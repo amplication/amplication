@@ -2,6 +2,11 @@ import {
   HorizontalRule,
   CodeEditor,
   Snackbar,
+  Label,
+  SelectMenu,
+  SelectMenuModal,
+  SelectMenuList,
+  SelectMenuItem,
 } from "@amplication/design-system";
 import { isValidJSON } from "@amplication/design-system/components/CodeEditor/CodeEditor";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
@@ -19,7 +24,7 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import usePlugins from "./hooks/usePlugins";
+import usePlugins, { PluginVersion } from "./hooks/usePlugins";
 import "./InstalledPluginSettings.scss";
 import { PluginLogo } from "./PluginLogo";
 
@@ -40,7 +45,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const { currentProject, currentWorkspace, currentResource } =
     useContext(AppContext);
   const editorRef: React.MutableRefObject<string | null> = useRef();
-  const [isValid, setIsValid] = useState<boolean>(false);
+  const [isValid, setIsValid] = useState<boolean>(true);
   const [resetKey, setResetKey] = useState<string>();
 
   const {
@@ -50,6 +55,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
     updatePluginInstallation,
     updateError,
   } = usePlugins(currentResource.id, pluginInstallationId);
+  const [selectedVersion, setSelectedVersion] = useState(
+    pluginInstallation?.PluginInstallation.version
+  );
 
   useEffect(() => {
     editorRef.current = JSON.stringify(
@@ -77,16 +85,25 @@ const InstalledPluginSettings: React.FC<Props> = ({
     setResetKey(generatedKey());
   }, []);
 
-  const handleSaveClick = useCallback(() => {
+  const handleSelectVersion = useCallback(
+    (pluginVersion: PluginVersion) => {
+      setSelectedVersion(pluginVersion.version);
+      pluginInstallation?.PluginInstallation.version !==
+        pluginVersion.version && setIsValid(false);
+      editorRef.current = pluginVersion.settings;
+    },
+    [setSelectedVersion, setIsValid]
+  );
+
+  const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
 
-    const { enabled, version, id } = pluginInstallation.PluginInstallation;
-
+    const { enabled, id } = pluginInstallation.PluginInstallation;
     updatePluginInstallation({
       variables: {
         data: {
           enabled,
-          version,
+          version: selectedVersion,
           settings: JSON.parse(editorRef.current),
         },
         where: {
@@ -94,7 +111,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         },
       },
     }).catch(console.error);
-  }, [updatePluginInstallation, pluginInstallation]);
+  }, [updatePluginInstallation, pluginInstallation, selectedVersion]);
 
   const errorMessage = formatError(updateError);
 
@@ -114,16 +131,51 @@ const InstalledPluginSettings: React.FC<Props> = ({
             <PluginLogo plugin={plugin} />
             <div className={`${moduleClass}__name`}>{plugin.name}</div>
           </div>
-          <div className={`${moduleClass}__row`}>
+          <div className={`${moduleClass}__column`}>
             <span className={`${moduleClass}__description`}>
               {plugin.description}
             </span>
+            <div className={`${moduleClass}__row`}>
+              <div className={`${moduleClass}__label-title`}>
+                <Label text="Plugin Version" />
+              </div>
+              <SelectMenu
+                title={
+                  selectedVersion ||
+                  pluginInstallation.PluginInstallation.version
+                }
+                buttonStyle={EnumButtonStyle.Secondary}
+                className={`${moduleClass}__menu`}
+                icon="chevron_down"
+              >
+                <SelectMenuModal>
+                  <SelectMenuList>
+                    <>
+                      {plugin.versions.map((pluginVersion: PluginVersion) => (
+                        <SelectMenuItem
+                          closeAfterSelectionChange
+                          itemData={pluginVersion}
+                          selected={pluginVersion.version === selectedVersion}
+                          key={pluginVersion.id}
+                          onSelectionChange={(pluginVersion) => {
+                            handleSelectVersion(pluginVersion);
+                          }}
+                        >
+                          {pluginVersion.version}
+                        </SelectMenuItem>
+                      ))}
+                    </>
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+            </div>
           </div>
           <HorizontalRule />
           <CodeEditor
             defaultValue={pluginInstallation?.PluginInstallation.settings}
             resetKey={resetKey}
             onChange={onEditorChange}
+            defaultLanguage={"json"}
           />
           <div className={`${moduleClass}__row`}>
             <Button
@@ -136,7 +188,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
             <Button
               className={`${moduleClass}__save`}
               buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleSaveClick}
+              onClick={handlePluginInstalledSave}
               disabled={isValid}
             >
               Save

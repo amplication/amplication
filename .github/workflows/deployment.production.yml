@@ -80,10 +80,10 @@ jobs:
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            if [[ "$project" != "data-service-generator-runner" ]]; then
+            if [[ "$project" != "data-service-generator" ]]; then
               yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
-            elif [[ "$project" == "data-service-generator-runner" ]]; then
+            elif [[ "$project" == "data-service-generator" ]]; then
               yq -i '.job.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
             fi;

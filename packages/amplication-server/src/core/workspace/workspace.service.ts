@@ -26,7 +26,7 @@ import { Subscription } from "../subscription/dto/Subscription";
 import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingPlan } from "../billing/BillingPlan";
+import { BillingPlan } from "../billing/billing.types";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 

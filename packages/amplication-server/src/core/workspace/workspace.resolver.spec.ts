@@ -18,6 +18,7 @@ import { EnumResourceType } from "../../prisma";
 import { ProjectService } from "../project/project.service";
 import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -173,6 +174,14 @@ describe("WorkspaceResolver", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             findProjects: projectServiceProjectsMock,
+          })),
+        },
+        {
+          provide: SubscriptionService,
+          useClass: jest.fn(() => ({
+            resolveSubscription: jest.fn(),
+            create: jest.fn(),
+            update: jest.fn(),
           })),
         },
         {
