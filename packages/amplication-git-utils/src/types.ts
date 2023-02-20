@@ -173,3 +173,8 @@ export interface CherryPickCommitsArgs {
   branchName: string;
   firstCommitOnDefaultBranch: Commit;
 }
+
+export interface CloneUrlArgs {
+  owner: string;
+  repositoryName: string;
+}

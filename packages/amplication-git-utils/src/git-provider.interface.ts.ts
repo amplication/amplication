@@ -1,5 +1,6 @@
 import {
   Branch,
+  CloneUrlArgs,
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
@@ -49,4 +50,5 @@ export interface GitProvider {
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
   getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
+  getCloneUrl: (args: CloneUrlArgs) => string;
 }

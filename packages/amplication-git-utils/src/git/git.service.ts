@@ -91,7 +91,10 @@ export class GitClientService {
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       const gitClient = new GitClient();
-      const cloneUrl = `https://${this.provider.domain}/${owner}/${repositoryName}.git`;
+      const cloneUrl = this.provider.getCloneUrl({
+        owner,
+        repositoryName,
+      });
 
       const cloneFolder = process.env.CLONES_FOLDER;
 

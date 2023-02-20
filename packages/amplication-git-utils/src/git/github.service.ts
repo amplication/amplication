@@ -11,6 +11,7 @@ import {
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
+  CloneUrlArgs,
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
@@ -73,6 +74,11 @@ export class GithubService implements GitProvider {
       privateKey,
     });
   }
+
+  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
+    return `https://${this.domain}/${owner}/${repositoryName}.git`;
+  }
+
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     const { branchName, owner, repositoryName } = args;
     const currentUserData = await this.getCurrentUser();
