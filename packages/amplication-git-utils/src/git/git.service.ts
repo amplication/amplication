@@ -6,7 +6,7 @@ import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
-  CherryPickCommitsArgs,
+  Commit,
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
@@ -93,14 +93,17 @@ export class GitClientService {
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
       const gitClient = new GitClient();
-      const cloneUrl = `https://${this.provider.domain}/${owner}/${repositoryName}.git`;
-      const randomUUID = v4();
-
       const cloneFolder = process.env.CLONES_FOLDER;
-
       if (!cloneFolder) {
         throw new MissingEnvParam("CLONES_FOLDER");
       }
+
+      const randomUUID = v4();
+
+      const cloneUrl = this.provider.getCloneUrl({
+        owner,
+        repositoryName,
+      });
 
       const cloneDir = normalize(
         join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
@@ -234,19 +237,23 @@ export class GitClientService {
         repositoryName,
         branchName: defaultBranch,
       });
-      await this.cherryPickCommits({
-        commits: amplicationCommits,
+      await this.cherryPickCommits(
+        amplicationCommits,
         gitClient,
         branchName,
-        firstCommitOnDefaultBranch,
-      });
+        firstCommitOnDefaultBranch
+      );
       return branch;
     }
     return branch;
   }
 
-  private async cherryPickCommits(args: CherryPickCommitsArgs) {
-    const { gitClient, commits, branchName, firstCommitOnDefaultBranch } = args;
+  private async cherryPickCommits(
+    commits: Commit[],
+    gitClient: GitClient,
+    branchName: string,
+    firstCommitOnDefaultBranch: Commit
+  ) {
     await gitClient.resetState();
     await gitClient.checkout(branchName);
 
