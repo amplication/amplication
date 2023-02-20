@@ -1,3 +1,5 @@
+import { GitClient } from "./git/git-client";
+
 export enum EnumPullRequestMode {
   Basic = "Basic",
   Accumulative = "Accumulative",
@@ -14,6 +16,10 @@ export enum EnumGitProvider {
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
+  installationId: string;
+}
+
+export interface GitProviderConstructorArgs {
   installationId: string;
 }
 
@@ -142,6 +148,13 @@ export interface GetBranchArgs {
   branchName: string;
 }
 
+export interface CreateBranchIfNotExistsArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  gitClient: GitClient;
+}
+
 export interface CreateBranchArgs {
   owner: string;
   repositoryName: string;
@@ -156,4 +169,9 @@ export interface Commit {
 export interface GitUser {
   id: string;
   login: string;
+}
+
+export interface CloneUrlArgs {
+  owner: string;
+  repositoryName: string;
 }

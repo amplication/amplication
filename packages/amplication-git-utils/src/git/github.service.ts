@@ -10,8 +10,8 @@ import {
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
-  GitUser,
   Branch,
+  CloneUrlArgs,
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
@@ -19,13 +19,15 @@ import {
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
+  EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitProviderArgs,
+  GitProviderConstructorArgs,
+  GitUser,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -44,8 +46,9 @@ export class GithubService implements GitProvider {
   private privateKey: string;
   private gitInstallationUrl: string;
   private octokit: Octokit;
-
-  constructor(private readonly gitProviderArgs: GitProviderArgs) {
+  public readonly name = EnumGitProvider.Github;
+  public readonly domain = "github.com";
+  constructor(private readonly gitProviderArgs: GitProviderConstructorArgs) {
     const {
       GITHUB_APP_INSTALLATION_URL,
       GITHUB_APP_APP_ID,
@@ -65,12 +68,16 @@ export class GithubService implements GitProvider {
     this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
-
     this.app = new App({
       appId: this.appId,
       privateKey,
     });
   }
+
+  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
+    return `https://${this.domain}/${owner}/${repositoryName}.git`;
+  }
+
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     const { branchName, owner, repositoryName } = args;
     const currentUserData = await this.getCurrentUser();

@@ -1,11 +1,16 @@
+import { rm } from "fs/promises";
+import { join, normalize } from "path";
+import { v4 } from "uuid";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
+import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
+  Commit,
+  CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
   EnumPullRequestMode,
-  GetBranchArgs,
   GetRepositoriesArgs,
   GitProviderArgs,
   RemoteGitOrganization,
@@ -14,11 +19,11 @@ import {
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
+import { GitClient } from "./git-client";
 import { GitFactory } from "./git-factory";
 
 export class GitClientService {
   private provider: GitProvider;
-
   async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
     this.provider = await GitFactory.getProvider(gitProviderArgs);
     return this;
@@ -85,10 +90,31 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      await this.createBranchIfNotExists({
+      const gitClient = new GitClient();
+      const cloneUrl = this.provider.getCloneUrl({
+        owner,
+        repositoryName,
+      });
+
+      const cloneFolder = process.env.CLONES_FOLDER;
+
+      if (!cloneFolder) {
+        throw new MissingEnvParam("CLONES_FOLDER");
+      }
+
+      const randomUUID = v4();
+
+      const cloneDir = normalize(
+        join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
+      );
+
+      await gitClient.clone(cloneUrl, cloneDir);
+
+      await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
+        gitClient,
       });
       await this.provider.createCommit({
         owner,
@@ -106,6 +132,9 @@ export class GitClientService {
         repositoryName,
         branchName,
       });
+
+      await rm(cloneDir, { recursive: true, force: true });
+
       if (!existingPullRequest) {
         return this.provider.createPullRequestForBranch({
           owner,
@@ -122,23 +151,59 @@ export class GitClientService {
     throw new InvalidPullRequestMode();
   }
 
-  private async createBranchIfNotExists(args: GetBranchArgs): Promise<Branch> {
+  private async restoreAmplicationBranchIfNotExists(
+    args: CreateBranchIfNotExistsArgs
+  ): Promise<Branch> {
+    const { branchName, owner, repositoryName, gitClient } = args;
     const branch = await this.provider.getBranch(args);
     if (!branch) {
       const { defaultBranch } = await this.provider.getRepository(args);
-      const { sha } = await this.provider.getFirstCommitOnBranch({
-        ...args,
-        branchName: defaultBranch,
+      const firstCommitOnDefaultBranch =
+        await this.provider.getFirstCommitOnBranch({
+          owner,
+          repositoryName,
+          branchName: defaultBranch,
+        });
+      const branch = await this.provider.createBranch({
+        owner,
+        branchName,
+        repositoryName,
+        pointingSha: firstCommitOnDefaultBranch.sha,
       });
-      const branch = this.provider.createBranch({ ...args, pointingSha: sha });
       const amplicationCommits = await this.provider.getCurrentUserCommitList({
-        ...args,
+        owner,
+        repositoryName,
         branchName: defaultBranch,
       });
-
+      await this.cherryPickCommits(
+        amplicationCommits,
+        gitClient,
+        branchName,
+        firstCommitOnDefaultBranch
+      );
       return branch;
     }
     return branch;
+  }
+
+  private async cherryPickCommits(
+    commits: Commit[],
+    gitClient: GitClient,
+    branchName: string,
+    firstCommitOnDefaultBranch: Commit
+  ) {
+    await gitClient.resetState();
+    await gitClient.checkout(branchName);
+
+    for (let index = commits.length - 1; index >= 0; index--) {
+      const commit = commits[index];
+      if (firstCommitOnDefaultBranch.sha === commit.sha) {
+        continue;
+      }
+      await gitClient.cherryPick(commit.sha);
+    }
+
+    await gitClient.git.push();
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {

@@ -1,23 +1,27 @@
 import {
   Branch,
+  CloneUrlArgs,
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  EnumGitProvider,
+  GetBranchArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GetBranchArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
 } from "./types";
 
 export interface GitProvider {
+  readonly name: EnumGitProvider;
+  readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
@@ -46,4 +50,5 @@ export interface GitProvider {
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
   getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
+  getCloneUrl: (args: CloneUrlArgs) => string;
 }
