@@ -184,3 +184,8 @@ export interface PreCommitProcessArgs {
 export type PreCommitProcessResult = Promise<{
   diff: string | null;
 }>;
+
+export interface PostCommitProcessArgs {
+  diffPath: string;
+  gitClient: GitClient;
+}

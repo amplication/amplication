@@ -13,6 +13,7 @@ import {
   EnumPullRequestMode,
   GetRepositoriesArgs,
   GitProviderArgs,
+  PostCommitProcessArgs,
   PreCommitProcessArgs,
   PreCommitProcessResult,
   RemoteGitOrganization,
@@ -147,10 +148,22 @@ export class GitClientService {
         branchName,
         files: preparedFiles,
       });
+
+      if (diff) {
+        await this.postCommitProcess({
+          diffPath: fullDiffPath,
+          gitClient,
+        });
+        await rm(fullDiffPath);
+      }
+
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
       });
+
+      await gitClient.mergeDefaultBranch(defaultBranch);
+
       const existingPullRequest = await this.provider.getPullRequestForBranch({
         owner,
         repositoryName,
@@ -208,6 +221,17 @@ export class GitClientService {
     await gitClient.resetState();
 
     return { diff };
+  }
+
+  async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
+    await gitClient.git.pull();
+    await gitClient.git
+      .applyPatch(diffPath)
+      .add(["."])
+      .commit("Amplication diff restoration", undefined, {
+        "--author": "Amplication <email@address.com>",
+      })
+      .push();
   }
 
   private async restoreAmplicationBranchIfNotExists(
