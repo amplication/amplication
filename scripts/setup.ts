@@ -107,10 +107,6 @@ const prepareGraphQL: Task[] = [
       "npx nx run-many --target graphql:schema:generate --output-style stream",
     label: "generating graphql schema 🧬",
   },
-  {
-    command: "npm run graphql-codegen",
-    label: "running graphql codegen 🧬",
-  },
 ];
 const build: Task[] = [
   {
