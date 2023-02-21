@@ -318,7 +318,7 @@ export class GitProviderService {
     }
 
     if (gitProvider === EnumGitProvider.Bitbucket) {
-      return "https://bitbucket.org/site/oauth2/authorize?client_id=6jQn5F38QpCLKCCwvW&response_type=code";
+      return `https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.BITBUCKET_CLIENT_ID}&response_type=code`;
     }
   }
 
@@ -330,6 +330,7 @@ export class GitProviderService {
     const { refreshToken } = await gitClientService.getAuthByTemporaryCode(
       code
     );
+    gitClientService.getWorkspaces();
     return refreshToken;
   }
 

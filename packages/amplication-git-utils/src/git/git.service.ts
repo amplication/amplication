@@ -33,6 +33,10 @@ export class GitClientService {
     return this.provider.getAuthByTemporaryCode(code);
   }
 
+  async getWorkspaces(): Promise<void> {
+    return this.provider.getWorkspaces();
+  }
+
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {

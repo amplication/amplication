@@ -84,6 +84,22 @@ export class BitBucketService implements GitProvider {
     );
   }
 
+  async getWorkspaces(): Promise<void> {
+    fetch("https://api.bitbucket.org/2.0/workspaces", {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${this.accessToken}`,
+        Accept: "application/json",
+      },
+    })
+      .then((response) => {
+        console.log(`Response: ${response.status} ${response.statusText}`);
+        return response.text();
+      })
+      .then((text) => console.log(text, "workspaces"))
+      .catch((err) => console.error(err));
+  }
+
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {

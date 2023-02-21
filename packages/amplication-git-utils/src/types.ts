@@ -152,6 +152,7 @@ export interface GitProvider {
   init(): Promise<void>;
   getAuthByTemporaryCode(code: string): Promise<GetAuthByTemporaryCodeResponse>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
+  getWorkspaces(): Promise<void>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;

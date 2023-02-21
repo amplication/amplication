@@ -20,6 +20,7 @@ import {
   CreatePullRequestForBranchArgs,
   GetFileArgs,
   UpdateFile,
+  GetAuthByTemporaryCodeResponse,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -68,10 +69,15 @@ export class GithubService implements GitProvider {
     }
   }
 
-  async getAuthByTemporaryCode(): Promise<string> {
-    return Promise.resolve(
-      `Not implemented for ${this.gitProviderArgs.provider} provider`
-    );
+  async getAuthByTemporaryCode(): Promise<GetAuthByTemporaryCodeResponse> {
+    return {
+      accessToken: null,
+      refreshToken: null,
+    };
+  }
+
+  async getWorkspaces(): Promise<void> {
+    return Promise.resolve();
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
