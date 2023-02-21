@@ -32,7 +32,9 @@ function WorkspaceSelectorListItem({
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
         <span className={`${CLASS_NAME}__plan`}>
-          {workspace.subscription?.subscriptionPlan || "Free"} Plan
+          {workspace.subscription?.subscriptionPlan ||
+            models.EnumSubscriptionPlan.Free}{" "}
+          Plan
         </span>
       </div>
       {selected && (

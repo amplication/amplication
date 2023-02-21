@@ -102,7 +102,8 @@ const PurchasePage = (props) => {
     async ({ plan, intentionType, selectedBillingPeriod }) => {
       trackEvent({
         eventName: AnalyticsEventNames.PricingPageCTAClick,
-        currentPlan: currentWorkspace.subscription || "Free",
+        currentPlan:
+          currentWorkspace.subscription || models.EnumSubscriptionPlan.Free,
         type: plan.displayName,
         price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
         action: intentionType,

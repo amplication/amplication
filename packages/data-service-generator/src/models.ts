@@ -17,7 +17,6 @@ export type Scalars = {
 };
 
 export type Account = {
-  __typename?: 'Account';
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
   firstName: Scalars['String'];
@@ -29,14 +28,12 @@ export type Account = {
 };
 
 export type Action = {
-  __typename?: 'Action';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   steps?: Maybe<Array<ActionStep>>;
 };
 
 export type ActionLog = {
-  __typename?: 'ActionLog';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   level: EnumActionLogLevel;
@@ -45,7 +42,6 @@ export type ActionLog = {
 };
 
 export type ActionStep = {
-  __typename?: 'ActionStep';
   completedAt?: Maybe<Scalars['DateTime']>;
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
@@ -56,7 +52,6 @@ export type ActionStep = {
 };
 
 export type AdminUiSettings = {
-  __typename?: 'AdminUISettings';
   adminUIPath: Scalars['String'];
   generateAdminUI: Scalars['Boolean'];
 };
@@ -67,7 +62,6 @@ export type AdminUiSettingsUpdateInput = {
 };
 
 export type ApiToken = {
-  __typename?: 'ApiToken';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   lastAccessAt: Scalars['DateTime'];
@@ -83,18 +77,15 @@ export type ApiTokenCreateInput = {
 };
 
 export type Auth = {
-  __typename?: 'Auth';
   /** JWT Bearer token */
   token: Scalars['String'];
 };
 
 export type AuthorizeResourceWithGitResult = {
-  __typename?: 'AuthorizeResourceWithGitResult';
   url: Scalars['String'];
 };
 
 export type Block = {
-  __typename?: 'Block';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -119,7 +110,6 @@ export type BlockVersionsArgs = {
 };
 
 export type BlockInputOutput = {
-  __typename?: 'BlockInputOutput';
   dataType?: Maybe<EnumDataType>;
   dataTypeEntityName?: Maybe<Scalars['String']>;
   description: Scalars['String'];
@@ -149,7 +139,6 @@ export type BlockOrderByInput = {
 };
 
 export type BlockVersion = {
-  __typename?: 'BlockVersion';
   block: Block;
   commit?: Maybe<Commit>;
   createdAt: Scalars['DateTime'];
@@ -195,7 +184,6 @@ export type BooleanFilter = {
 };
 
 export type Build = {
-  __typename?: 'Build';
   action?: Maybe<Action>;
   actionId: Scalars['String'];
   archiveURI: Scalars['String'];
@@ -243,7 +231,6 @@ export type ChangePasswordInput = {
 };
 
 export type Commit = {
-  __typename?: 'Commit';
   builds?: Maybe<Array<Build>>;
   changes?: Maybe<Array<PendingChange>>;
   createdAt: Scalars['DateTime'];
@@ -315,7 +302,6 @@ export type DateTimeFilter = {
 };
 
 export type Entity = {
-  __typename?: 'Entity';
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -364,7 +350,6 @@ export type EntityCreateInput = {
 };
 
 export type EntityField = {
-  __typename?: 'EntityField';
   createdAt: Scalars['DateTime'];
   dataType: EnumDataType;
   description?: Maybe<Scalars['String']>;
@@ -457,7 +442,6 @@ export type EntityOrderByInput = {
 };
 
 export type EntityPermission = {
-  __typename?: 'EntityPermission';
   action: EnumEntityAction;
   entityVersion?: Maybe<EntityVersion>;
   entityVersionId: Scalars['String'];
@@ -468,7 +452,6 @@ export type EntityPermission = {
 };
 
 export type EntityPermissionField = {
-  __typename?: 'EntityPermissionField';
   entityVersionId: Scalars['String'];
   field: EntityField;
   fieldPermanentId: Scalars['String'];
@@ -485,7 +468,6 @@ export type EntityPermissionFieldWhereUniqueInput = {
 };
 
 export type EntityPermissionRole = {
-  __typename?: 'EntityPermissionRole';
   action: EnumEntityAction;
   entityPermission?: Maybe<EntityPermission>;
   entityVersionId: Scalars['String'];
@@ -520,7 +502,6 @@ export type EntityUpdatePermissionRolesInput = {
 };
 
 export type EntityVersion = {
-  __typename?: 'EntityVersion';
   commit?: Maybe<Commit>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -707,8 +688,8 @@ export type EnumResourceTypeFilter = {
 };
 
 export enum EnumSubscriptionPlan {
-  Business = 'Business',
   Enterprise = 'Enterprise',
+  Free = 'Free',
   Pro = 'Pro'
 }
 
@@ -726,7 +707,6 @@ export enum EnumWorkspaceMemberType {
 }
 
 export type Environment = {
-  __typename?: 'Environment';
   address: Scalars['String'];
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -742,7 +722,6 @@ export type GitGetInstallationUrlInput = {
 };
 
 export type GitOrganization = {
-  __typename?: 'GitOrganization';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   installationId: Scalars['String'];
@@ -762,7 +741,6 @@ export type GitOrganizationWhereInput = {
 };
 
 export type GitRepository = {
-  __typename?: 'GitRepository';
   createdAt?: Maybe<Scalars['DateTime']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String'];
@@ -799,7 +777,6 @@ export type IntFilter = {
 };
 
 export type Invitation = {
-  __typename?: 'Invitation';
   createdAt: Scalars['DateTime'];
   email: Scalars['String'];
   id: Scalars['String'];
@@ -818,7 +795,6 @@ export type LoginInput = {
 };
 
 export type MessagePattern = {
-  __typename?: 'MessagePattern';
   topicId: Scalars['String'];
   type: EnumMessagePatternConnectionOptions;
 };
@@ -829,7 +805,6 @@ export type MessagePatternCreateInput = {
 };
 
 export type Mutation = {
-  __typename?: 'Mutation';
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
@@ -846,6 +821,7 @@ export type Mutation = {
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
+  createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
   createResourceRole: ResourceRole;
   createService: Resource;
@@ -977,6 +953,12 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
+};
+
+
+export type MutationCreatePluginInstallationsArgs = {
+  data: PluginInstallationsCreateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1231,7 +1213,6 @@ export type MutationUpdateWorkspaceArgs = {
 };
 
 export type PendingChange = {
-  __typename?: 'PendingChange';
   action: EnumPendingChangeAction;
   origin: PendingChangeOrigin;
   originId: Scalars['String'];
@@ -1251,7 +1232,6 @@ export type PendingChangesFindInput = {
 };
 
 export type PluginInstallation = IBlock & {
-  __typename?: 'PluginInstallation';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -1313,8 +1293,11 @@ export type PluginInstallationWhereInput = {
   updatedAt?: InputMaybe<DateTimeFilter>;
 };
 
+export type PluginInstallationsCreateInput = {
+  plugins?: InputMaybe<Array<PluginInstallationCreateInput>>;
+};
+
 export type PluginOrder = IBlock & {
-  __typename?: 'PluginOrder';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -1332,7 +1315,6 @@ export type PluginOrder = IBlock & {
 };
 
 export type PluginOrderItem = {
-  __typename?: 'PluginOrderItem';
   order: Scalars['Int'];
   pluginId: Scalars['String'];
 };
@@ -1342,7 +1324,6 @@ export type PluginSetOrderInput = {
 };
 
 export type Project = {
-  __typename?: 'Project';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   name: Scalars['String'];
@@ -1351,7 +1332,6 @@ export type Project = {
 };
 
 export type ProjectConfigurationSettings = IBlock & {
-  __typename?: 'ProjectConfigurationSettings';
   baseDirectory: Scalars['String'];
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
@@ -1396,7 +1376,6 @@ export type ProjectWhereInput = {
 };
 
 export type PropertySelector = {
-  __typename?: 'PropertySelector';
   include: Scalars['Boolean'];
   propertyName: Scalars['String'];
 };
@@ -1416,13 +1395,11 @@ export type ProvisionSubscriptionInput = {
 };
 
 export type ProvisionSubscriptionResult = {
-  __typename?: 'ProvisionSubscriptionResult';
   checkoutUrl?: Maybe<Scalars['String']>;
   provisionStatus: Scalars['String'];
 };
 
 export type Query = {
-  __typename?: 'Query';
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
   ServiceTopics?: Maybe<ServiceTopics>;
@@ -1651,7 +1628,6 @@ export enum QueryMode {
 }
 
 export type RemoteGitRepos = {
-  __typename?: 'RemoteGitRepos';
   currentPage: Scalars['Float'];
   pageSize: Scalars['Float'];
   repos: Array<RemoteGitRepository>;
@@ -1666,7 +1642,6 @@ export type RemoteGitRepositoriesWhereUniqueInput = {
 };
 
 export type RemoteGitRepository = {
-  __typename?: 'RemoteGitRepository';
   admin: Scalars['Boolean'];
   defaultBranch: Scalars['String'];
   fullName: Scalars['String'];
@@ -1676,7 +1651,6 @@ export type RemoteGitRepository = {
 };
 
 export type Resource = {
-  __typename?: 'Resource';
   builds: Array<Build>;
   createdAt: Scalars['DateTime'];
   description: Scalars['String'];
@@ -1758,7 +1732,6 @@ export type ResourceOrderByInput = {
 };
 
 export type ResourceRole = {
-  __typename?: 'ResourceRole';
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -1824,7 +1797,6 @@ export enum Role {
 }
 
 export type ServerSettings = {
-  __typename?: 'ServerSettings';
   generateGraphQL: Scalars['Boolean'];
   generateRestApi: Scalars['Boolean'];
   serverPath: Scalars['String'];
@@ -1837,7 +1809,6 @@ export type ServerSettingsUpdateInput = {
 };
 
 export type ServiceSettings = IBlock & {
-  __typename?: 'ServiceSettings';
   adminUISettings: AdminUiSettings;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
@@ -1875,7 +1846,6 @@ export type ServiceSettingsUpdateInput = {
 };
 
 export type ServiceTopics = IBlock & {
-  __typename?: 'ServiceTopics';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -1962,7 +1932,6 @@ export type StringFilter = {
 };
 
 export type Subscription = {
-  __typename?: 'Subscription';
   cancelUrl?: Maybe<Scalars['String']>;
   cancellationEffectiveDate?: Maybe<Scalars['DateTime']>;
   createdAt: Scalars['DateTime'];
@@ -1978,7 +1947,6 @@ export type Subscription = {
 };
 
 export type Topic = IBlock & {
-  __typename?: 'Topic';
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
@@ -2036,7 +2004,6 @@ export type UpdateAccountInput = {
 };
 
 export type User = {
-  __typename?: 'User';
   account?: Maybe<Account>;
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
@@ -2047,7 +2014,6 @@ export type User = {
 };
 
 export type UserRole = {
-  __typename?: 'UserRole';
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   role: Role;
@@ -2063,7 +2029,6 @@ export type WhereUniqueInput = {
 };
 
 export type Workspace = {
-  __typename?: 'Workspace';
   createdAt: Scalars['DateTime'];
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String'];
@@ -2079,7 +2044,6 @@ export type WorkspaceCreateInput = {
 };
 
 export type WorkspaceMember = {
-  __typename?: 'WorkspaceMember';
   member: WorkspaceMemberType;
   type: EnumWorkspaceMemberType;
 };
