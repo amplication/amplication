@@ -61,6 +61,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       onCompleted: (data) => {
         openSignInWindow(
           data.getGitResourceInstallationUrl.url ||
+            // TODO: change this
             "http://localhost:3001/amplication-test",
           "auth with git"
         );
@@ -72,28 +73,26 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = (provider: EnumGitProvider) => {
-    if (provider === EnumGitProvider.Github) {
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    }
+  const handleAuthWithGithubClick = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
+    });
+    authWithGit({
+      variables: {
+        gitProvider: EnumGitProvider.Github,
+      },
+    }).catch(console.error);
+  };
 
-    if (provider === EnumGitProvider.Bitbucket) {
-      trackEvent({
-        eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    }
+  const handleAuthWithBitbucketClicked = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
+    });
+    authWithGit({
+      variables: {
+        gitProvider: EnumGitProvider.Bitbucket,
+      },
+    }).catch(console.error);
   };
 
   triggerOnDone = () => {
@@ -128,7 +127,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <NewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+            provider={EnumGitProvider.Github}
+            onSyncNewGitOrganizationClick={handleAuthWithGithubClick}
           />
         ) : (
           <ExistingConnectionsMenu
@@ -137,11 +137,14 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
               setGitOrganization(organization);
             }}
             selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={(provider: EnumGitProvider) =>
-              handleAuthWithGitClick(provider)
-            }
+            onAddGitOrganization={handleAuthWithGithubClick}
           />
         )}
+
+        <NewConnection
+          provider={EnumGitProvider.Bitbucket}
+          onSyncNewGitOrganizationClick={handleAuthWithBitbucketClicked}
+        />
 
         <RepositoryActions
           onCreateRepository={() => {

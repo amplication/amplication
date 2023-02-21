@@ -15,7 +15,7 @@ import { EnumGitProvider } from "../../../models";
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  onAddGitOrganization: (provider: EnumGitProvider) => void;
+  onAddGitOrganization: () => void;
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
@@ -64,11 +64,7 @@ export default function ExistingConnectionsMenu({
                 </SelectMenuItem>
               ))}
               <hr className={`${CLASS_NAME}__hr`} />
-              <SelectMenuItem
-                onSelectionChange={(provider: EnumGitProvider) =>
-                  onAddGitOrganization(EnumGitProvider.Github)
-                }
-              >
+              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
                 <span>Add GitHub organization</span>
                 <Icon
                   icon="plus"
@@ -76,11 +72,7 @@ export default function ExistingConnectionsMenu({
                   size="xsmall"
                 />
               </SelectMenuItem>
-              <SelectMenuItem
-                onSelectionChange={(provider: EnumGitProvider) =>
-                  onAddGitOrganization(EnumGitProvider.Bitbucket)
-                }
-              >
+              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
                 <span>Add Bitbucket workspace</span>
                 <Icon
                   icon="plus"
