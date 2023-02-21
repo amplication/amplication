@@ -47,7 +47,7 @@ export class SubscriptionController {
         );
         const userId = updateStatusDto.metadata?.userId;
         if (
-          createSubscriptionInput.plan === EnumSubscriptionPlan.Pro &&
+          createSubscriptionInput.plan !== EnumSubscriptionPlan.Free &&
           userId
         ) {
           await this.analyticsService.track({
