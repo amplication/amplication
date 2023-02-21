@@ -652,8 +652,8 @@ type Subscription {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 
@@ -1099,6 +1099,7 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
@@ -1145,8 +1146,8 @@ input ProvisionSubscriptionInput {
   planId: String!
   billingPeriod: String!
   intentionType: String!
-  successUrl: String!
-  cancelUrl: String!
+  successUrl: String
+  cancelUrl: String
 }
 
 input ProjectCreateInput {
@@ -1402,6 +1403,10 @@ input PluginInstallationUpdateInput {
   enabled: Boolean!
   settings: JSONObject
   version: String!
+}
+
+input PluginInstallationsCreateInput {
+  plugins: [PluginInstallationCreateInput!]
 }
 
 input PluginSetOrderInput {

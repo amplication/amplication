@@ -2,6 +2,7 @@ import { namedTypes } from "ast-types";
 import {
   Entity,
   EntityField,
+  EntityLookupField,
   EnumDataType,
   Module,
   NamedClassDeclaration,
@@ -51,6 +52,38 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
+
+export interface CreateEntityControllerToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entity: Entity;
+  entityType: string;
+  whereUniqueInput: NamedClassDeclaration;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entityType: string;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverToOneRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entityType: string;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toOneFile: namedTypes.File;
+  toOneMapping: { [key: string]: any };
+}
 export interface CreateEntityControllerSpecParams extends EventParams {
   entity: Entity;
   entityType: string;
@@ -73,9 +106,7 @@ export interface CreateTokenPayloadInterfaceParams extends EventParams {
   templateMapping: { [key: string]: any };
   filePath: string;
 }
-export interface CreateServerAuthParams extends EventParams {
-  srcDir: string;
-}
+export interface CreateServerAuthParams extends EventParams {}
 
 export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
@@ -145,6 +176,8 @@ export interface CreateAdminUIPackageJsonParams extends EventParams {
 
 export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: Module[];
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityModuleParams extends EventParams {

@@ -12,6 +12,7 @@ import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
+import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -63,12 +64,42 @@ export class PluginInstallationService extends BlockTypeService<
     super(blockService);
   }
 
+  async createMany(
+    args: CreatePluginInstallationsArgs,
+    user: User
+  ): Promise<PluginInstallation[]> {
+    const { plugins } = args.data;
+
+    const newPlugins: PluginInstallation[] = [];
+
+    for (let index = 0; index < plugins.length; index++) {
+      const currentArgs: CreatePluginInstallationArgs = {
+        data: plugins[index],
+      };
+      const newPlugin = await super.create(currentArgs, user);
+      newPlugins.push(newPlugin);
+
+      await this.setOrder(
+        {
+          data: {
+            order: -1,
+          },
+          where: {
+            id: newPlugin.id,
+          },
+        },
+        user
+      );
+    }
+
+    return newPlugins;
+  }
+
   async create(
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
     const newPlugin = await super.create(args, user);
-
     await this.setOrder(
       {
         data: {

@@ -38,9 +38,9 @@ import {
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/BillingFeature";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { SendPullRequestArgs } from "./dto/sendPullRequest";
+import { BillingFeature } from "../billing/billing.types";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -458,11 +458,13 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const subscription = await this.billingService.getSubscription(
-            project.workspaceId
-          );
+          const smartGitSyncEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.SmartGitSync
+            );
 
-          const pullRequestMode = subscription
+          const pullRequestMode = smartGitSyncEntitlement.hasAccess
             ? EnumPullRequestMode.Accumulative
             : EnumPullRequestMode.Basic;
 

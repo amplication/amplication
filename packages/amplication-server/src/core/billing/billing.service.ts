@@ -15,8 +15,7 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan, SubscriptionData } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature } from "./BillingFeature";
-import { BillingPlan } from "./BillingPlan";
+import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
@@ -235,10 +234,6 @@ export class BillingService {
           return subscription.status === SubscriptionStatus.Active;
         });
 
-        if (activeSub.plan.id === BillingPlan.Free) {
-          return null;
-        }
-
         const amplicationSub = {
           id: activeSub.id,
           status: this.mapSubscriptionStatus(activeSub.status),
@@ -360,6 +355,8 @@ export class BillingService {
 
   mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
     switch (planId) {
+      case BillingPlan.Free:
+        return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:

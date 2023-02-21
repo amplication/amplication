@@ -1,6 +1,7 @@
 import * as reactTracking from "react-tracking";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 import { AnalyticsEventNames } from "./analytics-events.types";
+import { version } from "../util/version";
 
 export interface Event {
   eventName: AnalyticsEventNames;
@@ -23,15 +24,19 @@ export const useTracking: () => Omit<
 
 export function dispatch(event: Partial<Event>) {
   const { eventName, ...rest } = event;
+  const versionObj = version ? { version } : {};
   _hsq.push([
     "trackCustomBehavioralEvent",
-    { name: eventName, properties: rest },
+    { name: eventName, properties: { ...versionObj, ...rest } },
   ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
-    analytics.track(eventName || MISSING_EVENT_NAME, rest);
+    analytics.track(eventName || MISSING_EVENT_NAME, {
+      ...versionObj,
+      ...rest,
+    });
   }
 }
 

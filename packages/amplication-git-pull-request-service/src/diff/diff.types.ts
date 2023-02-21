@@ -1,4 +1,4 @@
+import { File } from "@amplication/git-utils";
 import { Difference } from "dir-compare";
-import { PrModule } from "../types";
 
-export type DiffVisitorFn = (diff: Difference) => PrModule | null;
+export type DiffVisitorFn = (diff: Difference) => File | null;

@@ -8,7 +8,7 @@
 </p>
 
 <p align="center">
-  <img src="https://github.com/amplication/amplication/workflows/Node.js%20CI/badge.svg" alt="Node.js CI">
+  <img src="https://github.com/amplication/amplication/actions/workflows/ci.yml/badge.svg" alt="Node.js CI">
   <a href="https://amplication.com/discord">
     <img src="https://img.shields.io/discord/757179260417867879?label=discord" alt="Discord">
   </a>
@@ -93,7 +93,7 @@ Follow these simple instructions to set up a local development environment.
   npm install
   ```
 
-2. Run the [setup script](https://github.com/amplication/amplication/blob/master/script/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
+2. Run the [setup script](https://github.com/amplication/amplication/blob/master/scripts/setup.ts), which takes care of installing dependencies, building packages and ensuring your workspace is dev-ready.
 
   ```bash
   npm run setup:dev

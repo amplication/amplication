@@ -1,13 +1,11 @@
-import { Modal, Snackbar, Loader } from "@amplication/design-system";
+import { Modal, Snackbar } from "@amplication/design-system";
 import React, { MutableRefObject, useContext, useRef } from "react";
-import { match, useHistory } from "react-router-dom";
+import { match } from "react-router-dom";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import { serviceSettings } from "./CreateServiceWizardForm";
-import * as models from "../../models";
 import { serviceSettingsFieldsInitValues } from "../constants";
 
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
 import CreateServiceWizardFooter from "./CreateServiceWizardFooter";
