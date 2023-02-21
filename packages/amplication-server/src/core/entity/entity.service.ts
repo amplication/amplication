@@ -2233,9 +2233,6 @@ export class EntityService {
             },
           });
         }
-        console.log("====================================");
-        console.log(updatedField);
-        console.log("====================================");
         return updatedField;
       }
     );
