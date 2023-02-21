@@ -1,7 +1,8 @@
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useCallback, useContext, useState } from "react";
+import { formatError } from "../util/error";
+import React, { useCallback, useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
@@ -9,7 +10,6 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { formatError } from "../util/error";
 import {
   validate,
   validationErrorMessages,
@@ -56,39 +56,27 @@ type Props = {
 const NewProject = ({ onProjectCreated }: Props) => {
   const { onNewProjectCompleted } = useContext(AppContext);
   const { trackEvent } = useTracking();
-  const [openErrorSnackbar, setOpenErrorSnackbar] = useState(false);
-  const [createProject, { error, loading }] = useMutation<DType>(
-    CREATE_PROJECT,
-    {
-      onCompleted: (data) => {
-        trackEvent({
-          eventName: AnalyticsEventNames.ProjectCreate,
-          projectName: data.createProject.name,
-        });
-        onProjectCreated();
-        onNewProjectCompleted(data.createProject);
-      },
-    }
-  );
+  const [createProject, { loading }] = useMutation<DType>(CREATE_PROJECT, {
+    onCompleted: (data) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.ProjectCreate,
+        projectName: data.createProject.name,
+      });
+      onProjectCreated();
+      onNewProjectCompleted(data.createProject);
+    },
+  });
 
   const handleSubmit = useCallback(
-    (data: CreateProjectType) => {
+    (data: CreateProjectType, { setErrors }) => {
       createProject({
         variables: {
           data,
         },
-      }).catch((err) => {
-        setOpenErrorSnackbar(true);
-        console.error(err);
-      });
+      }).catch((err) => setErrors({ name: formatError(err) }));
     },
     [createProject]
   );
-  const errorMessage = formatError(error);
-
-  const handleCloseErrorSnackbar = () => {
-    setOpenErrorSnackbar(false);
-  };
 
   return (
     <div className={CLASS_NAME}>
@@ -131,12 +119,6 @@ const NewProject = ({ onProjectCreated }: Props) => {
           );
         }}
       </Formik>
-      <Snackbar
-        open={openErrorSnackbar}
-        message={errorMessage}
-        onClose={handleCloseErrorSnackbar}
-        autoHideDuration={1000}
-      />
     </div>
   );
 };
