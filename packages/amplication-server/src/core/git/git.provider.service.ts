@@ -327,12 +327,22 @@ export class GitProviderService {
       provider: EnumGitProvider.Bitbucket,
       installationId: null,
     });
-    const { refreshToken } = await gitClientService.getAuthByTemporaryCode(
-      code
-    );
-    gitClientService.getWorkspaces();
+    // const { refreshToken } = await gitClientService.getAuthByTemporaryCode(
+    //   code
+    // );
+    const { refreshToken } = await gitClientService.authenticate(code);
     return refreshToken;
   }
+
+  // async getCurrentBitbucketUser() {
+  //   const gitClientService = await new GitClientService().create({
+  //     provider: EnumGitProvider.Bitbucket,
+  //     installationId: null,
+  //   });
+  //   const currentUser = await gitClientService.getCurrentUser();
+  //   console.log({ currentUser });
+  //   return currentUser;
+  // }
 
   async deleteGitOrganization(
     args: DeleteGitOrganizationArgs
