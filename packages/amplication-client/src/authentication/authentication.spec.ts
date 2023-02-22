@@ -42,16 +42,30 @@ describe("authentication", () => {
     });
   });
 
-  it(`setTokenFromCookie store the token in the local storage and delete the temporary cookie`, async () => {
-    const expectedToken = "secret";
-    spyOnWindowDocumentCookieGet.mockReturnValueOnce(
-      `${TEMPORARY_JWT_COOKIE_NAME}=${expectedToken}`
-    );
+  describe("setTokenFromCookie", () => {
+    it(`stores the token in the local storage and delete the temporary cookie`, async () => {
+      const expectedToken = "secret";
+      spyOnWindowDocumentCookieGet.mockReturnValueOnce(
+        `${TEMPORARY_JWT_COOKIE_NAME}=${expectedToken}`
+      );
 
-    setTokenFromCookie();
+      setTokenFromCookie();
 
-    expect(spyOnlocalStorageSet).toHaveBeenCalledWith(TOKEN_KEY, expectedToken);
-    expect(spyOnWindowDocumentCookieSet).toHaveBeenCalled();
+      expect(spyOnlocalStorageSet).toHaveBeenCalledWith(
+        TOKEN_KEY,
+        expectedToken
+      );
+      expect(spyOnWindowDocumentCookieSet).toHaveBeenCalled();
+    });
+
+    it(`doesn't delete the token in the local storage when not temporary cookies are passed`, async () => {
+      spyOnWindowDocumentCookieGet.mockReturnValueOnce("otherCookie=123");
+
+      setTokenFromCookie();
+
+      expect(spyOnlocalStorageRemove).toHaveBeenCalledTimes(0);
+      expect(spyOnWindowDocumentCookieSet).toHaveBeenCalledTimes(0);
+    });
   });
 
   it(`unsetToken delete the token from the local storage`, async () => {

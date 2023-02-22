@@ -26,8 +26,10 @@ export function getToken(): string | null {
 
 export function setTokenFromCookie(): void {
   const tokenFromCookie = getCookie(TEMPORARY_JWT_COOKIE_NAME);
-  setToken(tokenFromCookie);
-  expireCookie(TEMPORARY_JWT_COOKIE_NAME);
+  if (tokenFromCookie) {
+    setToken(tokenFromCookie);
+    expireCookie(TEMPORARY_JWT_COOKIE_NAME);
+  }
 }
 
 export function setToken(newToken: string) {
