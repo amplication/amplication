@@ -18,6 +18,7 @@ import {
   RemoteGitRepository,
 } from "../types";
 import fetch from "node-fetch";
+import { CustomError, NotImplementedError } from "../utils/custom-error";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -73,8 +74,9 @@ export class BitBucketService implements GitProvider {
       this.refreshToken = refreshToken;
       return { accessToken: access_token, refreshToken };
     } catch (error) {
-      // TODO: handle error
-      console.log(error);
+      // TODO: figure out how the error is look like
+      const { message, code, status, cause } = error;
+      throw new CustomError(message, { code, status, cause });
     }
   }
 
@@ -103,58 +105,58 @@ export class BitBucketService implements GitProvider {
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   deleteGitOrganization(): Promise<boolean> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   getOrganization(): Promise<RemoteGitOrganization> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   getFile(file: GetFileArgs): Promise<GitFile> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   createPullRequestFromFiles(
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   createBranchIfNotExists(
     createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   getPullRequestForBranch(
     getPullRequestForBranchArgs: GetPullRequestForBranchArgs
   ): Promise<{ url: string; number: number }> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 
   createPullRequestForBranch(
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ): Promise<string> {
-    console.log("Method not implemented.");
+    throw NotImplementedError;
   }
 }

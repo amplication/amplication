@@ -31,6 +31,7 @@ import {
   UpdateFunctionFile,
   File as OctokitFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
+import { NotImplementedError } from "../utils/custom-error";
 
 const GITHUB_FILE_TYPE = "file";
 
@@ -67,17 +68,6 @@ export class GithubService implements GitProvider {
         this.gitProviderArgs.installationId
       );
     }
-  }
-
-  async getAuthByTemporaryCode(): Promise<GetAuthByTemporaryCodeResponse> {
-    return {
-      accessToken: null,
-      refreshToken: null,
-    };
-  }
-
-  async getWorkspaces(): Promise<void> {
-    return Promise.resolve();
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
@@ -773,6 +763,15 @@ export class GithubService implements GitProvider {
       acc[file.path] = file.content;
       return acc;
     }, {} as Required<Changes["files"]>);
+  }
+
+  // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
+  async getAuthByTemporaryCode(): Promise<GetAuthByTemporaryCodeResponse> {
+    throw NotImplementedError;
+  }
+
+  async getWorkspaces(): Promise<void> {
+    throw NotImplementedError;
   }
 }
 
