@@ -103,7 +103,7 @@ function App() {
           onTimeout={handleTimeout}
         />
       )}
-      {!currentWorkspaceLoading && GeneratedRoutes}
+      {!showLoadingAnimation && GeneratedRoutes}
       {workspaceUpgradeConfirmation && (
         <PlanUpgradeConfirmation
           isOpen={workspaceUpgradeConfirmation}
