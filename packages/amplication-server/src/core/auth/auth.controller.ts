@@ -19,6 +19,8 @@ import {
   AmplicationLogger,
   AMPLICATION_LOGGER_PROVIDER,
 } from "@amplication/nest-logger-module";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Controller("/")
 export class AuthController {
@@ -26,9 +28,10 @@ export class AuthController {
   constructor(
     private readonly authService: AuthService,
     @Inject(AMPLICATION_LOGGER_PROVIDER)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly configService: ConfigService
   ) {
-    this.host = process.env.CLIENT_HOST || "http://localhost:3001";
+    this.host = configService.get(Env.CLIENT_HOST);
   }
 
   @UseInterceptors(MorganInterceptor("combined"))
@@ -45,7 +48,7 @@ export class AuthController {
   async githubCallback(
     @Req() request: GitHubRequest,
     @Res() response: Response
-  ) {
+  ): Promise<void> {
     const user: AuthUser = request.user as AuthUser;
     const isNew = request.isNew;
 
@@ -60,8 +63,12 @@ export class AuthController {
       // eslint-disable-next-line @typescript-eslint/naming-convention
       query: { "complete-signup": isNew ? "1" : "0" },
     });
+    const clientDomain = new URL(url).hostname;
 
-    const cookieDomain = new URL(url).hostname;
+    const cookieDomainParts = clientDomain.split(".");
+    const cookieDomain = cookieDomainParts
+      .slice(Math.max(cookieDomainParts.length - 2, 0))
+      .join(".");
 
     response.cookie("AJWT", token, {
       domain: cookieDomain,
