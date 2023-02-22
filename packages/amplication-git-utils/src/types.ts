@@ -146,13 +146,31 @@ export interface CreateCommitArgs {
 export interface GetAuthByTemporaryCodeResponse {
   accessToken: string;
   refreshToken: string;
+  scopes: string[];
+  tokenType: string;
+  expiresIn: number;
+  state: string;
+}
+
+export interface GetCurrentUserArgs {
+  links: {
+    avatar: {
+      href: string;
+      name: string;
+    };
+  };
+  createdOn: string;
+  displayName: string;
+  username: string;
+  uuid: string;
 }
 
 export interface GitProvider {
   init(): Promise<void>;
+  authenticate(code: string): Promise<{ refreshToken: string }>;
   getAuthByTemporaryCode(code: string): Promise<GetAuthByTemporaryCodeResponse>;
+  // getCurrentUser(accessToken: string): Promise<GetCurrentUserArgs>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getWorkspaces(): Promise<void>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;

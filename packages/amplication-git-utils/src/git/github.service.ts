@@ -21,6 +21,7 @@ import {
   GetFileArgs,
   UpdateFile,
   GetAuthByTemporaryCodeResponse,
+  GetCurrentUserArgs,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -771,6 +772,13 @@ export class GithubService implements GitProvider {
   }
 
   async getWorkspaces(): Promise<void> {
+    throw NotImplementedError;
+  }
+
+  // async getCurrentUser(): Promise<GetCurrentUserArgs> {
+  //   throw NotImplementedError;
+  // }
+  async authenticate(code: string): Promise<{ refreshToken: string }> {
     throw NotImplementedError;
   }
 }

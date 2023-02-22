@@ -6,6 +6,7 @@ import {
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   GetAuthByTemporaryCodeResponse,
+  GetCurrentUserArgs,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
@@ -16,9 +17,9 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-} from "../types";
-import fetch from "node-fetch";
-import { CustomError, NotImplementedError } from "../utils/custom-error";
+} from "../../types";
+import { CustomError, NotImplementedError } from "../../utils/custom-error";
+import { authDataRequest, currentUserRequest } from "./requests";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -46,33 +47,49 @@ export class BitBucketService implements GitProvider {
   }
 
   async init(): Promise<void> {
-    // this.accessToken = await this.createConsumerApp();
+    console.log("init");
+  }
+
+  async authenticate(code: string): Promise<{ refreshToken: string }> {
+    const authData = await this.getAuthByTemporaryCode(code);
+    const { accessToken, refreshToken } = authData;
+    const currentUser = await this.getCurrentUser(accessToken);
+    console.log("currentUser", currentUser);
+    return { refreshToken };
   }
 
   async getAuthByTemporaryCode(
     code: string
   ): Promise<GetAuthByTemporaryCodeResponse> {
-    const accessTokenUrl = "https://bitbucket.org/site/oauth2/access_token";
     try {
-      const request = await fetch(accessTokenUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-          Authorization: `Basic ${Buffer.from(
-            `${this.clientId}:${this.clientSecret}`
-          ).toString("base64")}`,
-        },
-        body: `grant_type=authorization_code&code=${code}`,
-      });
+      const response = await authDataRequest(
+        this.clientId,
+        this.clientSecret,
+        code
+      );
 
-      const response = await request.json();
-      // const accessToken = response.data.access_token;
-      console.log("accessToken", { response });
+      const authData = await response.json();
+      const {
+        access_token,
+        refreshToken,
+        scopes,
+        token_type,
+        expires_in,
+        state,
+      } = authData;
 
-      const { access_token, refreshToken } = response;
       this.accessToken = access_token;
       this.refreshToken = refreshToken;
-      return { accessToken: access_token, refreshToken };
+      console.log(this.accessToken, "accessToken");
+      const scopesArr = scopes.split(" ");
+      return {
+        accessToken: access_token,
+        refreshToken,
+        scopes: scopesArr,
+        tokenType: token_type,
+        expiresIn: expires_in,
+        state,
+      };
     } catch (error) {
       // TODO: figure out how the error is look like
       const { message, code, status, cause } = error;
@@ -80,26 +97,24 @@ export class BitBucketService implements GitProvider {
     }
   }
 
+  async getCurrentUser(accessToken: string): Promise<GetCurrentUserArgs> {
+    const response = await currentUserRequest(accessToken);
+    const currentUser = await response.json();
+    console.log(`Response: ${response.status} ${response.statusText}`);
+    const { links, created_on, display_name, username, uuid } = currentUser;
+    return {
+      links,
+      createdOn: created_on,
+      displayName: display_name,
+      username,
+      uuid,
+    };
+  }
+
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return Promise.resolve(
       `Not implemented for ${this.gitProviderArgs.provider} provider`
     );
-  }
-
-  async getWorkspaces(): Promise<void> {
-    fetch("https://api.bitbucket.org/2.0/workspaces", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${this.accessToken}`,
-        Accept: "application/json",
-      },
-    })
-      .then((response) => {
-        console.log(`Response: ${response.status} ${response.statusText}`);
-        return response.text();
-      })
-      .then((text) => console.log(text, "workspaces"))
-      .catch((err) => console.error(err));
   }
 
   getRepository(
