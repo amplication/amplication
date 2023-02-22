@@ -22,6 +22,7 @@ import {
   UpdateFile,
   GetAuthByTemporaryCodeResponse,
   GetCurrentUserArgs,
+  AuthenticateResponse,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -775,10 +776,7 @@ export class GithubService implements GitProvider {
     throw NotImplementedError;
   }
 
-  // async getCurrentUser(): Promise<GetCurrentUserArgs> {
-  //   throw NotImplementedError;
-  // }
-  async authenticate(code: string): Promise<{ refreshToken: string }> {
+  async authenticate(code: string): Promise<AuthenticateResponse> {
     throw NotImplementedError;
   }
 }
