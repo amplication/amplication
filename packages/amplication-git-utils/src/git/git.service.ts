@@ -9,8 +9,7 @@ import {
   CreatePullRequestArgs,
   GitProvider,
   EnumPullRequestMode,
-  GetAuthByTemporaryCodeResponse,
-  GetCurrentUserArgs,
+  AuthenticateResponse,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -28,19 +27,9 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getAuthByTemporaryCode(
-    code: string
-  ): Promise<GetAuthByTemporaryCodeResponse> {
-    return this.provider.getAuthByTemporaryCode(code);
-  }
-
-  async authenticate(code: string): Promise<{ refreshToken: string }> {
+  async authenticate(code: string): Promise<AuthenticateResponse> {
     return this.provider.authenticate(code);
   }
-
-  // async getCurrentUser(): Promise<GetCurrentUserArgs> {
-  //   return this.provider.getCurrentUser();
-  // }
 
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs

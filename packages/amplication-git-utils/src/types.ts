@@ -165,11 +165,28 @@ export interface GetCurrentUserArgs {
   uuid: string;
 }
 
+export interface AuthenticateResponse {
+  accessToken: string;
+  refreshToken: string;
+  scopes: string[];
+  tokenType: string;
+  expiresIn: number;
+  state: string;
+  links: {
+    avatar: {
+      href: string;
+      name: string;
+    };
+  };
+  createdOn: string;
+  displayName: string;
+  username: string;
+  uuid: string;
+}
+
 export interface GitProvider {
   init(): Promise<void>;
-  authenticate(code: string): Promise<{ refreshToken: string }>;
-  getAuthByTemporaryCode(code: string): Promise<GetAuthByTemporaryCodeResponse>;
-  // getCurrentUser(accessToken: string): Promise<GetCurrentUserArgs>;
+  authenticate(code: string): Promise<AuthenticateResponse>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs

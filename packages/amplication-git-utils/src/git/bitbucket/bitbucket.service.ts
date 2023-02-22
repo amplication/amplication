@@ -1,4 +1,5 @@
 import {
+  AuthenticateResponse,
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
@@ -50,15 +51,14 @@ export class BitBucketService implements GitProvider {
     console.log("init");
   }
 
-  async authenticate(code: string): Promise<{ refreshToken: string }> {
+  async authenticate(code: string): Promise<AuthenticateResponse> {
     const authData = await this.getAuthByTemporaryCode(code);
-    const { accessToken, refreshToken } = authData;
+    const { accessToken } = authData;
     const currentUser = await this.getCurrentUser(accessToken);
-    console.log("currentUser", currentUser);
-    return { refreshToken };
+    return { ...authData, ...currentUser };
   }
 
-  async getAuthByTemporaryCode(
+  private async getAuthByTemporaryCode(
     code: string
   ): Promise<GetAuthByTemporaryCodeResponse> {
     try {
@@ -97,7 +97,9 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  async getCurrentUser(accessToken: string): Promise<GetCurrentUserArgs> {
+  private async getCurrentUser(
+    accessToken: string
+  ): Promise<GetCurrentUserArgs> {
     const response = await currentUserRequest(accessToken);
     const currentUser = await response.json();
     console.log(`Response: ${response.status} ${response.statusText}`);
