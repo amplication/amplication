@@ -58,7 +58,13 @@ export class AuthController {
     const url = stringifyUrl({
       url: this.host,
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      query: { token, "complete-signup": isNew ? "1" : "0" },
+      query: { "complete-signup": isNew ? "1" : "0" },
+    });
+
+    const cookieDomain = new URL(url).hostname;
+
+    response.cookie("AJWT", token, {
+      domain: cookieDomain,
     });
     response.redirect(301, url);
   }
