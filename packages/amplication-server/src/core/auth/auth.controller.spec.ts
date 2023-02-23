@@ -82,6 +82,7 @@ describe("AuthController", () => {
 
     expect(responseMock.cookie).toHaveBeenCalledWith("AJWT", fakeToken, {
       domain: expectedDomain,
+      secure: true,
     });
 
     expect(responseMock.redirect).toHaveBeenCalledWith(

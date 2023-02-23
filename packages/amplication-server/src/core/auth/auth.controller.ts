@@ -72,6 +72,7 @@ export class AuthController {
 
     response.cookie("AJWT", token, {
       domain: cookieDomain,
+      secure: true,
     });
     response.redirect(301, url);
   }
