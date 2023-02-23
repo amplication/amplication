@@ -314,21 +314,37 @@ export class GitProviderService {
       installationId: null,
     });
     if (gitProvider === EnumGitProvider.Github) {
-      return await gitClientService.getGitInstallationUrl(workspaceId);
+      return gitClientService.getGitInstallationUrl(workspaceId);
     }
 
     if (gitProvider === EnumGitProvider.Bitbucket) {
-      return `https://bitbucket.org/site/oauth2/authorize?client_id=${process.env.BITBUCKET_CLIENT_ID}&response_type=code`;
+      return gitClientService.getCallbackUrl();
     }
   }
 
-  async authenticateWithBitbucket(code: string): Promise<unknown> {
+  async getAuthByTemporaryCode(code: string) {
     const gitClientService = await new GitClientService().create({
       provider: EnumGitProvider.Bitbucket,
       installationId: null,
     });
-    const userAuthenticationData = await gitClientService.authenticate(code);
-    return userAuthenticationData;
+    const { refreshToken, scopes, tokenType } =
+      await gitClientService.getAccessToken(code);
+
+    // TODO: save to DB
+    return { refreshToken, scopes, tokenType };
+  }
+
+  async getCurrentUser(accessToken: string) {
+    const gitClientService = await new GitClientService().create({
+      provider: EnumGitProvider.Bitbucket,
+      installationId: null,
+    });
+    const { displayName, uuid } = await gitClientService.getCurrentUser(
+      accessToken
+    );
+    console.log({ displayName, uuid });
+    // TODO: save to DB
+    return { displayName, uuid };
   }
 
   async deleteGitOrganization(
