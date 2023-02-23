@@ -59,10 +59,11 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
+        console.log(data.getGitResourceInstallationUrl.url);
         openSignInWindow(
           data.getGitResourceInstallationUrl.url ||
             // TODO: change this
-            "http://localhost:3001/amplication-test",
+            "http://localhost:3001/amit-amplication-local-oauth-consumer",
           "auth with git"
         );
       },

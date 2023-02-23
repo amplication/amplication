@@ -10,7 +10,6 @@ import React from "react";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
-import { EnumGitProvider } from "../../../models";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -66,14 +65,6 @@ export default function ExistingConnectionsMenu({
               <hr className={`${CLASS_NAME}__hr`} />
               <SelectMenuItem onSelectionChange={onAddGitOrganization}>
                 <span>Add GitHub organization</span>
-                <Icon
-                  icon="plus"
-                  className={`${CLASS_NAME}__add-icon`}
-                  size="xsmall"
-                />
-              </SelectMenuItem>
-              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-                <span>Add Bitbucket workspace</span>
                 <Icon
                   icon="plus"
                   className={`${CLASS_NAME}__add-icon`}
