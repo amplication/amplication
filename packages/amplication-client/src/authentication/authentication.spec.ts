@@ -58,7 +58,7 @@ describe("authentication", () => {
       expect(spyOnWindowDocumentCookieSet).toHaveBeenCalled();
     });
 
-    it(`doesn't delete the token in the local storage when not temporary cookies are passed`, async () => {
+    it(`doesn't delete the token from the local storage when not temporary cookies are passed`, async () => {
       spyOnWindowDocumentCookieGet.mockReturnValueOnce("otherCookie=123");
 
       setTokenFromCookie();
