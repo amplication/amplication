@@ -26,7 +26,7 @@ describe("authentication", () => {
   });
 
   describe("isAuthenticated", () => {
-    it(`returns true whe token is in local storage`, async () => {
+    it(`returns true when token is in local storage`, async () => {
       spyOnlocalStorageGet.mockReturnValueOnce("super-secret");
 
       const result = isAuthenticated();
@@ -34,7 +34,7 @@ describe("authentication", () => {
       expect(result).toEqual(true);
     });
 
-    it(`returns false whe token is not in local storage`, async () => {
+    it(`returns false when token is not in local storage`, async () => {
       unsetToken();
       const result = isAuthenticated();
 
