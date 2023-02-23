@@ -491,8 +491,9 @@ export class BuildService {
             pullRequestMode,
           };
 
-          await this.queueService.emitMessage(
+          await this.queueService.emitMessageWithKey(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            resourceRepository.id,
             JSON.stringify(createPullRequestArgs)
           );
         } catch (error) {
