@@ -152,7 +152,7 @@ export interface GetAuthByTemporaryCodeResponse {
   state: string;
 }
 
-export interface GetCurrentUserArgs {
+export interface GetCurrentUserResponse {
   links: {
     avatar: {
       href: string;
@@ -184,10 +184,23 @@ export interface AuthenticateResponse {
   uuid: string;
 }
 
+export interface AuthData {
+  clientId: string;
+  clientSecret: string;
+  accessToken: string;
+  expiresIn: number;
+  refreshToken: string;
+}
+
 export interface GitProvider {
   init(): Promise<void>;
-  authenticate(code: string): Promise<AuthenticateResponse>;
+  // authenticate(code: string): Promise<AuthenticateResponse>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
+  getCallbackUrl(): Promise<string>;
+  getAccessToken(
+    authorizationCode: string
+  ): Promise<GetAuthByTemporaryCodeResponse>;
+  getCurrentUser(accessToken: string): Promise<GetCurrentUserResponse>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;

@@ -1,5 +1,4 @@
 import {
-  AuthenticateResponse,
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
@@ -7,7 +6,7 @@ import {
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   GetAuthByTemporaryCodeResponse,
-  GetCurrentUserArgs,
+  GetCurrentUserResponse,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
@@ -20,7 +19,11 @@ import {
   RemoteGitRepository,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
-import { authDataRequest, currentUserRequest } from "./requests";
+import {
+  authDataRequest,
+  authorizeRequest,
+  currentUserRequest,
+} from "./requests";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -28,6 +31,7 @@ export class BitBucketService implements GitProvider {
   private callbackUrl: string;
   private accessToken: string;
   private refreshToken: string;
+  private expiresIn: number;
 
   constructor(private readonly gitProviderArgs: GitProviderArgs) {
     // TODO: move env variables to the server config
@@ -51,21 +55,19 @@ export class BitBucketService implements GitProvider {
     console.log("init");
   }
 
-  async authenticate(code: string): Promise<AuthenticateResponse> {
-    const authData = await this.getAuthByTemporaryCode(code);
-    const { accessToken } = authData;
-    const currentUser = await this.getCurrentUser(accessToken);
-    return { ...authData, ...currentUser };
+  async getCallbackUrl(): Promise<string> {
+    return authorizeRequest(this.clientId);
   }
 
-  private async getAuthByTemporaryCode(
-    code: string
+  // TODO: rename to getAccessToken and code to authorizationCode
+  async getAccessToken(
+    authorizationCode: string
   ): Promise<GetAuthByTemporaryCodeResponse> {
     try {
       const response = await authDataRequest(
         this.clientId,
         this.clientSecret,
-        code
+        authorizationCode
       );
 
       const authData = await response.json();
@@ -80,6 +82,7 @@ export class BitBucketService implements GitProvider {
 
       this.accessToken = access_token;
       this.refreshToken = refreshToken;
+      this.expiresIn = expires_in;
       console.log(this.accessToken, "accessToken");
       const scopesArr = scopes.split(" ");
       return {
@@ -97,10 +100,16 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  private async getCurrentUser(
-    accessToken: string
-  ): Promise<GetCurrentUserArgs> {
-    const response = await currentUserRequest(accessToken);
+  async getCurrentUser(): Promise<GetCurrentUserResponse> {
+    const { accessToken, refreshToken, clientId, clientSecret, expiresIn } =
+      this;
+    const response = await currentUserRequest({
+      clientId,
+      clientSecret,
+      accessToken,
+      refreshToken,
+      expiresIn,
+    });
     const currentUser = await response.json();
     console.log(`Response: ${response.status} ${response.statusText}`);
     const { links, created_on, display_name, username, uuid } = currentUser;

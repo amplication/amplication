@@ -21,8 +21,7 @@ import {
   GetFileArgs,
   UpdateFile,
   GetAuthByTemporaryCodeResponse,
-  GetCurrentUserArgs,
-  AuthenticateResponse,
+  GetCurrentUserResponse,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -768,15 +767,21 @@ export class GithubService implements GitProvider {
   }
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
-  async getAuthByTemporaryCode(): Promise<GetAuthByTemporaryCodeResponse> {
+  async getCallbackUrl(): Promise<string> {
     throw NotImplementedError;
   }
 
-  async getWorkspaces(): Promise<void> {
+  // async authenticate(code: string): Promise<AuthenticateResponse> {
+  //   throw NotImplementedError;
+  // }
+
+  async getAccessToken(
+    authorizationCode: string
+  ): Promise<GetAuthByTemporaryCodeResponse> {
     throw NotImplementedError;
   }
 
-  async authenticate(code: string): Promise<AuthenticateResponse> {
+  async getCurrentUser(accessToken: string): Promise<GetCurrentUserResponse> {
     throw NotImplementedError;
   }
 }
