@@ -33,7 +33,7 @@ const validateToken = (responseStatus: number, authData: AuthData) => {
   const { expiresIn, refreshToken, clientId, clientSecret } = authData;
   return (
     responseStatus === 401 ||
-    (expiresIn <= 0 &&
+    (expiresIn <= 60 &&
       refreshTokenRequest(clientId, clientSecret, refreshToken))
   );
 };

@@ -83,7 +83,7 @@ export class BitBucketService implements GitProvider {
       this.accessToken = access_token;
       this.refreshToken = refreshToken;
       this.expiresIn = expires_in;
-      console.log(this.accessToken, "accessToken");
+      console.log({ authData });
       const scopesArr = scopes.split(" ");
       return {
         accessToken: access_token,
@@ -111,7 +111,7 @@ export class BitBucketService implements GitProvider {
       expiresIn,
     });
     const currentUser = await response.json();
-    console.log(`Response: ${response.status} ${response.statusText}`);
+    console.log({ currentUser });
     const { links, created_on, display_name, username, uuid } = currentUser;
     return {
       links,
@@ -123,9 +123,7 @@ export class BitBucketService implements GitProvider {
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
-    return Promise.resolve(
-      `Not implemented for ${this.gitProviderArgs.provider} provider`
-    );
+    throw NotImplementedError;
   }
 
   getRepository(
