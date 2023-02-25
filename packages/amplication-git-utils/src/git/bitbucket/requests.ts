@@ -43,11 +43,11 @@ const requestWrapper = async (
   payload: RequestPayload,
   authData: AuthData
 ) => {
-  const request = await fetch(url, payload);
-  const response = await request.json();
-  const { status } = response;
+  const response = await fetch(url, payload);
+  const data = await response.json();
+  const { status } = data;
   validateToken(status, authData);
-  return request;
+  return response;
 };
 
 export const authorizeRequest = async (clientId: string) => {

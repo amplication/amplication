@@ -33,7 +33,7 @@ export class BitBucketService implements GitProvider {
   private refreshToken: string;
   private expiresIn: number;
 
-  constructor(private readonly gitProviderArgs: GitProviderArgs) {
+  constructor() {
     // TODO: move env variables to the server config
     const { BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET, CALLBACK_URL } =
       process.env;
@@ -122,6 +122,10 @@ export class BitBucketService implements GitProvider {
     };
   }
 
+  getOrganization(): Promise<RemoteGitOrganization> {
+    throw NotImplementedError;
+  }
+
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     throw NotImplementedError;
   }
@@ -145,10 +149,6 @@ export class BitBucketService implements GitProvider {
   }
 
   deleteGitOrganization(): Promise<boolean> {
-    throw NotImplementedError;
-  }
-
-  getOrganization(): Promise<RemoteGitOrganization> {
     throw NotImplementedError;
   }
 
