@@ -1,20 +1,10 @@
 # Amplication NestJS Logger Module
 
-The `@amplication/nest-logger-module` is our official logger module. Currently, it is a wrapper around the `nest-winston` package.
+The `@amplication/util/nestjs/logging` is our official logger module. This library leverage, under the hood, the framework-agnostic amplication logging library `@amplication/util/logging`.
 
-All services at Amplication must use this library to ensure consistent logging. This will enable us to trace and observe our systems reliably.
+All nestjs services at Amplication must use this library to ensure consistent logging. This will enable us to trace and observe our systems reliably.
 
 ## Getting started
-
-### Dependency
-
-Add this logger as a dependency to your service's `package.json` file. For example:
-
-```json
-"@amplication/nest-logger-module": "<current-amplication-version>"
-```
-
-Then run `lerna bootstrap`.
 
 ### Consume the module
 
@@ -23,16 +13,18 @@ In your microservices, import the logger module and consume it in your root modu
 ```ts
 // app.module.ts
 
-import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
+import { AmplicationLoggerModule } from '@amplication/util/nestjs/logging';
 
 @Module({
   imports: [
-    AmplicationLoggerModule.register({
-      metadata: { service: '<service-name>' },
+    //...
+    AmplicationLoggerModule.forRoot({
+      serviceName: SERVICE_NAME,
     }),
+    //...
   ],
 })
-export class AppModule implements
+export class AppModule implements // ....
 ```
 
 ### Usage
@@ -44,13 +36,12 @@ You can import the logger via dependency injection.
 
 import {
   AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+} from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class ExampleService {
   constructor(
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -62,7 +53,3 @@ export class ExampleService {
   }
 }
 ```
-
-## Useful information
-
-This module is a wrapper around [`nest-winston`](https://www.npmjs.com/package/nest-winston). For more advanced use cases, please check it out.
