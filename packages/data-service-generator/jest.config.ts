@@ -22,4 +22,10 @@ export default {
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
   coverageDirectory: "../../coverage/packages/data-service-generator",
+  coverageThreshold: {
+    global: {
+      branches: 89.32,
+      lines: 92.43,
+    },
+  },
 };

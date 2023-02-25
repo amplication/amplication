@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../coverage/libs/util/logging",
+  coverageThreshold: {
+    global: {
+      branches: 92.85,
+      lines: 80.98,
+    },
+  },
 };

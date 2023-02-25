@@ -16,4 +16,10 @@ module.exports = {
     "!**/jest.config.ts",
     "!**/index.ts",
   ],
+  coverageThreshold: {
+    global: {
+      branches: 90,
+      lines: 90,
+    },
+  },
 };

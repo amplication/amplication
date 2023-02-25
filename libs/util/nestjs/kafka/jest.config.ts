@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../../coverage/libs/util/nestjs/kafka",
+  coverageThreshold: {
+    global: {
+      branches: 61.5,
+      lines: 56.6,
+    },
+  },
 };
