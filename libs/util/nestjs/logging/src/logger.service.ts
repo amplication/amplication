@@ -49,6 +49,11 @@ export class AmplicationLogger implements LoggerService {
     this.logger.info(message, ...args);
   }
 
+  /**
+   * Generated a new logger instance with the same configuration of the parent with additional metadata.
+   * @param  {Record<string, unknown} metadata?
+   * @returns Logger
+   */
   public child(metadata?: Record<string, unknown>): Logger {
     const childOptions = {
       ...this.loggerOptions,
