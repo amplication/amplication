@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
@@ -8,11 +8,7 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import {
-  AnimationType,
-  FullScreenLoader,
-  PlanUpgradeConfirmation,
-} from "@amplication/design-system";
+import { PlanUpgradeConfirmation } from "@amplication/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
@@ -31,8 +27,6 @@ const context = {
   source: "amplication-client",
 };
 
-const MIN_ANIMATION_TIME = 2000;
-
 export const enhance = track<keyof typeof context>(
   // app-level tracking data
   context,
@@ -45,17 +39,11 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const location = useLocation();
-  const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
-  const [keepLoadingAnimation, setKeepLoadingAnimation] =
-    useState<boolean>(true);
+  useCurrentWorkspace(authenticated);
 
   useEffect(() => {
     initAnalytics();
     initPaddle();
-  }, []);
-
-  const handleTimeout = useCallback(() => {
-    setKeepLoadingAnimation(false);
   }, []);
 
   const [, setInvitationToken] = useLocalStorage(
@@ -92,18 +80,9 @@ function App() {
     ignoreTags: [],
   });
 
-  const showLoadingAnimation = keepLoadingAnimation || currentWorkspaceLoading;
-
   return (
     <ThemeProvider>
-      {showLoadingAnimation && (
-        <FullScreenLoader
-          animationType={AnimationType.Full}
-          minimumLoadTimeMS={MIN_ANIMATION_TIME}
-          onTimeout={handleTimeout}
-        />
-      )}
-      {!showLoadingAnimation && GeneratedRoutes}
+      {GeneratedRoutes}
       {workspaceUpgradeConfirmation && (
         <PlanUpgradeConfirmation
           isOpen={workspaceUpgradeConfirmation}
