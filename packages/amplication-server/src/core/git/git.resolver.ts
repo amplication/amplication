@@ -22,6 +22,7 @@ import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
+import { GetGitOAuth2FlowArgs } from "./dto/args/GetGitOAuth2FlowArgs";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -110,6 +111,14 @@ export class GitResolver {
     return {
       url: await this.gitService.getGitInstallationUrl(args),
     };
+  }
+
+  @Mutation(() => GitOrganization)
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
+  async completeGitOAuth2Flow(
+    @Args() args: GetGitOAuth2FlowArgs
+  ): Promise<GitOrganization> {
+    return await this.gitService.completeOAuth2Flow(args);
   }
 
   @Query(() => RemoteGitRepos)
