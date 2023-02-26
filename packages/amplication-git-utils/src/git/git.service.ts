@@ -162,20 +162,18 @@ export class GitClientService {
         await rm(fullDiffPath);
       }
 
+      await rm(cloneDir, { recursive: true, force: true });
+
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
       });
-
-      await gitClient.mergeDefaultBranch(defaultBranch);
 
       const existingPullRequest = await this.provider.getPullRequestForBranch({
         owner,
         repositoryName,
         branchName,
       });
-
-      await rm(cloneDir, { recursive: true, force: true });
 
       if (!existingPullRequest) {
         return this.provider.createPullRequestForBranch({

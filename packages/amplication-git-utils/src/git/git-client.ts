@@ -34,8 +34,11 @@ export class GitClient {
     await this.git.reset(["--hard"]);
   }
 
-  async mergeDefaultBranch(branchName: string): Promise<void> {
-    await this.git.merge(["--no-ff", `origin/${branchName}`]);
-    await this.git.push();
+  async merge({ into, from }: { into: string; from: string }) {
+    console.log(`Merging branch: ${from} into: ${into}`);
+    await this.git
+      .checkout(into)
+      .merge(["--no-ff", `origin/${from}`])
+      .push();
   }
 }
