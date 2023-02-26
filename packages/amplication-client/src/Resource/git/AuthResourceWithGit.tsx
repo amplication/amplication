@@ -59,11 +59,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     START_AUTH_APP_WITH_GITHUB,
     {
       onCompleted: (data) => {
-        console.log(data.getGitResourceInstallationUrl.url);
         openSignInWindow(
-          data.getGitResourceInstallationUrl.url ||
-            // TODO: change this
-            "http://localhost:3001/amit-amplication-local-oauth-consumer",
+          data.getGitResourceInstallationUrl.url,
           "auth with git"
         );
       },
@@ -89,6 +86,11 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     trackEvent({
       eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
     });
+    // openSignInWindow(
+    //   "https://bitbucket.org/site/oauth2/authorize?client_id=CNQsHyXRkhgp9UKhg4&response_type=code",
+    //   "auth with bitbucket"
+    // );
+
     authWithGit({
       variables: {
         gitProvider: EnumGitProvider.Bitbucket,
