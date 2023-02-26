@@ -258,7 +258,7 @@ export class GitProviderService {
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
-        installationId,
+        installationId: installationId,
         provider: gitProvider,
       },
     });
@@ -270,7 +270,7 @@ export class GitProviderService {
         },
         data: {
           provider: gitProvider,
-          installationId,
+          installationId: installationId,
           name: gitRemoteOrganization.name,
           type: gitRemoteOrganization.type,
         },
@@ -284,7 +284,7 @@ export class GitProviderService {
             id: args.data.workspaceId,
           },
         },
-        installationId,
+        installationId: installationId,
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
