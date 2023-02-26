@@ -230,21 +230,14 @@ export class GitClientService {
 
   async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
     await gitClient.git.pull();
-    try {
-      await gitClient.git.applyPatch(diffPath, [
-        "--3way",
-        "--whitespace=nowarn",
-      ]);
-    } catch (error) {
-      console.error(error);
-    } finally {
-      await gitClient.git
-        .add(["."])
-        .commit("Amplication diff restoration", undefined, {
-          "--author": "Amplication <email@address.com>",
-        })
-        .push();
-    }
+
+    await gitClient.git
+      .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
+      .add(["."])
+      .commit("Amplication diff restoration", undefined, {
+        "--author": "Amplication <email@address.com>",
+      })
+      .push();
   }
 
   private async restoreAmplicationBranchIfNotExists(
