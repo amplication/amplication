@@ -1,37 +1,37 @@
 import {
+  OAuthData,
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
-  GetAuthByTemporaryCodeResponse,
-  GetCurrentUserResponse,
+  CurrentUser,
   GetFileArgs,
   GetPullRequestForBranchArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
   GitProvider,
-  GitProviderArgs,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  OAuth2FlowResponse,
+  EnumGitOrganizationType,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
+  refreshTokenRequest,
 } from "./requests";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private callbackUrl: string;
   private accessToken: string;
   private refreshToken: string;
-  private expiresIn: number;
 
   constructor() {
     // TODO: move env variables to the server config
@@ -44,25 +44,30 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = BITBUCKET_CLIENT_ID;
     this.clientSecret = BITBUCKET_CLIENT_SECRET;
-    this.callbackUrl = CALLBACK_URL;
-
-    console.log("clientId", this.clientId);
-    console.log("clientSecret", this.clientSecret);
-    console.log("callbackUrl", this.callbackUrl);
   }
 
   async init(): Promise<void> {
     console.log("init");
+    const { clientId, clientSecret } = this;
+    console.log({ clientId, clientSecret });
   }
 
-  async getCallbackUrl(): Promise<string> {
-    return authorizeRequest(this.clientId);
+  getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
+    return authorizeRequest(this.clientId, amplicationWorkspaceId);
+  }
+
+  async refreshAccessToken(): Promise<OAuthData> {
+    const response = await refreshTokenRequest(
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken
+    );
+    const authData = await response.json();
+    return authData;
   }
 
   // TODO: rename to getAccessToken and code to authorizationCode
-  async getAccessToken(
-    authorizationCode: string
-  ): Promise<GetAuthByTemporaryCodeResponse> {
+  async getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse> {
     try {
       const response = await authDataRequest(
         this.clientId,
@@ -71,27 +76,26 @@ export class BitBucketService implements GitProvider {
       );
 
       const authData = await response.json();
-      const {
-        access_token,
-        refreshToken,
-        scopes,
-        token_type,
-        expires_in,
-        state,
-      } = authData;
-
-      this.accessToken = access_token;
-      this.refreshToken = refreshToken;
-      this.expiresIn = expires_in;
-      console.log({ authData });
+      const { access_token, refresh_token, scopes, token_type, expires_in } =
+        authData;
       const scopesArr = scopes.split(" ");
+      this.accessToken = access_token;
+      this.refreshToken = refresh_token;
+      const { username, uuid, links, displayName, createdOn } =
+        await this.getCurrentUser();
       return {
         accessToken: access_token,
-        refreshToken,
+        refreshToken: refresh_token,
         scopes: scopesArr,
         tokenType: token_type,
         expiresIn: expires_in,
-        state,
+        userData: {
+          username,
+          uuid,
+          links,
+          displayName,
+          createdOn,
+        },
       };
     } catch (error) {
       // TODO: figure out how the error is look like
@@ -100,34 +104,29 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  async getCurrentUser(): Promise<GetCurrentUserResponse> {
-    const { accessToken, refreshToken, clientId, clientSecret, expiresIn } =
-      this;
-    const response = await currentUserRequest({
-      clientId,
-      clientSecret,
-      accessToken,
-      refreshToken,
-      expiresIn,
-    });
-    const currentUser = await response.json();
-    console.log({ currentUser });
-    const { links, created_on, display_name, username, uuid } = currentUser;
+  private async getCurrentUser(): Promise<CurrentUser> {
+    try {
+      const response = await currentUserRequest(this.accessToken);
+      const currentUser = await response.json();
+      const { links, created_on, display_name, username, uuid } = currentUser;
+      return {
+        links,
+        createdOn: created_on,
+        displayName: display_name,
+        username,
+        uuid,
+      };
+    } catch (error) {
+      throw new CustomError(error.message, error);
+    }
+  }
+
+  async getOrganization(): Promise<RemoteGitOrganization> {
+    const gitOrganization = await this.getCurrentUser();
     return {
-      links,
-      createdOn: created_on,
-      displayName: display_name,
-      username,
-      uuid,
+      name: gitOrganization.username,
+      type: EnumGitOrganizationType.User,
     };
-  }
-
-  getOrganization(): Promise<RemoteGitOrganization> {
-    throw NotImplementedError;
-  }
-
-  getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
-    throw NotImplementedError;
   }
 
   getRepository(
