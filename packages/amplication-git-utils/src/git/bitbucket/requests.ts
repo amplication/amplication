@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import { AuthData } from "../../types";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -28,30 +27,20 @@ const getRequestHeaders = (accessToken: string) => ({
   Accept: "application/json",
 });
 
-const validateToken = (responseStatus: number, authData: AuthData) => {
-  // TODO: scopes changed?
-  const { expiresIn, refreshToken, clientId, clientSecret } = authData;
-  return (
-    responseStatus === 401 ||
-    (expiresIn <= 60 &&
-      refreshTokenRequest(clientId, clientSecret, refreshToken))
-  );
+const requestWrapper = async (url: string, payload: RequestPayload) => {
+  try {
+    return fetch(url, payload);
+  } catch (error) {
+    throw new Error(error);
+  }
 };
 
-const requestWrapper = async (
-  url: string,
-  payload: RequestPayload,
-  authData: AuthData
+export const authorizeRequest = async (
+  clientId: string,
+  amplicationWorkspaceId: string
 ) => {
-  const response = await fetch(url, payload);
-  const data = await response.json();
-  const { status } = data;
-  validateToken(status, authData);
-  return response;
-};
-
-export const authorizeRequest = async (clientId: string) => {
-  return `${AUTHORIZE_URL}?client_id=${clientId}&response_type=code`;
+  const callbackUrl = `${AUTHORIZE_URL}?client_id=${clientId}&response_type=code&state={state}}`;
+  return callbackUrl.replace("{state}", amplicationWorkspaceId);
 };
 
 export const refreshTokenRequest = (
@@ -59,7 +48,7 @@ export const refreshTokenRequest = (
   clientSecret: string,
   refreshToken: string
 ) => {
-  return fetch(ACCESS_TOKEN_URL, {
+  return requestWrapper(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.RefreshToken}&refresh_token=${refreshToken}`,
@@ -71,20 +60,16 @@ export const authDataRequest = async (
   clientSecret: string,
   code: string
 ) => {
-  return fetch(ACCESS_TOKEN_URL, {
+  return requestWrapper(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.AuthorizationCode}&code=${code}`,
   });
 };
 
-export const currentUserRequest = async (authData: AuthData) => {
-  return requestWrapper(
-    CURRENT_USER_URL,
-    {
-      method: "GET",
-      headers: getRequestHeaders(authData.accessToken),
-    },
-    authData
-  );
+export const currentUserRequest = async (accessToken: string) => {
+  return requestWrapper(CURRENT_USER_URL, {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 };
