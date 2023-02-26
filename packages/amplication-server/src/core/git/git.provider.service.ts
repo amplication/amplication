@@ -22,7 +22,7 @@ import {
   INVALID_RESOURCE_ID,
   ResourceService,
 } from "../resource/resource.service";
-import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
+import { GetGitOAuth2FlowArgs } from "./dto/args/GetGitOAuth2FlowArgs";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -256,7 +256,7 @@ export class GitProviderService {
 
     const gitOrganization = await this.prisma.gitOrganization.findFirst({
       where: {
-        installationId: installationId,
+        installationId,
         provider: gitProvider,
       },
     });
@@ -268,7 +268,7 @@ export class GitProviderService {
         },
         data: {
           provider: gitProvider,
-          installationId: installationId,
+          installationId,
           name: gitRemoteOrganization.name,
           type: gitRemoteOrganization.type,
         },
@@ -282,7 +282,7 @@ export class GitProviderService {
             id: args.data.workspaceId,
           },
         },
-        installationId: installationId,
+        installationId,
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
@@ -313,38 +313,32 @@ export class GitProviderService {
       provider: gitProvider,
       installationId: null,
     });
-    if (gitProvider === EnumGitProvider.Github) {
-      return gitClientService.getGitInstallationUrl(workspaceId);
-    }
-
-    if (gitProvider === EnumGitProvider.Bitbucket) {
-      return gitClientService.getCallbackUrl();
-    }
+    return gitClientService.getGitInstallationUrl(workspaceId);
   }
 
-  async getAuthByTemporaryCode(code: string) {
+  async completeOAuth2Flow(
+    args: GetGitOAuth2FlowArgs
+  ): Promise<GitOrganization> {
+    const { code, gitProvider, workspaceId } = args.data;
+    const oAuth2InstallationId = `not-supported-for-${gitProvider}-${code}`;
     const gitClientService = await new GitClientService().create({
-      provider: EnumGitProvider.Bitbucket,
-      installationId: null,
+      provider: gitProvider,
+      installationId: oAuth2InstallationId,
     });
-    const { refreshToken, scopes, tokenType } =
-      await gitClientService.getAccessToken(code);
-
-    // TODO: save to DB
-    return { refreshToken, scopes, tokenType };
-  }
-
-  async getCurrentUser(accessToken: string) {
-    const gitClientService = await new GitClientService().create({
-      provider: EnumGitProvider.Bitbucket,
-      installationId: null,
-    });
-    const { displayName, uuid } = await gitClientService.getCurrentUser(
-      accessToken
-    );
-    console.log({ displayName, uuid });
-    // TODO: save to DB
-    return { displayName, uuid };
+    try {
+      const oAuth2FlowResponse = await gitClientService.getAccessToken(code);
+      console.log({ oAuth2FlowResponse });
+      return this.createGitOrganization({
+        data: {
+          workspaceId,
+          gitProvider,
+          installationId: oAuth2InstallationId,
+        },
+      });
+    } catch (error) {
+      console.error(error);
+      throw new Error(error);
+    }
   }
 
   async deleteGitOrganization(
