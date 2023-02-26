@@ -1,6 +1,6 @@
-import { AnimationType, FullScreenLoader } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/design-system";
 import { StiggProvider } from "@stigg/react-sdk";
-import React, { lazy, useCallback, useEffect, useState } from "react";
+import React, { lazy, useEffect, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
 import { match } from "react-router-dom";
 import { useTracking } from "react-tracking";
@@ -90,13 +90,6 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingCreateMessageBroker,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
-  const [keepLoadingAnimation, setKeepLoadingAnimation] =
-    useState<boolean>(true);
-
-  const handleTimeout = useCallback(() => {
-    setKeepLoadingAnimation(false);
-  }, []);
-
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
     projectId: currentProject?.id,
@@ -127,7 +120,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     }
   }, [currentWorkspace]);
 
-  return currentWorkspace && !keepLoadingAnimation ? (
+  return currentWorkspace ? (
     <AppContextProvider
       newVal={{
         currentWorkspace,
@@ -208,11 +201,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
       )}
     </AppContextProvider>
   ) : (
-    <FullScreenLoader
-      animationType={AnimationType.Full}
-      minimumLoadTimeMS={2000}
-      onTimeout={handleTimeout}
-    />
+    <CircularProgress centerToParent />
   );
 };
 
