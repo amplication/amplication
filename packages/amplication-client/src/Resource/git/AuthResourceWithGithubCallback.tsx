@@ -40,7 +40,7 @@ export default AuthResourceWithGithubCallback;
 
 const CREATE_GIT_ORGANIZATION = gql`
   mutation createOrganization(
-    $installationId: String
+    $installationId: String!
     $gitProvider: EnumGitProvider!
   ) {
     createOrganization(
