@@ -20,8 +20,8 @@ import {
   CreatePullRequestForBranchArgs,
   GetFileArgs,
   UpdateFile,
-  GetAuthByTemporaryCodeResponse,
-  GetCurrentUserResponse,
+  OAuthData,
+  OAuth2FlowResponse,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
@@ -767,21 +767,12 @@ export class GithubService implements GitProvider {
   }
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
-  async getCallbackUrl(): Promise<string> {
+
+  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
     throw NotImplementedError;
   }
 
-  // async authenticate(code: string): Promise<AuthenticateResponse> {
-  //   throw NotImplementedError;
-  // }
-
-  async getAccessToken(
-    authorizationCode: string
-  ): Promise<GetAuthByTemporaryCodeResponse> {
-    throw NotImplementedError;
-  }
-
-  async getCurrentUser(accessToken: string): Promise<GetCurrentUserResponse> {
+  async getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse> {
     throw NotImplementedError;
   }
 }

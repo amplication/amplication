@@ -143,64 +143,36 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
-export interface GetAuthByTemporaryCodeResponse {
-  accessToken: string;
-  refreshToken: string;
-  scopes: string[];
-  tokenType: string;
-  expiresIn: number;
-  state: string;
-}
-
-export interface GetCurrentUserResponse {
+export interface CurrentUser {
   links: {
     avatar: {
       href: string;
       name: string;
     };
   };
-  createdOn: string;
-  displayName: string;
   username: string;
   uuid: string;
+  displayName: string;
+  createdOn: string;
 }
 
-export interface AuthenticateResponse {
+export interface OAuthData {
   accessToken: string;
   refreshToken: string;
-  scopes: string[];
   tokenType: string;
   expiresIn: number;
-  state: string;
-  links: {
-    avatar: {
-      href: string;
-      name: string;
-    };
-  };
-  createdOn: string;
-  displayName: string;
-  username: string;
-  uuid: string;
+  scopes: string[];
 }
 
-export interface AuthData {
-  clientId: string;
-  clientSecret: string;
-  accessToken: string;
-  expiresIn: number;
-  refreshToken: string;
+export interface OAuth2FlowResponse extends OAuthData {
+  userData: CurrentUser;
 }
 
 export interface GitProvider {
   init(): Promise<void>;
-  // authenticate(code: string): Promise<AuthenticateResponse>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getCallbackUrl(): Promise<string>;
-  getAccessToken(
-    authorizationCode: string
-  ): Promise<GetAuthByTemporaryCodeResponse>;
-  getCurrentUser(accessToken: string): Promise<GetCurrentUserResponse>;
+  getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse>;
+  refreshAccessToken(refreshToken: string): Promise<OAuthData>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;
