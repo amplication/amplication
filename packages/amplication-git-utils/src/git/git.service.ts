@@ -142,6 +142,7 @@ export class GitClientService {
         const diffPath = join(diffFolder, "diff.patch");
         await writeFile(diffPath, diff);
         fullDiffPath = resolve(diffPath);
+        console.log("Saving diff to: ", fullDiffPath);
       }
 
       await this.provider.createCommit({
@@ -197,6 +198,7 @@ export class GitClientService {
     owner,
     repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
+    console.log("Pre commit process");
     await gitClient.git.checkout(branchName);
 
     const commitsList = await this.provider.getCurrentUserCommitList({
@@ -216,13 +218,14 @@ export class GitClientService {
     const { sha } = latestCommit;
     const diff = await gitClient.git.diff([sha]);
     if (diff.length === 0) {
+      console.log("Diff returned empty");
       return { diff: null };
     }
     // Reset the branch to the latest commit
     await gitClient.git.reset([sha]);
     await gitClient.git.push(["--force"]);
     await gitClient.resetState();
-
+    console.log("Diff returned");
     return { diff };
   }
 
