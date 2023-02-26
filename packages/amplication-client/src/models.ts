@@ -721,6 +721,11 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+export type GitOAuth2FlowInput = {
+  code: Scalars['String'];
+  gitProvider: EnumGitProvider;
+};
+
 export type GitOrganization = {
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
@@ -808,6 +813,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
+  completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
@@ -884,6 +890,11 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCommitArgs = {
   data: CommitCreateInput;
+};
+
+
+export type MutationCompleteGitOAuth2FlowArgs = {
+  data: GitOAuth2FlowInput;
 };
 
 
