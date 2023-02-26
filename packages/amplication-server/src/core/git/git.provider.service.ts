@@ -14,6 +14,8 @@ import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
 import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import { v4 as uuid } from "uuid";
+
 import {
   EnumGitOrganizationType,
   GitClientService,
@@ -319,8 +321,8 @@ export class GitProviderService {
   async completeOAuth2Flow(
     args: GetGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
-    const { code, gitProvider, workspaceId } = args.data;
-    const oAuth2InstallationId = `not-supported-for-${gitProvider}-${code}`;
+    const { code, gitProvider } = args.data;
+    const oAuth2InstallationId = `not-supported-${uuid()}`;
     const gitClientService = await new GitClientService().create({
       provider: gitProvider,
       installationId: oAuth2InstallationId,
@@ -328,13 +330,15 @@ export class GitProviderService {
     try {
       const oAuth2FlowResponse = await gitClientService.getAccessToken(code);
       console.log({ oAuth2FlowResponse });
-      return this.createGitOrganization({
-        data: {
-          workspaceId,
-          gitProvider,
-          installationId: oAuth2InstallationId,
-        },
-      });
+      return {
+        provider: gitProvider,
+        installationId: oAuth2InstallationId,
+        name: oAuth2FlowResponse.userData.username,
+        type: EnumGitOrganizationType.User,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        id: uuid(),
+      };
     } catch (error) {
       console.error(error);
       throw new Error(error);
