@@ -80,6 +80,7 @@ export class GitClientService {
       amplicationIgnoreManger
     );
 
+    console.log(`Got a ${pullRequestMode} pull request mode`);
     if (pullRequestMode === EnumPullRequestMode.Basic) {
       return this.provider.createPullRequestFromFiles({
         owner,
