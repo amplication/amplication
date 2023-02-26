@@ -234,7 +234,7 @@ export class GitClientService {
     await gitClient.git.pull();
     try {
       await gitClient.git.applyPatch(diffPath, [
-        "--reject",
+        "--3way",
         "--whitespace=nowarn",
       ]);
     } catch (error) {
