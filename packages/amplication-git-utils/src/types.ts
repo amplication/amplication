@@ -171,8 +171,7 @@ export interface OAuth2FlowResponse extends OAuthData {
 export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse>;
-  refreshAccessToken(refreshToken: string): Promise<OAuthData>;
+  completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;

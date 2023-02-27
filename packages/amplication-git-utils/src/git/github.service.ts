@@ -768,11 +768,9 @@ export class GithubService implements GitProvider {
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
-    throw NotImplementedError;
-  }
-
-  async getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse> {
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
     throw NotImplementedError;
   }
 }

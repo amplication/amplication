@@ -24,14 +24,11 @@ import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
-  refreshTokenRequest,
 } from "./requests";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private accessToken: string;
-  private refreshToken: string;
 
   constructor() {
     // TODO: move env variables to the server config
@@ -56,18 +53,7 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  async refreshAccessToken(): Promise<OAuthData> {
-    const response = await refreshTokenRequest(
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken
-    );
-    const authData = await response.json();
-    return authData;
-  }
-
-  // TODO: rename to getAccessToken and code to authorizationCode
-  async getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse> {
+  private async getAccessToken(authorizationCode: string): Promise<OAuthData> {
     try {
       const response = await authDataRequest(
         this.clientId,
@@ -78,29 +64,13 @@ export class BitBucketService implements GitProvider {
       const authData = await response.json();
       const { access_token, refresh_token, scopes, token_type, expires_in } =
         authData;
-      const scopesArr = scopes.split(" ");
-      this.accessToken = access_token;
-      this.refreshToken = refresh_token;
-      const {
-        name: username,
-        uuid,
-        links,
-        displayName,
-        createdOn,
-      } = await this.getCurrentUser();
+
       return {
         accessToken: access_token,
         refreshToken: refresh_token,
-        scopes: scopesArr,
+        scopes: scopes.split(" "),
         tokenType: token_type,
         expiresIn: expires_in,
-        userData: {
-          name: username,
-          uuid,
-          links,
-          displayName,
-          createdOn,
-        },
       };
     } catch (error) {
       // TODO: figure out how the error is look like
@@ -109,10 +79,11 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  private async getCurrentUser(): Promise<CurrentUser> {
+  private async getCurrentUser(accessToken: string): Promise<CurrentUser> {
     try {
-      const response = await currentUserRequest(this.accessToken);
+      const response = await currentUserRequest(accessToken);
       const currentUser = await response.json();
+
       const { links, created_on, display_name, username, uuid } = currentUser;
       return {
         links,
@@ -126,12 +97,37 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  async getOrganization(): Promise<RemoteGitOrganization> {
-    const gitOrganization = await this.getCurrentUser();
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
+    const { accessToken, refreshToken, expiresIn, tokenType, scopes } =
+      await this.getAccessToken(authorizationCode);
+    const {
+      name: username,
+      uuid,
+      links,
+      displayName,
+      createdOn,
+    } = await this.getCurrentUser(accessToken);
+
     return {
-      name: gitOrganization.name,
-      type: EnumGitOrganizationType.User,
+      accessToken,
+      refreshToken,
+      scopes,
+      tokenType,
+      expiresIn,
+      userData: {
+        name: username,
+        uuid,
+        links,
+        displayName,
+        createdOn,
+      },
     };
+  }
+
+  async getOrganization(): Promise<RemoteGitOrganization> {
+    throw NotImplementedError;
   }
 
   getRepository(

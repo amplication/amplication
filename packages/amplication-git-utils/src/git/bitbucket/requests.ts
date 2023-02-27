@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { CustomError } from "../../utils/custom-error";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -27,49 +28,55 @@ const getRequestHeaders = (accessToken: string) => ({
   Accept: "application/json",
 });
 
-const requestWrapper = async (url: string, payload: RequestPayload) => {
+async function requestWrapper(url: string, payload: RequestPayload) {
   try {
-    return fetch(url, payload);
+    const response = await fetch(url, payload);
+    if (response.status === 401) {
+      // TODO: refresh token
+      console.log("refresh token");
+    }
+    return response;
   } catch (error) {
-    throw new Error(error);
+    const errorBody = await error.response.text();
+    throw new CustomError(errorBody);
   }
-};
+}
 
-export const authorizeRequest = async (
+export async function authorizeRequest(
   clientId: string,
   amplicationWorkspaceId: string
-) => {
-  const callbackUrl = `${AUTHORIZE_URL}?client_id=${clientId}&response_type=code&state={state}}`;
+) {
+  const callbackUrl = `${AUTHORIZE_URL}?client_id=${clientId}&response_type=code&state={state}`;
   return callbackUrl.replace("{state}", amplicationWorkspaceId);
-};
+}
 
-export const refreshTokenRequest = (
+export async function refreshTokenRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string
-) => {
-  return requestWrapper(ACCESS_TOKEN_URL, {
+) {
+  return fetch(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.RefreshToken}&refresh_token=${refreshToken}`,
   });
-};
+}
 
-export const authDataRequest = async (
+export async function authDataRequest(
   clientId: string,
   clientSecret: string,
   code: string
-) => {
-  return requestWrapper(ACCESS_TOKEN_URL, {
+) {
+  return fetch(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.AuthorizationCode}&code=${code}`,
   });
-};
+}
 
-export const currentUserRequest = async (accessToken: string) => {
+export async function currentUserRequest(accessToken: string) {
   return requestWrapper(CURRENT_USER_URL, {
     method: "GET",
     headers: getRequestHeaders(accessToken),
   });
-};
+}

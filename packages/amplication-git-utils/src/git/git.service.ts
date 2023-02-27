@@ -28,12 +28,10 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
-    return this.provider.refreshAccessToken(refreshToken);
-  }
-
-  async getAccessToken(authorizationCode: string): Promise<OAuth2FlowResponse> {
-    return this.provider.getAccessToken(authorizationCode);
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
+    return this.provider.completeOAuth2Flow(authorizationCode);
   }
 
   async getRepository(
