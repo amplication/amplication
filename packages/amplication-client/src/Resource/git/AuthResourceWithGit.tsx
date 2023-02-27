@@ -86,10 +86,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     trackEvent({
       eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
     });
-    // openSignInWindow(
-    //   "https://bitbucket.org/site/oauth2/authorize?client_id=CNQsHyXRkhgp9UKhg4&response_type=code",
-    //   "auth with bitbucket"
-    // );
 
     authWithGit({
       variables: {
