@@ -80,6 +80,7 @@ export class GitClientService {
       amplicationIgnoreManger
     );
 
+    console.log(`Got a ${pullRequestMode} pull request mode`);
     if (pullRequestMode === EnumPullRequestMode.Basic) {
       return this.provider.createPullRequestFromFiles({
         owner,
@@ -142,6 +143,7 @@ export class GitClientService {
         const diffPath = join(diffFolder, "diff.patch");
         await writeFile(diffPath, diff);
         fullDiffPath = resolve(diffPath);
+        console.log("Saving diff to: ", fullDiffPath);
       }
 
       await this.provider.createCommit({
@@ -160,20 +162,18 @@ export class GitClientService {
         await rm(fullDiffPath);
       }
 
+      await rm(cloneDir, { recursive: true, force: true });
+
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
       });
-
-      await gitClient.mergeDefaultBranch(defaultBranch);
 
       const existingPullRequest = await this.provider.getPullRequestForBranch({
         owner,
         repositoryName,
         branchName,
       });
-
-      await rm(cloneDir, { recursive: true, force: true });
 
       if (!existingPullRequest) {
         return this.provider.createPullRequestForBranch({
@@ -197,6 +197,7 @@ export class GitClientService {
     owner,
     repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
+    console.log("Pre commit process");
     await gitClient.git.checkout(branchName);
 
     const commitsList = await this.provider.getCurrentUserCommitList({
@@ -216,20 +217,22 @@ export class GitClientService {
     const { sha } = latestCommit;
     const diff = await gitClient.git.diff([sha]);
     if (diff.length === 0) {
+      console.log("Diff returned empty");
       return { diff: null };
     }
     // Reset the branch to the latest commit
     await gitClient.git.reset([sha]);
     await gitClient.git.push(["--force"]);
     await gitClient.resetState();
-
+    console.log("Diff returned");
     return { diff };
   }
 
   async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
     await gitClient.git.pull();
+
     await gitClient.git
-      .applyPatch(diffPath)
+      .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
         "--author": "Amplication <email@address.com>",
