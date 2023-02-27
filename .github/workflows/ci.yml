@@ -90,7 +90,7 @@ jobs:
         run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
 
       - name: Test
-        run: npx nx affected --target=test --parallel=3 $NX_FORCE_ALL
+        run: npx nx affected --target=test --parallel=3 --coverage $NX_FORCE_ALL
 
       - name: Build
         run: |
