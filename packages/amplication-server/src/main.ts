@@ -4,7 +4,7 @@ import { AppModule } from "./app.module";
 import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 async function bootstrap() {
   /**

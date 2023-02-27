@@ -4,9 +4,9 @@ import { AuthController } from "./auth.controller";
 import { GitHubRequest } from "./types";
 import { ModuleMocker, MockFunctionMetadata } from "jest-mock";
 import { AuthService } from "..";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const moduleMocker = new ModuleMocker(global);
 
@@ -20,9 +20,9 @@ describe("AuthController", () => {
       controllers: [AuthController],
       providers: [
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
-            log: jest.fn(),
+            info: jest.fn(),
             error: jest.fn(),
           })),
         },

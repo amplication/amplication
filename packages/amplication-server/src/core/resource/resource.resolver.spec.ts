@@ -22,7 +22,7 @@ import { User } from "../../models/User";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";

@@ -16,7 +16,7 @@ import { Invitation } from "./dto/Invitation";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../../prisma";
 import { ProjectService } from "../project/project.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 

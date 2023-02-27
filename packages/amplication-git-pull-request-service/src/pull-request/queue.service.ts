@@ -1,4 +1,4 @@
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 

@@ -12,7 +12,7 @@ import {
   RequestData,
   UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();

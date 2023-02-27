@@ -3,7 +3,7 @@ import {
   GitClientService,
   File,
 } from "@amplication/git-utils";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { DiffService } from "../diff/diff.service";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";

@@ -12,7 +12,7 @@ import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
 import { AmplicationError } from "../errors/AmplicationError";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export type RequestData = {
   query: string;
