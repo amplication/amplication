@@ -1,4 +1,4 @@
-import { Loader } from "@amplication/design-system";
+import { AnimationType, Loader } from "@amplication/design-system";
 import React from "react";
 import "./CreateServiceWizard.scss";
 
@@ -17,7 +17,7 @@ const CreateServiceLoader: React.FC<{}> = () => {
         </div>
       </div>
       <div className={`${CLASS_NAME}__processing__loader`}>
-        <Loader fullScreen={false} />
+        <Loader animationType={AnimationType.Full} />
       </div>
 
       <div className={`${CLASS_NAME}__processing__tagline`}>
