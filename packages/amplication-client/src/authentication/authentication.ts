@@ -26,9 +26,15 @@ export function getToken(): string | null {
 
 export function setTokenFromCookie(): void {
   const tokenFromCookie = getCookie(TEMPORARY_JWT_COOKIE_NAME);
-  if (tokenFromCookie) {
+  if (tokenFromCookie && !token) {
     setToken(tokenFromCookie);
-    expireCookie(TEMPORARY_JWT_COOKIE_NAME);
+
+    const cookieDomainParts = window.location.hostname.split(".");
+    const temporaryCookieDomain = cookieDomainParts
+      .slice(Math.max(cookieDomainParts.length - 2, 0))
+      .join(".");
+
+    expireCookie(TEMPORARY_JWT_COOKIE_NAME, temporaryCookieDomain);
   }
 }
 
