@@ -15,6 +15,7 @@ import {
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
+  CreatePullRequestCommentArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
@@ -896,6 +897,21 @@ export class GithubService implements GitProvider {
       acc[file.path] = file.content;
       return acc;
     }, {} as Omit<Required<Changes["files"]>, "undefined">);
+  }
+
+  async commentOnPullRequest(
+    args: CreatePullRequestCommentArgs
+  ): Promise<void> {
+    const { data, where } = args;
+    const { issueNumber, owner, repositoryName } = where;
+    const { body } = data;
+    await this.octokit.rest.issues.createComment({
+      owner,
+      body,
+      repo: repositoryName,
+      issue_number: issueNumber,
+    });
+    return;
   }
 }
 
