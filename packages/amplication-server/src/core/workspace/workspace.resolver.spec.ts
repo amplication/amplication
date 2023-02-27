@@ -16,7 +16,7 @@ import { Invitation } from "./dto/Invitation";
 import { ResourceService } from "../resource/resource.service";
 import { EnumResourceType } from "../../prisma";
 import { ProjectService } from "../project/project.service";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 
@@ -185,7 +185,7 @@ describe("WorkspaceResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

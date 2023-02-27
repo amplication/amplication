@@ -22,7 +22,7 @@ import { User } from "../../models/User";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -360,7 +360,7 @@ describe("ResourceResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

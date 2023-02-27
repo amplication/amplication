@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -36,7 +33,7 @@ export class BillingService {
   }
 
   constructor(
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
