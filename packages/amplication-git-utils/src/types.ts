@@ -150,7 +150,7 @@ export interface CurrentUser {
       name: string;
     };
   };
-  username: string;
+  name: string;
   uuid: string;
   displayName: string;
   createdOn?: string;

@@ -81,8 +81,13 @@ export class BitBucketService implements GitProvider {
       const scopesArr = scopes.split(" ");
       this.accessToken = access_token;
       this.refreshToken = refresh_token;
-      const { username, uuid, links, displayName, createdOn } =
-        await this.getCurrentUser();
+      const {
+        name: username,
+        uuid,
+        links,
+        displayName,
+        createdOn,
+      } = await this.getCurrentUser();
       return {
         accessToken: access_token,
         refreshToken: refresh_token,
@@ -90,7 +95,7 @@ export class BitBucketService implements GitProvider {
         tokenType: token_type,
         expiresIn: expires_in,
         userData: {
-          username,
+          name: username,
           uuid,
           links,
           displayName,
@@ -113,7 +118,7 @@ export class BitBucketService implements GitProvider {
         links,
         createdOn: created_on,
         displayName: display_name,
-        username,
+        name: username,
         uuid,
       };
     } catch (error) {
@@ -124,7 +129,7 @@ export class BitBucketService implements GitProvider {
   async getOrganization(): Promise<RemoteGitOrganization> {
     const gitOrganization = await this.getCurrentUser();
     return {
-      name: gitOrganization.username,
+      name: gitOrganization.name,
       type: EnumGitOrganizationType.User,
     };
   }
