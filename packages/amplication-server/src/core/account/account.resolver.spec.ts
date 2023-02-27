@@ -6,7 +6,7 @@ import {
 } from "apollo-server-testing";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { ConfigService } from "@nestjs/config";
 import { User, Account } from "../../models";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
@@ -97,7 +97,7 @@ describe("AccountResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

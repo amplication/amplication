@@ -6,7 +6,7 @@ import { ActionStep } from "./dto/ActionStep";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { FindOneActionArgs } from "./dto/FindOneActionArgs";
 import { EnumActionLogLevel } from "./dto";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 const EXAMPLE_ACTION_ID = "exampleActionId";
 const EXAMPLE_ACTION_STEP_ID = "exampleActionStepId";
@@ -62,7 +62,7 @@ describe("ActionService", () => {
           },
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

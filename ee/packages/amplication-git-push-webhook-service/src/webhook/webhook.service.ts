@@ -6,10 +6,7 @@ import { ConfigService } from '@nestjs/config';
 import { GitOrganizationRepository } from '../git-organization/git-organization.repository';
 import { PushEvent } from '@octokit/webhooks-types';
 import { EnumProvider } from '../git-organization/git-organization.types';
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
+import { AmplicationLogger } from '@amplication/nest-logger-module';
 
 const WEBHOOKS_SECRET_KEY = 'WEBHOOKS_SECRET_KEY';
 
@@ -20,7 +17,7 @@ export class WebhookService {
     private readonly queueService: QueueService,
     configService: ConfigService,
     private readonly gitOrganizationRepository: GitOrganizationRepository,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
   ) {
     this.webhooks = new Webhooks({

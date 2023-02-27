@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { Controller, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
@@ -25,7 +22,7 @@ export class PullRequestController {
     private readonly pullRequestService: PullRequestService,
     private readonly configService: ConfigService<Env, true>,
     private readonly queueService: QueueService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 

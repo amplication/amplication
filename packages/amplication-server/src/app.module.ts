@@ -28,11 +28,6 @@ import { SERVICE_NAME } from "./constants";
       inject: [ConfigService, GoogleSecretsManagerService],
       useClass: SendgridConfigService,
     }),
-
-    AmplicationLoggerModule.register({
-      metadata: { service: SERVICE_NAME },
-    }),
-
     GraphQLModule.forRootAsync({
       useFactory: async (configService: ConfigService) => {
         return {
@@ -48,7 +43,9 @@ import { SERVICE_NAME } from "./constants";
       },
       inject: [ConfigService],
     }),
-
+    AmplicationLoggerModule.forRoot({
+      serviceName: SERVICE_NAME,
+    }),
     MorganModule,
     SegmentAnalyticsModule.registerAsync({
       useClass: SegmentAnalyticsOptionsService,

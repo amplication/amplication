@@ -8,11 +8,16 @@ import {
   swaggerDocumentOptions,
   swaggerSetupOptions,
 } from "./swagger";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 const { PORT = 3005 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(AmplicationLogger));
 
   app.setGlobalPrefix("api");
   app.useGlobalPipes(
