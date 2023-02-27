@@ -2,10 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { GitPullEventRepository } from "./git-pull-event.repository";
 import { GitClientService } from "./git-client.service";
@@ -29,7 +26,7 @@ export class GitPullEventService {
     private gitPullEventRepository: GitPullEventRepository,
     private gitClientService: GitClientService,
     private storageService: StorageService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.rootStorageDir =

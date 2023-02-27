@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { Inject, Injectable } from "@nestjs/common";
 import assert from "assert";
 import { compare } from "dir-compare";
@@ -18,7 +15,7 @@ import { MissingBuildFiles } from "../errors/MissingBuildFiles";
 export class DiffService {
   constructor(
     private readonly buildsPathFactory: BuildPathFactory,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
   async listOfChangedFiles(

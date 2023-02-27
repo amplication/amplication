@@ -21,7 +21,7 @@ import {
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
 import { ConfigService } from "@nestjs/config";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -230,7 +230,7 @@ describe("ProjectResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

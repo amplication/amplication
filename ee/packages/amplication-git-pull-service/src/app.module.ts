@@ -9,8 +9,8 @@ import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
   imports: [
     GitPullEventModule,
     HealthModule,
-    AmplicationLoggerModule.register({
-      metadata: { service: "amplication-git-pull-service" },
+    AmplicationLoggerModule.forRoot({
+      serviceName: "amplication-git-pull-service",
     }),
     ConfigModule.forRoot({
       isGlobal: true,

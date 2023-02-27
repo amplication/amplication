@@ -1,4 +1,4 @@
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 
@@ -9,7 +9,7 @@ export class QueueService {
   constructor(
     @Inject(KAFKA_CLIENT)
     private readonly kafkaClient: ClientKafka,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: LoggerService
   ) {}
 

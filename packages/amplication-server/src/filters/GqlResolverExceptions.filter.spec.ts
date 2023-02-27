@@ -12,7 +12,7 @@ import {
   RequestData,
   UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/nest-logger-module";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
@@ -53,7 +53,7 @@ describe("GqlResolverExceptionsFilter", () => {
           },
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useValue: {
             error: errorMock,
             info: infoMock,
@@ -77,7 +77,7 @@ describe("GqlResolverExceptionsFilter", () => {
       string,
       Error,
       Error,
-      [string, { requestData: RequestData | null }] | [Error] | null,
+      [string, { requestData: RequestData | null }] | [string, Error] | null,
       [string, { requestData: RequestData | null }] | null
     ]
   > = [
@@ -98,7 +98,7 @@ describe("GqlResolverExceptionsFilter", () => {
       "PrismaClientKnownRequestError unknown",
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
       new InternalServerError(),
-      [EXAMPLE_PRISMA_UNKNOWN_ERROR],
+      [EXAMPLE_PRISMA_UNKNOWN_ERROR.message, EXAMPLE_PRISMA_UNKNOWN_ERROR],
       null,
     ],
     [
@@ -115,7 +115,13 @@ describe("GqlResolverExceptionsFilter", () => {
       null,
       [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
-    ["Error", EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null],
+    [
+      "Error",
+      EXAMPLE_ERROR,
+      new InternalServerError(),
+      [EXAMPLE_ERROR.message, EXAMPLE_ERROR],
+      null,
+    ],
   ];
   test.each(cases)("%s", (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;

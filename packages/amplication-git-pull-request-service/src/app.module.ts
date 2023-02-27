@@ -12,8 +12,8 @@ import { PullRequestModule } from "./pull-request/pull-request.module";
       isGlobal: true,
       envFilePath: [".env.local", ".env"],
     }),
-    AmplicationLoggerModule.register({
-      metadata: { service: "amplication-git-pull-request-service" },
+    AmplicationLoggerModule.forRoot({
+      serviceName: "amplication-git-pull-request-service",
     }),
   ],
 })
