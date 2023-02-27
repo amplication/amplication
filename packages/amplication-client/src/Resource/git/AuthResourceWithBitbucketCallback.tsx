@@ -32,7 +32,7 @@ const AuthResourceWithBitbucketCallback = () => {
   }, [completeAuthWithGit, trackEvent, window.location.search]);
 
   /**@todo: show formatted layout and optional error message */
-  return <p>Please wait...please wait</p>;
+  return <p>Please wait...</p>;
 };
 
 export default AuthResourceWithBitbucketCallback;
