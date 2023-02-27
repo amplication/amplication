@@ -14,17 +14,13 @@ import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
 import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
-import { v4 as uuid } from "uuid";
-
-import {
-  EnumGitOrganizationType,
-  GitClientService,
-} from "@amplication/git-utils";
+import { GitClientService } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
   ResourceService,
 } from "../resource/resource.service";
-import { GetGitOAuth2FlowArgs } from "./dto/args/GetGitOAuth2FlowArgs";
+import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
+import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -273,6 +269,11 @@ export class GitProviderService {
           installationId: installationId,
           name: gitRemoteOrganization.name,
           type: gitRemoteOrganization.type,
+          providerProperties: {
+            github: {
+              installationId,
+            },
+          },
         },
       });
     }
@@ -284,10 +285,15 @@ export class GitProviderService {
             id: args.data.workspaceId,
           },
         },
-        installationId: installationId,
+        installationId,
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
+        providerProperties: {
+          github: {
+            installationId,
+          },
+        },
       },
     });
   }
@@ -319,26 +325,68 @@ export class GitProviderService {
   }
 
   async completeOAuth2Flow(
-    args: GetGitOAuth2FlowArgs
+    args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
-    const { code, gitProvider } = args.data;
-    const oAuth2InstallationId = `not-supported-${uuid()}`;
+    const { code, gitProvider, workspaceId } = args.data;
     const gitClientService = await new GitClientService().create({
       provider: gitProvider,
-      installationId: oAuth2InstallationId,
+      installationId: null,
     });
     try {
-      const oAuth2FlowResponse = await gitClientService.getAccessToken(code);
-      console.log({ oAuth2FlowResponse });
-      return {
-        provider: gitProvider,
-        installationId: oAuth2InstallationId,
-        name: oAuth2FlowResponse.userData.username,
-        type: EnumGitOrganizationType.User,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        id: uuid(),
-      };
+      const {
+        accessToken,
+        refreshToken,
+        expiresIn,
+        tokenType,
+        scopes,
+        userData: { name, uuid },
+      } = await gitClientService.completeOAuth2Flow(code);
+
+      return this.prisma.gitOrganization.upsert({
+        where: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          provider_installationId: {
+            provider: gitProvider,
+            installationId: uuid,
+          },
+        },
+        create: {
+          provider: gitProvider,
+          installationId: uuid,
+          name,
+          type: EnumGitOrganizationType.User,
+          workspace: {
+            connect: {
+              id: workspaceId,
+            },
+          },
+          providerProperties: {
+            bitbucket: {
+              username: name,
+              uuid,
+              accessToken,
+              refreshToken,
+              expiresIn,
+              tokenType,
+              scopes,
+            },
+          },
+        },
+        update: {
+          name: name,
+          providerProperties: {
+            bitbucket: {
+              username: name,
+              uuid,
+              accessToken,
+              refreshToken,
+              expiresIn,
+              tokenType,
+              scopes,
+            },
+          },
+        },
+      });
     } catch (error) {
       console.error(error);
       throw new Error(error);
