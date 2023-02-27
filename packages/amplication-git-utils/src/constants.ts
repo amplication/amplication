@@ -1,7 +1,9 @@
 export const accumulativePullRequestTitle =
   "chore(Amplication): Update Generated Code";
 
-export const accumulativePullRequestBody = `This pull request includes multiple commits by Amplication with the latest generated code.The pull request may also include commits from several resources and/or projects.You can safely merge this pull request to your default branch.
+export const accumulativePullRequestBody = `This pull request includes multiple commits by Amplication with the latest generated code.
+The pull request may also include commits from several resources and/or projects.
+You can safely merge this pull request to your default branch.
 
 **Note: In case there are any conflicts, please resolve them on this branch before merging the PR.**
 
