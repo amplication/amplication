@@ -1,6 +1,10 @@
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join, normalize, resolve } from "path";
 import { v4 } from "uuid";
+import {
+  accumulativePullRequestBody,
+  accumulativePullRequestTitle,
+} from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface.ts";
@@ -16,6 +20,7 @@ import {
   PostCommitProcessArgs,
   PreCommitProcessArgs,
   PreCommitProcessResult,
+  PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -175,17 +180,25 @@ export class GitClientService {
         branchName,
       });
 
-      if (!existingPullRequest) {
-        return this.provider.createPullRequestForBranch({
+      let pullRequest: PullRequest | undefined = existingPullRequest;
+
+      if (!pullRequest) {
+        pullRequest = await this.provider.createPullRequestForBranch({
           owner,
           repositoryName,
-          pullRequestTitle,
-          pullRequestBody,
+          pullRequestTitle: accumulativePullRequestTitle,
+          pullRequestBody: accumulativePullRequestBody,
           branchName,
           defaultBranchName: defaultBranch,
         });
       }
-      return existingPullRequest.url;
+
+      await this.provider.commentOnPullRequest({
+        where: { issueNumber: pullRequest.number, owner, repositoryName },
+        data: { body: pullRequestBody },
+      });
+
+      return pullRequest.url;
     }
 
     throw new InvalidPullRequestMode();
