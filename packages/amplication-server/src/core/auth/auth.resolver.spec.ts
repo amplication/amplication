@@ -12,7 +12,7 @@ import { Account, Auth, User } from "../../models";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -143,7 +143,7 @@ describe("AuthResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

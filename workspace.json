@@ -10,7 +10,6 @@
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
     "amplication-git-utils": "packages/amplication-git-utils",
-    "amplication-nest-logger-module": "packages/amplication-nest-logger-module",
     "amplication-plugin-api": "packages/amplication-plugin-api",
     "amplication-prisma-db": "packages/amplication-prisma-db",
     "amplication-server": "packages/amplication-server",
@@ -19,6 +18,8 @@
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
     "util-code-gen-utils": "libs/util/code-gen-utils",
     "util-kafka": "libs/util/kafka",
-    "util-nestjs-kafka": "libs/util/nestjs/kafka"
+    "util-logging": "libs/util/logging",
+    "util-nestjs-kafka": "libs/util/nestjs/kafka",
+    "util-nestjs-logging": "libs/util/nestjs/logging"
   }
 }

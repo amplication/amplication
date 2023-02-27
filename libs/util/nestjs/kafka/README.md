@@ -21,8 +21,11 @@ In order to use the serializer, import the `KafkaConsumerModule` module and add 
 To produce messages with serialised key and value, import the `KafkaProducerService` and use that instead of calling the nestjs KafkaClient directly:
 
 ```ts
-    // class MyClass (readonly private kafkaProducerService: KafkaProducerService)
-    // ...
-    // myFunction(){
-       this.kafkaProducerService.emitMessage('topic-1', { key: "id-1", value: "my awesome value"});
+// class MyClass (readonly private kafkaProducerService: KafkaProducerService)
+// ...
+// myFunction(){
+this.kafkaProducerService.emitMessage("topic-1", {
+  key: "id-1",
+  value: "my awesome value",
+});
 ```

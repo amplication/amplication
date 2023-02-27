@@ -3,10 +3,7 @@ import {
   GitClientService,
   File,
 } from "@amplication/git-utils";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { DiffService } from "../diff/diff.service";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
@@ -15,7 +12,7 @@ import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 export class PullRequestService {
   constructor(
     private readonly diffService: DiffService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
