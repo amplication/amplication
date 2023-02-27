@@ -191,3 +191,18 @@ export interface PostCommitProcessArgs {
   diffPath: string;
   gitClient: GitClient;
 }
+
+export interface FindOneIssueInput {
+  owner: string;
+  repositoryName: string;
+  issueNumber: number;
+}
+
+interface CreatePullRequestCommentInput {
+  body: string;
+}
+
+export interface CreatePullRequestCommentArgs {
+  where: FindOneIssueInput;
+  data: CreatePullRequestCommentInput;
+}

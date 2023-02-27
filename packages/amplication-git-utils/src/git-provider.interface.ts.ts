@@ -4,6 +4,7 @@ import {
   Commit,
   CreateBranchArgs,
   CreateCommitArgs,
+  CreatePullRequestCommentArgs,
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
@@ -51,4 +52,5 @@ export interface GitProvider {
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
   getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
   getCloneUrl: (args: CloneUrlArgs) => string;
+  commentOnPullRequest: (args: CreatePullRequestCommentArgs) => Promise<void>;
 }
