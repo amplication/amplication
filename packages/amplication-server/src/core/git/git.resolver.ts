@@ -22,7 +22,7 @@ import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
-import { GetGitOAuth2FlowArgs } from "./dto/args/GetGitOAuth2FlowArgs";
+import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -116,7 +116,7 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async completeGitOAuth2Flow(
-    @Args() args: GetGitOAuth2FlowArgs
+    @Args() args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
     return await this.gitService.completeOAuth2Flow(args);
   }
