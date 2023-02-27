@@ -29,6 +29,7 @@ import {
   GitFile,
   GitProviderConstructorArgs,
   GitUser,
+  PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -586,7 +587,7 @@ export class GithubService implements GitProvider {
     pullRequestTitle,
     pullRequestBody,
     defaultBranchName,
-  }: CreatePullRequestForBranchArgs): Promise<string> {
+  }: CreatePullRequestForBranchArgs): Promise<PullRequest> {
     const { data: pullRequest } = await this.octokit.rest.pulls.create({
       owner,
       repo: repositoryName,
@@ -595,7 +596,7 @@ export class GithubService implements GitProvider {
       head: branchName,
       base: defaultBranchName,
     });
-    return pullRequest.html_url;
+    return { url: pullRequest.html_url, number: pullRequest.number };
   }
 
   async getBranch({

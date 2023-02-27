@@ -206,3 +206,8 @@ export interface CreatePullRequestCommentArgs {
   where: FindOneIssueInput;
   data: CreatePullRequestCommentInput;
 }
+
+export interface PullRequest {
+  url: string;
+  number: number;
+}
