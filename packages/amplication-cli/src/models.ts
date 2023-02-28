@@ -732,6 +732,7 @@ export type GitOrganization = {
   installationId: Scalars['String'];
   name: Scalars['String'];
   provider: EnumGitProvider;
+  providerProperties?: Maybe<ProviderProperties>;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
 };
@@ -752,6 +753,13 @@ export type GitRepository = {
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt?: Maybe<Scalars['DateTime']>;
+};
+
+export type GitWorkspace = {
+  name?: Maybe<Scalars['String']>;
+  slug?: Maybe<Scalars['String']>;
+  type?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
 };
 
 export type IBlock = {
@@ -1394,6 +1402,18 @@ export type PropertySelector = {
 export type PropertySelectorInput = {
   include: Scalars['Boolean'];
   propertyName: Scalars['String'];
+};
+
+export type ProviderProperties = {
+  accessToken?: Maybe<Scalars['String']>;
+  expiresIn?: Maybe<Scalars['Float']>;
+  installationId?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['String']>;
+  scopes?: Maybe<Array<Scalars['String']>>;
+  tokenType?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
+  workspaces?: Maybe<Array<GitWorkspace>>;
 };
 
 export type ProvisionSubscriptionInput = {

@@ -143,6 +143,7 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
+  providerProperties: ProviderProperties
 }
 
 enum EnumGitProvider {
@@ -153,6 +154,25 @@ enum EnumGitProvider {
 enum EnumGitOrganizationType {
   User
   Organization
+}
+
+type ProviderProperties {
+  installationId: String
+  username: String
+  uuid: String
+  accessToken: String
+  refreshToken: String
+  expiresIn: Float
+  tokenType: String
+  scopes: [String!]
+  workspaces: [GitWorkspace!]
+}
+
+type GitWorkspace {
+  name: String
+  slug: String
+  type: String
+  uuid: String
 }
 
 type Entity {
