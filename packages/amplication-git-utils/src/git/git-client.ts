@@ -33,12 +33,4 @@ export class GitClient {
     await this.git.pull();
     await this.git.reset(["--hard"]);
   }
-
-  async merge({ into, from }: { into: string; from: string }) {
-    console.log(`Merging branch: ${from} into: ${into}`);
-    await this.git
-      .checkout(into)
-      .merge(["--no-ff", `origin/${from}`])
-      .push();
-  }
 }
