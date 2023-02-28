@@ -9,6 +9,6 @@ You can safely merge this pull request to your default branch.
 
 Please keep in mind that this branch should not be deleted. Amplication will continue to push new commits to this PR as long as it remains open. If this PR has already been merged, we will open a new PR for the next commit.
 
-For more information on how to work with Amplication and manage pull requests, please refer to our documentation - [https://docs.amplication.com/](https://docs.amplication.com/)
+For more information on how to work with Amplication and manage pull requests, please refer to our documentation - [https://docs.amplication.com/sync-with-github](https://docs.amplication.com/sync-with-github)
 
 The Amplication Team`;
