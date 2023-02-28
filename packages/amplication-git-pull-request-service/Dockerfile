@@ -3,7 +3,7 @@ FROM node:18.12.1-alpine AS base
 WORKDIR /app
 
 RUN apk update \
-    && apk add --no-cache git=2.38.3-r1 \
+    && apk add --no-cache git \
     && rm /var/cache/apk/*
 
 COPY ./dist/packages/amplication-git-pull-request-service/package.json .
