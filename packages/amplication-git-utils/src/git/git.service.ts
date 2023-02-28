@@ -142,14 +142,6 @@ export class GitClientService {
         owner,
         repositoryName,
       });
-      let fullDiffPath = "";
-      if (diff) {
-        await mkdir(diffFolder, { recursive: true });
-        const diffPath = join(diffFolder, "diff.patch");
-        await writeFile(diffPath, diff);
-        fullDiffPath = resolve(diffPath);
-        console.log("Saving diff to: ", fullDiffPath);
-      }
 
       await this.provider.createCommit({
         owner,
@@ -160,6 +152,11 @@ export class GitClientService {
       });
 
       if (diff) {
+        await mkdir(diffFolder, { recursive: true });
+        const diffPath = join(diffFolder, "diff.patch");
+        await writeFile(diffPath, diff);
+        const fullDiffPath = resolve(diffPath);
+        console.log("Saving diff to: ", fullDiffPath);
         await this.postCommitProcess({
           diffPath: fullDiffPath,
           gitClient,
