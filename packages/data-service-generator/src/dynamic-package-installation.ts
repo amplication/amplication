@@ -21,6 +21,8 @@ export async function dynamicPackagesInstallations(
     const plugin: PackageInstallation = {
       name: plugins.npm,
       version: plugins.version,
+      settings: plugins.settings,
+      pluginId: plugins.pluginId,
     };
     await manager.install(plugin, {
       onBeforeInstall: async (plugin) => {

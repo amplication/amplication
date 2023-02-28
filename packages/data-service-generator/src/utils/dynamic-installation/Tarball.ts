@@ -1,7 +1,9 @@
 import downloadHelper from "download";
+import { join } from "path";
 import { packument } from "pacote";
 import { createLog } from "../../create-log";
 import { PackageInstallation } from "./DynamicPackageInstallationManager";
+import fse from "fs-extra";
 
 export class Tarball {
   constructor(
@@ -19,6 +21,24 @@ export class Tarball {
       },
     });
     return;
+  }
+
+  filterFunc(src, dest) {
+    if (src.includes("node_modules")) return false;
+
+    return true;
+  }
+
+  async copySync({ folderPath }): Promise<void> {
+    try {
+      const { name } = this.plugin;
+      fse.copySync(folderPath, join(this.modulesPath, name), {
+        overwrite: true,
+        filter: this.filterFunc,
+      });
+    } catch (error) {
+      console.log("fse.copySync", error);
+    }
   }
 
   private async packageTarball({
