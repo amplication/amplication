@@ -15,6 +15,8 @@ interface RequestPayload {
 const AUTHORIZE_URL = "https://bitbucket.org/site/oauth2/authorize";
 const ACCESS_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
 const CURRENT_USER_URL = "https://api.bitbucket.org/2.0/user";
+const CURRENT_USER_WORKSPACES_URL =
+  "https://api.bitbucket.org/2.0/user/permissions/workspaces";
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -35,7 +37,7 @@ async function requestWrapper(url: string, payload: RequestPayload) {
       // TODO: refresh token
       console.log("refresh token");
     }
-    return response;
+    return (await response).json();
   } catch (error) {
     const errorBody = await error.response.text();
     throw new CustomError(errorBody);
@@ -76,6 +78,13 @@ export async function authDataRequest(
 
 export async function currentUserRequest(accessToken: string) {
   return requestWrapper(CURRENT_USER_URL, {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
+}
+
+export async function currentUserWorkspacesRequest(accessToken: string) {
+  return requestWrapper(CURRENT_USER_WORKSPACES_URL, {
     method: "GET",
     headers: getRequestHeaders(accessToken),
   });

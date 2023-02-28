@@ -17,13 +17,14 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   OAuth2FlowResponse,
-  EnumGitOrganizationType,
+  PaginatedWorkspaceMembership,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
+  currentUserWorkspacesRequest,
 } from "./requests";
 
 export class BitBucketService implements GitProvider {
@@ -54,47 +55,43 @@ export class BitBucketService implements GitProvider {
   }
 
   private async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    try {
-      const response = await authDataRequest(
-        this.clientId,
-        this.clientSecret,
-        authorizationCode
-      );
+    const response = await authDataRequest(
+      this.clientId,
+      this.clientSecret,
+      authorizationCode
+    );
 
-      const authData = await response.json();
-      const { access_token, refresh_token, scopes, token_type, expires_in } =
-        authData;
+    const authData = await response.json();
 
-      return {
-        accessToken: access_token,
-        refreshToken: refresh_token,
-        scopes: scopes.split(" "),
-        tokenType: token_type,
-        expiresIn: expires_in,
-      };
-    } catch (error) {
-      // TODO: figure out how the error is look like
-      const { message, code, status, cause } = error;
-      throw new CustomError(message, { code, status, cause });
-    }
+    return {
+      accessToken: authData.access_token,
+      refreshToken: authData.refresh_token,
+      scopes: authData.scopes.split(" "),
+      tokenType: authData.token_type,
+      expiresIn: authData.expires_in,
+    };
   }
 
   private async getCurrentUser(accessToken: string): Promise<CurrentUser> {
-    try {
-      const response = await currentUserRequest(accessToken);
-      const currentUser = await response.json();
+    const currentUser = await currentUserRequest(accessToken);
 
-      const { links, created_on, display_name, username, uuid } = currentUser;
-      return {
-        links,
-        createdOn: created_on,
-        displayName: display_name,
-        name: username,
-        uuid,
-      };
-    } catch (error) {
-      throw new CustomError(error.message, error);
-    }
+    const { links, created_on, display_name, username, uuid } = currentUser;
+    return {
+      links,
+      createdOn: created_on,
+      displayName: display_name,
+      name: username,
+      uuid,
+    };
+  }
+
+  private async getWorkspacesOfCurrentUser(
+    accessToken: string
+  ): Promise<PaginatedWorkspaceMembership> {
+    const currentUserWorkspaces = await currentUserWorkspacesRequest(
+      accessToken
+    );
+    return currentUserWorkspaces;
   }
 
   async completeOAuth2Flow(
@@ -102,13 +99,37 @@ export class BitBucketService implements GitProvider {
   ): Promise<OAuth2FlowResponse> {
     const { accessToken, refreshToken, expiresIn, tokenType, scopes } =
       await this.getAccessToken(authorizationCode);
+
     const {
       name: username,
-      uuid,
-      links,
+      uuid: userUuid,
+      links: userLinks,
       displayName,
       createdOn,
     } = await this.getCurrentUser(accessToken);
+
+    const paginatedWorkspaceMembership = await this.getWorkspacesOfCurrentUser(
+      accessToken
+    );
+
+    const { values } = paginatedWorkspaceMembership;
+    const currentUserWorkspaces = values.map(
+      ({
+        workspace: {
+          name: workspaceName,
+          uuid: workspaceUuid,
+          slug: workspaceSlug,
+          type: workspaceType,
+          links: workspaceLinks,
+        },
+      }) => ({
+        name: workspaceName,
+        uuid: workspaceUuid,
+        slug: workspaceSlug,
+        type: workspaceType,
+        links: workspaceLinks,
+      })
+    );
 
     return {
       accessToken,
@@ -118,11 +139,12 @@ export class BitBucketService implements GitProvider {
       expiresIn,
       userData: {
         name: username,
-        uuid,
-        links,
+        uuid: userUuid,
+        links: userLinks,
         displayName,
         createdOn,
       },
+      workspaces: currentUserWorkspaces,
     };
   }
 
