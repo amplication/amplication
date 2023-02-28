@@ -1,3 +1,5 @@
+import { GitClient } from "./git/git-client";
+
 export enum EnumPullRequestMode {
   Basic = "Basic",
   Accumulative = "Accumulative",
@@ -14,7 +16,11 @@ export enum EnumGitProvider {
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  installationId: string | null;
+  installationId: string;
+}
+
+export interface GitProviderConstructorArgs {
+  installationId: string;
 }
 
 export interface RemoteGitOrganization {
@@ -87,7 +93,7 @@ export interface GetRepositoriesArgs {
 export interface GetFileArgs {
   owner: string;
   repositoryName: string;
-  baseBranchName: string;
+  baseBranchName?: string;
   path: string;
 }
 
@@ -113,12 +119,6 @@ export interface CreatePullRequestFromFilesArgs {
   files: UpdateFile[];
 }
 
-export interface CreateBranchIfNotExistsArgs {
-  owner: string;
-  repositoryName: string;
-  branchName: string;
-}
-
 export interface GetPullRequestForBranchArgs {
   owner: string;
   repositoryName: string;
@@ -142,32 +142,72 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
-export interface GitProvider {
-  init(): Promise<void>;
-  getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  getRepository(
-    getRepositoryArgs: GetRepositoryArgs
-  ): Promise<RemoteGitRepository>;
-  getRepositories(
-    getRepositoriesArgs: GetRepositoriesArgs
-  ): Promise<RemoteGitRepos>;
-  createRepository(
-    createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository>;
-  deleteGitOrganization(): Promise<boolean>;
-  getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: GetFileArgs): Promise<GitFile>;
-  createPullRequestFromFiles: (
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ) => Promise<string>;
-  createBranchIfNotExists: (
-    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
-  ) => Promise<Branch>;
-  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
-  getPullRequestForBranch: (
-    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
-  ) => Promise<{ url: string; number: number } | undefined>;
-  createPullRequestForBranch: (
-    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
-  ) => Promise<string>;
+export interface GetBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+}
+
+export interface CreateBranchIfNotExistsArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  gitClient: GitClient;
+}
+
+export interface CreateBranchArgs {
+  owner: string;
+  repositoryName: string;
+  branchName: string;
+  pointingSha: string;
+}
+
+export interface Commit {
+  sha: string;
+}
+
+export interface GitUser {
+  id: string;
+  login: string;
+}
+
+export interface CloneUrlArgs {
+  owner: string;
+  repositoryName: string;
+}
+
+export interface PreCommitProcessArgs {
+  gitClient: GitClient;
+  branchName: string;
+  owner: string;
+  repositoryName: string;
+}
+
+export type PreCommitProcessResult = Promise<{
+  diff: string | null;
+}>;
+
+export interface PostCommitProcessArgs {
+  diffPath: string;
+  gitClient: GitClient;
+}
+
+export interface FindOneIssueInput {
+  owner: string;
+  repositoryName: string;
+  issueNumber: number;
+}
+
+interface CreatePullRequestCommentInput {
+  body: string;
+}
+
+export interface CreatePullRequestCommentArgs {
+  where: FindOneIssueInput;
+  data: CreatePullRequestCommentInput;
+}
+
+export interface PullRequest {
+  url: string;
+  number: number;
 }

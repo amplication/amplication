@@ -1,35 +1,43 @@
 import { createAppAuth } from "@octokit/auth-app";
 import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
+import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
+  Changes,
+  File as OctokitFile,
+  TreeParameter,
+  UpdateFunctionFile,
+} from "octokit-plugin-create-pull-request/dist-types/types";
+import { PaginationLimit } from "../errors/PaginationLimit";
+import { GitProvider } from "../git-provider.interface.ts";
+import {
+  Branch,
+  CloneUrlArgs,
+  Commit,
+  CreateBranchArgs,
+  CreateCommitArgs,
+  CreatePullRequestCommentArgs,
+  CreatePullRequestForBranchArgs,
+  CreatePullRequestFromFilesArgs,
+  CreateRepositoryArgs,
   EnumGitOrganizationType,
+  EnumGitProvider,
+  GetBranchArgs,
+  GetFileArgs,
+  GetPullRequestForBranchArgs,
+  GetRepositoriesArgs,
+  GetRepositoryArgs,
   GitFile,
+  GitProviderConstructorArgs,
+  GitUser,
+  PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  GitProviderArgs,
-  GetRepositoryArgs,
-  GetRepositoriesArgs,
-  CreateRepositoryArgs,
-  GitProvider,
-  CreatePullRequestFromFilesArgs,
-  Branch,
-  CreateBranchIfNotExistsArgs,
-  CreateCommitArgs,
-  GetPullRequestForBranchArgs,
-  CreatePullRequestForBranchArgs,
-  GetFileArgs,
   UpdateFile,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
-import { createPullRequest } from "octokit-plugin-create-pull-request";
-import {
-  Changes,
-  TreeParameter,
-  UpdateFunctionFile,
-  File as OctokitFile,
-} from "octokit-plugin-create-pull-request/dist-types/types";
 
 const GITHUB_FILE_TYPE = "file";
 
@@ -41,23 +49,165 @@ export class GithubService implements GitProvider {
   private privateKey: string;
   private gitInstallationUrl: string;
   private octokit: Octokit;
-
-  constructor(private readonly gitProviderArgs: GitProviderArgs) {
+  public readonly name = EnumGitProvider.Github;
+  public readonly domain = "github.com";
+  constructor(private readonly gitProviderArgs: GitProviderConstructorArgs) {
     const {
       GITHUB_APP_INSTALLATION_URL,
       GITHUB_APP_APP_ID,
       GITHUB_APP_PRIVATE_KEY,
     } = process.env;
+    if (!GITHUB_APP_INSTALLATION_URL) {
+      throw new Error("GITHUB_APP_INSTALLATION_URL is not defined");
+    }
     this.gitInstallationUrl = GITHUB_APP_INSTALLATION_URL;
+    if (!GITHUB_APP_APP_ID) {
+      throw new Error("GITHUB_APP_APP_ID is not defined");
+    }
     this.appId = GITHUB_APP_APP_ID;
+    if (!GITHUB_APP_PRIVATE_KEY) {
+      throw new Error("GITHUB_APP_PRIVATE_KEY is not defined");
+    }
     this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
-
     this.app = new App({
       appId: this.appId,
       privateKey,
     });
+  }
+
+  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
+    return `https://${this.domain}/${owner}/${repositoryName}.git`;
+  }
+
+  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
+    const { branchName, owner, repositoryName } = args;
+    const currentUserData = await this.getCurrentUser();
+
+    let moreCommitsPagination = true;
+    let commitsList: Commit[] = [];
+    let cursor: string | undefined = undefined;
+
+    do {
+      const { commits, hasNextPage, endCursor } =
+        await this.paginatedCommitsList({
+          botData: currentUserData,
+          branchName,
+          owner,
+          repositoryName,
+          cursor,
+          paginationLimit: 100,
+        });
+      moreCommitsPagination = hasNextPage;
+      commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
+      cursor = endCursor;
+    } while (moreCommitsPagination);
+
+    return commitsList;
+  }
+
+  private async paginatedCommitsList(
+    args: GetBranchArgs & {
+      cursor: string | undefined;
+      botData: GitUser;
+      paginationLimit: number;
+    }
+  ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
+    const {
+      branchName,
+      owner,
+      repositoryName,
+      cursor,
+      botData,
+      paginationLimit,
+    } = args;
+    if (paginationLimit > 100 || paginationLimit < 1) {
+      throw new PaginationLimit(paginationLimit);
+    }
+
+    const data: {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes: {
+                oid: string;
+              }[];
+              pageInfo: {
+                hasNextPage: boolean;
+                endCursor: string;
+              };
+            };
+          };
+        };
+      };
+    } = await this.octokit.graphql(
+      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!, $paginationLimit: Int!) {
+        repository(name: $repo, owner: $owner) {
+          ref(qualifiedName: $branch) {
+            target {
+              ... on Commit {
+                history(author:{id: $author},first: $paginationLimit ${
+                  cursor ? `,after:"${cursor}"` : ""
+                }) {
+                  nodes {
+                    oid
+                  }
+                  pageInfo {
+                    hasNextPage
+                    endCursor
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+      {
+        owner,
+        repo: repositoryName,
+        branch: branchName,
+        author: botData.id,
+        paginationLimit,
+      }
+    );
+    const {
+      repository: {
+        ref: {
+          target: {
+            history: {
+              nodes,
+              pageInfo: { endCursor, hasNextPage },
+            },
+          },
+        },
+      },
+    } = data;
+    return {
+      commits: nodes.map(({ oid }) => ({
+        sha: oid,
+      })),
+      hasNextPage,
+      endCursor,
+    };
+  }
+
+  async getCurrentUser(): Promise<GitUser> {
+    const data: { viewer: { id: string; login: string } } = await this.octokit
+      .graphql(`{
+      viewer{
+        id
+        login
+      }
+    }`);
+    const {
+      viewer: { id, login },
+    } = data;
+    return {
+      login,
+      id,
+    };
   }
 
   async init(): Promise<void> {
@@ -148,20 +298,29 @@ export class GithubService implements GitProvider {
     getRepositoriesArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
     const { owner, repositoryName } = getRepositoriesArgs;
-    const {
-      data: {
-        permissions: { admin },
-        url,
-        private: isPrivate,
-        name,
-        full_name: fullName,
-        default_branch: defaultBranch,
-      },
-    } = await this.octokit.rest.repos.get({
+    const { data } = await this.octokit.rest.repos.get({
       owner,
       repo: repositoryName,
     });
-
+    const {
+      permissions,
+      url,
+      private: isPrivate,
+      name,
+      full_name: fullName,
+      default_branch: defaultBranch,
+    } = data;
+    const baseRepository = {
+      defaultBranch,
+      fullName,
+      name,
+      private: isPrivate,
+      url,
+    };
+    if (!permissions) {
+      return { ...baseRepository, admin: false };
+    }
+    const { admin } = permissions;
     return {
       admin,
       defaultBranch,
@@ -181,7 +340,7 @@ export class GithubService implements GitProvider {
 
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository> {
+  ): Promise<RemoteGitRepository | null> {
     const { gitOrganization, owner, repositoryName, isPrivateRepository } =
       createRepositoryArgs;
 
@@ -238,14 +397,24 @@ export class GithubService implements GitProvider {
       ),
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
-
+    const { account } = gitRemoteOrgs;
+    if (!account) {
+      throw new Error("Account not found");
+    }
+    const { login, type } = account;
+    if (!type) {
+      throw new Error("Account type not found");
+    }
+    if (!login) {
+      throw new Error("Account login not found");
+    }
     return {
-      name: gitRemoteOrgs.account.login,
-      type: EnumGitOrganizationType[gitRemoteOrganization.data.account.type],
+      name: login,
+      type: EnumGitOrganizationType[type],
     };
   }
 
-  async getFile(file: GetFileArgs): Promise<GitFile> {
+  async getFile(file: GetFileArgs): Promise<GitFile | null> {
     const { owner, repositoryName, path, baseBranchName } = file;
 
     const content = await this.octokit.rest.repos.getContent({
@@ -257,7 +426,9 @@ export class GithubService implements GitProvider {
 
     if (!Array.isArray(content)) {
       const item = content.data as DirectoryItem;
-
+      if (!item.content) {
+        return null;
+      }
       if (item.type === GITHUB_FILE_TYPE) {
         // Convert base64 results to UTF-8 string
         const buff = Buffer.from(item.content, "base64");
@@ -311,27 +482,10 @@ export class GithubService implements GitProvider {
         },
       ],
     });
-    return pr.data.html_url;
-  }
-
-  async createBranchIfNotExists({
-    owner,
-    repositoryName,
-    branchName,
-  }: CreateBranchIfNotExistsArgs): Promise<Branch> {
-    const { sha } = await this.getFirstDefaultBranchCommit(
-      owner,
-      repositoryName
-    );
-    const isBranchExist = await this.isBranchExist(
-      owner,
-      repositoryName,
-      branchName
-    );
-    if (!isBranchExist) {
-      return this.createBranch(owner, repositoryName, branchName, sha);
+    if (pr === null) {
+      throw new Error("We had a problem creating the pull request");
     }
-    return this.getBranch(owner, repositoryName, branchName);
+    return pr.data.html_url;
   }
 
   async createCommit({
@@ -362,6 +516,10 @@ export class GithubService implements GitProvider {
       gitHubFils
     );
 
+    if (lastTreeSha === null) {
+      throw new Error("Missing tree sha");
+    }
+
     console.info(`Created tree for for ${owner}/${repositoryName}`);
 
     const { data: commit } = await this.octokit.rest.git.createCommit({
@@ -388,9 +546,7 @@ export class GithubService implements GitProvider {
     owner,
     repositoryName,
     branchName,
-  }: GetPullRequestForBranchArgs): Promise<
-    { url: string; number: number } | undefined
-  > {
+  }: GetPullRequestForBranchArgs): Promise<PullRequest | null> {
     const branchInfo: {
       repository: {
         ref: {
@@ -433,7 +589,7 @@ export class GithubService implements GitProvider {
     const existingPullRequest =
       branchInfo.repository.ref?.associatedPullRequests?.edges?.[0]?.node;
 
-    return existingPullRequest;
+    return existingPullRequest || null;
   }
 
   async createPullRequestForBranch({
@@ -443,7 +599,7 @@ export class GithubService implements GitProvider {
     pullRequestTitle,
     pullRequestBody,
     defaultBranchName,
-  }: CreatePullRequestForBranchArgs): Promise<string> {
+  }: CreatePullRequestForBranchArgs): Promise<PullRequest> {
     const { data: pullRequest } = await this.octokit.rest.pulls.create({
       owner,
       repo: repositoryName,
@@ -452,47 +608,36 @@ export class GithubService implements GitProvider {
       head: branchName,
       base: defaultBranchName,
     });
-    return pullRequest.html_url;
+    return { url: pullRequest.html_url, number: pullRequest.number };
   }
 
-  private async isBranchExist(
-    owner: string,
-    repositoryName: string,
-    branch: string
-  ): Promise<boolean> {
+  async getBranch({
+    owner,
+    repositoryName,
+    branchName,
+  }: GetBranchArgs): Promise<Branch | null> {
     try {
-      const refs = await this.getBranch(owner, repositoryName, branch);
-      return Boolean(refs);
+      const { data: ref } = await this.octokit.rest.git.getRef({
+        owner,
+        repo: repositoryName,
+        ref: `heads/${branchName}`,
+      });
+      console.log(
+        `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
+      );
+      return { sha: ref.object.sha, name: branchName };
     } catch (error) {
-      return false;
+      return null;
     }
   }
 
-  private async getBranch(
-    owner: string,
-    repositoryName: string,
-    branchName: string
-  ): Promise<Branch> {
-    const { data: ref } = await this.octokit.rest.git.getRef({
-      owner,
-      repo: repositoryName,
-      ref: `heads/${branchName}`,
-    });
-
-    console.log(
-      `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
-    );
-
-    return { sha: ref.object.sha, name: branchName };
-  }
-
-  private async createBranch(
-    owner: string,
-    repositoryName: string,
-    newBranchName: string,
-    sha?: string
-  ): Promise<Branch> {
-    let baseSha = sha;
+  async createBranch({
+    owner,
+    repositoryName,
+    branchName,
+    pointingSha,
+  }: CreateBranchArgs): Promise<Branch> {
+    let baseSha = pointingSha;
     if (!baseSha) {
       const repository = await this.getRepository({ owner, repositoryName });
       const { defaultBranch } = repository;
@@ -507,24 +652,21 @@ export class GithubService implements GitProvider {
     const { data: branch } = await this.octokit.rest.git.createRef({
       owner,
       repo: repositoryName,
-      ref: `refs/heads/${newBranchName}`,
+      ref: `refs/heads/${branchName}`,
       sha: baseSha,
     });
-    return { name: newBranchName, sha: branch.object.sha };
+    return { name: branchName, sha: branch.object.sha };
   }
 
-  private async getFirstDefaultBranchCommit(
-    owner: string,
-    repositoryName: string
-  ): Promise<{ sha: string }> {
-    const { defaultBranch } = await this.getRepository({
-      owner,
-      repositoryName,
-    });
+  async getFirstCommitOnBranch({
+    branchName,
+    owner,
+    repositoryName,
+  }: GetBranchArgs): Promise<{ sha: string }> {
     const firstCommit: TData = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!) {
+      `query ($owner: String!, $repo: String!, $branchName: String!) {
       repository(name: $repo, owner: $owner) {
-        ref(qualifiedName: $defaultBranch) {
+        ref(qualifiedName: $branchName) {
           target {
             ... on Commit {
               history(first: 1) {
@@ -545,7 +687,7 @@ export class GithubService implements GitProvider {
       {
         owner,
         repo: repositoryName,
-        defaultBranch,
+        branchName,
       }
     );
     const {
@@ -566,9 +708,9 @@ export class GithubService implements GitProvider {
     const nextCursor = `${cursorPrefix} ${totalCount - 2}`;
 
     const lastCommitData: TData = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $defaultBranch: String!, $nextCursor: String!) {
+      `query ($owner: String!, $repo: String!, $branchName: String!, $nextCursor: String!) {
         repository(name: $repo, owner: $owner) {
-          ref(qualifiedName: $defaultBranch) {
+          ref(qualifiedName: $branchName) {
             target {
               ... on Commit {
                 history(first: 1, after: $nextCursor) {
@@ -586,7 +728,7 @@ export class GithubService implements GitProvider {
           }
         }
       }`,
-      { owner, repo: repositoryName, defaultBranch, nextCursor }
+      { owner, repo: repositoryName, branchName, nextCursor }
     );
     const {
       repository: {
@@ -605,7 +747,11 @@ export class GithubService implements GitProvider {
     repositoryName: string,
     branchName: string
   ) {
-    const branch = await this.getBranch(owner, repositoryName, branchName);
+    const branch = await this.getBranch({ owner, repositoryName, branchName });
+
+    if (!branch) {
+      throw new Error("Branch not found");
+    }
 
     console.log(
       `Got branch ${owner}/${repositoryName}/${branch.name} with sha ${branch.sha}`
@@ -629,6 +775,9 @@ export class GithubService implements GitProvider {
     latestCommitTreeSha: string,
     changes: Required<Changes["files"]>
   ): Promise<string | null> {
+    if (changes === undefined) {
+      throw new Error("Missing changes");
+    }
     const tree = (
       await Promise.all(
         Object.keys(changes).map(async (path) => {
@@ -760,7 +909,22 @@ export class GithubService implements GitProvider {
     return files.reduce((acc, file) => {
       acc[file.path] = file.content;
       return acc;
-    }, {} as Required<Changes["files"]>);
+    }, {} as Omit<Required<Changes["files"]>, "undefined">);
+  }
+
+  async commentOnPullRequest(
+    args: CreatePullRequestCommentArgs
+  ): Promise<void> {
+    const { data, where } = args;
+    const { issueNumber, owner, repositoryName } = where;
+    const { body } = data;
+    await this.octokit.rest.issues.createComment({
+      owner,
+      body,
+      repo: repositoryName,
+      issue_number: issueNumber,
+    });
+    return;
   }
 }
 
