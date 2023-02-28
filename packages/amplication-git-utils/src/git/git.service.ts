@@ -258,34 +258,34 @@ export class GitClientService {
   ): Promise<Branch> {
     const { branchName, owner, repositoryName, gitClient } = args;
     const branch = await this.provider.getBranch(args);
-    if (!branch) {
-      const { defaultBranch } = await this.provider.getRepository(args);
-      const firstCommitOnDefaultBranch =
-        await this.provider.getFirstCommitOnBranch({
-          owner,
-          repositoryName,
-          branchName: defaultBranch,
-        });
-      const branch = await this.provider.createBranch({
-        owner,
-        branchName,
-        repositoryName,
-        pointingSha: firstCommitOnDefaultBranch.sha,
-      });
-      const amplicationCommits = await this.provider.getCurrentUserCommitList({
+    if (branch) {
+      return branch;
+    }
+    const { defaultBranch } = await this.provider.getRepository(args);
+    const firstCommitOnDefaultBranch =
+      await this.provider.getFirstCommitOnBranch({
         owner,
         repositoryName,
         branchName: defaultBranch,
       });
-      await this.cherryPickCommits(
-        amplicationCommits,
-        gitClient,
-        branchName,
-        firstCommitOnDefaultBranch
-      );
-      return branch;
-    }
-    return branch;
+    const newBranch = await this.provider.createBranch({
+      owner,
+      branchName,
+      repositoryName,
+      pointingSha: firstCommitOnDefaultBranch.sha,
+    });
+    const amplicationCommits = await this.provider.getCurrentUserCommitList({
+      owner,
+      repositoryName,
+      branchName: defaultBranch,
+    });
+    await this.cherryPickCommits(
+      amplicationCommits,
+      gitClient,
+      branchName,
+      firstCommitOnDefaultBranch
+    );
+    return newBranch;
   }
 
   private async cherryPickCommits(
