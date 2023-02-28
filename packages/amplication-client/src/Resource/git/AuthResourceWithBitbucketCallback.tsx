@@ -29,7 +29,7 @@ const AuthResourceWithBitbucketCallback = () => {
         },
       }).catch(console.error);
     }
-  }, [completeAuthWithGit, trackEvent, window.location.search]);
+  }, [completeAuthWithGit, trackEvent]);
 
   /**@todo: show formatted layout and optional error message */
   return <p>Please wait...</p>;
@@ -43,7 +43,11 @@ const COMPLETE_OAUTH2_FLOW = gql`
     $gitProvider: EnumGitProvider!
   ) {
     completeGitOAuth2Flow(data: { code: $code, gitProvider: $gitProvider }) {
-      name
+      providerProperties {
+        workspaces {
+          name
+        }
+      }
     }
   }
 `;
