@@ -340,7 +340,15 @@ export class GitProviderService {
         tokenType,
         scopes,
         userData: { name, uuid },
+        workspaces,
       } = await gitClientService.completeOAuth2Flow(code);
+
+      const workspaceList = workspaces.map(({ name, uuid, slug, type }) => ({
+        name,
+        uuid,
+        slug,
+        type,
+      }));
 
       return this.prisma.gitOrganization.upsert({
         where: {
@@ -361,29 +369,27 @@ export class GitProviderService {
             },
           },
           providerProperties: {
-            bitbucket: {
-              username: name,
-              uuid,
-              accessToken,
-              refreshToken,
-              expiresIn,
-              tokenType,
-              scopes,
-            },
+            username: name,
+            uuid,
+            accessToken,
+            refreshToken,
+            expiresIn,
+            tokenType,
+            scopes,
+            workspaces: workspaceList,
           },
         },
         update: {
           name: name,
           providerProperties: {
-            bitbucket: {
-              username: name,
-              uuid,
-              accessToken,
-              refreshToken,
-              expiresIn,
-              tokenType,
-              scopes,
-            },
+            username: name,
+            uuid,
+            accessToken,
+            refreshToken,
+            expiresIn,
+            tokenType,
+            scopes,
+            workspaces: workspaceList,
           },
         },
       });
