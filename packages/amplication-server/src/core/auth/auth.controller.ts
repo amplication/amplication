@@ -8,6 +8,7 @@ import {
   UseFilters,
   Inject,
 } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
 import { Response } from "express";
 import { AuthService, AuthUser } from "./auth.service";
@@ -15,19 +16,15 @@ import { GithubAuthExceptionFilter } from "../../filters/github-auth-exception.f
 import { GitHubAuthGuard } from "./github.guard";
 import { GitHubRequest } from "./types";
 import { stringifyUrl } from "query-string";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
-import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Controller("/")
 export class AuthController {
   private host: string;
   constructor(
     private readonly authService: AuthService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly configService: ConfigService
   ) {
@@ -52,10 +49,9 @@ export class AuthController {
     const user: AuthUser = request.user as AuthUser;
     const isNew = request.isNew;
 
-    this.logger.log({
-      level: "info",
-      message: `receive login callback from github account_id=${user.account.id}`,
-    });
+    this.logger.info(
+      `receive login callback from github account_id=${user.account.id}`
+    );
 
     const token = await this.authService.prepareToken(user);
     const url = stringifyUrl({

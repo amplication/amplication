@@ -33,10 +33,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { SendPullRequestArgs } from "./dto/sendPullRequest";
@@ -158,7 +155,7 @@ export class BuildService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly billingService: BillingService,
 
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.host = this.configService.get(HOST_VAR);
@@ -306,8 +303,7 @@ export class BuildService {
         const logger = this.logger.child({
           buildId: build.id,
         });
-
-        logger.info("Preparing build generation message");
+        this.logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,

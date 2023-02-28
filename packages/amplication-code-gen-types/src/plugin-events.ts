@@ -25,8 +25,6 @@ import {
   CreateSwaggerParams,
   CreateSeedParams,
   CreateEntityControllerSpecParams,
-  CreateUserInfoParams,
-  CreateTokenPayloadInterfaceParams,
   CreateAdminUIPackageJsonParams,
   CreateEntityControllerToManyRelationMethodsParams,
   CreateEntityResolverToManyRelationMethodsParams,
@@ -38,8 +36,6 @@ import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
-  [EventNames.CreateUserInfo]?: PluginEventType<CreateUserInfoParams>;
-  [EventNames.CreateTokenPayloadInterface]?: PluginEventType<CreateTokenPayloadInterfaceParams>;
   [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;

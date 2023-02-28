@@ -14,7 +14,6 @@ export type Props = LoaderProps & {
 export const FullScreenLoader: React.FC<Props> = ({
   className,
   minimumLoadTimeMS,
-  fullScreen,
   onTimeout,
   animationType,
   ...rest
@@ -30,9 +29,7 @@ export const FullScreenLoader: React.FC<Props> = ({
 
   return (
     <div
-      className={classNames(CLASS_NAME, className, {
-        [`${CLASS_NAME}--fullscreen`]: fullScreen,
-      })}
+      className={classNames(CLASS_NAME, className, `${CLASS_NAME}--fullscreen`)}
     >
       <div className={`${CLASS_NAME}__animation`}>
         <Loader animationType={animationType} {...rest} />
