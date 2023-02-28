@@ -8,6 +8,7 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
+import { PaginationLimit } from "../errors/PaginationLimit";
 import { GitProvider } from "../git-provider.interface.ts";
 import {
   Branch,
@@ -96,6 +97,7 @@ export class GithubService implements GitProvider {
           owner,
           repositoryName,
           cursor,
+          paginationLimit: 100,
         });
       moreCommitsPagination = hasNextPage;
       commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
@@ -109,9 +111,20 @@ export class GithubService implements GitProvider {
     args: GetBranchArgs & {
       cursor: string | undefined;
       botData: GitUser;
+      paginationLimit: number;
     }
   ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
-    const { branchName, owner, repositoryName, cursor, botData } = args;
+    const {
+      branchName,
+      owner,
+      repositoryName,
+      cursor,
+      botData,
+      paginationLimit,
+    } = args;
+    if (paginationLimit > 100 || paginationLimit < 1) {
+      throw new PaginationLimit(paginationLimit);
+    }
 
     const data: {
       repository: {
@@ -130,12 +143,12 @@ export class GithubService implements GitProvider {
         };
       };
     } = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!) {
+      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!, $paginationLimit: Int!) {
         repository(name: $repo, owner: $owner) {
           ref(qualifiedName: $branch) {
             target {
               ... on Commit {
-                history(author:{id: $author},first:100 ${
+                history(author:{id: $author},first: $paginationLimit ${
                   cursor ? `,after:"${cursor}"` : ""
                 }) {
                   nodes {
@@ -156,6 +169,7 @@ export class GithubService implements GitProvider {
         repo: repositoryName,
         branch: branchName,
         author: botData.id,
+        paginationLimit,
       }
     );
     const {
