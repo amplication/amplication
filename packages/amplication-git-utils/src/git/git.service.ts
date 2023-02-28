@@ -248,7 +248,7 @@ export class GitClientService {
       .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
-        "--author": "Amplication <email@address.com>",
+        "--author": "Amplication diff info@amplication.com",
       })
       .push();
   }
