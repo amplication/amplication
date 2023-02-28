@@ -44,7 +44,7 @@ export interface GitProvider {
   createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
   getPullRequestForBranch: (
     getPullRequestForBranchArgs: GetPullRequestForBranchArgs
-  ) => Promise<PullRequest | undefined>;
+  ) => Promise<PullRequest | null>;
   createPullRequestForBranch: (
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
   ) => Promise<PullRequest>;

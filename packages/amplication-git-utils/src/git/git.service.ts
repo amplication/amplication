@@ -177,7 +177,7 @@ export class GitClientService {
         branchName,
       });
 
-      let pullRequest: PullRequest | undefined = existingPullRequest;
+      let pullRequest: PullRequest | null = existingPullRequest;
 
       if (!pullRequest) {
         pullRequest = await this.provider.createPullRequestForBranch({

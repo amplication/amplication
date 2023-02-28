@@ -546,9 +546,7 @@ export class GithubService implements GitProvider {
     owner,
     repositoryName,
     branchName,
-  }: GetPullRequestForBranchArgs): Promise<
-    { url: string; number: number } | undefined
-  > {
+  }: GetPullRequestForBranchArgs): Promise<PullRequest | null> {
     const branchInfo: {
       repository: {
         ref: {
@@ -591,7 +589,7 @@ export class GithubService implements GitProvider {
     const existingPullRequest =
       branchInfo.repository.ref?.associatedPullRequests?.edges?.[0]?.node;
 
-    return existingPullRequest;
+    return existingPullRequest || null;
   }
 
   async createPullRequestForBranch({
