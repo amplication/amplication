@@ -20,7 +20,6 @@ import {
   PostCommitProcessArgs,
   PreCommitProcessArgs,
   PreCommitProcessResult,
-  PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -177,7 +176,7 @@ export class GitClientService {
         branchName,
       });
 
-      let pullRequest: PullRequest | null = existingPullRequest;
+      let pullRequest = existingPullRequest;
 
       if (!pullRequest) {
         pullRequest = await this.provider.createPullRequestForBranch({
