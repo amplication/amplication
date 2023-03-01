@@ -142,6 +142,46 @@ $max-width: 700px;
     height: 250px;
   }
 
+  &__db_box {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 24px;
+    width: 520px;
+    height: 160px;
+    margin-top: 24px;
+  }
+
+  &__db_up_buttons {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 56px 24px;
+    gap: 8px;
+    width: 248px;
+    height: 160px;
+    background: #15192c;
+    border: 1px solid #373d57;
+    border-radius: 8px;
+  }
+
+  label {
+    font-weight: 600;
+    font-size: 18px;
+    color: white;
+  }
+
+  &_db_btn {
+    box-sizing: border-box;
+    gap: 10px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #22273c;
+    border-radius: 24px;
+  }
+
   &__repository_options {
     display: flex;
     align-items: center;

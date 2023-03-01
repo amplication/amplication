@@ -44,7 +44,7 @@ const CreateServiceWizardFooter: React.FC<{}> = () => {
         buttonStyle={EnumButtonStyle.Primary}
         //onClick={handleCreateServiceClick}
       >
-        <label>Continue</label>
+        Continue
       </Button>
     </div>
   );
