@@ -9,7 +9,7 @@ import {
 } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { Roles } from "../../decorators/roles.decorator";
-import { UserEntity } from "../../decorators/user.decorator";
+import { getUser, UserEntity } from "../../decorators/user.decorator";
 import { FindOneArgs } from "../../dto";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
@@ -140,8 +140,11 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
-    return this.resourceService.deleteResource(args);
+  async deleteResource(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<Resource | null> {
+    return this.resourceService.deleteResource(args, user);
   }
 
   @Mutation(() => Resource, {

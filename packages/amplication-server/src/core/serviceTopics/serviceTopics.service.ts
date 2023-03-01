@@ -109,7 +109,7 @@ export class ServiceTopicsService extends BlockTypeService<
     return super.update(args, user);
   }
 
-  async removeTopicFromAllServices(topicId: string, user: User): Promise<void> {
+  async deleteTopicFromAllServices(topicId: string, user: User): Promise<void> {
     const serviceTopicList =
       await this.blockService.findManyByBlockType<ServiceTopics>(
         {},

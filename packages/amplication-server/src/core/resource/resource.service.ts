@@ -1,8 +1,8 @@
 import {
   PrismaService,
-  EnumResourceType,
   GitRepository,
   Prisma,
+  EnumResourceType,
 } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
@@ -372,7 +372,31 @@ export class ResourceService {
     return resources;
   }
 
-  async deleteResource(args: FindOneArgs): Promise<Resource | null> {
+  private async deleteMessageBrokerTopics(
+    resource: Resource,
+    user: User
+  ): Promise<void> {
+    const messageBrokerTopicsId = (
+      await this.topicService.findMany({
+        where: {
+          resource: {
+            id: resource.id,
+          },
+        },
+      })
+    ).map((topic) => topic.id);
+
+    const deletedTopicsPromises = messageBrokerTopicsId.map((id) => {
+      return this.topicService.delete({ where: { id: id } }, user);
+    });
+
+    const deletedTopics = await Promise.all(deletedTopicsPromises);
+  }
+
+  async deleteResource(
+    args: FindOneArgs,
+    user: User
+  ): Promise<Resource | null> {
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: args.where.id,
@@ -386,8 +410,12 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    if (resource.resourceType === EnumResourceType.ProjectConfiguration) {
-      throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
+    switch (resource.resourceType) {
+      case EnumResourceType.ProjectConfiguration:
+        throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
+      case EnumResourceType.MessageBroker:
+        await this.deleteMessageBrokerTopics(resource, user);
+        break;
     }
 
     await this.prisma.resource.update({
