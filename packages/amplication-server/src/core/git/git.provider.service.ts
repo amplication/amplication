@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { FindOneArgs } from "../../dto";
@@ -22,6 +22,7 @@ import {
   INVALID_RESOURCE_ID,
   ResourceService,
 } from "../resource/resource.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -31,7 +32,9 @@ const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 export class GitProviderService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly resourceService: ResourceService
+    private readonly resourceService: ResourceService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async getReposOfOrganization(
@@ -46,7 +49,8 @@ export class GitProviderService {
     };
     const gitProviderArgs = { provider: args.gitProvider, installationId };
     const gitClientService = await new GitClientService().create(
-      gitProviderArgs
+      gitProviderArgs,
+      this.logger
     );
     return gitClientService.getRepositories(paginationArgs);
   }
@@ -73,7 +77,8 @@ export class GitProviderService {
       provider: args.gitProvider,
     };
     const gitClientService = await new GitClientService().create(
-      gitProviderArgs
+      gitProviderArgs,
+      this.logger
     );
     const remoteRepository = await gitClientService.createRepository(
       repository
@@ -246,10 +251,13 @@ export class GitProviderService {
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
-    const gitClientService = await new GitClientService().create({
-      provider: gitProvider,
-      installationId,
-    });
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId,
+      },
+      this.logger
+    );
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
@@ -308,10 +316,13 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    const gitClientService = await new GitClientService().create({
-      provider: gitProvider,
-      installationId: null,
-    });
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId: null,
+      },
+      this.logger
+    );
     return await gitClientService.getGitInstallationUrl(workspaceId);
   }
 
@@ -323,10 +334,13 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    const gitClientService = await new GitClientService().create({
-      provider: gitProvider,
-      installationId,
-    });
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId,
+      },
+      this.logger
+    );
     if (installationId) {
       const isDelete = await gitClientService.deleteGitOrganization();
       if (isDelete) {
