@@ -253,7 +253,7 @@ export class GitClientService {
       .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
-        "--author": "Amplication diff info@amplication.com",
+        "--author": "Amplication diff <info@amplication.com>",
       })
       .push();
   }
