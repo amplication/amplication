@@ -45,6 +45,7 @@ import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -53,6 +54,7 @@ const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
 export class ResourceService {
   constructor(
     private readonly prisma: PrismaService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger,
     private entityService: EntityService,
     private environmentService: EnvironmentService,
     private serviceSettingsService: ServiceSettingsService,
@@ -391,6 +393,10 @@ export class ResourceService {
     });
 
     const deletedTopics = await Promise.all(deletedTopicsPromises);
+    this.logger.debug("Deleted topics for resource", {
+      resource,
+      deletedTopics,
+    });
   }
 
   async deleteResource(
