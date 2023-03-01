@@ -50,6 +50,90 @@ $max-width: 700px;
     height: 100%;
   }
 
+  &__repo_hr {
+    width: 520px;
+    height: 1px;
+    border: none;
+    background: #22273c;
+  }
+
+  &__monorepo {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-top: 32px;
+    margin-bottom: 8px;
+    width: 520px;
+    height: 167px;
+  }
+
+  &__monorepo_title {
+    font-weight: 600;
+    font-size: 14px;
+    line-height: 22px;
+    color: #ffffff;
+    margin-bottom: 8px;
+  }
+
+  &__monorepo_example {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 24px;
+    gap: 4px;
+    width: 520px;
+    height: 137px;
+    border: 1px solid #22273c;
+    border-radius: 8px;
+  }
+
+  &__monorepo_example_app {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    width: 456px;
+    height: 18px;
+    color: white;
+  }
+
+  &__monorepo_example_tree {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0px 0px 0px 15px;
+  }
+
+  &__monorepo_example_tree_folders {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1px;
+    width: 456px;
+    height: 57px;
+    color: #a3a8b8;
+  }
+
+  &__monorepo_box_folder {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 5px 8px;
+    gap: 8px;
+    width: 456px;
+    height: 28px;
+    border-radius: 4px;
+  }
+
+  &__monorepo_hr {
+    width: 1px;
+    height: 57px;
+    background: #515873;
+    border-radius: 1px;
+    border: none;
+  }
+
   &__repository_box {
     display: flex;
     flex-direction: column;

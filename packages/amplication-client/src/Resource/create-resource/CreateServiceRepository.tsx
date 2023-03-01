@@ -1,4 +1,9 @@
-import { Button, EnumButtonStyle, TextInput } from "@amplication/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  Icon,
+  TextInput,
+} from "@amplication/design-system";
 import React, { useState } from "react";
 import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
@@ -66,6 +71,50 @@ const CreateServiceRepository: React.FC<Props> = ({ moduleClass }) => {
             <div className={`${moduleClass}__repository_base_dir`}>
               <TextInput name="base directory" label="base directory" />
             </div>
+          </div>
+          <hr className={`${moduleClass}__repo_hr`}></hr>
+          <div className={`${moduleClass}__monorepo`}>
+            <div className={`${moduleClass}__monorepo_title`}>
+              Your project will look like this:
+            </div>
+            {chooseOption === "Monorepo" ? (
+              <div className={`${moduleClass}__monorepo_example`}>
+                <div className={`${moduleClass}__monorepo_example_app`}>
+                  <Icon icon={"folder"}></Icon>
+                  apps
+                </div>
+                <div className={`${moduleClass}__monorepo_example_tree`}>
+                  <hr className={`${moduleClass}__monorepo_hr`}></hr>
+                  <div
+                    className={`${moduleClass}__monorepo_example_tree_folders`}
+                  >
+                    <div className={`${moduleClass}__monorepo_box_folder`}>
+                      <Icon icon={"folder"}></Icon>
+                      example-service
+                    </div>
+                    <div className={`${moduleClass}__monorepo_box_folder`}>
+                      <Icon icon={"folder"}></Icon>
+                      example-service-admin
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <div className={`${moduleClass}__monorepo_example`}>
+                <div
+                  className={`${moduleClass}__monorepo_example_tree_folders`}
+                >
+                  <div className={`${moduleClass}__monorepo_box_folder`}>
+                    <Icon icon={"folder"}></Icon>
+                    example-service
+                  </div>
+                  <div className={`${moduleClass}__monorepo_box_folder`}>
+                    <Icon icon={"folder"}></Icon>
+                    example-service-admin
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
