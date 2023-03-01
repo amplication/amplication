@@ -37,7 +37,7 @@ export class GitClientService {
     gitProviderArgs: GitProviderArgs,
     logger: ILogger
   ): Promise<GitClientService> {
-    this.provider = await GitFactory.getProvider(gitProviderArgs);
+    this.provider = await GitFactory.getProvider(gitProviderArgs, logger);
     this.logger = logger;
     return this;
   }
