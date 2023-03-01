@@ -81,8 +81,8 @@ export class GithubService implements GitProvider {
     });
   }
 
-  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
-    return `https://${this.domain}/${owner}/${repositoryName}.git`;
+  getCloneUrl({ owner, repositoryName, token }: CloneUrlArgs) {
+    return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
@@ -631,6 +631,7 @@ export class GithubService implements GitProvider {
       this.logger.info(
         `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
       );
+
       return { sha: ref.object.sha, name: branchName };
     } catch (error) {
       return null;
@@ -931,6 +932,15 @@ export class GithubService implements GitProvider {
       issue_number: issueNumber,
     });
     return;
+  }
+
+  async getToken(): Promise<string> {
+    const { data: installationTokenData } =
+      await this.octokit.rest.apps.createInstallationAccessToken({
+        installation_id: Number(this.gitProviderArgs.installationId),
+      });
+    const { token } = installationTokenData;
+    return token;
   }
 }
 

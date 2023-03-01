@@ -174,6 +174,7 @@ export interface GitUser {
 export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
+  token: string;
 }
 
 export interface PreCommitProcessArgs {

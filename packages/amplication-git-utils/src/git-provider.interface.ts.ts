@@ -54,4 +54,5 @@ export interface GitProvider {
   getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
   getCloneUrl: (args: CloneUrlArgs) => string;
   commentOnPullRequest: (args: CreatePullRequestCommentArgs) => Promise<void>;
+  getToken(): Promise<string>;
 }
