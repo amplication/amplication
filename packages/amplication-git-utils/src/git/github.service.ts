@@ -1,3 +1,4 @@
+import { ILogger } from "@amplication/util/logging";
 import { createAppAuth } from "@octokit/auth-app";
 import { components } from "@octokit/openapi-types";
 import { App, Octokit } from "octokit";
@@ -51,7 +52,10 @@ export class GithubService implements GitProvider {
   private octokit: Octokit;
   public readonly name = EnumGitProvider.Github;
   public readonly domain = "github.com";
-  constructor(private readonly gitProviderArgs: GitProviderConstructorArgs) {
+  constructor(
+    private readonly gitProviderArgs: GitProviderConstructorArgs,
+    private readonly logger: ILogger
+  ) {
     const {
       GITHUB_APP_INSTALLATION_URL,
       GITHUB_APP_APP_ID,
@@ -502,7 +506,7 @@ export class GithubService implements GitProvider {
       branchName
     );
 
-    console.log(`Got last commit with url ${lastCommit.html_url}`);
+    this.logger.info(`Got last commit with url ${lastCommit.html_url}`);
 
     if (!lastCommit) {
       throw new Error("No last commit found");
@@ -520,7 +524,7 @@ export class GithubService implements GitProvider {
       throw new Error("Missing tree sha");
     }
 
-    console.info(`Created tree for for ${owner}/${repositoryName}`);
+    this.logger.info(`Created tree for for ${owner}/${repositoryName}`);
 
     const { data: commit } = await this.octokit.rest.git.createCommit({
       message: commitMessage,
@@ -530,7 +534,7 @@ export class GithubService implements GitProvider {
       parents: [lastCommit.sha],
     });
 
-    console.info(`Created commit for ${owner}/${repositoryName}`);
+    this.logger.info(`Created commit for ${owner}/${repositoryName}`);
 
     await this.octokit.rest.git.updateRef({
       owner,
@@ -539,7 +543,9 @@ export class GithubService implements GitProvider {
       ref: `heads/${branchName}`,
     });
 
-    console.info(`Updated branch ${branchName} for ${owner}/${repositoryName}`);
+    this.logger.info(
+      `Updated branch ${branchName} for ${owner}/${repositoryName}`
+    );
   }
 
   async getPullRequestForBranch({
@@ -622,7 +628,7 @@ export class GithubService implements GitProvider {
         repo: repositoryName,
         ref: `heads/${branchName}`,
       });
-      console.log(
+      this.logger.info(
         `Got branch ${owner}/${repositoryName}/${branchName} with url ${ref.url}`
       );
       return { sha: ref.object.sha, name: branchName };
@@ -753,7 +759,7 @@ export class GithubService implements GitProvider {
       throw new Error("Branch not found");
     }
 
-    console.log(
+    this.logger.info(
       `Got branch ${owner}/${repositoryName}/${branch.name} with sha ${branch.sha}`
     );
 
