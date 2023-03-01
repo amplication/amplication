@@ -72,6 +72,7 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
+        "port": 7000,
         "buildTarget": "amplication-server:build"
       },
       "configurations": {
