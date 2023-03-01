@@ -111,10 +111,12 @@ export class GitClientService {
       }
 
       const randomUUID = v4();
+      const cloneToken = await this.provider.getToken();
 
       const cloneUrl = this.provider.getCloneUrl({
         owner,
         repositoryName,
+        token: cloneToken,
       });
 
       const cloneDir = normalize(
