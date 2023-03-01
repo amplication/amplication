@@ -29,12 +29,13 @@ export class Tarball {
     const response = await packument(fullPackageName);
     const latestTag = response["dist-tags"].latest;
     const latestVersion = response.versions[latestTag];
-    // check if a version was provided until we have the plugin API
-    if (!version) {
+    const requestedVersion = response.versions[version];
+
+    if (!version || version === "latest") {
       return latestVersion.dist.tarball;
     }
-    const requestedVersion = response.versions[version];
-    if (!requestedVersion) {
+
+    if (!requestedVersion.version) {
       throw new Error(
         `Could not find version ${version} for ${name}, please try to install another version, or the latest version: ${latestVersion}`
       );
