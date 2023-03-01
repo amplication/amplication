@@ -218,9 +218,8 @@ export class GitClientService {
     const latestCommit = commitsList[0];
 
     if (!latestCommit) {
-      throw new Error(
-        "Didn't find a commit that has been created by Amplication"
-      );
+      console.log("Didn't find a commit that has been created by Amplication");
+      return { diff: null };
     }
 
     const { sha } = latestCommit;
