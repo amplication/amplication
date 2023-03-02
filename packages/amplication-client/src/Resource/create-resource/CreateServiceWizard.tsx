@@ -44,7 +44,7 @@ const wizardSchema = {
 
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const { errorCreateService } = useContext(AppContext);
-  const [validate];
+  // const [validate];
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
 
