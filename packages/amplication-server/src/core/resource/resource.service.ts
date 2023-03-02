@@ -374,28 +374,36 @@ export class ResourceService {
     return resources;
   }
 
-  private async deleteMessageBrokerTopics(
+  private async deleteMessageBrokerReferences(
     resource: Resource,
     user: User
   ): Promise<void> {
-    const messageBrokerTopicsId = (
-      await this.topicService.findMany({
-        where: {
-          resource: {
-            id: resource.id,
-          },
-        },
-      })
-    ).map((topic) => topic.id);
+    if (resource.resourceType !== "MessageBroker") {
+      throw Error("Unsupported resource. Invalid resourceType");
+    }
 
-    const deletedTopicsPromises = messageBrokerTopicsId.map((id) => {
-      return this.topicService.delete({ where: { id: id } }, user);
+    const messageBrokerTopics = await this.topicService.findMany({
+      where: {
+        resource: {
+          id: resource.id,
+        },
+      },
+    });
+
+    const deletedTopicsPromises = messageBrokerTopics.map((topic) => {
+      return this.topicService.delete({ where: { id: topic.id } }, user);
     });
 
     const deletedTopics = await Promise.all(deletedTopicsPromises);
     this.logger.debug("Deleted topics for resource", {
       resource,
       deletedTopics,
+    });
+
+    const deleteServiceConnections =
+      await this.serviceTopicsService.deleteServiceTopic(resource.id, user);
+    this.logger.debug("Successfully deleted ServiceTopics", {
+      deleteServiceConnections,
     });
   }
 
@@ -420,7 +428,7 @@ export class ResourceService {
       case EnumResourceType.ProjectConfiguration:
         throw new Error(INVALID_DELETE_PROJECT_CONFIGURATION);
       case EnumResourceType.MessageBroker:
-        await this.deleteMessageBrokerTopics(resource, user);
+        await this.deleteMessageBrokerReferences(resource, user);
         break;
     }
 

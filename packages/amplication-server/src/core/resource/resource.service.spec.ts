@@ -666,7 +666,9 @@ describe("ResourceService", () => {
   it("should delete a resource", async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     const dateSpy = jest.spyOn(global, "Date");
-    expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_RESOURCE
+    );
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,
@@ -685,7 +687,7 @@ describe("ResourceService", () => {
 
   it("should not delete a resource of Project configuration", async () => {
     const args = { where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID } };
-    await expect(service.deleteResource(args)).rejects.toThrow(
+    await expect(service.deleteResource(args, EXAMPLE_USER)).rejects.toThrow(
       new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
     );
   });
