@@ -99,11 +99,12 @@ const useProjectSelector = (
 
     !workspaceUtil &&
       currentWorkspace?.id &&
-      history.push(
-        `/${currentWorkspace?.id}/${projectsList[0].id}${
+      history.push({
+        path: `/${currentWorkspace?.id}/${projectsList[0].id}${
           isFromSignup ? "/create-resource" : ""
-        }`
-      );
+        }`,
+        state: { userStatus: isFromSignup ? "signup" : "login" },
+      });
   }, [
     currentWorkspace?.id,
     history,

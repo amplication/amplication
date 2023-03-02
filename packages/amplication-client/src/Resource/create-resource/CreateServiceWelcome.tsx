@@ -4,8 +4,9 @@ import "./CreateServiceWelcome.scss";
 import { AppContext } from "../../context/appContext";
 import { Button } from "@amplication/design-system";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const CreateServiceWelcome: React.FC<{}> = () => {
+const CreateServiceWelcome: React.FC<{ moduleCss: string }> = ({
+  moduleCss,
+}) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const CLASS_NAME = "create-service-welcome";
@@ -26,7 +27,12 @@ const CreateServiceWelcome: React.FC<{}> = () => {
   return welcomeMatch.isExact ? (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__welcome`}>
-        <h2>Welcome to amplication! 🎉</h2>
+        <h2>
+          Welcome to amplication!{" "}
+          <span role="img" aria-label="party emoji">
+            🎉
+          </span>
+        </h2>
         <h3>Let’s create together your first service</h3>
         <div className={`${CLASS_NAME}__start_btn`}>
           <Button onClick={handleStartBtnClick}>Let's start</Button>
