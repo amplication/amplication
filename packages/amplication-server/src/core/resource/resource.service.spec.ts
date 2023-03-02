@@ -776,7 +776,7 @@ describe("ResourceService", () => {
       });
     });
 
-    it("should delete a resource", async () => {
+    it("should delete the message broker resource and the relative topic and connections from services that use that broker", async () => {
       const args = { where: { id: EXAMPLE_RESOURCE_ID } };
       const dateSpy = jest.spyOn(global, "Date");
       expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
