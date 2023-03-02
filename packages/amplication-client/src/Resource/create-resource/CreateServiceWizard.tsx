@@ -73,6 +73,7 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         <CreateServiceName moduleCss={moduleClass} />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
+      {props.innerRoutes}
     </Modal>
   );
 };
