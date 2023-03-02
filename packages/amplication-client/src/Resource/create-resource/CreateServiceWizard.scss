@@ -59,7 +59,7 @@ $max-width: 700px;
   &__service_name_header {
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
   }
 
   &__github_box {
@@ -292,6 +292,7 @@ $max-width: 700px;
     margin-top: 8px;
     padding-top: 16px;
     padding-bottom: 40px;
+    align-items: flex-start;
   }
 
   h2 {

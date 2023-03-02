@@ -95,8 +95,7 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/repository",
                 Component: lazy(
-                  () =>
-                    import("../Resource/create-resource/CreateServiceDatabase")
+                  () => import("../Resource/create-resource/CreateServiceAuth")
                 ),
                 moduleName: "CreateServiceRepository",
                 moduleClass: "create-service-wizard",
