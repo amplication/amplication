@@ -597,9 +597,12 @@ describe("ResourceResolver", () => {
       },
     });
     expect(deleteResourceMock).toBeCalledTimes(1);
-    expect(deleteResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID },
-    });
+    expect(deleteResourceMock).toBeCalledWith(
+      {
+        where: { id: EXAMPLE_RESOURCE_ID },
+      },
+      EXAMPLE_USER
+    );
   });
 
   it("should update a resource", async () => {

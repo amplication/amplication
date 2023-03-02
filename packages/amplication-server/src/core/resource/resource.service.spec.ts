@@ -49,6 +49,9 @@ import { TopicService } from "../topic/topic.service";
 import { Topic } from "../topic/dto/Topic";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
+import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -82,6 +85,17 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
+  deletedAt: null,
+  gitRepositoryOverride: false,
+};
+
+const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  resourceType: EnumResourceType.MessageBroker,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
@@ -271,7 +285,7 @@ const EXAMPLE_TOPIC: Topic = {
   createdAt: undefined,
   updatedAt: undefined,
   parentBlock: new Block(),
-  blockType: "ServiceSettings",
+  blockType: EnumBlockType.Topic,
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
@@ -285,9 +299,18 @@ const defaultTopicCreateMock = jest.fn(() => {
   return EXAMPLE_TOPIC;
 });
 
+const topicFindManyMock = jest.fn(() => {
+  return [EXAMPLE_TOPIC];
+});
+
+const topicDeleteMock = jest.fn();
+
+const serviceTopicsDeleteServiceTopicMock = jest.fn();
+
 const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
+
 const prismaResourceFindOneMock = jest.fn(
   (args: Prisma.ResourceFindUniqueArgs) => {
     if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
@@ -466,11 +489,16 @@ describe("ResourceService", () => {
           provide: TopicService,
           useClass: jest.fn(() => ({
             create: defaultTopicCreateMock,
+            findMany: topicFindManyMock,
+            delete: topicDeleteMock,
           })),
         },
         {
           provide: ServiceTopicsService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            deleteTopicFromAllServices: jest.fn(),
+            deleteServiceTopic: serviceTopicsDeleteServiceTopicMock,
+          })),
         },
         {
           provide: ProjectConfigurationSettingsService,
@@ -482,10 +510,15 @@ describe("ResourceService", () => {
             findUnique: projectServiceFindUniqueMock,
           })),
         },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 
     service = module.get<ResourceService>(ResourceService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("should be defined", () => {
@@ -700,6 +733,93 @@ describe("ResourceService", () => {
     expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
+  });
+  describe("when a resource is type of MessageBroker", () => {
+    const EXAMPLE_SERVICE_TOPICS: ServiceTopics = {
+      displayName: "exampleTopicDisplayName",
+      description: "exampleTopicDescription",
+      id: "",
+      createdAt: undefined,
+      updatedAt: undefined,
+      parentBlock: new Block(),
+      blockType: EnumBlockType.ServiceTopics,
+      versionNumber: 0,
+      inputParameters: [],
+      outputParameters: [],
+      messageBrokerId: EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+      enabled: true,
+      patterns: [],
+    };
+
+    const ANOTHER_TOPIC = {
+      id: "another",
+    } as Topic;
+
+    beforeEach(() => {
+      serviceTopicsDeleteServiceTopicMock.mockImplementation(() => {
+        return [EXAMPLE_SERVICE_TOPICS];
+      });
+      prismaResourceFindOneMock.mockImplementation(
+        () => EXAMPLE_RESOURCE_MESSAGE_BROKER
+      );
+
+      topicFindManyMock.mockImplementation(() => {
+        return [EXAMPLE_TOPIC, ANOTHER_TOPIC];
+      });
+      topicDeleteMock.mockImplementation((args: DeleteTopicArgs) => {
+        switch (args.where.id) {
+          case "another":
+            return ANOTHER_TOPIC;
+          default:
+            return EXAMPLE_TOPIC;
+        }
+      });
+    });
+
+    it("should delete a resource", async () => {
+      const args = { where: { id: EXAMPLE_RESOURCE_ID } };
+      const dateSpy = jest.spyOn(global, "Date");
+      expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
+        EXAMPLE_RESOURCE_MESSAGE_BROKER
+      );
+      expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+      expect(prismaResourceUpdateMock).toBeCalledWith({
+        ...args,
+        data: {
+          deletedAt: dateSpy.mock.instances[0],
+          name: prepareDeletedItemName(
+            EXAMPLE_RESOURCE.name,
+            EXAMPLE_RESOURCE.id
+          ),
+          gitRepository: {
+            disconnect: true,
+          },
+        },
+      });
+
+      expect(topicFindManyMock).toHaveBeenCalledWith({
+        where: {
+          resource: {
+            id: EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+          },
+        },
+      });
+
+      expect(topicDeleteMock).toHaveBeenCalledTimes(2);
+      expect(topicDeleteMock).toHaveBeenCalledWith(
+        {
+          where: expect.objectContaining({
+            id: EXAMPLE_TOPIC.id || ANOTHER_TOPIC.id,
+          }),
+        },
+        EXAMPLE_USER
+      );
+
+      expect(serviceTopicsDeleteServiceTopicMock).toHaveBeenCalledWith(
+        EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+        EXAMPLE_USER
+      );
+    });
   });
 
   describe("deleted resources", () => {
