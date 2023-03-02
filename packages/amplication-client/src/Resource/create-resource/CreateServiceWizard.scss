@@ -8,8 +8,37 @@ $max-width: 700px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  width: 100%;
   position: absolute;
+
+  &__wizard_container {
+    background-color: var(--black2);
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    flex: 1;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__footer {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+  }
 
   &__splitWrapper {
     display: flex;
@@ -274,16 +303,6 @@ $max-width: 700px;
     @include regular-14;
     text-align: center;
     margin: 0px;
-  }
-
-  &__footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    height: 26px;
-    background: var(--black10);
   }
 
   .amp-icon--size-small {
