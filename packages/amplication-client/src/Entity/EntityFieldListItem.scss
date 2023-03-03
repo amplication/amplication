@@ -30,7 +30,7 @@
   }
   &__description {
     @include body2;
-    color: #ffffff;
+    color: var(--black100);
     line-height: 18px;
   }
   &__property {
@@ -52,10 +52,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    color: var(--secondary);
+    color: var(--black100);
 
     .amp-icon {
-      margin-right: var(--default-spacing);
+      margin-right: var(--icon-spacing);
     }
   }
 }
