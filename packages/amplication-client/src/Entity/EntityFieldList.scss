@@ -1,6 +1,10 @@
 @import "../style/index.scss";
 
 .entity-field-list {
+  &__container {
+    border-bottom: 1px solid #2c3249;
+    margin-bottom: 16px;
+  }
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
