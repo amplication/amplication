@@ -72,7 +72,7 @@ export const EntityFieldListItem = ({
         >
           {entityField.displayName}
         </Link>
-        <span className={`${CLASS_NAME}__description`}>{entityField.name}</span>
+        <span className={`${CLASS_NAME}__subtitle`}>{entityField.name}</span>
         <span className="spacer" />
         <DeleteEntityField
           entityId={entity.id}

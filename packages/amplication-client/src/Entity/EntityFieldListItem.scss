@@ -8,6 +8,11 @@
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
 
+    &:nth-child(2) {
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--black10);
+    }
+
     &:last-child {
       margin-bottom: 0;
     }
@@ -15,10 +20,18 @@
   &__title {
     @include body1;
     color: var(--black100);
+    font-size: 14px;
+  }
+  &__subtitle {
+    @include body4;
+    font-style: italic;
+    font-weight: 400;
+    color: #53dbee;
   }
   &__description {
     @include body2;
-    color: var(--black80);
+    color: #ffffff;
+    line-height: 18px;
   }
   &__property {
     color: var(--positive-default);
