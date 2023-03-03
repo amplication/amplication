@@ -4,7 +4,7 @@
   &__header {
     @include flexFullRowWithSpacing;
     margin-bottom: var(--large-spacing);
-
+    width: 220px;
     .search-field {
       flex: 1;
     }
