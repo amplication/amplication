@@ -7,6 +7,7 @@ import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 import { AppContext } from "../context/appContext";
+import { EntityFieldProperty } from "./EntityFieldProperty";
 
 type Props = {
   resourceId: string;
@@ -110,22 +111,13 @@ export const EntityFieldListItem = ({
           )}
         </span>
         {entityField.required && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Required
-          </span>
+          <EntityFieldProperty property="Required" icon="alert_triangle" />
         )}
         {entityField.unique && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Unique
-          </span>
+          <EntityFieldProperty property="Unique" icon="star" />
         )}
         {entityField.searchable && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Searchable
-          </span>
+          <EntityFieldProperty property="Searchable" icon="search" />
         )}
         <span className="spacer" />
       </div>

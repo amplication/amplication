@@ -21,12 +21,14 @@
     @include body1;
     color: var(--black100);
     font-size: 14px;
+    font-weight: 600;
   }
   &__subtitle {
     @include body4;
     font-style: italic;
+    text-transform: capitalize;
     font-weight: 400;
-    color: #53dbee;
+    color: var(--dark-secondary-turquoise);
   }
   &__description {
     @include body2;
