@@ -1,11 +1,11 @@
 import React, { useCallback } from "react";
-import "./CreateServiceWizardForm.scss";
-import { ToggleField } from "@amplication/design-system";
+import { CircleBadge, Icon, ToggleField } from "@amplication/design-system";
 import { Form, Formik } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { serviceSettingsFieldsInitValues } from "../constants";
+import "./CreateServiceWizard.scss";
 
-const CLASS_NAME = "create-service-wizard-form";
+const CLASS_NAME = "create-service-wizard";
 
 type Props = {
   handleSubmitResource: (serviceSettings: serviceSettings) => void;
@@ -28,36 +28,44 @@ export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
   );
 
   return (
-    <div className={CLASS_NAME}>
-      <Formik
-        initialValues={serviceSettingsFieldsInitValues}
-        onSubmit={handleSubmit}
-      >
-        {(formik) => {
-          return (
-            <Form>
-              <div className={`${CLASS_NAME}__generationSettings`}>
-                <FormikAutoSave debounceMS={200} />
-                <div className={`${CLASS_NAME}__generation_setting_wrapper`}>
-                  <p>APIs Admin UI Settings</p>
-                  <div>
-                    <ToggleField name="generateGraphQL" label="GraphQL API" />
-                    <ToggleField
-                      name="generateRestApi"
-                      label="REST API & Swagger UI"
-                    />
-                    <ToggleField
-                      disabled={!formik.values.generateGraphQL}
-                      name="generateAdminUI"
-                      label="Admin UI"
-                    />
-                  </div>
+    <Formik
+      initialValues={serviceSettingsFieldsInitValues}
+      onSubmit={handleSubmit}
+    >
+      {(formik) => {
+        return (
+          <Form>
+            <div className={`${CLASS_NAME}__repo_wrapper`}>
+              <FormikAutoSave debounceMS={200} />
+              <div className={`${CLASS_NAME}__db_box`}>
+                <div className={`${CLASS_NAME}__db_up_buttons`}>
+                  <CircleBadge color={"black"} size={"small"}>
+                    <Icon icon="" size={"small"} />
+                  </CircleBadge>
+                  <label>GraphQL API</label>
+                  <ToggleField name="generateGraphQL" label="" />
+                </div>
+                <div className={`${CLASS_NAME}__db_up_buttons`}>
+                  <CircleBadge color={"black"} size={"small"}>
+                    <Icon icon="" size={"small"} />
+                  </CircleBadge>
+                  <label>REST API & Swagger UI</label>
+                  <ToggleField name="generateRestApi" label="" />
                 </div>
               </div>
-            </Form>
-          );
-        }}
-      </Formik>
-    </div>
+              <div className={`${CLASS_NAME}__db_box`}>
+                <div className={`${CLASS_NAME}__db_up_buttons`}>
+                  <CircleBadge color={"black"} size={"small"}>
+                    <Icon icon="" size={"small"} />
+                  </CircleBadge>
+                  <label>Admin UI</label>
+                  <ToggleField name="generateAdminUI" label="" />
+                </div>
+              </div>
+            </div>
+          </Form>
+        );
+      }}
+    </Formik>
   );
 };
