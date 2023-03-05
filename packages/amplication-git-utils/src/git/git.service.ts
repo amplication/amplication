@@ -247,8 +247,7 @@ export class GitClientService {
   }
 
   async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
-    await gitClient.git.pull();
-
+    await gitClient.resetState();
     await gitClient.git
       .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
       .add(["."])

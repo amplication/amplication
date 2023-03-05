@@ -1,4 +1,4 @@
-import { simpleGit, SimpleGit } from "simple-git";
+import { CleanOptions, simpleGit, SimpleGit } from "simple-git";
 
 export class GitClient {
   git: SimpleGit;
@@ -29,8 +29,10 @@ export class GitClient {
   }
 
   async resetState() {
-    await this.git.fetch(["--all"]);
-    await this.git.pull();
-    await this.git.reset(["--hard"]);
+    await this.git
+      .fetch(["--all"])
+      .pull()
+      .reset(["--hard"])
+      .clean(CleanOptions.FORCE);
   }
 }
