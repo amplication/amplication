@@ -43,11 +43,8 @@ const COMPLETE_OAUTH2_FLOW = gql`
     $gitProvider: EnumGitProvider!
   ) {
     completeGitOAuth2Flow(data: { code: $code, gitProvider: $gitProvider }) {
-      providerProperties {
-        workspaces {
-          name
-        }
-      }
+      id
+      name
     }
   }
 `;
