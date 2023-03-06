@@ -19,6 +19,17 @@ const defaultPlugins: DefaultPlugin[] = [
       version: "latest",
     },
   },
+  {
+    categoryPluginIds: ["lusha"],
+    defaultCategoryPlugin: {
+      id: "pclb3p3ov800cplc01a8f6uwje",
+      pluginId: "lusha",
+      npm: "@amplication/lusha",
+      enabled: true,
+      version: "0.0.1-beta.45",
+      settings: { local: true, destPath: "../../../plugins/plugins/lusha" },
+    },
+  },
 ];
 
 export function prepareDefaultPlugins(

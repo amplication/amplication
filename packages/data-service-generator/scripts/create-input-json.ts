@@ -19,7 +19,7 @@ function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [plugins.postgresPlugin],
+    pluginInstallations: [plugins.postgresPlugin, plugins.lushaPlugin],
   };
 
   const buildSpecPath = process.env.BUILD_SPEC_PATH;

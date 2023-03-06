@@ -28,4 +28,12 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
       enableLogging: true,
     },
   },
+  lushaPlugin: {
+    id: "clb3p3ov800cplc01a8f6uwje",
+    npm: "@amplication/lusha",
+    enabled: true,
+    version: "latest",
+    pluginId: "lusha",
+    settings: { local: true, destPath: "../../../plugins/plugins/lusha" },
+  },
 });
