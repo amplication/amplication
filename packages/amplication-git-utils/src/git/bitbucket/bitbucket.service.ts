@@ -17,14 +17,12 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   OAuth2FlowResponse,
-  PaginatedWorkspaceMembership,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
-  currentUserWorkspacesRequest,
 } from "./requests";
 
 export class BitBucketService implements GitProvider {
@@ -83,15 +81,6 @@ export class BitBucketService implements GitProvider {
       name: username,
       uuid,
     };
-  }
-
-  private async getWorkspacesOfCurrentUser(
-    accessToken: string
-  ): Promise<PaginatedWorkspaceMembership> {
-    const currentUserWorkspaces = await currentUserWorkspacesRequest(
-      accessToken
-    );
-    return currentUserWorkspaces;
   }
 
   async completeOAuth2Flow(
