@@ -91,13 +91,11 @@ export class ProjectService {
       (r) => r.resourceType === EnumResourceType.Service
     ).length;
 
-    if (this.billingService.isBillingEnabled) {
-      await this.billingService.reportUsage(
-        project.workspace.id,
-        BillingFeature.Services,
-        archivedServiceCount
-      );
-    }
+    await this.billingService.reportUsage(
+      project.workspace.id,
+      BillingFeature.Services,
+      archivedServiceCount
+    );
 
     return this.prisma.project.update({
       where: args.where,
