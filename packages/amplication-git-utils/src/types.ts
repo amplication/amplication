@@ -1,4 +1,4 @@
-import { GitClient } from "./git/git-client";
+import { GitClient } from "./providers/git-client";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
