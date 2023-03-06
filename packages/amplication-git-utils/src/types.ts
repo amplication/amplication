@@ -207,7 +207,6 @@ export interface OAuthData {
 
 export interface OAuth2FlowResponse extends OAuthData {
   userData: CurrentUser;
-  workspaces: Workspace[];
 }
 
 export interface GitProvider {

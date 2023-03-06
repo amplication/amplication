@@ -19,7 +19,7 @@ import {
   OAuth2FlowResponse,
   PaginatedWorkspaceMembership,
 } from "../../types";
-import { CustomError, NotImplementedError } from "../../utils/custom-error";
+import { NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
@@ -108,29 +108,6 @@ export class BitBucketService implements GitProvider {
       createdOn,
     } = await this.getCurrentUser(accessToken);
 
-    const paginatedWorkspaceMembership = await this.getWorkspacesOfCurrentUser(
-      accessToken
-    );
-
-    const { values } = paginatedWorkspaceMembership;
-    const currentUserWorkspaces = values.map(
-      ({
-        workspace: {
-          name: workspaceName,
-          uuid: workspaceUuid,
-          slug: workspaceSlug,
-          type: workspaceType,
-          links: workspaceLinks,
-        },
-      }) => ({
-        name: workspaceName,
-        uuid: workspaceUuid,
-        slug: workspaceSlug,
-        type: workspaceType,
-        links: workspaceLinks,
-      })
-    );
-
     return {
       accessToken,
       refreshToken,
@@ -144,7 +121,6 @@ export class BitBucketService implements GitProvider {
         displayName,
         createdOn,
       },
-      workspaces: currentUserWorkspaces,
     };
   }
 
