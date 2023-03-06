@@ -209,36 +209,6 @@ export interface OAuth2FlowResponse extends OAuthData {
   userData: CurrentUser;
 }
 
-export interface GitProvider {
-  init(): Promise<void>;
-  getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
-  getRepository(
-    getRepositoryArgs: GetRepositoryArgs
-  ): Promise<RemoteGitRepository>;
-  getRepositories(
-    getRepositoriesArgs: GetRepositoriesArgs
-  ): Promise<RemoteGitRepos>;
-  createRepository(
-    createRepositoryArgs: CreateRepositoryArgs
-  ): Promise<RemoteGitRepository>;
-  deleteGitOrganization(): Promise<boolean>;
-  getOrganization(): Promise<RemoteGitOrganization>;
-  getFile(file: GetFileArgs): Promise<GitFile>;
-  createPullRequestFromFiles: (
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ) => Promise<string>;
-  createBranchIfNotExists: (
-    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
-  ) => Promise<Branch>;
-  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
-  getPullRequestForBranch: (
-    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
-  ) => Promise<{ url: string; number: number } | undefined>;
-  createPullRequestForBranch: (
-    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
-  ) => Promise<string>;
-}
 export interface GetBranchArgs {
   owner: string;
   repositoryName: string;
