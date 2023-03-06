@@ -345,10 +345,13 @@ export class GitProviderService {
     args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
-    const gitClientService = await new GitClientService().create({
-      provider: gitProvider,
-      installationId: null,
-    });
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId: null,
+      },
+      this.logger
+    );
     try {
       const {
         accessToken,
