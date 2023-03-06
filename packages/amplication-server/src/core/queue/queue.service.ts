@@ -22,4 +22,21 @@ export class QueueService {
       });
     });
   }
+
+  async emitMessageWithKey(
+    topic: string,
+    key: string,
+    value: string
+  ): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, { key, value }).subscribe({
+        error: (err: any) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
+  }
 }

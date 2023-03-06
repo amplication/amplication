@@ -17,6 +17,7 @@ export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {
       client: {
         brokers: kafkaEnv.getBrokers(),
         clientId: kafkaEnv.getClientId() + `-${randomUUID()}`,
+        ssl: kafkaEnv.getClientSslConfig(),
       },
       consumer,
     },

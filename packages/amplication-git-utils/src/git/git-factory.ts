@@ -1,17 +1,20 @@
+import { ILogger } from "@amplication/util/logging";
+import { GitProvider } from "../git-provider.interface.ts";
+import { EnumGitProvider, GitProviderArgs } from "../types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { EnumGitProvider, GitProvider, GitProviderArgs } from "../types";
 import { GithubService } from "./github.service";
 import { BitBucketService } from "./bitbucket/bitbucket.service";
 
 export class GitFactory {
   public static async getProvider(
-    gitProviderArgs: GitProviderArgs
+    gitProviderArgs: GitProviderArgs,
+    logger: ILogger
   ): Promise<GitProvider> {
     let gitProvider: GitProvider;
 
     switch (gitProviderArgs.provider) {
       case EnumGitProvider.Github:
-        gitProvider = new GithubService(gitProviderArgs);
+        gitProvider = new GithubService(gitProviderArgs, logger);
         await gitProvider.init();
         return gitProvider;
       case EnumGitProvider.Bitbucket:

@@ -140,8 +140,11 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
-    return this.resourceService.deleteResource(args);
+  async deleteResource(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<Resource | null> {
+    return this.resourceService.deleteResource(args, user);
   }
 
   @Mutation(() => Resource, {
