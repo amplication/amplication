@@ -324,6 +324,12 @@ export class GitProviderService {
     return gitClientService.getGitInstallationUrl(workspaceId);
   }
 
+  async getCurrentOAuthUser(oAuthUserName: string): Promise<GitOrganization> {
+    return this.prisma.gitOrganization.findFirst({
+      where: { name: oAuthUserName },
+    });
+  }
+
   async completeOAuth2Flow(
     args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
