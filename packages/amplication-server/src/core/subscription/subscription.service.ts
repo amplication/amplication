@@ -15,12 +15,18 @@ import {
 } from "../../prisma";
 import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
+import { UpdateStatusDto } from "./dto/UpdateStatusDto";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Injectable()
 export class SubscriptionService {
   constructor(
     private readonly prisma: PrismaService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly analyticsService: SegmentAnalyticsService
   ) {}
 
   private async getSubscriptions(
@@ -191,6 +197,62 @@ export class SubscriptionService {
           data.subscriptionData as unknown as Prisma.InputJsonValue,
       },
     });
+  }
+
+  async handleUpdateSubscriptionStatusEvent(
+    updateStatusDto: UpdateStatusDto
+  ): Promise<void> {
+    switch (updateStatusDto.type) {
+      case "subscription.created": {
+        const createSubscriptionInput =
+          this.mapUpdateStatusDtoToCreateSubscriptionInput(updateStatusDto);
+        await this.create(updateStatusDto.id, createSubscriptionInput);
+        const userId = updateStatusDto.metadata?.userId;
+        if (
+          createSubscriptionInput.plan !== EnumSubscriptionPlan.Free &&
+          userId
+        ) {
+          await this.analyticsService.track({
+            userId: userId,
+            properties: {
+              workspaceId: updateStatusDto.customer.id,
+            },
+            event: EnumEventType.WorkspacePlanUpgradeCompleted,
+          });
+        }
+        break;
+      }
+      case "subscription.updated":
+      case "subscription.expired":
+      case "subscription.canceled": {
+        const updateSubscriptionInput =
+          this.mapUpdateStatusDtoToUpdateSubscriptionInput(updateStatusDto);
+        await this.update(updateStatusDto.id, updateSubscriptionInput);
+        break;
+      }
+    }
+  }
+
+  mapUpdateStatusDtoToCreateSubscriptionInput(
+    updateStatusDto: UpdateStatusDto
+  ): CreateSubscriptionInput {
+    return {
+      workspaceId: updateStatusDto.customer.id,
+      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
+      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
+      subscriptionData: new SubscriptionData(),
+    };
+  }
+
+  mapUpdateStatusDtoToUpdateSubscriptionInput(
+    updateStatusDto: UpdateStatusDto
+  ): UpdateSubscriptionInput {
+    return {
+      workspaceId: updateStatusDto.customer.id,
+      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
+      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
+      subscriptionData: new SubscriptionData(),
+    };
   }
 
   async resolveSubscription(workspaceId: string): Promise<Subscription> {

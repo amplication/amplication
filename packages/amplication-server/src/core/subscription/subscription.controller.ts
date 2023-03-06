@@ -1,11 +1,7 @@
 import { Body, Controller, Post, Headers } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { BillingService } from "../billing/billing.service";
-import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
-import { SubscriptionData } from "./dto/SubscriptionData";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
-import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
 import { SubscriptionService } from "./subscription.service";
 
 @Controller("subscriptions")
@@ -14,7 +10,6 @@ export class SubscriptionController {
 
   constructor(
     private readonly subscriptionService: SubscriptionService,
-    private readonly billingService: BillingService,
     private readonly configService: ConfigService
   ) {
     this.stiggWebhooksSecret = this.configService.get(
@@ -31,49 +26,8 @@ export class SubscriptionController {
       throw new Error("Invalid stigg-webhooks-secret");
     }
 
-    switch (updateStatusDto.type) {
-      case "subscription.created": {
-        const createSubscriptionInput =
-          this.mapUpdateStatusDtoToCreateSubscriptionInput(updateStatusDto);
-        await this.subscriptionService.create(
-          updateStatusDto.id,
-          createSubscriptionInput
-        );
-        break;
-      }
-      case "subscription.updated":
-      case "subscription.expired":
-      case "subscription.canceled": {
-        const updateSubscriptionInput =
-          this.mapUpdateStatusDtoToUpdateSubscriptionInput(updateStatusDto);
-        await this.subscriptionService.update(
-          updateStatusDto.id,
-          updateSubscriptionInput
-        );
-        break;
-      }
-    }
-  }
-
-  mapUpdateStatusDtoToCreateSubscriptionInput(
-    updateStatusDto: UpdateStatusDto
-  ): CreateSubscriptionInput {
-    return {
-      workspaceId: updateStatusDto.customer.id,
-      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
-      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
-      subscriptionData: new SubscriptionData(),
-    };
-  }
-
-  mapUpdateStatusDtoToUpdateSubscriptionInput(
-    updateStatusDto: UpdateStatusDto
-  ): UpdateSubscriptionInput {
-    return {
-      workspaceId: updateStatusDto.customer.id,
-      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
-      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
-      subscriptionData: new SubscriptionData(),
-    };
+    await this.subscriptionService.handleUpdateSubscriptionStatusEvent(
+      updateStatusDto
+    );
   }
 }
