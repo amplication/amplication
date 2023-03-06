@@ -31,6 +31,7 @@ import {
   authorizeRequest,
   currentUserRequest,
 } from "./requests";
+import { ILogger } from "@amplication/util/logging";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -38,7 +39,7 @@ export class BitBucketService implements GitProvider {
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
-  constructor() {
+  constructor(private readonly logger: ILogger) {
     // TODO: move env variables to the server config
     const { BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET, CALLBACK_URL } =
       process.env;
@@ -52,9 +53,7 @@ export class BitBucketService implements GitProvider {
   }
 
   async init(): Promise<void> {
-    console.log("init");
-    const { clientId, clientSecret } = this;
-    console.log({ clientId, clientSecret });
+    this.logger.info("BitBucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -68,6 +67,7 @@ export class BitBucketService implements GitProvider {
       authorizationCode
     );
 
+    this.logger.info("BitBucketService getAccessToken");
     const authData = await response.json();
 
     return {
@@ -87,10 +87,12 @@ export class BitBucketService implements GitProvider {
       accessToken,
       this.clientId,
       this.clientSecret,
-      refreshToken
+      refreshToken,
+      this.logger
     );
 
     const { links, created_on, display_name, username, uuid } = currentUser;
+    this.logger.info("BitBucketService getCurrentUser");
     return {
       links,
       createdOn: created_on,
@@ -114,6 +116,7 @@ export class BitBucketService implements GitProvider {
       createdOn,
     } = await this.getCurrentUser(accessToken, refreshToken);
 
+    this.logger.info("BitBucketService completeOAuth2Flow");
     return {
       accessToken,
       refreshToken,

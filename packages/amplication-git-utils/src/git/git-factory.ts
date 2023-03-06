@@ -18,7 +18,7 @@ export class GitFactory {
         await gitProvider.init();
         return gitProvider;
       case EnumGitProvider.Bitbucket:
-        gitProvider = new BitBucketService();
+        gitProvider = new BitBucketService(logger);
         await gitProvider.init();
         return gitProvider;
       default:

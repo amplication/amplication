@@ -1,3 +1,4 @@
+import { ILogger } from "@amplication/util/logging";
 import fetch from "node-fetch";
 import { CustomError } from "../../utils/custom-error";
 
@@ -33,7 +34,8 @@ async function requestWrapper(
   payload: RequestPayload,
   clientId: string,
   clientSecret: string,
-  refreshToken: string
+  refreshToken: string,
+  logger: ILogger
 ) {
   try {
     const response = await fetch(url, payload);
@@ -43,6 +45,7 @@ async function requestWrapper(
     return (await response).json();
   } catch (error) {
     const errorBody = await error.response.text();
+    logger.error(errorBody);
     throw new CustomError(errorBody);
   }
 }
@@ -83,7 +86,8 @@ export async function currentUserRequest(
   accessToken: string,
   clientId: string,
   clientSecret: string,
-  refreshToken: string
+  refreshToken: string,
+  logger: ILogger
 ) {
   return requestWrapper(
     CURRENT_USER_URL,
@@ -93,6 +97,7 @@ export async function currentUserRequest(
     },
     clientId,
     clientSecret,
-    refreshToken
+    refreshToken,
+    logger
   );
 }
