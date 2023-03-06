@@ -1,5 +1,6 @@
 import { namedTypes } from "ast-types";
 import {
+  DTOs,
   Entity,
   EntityField,
   EntityLookupField,
@@ -226,4 +227,8 @@ export interface CreateSeedParams extends EventParams {
   templateMapping: { [key: string]: any };
   fileDir: string;
   outputFileName: string;
+}
+
+export interface CreateDTOModulesParams extends EventParams {
+  dtos: DTOs[];
 }
