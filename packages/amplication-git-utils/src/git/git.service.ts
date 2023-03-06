@@ -7,7 +7,7 @@ import {
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { MissingEnvParam } from "../errors/MissingEnvParam";
-import { GitProvider } from "../git-provider.interface.ts";
+import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
   Commit,
@@ -24,12 +24,6 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   GetRepositoryArgs,
-  GetRepositoriesArgs,
-  CreateRepositoryArgs,
-  CreatePullRequestArgs,
-  GitProvider,
-  EnumPullRequestMode,
-  OAuthData,
   OAuth2FlowResponse,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";

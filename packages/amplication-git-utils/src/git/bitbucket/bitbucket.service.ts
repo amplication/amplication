@@ -1,3 +1,4 @@
+import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
   Branch,
@@ -12,11 +13,17 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitProvider,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
   OAuth2FlowResponse,
+  CloneUrlArgs,
+  Commit,
+  CreateBranchArgs,
+  CreatePullRequestCommentArgs,
+  EnumGitProvider,
+  GetBranchArgs,
+  PullRequest,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
@@ -28,6 +35,8 @@ import {
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
+  public readonly name = EnumGitProvider.Bitbucket;
+  public readonly domain = "bitbucket.com";
 
   constructor() {
     // TODO: move env variables to the server config
@@ -175,7 +184,28 @@ export class BitBucketService implements GitProvider {
 
   createPullRequestForBranch(
     createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
-  ): Promise<string> {
+  ): Promise<PullRequest> {
+    throw NotImplementedError;
+  }
+  getBranch(args: GetBranchArgs): Promise<Branch | null> {
+    throw NotImplementedError;
+  }
+  createBranch(args: CreateBranchArgs): Promise<Branch> {
+    throw NotImplementedError;
+  }
+  getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
+    throw NotImplementedError;
+  }
+  getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
+    throw NotImplementedError;
+  }
+  getCloneUrl(args: CloneUrlArgs): string {
+    throw NotImplementedError;
+  }
+  commentOnPullRequest(args: CreatePullRequestCommentArgs): Promise<void> {
+    throw NotImplementedError;
+  }
+  getToken(): Promise<string> {
     throw NotImplementedError;
   }
 }

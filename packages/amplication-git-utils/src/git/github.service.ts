@@ -10,7 +10,7 @@ import {
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { PaginationLimit } from "../errors/PaginationLimit";
-import { GitProvider } from "../git-provider.interface.ts";
+import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
   CloneUrlArgs,
@@ -36,10 +36,10 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
-  OAuthData,
   OAuth2FlowResponse,
 } from "../types";
 import { ConverterUtil } from "../utils/convert-to-number";
+import { NotImplementedError } from "../utils/custom-error";
 import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
 
 const GITHUB_FILE_TYPE = "file";
