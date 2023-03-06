@@ -70,8 +70,16 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  private async getCurrentUser(accessToken: string): Promise<CurrentUser> {
-    const currentUser = await currentUserRequest(accessToken);
+  private async getCurrentUser(
+    accessToken: string,
+    refreshToken
+  ): Promise<CurrentUser> {
+    const currentUser = await currentUserRequest(
+      accessToken,
+      this.clientId,
+      this.clientSecret,
+      refreshToken
+    );
 
     const { links, created_on, display_name, username, uuid } = currentUser;
     return {
@@ -95,7 +103,7 @@ export class BitBucketService implements GitProvider {
       links: userLinks,
       displayName,
       createdOn,
-    } = await this.getCurrentUser(accessToken);
+    } = await this.getCurrentUser(accessToken, refreshToken);
 
     return {
       accessToken,

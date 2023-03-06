@@ -28,12 +28,17 @@ const getRequestHeaders = (accessToken: string) => ({
   Accept: "application/json",
 });
 
-async function requestWrapper(url: string, payload: RequestPayload) {
+async function requestWrapper(
+  url: string,
+  payload: RequestPayload,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string
+) {
   try {
     const response = await fetch(url, payload);
     if (response.status === 401) {
-      // TODO: refresh token
-      console.log("refresh token");
+      return refreshTokenRequest(clientId, clientSecret, refreshToken);
     }
     return (await response).json();
   } catch (error) {
@@ -74,9 +79,20 @@ export async function authDataRequest(
   });
 }
 
-export async function currentUserRequest(accessToken: string) {
-  return requestWrapper(CURRENT_USER_URL, {
-    method: "GET",
-    headers: getRequestHeaders(accessToken),
-  });
+export async function currentUserRequest(
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string
+) {
+  return requestWrapper(
+    CURRENT_USER_URL,
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken
+  );
 }
