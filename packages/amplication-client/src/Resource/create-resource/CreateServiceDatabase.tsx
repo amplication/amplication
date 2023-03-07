@@ -1,25 +1,17 @@
 import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useState } from "react";
-import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
 
-import { AppRouteProps } from "../../routes/routesUtil";
-
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-};
-
-const CreateServiceDatabase: React.FC<Props> = ({ moduleClass }) => {
-  const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");
+const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
+  moduleClass,
+}) => {
+  const [chooseOption, setChooseOption] = useState<string>("Monorepo");
 
   const PLUGIN_LOGO_BASE_URL =
     "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
   const handleOptionChoose = (event) => {
-    setChooseOPtion(event.target.innerText);
+    setChooseOption(event.target.innerText);
   };
 
   return (

@@ -95,7 +95,10 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/repository",
                 Component: lazy(
-                  () => import("../Resource/create-resource/CreateServiceAuth")
+                  () =>
+                    import(
+                      "../Resource/create-resource/CreateServiceRepository"
+                    )
                 ),
                 moduleName: "CreateServiceRepository",
                 moduleClass: "create-service-wizard",
@@ -118,40 +121,6 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
             ],
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-service-name",
-            Component: lazy(
-              () => import("../Resource/create-resource/CreateServiceName")
-            ),
-            moduleName: "CreateServiceName",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-github-sync",
-            Component: lazy(
-              () => import("../Resource/create-resource/CreateGithubSync")
-            ),
-            moduleName: "CreateServiceName",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-generation-settings",
-            Component: lazy(
-              () =>
-                import("../Resource/create-resource/CreateGenerationSettings")
-            ),
-            moduleName: "CreateServiceName",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",

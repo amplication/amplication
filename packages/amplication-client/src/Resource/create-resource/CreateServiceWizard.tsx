@@ -16,6 +16,11 @@ import { AppContext } from "../../context/appContext";
 import CreateServiceWelcome from "./CreateServiceWelcome";
 import ServiceWizard from "./ServiceWizard";
 import CreateServiceName from "./CreateServiceName";
+import CreateGithubSync from "./CreateGithubSync";
+import CreateGenerationSettings from "./CreateGenerationSettings";
+import CreateServiceRepository from "./CreateServiceRepository";
+import CreateServiceDatabase from "./CreateServiceDatabase";
+import CreateServiceAuth from "./CreateServiceAuth";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -70,10 +75,21 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         wizardLen={4}
       >
         <CreateServiceWelcome moduleCss={moduleClass} />
-        <CreateServiceName moduleCss={moduleClass} />
+        <CreateServiceName moduleCss={moduleClass}></CreateServiceName>
+        <CreateGithubSync moduleClass={moduleClass}></CreateGithubSync>
+        <CreateGenerationSettings
+          moduleClass={moduleClass}
+        ></CreateGenerationSettings>
+        <CreateServiceRepository
+          moduleClass={moduleClass}
+        ></CreateServiceRepository>
+        <CreateServiceDatabase
+          moduleClass={moduleClass}
+        ></CreateServiceDatabase>
+        <CreateServiceAuth moduleClass={moduleClass}></CreateServiceAuth>
       </ServiceWizard>
+
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
-      {props.innerRoutes}
     </Modal>
   );
 };

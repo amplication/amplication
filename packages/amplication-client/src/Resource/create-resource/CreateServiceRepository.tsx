@@ -5,19 +5,11 @@ import {
   TextInput,
 } from "@amplication/design-system";
 import React, { useState } from "react";
-import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
 
-import { AppRouteProps } from "../../routes/routesUtil";
-
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-};
-
-const CreateServiceRepository: React.FC<Props> = ({ moduleClass }) => {
+const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
+  moduleClass,
+}) => {
   const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");
 
   const handleOptionChoose = (event) => {

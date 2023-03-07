@@ -7,7 +7,13 @@ const WizardProgressBar: React.FC = () => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
   return (
-    <div className={`create-service-wizard__footer`}>
+    <div>
+      {/* <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/create-resource/details/service-name`}
+        icon="settings"
+      >
+        Create service
+      </InnerTabLink>
       <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/create-resource/settings/github-sync`}
         icon="settings"
@@ -25,7 +31,7 @@ const WizardProgressBar: React.FC = () => {
         icon="settings"
       >
         Repository
-      </InnerTabLink>
+      </InnerTabLink> */}
     </div>
   );
 };

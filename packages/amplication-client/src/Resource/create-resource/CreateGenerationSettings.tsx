@@ -1,22 +1,14 @@
 import React, { MutableRefObject, useRef } from "react";
-import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
-
-import { AppRouteProps } from "../../routes/routesUtil";
 import { serviceSettingsFieldsInitValues } from "../constants";
 import {
   CreateServiceWizardForm,
   serviceSettings,
 } from "./CreateServiceWizardForm";
 
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-};
-
-const CreateGenerationSettings: React.FC<Props> = ({ moduleClass }) => {
+const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
+  moduleClass,
+}) => {
   const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
     serviceSettingsFieldsInitValues
   ); //todo: update appContext instead

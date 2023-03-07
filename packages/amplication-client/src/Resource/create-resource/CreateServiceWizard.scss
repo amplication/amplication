@@ -4,7 +4,6 @@
 $max-width: 700px;
 
 .create-service-wizard {
-  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -12,8 +11,6 @@ $max-width: 700px;
 
   &__wizard_container {
     background-color: var(--black2);
-    width: 100%;
-    height: 100vh;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -32,12 +29,34 @@ $max-width: 700px;
     flex: 1;
     justify-content: center;
     align-items: center;
+    width: 100%;
+  }
+
+  &__backButton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8px;
+    flex-grow: 1;
+  }
+
+  &__continueBtn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-end;
   }
 
   &__footer {
     display: flex;
-    flex: 1;
-    align-items: flex-end;
+    flex-direction: row;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+    height: 58px;
+    top: 966px;
+    background: #373d57;
   }
 
   &__splitWrapper {
@@ -50,8 +69,12 @@ $max-width: 700px;
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 64px;
   }
 
+  &__code_gen_title {
+    gap: 8px;
+  }
   &__service_input {
     width: 50%;
   }
@@ -270,6 +293,7 @@ $max-width: 700px;
 
   &__right {
     flex: 1;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;

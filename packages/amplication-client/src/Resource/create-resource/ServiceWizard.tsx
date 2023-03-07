@@ -27,10 +27,11 @@ const BackButton: React.FC<{
 const ContinueButton: React.FC<{
   goNextPage: () => void;
   disabled: boolean;
-}> = ({ goNextPage, disabled }) => {
+  buttonName: string;
+}> = ({ goNextPage, disabled, buttonName }) => {
   return (
     <Button onClick={goNextPage} {...(disabled ? { disabled } : {})}>
-      continue
+      {buttonName}
     </Button>
   );
 };
@@ -45,12 +46,21 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   const [activePageIndex, setActivePageIndex] = useState(
     defineUser === "login" ? 1 : 0
   );
+
   const pages = React.Children.toArray(children);
+
   const currentPage = pages[activePageIndex];
 
-  const goNextPage = useCallback(() => {}, []);
+  const goNextPage = useCallback(() => {
+    setActivePageIndex(activePageIndex + 1);
+  }, [activePageIndex]);
 
-  const goPrevPage = useCallback(() => {}, []);
+  const goPrevPage = useCallback(() => {
+    setActivePageIndex(activePageIndex - 1);
+    //const prevPage = pages[activePageIndex - 1] as React.ReactElement;
+
+    //console.log(prevPage.key); todo: convert by key value component name and route to the correct page
+  }, [activePageIndex]);
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
@@ -70,9 +80,28 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         )}
       </div>
       <div className={`${moduleCss}__footer`}>
-        <BackButton activePageIndex={activePageIndex} goPrevPage={goPrevPage} />
+        <div className={`${moduleCss}__backButton`}>
+          <BackButton
+            activePageIndex={activePageIndex}
+            goPrevPage={goPrevPage}
+          />
+        </div>
         <WizardProgressBar />
-        <ContinueButton goNextPage={goNextPage} disabled={false} />
+        <div className={`${moduleCss}__continueBtn`}>
+          {activePageIndex === 6 ? (
+            <ContinueButton
+              goNextPage={goNextPage}
+              disabled={false}
+              buttonName="Create service"
+            />
+          ) : (
+            <ContinueButton
+              goNextPage={goNextPage}
+              disabled={false}
+              buttonName="Continue"
+            />
+          )}
+        </div>
       </div>
     </div>
   );

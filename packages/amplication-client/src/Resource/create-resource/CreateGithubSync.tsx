@@ -1,18 +1,11 @@
 import React, { useCallback, useContext } from "react";
-import { match } from "react-router-dom";
 import "./CreateServiceWizard.scss";
-import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
 import AuthWithGit from "../git/AuthWithGit";
 
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-};
-
-const CreateGithubSync: React.FC<Props> = ({ moduleClass }) => {
+const CreateGithubSync: React.FC<{ moduleClass: string }> = ({
+  moduleClass,
+}) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
   const handleOnDone = useCallback(() => {
