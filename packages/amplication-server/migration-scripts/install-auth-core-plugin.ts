@@ -71,6 +71,7 @@ async function main() {
     where: {
       resourceType: EnumResourceType.Service,
       deletedAt: null,
+      archived: { not: true },
     },
   });
 

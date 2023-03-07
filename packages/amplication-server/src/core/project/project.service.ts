@@ -128,6 +128,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -220,6 +221,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -357,6 +359,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
