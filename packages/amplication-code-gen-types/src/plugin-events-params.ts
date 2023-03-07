@@ -229,6 +229,12 @@ export interface CreateSeedParams extends EventParams {
   outputFileName: string;
 }
 
+
 export interface CreateDTOsParams extends EventParams {
   dtos: DTOs;
+}
+
+export interface LoadStaticFilesParams extends EventParams {
+  source: string;
+  basePath: string;
 }

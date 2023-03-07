@@ -171,6 +171,7 @@ const PurchasePage = (props) => {
               priceNotSet: "Price not set",
             },
           }}
+          preferredBillingPeriod={BillingPeriod.Monthly}
           onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,

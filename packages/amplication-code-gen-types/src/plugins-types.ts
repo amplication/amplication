@@ -98,6 +98,7 @@ export enum EventNames {
   CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
   CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
   CreateDTOs = "CreateDTOs",
+  LoadStaticFiles = "LoadStaticFiles",
 }
 
 export interface AmplicationPlugin {
