@@ -4,7 +4,7 @@ import fg from "fast-glob";
 import {
   EventNames,
   Module,
-  ReadStaticModulesParams,
+  LoadStaticFilesParams,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../plugin-wrapper";
 
@@ -14,7 +14,7 @@ export async function readStaticModules(
   source: string,
   basePath: string
 ): Promise<Module[]> {
-  return pluginWrapper(readStaticModulesInner, EventNames.ReadStaticModules, {
+  return pluginWrapper(readStaticModulesInner, EventNames.LoadStaticFiles, {
     source,
     basePath,
   });
@@ -30,7 +30,7 @@ export async function readStaticModules(
 export async function readStaticModulesInner({
   source,
   basePath,
-}: ReadStaticModulesParams): Promise<Module[]> {
+}: LoadStaticFilesParams): Promise<Module[]> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,

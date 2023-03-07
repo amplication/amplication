@@ -228,7 +228,7 @@ export interface CreateSeedParams extends EventParams {
   outputFileName: string;
 }
 
-export interface ReadStaticModulesParams extends EventParams {
+export interface LoadStaticFilesParams extends EventParams {
   source: string;
   basePath: string;
 }
