@@ -18,6 +18,7 @@ type Props = {
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
+  onAddBitbucketOrganization: () => void;
 };
 
 const CLASS_NAME = "git-organization-select-menu";
@@ -27,6 +28,7 @@ export default function ExistingConnectionsMenu({
   selectedGitOrganization,
   onAddGitOrganization,
   onSelectGitOrganization,
+  onAddBitbucketOrganization,
 }: Props) {
   return (
     <SelectMenu
@@ -37,7 +39,7 @@ export default function ExistingConnectionsMenu({
             isMenuTitle
           />
         ) : (
-          "Select new organization"
+          "Select git provider integration"
         )
       }
       buttonStyle={EnumButtonStyle.Text}
@@ -65,6 +67,14 @@ export default function ExistingConnectionsMenu({
               <hr className={`${CLASS_NAME}__hr`} />
               <SelectMenuItem onSelectionChange={onAddGitOrganization}>
                 <span>Add GitHub organization</span>
+                <Icon
+                  icon="plus"
+                  className={`${CLASS_NAME}__add-icon`}
+                  size="xsmall"
+                />
+              </SelectMenuItem>
+              <SelectMenuItem onSelectionChange={onAddBitbucketOrganization}>
+                <span>Add Bitbucket account</span>
                 <Icon
                   icon="plus"
                   className={`${CLASS_NAME}__add-icon`}
