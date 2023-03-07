@@ -1,6 +1,6 @@
 import { EnumGitProvider } from "../../src/types";
-import { GithubService } from "../../src/git/github.service";
-import { GitFactory } from "../../src/git/git-factory";
+import { GithubService } from "../../src/providers/github/github.service";
+import { GitFactory } from "../../src/providers/git-factory";
 import { mock } from "jest-mock-extended";
 
 describe.skip("GitFactory", () => {
