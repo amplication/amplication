@@ -74,7 +74,7 @@ async function createServerInternal(
 
   await createLog({ level: "info", message: "Creating resources..." });
   logger.info("Creating resources...");
-  const dtoModules = createDTOModules(dtos);
+  const dtoModules = await createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities, logger);
 
   await createLog({ level: "info", message: "Creating Auth module..." });
