@@ -124,25 +124,14 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-        {isEmpty(gitOrganizations) ? (
-          <NewConnection
-            provider={EnumGitProvider.Github}
-            onSyncNewGitOrganizationClick={handleAuthWithGithubClick}
-          />
-        ) : (
-          <ExistingConnectionsMenu
-            gitOrganizations={gitOrganizations}
-            onSelectGitOrganization={(organization) => {
-              setGitOrganization(organization);
-            }}
-            selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAuthWithGithubClick}
-          />
-        )}
-
-        <NewConnection
-          provider={EnumGitProvider.Bitbucket}
-          onSyncNewGitOrganizationClick={handleAuthWithBitbucketClicked}
+        <ExistingConnectionsMenu
+          gitOrganizations={gitOrganizations}
+          onSelectGitOrganization={(organization) => {
+            setGitOrganization(organization);
+          }}
+          selectedGitOrganization={gitOrganization}
+          onAddGitOrganization={handleAuthWithGithubClick}
+          onAddBitbucketOrganization={handleAuthWithBitbucketClicked}
         />
 
         <RepositoryActions
