@@ -2,7 +2,7 @@ import { PluginInstallation } from "@amplication/code-gen-types";
 export const POSTGRESQL_PLUGIN_ID = "db-postgres";
 export const MYSQL_PLUGIN_ID = "db-mysql";
 export const POSTGRESQL_NPM = "@amplication/plugin-db-postgres";
-
+export const MONGO_PLUGIN_ID = "db-mongo";
 type DefaultPlugin = {
   categoryPluginIds: string[];
   defaultCategoryPlugin: PluginInstallation;
@@ -10,7 +10,7 @@ type DefaultPlugin = {
 
 const defaultPlugins: DefaultPlugin[] = [
   {
-    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID],
+    categoryPluginIds: [POSTGRESQL_PLUGIN_ID, MYSQL_PLUGIN_ID, MONGO_PLUGIN_ID],
     defaultCategoryPlugin: {
       id: "placeholder-id",
       pluginId: POSTGRESQL_PLUGIN_ID,
