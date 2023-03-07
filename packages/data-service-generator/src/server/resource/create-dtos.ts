@@ -32,7 +32,7 @@ import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relati
 import pluginWrapper from "../../plugin-wrapper";
 
 export function createDTOModules(dtos: DTOs): Module[] {
-  return pluginWrapper(createDTOModulesInner, EventNames.CreateAdminUI, {
+  return pluginWrapper(createDTOModulesInner, EventNames.CreateDTOs, {
     dtos,
   });
 }
