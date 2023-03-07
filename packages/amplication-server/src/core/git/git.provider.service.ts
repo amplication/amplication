@@ -404,8 +404,7 @@ export class GitProviderService {
         },
       });
     } catch (error) {
-      console.error(error);
-      throw new Error(error);
+      this.logger.error(error);
     }
   }
 
