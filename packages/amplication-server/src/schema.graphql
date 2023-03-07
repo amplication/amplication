@@ -165,14 +165,6 @@ type ProviderProperties {
   expiresIn: Float
   tokenType: String
   scopes: [String!]
-  workspaces: [GitWorkspace!]
-}
-
-type GitWorkspace {
-  name: String
-  slug: String
-  type: String
-  uuid: String
 }
 
 type Entity {
