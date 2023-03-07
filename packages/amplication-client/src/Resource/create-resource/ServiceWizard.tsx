@@ -6,7 +6,9 @@ import React, {
 } from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
-import { ResourceSettings } from "./CreateServiceWizard";
+import { INITIAL_VALUES_WIZARD, ResourceSettings } from "./CreateServiceWizard";
+import { Form, Formik } from "formik";
+import FormikAutoSave from "../../util/formikAutoSave";
 
 interface ServiceWizardProps {
   children: ReactNode;
@@ -14,7 +16,7 @@ interface ServiceWizardProps {
   moduleCss: string;
   wizardLen: number;
   submitWizard: () => void;
-  handleWizardChange: () => void;
+  handleWizardChange: (values: any) => void;
   resourceSettingsRef: MutableRefObject<ResourceSettings>;
 }
 
@@ -41,6 +43,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   children,
   moduleCss,
   wizardLen,
+  handleWizardChange,
   submitWizard,
 }) => {
   const [activePageIndex, setActivePageIndex] = useState(
@@ -57,10 +60,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 
   const goPrevPage = useCallback(() => {
     setActivePageIndex(activePageIndex - 1);
-    //const prevPage = pages[activePageIndex - 1] as React.ReactElement;
-
-    //console.log(prevPage.key); todo: convert by key value component name and route to the correct page
   }, [activePageIndex]);
+
+  const handleSubmit = useCallback((values) => {
+    handleWizardChange(values);
+  }, []);
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
@@ -71,13 +75,22 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         x close
       </Button>
       <div className={`${moduleCss}__content`}>
-        {React.cloneElement(
-          currentPage as React.ReactElement<
-            any,
-            string | React.JSXElementConstructor<any>
-          >,
-          {}
-        )}
+        <Formik initialValues={INITIAL_VALUES_WIZARD} onSubmit={handleSubmit}>
+          {(formik) => {
+            return (
+              <Form>
+                <FormikAutoSave debounceMS={1000} />
+                {React.cloneElement(
+                  currentPage as React.ReactElement<
+                    any,
+                    string | React.JSXElementConstructor<any>
+                  >,
+                  {}
+                )}
+              </Form>
+            );
+          }}
+        </Formik>
       </div>
       <div className={`${moduleCss}__footer`}>
         <div className={`${moduleCss}__backButton`}>

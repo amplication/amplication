@@ -1,6 +1,5 @@
-import { TextInput } from "@amplication/design-system";
+import { TextField } from "@amplication/design-system";
 import React from "react";
-import { AppRouteProps } from "../../../routes/routesUtil";
 import "../CreateServiceWizard.scss";
 
 const CreateServiceName: React.FC<{ moduleCss: string }> = ({ moduleCss }) => {
@@ -15,7 +14,7 @@ const CreateServiceName: React.FC<{ moduleCss: string }> = ({ moduleCss }) => {
         </h3>
       </div>
       <div className={`${moduleCss}__service_input`}>
-        <TextInput name="Service name" label="Service name" />
+        <TextField name="serviceName" label="Service name" />
       </div>
     </div>
   );

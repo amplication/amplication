@@ -1,22 +1,11 @@
-import React, { MutableRefObject, useRef } from "react";
+import React from "react";
 import "../CreateServiceWizard.scss";
-import { serviceSettingsFieldsInitValues } from "../../constants";
-import {
-  CreateServiceWizardForm,
-  serviceSettings,
-} from "../CreateServiceWizardForm";
+import {} from "../CreateServiceWizardForm";
+import { CircleBadge, Icon, ToggleField } from "@amplication/design-system";
 
 const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
   moduleClass,
 }) => {
-  const serviceSettingsFields: MutableRefObject<serviceSettings> = useRef(
-    serviceSettingsFieldsInitValues
-  ); //todo: update appContext instead
-
-  const handleSubmitResource = (currentServiceSettings: serviceSettings) => {
-    serviceSettingsFields.current = currentServiceSettings;
-  };
-
   return (
     <div className={`${moduleClass}__splitWrapper`}>
       <div className={`${moduleClass}__left`}>
@@ -34,7 +23,33 @@ const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
         </div>
       </div>
       <div className={`${moduleClass}__right`}>
-        <CreateServiceWizardForm handleSubmitResource={handleSubmitResource} />
+        <div className={`${moduleClass}__repo_wrapper`}>
+          <div className={`${moduleClass}__db_box`}>
+            <div className={`${moduleClass}__db_up_buttons`}>
+              <CircleBadge color={"black"} size={"small"}>
+                <Icon icon="" size={"small"} />
+              </CircleBadge>
+              <label>GraphQL API</label>
+              <ToggleField name="generateGraphQL" label="" />
+            </div>
+            <div className={`${moduleClass}__db_up_buttons`}>
+              <CircleBadge color={"black"} size={"small"}>
+                <Icon icon="" size={"small"} />
+              </CircleBadge>
+              <label>REST API & Swagger UI</label>
+              <ToggleField name="generateRestApi" label="" />
+            </div>
+          </div>
+          <div className={`${moduleClass}__db_box`}>
+            <div className={`${moduleClass}__db_up_buttons`}>
+              <CircleBadge color={"black"} size={"small"}>
+                <Icon icon="" size={"small"} />
+              </CircleBadge>
+              <label>Admin UI</label>
+              <ToggleField name="generateAdminUI" label="" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-import { Modal, Snackbar } from "@amplication/design-system";
+import { Button, Modal, Snackbar } from "@amplication/design-system";
 import React, {
   MutableRefObject,
   useCallback,
@@ -32,15 +32,31 @@ export interface ResourceSettings {
   serviceName: string;
 }
 
+export const INITIAL_VALUES_WIZARD = {
+  serviceName: "",
+  generateAdminUI: false,
+  generateGraphQL: false,
+  generateRestApi: false,
+};
+
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const { errorCreateService } = useContext(AppContext);
   // const [validate];
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
 
-  const onWizardChangeCb = useCallback(() => {
+  const onWizardChangeCb = useCallback((values) => {
     // assign new values to ref
     // validation to continue button
+
+    const { serviceName, generateAdminUI, generateGraphQL, generateRestApi } =
+      values;
+    console.log({
+      serviceName,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+    });
   }, []);
 
   const errorMessage = formatError(errorCreateService);
@@ -67,7 +83,6 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         <CreateServiceDatabase moduleClass={moduleClass} />
         <CreateServiceAuth moduleClass={moduleClass} />
       </ServiceWizard>
-
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
   );

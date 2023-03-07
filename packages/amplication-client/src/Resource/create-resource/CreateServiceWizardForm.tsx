@@ -15,7 +15,6 @@ export type serviceSettings = {
   generateAdminUI: boolean;
   generateGraphQL: boolean;
   generateRestApi: boolean;
-  resourceType: string;
 };
 
 export const CreateServiceWizardForm = ({ handleSubmitResource }: Props) => {
