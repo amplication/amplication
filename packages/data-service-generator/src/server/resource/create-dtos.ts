@@ -31,8 +31,8 @@ import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import pluginWrapper from "../../plugin-wrapper";
 
-export function createDTOModules(dtos: DTOs): Module[] {
-  return pluginWrapper(createDTOModulesInner, EventNames.CreateDTOs, {
+export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
+  return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
     dtos,
   });
 }
@@ -41,7 +41,7 @@ export function createDTOModules(dtos: DTOs): Module[] {
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModulesInner({ dtos }: CreateDTOsParams): Module[] {
+export function createDTOModulesInternal({ dtos }: CreateDTOsParams): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs).map((dto) => {
