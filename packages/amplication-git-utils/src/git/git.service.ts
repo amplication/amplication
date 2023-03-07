@@ -35,6 +35,7 @@ import { ILogger } from "@amplication/util/logging";
 export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
+
   async create(
     gitProviderArgs: GitProviderArgs,
     logger: ILogger

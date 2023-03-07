@@ -18,6 +18,8 @@ export enum EnumGitProvider {
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string;
+  clientId?: string;
+  clientSecret?: string;
 }
 
 export interface GitProviderConstructorArgs {
