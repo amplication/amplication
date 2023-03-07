@@ -316,6 +316,9 @@ describe("ProjectService", () => {
     const findManyArgs = {
       where: {
         deletedAt: null,
+        archived: {
+          not: true,
+        },
         projectId: EXAMPLE_PROJECT_ID,
         project: {
           workspace: {
