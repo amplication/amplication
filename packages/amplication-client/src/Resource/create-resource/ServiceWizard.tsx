@@ -6,18 +6,23 @@ import React, {
 } from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
-import { INITIAL_VALUES_WIZARD, ResourceSettings } from "./CreateServiceWizard";
-import { Form, Formik } from "formik";
+import {
+  ResourceSettings,
+} from "./CreateServiceWizard";
+import { Form, Formik, FormikErrors } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
+import { validate } from "../../util/formikValidateJsonSchema";
 
 interface ServiceWizardProps {
   children: ReactNode;
-  defineUser: "signup" | "login";
+  wizardPattern: number[];
+  wizardSchema: { [key: string]: any };
+  wizardInitialValues: { [key: string]: any };
+  context: {
+    submitWizard: () => void;
+    resourceSettingsRef: MutableRefObject<ResourceSettings>;
+  };
   moduleCss: string;
-  wizardLen: number;
-  submitWizard: () => void;
-  handleWizardChange: (values: any) => void;
-  resourceSettingsRef: MutableRefObject<ResourceSettings>;
 }
 
 const BackButton: React.FC<{
@@ -39,33 +44,39 @@ const ContinueButton: React.FC<{
 };
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
-  defineUser,
+  wizardPattern,
+  wizardSchema,
+  wizardInitialValues,
+  context,
   children,
   moduleCss,
-  wizardLen,
-  handleWizardChange,
-  submitWizard,
 }) => {
-  const [activePageIndex, setActivePageIndex] = useState(
-    defineUser === "login" ? 1 : 0
+  const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
+  const [currWizardPatternIndex, setCurrWizardPatternIndex] = useState(
+    wizardPattern.findIndex((i) => i === activePageIndex)
   );
-
   const pages = React.Children.toArray(children);
-
   const currentPage = pages[activePageIndex];
 
   const goNextPage = useCallback(() => {
-    setActivePageIndex(activePageIndex + 1);
+    const wizardIndex =
+      currWizardPatternIndex === wizardPattern.length - 1
+        ? currWizardPatternIndex
+        : currWizardPatternIndex + 1;
+    setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
   const goPrevPage = useCallback(() => {
-    setActivePageIndex(activePageIndex - 1);
+    const wizardIndex =
+      currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
+    setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
   const handleSubmit = useCallback((values) => {
-    handleWizardChange(values);
+    console.log(values);
+    // context.handleWizardChange(values);
   }, []);
-
+  console.log(wizardSchema[activePageIndex]);
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -75,8 +86,26 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         x close
       </Button>
       <div className={`${moduleCss}__content`}>
-        <Formik initialValues={INITIAL_VALUES_WIZARD} onSubmit={handleSubmit}>
-          {(formik) => {
+        <Formik
+          initialValues={wizardInitialValues}
+          onSubmit={handleSubmit}
+          validateOnMount
+          validate={
+            (values: ResourceSettings) => {
+              const errors: FormikErrors<ResourceSettings> = validate<ResourceSettings>(
+                values,
+                wizardSchema[activePageIndex]
+              );
+             
+              console.log(errors)
+      
+              return errors;
+            }
+          }
+          // validate={(values: ResourceSettings) => validate(values, wizardSchema[activePageIndex])}
+          validateOnBlur
+        >
+          {({ errors, touched }) => {
             return (
               <Form>
                 <FormikAutoSave debounceMS={1000} />
@@ -87,6 +116,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                   >,
                   {}
                 )}
+                <div>{Object.keys(errors).length && Object.keys(touched).length ? "no good" : "fine"}</div>
               </Form>
             );
           }}
@@ -101,19 +131,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         </div>
         <WizardProgressBar />
         <div className={`${moduleCss}__continueBtn`}>
-          {activePageIndex === 6 ? (
-            <ContinueButton
-              goNextPage={goNextPage}
-              disabled={false}
-              buttonName="Create service"
-            />
-          ) : (
-            <ContinueButton
-              goNextPage={goNextPage}
-              disabled={false}
-              buttonName="Continue"
-            />
-          )}
+          <ContinueButton
+            goNextPage={goNextPage}
+            disabled={false}
+            buttonName={"continue"}
+          />
         </div>
       </div>
     </div>

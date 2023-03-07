@@ -1,14 +1,92 @@
-const wizardSchema = {
-  step0: {
-    serviceName: {
-      type: "String",
-      require: true,
-      min: 2,
-    },
-  },
-  step1: {
-    gitProvider: {},
-  },
-};
 
-export default wizardSchema;
+const ResourceName = {
+  properties: {
+    serviceName: {
+      type: "string",
+      minLength: 2
+    }
+  },
+  required: ["serviceName"]
+}
+
+const GitRepository = {
+  properties: {
+    gitRepositoryId: {
+      type: "string"
+    }
+  },
+  required: ["gitRepositoryId"]
+}
+
+const GenerationSettings = {
+  properties: {
+    generateAdminUI: {
+      type: "boolean",
+      default: false,
+    },
+    generateGraphQL: {
+      type: "boolean",
+      default: false,
+    },
+    generateRestApi: {
+      type: "boolean",
+      default: false,
+    }
+  },
+  required: ["generateAdminUI", "generateGraphQL", "generateRestApi"] 
+}
+
+const StructureType = {
+  properties: {
+     structureType:{
+      enum: ["monorepo", "polyrepo"],
+     },
+     baseDir: {
+      type: "string",
+      minLength: 4
+     }
+  },
+  required: ["structureType"]
+}
+
+const DataBaseType = {
+  properties: {
+    dataBaseType: {
+      enum: ["postgres", "mongo", "mysql"]
+    }
+  },
+  required: ["dataBaseType"]
+}
+
+const Auth = {
+  properties: {
+    authSwitch: {
+      type: "boolean"
+    }
+  },
+  required: ["authSwitch"]
+}
+
+
+export const schemaArray = [
+  [],
+  ResourceName,
+  GitRepository,
+  GenerationSettings,
+  StructureType,
+  DataBaseType,
+  Auth,
+  [],
+  []
+]
+
+export const ResourceInitialValues = {
+  serviceName: null,
+  gitRepositoryId: null,
+  generateAdminUI: false,
+  generateGraphQL: false,
+  generateRestApi: false,
+  structureType: "monorepo",
+  dataBaseType: "postgres",
+  authSwitch: false,
+}

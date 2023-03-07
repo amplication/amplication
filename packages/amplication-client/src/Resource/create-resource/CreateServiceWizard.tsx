@@ -4,6 +4,7 @@ import React, {
   useCallback,
   useContext,
   useRef,
+  useState,
 } from "react";
 import { match } from "react-router-dom";
 import * as H from "history";
@@ -19,6 +20,7 @@ import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
 import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
 import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
+import  { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,34 +32,46 @@ type Props = AppRouteProps & {
 
 export interface ResourceSettings {
   serviceName: string;
+  gitRepositoryId: string,
+  generateAdminUI: boolean,
+  generateGraphQL: boolean,
+  generateRestApi: boolean,
+  structureType: "monorepo" | "polyrepo",
+  dataBaseType: "postgres" | "mysql" | "mongo",
+  authSwitch: boolean,
+}
+export interface NextPage {
+  nextTitle: string;
+  isValid: boolean;
 }
 
-export const INITIAL_VALUES_WIZARD = {
-  serviceName: "",
-  generateAdminUI: false,
-  generateGraphQL: false,
-  generateRestApi: false,
-};
+// interface OnWizardChangeCb {
+//   step: number;
+//   [key: string]: any;
+// }
 
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const { errorCreateService } = useContext(AppContext);
-  // const [validate];
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
 
-  const onWizardChangeCb = useCallback((values) => {
-    // assign new values to ref
-    // validation to continue button
-
-    const { serviceName, generateAdminUI, generateGraphQL, generateRestApi } =
-      values;
-    console.log({
-      serviceName,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
-    });
-  }, []);
+  // const onWizardChangeCb = useCallback((changeObj: OnWizardChangeCb) => {
+  //   const schema = wizardSchema[`step${changeObj.step}`];
+  //   Object.keys(schema).forEach((fieldName) => {
+  //     // changeObj[fieldName] => validate
+  //   });
+  //   // const { serviceName, generateAdminUI, generateGraphQL, generateRestApi } =
+  //   //   values;
+  //   // console.log({
+  //   //   serviceName,
+  //   //   generateAdminUI,
+  //   //   generateGraphQL,
+  //   //   generateRestApi,
+  //   // });
+  //   // assign new values to ref
+  //   // validation to continue button
+  //   // update setNextPage
+  // }, []);
 
   const errorMessage = formatError(errorCreateService);
 
@@ -68,12 +82,18 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        defineUser={defineUser}
+        wizardPattern={
+          defineUser === "login"
+            ? [1, 2, 3, 4, 5, 6, 8]
+            : [0, 1, 2, 3, 4, 5, 6, 7, 8]
+        }
+        wizardSchema={schemaArray}
+        wizardInitialValues={ResourceInitialValues}
+        context={{
+          submitWizard: createResource,
+          resourceSettingsRef,
+        }}
         moduleCss={moduleClass}
-        submitWizard={createResource}
-        handleWizardChange={onWizardChangeCb}
-        resourceSettingsRef={resourceSettingsRef}
-        wizardLen={8}
       >
         <CreateServiceWelcome moduleCss={moduleClass} />
         <CreateServiceName moduleCss={moduleClass} />
@@ -82,6 +102,8 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         <CreateServiceRepository moduleClass={moduleClass} />
         <CreateServiceDatabase moduleClass={moduleClass} />
         <CreateServiceAuth moduleClass={moduleClass} />
+        <div>page 7</div>
+        <div>end of wizard - 8</div>
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
