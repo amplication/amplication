@@ -100,6 +100,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   }, [currentWorkspace, window.location.pathname]);
 
   const handleContactUsClick = useCallback(() => {
+    history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,

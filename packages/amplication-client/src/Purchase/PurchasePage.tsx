@@ -70,6 +70,7 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
+    history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
@@ -77,6 +78,11 @@ const PurchasePage = (props) => {
       workspaceId: currentWorkspace.id,
     });
   }, [openHubSpotChat, currentWorkspace.id]);
+
+  const handleDowngradeClick = useCallback(() => {
+    history.push("?downgrade=true");
+    openHubSpotChat();
+  }, [openHubSpotChat]);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -116,6 +122,9 @@ const PurchasePage = (props) => {
         case "plan-amplication-pro":
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
+          break;
+        case "plan-amplication-free":
+          handleDowngradeClick();
           break;
       }
     },
