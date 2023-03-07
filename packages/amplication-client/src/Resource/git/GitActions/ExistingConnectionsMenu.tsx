@@ -64,7 +64,7 @@ export default function ExistingConnectionsMenu({
               ))}
               <hr className={`${CLASS_NAME}__hr`} />
               <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-                <span>Add another organization</span>
+                <span>Add GitHub organization</span>
                 <Icon
                   icon="plus"
                   className={`${CLASS_NAME}__add-icon`}

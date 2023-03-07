@@ -143,6 +143,7 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
+  providerProperties: ProviderProperties
 }
 
 enum EnumGitProvider {
@@ -153,6 +154,17 @@ enum EnumGitProvider {
 enum EnumGitOrganizationType {
   User
   Organization
+}
+
+type ProviderProperties {
+  installationId: String
+  username: String
+  uuid: String
+  accessToken: String
+  refreshToken: String
+  expiresIn: Float
+  tokenType: String
+  scopes: [String!]
 }
 
 type Entity {
@@ -1118,6 +1130,7 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
 }
 
 input UpdateAccountInput {
@@ -1468,4 +1481,9 @@ input GitOrganizationCreateInput {
 
 input GitGetInstallationUrlInput {
   gitProvider: EnumGitProvider!
+}
+
+input GitOAuth2FlowInput {
+  gitProvider: EnumGitProvider!
+  code: String!
 }

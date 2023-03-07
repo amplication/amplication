@@ -70,16 +70,29 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-  const handleAuthWithGitClick = useCallback(() => {
+
+  const handleAuthWithGithubClick = useCallback(() => {
     trackEvent({
       eventName: AnalyticsEventNames.GitHubAuthResourceStart,
     });
     authWithGit({
       variables: {
-        gitProvider: "Github",
+        gitProvider: EnumGitProvider.Github,
       },
     }).catch(console.error);
-  }, [authWithGit, trackEvent]);
+  }, []);
+
+  const handleAuthWithBitbucketClicked = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
+    });
+
+    authWithGit({
+      variables: {
+        gitProvider: EnumGitProvider.Bitbucket,
+      },
+    }).catch(console.error);
+  }, []);
 
   triggerOnDone = () => {
     onDone();
@@ -113,7 +126,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <NewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+            provider={EnumGitProvider.Github}
+            onSyncNewGitOrganizationClick={handleAuthWithGithubClick}
           />
         ) : (
           <ExistingConnectionsMenu
@@ -122,9 +136,14 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
               setGitOrganization(organization);
             }}
             selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAuthWithGitClick}
+            onAddGitOrganization={handleAuthWithGithubClick}
           />
         )}
+
+        <NewConnection
+          provider={EnumGitProvider.Bitbucket}
+          onSyncNewGitOrganizationClick={handleAuthWithBitbucketClicked}
+        />
 
         <RepositoryActions
           onCreateRepository={() => {

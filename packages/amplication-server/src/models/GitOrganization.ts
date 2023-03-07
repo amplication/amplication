@@ -1,6 +1,8 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
 import { EnumGitOrganizationType } from "../core/git/dto/enums/EnumGitOrganizationType";
 import { EnumGitProvider } from "../core/git/dto/enums/EnumGitProvider";
+import { ProviderProperties } from "../core/git/dto/inputs/ProviderProperties";
 
 @ObjectType({
   isAbstract: true,
@@ -26,4 +28,9 @@ export class GitOrganization {
 
   @Field(() => EnumGitOrganizationType, { nullable: false })
   type!: keyof typeof EnumGitOrganizationType;
+
+  @Field(() => ProviderProperties, {
+    nullable: true,
+  })
+  providerProperties!: JsonValue;
 }

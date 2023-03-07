@@ -104,6 +104,9 @@ export enum AnalyticsEventNames {
   CreateMessageBroker = "CreateMessageBroker",
   CreateProjectConfiguration = "CreateProjectConfiguration",
 
+  // Bitbucket
+  BitbucketAuthResourceStart = "startAuthResourceWithBitbucket",
+
   // Purchase Page
   PricingPageClose = "PricingPageClose",
   PricingPageCTAClick = "PricingPageCTAClick",
