@@ -24,6 +24,7 @@ import {
   EnumGitProvider,
   GetBranchArgs,
   PullRequest,
+  GitProviderArgs,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
@@ -39,21 +40,22 @@ export class BitBucketService implements GitProvider {
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
-  constructor(private readonly logger: ILogger) {
-    // TODO: move env variables to the server config
-    const { BITBUCKET_CLIENT_ID, BITBUCKET_CLIENT_SECRET, CALLBACK_URL } =
-      process.env;
-
-    if (!BITBUCKET_CLIENT_ID || !BITBUCKET_CLIENT_SECRET || !CALLBACK_URL) {
-      throw new Error("Missing BitBucket env variables");
+  constructor(
+    private readonly gitProviderArgs: GitProviderArgs,
+    private readonly logger: ILogger
+  ) {
+    const { clientId, clientSecret } = gitProviderArgs;
+    if (!clientId || !clientSecret) {
+      this.logger.error("Missing Bitbucket configuration");
+      throw new Error("Missing Bitbucket configuration");
     }
 
-    this.clientId = BITBUCKET_CLIENT_ID;
-    this.clientSecret = BITBUCKET_CLIENT_SECRET;
+    this.clientId = clientId;
+    this.clientSecret = clientSecret;
   }
 
   async init(): Promise<void> {
-    this.logger.info("BitBucketService init");
+    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {

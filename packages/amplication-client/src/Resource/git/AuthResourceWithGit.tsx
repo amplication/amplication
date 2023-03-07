@@ -71,7 +71,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGithubClick = () => {
+  const handleAuthWithGithubClick = useCallback(() => {
     trackEvent({
       eventName: AnalyticsEventNames.GitHubAuthResourceStart,
     });
@@ -80,9 +80,9 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         gitProvider: EnumGitProvider.Github,
       },
     }).catch(console.error);
-  };
+  }, []);
 
-  const handleAuthWithBitbucketClicked = () => {
+  const handleAuthWithBitbucketClicked = useCallback(() => {
     trackEvent({
       eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
     });
@@ -92,7 +92,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         gitProvider: EnumGitProvider.Bitbucket,
       },
     }).catch(console.error);
-  };
+  }, []);
 
   triggerOnDone = () => {
     onDone();

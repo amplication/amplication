@@ -22,6 +22,8 @@ import {
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -29,12 +31,21 @@ const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
 
 @Injectable()
 export class GitProviderService {
+  private clientId: string;
+  private clientSecret: string;
+
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.clientId = this.configService.get<string>(Env.BITBUCKET_CLIENT_ID);
+    this.clientSecret = this.configService.get<string>(
+      Env.BITBUCKET_CLIENT_SECRET
+    );
+  }
 
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
@@ -329,6 +340,8 @@ export class GitProviderService {
       {
         provider: gitProvider,
         installationId: null,
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
       },
       this.logger
     );
@@ -349,6 +362,8 @@ export class GitProviderService {
       {
         provider: gitProvider,
         installationId: null,
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
       },
       this.logger
     );
@@ -404,8 +419,7 @@ export class GitProviderService {
         },
       });
     } catch (error) {
-      console.error(error);
-      throw new Error(error);
+      this.logger.error(error);
     }
   }
 

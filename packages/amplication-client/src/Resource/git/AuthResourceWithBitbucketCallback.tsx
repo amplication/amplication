@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { EnumGitProvider } from "../../models";
+import { COMPLETE_OAUTH2_FLOW } from "./queries/git-callback";
 
 const AuthResourceWithBitbucketCallback = () => {
   const { trackEvent } = useTracking();
@@ -36,15 +37,3 @@ const AuthResourceWithBitbucketCallback = () => {
 };
 
 export default AuthResourceWithBitbucketCallback;
-
-const COMPLETE_OAUTH2_FLOW = gql`
-  mutation completeGitOAuth2Flow(
-    $code: String!
-    $gitProvider: EnumGitProvider!
-  ) {
-    completeGitOAuth2Flow(data: { code: $code, gitProvider: $gitProvider }) {
-      id
-      name
-    }
-  }
-`;

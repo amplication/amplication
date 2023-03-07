@@ -5,35 +5,19 @@ import { Field, ObjectType } from "@nestjs/graphql";
 })
 export class ProviderProperties {
   @Field(() => String, { nullable: true })
-  installationId: string;
+  installationId?: string;
   @Field(() => String, { nullable: true })
-  username: string;
+  username?: string;
   @Field(() => String, { nullable: true })
-  uuid: string;
+  uuid?: string;
   @Field(() => String, { nullable: true })
-  accessToken: string;
+  accessToken?: string;
   @Field(() => String, { nullable: true })
-  refreshToken: string;
+  refreshToken?: string;
   @Field(() => Number, { nullable: true })
-  expiresIn: number;
+  expiresIn?: number;
   @Field(() => String, { nullable: true })
-  tokenType: string;
+  tokenType?: string;
   @Field(() => [String], { nullable: true })
-  scopes: string[];
-  @Field(() => [GitWorkspace], { nullable: true })
-  workspaces: GitWorkspace[];
-}
-
-@ObjectType({
-  isAbstract: true,
-})
-class GitWorkspace {
-  @Field(() => String, { nullable: true })
-  name: string;
-  @Field(() => String, { nullable: true })
-  slug: string;
-  @Field(() => String, { nullable: true })
-  type: string;
-  @Field(() => String, { nullable: true })
-  uuid: string;
+  scopes?: string[];
 }

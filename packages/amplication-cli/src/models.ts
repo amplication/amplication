@@ -755,13 +755,6 @@ export type GitRepository = {
   updatedAt?: Maybe<Scalars['DateTime']>;
 };
 
-export type GitWorkspace = {
-  name?: Maybe<Scalars['String']>;
-  slug?: Maybe<Scalars['String']>;
-  type?: Maybe<Scalars['String']>;
-  uuid?: Maybe<Scalars['String']>;
-};
-
 export type IBlock = {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
@@ -1413,7 +1406,6 @@ export type ProviderProperties = {
   tokenType?: Maybe<Scalars['String']>;
   username?: Maybe<Scalars['String']>;
   uuid?: Maybe<Scalars['String']>;
-  workspaces?: Maybe<Array<GitWorkspace>>;
 };
 
 export type ProvisionSubscriptionInput = {

@@ -1,8 +1,9 @@
 import { useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { EnumGitProvider } from "../../models";
+import { CREATE_GIT_ORGANIZATION } from "./queries/git-callback";
 
 const AuthResourceWithGithubCallback = () => {
   const { trackEvent } = useTracking();
@@ -37,17 +38,3 @@ const AuthResourceWithGithubCallback = () => {
 };
 
 export default AuthResourceWithGithubCallback;
-
-const CREATE_GIT_ORGANIZATION = gql`
-  mutation createOrganization(
-    $installationId: String!
-    $gitProvider: EnumGitProvider!
-  ) {
-    createOrganization(
-      data: { installationId: $installationId, gitProvider: $gitProvider }
-    ) {
-      id
-      name
-    }
-  }
-`;
