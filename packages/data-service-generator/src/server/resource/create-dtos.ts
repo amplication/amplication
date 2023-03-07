@@ -8,6 +8,7 @@ import {
   EntityEnumDTOs,
   EntityDTOs,
   EventNames,
+  CreateDTOsParams,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../utils/entity";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
@@ -40,7 +41,7 @@ export function createDTOModules(dtos: DTOs): Module[] {
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModulesInner(dtos: DTOs): Module[] {
+export function createDTOModulesInner({ dtos }: CreateDTOsParams): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs).map((dto) => {

@@ -31,7 +31,7 @@ import {
   CreateEntityResolverToOneRelationMethodsParams,
   CreateServerGitIgnoreParams,
   CreateAdminGitIgnoreParams,
-  CreateDTOModulesParams,
+  CreateDTOsParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -68,5 +68,5 @@ export type Events = {
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
-  [EventNames.CreateDTOModules]?: PluginEventType<CreateDTOModulesParams>;
+  [EventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
 };

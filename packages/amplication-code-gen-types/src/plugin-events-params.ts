@@ -229,6 +229,6 @@ export interface CreateSeedParams extends EventParams {
   outputFileName: string;
 }
 
-export interface CreateDTOModulesParams extends EventParams {
-  dtos: DTOs[];
+export interface CreateDTOsParams extends EventParams {
+  dtos: DTOs;
 }

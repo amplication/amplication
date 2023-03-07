@@ -97,7 +97,7 @@ export enum EventNames {
   CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
   CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
   CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
-  CreateDTOModules = "CreateDTOModules",
+  CreateDTOs = "CreateDTOs",
 }
 
 export interface AmplicationPlugin {
