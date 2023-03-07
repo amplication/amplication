@@ -1,10 +1,10 @@
 import React, { MutableRefObject, useRef } from "react";
-import "./CreateServiceWizard.scss";
-import { serviceSettingsFieldsInitValues } from "../constants";
+import "../CreateServiceWizard.scss";
+import { serviceSettingsFieldsInitValues } from "../../constants";
 import {
   CreateServiceWizardForm,
   serviceSettings,
-} from "./CreateServiceWizardForm";
+} from "../CreateServiceWizardForm";
 
 const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
   moduleClass,

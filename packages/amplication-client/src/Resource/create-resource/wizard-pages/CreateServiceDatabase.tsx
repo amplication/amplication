@@ -1,6 +1,6 @@
 import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useState } from "react";
-import "./CreateServiceWizard.scss";
+import "../CreateServiceWizard.scss";
 
 const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
   moduleClass,

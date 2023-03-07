@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import "./CreateServiceWelcome.scss";
-import { AppContext } from "../../context/appContext";
+import { AppContext } from "../../../context/appContext";
 import { Button } from "@amplication/design-system";
 
 const CreateServiceWelcome: React.FC<{ moduleCss: string }> = ({

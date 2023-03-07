@@ -1,8 +1,7 @@
 import { TextInput } from "@amplication/design-system";
 import React from "react";
-import { match } from "react-router-dom";
-import { AppRouteProps } from "../../routes/routesUtil";
-import "./CreateServiceWizard.scss";
+import { AppRouteProps } from "../../../routes/routesUtil";
+import "../CreateServiceWizard.scss";
 
 const CreateServiceName: React.FC<{ moduleCss: string }> = ({ moduleCss }) => {
   return (

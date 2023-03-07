@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
-import "./CreateServiceWizard.scss";
-import { AppContext } from "../../context/appContext";
-import AuthWithGit from "../git/AuthWithGit";
+import "../CreateServiceWizard.scss";
+import { AppContext } from "../../../context/appContext";
+import AuthWithGit from "../../git/AuthWithGit";
 
 const CreateGithubSync: React.FC<{ moduleClass: string }> = ({
   moduleClass,

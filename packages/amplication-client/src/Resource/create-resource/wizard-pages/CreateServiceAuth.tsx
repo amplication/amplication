@@ -1,6 +1,6 @@
 import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useState } from "react";
-import "./CreateServiceWizard.scss";
+import "../CreateServiceWizard.scss";
 
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";

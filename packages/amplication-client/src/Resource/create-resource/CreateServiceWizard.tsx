@@ -9,18 +9,16 @@ import { match } from "react-router-dom";
 import * as H from "history";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
-import { serviceSettings } from "./CreateServiceWizardForm";
-import { serviceSettingsFieldsInitValues } from "../constants";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
-import CreateServiceWelcome from "./CreateServiceWelcome";
+import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
 import ServiceWizard from "./ServiceWizard";
-import CreateServiceName from "./CreateServiceName";
-import CreateGithubSync from "./CreateGithubSync";
-import CreateGenerationSettings from "./CreateGenerationSettings";
-import CreateServiceRepository from "./CreateServiceRepository";
-import CreateServiceDatabase from "./CreateServiceDatabase";
-import CreateServiceAuth from "./CreateServiceAuth";
+import CreateServiceName from "./wizard-pages/CreateServiceName";
+import CreateGithubSync from "./wizard-pages/CreateGithubSync";
+import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
+import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
+import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
+import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -33,19 +31,6 @@ type Props = AppRouteProps & {
 export interface ResourceSettings {
   serviceName: string;
 }
-
-const wizardSchema = {
-  step0: {
-    serviceName: {
-      type: "String",
-      require: true,
-      min: 2,
-    },
-  },
-  step1: {
-    gitProvider: {},
-  },
-};
 
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const { errorCreateService } = useContext(AppContext);
@@ -72,21 +57,15 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         submitWizard={createResource}
         handleWizardChange={onWizardChangeCb}
         resourceSettingsRef={resourceSettingsRef}
-        wizardLen={4}
+        wizardLen={8}
       >
         <CreateServiceWelcome moduleCss={moduleClass} />
-        <CreateServiceName moduleCss={moduleClass}></CreateServiceName>
-        <CreateGithubSync moduleClass={moduleClass}></CreateGithubSync>
-        <CreateGenerationSettings
-          moduleClass={moduleClass}
-        ></CreateGenerationSettings>
-        <CreateServiceRepository
-          moduleClass={moduleClass}
-        ></CreateServiceRepository>
-        <CreateServiceDatabase
-          moduleClass={moduleClass}
-        ></CreateServiceDatabase>
-        <CreateServiceAuth moduleClass={moduleClass}></CreateServiceAuth>
+        <CreateServiceName moduleCss={moduleClass} />
+        <CreateGithubSync moduleClass={moduleClass} />
+        <CreateGenerationSettings moduleClass={moduleClass} />
+        <CreateServiceRepository moduleClass={moduleClass} />
+        <CreateServiceDatabase moduleClass={moduleClass} />
+        <CreateServiceAuth moduleClass={moduleClass} />
       </ServiceWizard>
 
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />

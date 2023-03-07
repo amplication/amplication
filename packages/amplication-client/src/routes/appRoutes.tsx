@@ -73,7 +73,10 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/details/service-name",
                 Component: lazy(
-                  () => import("../Resource/create-resource/CreateServiceName")
+                  () =>
+                    import(
+                      "../Resource/create-resource/wizard-pages/CreateServiceName"
+                    )
                 ),
                 moduleName: "CreateServiceName",
                 moduleClass: "create-service-wizard",
@@ -84,7 +87,10 @@ export const Routes: RouteDef[] = [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/settings/github-sync",
                 Component: lazy(
-                  () => import("../Resource/create-resource/CreateGithubSync")
+                  () =>
+                    import(
+                      "../Resource/create-resource/wizard-pages/CreateGithubSync"
+                    )
                 ),
                 moduleName: "CreateServiceName",
                 moduleClass: "create-service-wizard",
@@ -97,7 +103,7 @@ export const Routes: RouteDef[] = [
                 Component: lazy(
                   () =>
                     import(
-                      "../Resource/create-resource/CreateServiceRepository"
+                      "../Resource/create-resource/wizard-pages/CreateServiceRepository"
                     )
                 ),
                 moduleName: "CreateServiceRepository",
@@ -111,7 +117,7 @@ export const Routes: RouteDef[] = [
                 Component: lazy(
                   () =>
                     import(
-                      "../Resource/create-resource/CreateGenerationSettings"
+                      "../Resource/create-resource/wizard-pages/CreateGenerationSettings"
                     )
                 ),
                 moduleName: "CreateServiceName",
