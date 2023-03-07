@@ -31,6 +31,7 @@ import {
   CreateEntityResolverToOneRelationMethodsParams,
   CreateServerGitIgnoreParams,
   CreateAdminGitIgnoreParams,
+  LoadStaticFilesParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -67,4 +68,5 @@ export type Events = {
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
+  [EventNames.LoadStaticFiles]?: PluginEventType<LoadStaticFilesParams>;
 };
