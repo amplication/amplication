@@ -4,23 +4,32 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Icon,
 } from "@amplication/design-system";
-import React from "react";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
+import * as models from "../../../models";
+import { GitOrganizationMenuAddProvider } from "./GitOrganizationMenuAddProvider";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  onAddGitOrganization: () => void;
+  onAddGitOrganization: (provider: models.EnumGitProvider) => void;
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
 };
 
 const CLASS_NAME = "git-organization-select-menu";
+
+const GIT_PROVIDERS: { provider: models.EnumGitProvider; label: string }[] = [
+  { provider: models.EnumGitProvider.Github, label: "Add GitHub Organization" },
+  // comment until we fully support Bitbucket
+  // {
+  //   provider: models.EnumGitProvider.Bitbucket,
+  //   label: "Add BitBucket Account",
+  // },
+];
 
 export default function ExistingConnectionsMenu({
   gitOrganizations,
@@ -37,7 +46,7 @@ export default function ExistingConnectionsMenu({
             isMenuTitle
           />
         ) : (
-          "Select new organization"
+          "Select Git Provider"
         )
       }
       buttonStyle={EnumButtonStyle.Text}
@@ -63,14 +72,14 @@ export default function ExistingConnectionsMenu({
                 </SelectMenuItem>
               ))}
               <hr className={`${CLASS_NAME}__hr`} />
-              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-                <span>Add another organization</span>
-                <Icon
-                  icon="plus"
-                  className={`${CLASS_NAME}__add-icon`}
-                  size="xsmall"
+              {GIT_PROVIDERS.map((provider) => (
+                <GitOrganizationMenuAddProvider
+                  label={provider.label}
+                  provider={provider.provider}
+                  onAddGitOrganization={onAddGitOrganization}
+                  className={CLASS_NAME}
                 />
-              </SelectMenuItem>
+              ))}
             </>
           </SelectMenuList>
         </div>

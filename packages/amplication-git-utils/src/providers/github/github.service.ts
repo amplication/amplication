@@ -9,8 +9,8 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { PaginationLimit } from "../errors/PaginationLimit";
-import { GitProvider } from "../git-provider.interface.ts";
+import { PaginationLimit } from "../../errors/PaginationLimit";
+import { GitProvider } from "../../git-provider.interface";
 import {
   Branch,
   CloneUrlArgs,
@@ -36,9 +36,11 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
-} from "../types";
-import { ConverterUtil } from "../utils/convert-to-number";
-import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "./git.constants";
+  OAuth2FlowResponse,
+} from "../../types";
+import { ConverterUtil } from "../../utils/convert-to-number";
+import { NotImplementedError } from "../../utils/custom-error";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../git.constants";
 
 const GITHUB_FILE_TYPE = "file";
 
@@ -941,6 +943,14 @@ export class GithubService implements GitProvider {
       });
     const { token } = installationTokenData;
     return token;
+  }
+
+  // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
+
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
+    throw NotImplementedError;
   }
 }
 
