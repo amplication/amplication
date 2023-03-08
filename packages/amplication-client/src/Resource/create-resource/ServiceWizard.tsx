@@ -6,9 +6,7 @@ import React, {
 } from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
-import {
-  ResourceSettings,
-} from "./CreateServiceWizard";
+import { ResourceSettings } from "./CreateServiceWizard";
 import { Form, Formik, FormikErrors } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
@@ -51,6 +49,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   children,
   moduleCss,
 }) => {
+  const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
   const [currWizardPatternIndex, setCurrWizardPatternIndex] = useState(
     wizardPattern.findIndex((i) => i === activePageIndex)
@@ -76,7 +75,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     console.log(values);
     // context.handleWizardChange(values);
   }, []);
-  console.log(wizardSchema[activePageIndex]);
+
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -90,19 +89,17 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           initialValues={wizardInitialValues}
           onSubmit={handleSubmit}
           validateOnMount
-          validate={
-            (values: ResourceSettings) => {
-              const errors: FormikErrors<ResourceSettings> = validate<ResourceSettings>(
-                values,
-                wizardSchema[activePageIndex]
-              );
-             
-              console.log(errors)
-      
-              return errors;
-            }
-          }
-          // validate={(values: ResourceSettings) => validate(values, wizardSchema[activePageIndex])}
+          validate={(values: ResourceSettings) => {
+            const errors: FormikErrors<ResourceSettings> =
+              validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
+            console.log(
+              Object.keys(errors).length,
+              !!Object.keys(errors).length
+            );
+            setIsValidStep(!!Object.keys(errors).length);
+
+            return errors;
+          }}
           validateOnBlur
         >
           {({ errors, touched }) => {
@@ -116,7 +113,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                   >,
                   {}
                 )}
-                <div>{Object.keys(errors).length && Object.keys(touched).length ? "no good" : "fine"}</div>
+                <div>
+                  {Object.keys(errors).length && Object.keys(touched).length
+                    ? "no good"
+                    : "fine"}
+                </div>
               </Form>
             );
           }}
@@ -133,7 +134,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         <div className={`${moduleCss}__continueBtn`}>
           <ContinueButton
             goNextPage={goNextPage}
-            disabled={false}
+            disabled={isValidStep}
             buttonName={"continue"}
           />
         </div>
