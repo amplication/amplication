@@ -1,7 +1,7 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { isEmpty } from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import * as models from "../../models";
 import { AppContext } from "../../context/appContext";
 import {
   AuthorizeResourceWithGitResult,
@@ -14,7 +14,6 @@ import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
-import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
@@ -71,28 +70,43 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGithubClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: EnumGitProvider.Github,
-      },
-    }).catch(console.error);
-  }, []);
+  const handleAddProviderClick = useCallback(
+    (provider: models.EnumGitProvider) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.AddGitProviderClick,
+        provider: provider,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    },
+    []
+  );
 
-  const handleAuthWithBitbucketClicked = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
-    });
+  // const handleAuthWithGithubClick = useCallback(() => {
+  //   trackEvent({
+  //     eventName: AnalyticsEventNames.GitHubAuthResourceStart,
+  //   });
+  //   authWithGit({
+  //     variables: {
+  //       gitProvider: EnumGitProvider.Github,
+  //     },
+  //   }).catch(console.error);
+  // }, []);
 
-    authWithGit({
-      variables: {
-        gitProvider: EnumGitProvider.Bitbucket,
-      },
-    }).catch(console.error);
-  }, []);
+  // const handleAuthWithBitbucketClicked = useCallback(() => {
+  //   trackEvent({
+  //     eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
+  //   });
+
+  //   authWithGit({
+  //     variables: {
+  //       gitProvider: EnumGitProvider.Bitbucket,
+  //     },
+  //   }).catch(console.error);
+  // }, []);
 
   triggerOnDone = () => {
     onDone();
@@ -130,8 +144,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             setGitOrganization(organization);
           }}
           selectedGitOrganization={gitOrganization}
-          onAddGitOrganization={handleAuthWithGithubClick}
-          onAddBitbucketOrganization={handleAuthWithBitbucketClicked}
+          onAddGitOrganization={handleAddProviderClick}
         />
 
         <RepositoryActions

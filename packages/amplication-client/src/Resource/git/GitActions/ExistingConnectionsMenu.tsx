@@ -6,29 +6,36 @@ import {
   SelectMenuModal,
   Icon,
 } from "@amplication/design-system";
-import React from "react";
+import React, { useCallback } from "react";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
+import * as models from "../../../models";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  onAddGitOrganization: () => void;
+  onAddGitOrganization: (provider: models.EnumGitProvider) => void;
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
-  onAddBitbucketOrganization: () => void;
 };
 
 const CLASS_NAME = "git-organization-select-menu";
+
+const GIT_PROVIDERS: { provider: models.EnumGitProvider; label: string }[] = [
+  { provider: models.EnumGitProvider.Github, label: "Add GitHub Organization" },
+  {
+    provider: models.EnumGitProvider.Bitbucket,
+    label: "Add BitBucket Account",
+  },
+];
 
 export default function ExistingConnectionsMenu({
   gitOrganizations,
   selectedGitOrganization,
   onAddGitOrganization,
   onSelectGitOrganization,
-  onAddBitbucketOrganization,
 }: Props) {
   return (
     <SelectMenu
@@ -65,22 +72,13 @@ export default function ExistingConnectionsMenu({
                 </SelectMenuItem>
               ))}
               <hr className={`${CLASS_NAME}__hr`} />
-              <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-                <span>Add GitHub organization</span>
-                <Icon
-                  icon="plus"
-                  className={`${CLASS_NAME}__add-icon`}
-                  size="xsmall"
+              {GIT_PROVIDERS.map((provider) => (
+                <GitOrganizationMenuAddProvider
+                  label={provider.label}
+                  provider={provider.provider}
+                  onAddGitOrganization={onAddGitOrganization}
                 />
-              </SelectMenuItem>
-              <SelectMenuItem onSelectionChange={onAddBitbucketOrganization}>
-                <span>Add Bitbucket account</span>
-                <Icon
-                  icon="plus"
-                  className={`${CLASS_NAME}__add-icon`}
-                  size="xsmall"
-                />
-              </SelectMenuItem>
+              ))}
             </>
           </SelectMenuList>
         </div>
@@ -88,3 +86,24 @@ export default function ExistingConnectionsMenu({
     </SelectMenu>
   );
 }
+
+export const GitOrganizationMenuAddProvider = ({
+  provider,
+  label,
+  onAddGitOrganization,
+}: {
+  provider: models.EnumGitProvider;
+  onAddGitOrganization: (provider: string) => void;
+  label: string;
+}) => {
+  const itemSelected = useCallback(() => {
+    onAddGitOrganization(provider);
+  }, [provider]);
+
+  return (
+    <SelectMenuItem onSelectionChange={itemSelected}>
+      <span>{label}</span>
+      <Icon icon="plus" className={`${CLASS_NAME}__add-icon`} size="xsmall" />
+    </SelectMenuItem>
+  );
+};
