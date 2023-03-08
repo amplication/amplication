@@ -60,7 +60,7 @@ model GitOrganization {
   provider           EnumGitProvider
   name               String
   installationId     String
-  providerProperties Json
+  providerProperties Json                     @default("{}")
   createdAt          DateTime                 @default(now())
   updatedAt          DateTime                 @updatedAt
   workspaceId        String
