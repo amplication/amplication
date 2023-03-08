@@ -203,6 +203,9 @@ export class BillingService {
         cancelUrl: new URL(successUrl, this.clientHost).href,
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
+      metadata: {
+        userId: userId,
+      },
     });
     await this.analytics.track({
       userId,

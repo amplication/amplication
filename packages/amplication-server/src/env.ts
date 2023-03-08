@@ -1,6 +1,8 @@
 /* eslint-disable @typescript-eslint/naming-convention */
 export class Env {
   static readonly CLIENT_HOST = "CLIENT_HOST";
+  static readonly BITBUCKET_CLIENT_ID = "BITBUCKET_CLIENT_ID";
+  static readonly BITBUCKET_CLIENT_SECRET = "BITBUCKET_CLIENT_SECRET";
 
   static readonly CODE_GENERATION_REQUEST_TOPIC =
     "CODE_GENERATION_REQUEST_TOPIC";
