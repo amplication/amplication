@@ -33,14 +33,11 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/BillingFeature";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { SendPullRequestArgs } from "./dto/sendPullRequest";
+import { BillingFeature } from "../billing/billing.types";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -158,7 +155,7 @@ export class BuildService {
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly billingService: BillingService,
 
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.host = this.configService.get(HOST_VAR);
@@ -306,8 +303,7 @@ export class BuildService {
         const logger = this.logger.child({
           buildId: build.id,
         });
-
-        logger.info("Preparing build generation message");
+        this.logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
@@ -458,11 +454,13 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const subscription = await this.billingService.getSubscription(
-            project.workspaceId
-          );
+          const smartGitSyncEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.SmartGitSync
+            );
 
-          const pullRequestMode = subscription
+          const pullRequestMode = smartGitSyncEntitlement.hasAccess
             ? EnumPullRequestMode.Accumulative
             : EnumPullRequestMode.Basic;
 
@@ -489,8 +487,9 @@ export class BuildService {
             pullRequestMode,
           };
 
-          await this.queueService.emitMessage(
+          await this.queueService.emitMessageWithKey(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            resourceRepository.id,
             JSON.stringify(createPullRequestArgs)
           );
         } catch (error) {

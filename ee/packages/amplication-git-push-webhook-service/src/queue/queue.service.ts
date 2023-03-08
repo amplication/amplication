@@ -4,10 +4,7 @@ import { KafkaTopics } from './queue.types';
 import { CreateRepositoryPush } from './dto/create-repository-push.dto';
 import { CreateEventRepositoryPush } from './dto/create-event-repository-push.dto';
 import { ConfigService } from '@nestjs/config';
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from '@amplication/nest-logger-module';
+import { AmplicationLogger } from '@amplication/util/nestjs/logging';
 
 export const QUEUE_SERVICE_NAME = 'REPOSITORY_PUSH_EVENT_SERVICE';
 
@@ -19,7 +16,7 @@ export class QueueService {
     @Inject(QUEUE_SERVICE_NAME)
     private readonly repositoryClient: ClientKafka,
     configService: ConfigService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
   ) {
     this.kafkaRepositoryPushQueue = configService.get<string>(

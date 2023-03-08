@@ -57,6 +57,7 @@ jobs:
           fetch-depth: 0
 
       - uses: nrwl/nx-set-shas@v3
+        if: inputs.nx-force-all == false
         with:
           main-branch-name: ${{ inputs.nx-base }}
 

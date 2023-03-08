@@ -2,15 +2,15 @@ import { Module } from "@nestjs/common";
 import { GitPullEventModule } from "./git-pull-event/git-pull-event.module";
 import { HealthModule } from "./health/health.module";
 import { ConfigModule } from "@nestjs/config";
-import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 
 @Module({
   controllers: [],
   imports: [
     GitPullEventModule,
     HealthModule,
-    AmplicationLoggerModule.register({
-      metadata: { service: "amplication-git-pull-service" },
+    AmplicationLoggerModule.forRoot({
+      serviceName: "amplication-git-pull-service",
     }),
     ConfigModule.forRoot({
       isGlobal: true,

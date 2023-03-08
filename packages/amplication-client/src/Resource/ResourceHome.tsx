@@ -10,7 +10,6 @@ import { resourceThemeMap } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
-import NewVersionTile from "./NewVersionTile";
 import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
@@ -64,7 +63,6 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
             />
           </div>
           <div className={`${CLASS_NAME}__tiles`}>
-            <NewVersionTile resourceId={resourceId} />
             {currentResource?.resourceType === EnumResourceType.Service && (
               <OverviewTile resourceId={resourceId} />
             )}

@@ -3,18 +3,11 @@
 .vscode
 .idea
 docs
-terraform
 .env
-.gcloudignore
-.gitbook.yaml
 .gitignore
 docker-compose.yml
-packages/amplication-e2e-tester
-packages/amplication-server/artifacts
-libs/data-service-generator/src/tests
-libs/data-service-generator/generated
 
-
+**/coverage
 **/node_modules
 !**/node_modules/@amplication/prisma-clients
 *.md
@@ -22,11 +15,11 @@ libs/data-service-generator/generated
 *.yaml
 **/*.yaml
 
-packages/**/dist
-packages/amplication-client/build
-packages/**/lib
-
 **/*.spec.ts
 **/*.mock.ts
 
-!libs/data-service-generator/src/*/static
+.amplication
+
+libs/
+
+!**/data-service-generator/src/**/static/**/*.*

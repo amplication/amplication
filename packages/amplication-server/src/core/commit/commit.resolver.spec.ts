@@ -14,7 +14,7 @@ import { UserService } from "../user/user.service";
 import { BuildService } from "../build/build.service";
 
 import { CommitResolver } from "./commit.resolver";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -104,7 +104,7 @@ describe("CommitService", () => {
           useValue: {},
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

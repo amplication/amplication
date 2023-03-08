@@ -24,7 +24,7 @@ import { EntityPermission } from "../../models/EntityPermission";
 import { EntityVersion } from "../../models/EntityVersion";
 import { Commit, EntityPermissionField } from "../../models";
 import { EntityVersionResolver } from "./entityVersion.resolver";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -654,7 +654,7 @@ describe("EntityResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),

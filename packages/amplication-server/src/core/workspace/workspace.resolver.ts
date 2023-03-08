@@ -32,6 +32,7 @@ import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
+import { SubscriptionService } from "../subscription/subscription.service";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -40,7 +41,8 @@ export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly subscriptionService: SubscriptionService
   ) {}
 
   @Query(() => Workspace, {
@@ -148,7 +150,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
-    return this.billingService.getSubscription(workspace.id);
+    return await this.subscriptionService.resolveSubscription(workspace.id);
   }
 
   @ResolveField(() => [GitOrganization])

@@ -5,6 +5,7 @@
     @include flexFullRow;
     justify-content: flex-start;
     color: var(--black90);
+    font-size: 14px;
   }
 
   &__field {
@@ -21,5 +22,8 @@
   }
   &__action-name {
     color: var(--black100);
+  }
+  .select-menu__summary {
+    margin: 12px;
   }
 }

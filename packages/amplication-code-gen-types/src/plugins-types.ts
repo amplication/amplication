@@ -68,8 +68,6 @@ export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
-  CreateUserInfo = "CreateUserInfo",
-  CreateTokenPayloadInterface = "CreateTokenPayloadInterface",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",
@@ -96,6 +94,9 @@ export enum EventNames {
   CreateEntityResolverBase = "CreateEntityResolverBase",
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
+  CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
+  CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
+  CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
 }
 
 export interface AmplicationPlugin {

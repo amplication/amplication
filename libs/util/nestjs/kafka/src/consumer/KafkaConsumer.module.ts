@@ -1,4 +1,4 @@
-import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import {
   KafkaMessageJsonSerializer,
   KAFKA_SERIALIZER,

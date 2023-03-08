@@ -5,16 +5,38 @@ export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 
 @Injectable()
 export class QueueService {
-  generatePullRequestTopic: string;
   constructor(
     @Inject(QUEUE_SERVICE_NAME)
     private readonly kafkaClient: ClientKafka
   ) {}
 
   async emitMessage(topic: string, message: string): Promise<void> {
-    // Explicitly wait for kafka client to connect. https://github.com/nestjs/nest/issues/10449
-    await this.kafkaClient.connect();
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, message).subscribe({
+        error: (err: any) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
+  }
 
-    this.kafkaClient.emit(topic, message);
+  async emitMessageWithKey(
+    topic: string,
+    key: string,
+    value: string
+  ): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, { key, value }).subscribe({
+        error: (err: any) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
   }
 }

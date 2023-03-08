@@ -1,5 +1,6 @@
 name: Documentation Request
 description: Provide information for a new or updated documentation
+title: "📖 Documentation: "
 labels: ["type: docs"]
 body:
   - type: markdown

@@ -4,25 +4,22 @@ import React from "react";
 import { BrowserRouter as Router } from "react-router-dom";
 import {
   ApolloClient,
+  ApolloLink,
   InMemoryCache,
   createHttpLink,
   ApolloProvider,
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { getToken, setToken } from "./authentication/authentication";
+import { getToken, setTokenFromCookie } from "./authentication/authentication";
 import "@amplication/design-system/icons";
 import "./index.scss";
 import App from "./App";
-import { REACT_APP_DATA_SOURCE } from "./env";
+import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 
 const queryClient = new QueryClient();
 
-const params = new URLSearchParams(window.location.search);
-const token = params.get("token");
-if (token) {
-  setToken(token);
-}
+setTokenFromCookie();
 
 if (!REACT_APP_DATA_SOURCE) {
   throw new Error("Missing ֿREACT_APP_DATA_SOURCE env variable");
@@ -30,6 +27,10 @@ if (!REACT_APP_DATA_SOURCE) {
 
 const httpLink = createHttpLink({
   uri: REACT_APP_DATA_SOURCE,
+});
+
+const pluginApiHttpLink = createHttpLink({
+  uri: REACT_APP_PLUGIN_API_DATA_SOURCE,
 });
 
 const authLink = setContext((_, { headers }) => {
@@ -46,7 +47,11 @@ const authLink = setContext((_, { headers }) => {
 
 const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
-  link: authLink.concat(httpLink),
+  link: ApolloLink.split(
+    (operation) => operation.getContext().clientName === "pluginApiHttpLink",
+    pluginApiHttpLink,
+    authLink.concat(httpLink)
+  ),
 });
 
 const root = ReactDOM.createRoot(

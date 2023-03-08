@@ -1,7 +1,8 @@
-import { Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { Link, useHistory } from "react-router-dom";
+import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import * as models from "../models";
 import {
   Button,
@@ -10,64 +11,52 @@ import {
   Modal,
 } from "@amplication/design-system";
 import "./PurchasePage.scss";
-import { useContext } from "react";
+import { useCallback, useContext, useState } from "react";
+
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
+import { PurchaseLoader } from "./PurchaseLoader";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
 };
 
-const selectedPlanAction = {
-  "plan-amplication-enterprise": (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType,
-    provisionSubscription
-  ) => {
-    window.open(
-      "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
-      "_blank",
-      "noreferrer"
-    );
-  },
-  "plan-amplication-pro": async (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType,
-    provisionSubscription
-  ) => {
-    provisionSubscription({
-      variables: {
-        data: {
-          workspaceId: purchaseWorkspace.id,
-          planId: "plan-amplication-pro",
-          billingPeriod: selectedBillingPeriod,
-          intentionType,
-          successUrl: props.location.state.from.pathname,
-          cancelUrl: props.location.state.from.pathname,
-        },
-      },
-    });
-  },
+const UNKNOWN = "unknown";
+
+const getPlanPrice = (
+  selectedBillingPeriod: BillingPeriod,
+  pricePoints: Price[]
+) => {
+  if (!pricePoints.length) return UNKNOWN;
+
+  return pricePoints.reduce((price: string, pricePoint: Price) => {
+    if (pricePoint.billingPeriod === selectedBillingPeriod)
+      price = `${pricePoint.amount}${pricePoint.currency}`;
+
+    return price;
+  }, UNKNOWN);
 };
 
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
+
   const { trackEvent } = useTracking();
+
   const history = useHistory();
-  const backUrl = () => {
+  const backUrl = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PricingPageClose,
+    });
     if (history.location.state && history.location.state.source)
       return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
-  };
-  const { currentWorkspace } = useContext(AppContext);
+  }, [history]);
+
   const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
       onCompleted: (data) => {
@@ -80,9 +69,68 @@ const PurchasePage = (props) => {
       },
     });
 
+  const handleContactUsClick = useCallback(() => {
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.ContactUsButtonClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat, currentWorkspace.id]);
+
+  const [isLoading, setLoading] = useState(false);
+
+  const upgradeToPro = useCallback(
+    async (selectedBillingPeriod, intentionType) => {
+      await provisionSubscription({
+        variables: {
+          data: {
+            workspaceId: currentWorkspace.id,
+            planId: "plan-amplication-pro",
+            billingPeriod: selectedBillingPeriod,
+            intentionType,
+            successUrl: props.location.state?.from?.pathname,
+            cancelUrl: props.location.state?.from?.pathname,
+          },
+        },
+      });
+    },
+    [props.location.state, provisionSubscription, currentWorkspace.id]
+  );
+
+  const onPlanSelected = useCallback(
+    async ({ plan, intentionType, selectedBillingPeriod }) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.PricingPageCTAClick,
+        currentPlan:
+          currentWorkspace.subscription || models.EnumSubscriptionPlan.Free,
+        type: plan.displayName,
+        price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
+        action: intentionType,
+        Billing: selectedBillingPeriod,
+      });
+      switch (plan.id) {
+        case "plan-amplication-enterprise":
+          handleContactUsClick();
+          break;
+        case "plan-amplication-pro":
+          setLoading(true);
+          await upgradeToPro(selectedBillingPeriod, intentionType);
+          break;
+      }
+    },
+    [upgradeToPro, handleContactUsClick]
+  );
+
+  const pageTitle = "Pricing & Plans";
+
   return (
     <Modal open fullScreen>
+      <Helmet>
+        <title>{`Amplication | ${pageTitle} : `}</title>
+      </Helmet>
       <div className={CLASS_NAME}>
+        {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
           <Button
             className={`${CLASS_NAME}__layout__btn`}
@@ -123,32 +171,14 @@ const PurchasePage = (props) => {
               priceNotSet: "Price not set",
             },
           }}
+          preferredBillingPeriod={BillingPeriod.Monthly}
           onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
               action: billingPeriod,
             });
           }}
-          onPlanSelected={async ({
-            plan,
-            intentionType,
-            selectedBillingPeriod,
-          }) => {
-            trackEvent({
-              eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
-              type: plan.displayName,
-              action: intentionType,
-              Billing: selectedBillingPeriod,
-            });
-            selectedPlanAction[plan.id](
-              props,
-              currentWorkspace,
-              selectedBillingPeriod,
-              intentionType,
-              provisionSubscription
-            );
-          }}
+          onPlanSelected={onPlanSelected}
         />
         <div className={`${CLASS_NAME}__contact`}>
           <div className={`${CLASS_NAME}__contact__content`}>
@@ -160,15 +190,11 @@ const PurchasePage = (props) => {
               do our best to help you improve your project for the community!
             </div>
           </div>
-          <Button buttonStyle={EnumButtonStyle.Primary}>
-            <a
-              target="_blank"
-              rel="noreferrer"
-              className={`${CLASS_NAME}__contact_pro_btn`}
-              href="mailto:sales@amplication.com?subject=Pro plan for Open Source project"
-            >
-              Contact us
-            </a>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleContactUsClick}
+          >
+            Contact Us
           </Button>
         </div>
         <div className={`${CLASS_NAME}__footer`}>
