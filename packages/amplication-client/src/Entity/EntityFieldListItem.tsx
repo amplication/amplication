@@ -8,6 +8,7 @@ import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 import { AppContext } from "../context/appContext";
 import { EntityFieldProperty } from "./EntityFieldProperty";
+import classNames from "classnames";
 
 type Props = {
   resourceId: string;
@@ -83,7 +84,12 @@ export const EntityFieldListItem = ({
         />
       </div>
       {!isEmpty(entityField.description) && (
-        <div className={`${CLASS_NAME}__row`}>
+        <div
+          className={classNames(
+            `${CLASS_NAME}__row`,
+            `${CLASS_NAME}__description-row`
+          )}
+        >
           <span className={`${CLASS_NAME}__description`}>
             {entityField.description}
           </span>

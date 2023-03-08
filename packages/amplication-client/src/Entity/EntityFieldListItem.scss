@@ -8,20 +8,16 @@
     @include flexFullRowWithSpacing;
     margin-bottom: var(--default-spacing);
 
-    &:nth-child(2) {
-      padding-bottom: 12px;
-      border-bottom: 1px solid var(--black10);
-    }
-
     &:last-child {
       margin-bottom: 0;
     }
   }
+  &__description-row {
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--black10);
+  }
   &__title {
-    @include body1;
-    color: var(--black100);
-    font-size: 14px;
-    font-weight: 600;
+    @include bold-14;
   }
   &__subtitle {
     @include body4;

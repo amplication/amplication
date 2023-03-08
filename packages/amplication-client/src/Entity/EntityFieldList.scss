@@ -1,16 +1,13 @@
 @import "../style/index.scss";
 
 .entity-field-list {
-  &__container {
-    border-bottom: 1px solid #2c3249;
-    margin-bottom: 16px;
-  }
   &__header {
     @include flexFullRowWithSpacing;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--black5);
     margin-bottom: var(--large-spacing);
-    width: 220px;
-    .search-field {
-      flex: 1;
+    .search-field input {
+      width: 220px;
     }
   }
   &__title {

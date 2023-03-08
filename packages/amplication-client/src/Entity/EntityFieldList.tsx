@@ -75,14 +75,12 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   return (
     <>
-      <div className={`${CLASS_NAME}__container`}>
-        <div className={`${CLASS_NAME}__header`}>
-          <SearchField
-            label="search"
-            placeholder="Search"
-            onChange={handleSearchChange}
-          />
-        </div>
+      <div className={`${CLASS_NAME}__header`}>
+        <SearchField
+          label="search"
+          placeholder="Search"
+          onChange={handleSearchChange}
+        />
       </div>
       <div className={`${CLASS_NAME}__title`}>
         {data?.entity.fields?.length}{" "}
