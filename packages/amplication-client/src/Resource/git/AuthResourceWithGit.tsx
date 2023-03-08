@@ -17,6 +17,8 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { isEmpty } from "lodash";
+import NewConnection from "./GitActions/NewConnection";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -115,14 +117,21 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-        <ExistingConnectionsMenu
-          gitOrganizations={gitOrganizations}
-          onSelectGitOrganization={(organization) => {
-            setGitOrganization(organization);
-          }}
-          selectedGitOrganization={gitOrganization}
-          onAddGitOrganization={handleAddProviderClick}
-        />
+        {isEmpty(gitOrganizations) ? (
+          <NewConnection
+            provider={EnumGitProvider.Github}
+            onSyncNewGitOrganizationClick={handleAddProviderClick}
+          />
+        ) : (
+          <ExistingConnectionsMenu
+            gitOrganizations={gitOrganizations}
+            onSelectGitOrganization={(organization) => {
+              setGitOrganization(organization);
+            }}
+            selectedGitOrganization={gitOrganization}
+            onAddGitOrganization={handleAddProviderClick}
+          />
+        )}
 
         <RepositoryActions
           onCreateRepository={() => {

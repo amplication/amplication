@@ -24,10 +24,11 @@ const CLASS_NAME = "git-organization-select-menu";
 
 const GIT_PROVIDERS: { provider: models.EnumGitProvider; label: string }[] = [
   { provider: models.EnumGitProvider.Github, label: "Add GitHub Organization" },
-  {
-    provider: models.EnumGitProvider.Bitbucket,
-    label: "Add BitBucket Account",
-  },
+  // comment until we fully support Bitbucket
+  // {
+  //   provider: models.EnumGitProvider.Bitbucket,
+  //   label: "Add BitBucket Account",
+  // },
 ];
 
 export default function ExistingConnectionsMenu({
