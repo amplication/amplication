@@ -15,6 +15,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
+  OAuth2FlowResponse,
   PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -26,6 +27,7 @@ export interface GitProvider {
   readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
+  completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;

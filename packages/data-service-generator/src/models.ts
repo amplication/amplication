@@ -653,6 +653,7 @@ export enum EnumGitOrganizationType {
 }
 
 export enum EnumGitProvider {
+  Bitbucket = 'Bitbucket',
   Github = 'Github'
 }
 
@@ -720,12 +721,18 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+export type GitOAuth2FlowInput = {
+  code: Scalars['String'];
+  gitProvider: EnumGitProvider;
+};
+
 export type GitOrganization = {
   createdAt: Scalars['DateTime'];
   id: Scalars['String'];
   installationId: Scalars['String'];
   name: Scalars['String'];
   provider: EnumGitProvider;
+  providerProperties?: Maybe<ProviderProperties>;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
 };
@@ -807,6 +814,7 @@ export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
   commit?: Maybe<Commit>;
+  completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
@@ -883,6 +891,11 @@ export type MutationChangePasswordArgs = {
 
 export type MutationCommitArgs = {
   data: CommitCreateInput;
+};
+
+
+export type MutationCompleteGitOAuth2FlowArgs = {
+  data: GitOAuth2FlowInput;
 };
 
 
@@ -1382,6 +1395,17 @@ export type PropertySelector = {
 export type PropertySelectorInput = {
   include: Scalars['Boolean'];
   propertyName: Scalars['String'];
+};
+
+export type ProviderProperties = {
+  accessToken?: Maybe<Scalars['String']>;
+  expiresIn?: Maybe<Scalars['Float']>;
+  installationId?: Maybe<Scalars['String']>;
+  refreshToken?: Maybe<Scalars['String']>;
+  scopes?: Maybe<Array<Scalars['String']>>;
+  tokenType?: Maybe<Scalars['String']>;
+  username?: Maybe<Scalars['String']>;
+  uuid?: Maybe<Scalars['String']>;
 };
 
 export type ProvisionSubscriptionInput = {

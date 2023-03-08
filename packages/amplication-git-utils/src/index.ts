@@ -1,2 +1,2 @@
-export { GitClientService } from "./git/git.service";
+export { GitClientService } from "./providers/git.service";
 export * from "./types";

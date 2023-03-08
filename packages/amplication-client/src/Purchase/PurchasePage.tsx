@@ -23,20 +23,29 @@ export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
 };
 
+type PriceParam = { price: number; currency: string };
+
 const UNKNOWN = "unknown";
 
 const getPlanPrice = (
   selectedBillingPeriod: BillingPeriod,
   pricePoints: Price[]
-) => {
-  if (!pricePoints.length) return UNKNOWN;
+): PriceParam => {
+  const unknownPrice: PriceParam = { currency: UNKNOWN, price: 0 };
 
-  return pricePoints.reduce((price: string, pricePoint: Price) => {
-    if (pricePoint.billingPeriod === selectedBillingPeriod)
-      price = `${pricePoint.amount}${pricePoint.currency}`;
+  // If there are no price points, return the unknown price
+  if (!pricePoints.length) return unknownPrice;
 
-    return price;
-  }, UNKNOWN);
+  // Return the price point with the selected billing period
+  return pricePoints.reduce(
+    (price: PriceParam, pricePoint: Price): PriceParam => {
+      if (pricePoint.billingPeriod === selectedBillingPeriod) {
+        price = { currency: pricePoint.currency, price: pricePoint.amount };
+      }
+      return price;
+    },
+    unknownPrice
+  );
 };
 
 const CLASS_NAME = "purchase-page";
@@ -100,14 +109,20 @@ const PurchasePage = (props) => {
 
   const onPlanSelected = useCallback(
     async ({ plan, intentionType, selectedBillingPeriod }) => {
+      const { currency, price } = getPlanPrice(
+        selectedBillingPeriod,
+        plan.pricePoints
+      );
+
       trackEvent({
         eventName: AnalyticsEventNames.PricingPageCTAClick,
         currentPlan:
           currentWorkspace.subscription || models.EnumSubscriptionPlan.Free,
+        price,
         type: plan.displayName,
-        price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
         action: intentionType,
         Billing: selectedBillingPeriod,
+        currency,
       });
       switch (plan.id) {
         case "plan-amplication-enterprise":
