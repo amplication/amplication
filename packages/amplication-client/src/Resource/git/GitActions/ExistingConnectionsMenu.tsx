@@ -45,7 +45,7 @@ export default function ExistingConnectionsMenu({
             isMenuTitle
           />
         ) : (
-          "Select git provider integration"
+          "Select Git Provider"
         )
       }
       buttonStyle={EnumButtonStyle.Text}
