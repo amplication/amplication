@@ -8,6 +8,7 @@ import {
   EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE,
+  NUMBER_WITH_INVALID_MINIMUM_VALUE,
 } from "./entity.service";
 import {
   Entity,
@@ -222,6 +223,41 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   },
 };
 
+const EXAMPLE_ENTITY_FIELD_DATA_WITH_INVALID_MINIMUM_VALUE = {
+  name: "exampleEntityFieldNameWithInvalidMinimumValue",
+  displayName: "Example Entity Field Display Name With Invalid Minimum Value",
+  dataType: EnumDataType.WholeNumber,
+  properties: { maximumValue: 10, minimumValue: 10 },
+  required: false,
+  unique: false,
+  searchable: true,
+  description: "",
+};
+const EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE = {
+  name: "exampleEntityFieldNameWithInvalidMinimumValue",
+  displayName: "Example Entity Field Display Name With Invalid Minimum Value",
+  dataType: EnumDataType.WholeNumber,
+  properties: { maximumValue: 10, minimumValue: 1 },
+  required: false,
+  unique: false,
+  searchable: true,
+  description: "",
+};
+const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
+  createdAt: new Date(),
+  dataType: "SingleLineText",
+  description: "example field",
+  displayName: "example field",
+  entityVersionId: "exampleEntityVersion",
+  id: "exampleEntityField",
+  name: "exampleFieldName",
+  permanentId: "exampleEntityFieldPermanentId",
+  properties: null,
+  required: true,
+  searchable: true,
+  unique: false,
+  updatedAt: new Date(),
+};
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
@@ -1038,6 +1074,27 @@ describe("EntityService", () => {
       )
     ).rejects.toThrow(NAME_VALIDATION_ERROR_MESSAGE);
   });
+
+  it("should update Minimum value of a field", async () => {
+    const args = {
+      data: EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE,
+      where: { id: "exampleEntityField" },
+    };
+    expect(await service.updateField(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER
+    );
+  });
+
+  it('should throw "Minimum value can not be greater than or equal to, the Maximum value', async () => {
+    const args = {
+      data: EXAMPLE_ENTITY_FIELD_DATA_WITH_INVALID_MINIMUM_VALUE,
+      where: { id: "exampleEntityField" },
+    };
+    await expect(service.updateField(args, EXAMPLE_USER)).rejects.toThrow(
+      NUMBER_WITH_INVALID_MINIMUM_VALUE
+    );
+  });
+
   it("should update entity field", async () => {
     const args = {
       where: { id: EXAMPLE_ENTITY_FIELD.id },

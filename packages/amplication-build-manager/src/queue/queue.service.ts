@@ -10,7 +10,16 @@ export class QueueService {
     private readonly kafkaClient: ClientKafka
   ) {}
 
-  emitMessage(topic: string, message: string): void {
-    this.kafkaClient.emit(topic, message);
+  async emitMessage(topic: string, message: string): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, message).subscribe({
+        error: (err: any) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
   }
 }

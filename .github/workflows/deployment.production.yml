@@ -52,11 +52,24 @@ jobs:
         with:
           registries: "439403303254"
 
+      # https://github.com/docker/metadata-action
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          tags: |
+            type=raw,value=${{ github.ref_name }}
+
+      # https://www.npmjs.com/package/@nx-tools/nx-docker
+      # GIT_REF_NAME and GIT_SHA variables are substituted in the project.json docker target build-args
       - name: Package
-        run: npx nx docker:build ${{ matrix.project }}
+        run: npx nx docker:build ${{ matrix.project }} --prod 
         env:
-          INPUT_TAGS: ${{ github.ref_name }}
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
 
   deployment:
     name: Deployment
@@ -80,10 +93,10 @@ jobs:
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            if [[ "$project" != "data-service-generator-runner" ]]; then
+            if [[ "$project" != "data-service-generator" ]]; then
               yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
-            elif [[ "$project" == "data-service-generator-runner" ]]; then
+            elif [[ "$project" == "data-service-generator" ]]; then
               yq -i '.job.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
             fi;

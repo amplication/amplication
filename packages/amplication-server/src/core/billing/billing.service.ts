@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -15,8 +12,7 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan, SubscriptionData } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature } from "./BillingFeature";
-import { BillingPlan } from "./BillingPlan";
+import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
@@ -37,7 +33,7 @@ export class BillingService {
   }
 
   constructor(
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
@@ -207,6 +203,9 @@ export class BillingService {
         cancelUrl: new URL(successUrl, this.clientHost).href,
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
+      metadata: {
+        userId: userId,
+      },
     });
     await this.analytics.track({
       userId,
@@ -234,10 +233,6 @@ export class BillingService {
         const activeSub = await workspace.subscriptions.find((subscription) => {
           return subscription.status === SubscriptionStatus.Active;
         });
-
-        if (activeSub.plan.id === BillingPlan.Free) {
-          return null;
-        }
 
         const amplicationSub = {
           id: activeSub.id,
@@ -360,6 +355,8 @@ export class BillingService {
 
   mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
     switch (planId) {
+      case BillingPlan.Free:
+        return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:

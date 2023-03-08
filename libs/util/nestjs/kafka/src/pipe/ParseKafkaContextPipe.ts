@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
   PipeTransform,
   Injectable,
@@ -22,7 +19,7 @@ export class ParseKafkaContextPipe
   constructor(
     @Inject(KAFKA_SERIALIZER)
     private serializerService: IKafkaMessageSerializer,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 

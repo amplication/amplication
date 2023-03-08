@@ -4,7 +4,7 @@ import { Plugin } from "./hooks/usePlugins";
 import "./PluginLogo.scss";
 
 const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/";
+  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
 const CLASS_NAME = "plugin-logo";
 

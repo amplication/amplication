@@ -111,12 +111,14 @@ jobs:
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
-        run: npx nx docker:build ${{ matrix.project }}
+        run: npx nx docker:build ${{ matrix.project }} --prod
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
-          INPUT_BUILD_ARGS: GIT_REF=${{ github.ref }}
-          
+          # env variables substituted in the project.json docker target build-args
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+
   configure:
     name: Configure deployment target environment
     runs-on: ubuntu-20.04

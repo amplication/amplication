@@ -15,6 +15,7 @@ import {
   EnumMessagePatternConnectionOptions,
   MessagePatternCreateInput,
 } from "@amplication/code-gen-types/models";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class ServiceTopicsService extends BlockTypeService<
@@ -29,7 +30,8 @@ export class ServiceTopicsService extends BlockTypeService<
   constructor(
     @Inject(forwardRef(() => ResourceService))
     private resourceService: ResourceService,
-    protected readonly blockService: BlockService
+    protected readonly blockService: BlockService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {
     super(blockService);
   }
@@ -109,7 +111,13 @@ export class ServiceTopicsService extends BlockTypeService<
     return super.update(args, user);
   }
 
-  async removeTopicFromAllServices(topicId: string, user: User): Promise<void> {
+  /**
+   * Delete all references of a Topic from all services configured with it by updating the settings pattern.
+   * @param  {string} topicId Id of the topic to be removed
+   * @param  {User} user User performing the action
+   * @returns Promise<void>
+   */
+  async deleteTopicFromAllServices(topicId: string, user: User): Promise<void> {
     const serviceTopicList =
       await this.blockService.findManyByBlockType<ServiceTopics>(
         {},
@@ -143,5 +151,60 @@ export class ServiceTopicsService extends BlockTypeService<
       );
     });
     return;
+  }
+
+  async deleteServiceTopic(
+    messageBrokerResourceId: string,
+    user: User
+  ): Promise<ServiceTopics[]> {
+    const resource = await this.resourceService.findOne({
+      where: {
+        id: messageBrokerResourceId,
+      },
+    });
+    const serviceTopicList =
+      await this.blockService.findManyByBlockType<ServiceTopics>(
+        {
+          where: {
+            resource: {
+              projectId: resource.projectId,
+            },
+          },
+        },
+        EnumBlockType.ServiceTopics
+      );
+
+    const serviceTopicsIdsToDelete = serviceTopicList
+      .filter(
+        (serviceTopic) =>
+          serviceTopic.messageBrokerId === messageBrokerResourceId
+      )
+      .map((serviceTopic) => serviceTopic.id);
+
+    const deletionPromises = serviceTopicsIdsToDelete.map((id) =>
+      super.delete(
+        {
+          where: {
+            id,
+          },
+        },
+        user
+      )
+    );
+
+    const settledPromise = await Promise.allSettled(deletionPromises);
+
+    const failedDeletions = settledPromise
+      .filter((result) => result.status === "rejected")
+      .map((result) => (result as PromiseRejectedResult).reason);
+
+    if (failedDeletions.length > 0)
+      this.logger.error("Failed to delete some ServiceTopics", {
+        failedDeletions,
+      });
+
+    return settledPromise
+      .filter((result) => result.status === "fulfilled")
+      .map((result) => (result as PromiseFulfilledResult<ServiceTopics>).value);
   }
 }

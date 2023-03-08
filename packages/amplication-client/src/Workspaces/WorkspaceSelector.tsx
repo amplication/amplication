@@ -10,6 +10,7 @@ import WorkspaceSelectorList from "./WorkspaceSelectorList";
 import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";
 import { AppContext } from "../context/appContext";
+import { EnumSubscriptionPlan } from "../models";
 
 export const WORKSPACE_COLOR = "#A787FF";
 const CLASS_NAME = "workspaces-selector";
@@ -61,7 +62,9 @@ function WorkspaceSelector() {
                 {currentWorkspace.name}
               </span>
               <span className={`${CLASS_NAME}__current__plan`}>
-                {currentWorkspace.subscription?.subscriptionPlan || "Free"} Plan
+                {currentWorkspace.subscription?.subscriptionPlan ||
+                  EnumSubscriptionPlan.Free}{" "}
+                Plan
               </span>
             </div>
             <Button

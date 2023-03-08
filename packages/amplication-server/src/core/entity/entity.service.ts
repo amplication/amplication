@@ -5,12 +5,12 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
 } from "@nestjs/common";
 import { DataConflictError } from "../../errors/DataConflictError";
 import { Prisma, PrismaService } from "../../prisma";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { camelCase } from "camel-case";
-import difference from "@extra-set/difference";
 import { isEmpty, pick, last, head, omit, isEqual } from "lodash";
 import {
   Entity,
@@ -124,6 +124,9 @@ export type EntityPendingChange = {
 const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
   "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
+
+export const NUMBER_WITH_INVALID_MINIMUM_VALUE =
+  "Minimum value can not be greater than or equal to, the Maximum value";
 
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
 
@@ -1201,7 +1204,7 @@ export class EntityService {
 
     const matchingNames = new Set(matchingFields.map(({ name }) => name));
 
-    return difference(uniqueNames, matchingNames);
+    return new Set([...uniqueNames].filter((x) => !matchingNames.has(x)));
   }
 
   async updateEntityPermission(
@@ -2118,6 +2121,14 @@ export class EntityService {
         "The base properties of the ID field cannot be edited"
       );
     }
+    const { minimumValue, maximumValue } = args?.data
+      ?.properties as unknown as {
+      minimumValue: number;
+      maximumValue: number;
+    };
+    if (minimumValue && minimumValue >= maximumValue) {
+      throw new BadRequestException(NUMBER_WITH_INVALID_MINIMUM_VALUE);
+    }
 
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
@@ -2221,7 +2232,6 @@ export class EntityService {
             },
           });
         }
-
         return updatedField;
       }
     );
