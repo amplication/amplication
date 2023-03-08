@@ -4,13 +4,12 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-  Icon,
 } from "@amplication/design-system";
-import React, { useCallback } from "react";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
 import * as models from "../../../models";
+import { GitOrganizationMenuAddProvider } from "./GitOrganizationMenuAddProvider";
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -77,6 +76,7 @@ export default function ExistingConnectionsMenu({
                   label={provider.label}
                   provider={provider.provider}
                   onAddGitOrganization={onAddGitOrganization}
+                  className={CLASS_NAME}
                 />
               ))}
             </>
@@ -86,24 +86,3 @@ export default function ExistingConnectionsMenu({
     </SelectMenu>
   );
 }
-
-export const GitOrganizationMenuAddProvider = ({
-  provider,
-  label,
-  onAddGitOrganization,
-}: {
-  provider: models.EnumGitProvider;
-  onAddGitOrganization: (provider: string) => void;
-  label: string;
-}) => {
-  const itemSelected = useCallback(() => {
-    onAddGitOrganization(provider);
-  }, [provider]);
-
-  return (
-    <SelectMenuItem onSelectionChange={itemSelected}>
-      <span>{label}</span>
-      <Icon icon="plus" className={`${CLASS_NAME}__add-icon`} size="xsmall" />
-    </SelectMenuItem>
-  );
-};

@@ -85,29 +85,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     []
   );
 
-  // const handleAuthWithGithubClick = useCallback(() => {
-  //   trackEvent({
-  //     eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-  //   });
-  //   authWithGit({
-  //     variables: {
-  //       gitProvider: EnumGitProvider.Github,
-  //     },
-  //   }).catch(console.error);
-  // }, []);
-
-  // const handleAuthWithBitbucketClicked = useCallback(() => {
-  //   trackEvent({
-  //     eventName: AnalyticsEventNames.BitbucketAuthResourceStart,
-  //   });
-
-  //   authWithGit({
-  //     variables: {
-  //       gitProvider: EnumGitProvider.Bitbucket,
-  //     },
-  //   }).catch(console.error);
-  // }, []);
-
   triggerOnDone = () => {
     onDone();
   };
