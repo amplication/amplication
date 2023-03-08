@@ -2,15 +2,22 @@ import React, { useCallback, useContext } from "react";
 import "../CreateServiceWizard.scss";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
+import { FormikProps } from "formik";
 
-const CreateGithubSync: React.FC<{ moduleClass: string }> = ({
-  moduleClass,
-}) => {
+const CreateGithubSync: React.FC<{
+  moduleClass: string;
+  formik?: FormikProps<{ [key: string]: any }>;
+}> = ({ moduleClass }) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
-  const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-  }, [refreshCurrentWorkspace]);
+  const handleOnDone = useCallback(
+    (data: any) => {
+      // formik.setFieldValue()
+      console.log(data);
+      refreshCurrentWorkspace();
+    },
+    [refreshCurrentWorkspace]
+  );
 
   return (
     <div className={`${moduleClass}__splitWrapper`}>

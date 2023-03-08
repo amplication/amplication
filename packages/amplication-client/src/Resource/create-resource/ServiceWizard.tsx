@@ -8,7 +8,6 @@ import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./CreateServiceWizard";
 import { Form, Formik, FormikErrors } from "formik";
-import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 
 interface ServiceWizardProps {
@@ -17,17 +16,20 @@ interface ServiceWizardProps {
   wizardSchema: { [key: string]: any };
   wizardInitialValues: { [key: string]: any };
   context: {
-    submitWizard: () => void;
+    submitWizard: (values: ResourceSettings) => void;
     resourceSettingsRef: MutableRefObject<ResourceSettings>;
   };
   moduleCss: string;
 }
 
 const BackButton: React.FC<{
+  wizardPattern: number[];
   activePageIndex: number;
   goPrevPage: () => void;
-}> = ({ activePageIndex, goPrevPage }) =>
-  activePageIndex > 0 ? <Button onClick={goPrevPage}>back</Button> : null;
+}> = ({ wizardPattern, activePageIndex, goPrevPage }) =>
+  activePageIndex !== wizardPattern[0] ? (
+    <Button onClick={goPrevPage}>back</Button>
+  ) : null;
 
 const ContinueButton: React.FC<{
   goNextPage: () => void;
@@ -51,9 +53,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
-  const [currWizardPatternIndex, setCurrWizardPatternIndex] = useState(
-    wizardPattern.findIndex((i) => i === activePageIndex)
+  const currWizardPatternIndex = wizardPattern.findIndex(
+    (i) => i === activePageIndex
   );
+
   const pages = React.Children.toArray(children);
   const currentPage = pages[activePageIndex];
 
@@ -71,11 +74,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
-  const handleSubmit = useCallback((values) => {
-    console.log(values);
-    // context.handleWizardChange(values);
-  }, []);
-
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -87,37 +85,29 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
-          onSubmit={handleSubmit}
+          onSubmit={context.submitWizard}
           validateOnMount
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
-            console.log(
-              Object.keys(errors).length,
-              !!Object.keys(errors).length
-            );
+
             setIsValidStep(!!Object.keys(errors).length);
 
             return errors;
           }}
           validateOnBlur
         >
-          {({ errors, touched }) => {
+          {(formik) => {
             return (
               <Form>
-                <FormikAutoSave debounceMS={1000} />
+                {/* <FormikAutoSave debounceMS={250} /> */}
                 {React.cloneElement(
                   currentPage as React.ReactElement<
                     any,
                     string | React.JSXElementConstructor<any>
                   >,
-                  {}
+                  { formik }
                 )}
-                <div>
-                  {Object.keys(errors).length && Object.keys(touched).length
-                    ? "no good"
-                    : "fine"}
-                </div>
               </Form>
             );
           }}
@@ -126,6 +116,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__footer`}>
         <div className={`${moduleCss}__backButton`}>
           <BackButton
+            wizardPattern={wizardPattern}
             activePageIndex={activePageIndex}
             goPrevPage={goPrevPage}
           />
