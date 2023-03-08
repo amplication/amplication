@@ -1,4 +1,4 @@
-import { GitClient } from "./git/git-client";
+import { GitClient } from "./providers/git-client";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
@@ -12,11 +12,14 @@ export enum EnumGitOrganizationType {
 
 export enum EnumGitProvider {
   Github = "Github",
+  Bitbucket = "Bitbucket",
 }
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string;
+  clientId?: string;
+  clientSecret?: string;
 }
 
 export interface GitProviderConstructorArgs {
@@ -140,6 +143,33 @@ export interface CreateCommitArgs {
   commitMessage: string;
   branchName: string;
   files: UpdateFile[];
+}
+
+interface LinksMetadata {
+  href: string;
+  name: string;
+}
+
+export interface CurrentUser {
+  links: {
+    avatar: LinksMetadata;
+  };
+  name: string;
+  uuid: string;
+  displayName: string;
+  createdOn?: string;
+}
+
+export interface OAuthData {
+  accessToken: string;
+  refreshToken: string;
+  tokenType: string;
+  expiresIn: number;
+  scopes: string[];
+}
+
+export interface OAuth2FlowResponse extends OAuthData {
+  userData: CurrentUser;
 }
 
 export interface GetBranchArgs {

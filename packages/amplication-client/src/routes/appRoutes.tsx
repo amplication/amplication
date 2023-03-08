@@ -139,9 +139,20 @@ export const Routes: RouteDef[] = [
   {
     path: "/github-auth-app/callback",
     Component: lazy(
-      () => import("../Resource/git/AuthResourceWithGitCallback")
+      () => import("../Resource/git/AuthResourceWithGithubCallback")
     ),
-    moduleName: "AuthAppWithGitCallback",
+    moduleName: "AuthResourceWithGithubCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/bitbucket-auth-app/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithBitbucketCallback")
+    ),
+    moduleName: "AuthResourceWithBitbucketCallback",
     permission: true,
     routeTrackType: "auth app with git callback",
     exactPath: true,

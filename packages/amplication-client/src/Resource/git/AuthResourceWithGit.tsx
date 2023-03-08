@@ -1,7 +1,7 @@
 import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { isEmpty } from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
+import * as models from "../../models";
 import { AppContext } from "../../context/appContext";
 import {
   AuthorizeResourceWithGitResult,
@@ -14,10 +14,11 @@ import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
-import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { isEmpty } from "lodash";
+import NewConnection from "./GitActions/NewConnection";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -70,16 +71,21 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const handleSelectRepoDialogOpen = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
-  const handleAuthWithGitClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: "Github",
-      },
-    }).catch(console.error);
-  }, [authWithGit, trackEvent]);
+
+  const handleAddProviderClick = useCallback(
+    (provider: models.EnumGitProvider) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.AddGitProviderClick,
+        provider: provider,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    },
+    []
+  );
 
   triggerOnDone = () => {
     onDone();
@@ -113,7 +119,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <NewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+            provider={EnumGitProvider.Github}
+            onSyncNewGitOrganizationClick={handleAddProviderClick}
           />
         ) : (
           <ExistingConnectionsMenu
@@ -122,7 +129,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
               setGitOrganization(organization);
             }}
             selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAuthWithGitClick}
+            onAddGitOrganization={handleAddProviderClick}
           />
         )}
 

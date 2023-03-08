@@ -44,15 +44,6 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/auth/update",
-    Component: lazy(() => import("../Resource/ApplicationAuthSettingForm")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
-    isAnalytics: true,
-  },
-  {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/api-tokens",
     Component: lazy(() => import("../Settings/ApiTokenList")),
     moduleName: "",

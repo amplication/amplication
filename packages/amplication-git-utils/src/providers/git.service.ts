@@ -7,7 +7,7 @@ import {
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { MissingEnvParam } from "../errors/MissingEnvParam";
-import { GitProvider } from "../git-provider.interface.ts";
+import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
   Commit,
@@ -23,6 +23,8 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  GetRepositoryArgs,
+  OAuth2FlowResponse,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -33,6 +35,7 @@ import { ILogger } from "@amplication/util/logging";
 export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
+
   async create(
     gitProviderArgs: GitProviderArgs,
     logger: ILogger
@@ -44,6 +47,18 @@ export class GitClientService {
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
+  }
+
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
+    return this.provider.completeOAuth2Flow(authorizationCode);
+  }
+
+  async getRepository(
+    getRepositoryArgs: GetRepositoryArgs
+  ): Promise<RemoteGitRepository> {
+    return this.provider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(

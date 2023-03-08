@@ -1,5 +1,5 @@
 import { join } from "path";
-import { AMPLICATION_IGNORED_FOLDER } from "../git/git.constants";
+import { AMPLICATION_IGNORED_FOLDER } from "../providers/git.constants";
 import { File, GitResourceMeta, UpdateFile } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 
