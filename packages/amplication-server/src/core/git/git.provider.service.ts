@@ -24,6 +24,8 @@ import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -78,6 +80,7 @@ export class GitProviderService {
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
+        useGroupingForRepositories: false,
       },
       owner: organization.name,
       isPrivateRepository: args.public,
@@ -257,6 +260,7 @@ export class GitProviderService {
     });
   }
 
+  // part of sync with GitHub flow (ONLY!)
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
@@ -308,6 +312,7 @@ export class GitProviderService {
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
+        useGroupingForRepositories: false,
         providerProperties: {
           github: {
             installationId,
@@ -374,7 +379,7 @@ export class GitProviderService {
         expiresIn,
         tokenType,
         scopes,
-        userData: { name, uuid },
+        userData: { username, uuid },
       } = await gitClientService.completeOAuth2Flow(code);
 
       return this.prisma.gitOrganization.upsert({
@@ -388,39 +393,65 @@ export class GitProviderService {
         create: {
           provider: gitProvider,
           installationId: uuid,
-          name,
+          name: username,
           type: EnumGitOrganizationType.User,
+          useGroupingForRepositories: true,
           workspace: {
             connect: {
               id: workspaceId,
             },
           },
           providerProperties: {
-            username: name,
-            uuid,
-            accessToken,
-            refreshToken,
-            expiresIn,
-            tokenType,
-            scopes,
+            bitbucket: {
+              username,
+              uuid,
+              accessToken,
+              refreshToken,
+              expiresIn,
+              tokenType,
+              scopes,
+            },
           },
         },
         update: {
-          name: name,
+          name: username,
           providerProperties: {
-            username: name,
-            uuid,
-            accessToken,
-            refreshToken,
-            expiresIn,
-            tokenType,
-            scopes,
+            bitbucket: {
+              username,
+              uuid,
+              accessToken,
+              refreshToken,
+              expiresIn,
+              tokenType,
+              scopes,
+            },
           },
         },
       });
     } catch (error) {
       this.logger.error(error);
     }
+  }
+
+  async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
+    const { gitProvider, oAuthUserName } = args.where;
+    const lowerCaseProvider = gitProvider.toLowerCase();
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId: null,
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
+      },
+      this.logger
+    );
+    const currentUser = await this.getCurrentOAuthUser(oAuthUserName);
+    return await gitClientService.getGitGroups({
+      accessToken:
+        currentUser.providerProperties[lowerCaseProvider]["accessToken"],
+      refreshToken:
+        currentUser.providerProperties[lowerCaseProvider]["refreshToken"],
+    });
   }
 
   async deleteGitOrganization(
