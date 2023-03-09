@@ -24,7 +24,6 @@
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
-    "@apollo/gateway": "^0.42.3",
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
