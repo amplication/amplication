@@ -20,7 +20,7 @@ import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
 import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
 import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
-import  { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
+import { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -32,50 +32,27 @@ type Props = AppRouteProps & {
 
 export interface ResourceSettings {
   serviceName: string;
-  gitRepositoryId: string,
-  generateAdminUI: boolean,
-  generateGraphQL: boolean,
-  generateRestApi: boolean,
-  structureType: "monorepo" | "polyrepo",
-  dataBaseType: "postgres" | "mysql" | "mongo",
-  authSwitch: boolean,
+  gitRepositoryId: string;
+  generateAdminUI: boolean;
+  generateGraphQL: boolean;
+  generateRestApi: boolean;
+  structureType: "monorepo" | "polyrepo";
+  dataBaseType: "postgres" | "mysql" | "mongo";
+  authSwitch: boolean;
 }
 export interface NextPage {
   nextTitle: string;
   isValid: boolean;
 }
 
-// interface OnWizardChangeCb {
-//   step: number;
-//   [key: string]: any;
-// }
-
 const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const { errorCreateService } = useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
 
-  // const onWizardChangeCb = useCallback((changeObj: OnWizardChangeCb) => {
-  //   const schema = wizardSchema[`step${changeObj.step}`];
-  //   Object.keys(schema).forEach((fieldName) => {
-  //     // changeObj[fieldName] => validate
-  //   });
-  //   // const { serviceName, generateAdminUI, generateGraphQL, generateRestApi } =
-  //   //   values;
-  //   // console.log({
-  //   //   serviceName,
-  //   //   generateAdminUI,
-  //   //   generateGraphQL,
-  //   //   generateRestApi,
-  //   // });
-  //   // assign new values to ref
-  //   // validation to continue button
-  //   // update setNextPage
-  // }, []);
-
   const errorMessage = formatError(errorCreateService);
 
-  const createResource = useCallback(() => {
+  const createResource = useCallback((values: ResourceSettings) => {
     // at the end of the process this function will trigger create service
   }, []);
 
