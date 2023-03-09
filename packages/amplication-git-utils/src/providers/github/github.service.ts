@@ -37,6 +37,8 @@ import {
   RemoteGitRepository,
   UpdateFile,
   OAuth2FlowResponse,
+  OAuth2FlowArgs,
+  PaginatedGitGroupMembership,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -417,6 +419,7 @@ export class GithubService implements GitProvider {
     return {
       name: login,
       type: EnumGitOrganizationType[type],
+      useGroupingForRepositories: false,
     };
   }
 
@@ -950,6 +953,12 @@ export class GithubService implements GitProvider {
   async completeOAuth2Flow(
     authorizationCode: string
   ): Promise<OAuth2FlowResponse> {
+    throw NotImplementedError;
+  }
+
+  getGitGroups(
+    oauth2args: OAuth2FlowArgs
+  ): Promise<PaginatedGitGroupMembership> {
     throw NotImplementedError;
   }
 }

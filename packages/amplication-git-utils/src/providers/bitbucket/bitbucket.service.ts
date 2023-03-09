@@ -25,12 +25,15 @@ import {
   GetBranchArgs,
   PullRequest,
   GitProviderArgs,
+  OAuth2FlowArgs,
+  PaginatedGitGroupMembership,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
+  currentUserWorkspacesRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 
@@ -99,7 +102,7 @@ export class BitBucketService implements GitProvider {
       links,
       createdOn: created_on,
       displayName: display_name,
-      name: username,
+      username,
       uuid,
     };
   }
@@ -111,7 +114,7 @@ export class BitBucketService implements GitProvider {
       await this.getAccessToken(authorizationCode);
 
     const {
-      name: username,
+      username,
       uuid: userUuid,
       links: userLinks,
       displayName,
@@ -125,13 +128,69 @@ export class BitBucketService implements GitProvider {
       scopes,
       tokenType,
       expiresIn,
+      useGroupingForRepositories: true,
       userData: {
-        name: username,
+        username,
         uuid: userUuid,
         links: userLinks,
         displayName,
         createdOn,
       },
+    };
+  }
+
+  async getGitGroups(
+    oauth2args: OAuth2FlowArgs
+  ): Promise<PaginatedGitGroupMembership> {
+    const { accessToken, refreshToken } = oauth2args;
+    const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
+      accessToken,
+      this.clientId,
+      this.clientSecret,
+      refreshToken,
+      this.logger
+    );
+
+    const { size, page, pagelen, next, previous, values } =
+      paginatedWorkspaceMembership;
+    const gitValues = values.map(({ links, user, workspace }) => {
+      const { display_name, username, links: userLinks, uuid: userUuid } = user;
+
+      const {
+        is_private,
+        links: workspaceLinks,
+        uuid: workspaceUuid,
+        name,
+        slug,
+      } = workspace;
+
+      this.logger.info("BitBucketService getGitGroups");
+
+      return {
+        links,
+        user: {
+          links: userLinks,
+          uuid: userUuid,
+          username,
+          displayName: display_name,
+        },
+        gitGroup: {
+          slug,
+          name,
+          uuid: workspaceUuid,
+          links: workspaceLinks,
+          isPrivate: is_private,
+        },
+      };
+    });
+
+    return {
+      size,
+      page,
+      pagelen,
+      next,
+      previous,
+      values: gitValues,
     };
   }
 
@@ -160,6 +219,8 @@ export class BitBucketService implements GitProvider {
   deleteGitOrganization(): Promise<boolean> {
     throw NotImplementedError;
   }
+
+  // pull request flow
 
   getFile(file: GetFileArgs): Promise<GitFile> {
     throw NotImplementedError;

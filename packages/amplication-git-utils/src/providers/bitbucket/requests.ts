@@ -1,6 +1,7 @@
 import { ILogger } from "@amplication/util/logging";
 import fetch from "node-fetch";
 import { CustomError } from "../../utils/custom-error";
+import { Account, PaginatedWorkspaceMembership } from "./bitbucket.types";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -16,6 +17,8 @@ interface RequestPayload {
 const AUTHORIZE_URL = "https://bitbucket.org/site/oauth2/authorize";
 const ACCESS_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
 const CURRENT_USER_URL = "https://api.bitbucket.org/2.0/user";
+const CURRENT_USER_WORKSPACES_URL =
+  "https://api.bitbucket.org/2.0/user/permissions/workspaces";
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -88,9 +91,29 @@ export async function currentUserRequest(
   clientSecret: string,
   refreshToken: string,
   logger: ILogger
-) {
+): Promise<Account> {
   return requestWrapper(
     CURRENT_USER_URL,
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken,
+    logger
+  );
+}
+
+export async function currentUserWorkspacesRequest(
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  logger: ILogger
+): Promise<PaginatedWorkspaceMembership> {
+  return requestWrapper(
+    CURRENT_USER_WORKSPACES_URL,
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
