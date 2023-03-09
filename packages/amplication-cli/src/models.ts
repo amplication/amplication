@@ -721,6 +721,17 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+export type GitGroup = {
+  id: Scalars['String'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+};
+
+export type GitGroupInput = {
+  gitProvider: EnumGitProvider;
+  oAuthUserName: Scalars['String'];
+};
+
 export type GitOAuth2FlowInput = {
   code: Scalars['String'];
   gitProvider: EnumGitProvider;
@@ -732,9 +743,9 @@ export type GitOrganization = {
   installationId: Scalars['String'];
   name: Scalars['String'];
   provider: EnumGitProvider;
-  providerProperties?: Maybe<ProviderProperties>;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
+  useGroupingForRepositories: Scalars['Boolean'];
 };
 
 export type GitOrganizationCreateInput = {
@@ -1224,6 +1235,15 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+export type PaginatedGitGroup = {
+  groups?: Maybe<Array<GitGroup>>;
+  next?: Maybe<Scalars['String']>;
+  page: Scalars['Float'];
+  pagelen: Scalars['Float'];
+  previous?: Maybe<Scalars['String']>;
+  size: Scalars['Float'];
+};
+
 export type PendingChange = {
   action: EnumPendingChangeAction;
   origin: PendingChangeOrigin;
@@ -1397,17 +1417,6 @@ export type PropertySelectorInput = {
   propertyName: Scalars['String'];
 };
 
-export type ProviderProperties = {
-  accessToken?: Maybe<Scalars['String']>;
-  expiresIn?: Maybe<Scalars['Float']>;
-  installationId?: Maybe<Scalars['String']>;
-  refreshToken?: Maybe<Scalars['String']>;
-  scopes?: Maybe<Array<Scalars['String']>>;
-  tokenType?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-  uuid?: Maybe<Scalars['String']>;
-};
-
 export type ProvisionSubscriptionInput = {
   billingPeriod: Scalars['String'];
   cancelUrl?: InputMaybe<Scalars['String']>;
@@ -1440,6 +1449,7 @@ export type Query = {
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
+  gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
@@ -1556,6 +1566,11 @@ export type QueryEntitiesArgs = {
 
 export type QueryEntityArgs = {
   where: WhereUniqueInput;
+};
+
+
+export type QueryGitGroupsArgs = {
+  where: GitGroupInput;
 };
 
 

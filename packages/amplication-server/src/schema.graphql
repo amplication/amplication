@@ -68,6 +68,7 @@ type Query {
   me: User!
   userApiTokens: [ApiToken!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
+  gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
@@ -143,7 +144,7 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
-  providerProperties: ProviderProperties
+  useGroupingForRepositories: Boolean!
 }
 
 enum EnumGitProvider {
@@ -154,17 +155,6 @@ enum EnumGitProvider {
 enum EnumGitOrganizationType {
   User
   Organization
-}
-
-type ProviderProperties {
-  installationId: String
-  username: String
-  uuid: String
-  accessToken: String
-  refreshToken: String
-  expiresIn: Float
-  tokenType: String
-  scopes: [String!]
 }
 
 type Entity {
@@ -1036,6 +1026,26 @@ type ApiToken {
   token: String
   previewChars: String!
   lastAccessAt: DateTime!
+}
+
+type PaginatedGitGroup {
+  size: Float!
+  page: Float!
+  pagelen: Float!
+  next: String
+  previous: String
+  groups: [GitGroup!]
+}
+
+type GitGroup {
+  id: String!
+  name: String!
+  slug: String!
+}
+
+input GitGroupInput {
+  gitProvider: EnumGitProvider!
+  oAuthUserName: String!
 }
 
 type RemoteGitRepos {
