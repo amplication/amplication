@@ -3,7 +3,7 @@ import { TestingModule } from "@nestjs/testing";
 import { ApolloServer } from "apollo-server-express";
 
 /**
- * Wraps Apollo Server's createTestClient to easily work with Nest.js
+ *
  * @param testingModule the Nest.js testing module
  * @returns Apollo Server's test client
  */
