@@ -26,7 +26,7 @@ import {
   PullRequest,
   GitProviderArgs,
   OAuth2FlowArgs,
-  PaginatedGitGroupMembership,
+  PaginatedGitGroup,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
@@ -139,9 +139,7 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async getGitGroups(
-    oauth2args: OAuth2FlowArgs
-  ): Promise<PaginatedGitGroupMembership> {
+  async getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup> {
     const { accessToken, refreshToken } = oauth2args;
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
       accessToken,
@@ -153,36 +151,16 @@ export class BitBucketService implements GitProvider {
 
     const { size, page, pagelen, next, previous, values } =
       paginatedWorkspaceMembership;
-    const gitValues = values.map(({ links, user, workspace }) => {
-      const { display_name, username, links: userLinks, uuid: userUuid } = user;
-
-      const {
-        is_private,
-        links: workspaceLinks,
-        uuid: workspaceUuid,
+    const gitGroups = values.map(({ workspace }) => {
+      const { uuid: workspaceUuid, name, slug } = workspace;
+      return {
+        id: workspaceUuid,
         name,
         slug,
-      } = workspace;
-
-      this.logger.info("BitBucketService getGitGroups");
-
-      return {
-        links,
-        user: {
-          links: userLinks,
-          uuid: userUuid,
-          username,
-          displayName: display_name,
-        },
-        gitGroup: {
-          slug,
-          name,
-          uuid: workspaceUuid,
-          links: workspaceLinks,
-          isPrivate: is_private,
-        },
       };
     });
+
+    this.logger.info("BitBucketService getGitGroups");
 
     return {
       size,
@@ -190,7 +168,7 @@ export class BitBucketService implements GitProvider {
       pagelen,
       next,
       previous,
-      values: gitValues,
+      groups: gitGroups,
     };
   }
 

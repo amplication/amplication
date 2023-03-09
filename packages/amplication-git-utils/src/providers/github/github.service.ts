@@ -38,7 +38,7 @@ import {
   UpdateFile,
   OAuth2FlowResponse,
   OAuth2FlowArgs,
-  PaginatedGitGroupMembership,
+  PaginatedGitGroup,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -956,9 +956,7 @@ export class GithubService implements GitProvider {
     throw NotImplementedError;
   }
 
-  getGitGroups(
-    oauth2args: OAuth2FlowArgs
-  ): Promise<PaginatedGitGroupMembership> {
+  getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup> {
     throw NotImplementedError;
   }
 }

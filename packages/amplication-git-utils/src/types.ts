@@ -179,39 +179,19 @@ export interface OAuth2FlowResponse extends OAuthData {
   useGroupingForRepositories: boolean;
 }
 
-export interface PaginatedGitGroupMembership {
+export interface PaginatedGitGroup {
   size: number;
   page: number;
   pagelen: number;
   next: string;
   previous: string;
-  values: GitGroupMembership[];
-}
-
-export interface GitGroupMembership {
-  links: {
-    self: LinksMetadata;
-  };
-  user: CurrentUser;
-  gitGroup: GitGroup;
+  groups: GitGroup[];
 }
 
 export interface GitGroup {
+  id: string;
   name: string;
-  uuid: string;
   slug: string;
-  isPrivate: boolean;
-  links: {
-    avatar: LinksMetadata;
-    html?: LinksMetadata;
-    members?: LinksMetadata;
-    owners?: LinksMetadata;
-    projects?: LinksMetadata;
-    repositories?: LinksMetadata;
-    self?: LinksMetadata;
-  };
-  createdOn?: string;
-  updatedOn?: string;
 }
 
 export interface GetBranchArgs {

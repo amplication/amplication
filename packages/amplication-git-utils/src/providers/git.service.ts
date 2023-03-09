@@ -26,7 +26,7 @@ import {
   GetRepositoryArgs,
   OAuth2FlowResponse,
   OAuth2FlowArgs,
-  PaginatedGitGroupMembership,
+  PaginatedGitGroup,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -57,9 +57,7 @@ export class GitClientService {
     return this.provider.completeOAuth2Flow(authorizationCode);
   }
 
-  async getGitGroups(
-    oauth2args: OAuth2FlowArgs
-  ): Promise<PaginatedGitGroupMembership> {
+  async getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup> {
     return this.provider.getGitGroups(oauth2args);
   }
 
