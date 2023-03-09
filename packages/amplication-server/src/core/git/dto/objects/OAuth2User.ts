@@ -16,7 +16,4 @@ export class OAuth2User {
 
   @Field(() => GitUserLinks, { nullable: false })
   links: GitUserLinks;
-
-  @Field(() => String, { nullable: true })
-  createdOn?: string;
 }
