@@ -1,9 +1,6 @@
-import { TestingModule } from "@nestjs/testing";
 import { GraphQLModule } from "@nestjs/graphql";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { TestingModule } from "@nestjs/testing";
+import { ApolloServer } from "apollo-server-express";
 
 /**
  * Wraps Apollo Server's createTestClient to easily work with Nest.js
@@ -12,8 +9,8 @@ import {
  */
 export function createApolloServerTestClient(
   testingModule: TestingModule
-): ApolloServerTestClient {
+): ApolloServer {
   // GraphQLModule doesn't expose the apolloServer property
   const graphqlModule = testingModule.get(GraphQLModule) as any;
-  return createTestClient(graphqlModule.apolloServer);
+  return graphqlModule.apolloServer;
 }
