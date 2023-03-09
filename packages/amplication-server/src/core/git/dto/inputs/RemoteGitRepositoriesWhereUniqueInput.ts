@@ -6,6 +6,9 @@ export class RemoteGitRepositoriesWhereUniqueInput {
   @Field(() => String, { nullable: false })
   gitOrganizationId!: string;
 
+  @Field(() => String, { nullable: true })
+  gitGroupName: string;
+
   @Field(() => EnumGitProvider, { nullable: false })
   gitProvider!: EnumGitProvider;
 

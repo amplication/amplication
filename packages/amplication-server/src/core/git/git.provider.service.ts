@@ -55,16 +55,40 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const paginationArgs = {
-      limit: args.limit,
-      page: args.page,
+
+    const gitProviderArgs = {
+      provider: args.gitProvider,
+      installationId,
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
     };
-    const gitProviderArgs = { provider: args.gitProvider, installationId };
     const gitClientService = await new GitClientService().create(
       gitProviderArgs,
       this.logger
     );
-    return gitClientService.getRepositories(paginationArgs);
+    const gitOrganization = await this.getGitOrganization({
+      where: { id: args.gitOrganizationId },
+    });
+    const lowerCaseProvider = args.gitProvider.toLowerCase();
+    const oauth2args = gitOrganization.useGroupingForRepositories
+      ? {
+          accessToken:
+            gitOrganization.providerProperties[lowerCaseProvider][
+              "accessToken"
+            ],
+          refreshToken:
+            gitOrganization.providerProperties[lowerCaseProvider][
+              "refreshToken"
+            ],
+        }
+      : null;
+    const repositoriesArgs = {
+      limit: args.limit,
+      page: args.page,
+      oauth2args,
+      gitGroupName: args.gitGroupName,
+    };
+    return gitClientService.getRepositories(repositoriesArgs);
   }
 
   async createRemoteGitRepository(
