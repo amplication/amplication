@@ -158,7 +158,6 @@ export interface CurrentUser {
   username: string;
   uuid: string;
   displayName: string;
-  createdOn?: string;
 }
 
 export interface OAuthData {

@@ -96,11 +96,10 @@ export class BitBucketService implements GitProvider {
       this.logger
     );
 
-    const { links, created_on, display_name, username, uuid } = currentUser;
+    const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
     return {
       links,
-      createdOn: created_on,
       displayName: display_name,
       username,
       uuid,
@@ -118,7 +117,6 @@ export class BitBucketService implements GitProvider {
       uuid: userUuid,
       links: userLinks,
       displayName,
-      createdOn,
     } = await this.getCurrentUser(accessToken, refreshToken);
 
     this.logger.info("BitBucketService completeOAuth2Flow");
@@ -134,7 +132,6 @@ export class BitBucketService implements GitProvider {
         uuid: userUuid,
         links: userLinks,
         displayName,
-        createdOn,
       },
     };
   }
