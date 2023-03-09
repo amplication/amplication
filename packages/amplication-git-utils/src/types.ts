@@ -18,8 +18,8 @@ export enum EnumGitProvider {
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   installationId: string;
-  clientId?: string;
-  clientSecret?: string;
+  clientId?: string | null;
+  clientSecret?: string | null;
 }
 
 export interface GitProviderConstructorArgs {
@@ -95,7 +95,7 @@ export interface CreateRepositoryArgs {
 export interface GetRepositoriesArgs {
   limit: number;
   page: number;
-  oauth2args?: OAuth2FlowArgs;
+  oauth2args?: OAuth2FlowArgs | null;
   gitGroupName?: string;
 }
 
