@@ -47,3 +47,37 @@ export interface Workspace {
   created_on: string;
   updated_on: string;
 }
+
+// https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-get
+export interface PaginatedRepositories {
+  size: number;
+  page: number;
+  pagelen: number;
+  next: string;
+  previous: string;
+  values: Repository[];
+}
+
+export interface Repository {
+  links: {
+    self: LinksMetadata;
+  };
+  uuid: string;
+  full_name: string; // The concatenation of the repository owner's username and the slugified name, e.g. "evzijst/interruptingcow". This is the same string used in Bitbucket URLs.
+  is_private: boolean;
+  owner: Account;
+  name: string;
+  project: Project;
+  mainbranch: Branch;
+}
+
+interface Project {
+  key: string;
+  owner: string;
+  name: string;
+}
+
+interface Branch {
+  merge_strategies: string[];
+  default_merge_strategy: string;
+}

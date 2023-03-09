@@ -34,6 +34,8 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  repositoriesInWorkspaceRequest,
+  repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 
@@ -173,16 +175,83 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  getRepository(
+  async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw NotImplementedError;
+    const { gitGroupName, oauth2args, repositoryName } = getRepositoryArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomEvent("Missing gitGroupName");
+    }
+    if (!oauth2args) {
+      this.logger.error("Missing oauth2args");
+      throw new CustomEvent("Missing oauth2args");
+    }
+
+    const repository = await repositoryRequest(
+      gitGroupName,
+      repositoryName,
+      oauth2args.accessToken,
+      this.clientId,
+      this.clientSecret,
+      oauth2args.refreshToken,
+      this.logger
+    );
+    const { links, name, is_private, full_name, mainbranch } = repository;
+
+    return {
+      name,
+      url: links.self.href,
+      private: is_private,
+      fullName: full_name,
+      admin: null,
+      // TODO: check if this is the correct way to get the default branch name
+      defaultBranch: mainbranch.default_merge_strategy,
+    };
   }
 
-  getRepositories(
+  async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    throw NotImplementedError;
+    const { gitGroupName, oauth2args } = getRepositoriesArgs;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomEvent("Missing gitGroupName");
+    }
+    if (!oauth2args) {
+      this.logger.error("Missing oauth2args");
+      throw new CustomEvent("Missing oauth2args");
+    }
+    const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
+      gitGroupName,
+      oauth2args.accessToken,
+      this.clientId,
+      this.clientSecret,
+      oauth2args.refreshToken,
+      this.logger
+    );
+
+    const { size, page, pagelen, values } = repositoriesInWorkspace;
+    const gitRepos = values.map(
+      ({ name, is_private, links, full_name, mainbranch }) => {
+        return {
+          name,
+          url: links.self.href,
+          private: is_private,
+          fullName: full_name,
+          admin: null,
+          // TODO: check if this is the correct way to get the default branch name
+          defaultBranch: mainbranch.default_merge_strategy,
+        };
+      }
+    );
+    return {
+      repos: gitRepos,
+      totalRepos: size,
+      currentPage: page,
+      pageSize: pagelen,
+    };
   }
 
   createRepository(

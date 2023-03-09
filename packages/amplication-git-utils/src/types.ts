@@ -80,6 +80,8 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
+  oauth2args?: OAuth2FlowArgs;
+  gitGroupName?: string;
 }
 
 export interface CreateRepositoryArgs {
@@ -87,11 +89,14 @@ export interface CreateRepositoryArgs {
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
+  gitGroupName?: string;
 }
 
 export interface GetRepositoriesArgs {
   limit: number;
   page: number;
+  oauth2args?: OAuth2FlowArgs;
+  gitGroupName?: string;
 }
 
 export interface GetFileArgs {
