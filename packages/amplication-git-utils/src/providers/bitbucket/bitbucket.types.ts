@@ -1,5 +1,12 @@
 import { LinksMetadata } from "../../types";
 
+/**
+ * These types are based on the Bitbucket API documentation:
+ * https://developer.atlassian.com/cloud/bitbucket/rest
+ * we use them to define the response types of the Bitbucket API in the requests.ts file
+ * we took only the properties we need for the app
+ */
+
 // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-users/#api-user-get
 export interface Account {
   links: {
@@ -21,7 +28,7 @@ export interface PaginatedWorkspaceMembership {
   values: WorkspaceMembership[];
 }
 
-export interface WorkspaceMembership {
+interface WorkspaceMembership {
   links: {
     self: LinksMetadata;
   };
@@ -29,23 +36,14 @@ export interface WorkspaceMembership {
   workspace: Workspace;
 }
 
-export interface Workspace {
+interface Workspace {
   links: {
     avatar: LinksMetadata;
-    html: LinksMetadata;
-    members: LinksMetadata;
-    owners: LinksMetadata;
-    projects: LinksMetadata;
-    repositories: LinksMetadata;
-    snippets: LinksMetadata;
     self: LinksMetadata;
   };
   uuid: string;
   name: string;
   slug: string;
-  is_private: boolean;
-  created_on: string;
-  updated_on: string;
 }
 
 // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-get
