@@ -21,7 +21,7 @@ $tabs-width: 300px;
     padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
     box-sizing: border-box;
     overflow-y: auto;
-    scrollbar-gutter: stable;
+    padding-right: 15px;
     @include scrollbars(16px, var(--black60), transparent);
 
     .sub-list {
@@ -31,7 +31,7 @@ $tabs-width: 300px;
 
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
-    scrollbar-gutter: stable;
+    padding-right: 15px;
     flex: 1;
     overflow: auto;
     position: relative;
