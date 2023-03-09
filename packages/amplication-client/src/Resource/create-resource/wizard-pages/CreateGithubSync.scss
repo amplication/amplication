@@ -1,0 +1,25 @@
+.create-github-sync {
+  display: flex;
+  flex: 1;
+
+  &__left {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+
+    &__description {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+
+      width: 520px;
+    }
+  }
+
+  &__right {
+    display: flex;
+    flex: 1;
+    background: var(--white);
+  }
+}

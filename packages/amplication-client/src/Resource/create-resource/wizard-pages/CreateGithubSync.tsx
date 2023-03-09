@@ -1,8 +1,11 @@
 import React, { useCallback, useContext } from "react";
-import "../CreateServiceWizard.scss";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import { FormikProps } from "formik";
+
+import "./CreateGithubSync.scss";
+
+const className = "create-github-sync";
 
 const CreateGithubSync: React.FC<{
   moduleClass: string;
@@ -20,13 +23,13 @@ const CreateGithubSync: React.FC<{
   );
 
   return (
-    <div className={`${moduleClass}__splitWrapper`}>
-      <div className={`${moduleClass}__left`}>
-        <div className={`${moduleClass}__description`}>
-          <div className={`${moduleClass}__description_top`}>
-            <h2>Now, let’s connect to a Git repository</h2>
+    <div className={className}>
+      <div className={`${className}__left`}>
+        <div className={`${className}__left__description`}>
+          <div className={`${className}__left__description__top`}>
+            <h2>Now, let`s connect to a Git repository</h2>
           </div>
-          <div className={`${moduleClass}__description_bottom`}>
+          <div className={`${className}__left__description__bottom`}>
             <h3>
               Amplication automatically pushes the generated code of your
               services to a git repository. You are the owner of the code and
@@ -35,9 +38,9 @@ const CreateGithubSync: React.FC<{
           </div>
         </div>
       </div>
-      <div className={`${moduleClass}__right`}>
-        <div className={`${moduleClass}__github_box`}>
-          <AuthWithGit onDone={handleOnDone}></AuthWithGit>
+      <div className={`${className}__right`}>
+        <div className={`${className}__github_box`}>
+          {/* <AuthWithGit onDone={handleOnDone}></AuthWithGit> */}
         </div>
       </div>
     </div>

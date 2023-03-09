@@ -6,16 +6,21 @@ $max-width: 700px;
 .create-service-wizard {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  position: absolute;
+
+  form {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
 
   &__wizard_container {
     background-color: var(--black2);
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    align-items: center;
     flex: 1;
+    // justify-content: center;
+    // align-items: center;
   }
 
   &__close {
@@ -27,9 +32,9 @@ $max-width: 700px;
   &__content {
     display: flex;
     flex: 1;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
+    // justify-content: center;
+    // align-items: center;
+    // width: 100%;
   }
 
   &__backButton {
@@ -219,11 +224,11 @@ $max-width: 700px;
     border-radius: 8px;
   }
 
-  label {
-    font-weight: 600;
-    font-size: 18px;
-    color: white;
-  }
+  // label {
+  //   font-weight: 600;
+  //   font-size: 18px;
+  //   color: white;
+  // }
 
   &_db_btn {
     box-sizing: border-box;
@@ -299,6 +304,7 @@ $max-width: 700px;
     align-items: center;
     background: var(--white);
   }
+
   &__description {
     display: flex;
     flex-direction: column;

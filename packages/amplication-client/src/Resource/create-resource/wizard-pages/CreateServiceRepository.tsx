@@ -5,6 +5,9 @@ import {
   TextInput,
 } from "@amplication/design-system";
 import React, { useState } from "react";
+
+import "./CreateServiceRepository.scss";
+
 import "../CreateServiceWizard.scss";
 
 const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
