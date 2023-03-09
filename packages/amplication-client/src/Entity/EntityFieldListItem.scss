@@ -13,7 +13,7 @@
     }
   }
   &__description-row {
-    padding-bottom: 12px;
+    padding-bottom: var(--default-spacing);
     border-bottom: 1px solid var(--black10);
   }
   &__title {

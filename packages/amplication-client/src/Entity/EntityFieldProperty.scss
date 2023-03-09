@@ -3,8 +3,8 @@
 .entity-field-list-item-property {
   &__container {
     color: var(--black100);
-    height: 20px;
-    border-radius: 35px;
+    height: var(--icon-size-xsmall);
+    border-radius: var(--xxlarge-border-radius);
     display: flex;
     align-items: center;
     justify-content: center;
