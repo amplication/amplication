@@ -728,8 +728,7 @@ export type GitGroup = {
 };
 
 export type GitGroupInput = {
-  gitProvider: EnumGitProvider;
-  oAuthUserName: Scalars['String'];
+  organizationId: Scalars['String'];
 };
 
 export type GitOAuth2FlowInput = {

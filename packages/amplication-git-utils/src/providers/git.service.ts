@@ -25,7 +25,6 @@ import {
   RemoteGitRepository,
   GetRepositoryArgs,
   OAuth2FlowResponse,
-  OAuth2FlowArgs,
   PaginatedGitGroup,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
@@ -57,8 +56,8 @@ export class GitClientService {
     return this.provider.completeOAuth2Flow(authorizationCode);
   }
 
-  async getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup> {
-    return this.provider.getGitGroups(oauth2args);
+  async getGitGroups(): Promise<PaginatedGitGroup> {
+    return this.provider.getGitGroups();
   }
 
   async getRepository(
