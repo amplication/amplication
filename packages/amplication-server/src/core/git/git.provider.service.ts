@@ -320,7 +320,8 @@ export class GitProviderService {
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
-        useGroupingForRepositories: gitOrganization.useGroupingForRepositories,
+        useGroupingForRepositories:
+          gitRemoteOrganization.useGroupingForRepositories,
         providerProperties,
       },
     });
