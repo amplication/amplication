@@ -1,0 +1,53 @@
+@import "../../../style/index.scss";
+
+.create-service-code-generation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+
+  padding-top: 80px;
+
+  &__status {
+    display: flex;
+    flex: 1;
+
+    margin: 250px;
+    margin-top: 64px;
+
+    &__completed {
+      display: flex;
+      flex: 1;
+
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      background: var(--white);
+
+      gap: 32px;
+
+      &__image {
+        width: 150px;
+        height: 120px;
+      }
+
+      &__description {
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        &__header {
+          @include title-24;
+        }
+
+        &__link {
+          @include title-14;
+          font-weight: 400;
+          color: var(--black80);
+        }
+      }
+    }
+  }
+}
