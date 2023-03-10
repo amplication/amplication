@@ -2,6 +2,8 @@ import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useState } from "react";
 import "../CreateServiceWizard.scss";
 
+import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
@@ -15,25 +17,19 @@ const CreateServiceAuth: React.FC<{ moduleClass: string }> = ({
   };
 
   return (
-    <div className={`${moduleClass}__splitWrapper`}>
-      <div className={`${moduleClass}__left`}>
-        <div className={`${moduleClass}__service_name_header`}>
-          <h2>One last step - Authentication</h2>
-        </div>
-        <div className={`${moduleClass}__description_bottom`}>
-          <h3>
-            Choose whether you want to add authentication and authorization
-            layer on your service or not. When needed, Amplication will generate
-            your service with guards, decorators, user entity, roles, etc. By
-            default, the service will use “passport-jwt” provider, but you can
-            easily change that later. You can skip this step if you don’t want
-            to authenticate users on this service. It may be needed for internal
-            services that are not exposed to users, or if you are building a
-            fully public API.
-          </h3>
-        </div>
-      </div>
-      <div className={`${moduleClass}__right`}>
+    <Layout.Split>
+      <Layout.LeftSide>
+        <Layout.Description
+          header="One last step - Authentication"
+          text={`Choose whether you want to add authentication and authorization layer on your service or not. 
+        
+        When needed, Amplication will generate your service with guards, decorators, user entity, roles, etc. By default, the service will use “passport-jwt” provider, but you can easily change that later.
+        
+        You can skip this step if you don’t want to authenticate users on this service. It may be needed for internal services that are not exposed to users, or if you are building a fully public API.
+        `}
+        />
+      </Layout.LeftSide>
+      <Layout.RightSide>
         <div className={`${moduleClass}__repo_wrapper`}>
           <div className={`${moduleClass}__db_box`}>
             <div className={`${moduleClass}__db_up_buttons`}>
@@ -69,8 +65,8 @@ const CreateServiceAuth: React.FC<{ moduleClass: string }> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </Layout.RightSide>
+    </Layout.Split>
   );
 };
 

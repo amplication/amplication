@@ -3,6 +3,8 @@ import React from "react";
 // import "../CreateServiceWizard.scss";
 import "./CreateServiceName.scss";
 
+import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+
 const className = "create-service-name";
 
 const CreateServiceName: React.FC<{ moduleCss: string }> = ({ moduleCss }) => {

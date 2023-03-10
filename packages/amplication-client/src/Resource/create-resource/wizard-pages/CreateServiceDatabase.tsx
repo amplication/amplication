@@ -2,6 +2,8 @@ import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useState } from "react";
 import "../CreateServiceWizard.scss";
 
+import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+
 const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
   moduleClass,
 }) => {
@@ -15,20 +17,17 @@ const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
   };
 
   return (
-    <div className={`${moduleClass}__splitWrapper`}>
-      <div className={`${moduleClass}__left`}>
-        <div className={`${moduleClass}__service_name_header`}>
-          <h2>Which database do you want to use?</h2>
-        </div>
-        <div className={`${moduleClass}__description_bottom`}>
-          <h3>
-            Amplication generates the service with all the required
-            configuration and code to start working with a DB. You can easily
-            change the type of the DB later in the plugins page
-          </h3>
-        </div>
-      </div>
-      <div className={`${moduleClass}__right`}>
+    <Layout.Split>
+      <Layout.LeftSide>
+        <Layout.Description
+          header="Which database do you want to use?"
+          text={`Amplication generates the service with all the required configuration and code to start working with a DB. 
+          
+          You can easily change the type of the DB later in the plugins page
+          `}
+        />
+      </Layout.LeftSide>
+      <Layout.RightSide>
         <div className={`${moduleClass}__repo_wrapper`}>
           <div className={`${moduleClass}__db_box`}>
             <div className={`${moduleClass}__db_up_buttons`}>
@@ -99,8 +98,8 @@ const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </Layout.RightSide>
+    </Layout.Split>
   );
 };
 

@@ -1,0 +1,46 @@
+@import "../../style/index.scss";
+
+.create-service-wizard-layout {
+  display: flex;
+  flex: 1;
+
+  &__split {
+    display: flex;
+    flex: 1;
+  }
+
+  &__right,
+  &__left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    padding: 100px;
+    //It might be the case, that Alex wanted main block been centered, but there is padding 100px in Figma
+    // align-items: center;
+  }
+
+  &__right {
+    background: var(--white);
+  }
+
+  &__description {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+
+    &__header {
+      @include title-24;
+      margin-bottom: var(--large-spacing);
+    }
+
+    &__text {
+      @include regular-14;
+      white-space: pre-line;
+    }
+
+    &__paragraph {
+      @include regular-14;
+    }
+  }
+}

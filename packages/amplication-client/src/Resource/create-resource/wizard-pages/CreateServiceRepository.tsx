@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import "./CreateServiceRepository.scss";
 
 import "../CreateServiceWizard.scss";
+import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 
 const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
   moduleClass,
@@ -20,22 +21,17 @@ const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
   };
 
   return (
-    <div className={`${moduleClass}__splitWrapper`}>
-      <div className={`${moduleClass}__left`}>
-        <div className={`${moduleClass}__service_name_header`}>
-          <h2>Are you using a monorepo or polyrepo?</h2>
-        </div>
-        <div className={`${moduleClass}__description_bottom`}>
-          <h3>
-            If you are using a monorepo, you can select the folder where you
-            want to save the code of the service. “apps”, “packages”,
-            “ee/packages” all are valid. Otherwise, Amplication will push the
-            code to the root of the repo in separate folders for the server and
-            the admin-ui.
-          </h3>
-        </div>
-      </div>
-      <div className={`${moduleClass}__right`}>
+    <Layout.Split>
+      <Layout.LeftSide>
+        <Layout.Description
+          header="Are you using a monorepo or polyrepo?"
+          text={`If you are using a monorepo, you can select the folder where you want to save the code of the service. “apps”, “packages”, “ee/packages” all are valid. 
+          
+          Otherwise, Amplication will push the code to the root of the repo in separate folders for the server and the admin-ui.
+          `}
+        />
+      </Layout.LeftSide>
+      <Layout.RightSide>
         <div className={`${moduleClass}__repo_wrapper`}>
           <div className={`${moduleClass}__repository_box`}>
             <div className={`${moduleClass}__repository_options`}>
@@ -112,8 +108,8 @@ const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
             )}
           </div>
         </div>
-      </div>
-    </div>
+      </Layout.RightSide>
+    </Layout.Split>
   );
 };
 

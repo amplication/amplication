@@ -2,19 +2,10 @@
   display: flex;
   flex: 1;
 
-  &__left {
+  &__description {
     display: flex;
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-
-    &__description {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-
-      width: 520px;
-    }
+    flex-direction: column;
+    align-items: flex-start;
   }
 
   &__right {

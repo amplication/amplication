@@ -3,26 +3,27 @@ import "../CreateServiceWizard.scss";
 import {} from "../CreateServiceWizardForm";
 import { CircleBadge, Icon, ToggleField } from "@amplication/design-system";
 
+import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+
+const className = "create-generation-settings";
+
 const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
   moduleClass,
 }) => {
   return (
-    <div className={`${moduleClass}__splitWrapper`}>
-      <div className={`${moduleClass}__left`}>
-        <div className={`${moduleClass}__description`}>
-          <h2>How would you like to build your service?</h2>
-        </div>
-        <div className={`${moduleClass}__description_bottom`}>
-          <h3>
-            Do you want to use GraphQL API? REST API? both?� Also, select
-            whether you want to generate the Admin UI for your service with
-            forms to create, update and delete data in your service. � Note: The
-            Admin UI is using the GraphQL API so you can’t generate the one
-            without the other.
-          </h3>
-        </div>
-      </div>
-      <div className={`${moduleClass}__right`}>
+    <Layout.Split>
+      <Layout.LeftSide>
+        <Layout.Description
+          header="How would you like to build your service?"
+          text={`Do you want to use GraphQL API? REST API? both?
+
+            Also, select whether you want to generate the Admin UI for your service with forms to create, update and delete data in your service.
+            
+            Note: The Admin UI is using the GraphQL API so you can’t generate the one without the other.
+          `}
+        />
+      </Layout.LeftSide>
+      <Layout.RightSide>
         <div className={`${moduleClass}__repo_wrapper`}>
           <div className={`${moduleClass}__db_box`}>
             <div className={`${moduleClass}__db_up_buttons`}>
@@ -50,8 +51,8 @@ const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      </Layout.RightSide>
+    </Layout.Split>
   );
 };
 
