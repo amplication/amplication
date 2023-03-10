@@ -46,7 +46,7 @@ export class PullRequestService {
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId,
+        providerProperties: { installationId },
       },
       this.logger
     );

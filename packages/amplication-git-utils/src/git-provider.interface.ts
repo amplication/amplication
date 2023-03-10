@@ -15,7 +15,6 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  OAuth2FlowArgs,
   OAuth2FlowResponse,
   PaginatedGitGroup,
   PullRequest,
@@ -30,7 +29,7 @@ export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
-  getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup>;
+  getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;
