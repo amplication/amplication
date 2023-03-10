@@ -41,6 +41,8 @@ import { ILogger } from "@amplication/util/logging";
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
+  private accessToken: string;
+  private refreshToken: string;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
@@ -48,7 +50,8 @@ export class BitBucketService implements GitProvider {
     private readonly gitProviderArgs: GitProviderArgs,
     private readonly logger: ILogger
   ) {
-    const { clientId, clientSecret } = gitProviderArgs.providerProperties;
+    const { clientId, clientSecret, accessToken, refreshToken } =
+      gitProviderArgs.providerProperties;
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -56,6 +59,8 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 
   async init(): Promise<void> {
@@ -169,24 +174,20 @@ export class BitBucketService implements GitProvider {
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { gitGroupName, oauth2args, repositoryName } = getRepositoryArgs;
+    const { gitGroupName, repositoryName } = getRepositoryArgs;
 
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
       throw new CustomError("Missing gitGroupName");
     }
-    if (!oauth2args) {
-      this.logger.error("Missing oauth2args");
-      throw new CustomError("Missing oauth2args");
-    }
 
     const repository = await repositoryRequest(
       gitGroupName,
       repositoryName,
-      oauth2args.accessToken,
+      this.accessToken,
       this.clientId,
       this.clientSecret,
-      oauth2args.refreshToken,
+      this.refreshToken,
       this.logger
     );
     const { links, name, is_private, full_name, mainbranch } = repository;

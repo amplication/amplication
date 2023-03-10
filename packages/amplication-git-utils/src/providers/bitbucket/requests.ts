@@ -185,7 +185,7 @@ export async function repositoryRequest(
 export async function repositoryCreateRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  repositoryCreateData: Repository,
+  repositoryCreateData: Partial<Repository>,
   accessToken: string,
   clientId: string,
   clientSecret: string,

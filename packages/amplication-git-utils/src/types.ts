@@ -78,7 +78,6 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
-  oauth2args?: OAuth2FlowArgs;
   gitGroupName?: string;
 }
 
