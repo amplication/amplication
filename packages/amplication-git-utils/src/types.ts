@@ -17,7 +17,7 @@ export enum EnumGitProvider {
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerProperties: any;
+  providerProperties: Record<string, any>;
 }
 
 export interface GitProviderConstructorArgs {
@@ -172,7 +172,7 @@ export interface OAuth2FlowArgs {
 }
 
 export interface OAuth2FlowResponse {
-  providerProperties: any;
+  providerProperties: Record<string, any>;
   useGroupingForRepositories: boolean;
 }
 
