@@ -34,6 +34,7 @@ import {
   currentUserRequest,
   currentUserWorkspacesRequest,
   repositoriesInWorkspaceRequest,
+  repositoryCreateRequest,
   repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
@@ -246,10 +247,45 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  createRepository(
+  async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw NotImplementedError;
+    const {
+      gitGroupName,
+      repositoryName,
+      isPrivateRepository,
+      owner, // TODO: type string in our interface, but in bitbucket it's Account
+      gitOrganization,
+    } = createRepositoryArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const newRepository = await repositoryCreateRequest(
+      gitGroupName,
+      repositoryName,
+      {
+        is_private: isPrivateRepository,
+        name: repositoryName,
+        full_name: `${gitOrganization.name}/${repositoryName}`,
+      },
+      this.accessToken,
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken,
+      this.logger
+    );
+
+    return {
+      name: newRepository.name,
+      url: newRepository.links.self.href,
+      private: newRepository.is_private,
+      fullName: newRepository.full_name,
+      admin: null,
+      defaultBranch: newRepository.mainbranch.default_merge_strategy,
+    };
   }
 
   deleteGitOrganization(): Promise<boolean> {
