@@ -34,4 +34,7 @@ export class CreateGitRepositoryInput {
     nullable: false,
   })
   gitOrganizationType!: EnumGitOrganizationType;
+
+  @Field(() => String, { nullable: true })
+  gitGroupName: string;
 }
