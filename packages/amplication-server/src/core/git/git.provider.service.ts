@@ -57,12 +57,6 @@ export class GitProviderService {
       args.gitOrganizationId
     );
 
-    const gitOrganization = await this.getGitOrganization({
-      where: { id: args.gitOrganizationId },
-    });
-
-    const lowerCaseProvider = args.gitProvider.toLowerCase();
-
     const gitProviderArgs = {
       provider: args.gitProvider,
       providerProperties: {
@@ -76,23 +70,9 @@ export class GitProviderService {
       this.logger
     );
 
-    const oauth2args = gitOrganization.useGroupingForRepositories
-      ? {
-          accessToken:
-            gitOrganization.providerProperties[lowerCaseProvider][
-              "accessToken"
-            ],
-          refreshToken:
-            gitOrganization.providerProperties[lowerCaseProvider][
-              "refreshToken"
-            ],
-        }
-      : null;
-
     const repositoriesArgs = {
       limit: args.limit,
       page: args.page,
-      oauth2args,
       gitGroupName: args.gitGroupName,
     };
     return gitClientService.getRepositories(repositoriesArgs);
