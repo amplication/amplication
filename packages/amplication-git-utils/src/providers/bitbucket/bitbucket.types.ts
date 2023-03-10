@@ -46,7 +46,10 @@ interface Workspace {
   slug: string;
 }
 
-// https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-get
+/**
+ * get repository/repositories: https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-get
+ * create repository: https://developer.atlassian.com/cloud/bitbucket/rest/api-group-repositories/#api-repositories-workspace-repo-slug-post
+ **/
 export interface PaginatedRepositories {
   size: number;
   page: number;

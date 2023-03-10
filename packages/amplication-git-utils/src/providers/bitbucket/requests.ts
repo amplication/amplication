@@ -1,5 +1,5 @@
-import { ILogger } from "@amplication/util/logging";
 import fetch from "node-fetch";
+import { ILogger } from "@amplication/util/logging";
 import { CustomError } from "../../utils/custom-error";
 import {
   Account,
@@ -29,6 +29,9 @@ const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
   `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}`;
 
 const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
+
+const REPOSITORY_CREATE_URL = (workspaceSlug: string, repositorySlug: string) =>
   `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
@@ -171,6 +174,30 @@ export async function repositoryRequest(
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken,
+    logger
+  );
+}
+
+export async function repositoryCreateRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  repositoryCreateData: Repository,
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  logger: ILogger
+): Promise<Repository> {
+  return requestWrapper(
+    REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
+    {
+      method: "POST",
+      headers: getRequestHeaders(accessToken),
+      body: JSON.stringify(repositoryCreateData),
     },
     clientId,
     clientSecret,

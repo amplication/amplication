@@ -28,7 +28,7 @@ import {
   OAuth2FlowArgs,
   PaginatedGitGroup,
 } from "../../types";
-import { NotImplementedError } from "../../utils/custom-error";
+import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
@@ -182,11 +182,11 @@ export class BitBucketService implements GitProvider {
 
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
-      throw new CustomEvent("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
     }
     if (!oauth2args) {
       this.logger.error("Missing oauth2args");
-      throw new CustomEvent("Missing oauth2args");
+      throw new CustomError("Missing oauth2args");
     }
 
     const repository = await repositoryRequest(
@@ -217,11 +217,11 @@ export class BitBucketService implements GitProvider {
     const { gitGroupName, oauth2args } = getRepositoriesArgs;
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
-      throw new CustomEvent("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
     }
     if (!oauth2args) {
       this.logger.error("Missing oauth2args");
-      throw new CustomEvent("Missing oauth2args");
+      throw new CustomError("Missing oauth2args");
     }
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       gitGroupName,
