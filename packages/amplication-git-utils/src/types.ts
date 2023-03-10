@@ -17,9 +17,7 @@ export enum EnumGitProvider {
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  installationId: string;
-  clientId?: string;
-  clientSecret?: string;
+  providerProperties: any;
 }
 
 export interface GitProviderConstructorArgs {
@@ -173,8 +171,8 @@ export interface OAuth2FlowArgs {
   refreshToken: string;
 }
 
-export interface OAuth2FlowResponse extends OAuthData {
-  userData: CurrentUser;
+export interface OAuth2FlowResponse {
+  providerProperties: any;
   useGroupingForRepositories: boolean;
 }
 

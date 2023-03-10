@@ -25,7 +25,6 @@ import {
   GetBranchArgs,
   PullRequest,
   GitProviderArgs,
-  OAuth2FlowArgs,
   PaginatedGitGroup,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -47,7 +46,7 @@ export class BitBucketService implements GitProvider {
     private readonly gitProviderArgs: GitProviderArgs,
     private readonly logger: ILogger
   ) {
-    const { clientId, clientSecret } = gitProviderArgs;
+    const { clientId, clientSecret } = gitProviderArgs.providerProperties;
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -109,35 +108,27 @@ export class BitBucketService implements GitProvider {
   async completeOAuth2Flow(
     authorizationCode: string
   ): Promise<OAuth2FlowResponse> {
-    const { accessToken, refreshToken, expiresIn, tokenType, scopes } =
-      await this.getAccessToken(authorizationCode);
+    const oAuthData = await this.getAccessToken(authorizationCode);
 
-    const {
-      username,
-      uuid: userUuid,
-      links: userLinks,
-      displayName,
-    } = await this.getCurrentUser(accessToken, refreshToken);
+    const currentUserData = await this.getCurrentUser(
+      oAuthData.accessToken,
+      oAuthData.refreshToken
+    );
 
     this.logger.info("BitBucketService completeOAuth2Flow");
+
     return {
-      accessToken,
-      refreshToken,
-      scopes,
-      tokenType,
-      expiresIn,
-      useGroupingForRepositories: true,
-      userData: {
-        username,
-        uuid: userUuid,
-        links: userLinks,
-        displayName,
+      providerProperties: {
+        ...oAuthData,
+        ...currentUserData,
       },
+      useGroupingForRepositories: true,
     };
   }
 
-  async getGitGroups(oauth2args: OAuth2FlowArgs): Promise<PaginatedGitGroup> {
-    const { accessToken, refreshToken } = oauth2args;
+  async getGitGroups(): Promise<PaginatedGitGroup> {
+    const { accessToken, refreshToken } =
+      this.gitProviderArgs.providerProperties;
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
       accessToken,
       this.clientId,
