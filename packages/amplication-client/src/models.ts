@@ -728,7 +728,6 @@ export type GitGroup = {
 };
 
 export type GitGroupInput = {
-  gitProvider: EnumGitProvider;
   organizationId: Scalars['String'];
 };
 

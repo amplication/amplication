@@ -1044,7 +1044,6 @@ type GitGroup {
 }
 
 input GitGroupInput {
-  gitProvider: EnumGitProvider!
   organizationId: String!
 }
 
