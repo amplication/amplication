@@ -1045,7 +1045,7 @@ type GitGroup {
 
 input GitGroupInput {
   gitProvider: EnumGitProvider!
-  oAuthUserName: String!
+  organizationId: String!
 }
 
 type RemoteGitRepos {
