@@ -59,7 +59,12 @@ export class GitProviderService {
       limit: args.limit,
       page: args.page,
     };
-    const gitProviderArgs = { provider: args.gitProvider, installationId };
+    const gitProviderArgs = {
+      provider: args.gitProvider,
+      providerProperties: {
+        installationId,
+      },
+    };
     const gitClientService = await new GitClientService().create(
       gitProviderArgs,
       this.logger
@@ -86,8 +91,10 @@ export class GitProviderService {
       isPrivateRepository: args.public,
     };
     const gitProviderArgs = {
-      installationId: organization.installationId,
       provider: args.gitProvider,
+      providerProperties: {
+        installationId: organization.installationId,
+      },
     };
     const gitClientService = await new GitClientService().create(
       gitProviderArgs,
@@ -260,15 +267,18 @@ export class GitProviderService {
     });
   }
 
-  // part of sync with GitHub flow (ONLY!)
+  // installation id flow (GitHub ONLY!)
   async createGitOrganization(
     args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
+    // get the provider properties of the installationId flow (GitHub)
+    const providerProperties = { installationId };
+    // instantiate the git client service with the provider and the provider properties
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId,
+        providerProperties,
       },
       this.logger
     );
@@ -282,6 +292,7 @@ export class GitProviderService {
       },
     });
 
+    // save or update the git organization with its provider and provider properties
     if (gitOrganization) {
       return await this.prisma.gitOrganization.update({
         where: {
@@ -292,11 +303,7 @@ export class GitProviderService {
           installationId: installationId,
           name: gitRemoteOrganization.name,
           type: gitRemoteOrganization.type,
-          providerProperties: {
-            github: {
-              installationId,
-            },
-          },
+          providerProperties,
         },
       });
     }
@@ -312,12 +319,8 @@ export class GitProviderService {
         name: gitRemoteOrganization.name,
         provider: gitProvider,
         type: gitRemoteOrganization.type,
-        useGroupingForRepositories: false,
-        providerProperties: {
-          github: {
-            installationId,
-          },
-        },
+        useGroupingForRepositories: gitOrganization.useGroupingForRepositories,
+        providerProperties,
       },
     });
   }
@@ -341,12 +344,15 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
+    const providerProperties = {
+      installationId: null,
+      clientId: this.clientId || null,
+      clientSecret: this.clientSecret || null,
+    };
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId: null,
-        clientId: this.clientId,
-        clientSecret: this.clientSecret,
+        providerProperties,
       },
       this.logger
     );
@@ -363,69 +369,47 @@ export class GitProviderService {
     args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
+    // provider properties to instantiate the git client service
+    const initialProviderProperties = {
+      installationId: null,
+      clientId: this.clientId,
+      clientSecret: this.clientSecret,
+    };
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId: null,
-        clientId: this.clientId,
-        clientSecret: this.clientSecret,
+        providerProperties: initialProviderProperties,
       },
       this.logger
     );
     try {
-      const {
-        accessToken,
-        refreshToken,
-        expiresIn,
-        tokenType,
-        scopes,
-        userData: { username, uuid },
-      } = await gitClientService.completeOAuth2Flow(code);
+      const { providerProperties, useGroupingForRepositories } =
+        await gitClientService.completeOAuth2Flow(code);
 
       return this.prisma.gitOrganization.upsert({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           provider_installationId: {
             provider: gitProvider,
-            installationId: uuid,
+            installationId: providerProperties.uuid,
           },
         },
         create: {
           provider: gitProvider,
-          installationId: uuid,
-          name: username,
+          installationId: providerProperties.uuid,
+          name: providerProperties.username,
           type: EnumGitOrganizationType.User,
-          useGroupingForRepositories: true,
+          useGroupingForRepositories,
           workspace: {
             connect: {
               id: workspaceId,
             },
           },
-          providerProperties: {
-            bitbucket: {
-              username,
-              uuid,
-              accessToken,
-              refreshToken,
-              expiresIn,
-              tokenType,
-              scopes,
-            },
-          },
+          providerProperties,
         },
         update: {
-          name: username,
-          providerProperties: {
-            bitbucket: {
-              username,
-              uuid,
-              accessToken,
-              refreshToken,
-              expiresIn,
-              tokenType,
-              scopes,
-            },
-          },
+          name: providerProperties.username,
+          providerProperties,
         },
       });
     } catch (error) {
@@ -434,24 +418,25 @@ export class GitProviderService {
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
-    const { gitProvider, oAuthUserName } = args.where;
-    const lowerCaseProvider = gitProvider.toLowerCase();
+    const { gitProvider } = args.where;
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.where.organizationId,
+      },
+    });
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId: null,
-        clientId: this.clientId,
-        clientSecret: this.clientSecret,
+        providerProperties: {
+          ...JSON.parse(JSON.stringify(organization.providerProperties)),
+          clientId: this.clientId,
+          clientSecret: this.clientSecret,
+        },
       },
       this.logger
     );
-    const currentUser = await this.getCurrentOAuthUser(oAuthUserName);
-    return await gitClientService.getGitGroups({
-      accessToken:
-        currentUser.providerProperties[lowerCaseProvider]["accessToken"],
-      refreshToken:
-        currentUser.providerProperties[lowerCaseProvider]["refreshToken"],
-    });
+
+    return await gitClientService.getGitGroups();
   }
 
   async deleteGitOrganization(
@@ -465,7 +450,7 @@ export class GitProviderService {
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        installationId,
+        providerProperties: { installationId },
       },
       this.logger
     );

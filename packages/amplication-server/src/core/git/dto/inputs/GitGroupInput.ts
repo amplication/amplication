@@ -9,5 +9,5 @@ export class GitGroupInput {
   gitProvider!: EnumGitProvider;
 
   @Field(() => String, { nullable: false })
-  oAuthUserName!: string;
+  organizationId!: string;
 }

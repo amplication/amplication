@@ -124,6 +124,10 @@ export class GitResolver {
   }
 
   @Query(() => PaginatedGitGroup)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "where.organizationId"
+  )
   gitGroups(@Args() args: GitGroupArgs) {
     return this.gitService.getGitGroups(args);
   }
