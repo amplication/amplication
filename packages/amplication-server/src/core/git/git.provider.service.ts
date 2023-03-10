@@ -26,6 +26,7 @@ import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
+import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -418,7 +419,6 @@ export class GitProviderService {
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
-    const { gitProvider } = args.where;
     const organization = await this.getGitOrganization({
       where: {
         id: args.where.organizationId,
@@ -426,7 +426,7 @@ export class GitProviderService {
     });
     const gitClientService = await new GitClientService().create(
       {
-        provider: gitProvider,
+        provider: EnumGitProvider[organization.provider],
         providerProperties: {
           ...JSON.parse(JSON.stringify(organization.providerProperties)),
           clientId: this.clientId,
