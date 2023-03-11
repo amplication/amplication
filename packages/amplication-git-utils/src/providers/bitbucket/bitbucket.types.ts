@@ -14,6 +14,15 @@ enum AccessLevel {
  * we took only the properties we need for the app
  */
 
+export interface OAuth2 {
+  access_token: string;
+  refresh_token: string;
+  token_type: string;
+  expires_in: number;
+  state: string;
+  scopes: string;
+}
+
 // https://developer.atlassian.com/cloud/bitbucket/rest/api-group-users/#api-user-get
 export interface Account {
   links: {
