@@ -224,7 +224,6 @@ export class BitBucketService implements GitProvider {
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
-
     const gitRepos = values.map(
       ({ name, is_private, links, full_name, mainbranch, accessLevel }) => {
         return {
@@ -237,6 +236,7 @@ export class BitBucketService implements GitProvider {
         };
       }
     );
+
     return {
       repos: gitRepos,
       totalRepos: size,
