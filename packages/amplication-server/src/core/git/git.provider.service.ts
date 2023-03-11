@@ -64,6 +64,12 @@ export class GitProviderService {
       args.gitOrganizationId
     );
 
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId,
+      },
+    });
+
     const repositoriesArgs = {
       limit: args.limit,
       page: args.page,
@@ -73,6 +79,7 @@ export class GitProviderService {
     const gitProviderArgs = {
       provider: args.gitProvider,
       providerProperties: {
+        ...JSON.parse(JSON.stringify(organization.providerProperties)),
         installationId,
         clientId: this.clientId,
         clientSecret: this.clientSecret,
@@ -96,15 +103,19 @@ export class GitProviderService {
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
-        useGroupingForRepositories: false,
+        useGroupingForRepositories: organization.useGroupingForRepositories,
       },
+      gitGroupName: args.gitGroupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
     const gitProviderArgs = {
       provider: args.gitProvider,
       providerProperties: {
+        ...JSON.parse(JSON.stringify(organization.providerProperties)),
         installationId: organization.installationId,
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
       },
     };
     const gitClientService = await this.createGitClient(gitProviderArgs);
