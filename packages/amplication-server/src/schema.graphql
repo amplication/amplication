@@ -1068,6 +1068,7 @@ input RemoteGitRepositoriesWhereUniqueInput {
   gitProvider: EnumGitProvider!
   limit: Float!
   page: Float!
+  gitGroupName: String
 }
 
 input GitOrganizationWhereInput {
@@ -1475,6 +1476,7 @@ input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
+  gitGroupName: String
 }
 
 input ConnectGitRepositoryInput {

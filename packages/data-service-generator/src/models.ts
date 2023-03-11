@@ -282,6 +282,7 @@ export type ConnectGitRepositoryInput = {
 };
 
 export type CreateGitRepositoryInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
@@ -1672,6 +1673,7 @@ export type RemoteGitRepos = {
 };
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
   limit: Scalars['Float'];
