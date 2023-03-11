@@ -57,6 +57,7 @@ async function requestWrapper(
   try {
     const response = await fetch(url, payload);
     if (response.status === 401) {
+      logger.error("Unauthorized request");
       return refreshTokenRequest(clientId, clientSecret, refreshToken);
     }
     return (await response).json();

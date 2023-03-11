@@ -191,51 +191,49 @@ export class BitBucketService implements GitProvider {
       this.refreshToken,
       this.logger
     );
-    const { links, name, is_private, full_name, mainbranch } = repository;
+    const { links, name, is_private, full_name, mainbranch, accessLevel } =
+      repository;
 
     return {
       name,
       url: links.self.href,
       private: is_private,
       fullName: full_name,
-      admin: null,
-      // TODO: check if this is the correct way to get the default branch name
-      defaultBranch: mainbranch.default_merge_strategy,
+      admin: !!(accessLevel === "admin"),
+      defaultBranch: mainbranch.name,
     };
   }
 
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const { gitGroupName, oauth2args } = getRepositoriesArgs;
+    const { gitGroupName } = getRepositoriesArgs;
+
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
       throw new CustomError("Missing gitGroupName");
     }
-    if (!oauth2args) {
-      this.logger.error("Missing oauth2args");
-      throw new CustomError("Missing oauth2args");
-    }
+
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       gitGroupName,
-      oauth2args.accessToken,
+      this.accessToken,
       this.clientId,
       this.clientSecret,
-      oauth2args.refreshToken,
+      this.refreshToken,
       this.logger
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
+
     const gitRepos = values.map(
-      ({ name, is_private, links, full_name, mainbranch }) => {
+      ({ name, is_private, links, full_name, mainbranch, accessLevel }) => {
         return {
           name,
           url: links.self.href,
           private: is_private,
           fullName: full_name,
-          admin: null,
-          // TODO: check if this is the correct way to get the default branch name
-          defaultBranch: mainbranch.default_merge_strategy,
+          admin: !!(accessLevel === "admin"),
+          defaultBranch: mainbranch.name,
         };
       }
     );
@@ -254,7 +252,6 @@ export class BitBucketService implements GitProvider {
       gitGroupName,
       repositoryName,
       isPrivateRepository,
-      owner, // TODO: type string in our interface, but in bitbucket it's Account
       gitOrganization,
     } = createRepositoryArgs;
 
@@ -278,13 +275,15 @@ export class BitBucketService implements GitProvider {
       this.logger
     );
 
+    console.log("newRepository", newRepository);
+
     return {
       name: newRepository.name,
-      url: newRepository.links.self.href,
+      url: "https://bitbucket.org/" + newRepository.full_name,
       private: newRepository.is_private,
       fullName: newRepository.full_name,
-      admin: null,
-      defaultBranch: newRepository.mainbranch.default_merge_strategy,
+      admin: !!(newRepository.accessLevel === "admin"),
+      defaultBranch: newRepository.mainbranch.name,
     };
   }
 

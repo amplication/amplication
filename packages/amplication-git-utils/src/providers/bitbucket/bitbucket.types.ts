@@ -1,5 +1,12 @@
 import { LinksMetadata } from "../../types";
 
+enum AccessLevel {
+  ADMIN = "admin",
+  OWNER = "owner",
+  MEMBER = "member",
+  CONTRIBUTOR = "contributor",
+}
+
 /**
  * These types are based on the Bitbucket API documentation:
  * https://developer.atlassian.com/cloud/bitbucket/rest
@@ -70,6 +77,7 @@ export interface Repository {
   name: string;
   project: Project;
   mainbranch: Branch;
+  accessLevel: AccessLevel;
 }
 
 interface Project {
@@ -79,6 +87,7 @@ interface Project {
 }
 
 interface Branch {
+  name: string;
   merge_strategies: string[];
   default_merge_strategy: string;
 }

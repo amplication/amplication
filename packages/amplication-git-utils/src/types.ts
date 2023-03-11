@@ -92,7 +92,6 @@ export interface CreateRepositoryArgs {
 export interface GetRepositoriesArgs {
   limit: number;
   page: number;
-  oauth2args?: OAuth2FlowArgs | null;
   gitGroupName?: string;
 }
 
