@@ -3,6 +3,7 @@ import { ILogger } from "@amplication/util/logging";
 import { CustomError } from "../../utils/custom-error";
 import {
   Account,
+  OAuth2,
   PaginatedRepositories,
   PaginatedWorkspaceMembership,
   Repository,
@@ -55,10 +56,20 @@ async function requestWrapper(
   logger: ILogger
 ) {
   try {
-    const response = await fetch(url, payload);
+    let response = await fetch(url, payload);
     if (response.status === 401) {
       logger.error("Unauthorized request");
-      return refreshTokenRequest(clientId, clientSecret, refreshToken);
+      const { access_token, refresh_token } = await refreshTokenRequest(
+        clientId,
+        clientSecret,
+        refreshToken
+      );
+      refreshToken = refresh_token;
+      const newPayload = {
+        ...payload,
+        headers: getRequestHeaders(access_token),
+      };
+      response = await fetch(url, newPayload);
     }
     return (await response).json();
   } catch (error) {
@@ -80,12 +91,13 @@ export async function refreshTokenRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string
-) {
-  return fetch(ACCESS_TOKEN_URL, {
+): Promise<OAuth2> {
+  const response = await fetch(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.RefreshToken}&refresh_token=${refreshToken}`,
   });
+  return response.json();
 }
 
 export async function authDataRequest(
