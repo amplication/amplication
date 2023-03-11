@@ -14,7 +14,7 @@ import { ConnectGitRepositoryInput } from "./dto/inputs/ConnectGitRepositoryInpu
 import { CreateGitRepositoryInput } from "./dto/inputs/CreateGitRepositoryInput";
 import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRepositoriesWhereUniqueInput";
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
-import { GitClientService } from "@amplication/git-utils";
+import { GitClientService, GitProviderArgs } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
   ResourceService,
@@ -50,12 +50,25 @@ export class GitProviderService {
     );
   }
 
+  async createGitClient(
+    gitProviderArgs: GitProviderArgs,
+    logger = this.logger
+  ): Promise<GitClientService> {
+    return new GitClientService().create(gitProviderArgs, logger);
+  }
+
   async getReposOfOrganization(
     args: RemoteGitRepositoriesWhereUniqueInput
   ): Promise<RemoteGitRepos> {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
+
+    const repositoriesArgs = {
+      limit: args.limit,
+      page: args.page,
+      gitGroupName: args.gitGroupName,
+    };
 
     const gitProviderArgs = {
       provider: args.gitProvider,
@@ -65,16 +78,8 @@ export class GitProviderService {
         clientSecret: this.clientSecret,
       },
     };
-    const gitClientService = await new GitClientService().create(
-      gitProviderArgs,
-      this.logger
-    );
 
-    const repositoriesArgs = {
-      limit: args.limit,
-      page: args.page,
-      gitGroupName: args.gitGroupName,
-    };
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     return gitClientService.getRepositories(repositoriesArgs);
   }
 
@@ -102,10 +107,7 @@ export class GitProviderService {
         installationId: organization.installationId,
       },
     };
-    const gitClientService = await new GitClientService().create(
-      gitProviderArgs,
-      this.logger
-    );
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     const remoteRepository = await gitClientService.createRepository(
       repository
     );
@@ -280,14 +282,9 @@ export class GitProviderService {
     const { gitProvider, installationId } = args.data;
     // get the provider properties of the installationId flow (GitHub)
     const providerProperties = { installationId };
+    const gitProviderArgs = { provider: gitProvider, providerProperties };
     // instantiate the git client service with the provider and the provider properties
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerProperties,
-      },
-      this.logger
-    );
+    const gitClientService = await this.createGitClient(gitProviderArgs);
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
@@ -356,13 +353,8 @@ export class GitProviderService {
       clientId: this.clientId || null,
       clientSecret: this.clientSecret || null,
     };
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerProperties,
-      },
-      this.logger
-    );
+    const gitProviderArgs = { provider: gitProvider, providerProperties };
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     return await gitClientService.getGitInstallationUrl(workspaceId);
   }
 
@@ -382,13 +374,11 @@ export class GitProviderService {
       clientId: this.clientId,
       clientSecret: this.clientSecret,
     };
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerProperties: initialProviderProperties,
-      },
-      this.logger
-    );
+    const gitProviderArgs = {
+      provider: gitProvider,
+      providerProperties: initialProviderProperties,
+    };
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     try {
       const { providerProperties, useGroupingForRepositories } =
         await gitClientService.completeOAuth2Flow(code);
@@ -430,17 +420,15 @@ export class GitProviderService {
         id: args.where.organizationId,
       },
     });
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: EnumGitProvider[organization.provider],
-        providerProperties: {
-          ...JSON.parse(JSON.stringify(organization.providerProperties)),
-          clientId: this.clientId,
-          clientSecret: this.clientSecret,
-        },
+    const gitProviderArgs = {
+      provider: EnumGitProvider[organization.provider],
+      providerProperties: {
+        ...JSON.parse(JSON.stringify(organization.providerProperties)),
+        clientId: this.clientId,
+        clientSecret: this.clientSecret,
       },
-      this.logger
-    );
+    };
+    const gitClientService = await this.createGitClient(gitProviderArgs);
 
     return await gitClientService.getGitGroups();
   }
@@ -453,13 +441,11 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       gitOrganizationId
     );
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerProperties: { installationId },
-      },
-      this.logger
-    );
+    const gitProviderArgs = {
+      provider: gitProvider,
+      providerProperties: { installationId },
+    };
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     if (installationId) {
       const isDelete = await gitClientService.deleteGitOrganization();
       if (isDelete) {
