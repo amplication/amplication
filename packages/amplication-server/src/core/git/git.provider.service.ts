@@ -54,7 +54,7 @@ export class GitProviderService {
     gitProviderArgs: GitProviderArgs,
     logger = this.logger
   ): Promise<GitClientService> {
-    return this.createGitClient(gitProviderArgs, logger);
+    return new GitClientService().create(gitProviderArgs, logger);
   }
 
   async getReposOfOrganization(
