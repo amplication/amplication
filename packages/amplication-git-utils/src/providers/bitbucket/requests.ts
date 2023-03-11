@@ -209,7 +209,10 @@ export async function repositoryCreateRequest(
     REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
     {
       method: "POST",
-      headers: getRequestHeaders(accessToken),
+      headers: {
+        ...getRequestHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
       body: JSON.stringify(repositoryCreateData),
     },
     clientId,

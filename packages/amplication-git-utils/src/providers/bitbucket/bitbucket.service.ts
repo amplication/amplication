@@ -275,8 +275,6 @@ export class BitBucketService implements GitProvider {
       this.logger
     );
 
-    console.log("newRepository", newRepository);
-
     return {
       name: newRepository.name,
       url: "https://bitbucket.org/" + newRepository.full_name,
