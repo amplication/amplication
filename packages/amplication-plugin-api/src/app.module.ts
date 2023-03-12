@@ -15,7 +15,7 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { GraphQLError, GraphQLFormattedError } from "graphql";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
-
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 @Module({
   controllers: [],
   imports: [
@@ -35,7 +35,8 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
     AmplicationLoggerModule.forRoot({
       serviceName: "amplication-plugin-api",
     }),
-    GraphQLModule.forRootAsync({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
       useFactory: (configService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
