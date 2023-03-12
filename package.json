@@ -70,6 +70,7 @@
     "apollo-server-express": "^3.10.2",
     "assert": "^2.0.0",
     "ast-types": "^0.14.2",
+    "axios": "^0.27.2",
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
