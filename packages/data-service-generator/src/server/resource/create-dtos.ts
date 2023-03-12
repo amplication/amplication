@@ -7,6 +7,8 @@ import {
   NamedClassDeclaration,
   EntityEnumDTOs,
   EntityDTOs,
+  EventNames,
+  CreateDTOsParams,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../utils/entity";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
@@ -27,12 +29,19 @@ import { createUpdateArgs } from "./dto/graphql/update/create-update-args";
 import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested";
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
+import pluginWrapper from "../../plugin-wrapper";
+
+export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
+  return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
+    dtos,
+  });
+}
 
 /**
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModules(dtos: DTOs): Module[] {
+export function createDTOModulesInternal({ dtos }: CreateDTOsParams): Module[] {
   const dtoNameToPath = getDTONameToPath(dtos);
   return Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs).map((dto) => {

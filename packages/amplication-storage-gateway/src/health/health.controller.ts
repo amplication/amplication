@@ -1,7 +1,7 @@
 import { Controller, Inject } from "@nestjs/common";
 import { HealthControllerBase } from "./base/health.controller.base";
 import { HealthService } from "./health.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Controller("_health")
 export class HealthController extends HealthControllerBase {

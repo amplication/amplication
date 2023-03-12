@@ -14,7 +14,7 @@ import { GoogleSecretsManagerModule } from "./services/googleSecretsManager.modu
 import { GoogleSecretsManagerService } from "./services/googleSecretsManager.service";
 import { HealthModule } from "./core/health/health.module";
 import { join } from "path";
-import { AmplicationLoggerModule } from "@amplication/nest-logger-module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
 
 @Module({

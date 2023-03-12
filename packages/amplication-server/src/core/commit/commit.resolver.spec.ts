@@ -1,9 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { ApolloServer, gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -14,7 +10,8 @@ import { UserService } from "../user/user.service";
 import { BuildService } from "../build/build.service";
 
 import { CommitResolver } from "./commit.resolver";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -78,7 +75,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("CommitService", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServer;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -124,12 +121,11 @@ describe("CommitService", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
   });
 
   it("should find committing user", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: USER_QUERY,
       variables: {
         id: EXAMPLE_COMMIT_ID,
@@ -152,7 +148,7 @@ describe("CommitService", () => {
   });
 
   it("should find one Commit", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ONE_COMMIT_QUERY,
       variables: { id: EXAMPLE_COMMIT_ID },
     });
@@ -170,7 +166,7 @@ describe("CommitService", () => {
   });
 
   it("should find many Commits", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_COMMIT_QUERY,
       variables: {},
     });

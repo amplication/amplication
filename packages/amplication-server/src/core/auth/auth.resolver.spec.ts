@@ -2,17 +2,14 @@ import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { ApolloServer, gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Account, Auth, User } from "../../models";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -126,7 +123,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("AuthResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServer;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -163,12 +160,11 @@ describe("AuthResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
   });
 
   it("should return current user", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: ME_QUERY,
     });
     expect(res.errors).toBeUndefined();
@@ -189,8 +185,8 @@ describe("AuthResolver", () => {
       lastName: EXAMPLE_LAST_NAME,
       workspaceName: EXAMPLE_WORKSPACE_NAME,
     };
-    const res = await apolloClient.mutate({
-      mutation: SIGNUP_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: SIGNUP_MUTATION,
       variables: variables,
     });
     expect(res.errors).toBeUndefined();
@@ -211,8 +207,8 @@ describe("AuthResolver", () => {
       email: EXAMPLE_EMAIL,
       password: EXAMPLE_PASSWORD,
     };
-    const res = await apolloClient.mutate({
-      mutation: LOGIN_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: LOGIN_MUTATION,
       variables: variables,
     });
     expect(res.errors).toBeUndefined();
@@ -229,8 +225,8 @@ describe("AuthResolver", () => {
   });
 
   it("should change a password", async () => {
-    const res = await apolloClient.mutate({
-      mutation: CHANGE_PASSWORD_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: CHANGE_PASSWORD_MUTATION,
       variables: {
         oldPassword: EXAMPLE_PASSWORD,
         newPassword: EXAMPLE_PASSWORD,
@@ -253,8 +249,8 @@ describe("AuthResolver", () => {
   });
 
   it("set set the current workspace", async () => {
-    const res = await apolloClient.mutate({
-      mutation: SET_WORKSPACE_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: SET_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
@@ -274,8 +270,8 @@ describe("AuthResolver", () => {
     mockCanActivate.mockImplementation(
       mockGqlAuthGuardCanActivate(EXAMPLE_USER_WITHOUT_ACCOUNT)
     );
-    const { data, errors } = await apolloClient.mutate({
-      mutation: SET_WORKSPACE_MUTATION,
+    const { data, errors } = await apolloClient.executeOperation({
+      query: SET_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
 

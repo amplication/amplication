@@ -1,10 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PrismaService } from "../../prisma/prisma.service";
-import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { ApolloServer, gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -12,7 +8,8 @@ import { ConfigService } from "@nestjs/config";
 import { ResourceRoleService } from "./resourceRole.service";
 import { ResourceRoleResolver } from "./resourceRole.resolver";
 import { ResourceRole } from "../../models";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
 const EXAMPLE_NAME = "EXAMPLE_NAME";
@@ -126,7 +123,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("ResourceRoleResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServer;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -169,12 +166,11 @@ describe("ResourceRoleResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
   });
 
   it("should get one ResourceRole", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_RESOURCE_ROLE_QUERY,
       variables: { id: EXAMPLE_RESOURCE_ROLE_ID, version: EXAMPLE_VERSION },
     });
@@ -194,7 +190,7 @@ describe("ResourceRoleResolver", () => {
   });
 
   it("should get Many ResourceRoles", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_RESOURCE_ROLES_QUERY,
     });
     expect(res.errors).toBeUndefined();
@@ -212,7 +208,7 @@ describe("ResourceRoleResolver", () => {
   });
 
   it("should create a resourceRole", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_RESOURCE_ROLE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,
@@ -241,7 +237,7 @@ describe("ResourceRoleResolver", () => {
   });
 
   it("should delete a resourceRole", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: DELETE_APP_ROLE_MUTATION,
       variables: { id: EXAMPLE_RESOURCE_ROLE_ID },
     });
@@ -260,7 +256,7 @@ describe("ResourceRoleResolver", () => {
   });
 
   it("should update a resourceRole", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_APP_ROLE_MUTATION,
       variables: {
         id: EXAMPLE_RESOURCE_ROLE_ID,

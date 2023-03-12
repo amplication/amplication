@@ -10,7 +10,6 @@ import { resourceThemeMap } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
-import NewVersionTile from "./NewVersionTile";
 import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
@@ -19,6 +18,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
+import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -50,7 +50,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            {currentResource?.name}
+            <ResourceNameField
+              currentResource={currentResource}
+              resourceId={resourceId}
+            />
             <CircleBadge
               name={currentResource?.name || ""}
               color={
@@ -60,7 +63,6 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
             />
           </div>
           <div className={`${CLASS_NAME}__tiles`}>
-            <NewVersionTile resourceId={resourceId} />
             {currentResource?.resourceType === EnumResourceType.Service && (
               <OverviewTile resourceId={resourceId} />
             )}

@@ -1,12 +1,8 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { ApolloServer, gql } from "apollo-server-express";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { User, Account } from "../../models";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
@@ -14,6 +10,7 @@ import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AccountResolver } from "./account.resolver";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AccountService } from "./account.service";
+import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
@@ -83,7 +80,7 @@ const GET_ACCOUNT_QUERY = gql`
 
 describe("AccountResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServer;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -121,12 +118,11 @@ describe("AccountResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
   });
 
   it("should get current account", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_ACCOUNT_QUERY,
     });
     expect(res.errors).toBeUndefined();
@@ -150,7 +146,7 @@ describe("AccountResolver", () => {
         lastName: EXAMPLE_UPDATED_ACCOUNT.lastName,
       },
     };
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ACCOUNT_MUTATION,
       variables,
     });

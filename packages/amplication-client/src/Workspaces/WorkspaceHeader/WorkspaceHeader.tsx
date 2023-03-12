@@ -25,10 +25,38 @@ import "./WorkspaceHeader.scss";
 import { useTracking } from "../../util/analytics";
 import ProfileForm from "../../Profile/ProfileForm";
 import { version } from "../../util/version";
+import {
+  AMPLICATION_DISCORD_URL,
+  AMPLICATION_DOC_URL,
+} from "../../util/constants";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
+
+enum ItemDataCommand {
+  COMMAND_CONTACT_US = "command_contact_us",
+}
+
+type HelpMenuItem = {
+  name: string;
+  url: string | null;
+  itemData: ItemDataCommand | null;
+};
+
+const HELP_MENU_LIST: HelpMenuItem[] = [
+  { name: "Docs", url: AMPLICATION_DOC_URL, itemData: null },
+  {
+    name: "Technical Support",
+    url: AMPLICATION_DISCORD_URL,
+    itemData: null,
+  },
+  {
+    name: "Contact Us",
+    url: null,
+    itemData: ItemDataCommand.COMMAND_CONTACT_US,
+  },
+];
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const WorkspaceHeader: React.FC<{}> = () => {
@@ -108,6 +136,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
     });
   }, [openHubSpotChat]);
 
+  const handleItemDataClicked = useCallback(
+    (itemData: ItemDataCommand) => {
+      if (itemData === ItemDataCommand.COMMAND_CONTACT_US) {
+        handleContactUsClick();
+      }
+      return;
+    },
+    [handleContactUsClick]
+  );
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
@@ -255,21 +292,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
             >
               Upgrade
             </Button>
-            <Button
-              className={`${CLASS_NAME}__contact__btn`}
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={handleContactUsClick}
-            >
-              Contact Us
-            </Button>
-            <a
-              className={`${CLASS_NAME}__links__link`}
-              rel="noopener noreferrer"
-              href="https://docs.amplication.com"
-              target="_blank"
-            >
-              Docs
-            </a>
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
@@ -290,7 +312,41 @@ const WorkspaceHeader: React.FC<{}> = () => {
             }
           />
           <hr className={`${CLASS_NAME}__vertical_border`} />
-
+          <div className={`${CLASS_NAME}__help_popover`}>
+            <SelectMenu
+              title="Help"
+              buttonStyle={EnumButtonStyle.Text}
+              icon="chevron_down"
+              openIcon="chevron_up"
+              className={`${CLASS_NAME}__help_popover__menu`}
+            >
+              <SelectMenuModal align="right">
+                <SelectMenuList>
+                  {HELP_MENU_LIST.map((route: HelpMenuItem, index) => (
+                    <SelectMenuItem
+                      closeAfterSelectionChange
+                      onSelectionChange={() => {
+                        !route.url && handleItemDataClicked(route.itemData);
+                      }}
+                      key={index}
+                      {...(route.url
+                        ? {
+                            rel: "noopener noreferrer",
+                            href: route.url,
+                            target: "_blank",
+                          }
+                        : {})}
+                    >
+                      <div className={`${CLASS_NAME}__help_popover__name`}>
+                        {route.name}
+                      </div>
+                    </SelectMenuItem>
+                  ))}
+                </SelectMenuList>
+              </SelectMenuModal>
+            </SelectMenu>
+          </div>
+          <hr className={`${CLASS_NAME}__vertical_border`} />
           <div
             className={`${CLASS_NAME}__user_badge_wrapper`}
             onClick={handleShowProfileForm}

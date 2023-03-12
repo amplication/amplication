@@ -1,4 +1,4 @@
-import { AmplicationLogger } from '@amplication/nest-logger-module';
+import { AmplicationLogger } from '@amplication/util/nestjs/logging';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 

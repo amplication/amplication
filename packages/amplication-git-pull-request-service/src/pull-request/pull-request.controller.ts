@@ -1,4 +1,4 @@
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {

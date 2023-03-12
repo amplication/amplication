@@ -14,6 +14,7 @@ import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
 import { GraphQLError, GraphQLFormattedError } from "graphql";
 import { PrismaModule } from "./prisma/prisma.module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 
 @Module({
   controllers: [],
@@ -30,6 +31,9 @@ import { PrismaModule } from "./prisma/prisma.module";
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
+    }),
+    AmplicationLoggerModule.forRoot({
+      serviceName: "amplication-plugin-api",
     }),
     GraphQLModule.forRootAsync({
       useFactory: (configService) => {

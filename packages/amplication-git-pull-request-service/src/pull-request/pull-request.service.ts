@@ -3,7 +3,7 @@ import {
   GitClientService,
   File,
 } from "@amplication/git-utils";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { DiffService } from "../diff/diff.service";
 import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
@@ -43,10 +43,13 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
-    const gitClientService = await new GitClientService().create({
-      provider: gitProvider,
-      installationId,
-    });
+    const gitClientService = await new GitClientService().create(
+      {
+        provider: gitProvider,
+        installationId,
+      },
+      this.logger
+    );
     const prUrl = await gitClientService.createPullRequest({
       owner,
       repositoryName: repo,

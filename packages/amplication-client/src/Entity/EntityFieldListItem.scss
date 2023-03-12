@@ -12,13 +12,24 @@
       margin-bottom: 0;
     }
   }
+  &__description-row {
+    padding-bottom: var(--default-spacing);
+    border-bottom: 1px solid var(--black10);
+  }
   &__title {
-    @include body1;
-    color: var(--black100);
+    @include bold-14;
+  }
+  &__subtitle {
+    @include body4;
+    font-style: italic;
+    text-transform: capitalize;
+    font-weight: 400;
+    color: var(--dark-secondary-turquoise);
   }
   &__description {
     @include body2;
-    color: var(--black80);
+    color: var(--black100);
+    line-height: 18px;
   }
   &__property {
     color: var(--positive-default);
@@ -39,10 +50,10 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    color: var(--secondary);
+    color: var(--black100);
 
     .amp-icon {
-      margin-right: var(--default-spacing);
+      margin-right: var(--icon-spacing);
     }
   }
 }

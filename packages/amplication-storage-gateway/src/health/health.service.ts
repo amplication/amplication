@@ -2,7 +2,7 @@ import { Injectable, Inject } from "@nestjs/common";
 import { HealthServiceBase } from "./base/health.service.base";
 import { QueueService } from "../queue/queue.service";
 import { StorageService } from "../storage/storage.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import os from "os";
 
 @Injectable()

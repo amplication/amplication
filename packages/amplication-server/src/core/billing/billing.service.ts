@@ -1,4 +1,4 @@
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -202,6 +202,9 @@ export class BillingService {
         allowPromoCodes: true,
         cancelUrl: new URL(successUrl, this.clientHost).href,
         successUrl: new URL(cancelUrl, this.clientHost).href,
+      },
+      metadata: {
+        userId: userId,
       },
     });
     await this.analytics.track({
