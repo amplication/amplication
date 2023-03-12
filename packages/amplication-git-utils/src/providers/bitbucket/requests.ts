@@ -58,17 +58,19 @@ async function requestWrapper(
   try {
     let response = await fetch(url, payload);
     if (response.status === 401) {
-      logger.error("Unauthorized request");
+      logger.error("Bitbucket unauthorized request");
       const { access_token, refresh_token } = await refreshTokenRequest(
         clientId,
         clientSecret,
         refreshToken
       );
+      logger.info("Refreshed access token");
       refreshToken = refresh_token;
       const newPayload = {
         ...payload,
         headers: getRequestHeaders(access_token),
       };
+      logger.info("Retrying request");
       response = await fetch(url, newPayload);
     }
     return (await response).json();
