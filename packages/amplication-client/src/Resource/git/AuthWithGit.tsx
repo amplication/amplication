@@ -106,6 +106,7 @@ function AuthWithGit({ onDone }: Props) {
         {isEmpty(gitOrganizations) ? (
           <NewConnection
             onSyncNewGitOrganizationClick={handleAuthWithGitClick}
+            provider={EnumGitProvider.Github}
           />
         ) : (
           <ExistingConnectionsMenu
