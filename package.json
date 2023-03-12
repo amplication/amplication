@@ -144,7 +144,6 @@
     "rxjs": "^7.5.7",
     "simple-git": "^3.14.1",
     "skeleton-screen-css": "^1.1.0",
-    "swagger-ui-express": "^4.5.0",
     "tar-stream": "^2.2.0",
     "ts-morph": "^17.0.1",
     "tslib": "^2.5.0",
