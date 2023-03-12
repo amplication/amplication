@@ -53,3 +53,26 @@ export class ExampleService {
   }
 }
 ```
+
+
+## Testing utils
+
+A mocked provider can be used in unit tests. 
+The folliwng example explain how to use it
+
+```ts
+/// myservice.spec.ts
+
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+
+//...
+ const module: TestingModule = await Test.createTestingModule({
+      providers: [
+        // ... 
+        MockedAmplicationLoggerProvider,
+        // ...
+      ]
+      //...
+ }).compile();
+//...
+```

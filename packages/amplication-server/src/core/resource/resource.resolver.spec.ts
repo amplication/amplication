@@ -3,11 +3,7 @@ import { PrismaService, EnumResourceType } from "../../prisma";
 import { BuildService } from "../build/build.service";
 import { EntityService } from "../entity/entity.service";
 import { EnvironmentService } from "../environment/environment.service";
-import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+import { ApolloServer, gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { ResourceResolver } from "./resource.resolver";
 import { INestApplication } from "@nestjs/common";
@@ -23,6 +19,7 @@ import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -325,7 +322,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("ResourceResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServer;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -390,12 +387,11 @@ describe("ResourceResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = createApolloServerTestClient(moduleFixture);
   });
 
   it("should find one resource", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ONE_RESOURCE_QUERY,
       variables: { id: EXAMPLE_RESOURCE_ID },
     });
@@ -435,7 +431,7 @@ describe("ResourceResolver", () => {
   });
 
   it("should find many entities", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_ENTITIES_QUERY,
       variables: {
         resourceId: EXAMPLE_RESOURCE_ID,
@@ -465,7 +461,7 @@ describe("ResourceResolver", () => {
   });
 
   it("should find many builds", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_BUILDS_QUERY,
       variables: { resourceId: EXAMPLE_RESOURCE_ID },
     });
@@ -488,7 +484,7 @@ describe("ResourceResolver", () => {
   });
 
   it("should find many environments", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_ENVIRONMENTS_QUERY,
       variables: { resourceId: EXAMPLE_RESOURCE_ID },
     });
@@ -517,7 +513,7 @@ describe("ResourceResolver", () => {
       resourceType: EnumResourceType.Service,
       project: { connect: { id: EXAMPLE_PROJECT_ID } },
     };
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_SERVICE_MUTATION,
       variables: {
         data: resourceCreateInput,
@@ -562,7 +558,7 @@ describe("ResourceResolver", () => {
   });
 
   it("should delete a resource", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: DELETE_RESOURCE_MUTATION,
       variables: {
         id: EXAMPLE_RESOURCE_ID,
@@ -597,13 +593,16 @@ describe("ResourceResolver", () => {
       },
     });
     expect(deleteResourceMock).toBeCalledTimes(1);
-    expect(deleteResourceMock).toBeCalledWith({
-      where: { id: EXAMPLE_RESOURCE_ID },
-    });
+    expect(deleteResourceMock).toBeCalledWith(
+      {
+        where: { id: EXAMPLE_RESOURCE_ID },
+      },
+      EXAMPLE_USER
+    );
   });
 
   it("should update a resource", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_RESOURCE_MUTATION,
       variables: {
         name: EXAMPLE_NAME,

@@ -7,6 +7,8 @@ import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";
 import "./EntityFieldListItem.scss";
 import { AppContext } from "../context/appContext";
+import { EntityFieldProperty } from "./EntityFieldProperty";
+import classNames from "classnames";
 
 type Props = {
   resourceId: string;
@@ -72,7 +74,7 @@ export const EntityFieldListItem = ({
         >
           {entityField.displayName}
         </Link>
-        <span className={`${CLASS_NAME}__description`}>{entityField.name}</span>
+        <span className={`${CLASS_NAME}__subtitle`}>{entityField.name}</span>
         <span className="spacer" />
         <DeleteEntityField
           entityId={entity.id}
@@ -82,7 +84,12 @@ export const EntityFieldListItem = ({
         />
       </div>
       {!isEmpty(entityField.description) && (
-        <div className={`${CLASS_NAME}__row`}>
+        <div
+          className={classNames(
+            `${CLASS_NAME}__row`,
+            `${CLASS_NAME}__description-row`
+          )}
+        >
           <span className={`${CLASS_NAME}__description`}>
             {entityField.description}
           </span>
@@ -110,22 +117,13 @@ export const EntityFieldListItem = ({
           )}
         </span>
         {entityField.required && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Required
-          </span>
+          <EntityFieldProperty property="Required" icon="alert_triangle" />
         )}
         {entityField.unique && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Unique
-          </span>
+          <EntityFieldProperty property="Unique" icon="star" />
         )}
         {entityField.searchable && (
-          <span className={`${CLASS_NAME}__property`}>
-            <Icon icon="check" />
-            Searchable
-          </span>
+          <EntityFieldProperty property="Searchable" icon="search" />
         )}
         <span className="spacer" />
       </div>

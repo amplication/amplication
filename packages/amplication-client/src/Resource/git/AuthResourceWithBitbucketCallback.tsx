@@ -1,11 +1,13 @@
 import { useEffect } from "react";
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { EnumGitProvider } from "../../models";
+import { COMPLETE_OAUTH2_FLOW } from "./queries/git-callback";
 
-const AuthResourceWithGitCallback = () => {
+const AuthResourceWithBitbucketCallback = () => {
   const { trackEvent } = useTracking();
-  const [completeAuthWithGit] = useMutation<boolean>(CREATE_GIT_ORGANIZATION, {
+  const [completeAuthWithGit] = useMutation<boolean>(COMPLETE_OAUTH2_FLOW, {
     onCompleted: (data) => {
       window.opener.postMessage({ completed: true });
       // close the popup
@@ -14,18 +16,17 @@ const AuthResourceWithGitCallback = () => {
   });
 
   useEffect(() => {
-    // get the URL parameters with the code and state values
     const queryString = window.location.search;
     const urlParams = new URLSearchParams(queryString);
-    const installationId = urlParams.get("installation_id");
+    const authorizationCode = urlParams.get("code");
     if (window.opener) {
       trackEvent({
         eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
       });
       completeAuthWithGit({
         variables: {
-          installationId,
-          gitProvider: "Github",
+          code: authorizationCode,
+          gitProvider: EnumGitProvider.Bitbucket,
         },
       }).catch(console.error);
     }
@@ -35,18 +36,4 @@ const AuthResourceWithGitCallback = () => {
   return <p>Please wait...</p>;
 };
 
-export default AuthResourceWithGitCallback;
-
-const CREATE_GIT_ORGANIZATION = gql`
-  mutation createOrganization(
-    $installationId: String!
-    $gitProvider: EnumGitProvider!
-  ) {
-    createOrganization(
-      data: { installationId: $installationId, gitProvider: $gitProvider }
-    ) {
-      id
-      name
-    }
-  }
-`;
+export default AuthResourceWithBitbucketCallback;

@@ -7,7 +7,7 @@ import {
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
 import { MissingEnvParam } from "../errors/MissingEnvParam";
-import { GitProvider } from "../git-provider.interface.ts";
+import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
   Commit,
@@ -23,21 +23,42 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  GetRepositoryArgs,
+  OAuth2FlowResponse,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitClient } from "./git-client";
 import { GitFactory } from "./git-factory";
+import { ILogger } from "@amplication/util/logging";
 
 export class GitClientService {
   private provider: GitProvider;
-  async create(gitProviderArgs: GitProviderArgs): Promise<GitClientService> {
-    this.provider = await GitFactory.getProvider(gitProviderArgs);
+  private logger: ILogger;
+
+  async create(
+    gitProviderArgs: GitProviderArgs,
+    logger: ILogger
+  ): Promise<GitClientService> {
+    this.provider = await GitFactory.getProvider(gitProviderArgs, logger);
+    this.logger = logger;
     return this;
   }
 
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
+  }
+
+  async completeOAuth2Flow(
+    authorizationCode: string
+  ): Promise<OAuth2FlowResponse> {
+    return this.provider.completeOAuth2Flow(authorizationCode);
+  }
+
+  async getRepository(
+    getRepositoryArgs: GetRepositoryArgs
+  ): Promise<RemoteGitRepository> {
+    return this.provider.getRepository(getRepositoryArgs);
   }
 
   async getRepositories(
@@ -84,7 +105,7 @@ export class GitClientService {
       amplicationIgnoreManger
     );
 
-    console.log(`Got a ${pullRequestMode} pull request mode`);
+    this.logger.info(`Got a ${pullRequestMode} pull request mode`);
     if (pullRequestMode === EnumPullRequestMode.Basic) {
       return this.provider.createPullRequestFromFiles({
         owner,
@@ -105,10 +126,12 @@ export class GitClientService {
       }
 
       const randomUUID = v4();
+      const cloneToken = await this.provider.getToken();
 
       const cloneUrl = this.provider.getCloneUrl({
         owner,
         repositoryName,
+        token: cloneToken,
       });
 
       const cloneDir = normalize(
@@ -155,7 +178,7 @@ export class GitClientService {
         const diffPath = join(diffFolder, "diff.patch");
         await writeFile(diffPath, diff);
         const fullDiffPath = resolve(diffPath);
-        console.log("Saving diff to: ", fullDiffPath);
+        this.logger.info(`Saving diff to: ${fullDiffPath}`);
         await this.postCommitProcess({
           diffPath: fullDiffPath,
           gitClient,
@@ -206,7 +229,7 @@ export class GitClientService {
     owner,
     repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
-    console.log("Pre commit process");
+    this.logger.info("Pre commit process");
     await gitClient.git.checkout(branchName);
 
     const commitsList = await this.provider.getCurrentUserCommitList({
@@ -218,33 +241,33 @@ export class GitClientService {
     const latestCommit = commitsList[0];
 
     if (!latestCommit) {
-      throw new Error(
+      this.logger.info(
         "Didn't find a commit that has been created by Amplication"
       );
+      return { diff: null };
     }
 
     const { sha } = latestCommit;
     const diff = await gitClient.git.diff([sha]);
     if (diff.length === 0) {
-      console.log("Diff returned empty");
+      this.logger.info("Diff returned empty");
       return { diff: null };
     }
     // Reset the branch to the latest commit
     await gitClient.git.reset([sha]);
     await gitClient.git.push(["--force"]);
     await gitClient.resetState();
-    console.log("Diff returned");
+    this.logger.info("Diff returned");
     return { diff };
   }
 
   async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
-    await gitClient.git.pull();
-
+    await gitClient.resetState();
     await gitClient.git
       .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
-        "--author": "Amplication diff info@amplication.com",
+        "--author": "Amplication diff <info@amplication.com>",
       })
       .push();
   }
@@ -317,10 +340,10 @@ export class GitClientService {
           return "";
         }
         const { content, htmlUrl, name } = file;
-        console.log(`Got ${name} file ${htmlUrl}`);
+        this.logger.info(`Got ${name} file ${htmlUrl}`);
         return content;
       } catch (error) {
-        console.log("Repository does not have a .amplicationignore file");
+        this.logger.info("Repository does not have a .amplicationignore file");
         return "";
       }
     });

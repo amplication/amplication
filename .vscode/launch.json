@@ -93,6 +93,13 @@
       "env": {
         "STATUS_UPDATE_URL": "https://2a08-77-252-192-146.eu.ngrok.io/generated-apps/update-action-step-status"
       }
+    },
+    {
+      "type": "node",
+      "name": "Attach Debugger Server",
+      "request": "attach",
+      "sourceMaps": true,
+      "port": 7000
     }
   ]
 }
