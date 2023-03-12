@@ -9,6 +9,6 @@ export class GitPullEventController {
 
   @MessagePattern(KafkaTopics.GitExternalPush)
   async processRepositoryPushEvent(@Payload() message: any) {
-    await this.gitPullEventService.handlePushEvent(message.value);
+    await this.gitPullEventService.handlePushEvent(message);
   }
 }
