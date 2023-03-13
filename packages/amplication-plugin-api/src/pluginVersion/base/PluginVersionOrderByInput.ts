@@ -91,4 +91,4 @@ class PluginVersionOrderByInput {
   version?: SortOrder;
 }
 
-export { PluginVersionOrderByInput };
+export { PluginVersionOrderByInput as PluginVersionOrderByInput };

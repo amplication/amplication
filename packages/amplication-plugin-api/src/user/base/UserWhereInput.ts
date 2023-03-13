@@ -63,4 +63,4 @@ class UserWhereInput {
   username?: StringFilter;
 }
 
-export { UserWhereInput };
+export { UserWhereInput as UserWhereInput };

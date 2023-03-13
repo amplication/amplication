@@ -69,4 +69,4 @@ class PluginVersionCreateInput {
   version?: string | null;
 }
 
-export { PluginVersionCreateInput };
+export { PluginVersionCreateInput as PluginVersionCreateInput };

@@ -1,5 +1,5 @@
-datasource mongo {
-  provider = "mongodb"
+datasource postgres {
+  provider = "postgresql"
   url      = env("DB_URL")
 }
 
@@ -10,7 +10,7 @@ generator client {
 model User {
   createdAt DateTime @default(now())
   firstName String?
-  id        String   @id @default(auto()) @map("_id") @mongo.ObjectId
+  id        String   @id @default(cuid())
   lastName  String?
   password  String
   roles     Json
@@ -23,7 +23,7 @@ model Plugin {
   description String?
   github      String?
   icon        String?
-  id          String   @id @default(auto()) @map("_id") @mongo.ObjectId
+  id          String   @id @default(cuid())
   name        String?
   npm         String?
   pluginId    String?  @unique
@@ -34,7 +34,7 @@ model Plugin {
 model PluginVersion {
   createdAt       DateTime @default(now())
   deprecated      String?
-  id              String   @id @default(auto()) @map("_id") @mongo.ObjectId
+  id              String   @id @default(cuid())
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?

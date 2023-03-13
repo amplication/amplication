@@ -94,4 +94,4 @@ class PluginVersion {
   version!: string | null;
 }
 
-export { PluginVersion };
+export { PluginVersion as PluginVersion };

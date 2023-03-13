@@ -72,4 +72,4 @@ class PluginVersionUpdateInput {
   version?: string | null;
 }
 
-export { PluginVersionUpdateInput };
+export { PluginVersionUpdateInput as PluginVersionUpdateInput };

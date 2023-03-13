@@ -24,4 +24,4 @@ class PluginWhereUniqueInput {
   id!: string;
 }
 
-export { PluginWhereUniqueInput };
+export { PluginWhereUniqueInput as PluginWhereUniqueInput };

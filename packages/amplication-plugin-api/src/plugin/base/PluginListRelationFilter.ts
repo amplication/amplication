@@ -53,4 +53,4 @@ class PluginListRelationFilter {
   })
   none?: PluginWhereInput;
 }
-export { PluginListRelationFilter };
+export { PluginListRelationFilter as PluginListRelationFilter };

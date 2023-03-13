@@ -24,4 +24,4 @@ class UserWhereUniqueInput {
   id!: string;
 }
 
-export { UserWhereUniqueInput };
+export { UserWhereUniqueInput as UserWhereUniqueInput };

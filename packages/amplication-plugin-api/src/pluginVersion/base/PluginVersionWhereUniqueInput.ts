@@ -24,4 +24,4 @@ class PluginVersionWhereUniqueInput {
   id!: string;
 }
 
-export { PluginVersionWhereUniqueInput };
+export { PluginVersionWhereUniqueInput as PluginVersionWhereUniqueInput };

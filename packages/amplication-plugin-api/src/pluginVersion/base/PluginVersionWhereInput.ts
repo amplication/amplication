@@ -86,4 +86,4 @@ class PluginVersionWhereInput {
   version?: StringNullableFilter;
 }
 
-export { PluginVersionWhereInput };
+export { PluginVersionWhereInput as PluginVersionWhereInput };
