@@ -41,7 +41,6 @@ const CreateServiceWizard: React.FC<Props> = ({
 }) => {
   const { errorCreateService } = useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
-  const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
 
   const errorMessage = formatError(errorCreateService);
 
@@ -62,10 +61,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         }
         wizardSchema={schemaArray}
         wizardInitialValues={ResourceInitialValues}
-        context={{
-          submitWizard: createResource,
-          resourceSettingsRef,
-        }}
+        wizardSubmit={createResource}
         moduleCss={moduleClass}
       >
         <CreateServiceWelcome moduleCss={moduleClass} path="welcome" />

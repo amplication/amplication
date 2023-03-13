@@ -6,7 +6,7 @@ import React, {
 } from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
-import { ResourceSettings } from "./CreateServiceWizard";
+import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { Redirect } from "react-router-dom";
@@ -17,10 +17,7 @@ interface ServiceWizardProps {
   wizardPattern: number[];
   wizardSchema: { [key: string]: any };
   wizardInitialValues: { [key: string]: any };
-  context: {
-    submitWizard: (values: ResourceSettings) => void;
-    resourceSettingsRef: MutableRefObject<ResourceSettings>;
-  };
+  wizardSubmit: (values: ResourceSettings) => void;
   moduleCss: string;
 }
 
@@ -61,7 +58,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardPattern,
   wizardSchema,
   wizardInitialValues,
-  context,
+  wizardSubmit,
   children,
   moduleCss,
 }) => {
@@ -100,7 +97,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
-          onSubmit={context.submitWizard}
+          onSubmit={wizardSubmit}
           validateOnMount
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =
