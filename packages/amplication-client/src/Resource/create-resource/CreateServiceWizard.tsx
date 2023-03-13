@@ -22,7 +22,6 @@ import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
 import { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
 import { ResourceSettings } from "./wizard-pages/interfaces";
-import CreateServiceBuild from "./wizard-pages/CreateServiceBuild";
 import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
 import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
 
