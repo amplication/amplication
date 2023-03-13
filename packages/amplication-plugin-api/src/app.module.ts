@@ -45,20 +45,6 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
           sortSchema: true,
           playground,
           introspection: playground || introspection,
-          formatError: (error: GraphQLError) => {
-            const graphQLFormattedError: GraphQLFormattedError = {
-              message:
-                error?.extensions?.exception?.response?.message ||
-                error?.message,
-              extensions: {
-                code:
-                  error?.extensions?.extensions?.code ||
-                  "INTERNAL_SERVER_ERROR",
-                http: error?.extensions?.extensions?.http || { status: 400 },
-              },
-            };
-            return graphQLFormattedError;
-          },
         };
       },
       inject: [ConfigService],
