@@ -1,14 +1,16 @@
 import React, { useState, ReactNode, useCallback } from "react";
+import * as analytics from "../../util/analytics";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./wizard-pages/interfaces";
-import { Form, Formik, FormikErrors } from "formik";
+import { Form, Formik, FormikErrors, FormikProps } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
 import {
   Redirect,
-  BrowserRouter as Router,
   useRouteMatch,
   useHistory,
+  Route,
+  Switch,
 } from "react-router-dom";
 
 interface ServiceWizardProps {
@@ -42,6 +44,40 @@ const ContinueButton: React.FC<{
   );
 };
 
+const pageTracking = (path: string, url: string, params: any) => {
+  analytics.page(path.replaceAll("/", "-"), {
+    path,
+    url,
+    params: params,
+  });
+};
+
+const setWizardRoutes = (
+  pages: (
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactPortal
+  )[],
+  formik: FormikProps<{ [key: string]: any }>
+) =>
+  pages.map((page) => (
+    <Route
+      path={page.props.path}
+      exact={true}
+      render={(props) => {
+        const { match } = props;
+        pageTracking(match.path, match.url, match.params);
+
+        return React.cloneElement(
+          page as React.ReactElement<
+            any,
+            string | React.JSXElementConstructor<any>
+          >,
+          { formik }
+        );
+      }}
+    />
+  ));
+
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardBaseRoute,
   wizardPattern,
@@ -61,10 +97,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     (i) => i === activePageIndex
   );
 
-  const pages = React.Children.toArray(children) as
+  const pages = React.Children.toArray(children) as (
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal[];
+    | React.ReactPortal
+  )[];
 
   const currentPage = pages[activePageIndex];
 
@@ -75,7 +111,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         : currWizardPatternIndex + 1;
     setActivePageIndex(wizardPattern[wizardIndex]);
     history.push(
-      `${wizardBaseRoute}/${pages[wizardPattern[wizardIndex]].props.path}`
+      `${wizardBaseRoute}/${pages[wizardPattern[wizardIndex]].props.step}`
     );
   }, [activePageIndex, history]);
 
@@ -84,16 +120,16 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
     setActivePageIndex(wizardPattern[wizardIndex]);
     history.push(
-      `${wizardBaseRoute}/${pages[wizardPattern[wizardIndex]].props.path}`
+      `${wizardBaseRoute}/${pages[wizardPattern[wizardIndex]].props.step}`
     );
   }, [activePageIndex, history]);
 
   return (
-    <Router>
+    <>
       {matchCreateResource.isExact && (
         <Redirect
           from={wizardBaseRoute}
-          to={`${wizardBaseRoute}/${currentPage.props.path}`}
+          to={`${wizardBaseRoute}/${currentPage.props.step}`}
         />
       )}
       <div className={`${moduleCss}__wizard_container`}>
@@ -124,13 +160,14 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             {(formik) => {
               return (
                 <Form>
-                  {React.cloneElement(
+                  <Switch>{setWizardRoutes(pages, formik)}</Switch>
+                  {/* {React.cloneElement(
                     currentPage as React.ReactElement<
                       any,
                       string | React.JSXElementConstructor<any>
                     >,
                     { formik }
-                  )}
+                  )} */}
                 </Form>
               );
             }}
@@ -154,7 +191,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           </div>
         </div>
       </div>
-    </Router>
+    </>
   );
 };
 

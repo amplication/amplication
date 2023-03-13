@@ -70,118 +70,118 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             isAnalytics: true,
             routes: [
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/welcome",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceWelcome"
-                    )
-                ),
-                moduleName: "CreateServiceWelcome",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/service-name",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceName"
-                    )
-                ),
-                moduleName: "CreateServiceName",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/github-sync",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateGithubSync"
-                    )
-                ),
-                moduleName: "CreateServiceName",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/generation-settings",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateGenerationSettings"
-                    )
-                ),
-                moduleName: "CreateServiceName",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/repository",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceRepository"
-                    )
-                ),
-                moduleName: "CreateServiceRepository",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/data-base",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceDatabase"
-                    )
-                ),
-                moduleName: "CreateServiceRepository",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/auth",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceAuth"
-                    )
-                ),
-                moduleName: "CreateServiceRepository",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/success",
-                Component: lazy(
-                  () =>
-                    import(
-                      "../Resource/create-resource/wizard-pages/CreateServiceRepository"
-                    )
-                ),
-                moduleName: "CreateServiceRepository",
-                moduleClass: "create-service-wizard",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/welcome",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceWelcome"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceWelcome",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/service-name",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceName"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceName",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/github-sync",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateGithubSync"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceName",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/generation-settings",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateGenerationSettings"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceName",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/repository",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceRepository"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceRepository",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/data-base",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceDatabase"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceRepository",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/auth",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceAuth"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceRepository",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
+              //   {
+              //     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/success",
+              //     Component: lazy(
+              //       () =>
+              //         import(
+              //           "../Resource/create-resource/wizard-pages/CreateServiceRepository"
+              //         )
+              //     ),
+              //     moduleName: "CreateServiceRepository",
+              //     moduleClass: "create-service-wizard",
+              //     routeTrackType: "",
+              //     exactPath: true,
+              //     isAnalytics: true,
+              //   },
             ],
           },
           {
