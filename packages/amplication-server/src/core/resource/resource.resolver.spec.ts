@@ -1,4 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { PrismaService, EnumResourceType } from "../../prisma";
 import { BuildService } from "../build/build.service";
 import { EntityService } from "../entity/entity.service";
@@ -379,7 +380,12 @@ describe("ResourceResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })

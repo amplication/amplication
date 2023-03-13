@@ -1,4 +1,5 @@
 import { INestApplication } from "@nestjs/common";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -152,7 +153,12 @@ describe("AuthResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })

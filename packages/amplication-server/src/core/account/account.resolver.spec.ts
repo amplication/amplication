@@ -11,6 +11,7 @@ import { AccountResolver } from "./account.resolver";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AccountService } from "./account.service";
 import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
@@ -110,7 +111,12 @@ describe("AccountResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })

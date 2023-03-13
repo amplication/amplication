@@ -1,4 +1,5 @@
 import { INestApplication } from "@nestjs/common";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
 import { gql, ApolloServer } from "apollo-server-express";
@@ -209,7 +210,12 @@ describe("ProjectResolver", () => {
   beforeEach(async () => {
     jest.clearAllMocks();
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
       providers: [
         ProjectResolver,
         {

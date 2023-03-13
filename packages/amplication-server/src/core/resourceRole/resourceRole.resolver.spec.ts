@@ -1,4 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { PrismaService } from "../../prisma/prisma.service";
 import { ApolloServer, gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
@@ -158,7 +159,12 @@ describe("ResourceRoleResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
