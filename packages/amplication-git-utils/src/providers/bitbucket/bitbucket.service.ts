@@ -122,7 +122,7 @@ export class BitBucketService implements GitProvider {
       oAuthData.refreshToken
     );
 
-    this.logger.info("BitBucketService completeOAuth2Flow");
+    this.logger.info("BitBucketService: completeOAuth2Flow");
 
     return {
       providerProperties: {
