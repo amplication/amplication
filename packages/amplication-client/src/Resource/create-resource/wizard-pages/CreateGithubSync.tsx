@@ -8,7 +8,10 @@ import { WizardStepProps } from "./interfaces";
 
 const className = "create-github-sync";
 
-const CreateGithubSync: React.FC<WizardStepProps> = ({ moduleCss, formik }) => {
+const CreateGithubSync: React.FC<WizardStepProps> = ({
+  moduleClass,
+  formik,
+}) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
   const handleOnDone = useCallback(() => {

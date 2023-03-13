@@ -5,7 +5,7 @@ import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-name";
 
-const CreateServiceName: React.FC<WizardStepProps> = ({ moduleCss }) => {
+const CreateServiceName: React.FC<WizardStepProps> = ({ moduleClass }) => {
   return (
     <div className={className}>
       <div className={`${className}__description`}>

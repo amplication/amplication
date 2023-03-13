@@ -16,7 +16,7 @@ export interface NextPage {
 }
 
 export interface WizardStepProps {
-  moduleCss: string;
+  moduleClass: string;
   path: string;
   formik?: FormikProps<{ [key: string]: any }>;
 }

@@ -24,16 +24,16 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${moduleClass}__repo_wrapper`}>
-          <div className={`${moduleClass}__db_box`}>
-            <div className={`${moduleClass}__db_up_buttons`}>
+        <div className={`${className}__repo_wrapper`}>
+          <div className={`${className}__db_box`}>
+            <div className={`${className}__db_up_buttons`}>
               <CircleBadge color={"black"} size={"small"}>
                 <Icon icon="" size={"small"} />
               </CircleBadge>
               <label>GraphQL API</label>
               <ToggleField name="generateGraphQL" label="" />
             </div>
-            <div className={`${moduleClass}__db_up_buttons`}>
+            <div className={`${className}__db_up_buttons`}>
               <CircleBadge color={"black"} size={"small"}>
                 <Icon icon="" size={"small"} />
               </CircleBadge>
@@ -41,8 +41,8 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
               <ToggleField name="generateRestApi" label="" />
             </div>
           </div>
-          <div className={`${moduleClass}__db_box`}>
-            <div className={`${moduleClass}__db_up_buttons`}>
+          <div className={`${className}__db_box`}>
+            <div className={`${className}__db_up_buttons`}>
               <CircleBadge color={"black"} size={"small"}>
                 <Icon icon="" size={"small"} />
               </CircleBadge>

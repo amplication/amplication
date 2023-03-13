@@ -63,21 +63,21 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardSubmit={createResource}
         moduleCss={moduleClass}
       >
-        <CreateServiceWelcome moduleCss={moduleClass} path="welcome" />
-        <CreateServiceName moduleCss={moduleClass} path="service-name" />
-        <CreateGithubSync moduleCss={moduleClass} path="github-sync" />
+        <CreateServiceWelcome moduleClass={moduleClass} path="welcome" />
+        <CreateServiceName moduleClass={moduleClass} path="service-name" />
+        <CreateGithubSync moduleClass={moduleClass} path="github-sync" />
         <CreateGenerationSettings
-          moduleCss={moduleClass}
+          moduleClass={moduleClass}
           path="generation-settings"
         />
-        <CreateServiceRepository moduleCss={moduleClass} path="repository" />
-        <CreateServiceDatabase moduleCss={moduleClass} path="data-base" />
-        <CreateServiceAuth moduleCss={moduleClass} path="auth" />
+        <CreateServiceRepository moduleClass={moduleClass} path="repository" />
+        <CreateServiceDatabase moduleClass={moduleClass} path="data-base" />
+        <CreateServiceAuth moduleClass={moduleClass} path="auth" />
         <CreateServiceCodeGeneration
-          moduleCss="create-service-code-generation"
+          moduleClass="create-service-code-generation"
           path="build"
         />
-        <CreateServiceNextSteps moduleCss={moduleClass} path="end" />
+        <CreateServiceNextSteps moduleClass={moduleClass} path="end" />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>

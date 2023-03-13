@@ -11,7 +11,7 @@ import { WizardStepProps } from "./interfaces";
 const className = "create-service-code-generation";
 
 const CreateServiceCodeGeneration: React.FC<WizardStepProps> = ({
-  moduleCss,
+  moduleClass,
 }) => {
   const actionLog = {
     action: {

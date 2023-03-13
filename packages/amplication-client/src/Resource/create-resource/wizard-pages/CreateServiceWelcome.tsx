@@ -5,7 +5,7 @@ import { AppContext } from "../../../context/appContext";
 import { Button } from "@amplication/design-system";
 import { WizardStepProps } from "./interfaces";
 
-const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleCss }) => {
+const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleClass }) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const CLASS_NAME = "create-service-welcome";
