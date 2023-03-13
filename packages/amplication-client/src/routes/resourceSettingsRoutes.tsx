@@ -33,17 +33,6 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/db/update",
-    Component: lazy(
-      () => import("../Resource/ApplicationDatabaseSettingsForms")
-    ),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
-    isAnalytics: true,
-  },
-  {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/api-tokens",
     Component: lazy(() => import("../Settings/ApiTokenList")),
     moduleName: "",

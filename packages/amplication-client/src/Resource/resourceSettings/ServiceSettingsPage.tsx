@@ -38,14 +38,6 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       </div>
       <div>
         <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/db/update`}
-          icon="settings"
-        >
-          Database
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
           to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/api-tokens`}
           icon="id"
         >
