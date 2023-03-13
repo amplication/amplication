@@ -45,7 +45,11 @@ export interface NextPage {
   isValid: boolean;
 }
 
-const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
+const CreateServiceWizard: React.FC<Props> = ({
+  moduleClass,
+  innerRoutes,
+  ...props
+}) => {
   const { errorCreateService } = useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const resourceSettingsRef: MutableRefObject<ResourceSettings> = useRef();
@@ -55,6 +59,8 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
   const createResource = useCallback((values: ResourceSettings) => {
     // at the end of the process this function will trigger create service
   }, []);
+
+  /// wizardHook => defineUser | createResource | loadingResource | route to go | progressBar
 
   return (
     <Modal open fullScreen css={moduleClass}>
@@ -72,15 +78,16 @@ const CreateServiceWizard: React.FC<Props> = ({ moduleClass, ...props }) => {
         }}
         moduleCss={moduleClass}
       >
-        <CreateServiceWelcome moduleCss={moduleClass} />
+        {innerRoutes}
+        {/* <CreateServiceWelcome moduleCss={moduleClass} />
         <CreateServiceName moduleCss={moduleClass} />
         <CreateGithubSync moduleClass={moduleClass} />
         <CreateGenerationSettings moduleClass={moduleClass} />
         <CreateServiceRepository moduleClass={moduleClass} />
         <CreateServiceDatabase moduleClass={moduleClass} />
         <CreateServiceAuth moduleClass={moduleClass} />
-        <div>page 7</div>
-        <div>end of wizard - 8</div>
+        <div>page 7 - build</div>
+        <div>end of wizard - 8</div> */}
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
