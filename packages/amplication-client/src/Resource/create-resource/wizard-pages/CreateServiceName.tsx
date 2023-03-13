@@ -1,13 +1,11 @@
 import { TextField } from "@amplication/design-system";
 import React from "react";
-// import "../CreateServiceWizard.scss";
 import "./CreateServiceName.scss";
-
-import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-name";
 
-const CreateServiceName: React.FC<{ moduleCss: string }> = ({ moduleCss }) => {
+const CreateServiceName: React.FC<WizardStepProps> = ({ moduleCss }) => {
   return (
     <div className={className}>
       <div className={`${className}__description`}>

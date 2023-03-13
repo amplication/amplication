@@ -1,17 +1,14 @@
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
-import { FormikProps } from "formik";
 import "./CreateGithubSync.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { gitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-github-sync";
 
-const CreateGithubSync: React.FC<{
-  moduleClass: string;
-  formik?: FormikProps<{ [key: string]: any }>;
-}> = ({ moduleClass, formik }) => {
+const CreateGithubSync: React.FC<WizardStepProps> = ({ moduleCss, formik }) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
   const handleOnDone = useCallback(() => {

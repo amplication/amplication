@@ -9,9 +9,11 @@ import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./CreateServiceWizard";
 import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
+import { Redirect } from "react-router-dom";
 
 interface ServiceWizardProps {
   children: ReactNode;
+  wizardBaseRoute: string;
   wizardPattern: number[];
   wizardSchema: { [key: string]: any };
   wizardInitialValues: { [key: string]: any };
@@ -43,7 +45,19 @@ const ContinueButton: React.FC<{
   );
 };
 
+const setWizardRoutes = (
+  pages: (
+    | string
+    | number
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactFragment
+    | React.ReactPortal
+  )[],
+  props: { [key: string]: any }
+) => {};
+
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
+  wizardBaseRoute,
   wizardPattern,
   wizardSchema,
   wizardInitialValues,
@@ -58,6 +72,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   );
 
   const pages = React.Children.toArray(children);
+
   const currentPage = pages[activePageIndex];
 
   const goNextPage = useCallback(() => {
@@ -100,7 +115,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           {(formik) => {
             return (
               <Form>
-                {/* <FormikAutoSave debounceMS={250} /> */}
                 {React.cloneElement(
                   currentPage as React.ReactElement<
                     any,

@@ -10,8 +10,9 @@ import "./CreateServiceRepository.scss";
 
 import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { WizardStepProps } from "./interfaces";
 
-const CreateServiceRepository: React.FC<{ moduleClass: string }> = ({
+const CreateServiceRepository: React.FC<WizardStepProps> = ({
   moduleClass,
 }) => {
   const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");

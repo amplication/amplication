@@ -3,10 +3,9 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import "./CreateServiceWelcome.scss";
 import { AppContext } from "../../../context/appContext";
 import { Button } from "@amplication/design-system";
+import { WizardStepProps } from "./interfaces";
 
-const CreateServiceWelcome: React.FC<{ moduleCss: string }> = ({
-  moduleCss,
-}) => {
+const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleCss }) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
 
   const CLASS_NAME = "create-service-welcome";

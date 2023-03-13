@@ -1,13 +1,13 @@
 import React from "react";
 import "../CreateServiceWizard.scss";
-import {} from "../CreateServiceWizardForm";
 import { CircleBadge, Icon, ToggleField } from "@amplication/design-system";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-generation-settings";
 
-const CreateGenerationSettings: React.FC<{ moduleClass }> = ({
+const CreateGenerationSettings: React.FC<WizardStepProps> = ({
   moduleClass,
 }) => {
   return (

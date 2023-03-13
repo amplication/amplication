@@ -3,13 +3,12 @@ import React, { useState } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { WizardStepProps } from "./interfaces";
 
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
-const CreateServiceAuth: React.FC<{ moduleClass: string }> = ({
-  moduleClass,
-}) => {
+const CreateServiceAuth: React.FC<WizardStepProps> = ({ moduleClass }) => {
   const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");
 
   const handleOptionChoose = (event) => {

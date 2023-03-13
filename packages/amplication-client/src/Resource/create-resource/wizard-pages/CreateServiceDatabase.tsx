@@ -3,10 +3,9 @@ import React, { useState } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { WizardStepProps } from "./interfaces";
 
-const CreateServiceDatabase: React.FC<{ moduleClass: string }> = ({
-  moduleClass,
-}) => {
+const CreateServiceDatabase: React.FC<WizardStepProps> = ({ moduleClass }) => {
   const [chooseOption, setChooseOption] = useState<string>("Monorepo");
 
   const PLUGIN_LOGO_BASE_URL =

@@ -21,6 +21,8 @@ import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
 import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
 import { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
+import { ResourceSettings } from "./wizard-pages/interfaces";
+import CreateServiceBuild from "./wizard-pages/CreateServiceBuild";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -29,21 +31,6 @@ type Props = AppRouteProps & {
   }>;
   location: H.Location;
 };
-
-export interface ResourceSettings {
-  serviceName: string;
-  gitRepositoryId: string;
-  generateAdminUI: boolean;
-  generateGraphQL: boolean;
-  generateRestApi: boolean;
-  structureType: "monorepo" | "polyrepo";
-  dataBaseType: "postgres" | "mysql" | "mongo";
-  authSwitch: boolean;
-}
-export interface NextPage {
-  nextTitle: string;
-  isValid: boolean;
-}
 
 const CreateServiceWizard: React.FC<Props> = ({
   moduleClass,
@@ -59,12 +46,13 @@ const CreateServiceWizard: React.FC<Props> = ({
   const createResource = useCallback((values: ResourceSettings) => {
     // at the end of the process this function will trigger create service
   }, []);
-
+  // on refresh if the route is not the base redirect to base
   /// wizardHook => defineUser | createResource | loadingResource | route to go | progressBar
 
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
+        wizardBaseRoute={""}
         wizardPattern={
           defineUser === "login"
             ? [1, 2, 3, 4, 5, 6, 8]
@@ -78,16 +66,18 @@ const CreateServiceWizard: React.FC<Props> = ({
         }}
         moduleCss={moduleClass}
       >
-        {innerRoutes}
-        {/* <CreateServiceWelcome moduleCss={moduleClass} />
-        <CreateServiceName moduleCss={moduleClass} />
-        <CreateGithubSync moduleClass={moduleClass} />
-        <CreateGenerationSettings moduleClass={moduleClass} />
-        <CreateServiceRepository moduleClass={moduleClass} />
-        <CreateServiceDatabase moduleClass={moduleClass} />
-        <CreateServiceAuth moduleClass={moduleClass} />
-        <div>page 7 - build</div>
-        <div>end of wizard - 8</div> */}
+        <CreateServiceWelcome moduleCss={moduleClass} path="welcome" />
+        <CreateServiceName moduleCss={moduleClass} path="service-name" />
+        <CreateGithubSync moduleCss={moduleClass} path="github-sync" />
+        <CreateGenerationSettings
+          moduleCss={moduleClass}
+          path="generation-settings"
+        />
+        <CreateServiceRepository moduleCss={moduleClass} path="repository" />
+        <CreateServiceDatabase moduleCss={moduleClass} path="data-base" />
+        <CreateServiceAuth moduleCss={moduleClass} path="auth" />
+        <CreateServiceBuild moduleCss={moduleClass} path="build" />
+        <div path="end">end of wizard - 8</div>
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
