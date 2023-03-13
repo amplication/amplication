@@ -5,10 +5,10 @@ import { AppContext } from "../../../context/appContext";
 import { Button } from "@amplication/design-system";
 import { WizardStepProps } from "./interfaces";
 
+const CLASS_NAME = "create-service-welcome";
+
 const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleClass }) => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
-
-  const CLASS_NAME = "create-service-welcome";
 
   const welcomeMatch = useRouteMatch({
     path: `/${currentWorkspace?.id}/${currentProject?.id}/create-resource`,

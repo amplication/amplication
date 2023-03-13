@@ -38,7 +38,8 @@ const CreateServiceWizard: React.FC<Props> = ({
   innerRoutes,
   ...props
 }) => {
-  const { errorCreateService } = useContext(AppContext);
+  const { errorCreateService, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
 
   const errorMessage = formatError(errorCreateService);
@@ -52,7 +53,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardBaseRoute={""}
+        wizardBaseRoute={`/${currentWorkspace.id}/${currentProject.id}/create-resource`}
         wizardPattern={
           defineUser === "login"
             ? [1, 2, 3, 4, 5, 6, 8]
