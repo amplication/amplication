@@ -23,6 +23,8 @@ import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
 import { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import CreateServiceBuild from "./wizard-pages/CreateServiceBuild";
+import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
+import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -76,8 +78,11 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceRepository moduleCss={moduleClass} path="repository" />
         <CreateServiceDatabase moduleCss={moduleClass} path="data-base" />
         <CreateServiceAuth moduleCss={moduleClass} path="auth" />
-        <CreateServiceBuild moduleCss={moduleClass} path="build" />
-        <div path="end">end of wizard - 8</div>
+        <CreateServiceNextSteps moduleCss={moduleClass} path="build" />
+        <CreateServiceCodeGeneration
+          moduleCss="create-service-code-generation"
+          path="end"
+        />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>

@@ -1,13 +1,12 @@
 import { CircleBadge, Icon } from "@amplication/design-system";
 import "./CreateServiceNextSteps.scss";
-
-export type Props = {
-  moduleClass: string;
-};
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-next-steps";
 
-export const CreateServiceNextSteps = ({ moduleClass }: Props) => {
+export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
+  moduleCss,
+}) => {
   return (
     <div className={className}>
       <div className={`${className}__description`}>

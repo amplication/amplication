@@ -1,24 +1,18 @@
 import React from "react";
-import { match } from "react-router-dom";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
-import { AppRouteProps } from "../../../routes/routesUtil";
 import ActionLog from "../../../VersionControl/ActionLog";
-import { Action } from "../../../models";
+// import { Action } from "../../../models";
 
 import CodeGenerationCompleted from "../../../../src/assets/images/code-generation-completed.svg";
 import { Button } from "@amplication/design-system";
-
-type Props = AppRouteProps & {
-  match: match<{
-    workspace: string;
-    project: string;
-  }>;
-};
+import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-code-generation";
 
-const CreateServiceCodeGeneration = ({ moduleClass }) => {
+const CreateServiceCodeGeneration: React.FC<WizardStepProps> = ({
+  moduleCss,
+}) => {
   const actionLog = {
     action: {
       createdAt: new Date(),
