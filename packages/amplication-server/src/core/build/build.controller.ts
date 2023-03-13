@@ -1,19 +1,18 @@
+import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller } from "@nestjs/common";
-import { BuildService, ACTION_LOG_LEVEL } from "./build.service";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-import { plainToInstance } from "class-transformer";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
-import { KafkaMessage } from "kafkajs";
+import { plainToInstance } from "class-transformer";
+import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
+import { Env } from "../../env";
+import { ActionService } from "../action/action.service";
+import { EnumActionStepStatus } from "../action/dto";
 import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
-import { EnvironmentVariables } from "@amplication/util/kafka";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
+import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
+import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
-import { Env } from "../../env";
-import { EnumActionStepStatus } from "../action/dto";
-import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
-import { ActionService } from "../action/action.service";
+import { CreatePRFailure } from "./dto/CreatePRFailure";
+import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { LogEntryDto } from "./dto/LogEntryDto";
 
 @Controller("generated-apps")
