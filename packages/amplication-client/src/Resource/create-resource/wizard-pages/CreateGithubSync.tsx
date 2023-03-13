@@ -2,23 +2,26 @@ import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import { FormikProps } from "formik";
-
 import "./CreateGithubSync.scss";
-
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { gitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
 
 const className = "create-github-sync";
 
 const CreateGithubSync: React.FC<{
   moduleClass: string;
   formik?: FormikProps<{ [key: string]: any }>;
-}> = ({ moduleClass }) => {
+}> = ({ moduleClass, formik }) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
-  const handleOnDone = useCallback(
-    (data: any) => {
-      // formik.setFieldValue()
-      console.log(data);
+  const handleOnDone = useCallback(() => {
+    refreshCurrentWorkspace();
+  }, [refreshCurrentWorkspace]);
+
+  const handleOnGitRepositorySelected = useCallback(
+    (data: gitRepositorySelected) => {
+      formik.setFieldValue("gitRepositoryId", data.gitOrganizationId);
+
       refreshCurrentWorkspace();
     },
     [refreshCurrentWorkspace]
@@ -34,7 +37,10 @@ const CreateGithubSync: React.FC<{
       </Layout.LeftSide>
       <Layout.RightSide>
         <div className={`${className}__github_box`}>
-          {/* <AuthWithGit onDone={handleOnDone}></AuthWithGit> */}
+          <AuthWithGit
+            onDone={handleOnDone}
+            onGitRepositorySelected={handleOnGitRepositorySelected}
+          ></AuthWithGit>
         </div>
       </Layout.RightSide>
     </Layout.Split>

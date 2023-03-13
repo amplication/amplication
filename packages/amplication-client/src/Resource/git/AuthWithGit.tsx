@@ -9,6 +9,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./AuthWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
+import { gitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
@@ -25,11 +26,12 @@ let triggerAuthFailed = () => {};
 
 type Props = {
   onDone: () => void;
+  onGitRepositorySelected: (data: gitRepositorySelected) => void;
 };
 
 export const CLASS_NAME = "auth-with-git";
 
-function AuthWithGit({ onDone }: Props) {
+function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
   const { currentProjectConfiguration, currentWorkspace } =
     useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
@@ -93,6 +95,10 @@ function AuthWithGit({ onDone }: Props) {
           gitOrganizationName={gitOrganization.name}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
+          }}
+          onSelectGitRepository={(data: gitRepositorySelected) => {
+            setSelectRepoOpen(false);
+            onGitRepositorySelected(data);
           }}
           onPopupFailedClose={() => {
             setPopupFailed(false);

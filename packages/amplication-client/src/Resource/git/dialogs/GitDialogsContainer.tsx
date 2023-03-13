@@ -1,9 +1,8 @@
 import { Resource } from "@amplication/code-gen-types/models";
 import { Dialog } from "@amplication/design-system";
-import React from "react";
 import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
-import GitRepos from "./GitRepos/GithubRepos";
+import GitRepos, { gitRepositorySelected } from "./GitRepos/GithubRepos";
 
 type Props = {
   resource: Resource;
@@ -16,6 +15,7 @@ type Props = {
   onGitCreateRepository: () => void;
   onPopupFailedClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
+  onSelectGitRepository: (data: gitRepositorySelected) => void;
 };
 
 export default function GitDialogsContainer({
@@ -29,6 +29,7 @@ export default function GitDialogsContainer({
   onGitCreateRepository,
   onPopupFailedClose,
   onSelectGitRepositoryDialogClose,
+  onSelectGitRepository,
 }: Props) {
   return (
     <div>
@@ -41,7 +42,7 @@ export default function GitDialogsContainer({
         <GitRepos
           resourceId={resource.id}
           gitOrganizationId={gitOrganizationId}
-          onGitRepositoryConnected={onSelectGitRepositoryDialogClose}
+          onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
         />
       </Dialog>

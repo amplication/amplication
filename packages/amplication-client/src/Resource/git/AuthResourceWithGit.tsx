@@ -19,6 +19,10 @@ import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 import { isEmpty } from "lodash";
 import NewConnection from "./GitActions/NewConnection";
+import {
+  CONNECT_GIT_REPOSITORY,
+  gitRepositorySelected,
+} from "./dialogs/GitRepos/GithubRepos";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -94,6 +98,26 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     setPopupFailed(true);
   };
   const errorMessage = formatError(error);
+
+  const [connectGitRepository, { error: errorUpdate }] = useMutation(
+    CONNECT_GIT_REPOSITORY
+  );
+  const handleRepoSelected = useCallback(
+    (data: gitRepositorySelected) => {
+      connectGitRepository({
+        variables: {
+          name: data.repositoryName,
+          gitOrganizationId: data.gitOrganizationId,
+          resourceId: resource.id,
+        },
+      }).catch(console.error);
+      trackEvent({
+        eventName: AnalyticsEventNames.GitHubRepositorySync,
+      });
+    },
+    [connectGitRepository, trackEvent]
+  );
+
   return (
     <>
       {gitOrganization && (
@@ -105,6 +129,10 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           gitCreateRepoOpen={createNewRepoOpen}
           gitProvider={EnumGitProvider.Github}
           gitOrganizationName={gitOrganization.name}
+          onSelectGitRepository={(data: gitRepositorySelected) => {
+            setSelectRepoOpen(false);
+            handleRepoSelected(data);
+          }}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}

@@ -29,8 +29,13 @@ const MAX_ITEMS_PER_PAGE = 50;
 type Props = {
   gitOrganizationId: string;
   resourceId: string;
-  onGitRepositoryConnected: () => void;
+  onGitRepositoryConnected: (data: gitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
+};
+
+export type gitRepositorySelected = {
+  gitOrganizationId: string;
+  repositoryName: string;
 };
 
 function GitRepos({
@@ -62,24 +67,27 @@ function GitRepos({
   );
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
-      connectGitRepository({
-        variables: {
-          gitOrganizationId,
-          resourceId,
-          name: data.name,
-        },
-      }).catch(console.error);
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubRepositorySync,
+      // connectGitRepository({
+      //   variables: {
+      //     gitOrganizationId,
+      //     resourceId,
+      //     name: data.name,
+      //   },
+      // }).catch(console.error);
+      // trackEvent({
+      //   eventName: AnalyticsEventNames.GitHubRepositorySync,
+      // });
+      onGitRepositoryConnected({
+        gitOrganizationId: gitOrganizationId,
+        repositoryName: data.name,
       });
-      onGitRepositoryConnected();
     },
     [
       resourceId,
-      connectGitRepository,
+      //connectGitRepository,
       gitOrganizationId,
       onGitRepositoryConnected,
-      trackEvent,
+      //trackEvent,
     ]
   );
   const handleRefresh = useCallback(() => {
@@ -165,7 +173,7 @@ function GitRepos({
 
 export default GitRepos;
 
-const CONNECT_GIT_REPOSITORY = gql`
+export const CONNECT_GIT_REPOSITORY = gql`
   mutation connectResourceGitRepository(
     $name: String!
     $gitOrganizationId: String!
