@@ -394,6 +394,7 @@ export class GitProviderService {
       const { providerProperties, useGroupingForRepositories } =
         await gitClientService.completeOAuth2Flow(code);
 
+      this.logger.info("server: completeOAuth2Flow");
       return this.prisma.gitOrganization.upsert({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
