@@ -61,20 +61,20 @@ export class GithubService implements GitProvider {
     private readonly gitProviderArgs: GitProviderArgs,
     private readonly providerConfiguration: GitHubConfiguration,
     private readonly logger: ILogger
-  ) {
+  ) {}
+
+  async init(): Promise<void> {
     const {
       appId,
       privateKey: envPrivateKey,
       installationUrl,
-    } = providerConfiguration;
+    } = this.providerConfiguration;
+
     this.gitInstallationUrl = installationUrl;
-
     this.appId = appId;
-
     this.privateKey = envPrivateKey;
-
     this.installationId =
-      gitProviderArgs.providerOrganizationProperties.installationId;
+      this.gitProviderArgs.providerOrganizationProperties.installationId;
 
     if (!appId || !envPrivateKey || !installationUrl) {
       this.logger.error("Missing Github configuration");
@@ -86,9 +86,6 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
-  }
-
-  async init(): Promise<void> {
     if (this.installationId) {
       this.octokit = await this.getInstallationOctokit(this.installationId);
     }

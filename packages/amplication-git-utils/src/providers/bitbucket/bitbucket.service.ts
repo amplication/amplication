@@ -47,8 +47,11 @@ export class BitBucketService implements GitProvider {
     private readonly gitProviderArgs: GitProviderArgs,
     private readonly providerConfiguration: BitBucketConfiguration,
     private readonly logger: ILogger
-  ) {
-    const { clientId, clientSecret } = providerConfiguration;
+  ) {}
+
+  async init(): Promise<void> {
+    this.logger.info("BitbucketService init");
+    const { clientId, clientSecret } = this.providerConfiguration;
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -56,10 +59,6 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-  }
-
-  async init(): Promise<void> {
-    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
