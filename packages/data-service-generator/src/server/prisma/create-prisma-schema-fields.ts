@@ -12,20 +12,22 @@ import { pascalCase } from "pascal-case";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
 import * as PrismaSchemaDSLTypes from "prisma-schema-dsl-types";
 
-export const CUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
-  PrismaSchemaDSLTypes.CUID
-);
+export const CUID_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
+  callee: PrismaSchemaDSLTypes.CUID,
+};
 
-export const UUID_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
-  PrismaSchemaDSLTypes.UUID
-);
+export const UUID_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
+  callee: PrismaSchemaDSLTypes.UUID,
+};
 
-export const INCREMENTAL_CALL_EXPRESSION =
-  new PrismaSchemaDSLTypes.CallExpression(PrismaSchemaDSLTypes.AUTO_INCREMENT);
+export const INCREMENTAL_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression =
+  {
+    callee: PrismaSchemaDSLTypes.AUTO_INCREMENT,
+  };
 
-export const NOW_CALL_EXPRESSION = new PrismaSchemaDSLTypes.CallExpression(
-  PrismaSchemaDSLTypes.NOW
-);
+export const NOW_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
+  callee: PrismaSchemaDSLTypes.NOW,
+};
 
 export function createPrismaFields(
   field: EntityField,
