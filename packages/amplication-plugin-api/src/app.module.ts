@@ -12,7 +12,6 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
-import { GraphQLError, GraphQLFormattedError } from "graphql";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
