@@ -26,11 +26,14 @@ export class CommitResolver {
 
   @ResolveField(() => User)
   async user(@Parent() commit: Commit): Promise<User> {
-    return this.userService.findUser({
-      where: {
-        id: commit.userId,
+    return this.userService.findUser(
+      {
+        where: {
+          id: commit.userId,
+        },
       },
-    });
+      true
+    );
   }
 
   @Query(() => Commit, {

@@ -142,9 +142,12 @@ describe("CommitService", () => {
       },
     });
     expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID },
-    });
+    expect(userServiceFindUserMock).toBeCalledWith(
+      {
+        where: { id: EXAMPLE_USER_ID },
+      },
+      true
+    );
   });
 
   it("should find one Commit", async () => {
