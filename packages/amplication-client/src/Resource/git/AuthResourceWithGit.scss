@@ -3,6 +3,7 @@
 .auth-app-with-github {
   margin-left: 0 !important;
   padding-left: 0 !important;
+  padding-bottom: 0 !important;
 
   .toggle-field {
     margin: 0;
@@ -19,9 +20,8 @@
       color: var(--black100);
     }
     text-align: left;
-    margin-top: var(--double-spacing);
+    margin-top: var(--medium-spacing);
     color: var(--black100);
-    margin-bottom: var(--double-spacing);
 
     ul {
       margin: 0;
