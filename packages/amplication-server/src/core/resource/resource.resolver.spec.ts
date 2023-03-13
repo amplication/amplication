@@ -1,26 +1,30 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { PrismaService, EnumResourceType } from "../../prisma";
-import { BuildService } from "../build/build.service";
-import { EntityService } from "../entity/entity.service";
-import { EnvironmentService } from "../environment/environment.service";
-import { ApolloServer, gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { ResourceResolver } from "./resource.resolver";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 import { INestApplication } from "@nestjs/common";
-import { GraphQLModule } from "@nestjs/graphql";
-import { ResourceService } from "./resource.service";
-import { Resource } from "../../models/Resource";
 import { ConfigService } from "@nestjs/config";
-import { Entity } from "../../models/Entity";
-import { Build } from "../build/dto/Build";
-import { Environment } from "../environment/dto/Environment";
-import { User } from "../../models/User";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Entity } from "../../models/Entity";
+import { Resource } from "../../models/Resource";
+import { User } from "../../models/User";
+import { EnumResourceType, PrismaService } from "../../prisma";
+import { BuildService } from "../build/build.service";
+import { Build } from "../build/dto/Build";
+import { EntityService } from "../entity/entity.service";
+import { Environment } from "../environment/dto/Environment";
+import { EnvironmentService } from "../environment/environment.service";
 import { UserService } from "../user/user.service";
 import { ResourceCreateInput } from "./dto";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ResourceResolver } from "./resource.resolver";
+import { ResourceService } from "./resource.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -323,7 +327,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("ResourceResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -393,7 +397,7 @@ describe("ResourceResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find one resource", async () => {

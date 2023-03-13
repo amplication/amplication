@@ -1,28 +1,32 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { ApolloServer, gql } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { EntityResolver } from "./entity.resolver";
-import { EntityService } from "./entity.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 import { INestApplication } from "@nestjs/common";
-import { UserService } from "../user/user.service";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, EntityPermissionField } from "../../models";
 import { Entity } from "../../models/Entity";
-import { User } from "../../models/User";
 import { EntityField } from "../../models/EntityField";
+import { EntityPermission } from "../../models/EntityPermission";
+import { EntityVersion } from "../../models/EntityVersion";
+import { User } from "../../models/User";
 import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
 } from "../../prisma";
-import { EntityPermission } from "../../models/EntityPermission";
-import { EntityVersion } from "../../models/EntityVersion";
-import { Commit, EntityPermissionField } from "../../models";
+import { UserService } from "../user/user.service";
+import { EntityResolver } from "./entity.resolver";
+import { EntityService } from "./entity.service";
 import { EntityVersionResolver } from "./entityVersion.resolver";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -608,7 +612,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("EntityResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -677,7 +681,7 @@ describe("EntityResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find one entity", async () => {

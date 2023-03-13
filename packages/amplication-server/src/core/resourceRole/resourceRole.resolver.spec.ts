@@ -1,7 +1,11 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 import { PrismaService } from "../../prisma/prisma.service";
-import { ApolloServer, gql } from "apollo-server-express";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -10,7 +14,7 @@ import { ResourceRoleService } from "./resourceRole.service";
 import { ResourceRoleResolver } from "./resourceRole.resolver";
 import { ResourceRole } from "../../models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_RESOURCE_ROLE_ID = "EXAMPLE_APP_ROLE_ID";
 const EXAMPLE_NAME = "EXAMPLE_NAME";
@@ -124,7 +128,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("ResourceRoleResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -172,7 +176,7 @@ describe("ResourceRoleResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should get one ResourceRole", async () => {

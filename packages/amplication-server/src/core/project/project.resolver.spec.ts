@@ -1,25 +1,29 @@
-import { INestApplication } from "@nestjs/common";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-import { GraphQLModule } from "@nestjs/graphql";
-import { Test, TestingModule } from "@nestjs/testing";
-import { gql, ApolloServer } from "apollo-server-express";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { Commit, Entity, Resource, User } from "../../models";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { Environment } from "../environment/dto";
-import { Build } from "../build/dto/Build";
-import { ProjectResolver } from "./project.resolver";
-import { ProjectService } from "./project.service";
 import {
-  EnumResourceType,
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
+  EnumResourceType,
 } from "@amplication/code-gen-types/models";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { INestApplication } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, Entity, Resource, User } from "../../models";
+import { Build } from "../build/dto/Build";
+import { Environment } from "../environment/dto";
 import { PendingChange } from "../resource/dto/PendingChange";
 import { ResourceService } from "../resource/resource.service";
-import { ConfigService } from "@nestjs/config";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ProjectResolver } from "./project.resolver";
+import { ProjectService } from "./project.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -205,7 +209,7 @@ const getPendingChangesMock = jest.fn(() => {
 
 describe("ProjectResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -252,7 +256,7 @@ describe("ProjectResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should commit", async () => {
