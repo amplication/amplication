@@ -1,22 +1,24 @@
-
 const ResourceName = {
   properties: {
     serviceName: {
       type: "string",
-      minLength: 2
-    }
+      minLength: 2,
+    },
   },
-  required: ["serviceName"]
-}
+  required: ["serviceName"],
+};
 
 const GitRepository = {
   properties: {
-    gitRepositoryId: {
-      type: "string"
-    }
+    gitOrganizationId: {
+      type: "string",
+    },
+    gitRepositoryName: {
+      type: "string",
+    },
   },
-  required: ["gitRepositoryId"]
-}
+  required: ["gitOrganizationId", "gitRepositoryName"],
+};
 
 const GenerationSettings = {
   properties: {
@@ -31,42 +33,41 @@ const GenerationSettings = {
     generateRestApi: {
       type: "boolean",
       default: false,
-    }
+    },
   },
-  required: ["generateAdminUI", "generateGraphQL", "generateRestApi"] 
-}
+  required: ["generateAdminUI", "generateGraphQL", "generateRestApi"],
+};
 
 const StructureType = {
   properties: {
-     structureType:{
+    structureType: {
       enum: ["monorepo", "polyrepo"],
-     },
-     baseDir: {
+    },
+    baseDir: {
       type: "string",
-      minLength: 4
-     }
+      minLength: 4,
+    },
   },
-  required: ["structureType"]
-}
+  required: ["structureType"],
+};
 
 const DataBaseType = {
   properties: {
     dataBaseType: {
-      enum: ["postgres", "mongo", "mysql"]
-    }
+      enum: ["postgres", "mongo", "mysql"],
+    },
   },
-  required: ["dataBaseType"]
-}
+  required: ["dataBaseType"],
+};
 
 const Auth = {
   properties: {
     authSwitch: {
-      type: "boolean"
-    }
+      type: "boolean",
+    },
   },
-  required: ["authSwitch"]
-}
-
+  required: ["authSwitch"],
+};
 
 export const schemaArray = [
   [],
@@ -77,16 +78,17 @@ export const schemaArray = [
   DataBaseType,
   Auth,
   [],
-  []
-]
+  [],
+];
 
 export const ResourceInitialValues = {
   serviceName: null,
-  gitRepositoryId: null,
+  gitOrganizationId: null,
+  gitRepositoryName: null,
   generateAdminUI: false,
   generateGraphQL: false,
   generateRestApi: false,
   structureType: "monorepo",
   dataBaseType: "postgres",
   authSwitch: false,
-}
+};

@@ -1,15 +1,9 @@
-import React, {
-  useState,
-  ReactNode,
-  useCallback,
-  MutableRefObject,
-} from "react";
+import React, { useState, ReactNode, useCallback } from "react";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { Redirect } from "react-router-dom";
 
 interface ServiceWizardProps {
   children: ReactNode;
@@ -104,7 +98,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
 
             setIsValidStep(!!Object.keys(errors).length);
-
             return errors;
           }}
           validateOnBlur

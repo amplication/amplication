@@ -14,7 +14,6 @@ import { formatError } from "../../util/error";
 import "./AuthResourceWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
-import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 import { isEmpty } from "lodash";
@@ -23,6 +22,7 @@ import {
   CONNECT_GIT_REPOSITORY,
   gitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
+import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -161,7 +161,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           />
         )}
 
-        <RepositoryActions
+        <WizardRepositoryActions
           onCreateRepository={() => {
             setCreateNewRepoOpen(true);
           }}
