@@ -78,11 +78,11 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceRepository moduleCss={moduleClass} path="repository" />
         <CreateServiceDatabase moduleCss={moduleClass} path="data-base" />
         <CreateServiceAuth moduleCss={moduleClass} path="auth" />
-        <CreateServiceNextSteps moduleCss={moduleClass} path="build" />
         <CreateServiceCodeGeneration
           moduleCss="create-service-code-generation"
-          path="end"
+          path="build"
         />
+        <CreateServiceNextSteps moduleCss={moduleClass} path="end" />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
