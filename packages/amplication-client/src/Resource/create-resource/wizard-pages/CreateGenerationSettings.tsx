@@ -1,12 +1,8 @@
 import React from "react";
 
-import "./CreateGenerationSettings.scss";
-
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
-import { IconDescriptionToggle } from "./IconDescriptionToggle";
-
-const className = "create-generation-settings";
+import { IconLabelToggle } from "./IconLabelToggle";
 
 const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
   return (
@@ -23,23 +19,23 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${className}__db_box`}>
-          <IconDescriptionToggle
+        <Layout.SelectorWrapper>
+          <IconLabelToggle
             icon="graphql"
-            description="GraphQL API"
+            label="GraphQL API"
             name="generateGraphQL"
           />
-          <IconDescriptionToggle
+          <IconLabelToggle
             icon="graphql"
-            description="REST API & Swagger UI"
+            label="REST API & Swagger UI"
             name="generateGraphQL"
           />
-          <IconDescriptionToggle
+          <IconLabelToggle
             icon="graphql"
-            description="Admin UI"
+            label="Admin UI"
             name="generateGraphQL"
           />
-        </div>
+        </Layout.SelectorWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );
