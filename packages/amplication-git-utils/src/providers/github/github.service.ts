@@ -38,6 +38,7 @@ import {
   OAuth2FlowResponse,
   PaginatedGitGroup,
   GitProviderArgs,
+  GitHubConfiguration,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -58,36 +59,33 @@ export class GithubService implements GitProvider {
   public readonly domain = "github.com";
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerConfiguration: GitHubConfiguration,
     private readonly logger: ILogger
-  ) {
-    const {
-      GITHUB_APP_INSTALLATION_URL,
-      GITHUB_APP_APP_ID,
-      GITHUB_APP_PRIVATE_KEY,
-    } = process.env;
-    if (!GITHUB_APP_INSTALLATION_URL) {
-      throw new Error("GITHUB_APP_INSTALLATION_URL is not defined");
-    }
-    this.gitInstallationUrl = GITHUB_APP_INSTALLATION_URL;
-    if (!GITHUB_APP_APP_ID) {
-      throw new Error("GITHUB_APP_APP_ID is not defined");
-    }
-    this.appId = GITHUB_APP_APP_ID;
-    if (!GITHUB_APP_PRIVATE_KEY) {
-      throw new Error("GITHUB_APP_PRIVATE_KEY is not defined");
-    }
-    this.privateKey = GITHUB_APP_PRIVATE_KEY;
+  ) {}
 
-    this.installationId = gitProviderArgs.providerProperties.installationId;
+  async init(): Promise<void> {
+    const {
+      appId,
+      privateKey: envPrivateKey,
+      installationUrl,
+    } = this.providerConfiguration;
+
+    this.gitInstallationUrl = installationUrl;
+    this.appId = appId;
+    this.privateKey = envPrivateKey;
+    this.installationId =
+      this.gitProviderArgs.providerOrganizationProperties.installationId;
+
+    if (!appId || !envPrivateKey || !installationUrl) {
+      this.logger.error("Missing Github configuration");
+      throw new Error("Missing Github configuration");
+    }
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
     this.app = new App({
       appId: this.appId,
       privateKey,
     });
-  }
-
-  async init(): Promise<void> {
     if (this.installationId) {
       this.octokit = await this.getInstallationOctokit(this.installationId);
     }

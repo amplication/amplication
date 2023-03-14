@@ -19,10 +19,27 @@ export interface OAuthCacheProvider {
   get: <T>(key: string) => Promise<T>;
   set: <T>(key: string, value: T) => Promise<void>;
 }
+export interface BitBucketConfiguration {
+  clientId: string;
+  clientSecret: string;
+}
+
+export interface GitHubConfiguration {
+  clientId: string;
+  clientSecret: string;
+  appId: string;
+  privateKey: string;
+  installationUrl: string;
+}
+
+export interface GitProvidersConfiguration {
+  gitHubConfiguration: GitHubConfiguration;
+  bitBucketConfiguration: BitBucketConfiguration;
+}
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerProperties: Record<string, any>;
+  providerOrganizationProperties: Record<string, any>;
 }
 
 export interface GitProviderConstructorArgs {
@@ -180,7 +197,7 @@ export interface OAuth2FlowArgs {
 }
 
 export interface OAuth2FlowResponse {
-  providerProperties: Record<string, any>;
+  providerOrganizationProperties: Record<string, any>;
   useGroupingForRepositories: boolean;
 }
 

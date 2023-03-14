@@ -27,6 +27,7 @@ import {
   GitProviderArgs,
   PaginatedGitGroup,
   OAuthCacheProvider,
+  BitBucketConfiguration,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -50,14 +51,17 @@ export class BitBucketService implements GitProvider {
 
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerConfiguration: BitBucketConfiguration,
     private readonly oAuthCacheProvider: OAuthCacheProvider,
     private readonly logger: ILogger
   ) {}
 
   async init(): Promise<void> {
     this.logger.info("BitbucketService init");
-    const { clientId, clientSecret, accessToken, refreshToken } =
-      this.gitProviderArgs.providerProperties;
+    const { accessToken, refreshToken } =
+      this.gitProviderArgs.providerOrganizationProperties;
+    const { clientId, clientSecret } = this.providerConfiguration;
+
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -128,7 +132,7 @@ export class BitBucketService implements GitProvider {
     this.logger.info("BitBucketService: completeOAuth2Flow");
 
     return {
-      providerProperties: {
+      providerOrganizationProperties: {
         ...oAuthData,
         ...currentUserData,
       },
