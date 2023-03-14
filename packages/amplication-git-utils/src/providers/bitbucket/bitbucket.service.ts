@@ -112,13 +112,7 @@ export class BitBucketService implements GitProvider {
   }
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    const currentUser = await currentUserRequest(
-      accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
-    );
+    const currentUser = await currentUserRequest(accessToken);
 
     const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
@@ -133,11 +127,7 @@ export class BitBucketService implements GitProvider {
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     const { size, page, pagelen, next, previous, values } =
@@ -180,11 +170,7 @@ export class BitBucketService implements GitProvider {
     const repository = await repositoryRequest(
       gitGroupName,
       repositoryName,
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -211,11 +197,7 @@ export class BitBucketService implements GitProvider {
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       gitGroupName,
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -263,11 +245,7 @@ export class BitBucketService implements GitProvider {
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     return {

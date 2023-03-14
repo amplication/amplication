@@ -47,37 +47,12 @@ const getRequestHeaders = (accessToken: string) => ({
   Accept: "application/json",
 });
 
-async function requestWrapper(
-  url: string,
-  payload: RequestPayload,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
-) {
+async function requestWrapper(url: string, payload: RequestPayload) {
   try {
-    let response = await fetch(url, payload);
-    if (response.status === 401) {
-      logger.error("Bitbucket unauthorized request");
-      const { access_token, refresh_token } = await refreshTokenRequest(
-        clientId,
-        clientSecret,
-        refreshToken
-      );
-      logger.info("Refreshed access token");
-
-      const newPayload = {
-        ...payload,
-        headers: getRequestHeaders(access_token),
-      };
-
-      logger.info("Retrying request");
-      response = await fetch(url, newPayload);
-    }
+    const response = await fetch(url, payload);
     return (await response).json();
   } catch (error) {
     const errorBody = await error.response.text();
-    logger.error(errorBody);
     throw new CustomError(errorBody);
   }
 }
@@ -118,111 +93,56 @@ export async function authDataRequest(
 }
 
 export async function currentUserRequest(
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
+  accessToken: string
 ): Promise<Account> {
-  return requestWrapper(
-    CURRENT_USER_URL,
-    {
-      method: "GET",
-      headers: getRequestHeaders(accessToken),
-    },
-    clientId,
-    clientSecret,
-    refreshToken,
-    logger
-  );
+  return requestWrapper(CURRENT_USER_URL, {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 }
 
 export async function currentUserWorkspacesRequest(
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
+  accessToken: string
 ): Promise<PaginatedWorkspaceMembership> {
-  return requestWrapper(
-    CURRENT_USER_WORKSPACES_URL,
-    {
-      method: "GET",
-      headers: getRequestHeaders(accessToken),
-    },
-    clientId,
-    clientSecret,
-    refreshToken,
-    logger
-  );
+  return requestWrapper(CURRENT_USER_WORKSPACES_URL, {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 }
 
 export async function repositoriesInWorkspaceRequest(
   workspaceSlug: string,
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
+  accessToken: string
 ): Promise<PaginatedRepositories> {
-  return requestWrapper(
-    REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug),
-    {
-      method: "GET",
-      headers: getRequestHeaders(accessToken),
-    },
-    clientId,
-    clientSecret,
-    refreshToken,
-    logger
-  );
+  return requestWrapper(REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug), {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 }
 
 export async function repositoryRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
+  accessToken: string
 ): Promise<Repository> {
-  return requestWrapper(
-    REPOSITORY_URL(workspaceSlug, repositorySlug),
-    {
-      method: "GET",
-      headers: getRequestHeaders(accessToken),
-    },
-    clientId,
-    clientSecret,
-    refreshToken,
-    logger
-  );
+  return requestWrapper(REPOSITORY_URL(workspaceSlug, repositorySlug), {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 }
 
 export async function repositoryCreateRequest(
   workspaceSlug: string,
   repositorySlug: string,
   repositoryCreateData: Partial<Repository>,
-  accessToken: string,
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  logger: ILogger
+  accessToken: string
 ): Promise<Repository> {
-  return requestWrapper(
-    REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
-    {
-      method: "POST",
-      headers: {
-        ...getRequestHeaders(accessToken),
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(repositoryCreateData),
+  return requestWrapper(REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug), {
+    method: "POST",
+    headers: {
+      ...getRequestHeaders(accessToken),
+      "Content-Type": "application/json",
     },
-    clientId,
-    clientSecret,
-    refreshToken,
-    logger
-  );
+    body: JSON.stringify(repositoryCreateData),
+  });
 }
