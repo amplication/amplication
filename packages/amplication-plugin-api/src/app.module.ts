@@ -12,10 +12,9 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
-import { GraphQLError, GraphQLFormattedError } from "graphql";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
-
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 @Module({
   controllers: [],
   imports: [
@@ -35,7 +34,8 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
     AmplicationLoggerModule.forRoot({
       serviceName: "amplication-plugin-api",
     }),
-    GraphQLModule.forRootAsync({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
       useFactory: (configService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
@@ -44,20 +44,6 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
           sortSchema: true,
           playground,
           introspection: playground || introspection,
-          formatError: (error: GraphQLError) => {
-            const graphQLFormattedError: GraphQLFormattedError = {
-              message:
-                error?.extensions?.exception?.response?.message ||
-                error?.message,
-              extensions: {
-                code:
-                  error?.extensions?.extensions?.code ||
-                  "INTERNAL_SERVER_ERROR",
-                http: error?.extensions?.extensions?.http || { status: 400 },
-              },
-            };
-            return graphQLFormattedError;
-          },
         };
       },
       inject: [ConfigService],

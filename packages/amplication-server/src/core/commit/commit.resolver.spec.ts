@@ -1,5 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloServer, gql } from "apollo-server-express";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -8,10 +13,9 @@ import { CommitService } from "./commit.service";
 import { Commit, User } from "../../models";
 import { UserService } from "../user/user.service";
 import { BuildService } from "../build/build.service";
-
 import { CommitResolver } from "./commit.resolver";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -75,7 +79,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("CommitService", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -113,7 +117,12 @@ describe("CommitService", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -121,7 +130,7 @@ describe("CommitService", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find committing user", async () => {
