@@ -107,12 +107,14 @@ export async function authDataRequest(
   clientId: string,
   clientSecret: string,
   code: string
-) {
-  return fetch(ACCESS_TOKEN_URL, {
+): Promise<OAuth2> {
+  const response = await fetch(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.AuthorizationCode}&code=${code}`,
   });
+
+  return response.json();
 }
 
 export async function currentUserRequest(

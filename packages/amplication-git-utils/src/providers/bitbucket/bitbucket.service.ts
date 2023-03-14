@@ -33,6 +33,7 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
   repositoryRequest,
@@ -75,14 +76,13 @@ export class BitBucketService implements GitProvider {
   }
 
   async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    const response = await authDataRequest(
+    const authData = await authDataRequest(
       this.clientId,
       this.clientSecret,
       authorizationCode
     );
 
-    this.logger.info("BitBucketService getAccessToken");
-    const authData = await response.json();
+    this.logger.info("BitBucketService: getAccessToken");
 
     return {
       accessToken: authData.access_token,
@@ -90,6 +90,24 @@ export class BitBucketService implements GitProvider {
       scopes: authData.scopes.split(" "),
       tokenType: authData.token_type,
       expiresIn: authData.expires_in,
+    };
+  }
+
+  async refreshAccessToken(): Promise<OAuthData> {
+    const newOAuthData = await refreshTokenRequest(
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken
+    );
+
+    this.logger.info("BitBucketService: refreshAccessToken");
+
+    return {
+      accessToken: newOAuthData.access_token,
+      refreshToken: newOAuthData.refresh_token,
+      scopes: newOAuthData.scopes.split(" "),
+      tokenType: newOAuthData.token_type,
+      expiresIn: newOAuthData.expires_in,
     };
   }
 

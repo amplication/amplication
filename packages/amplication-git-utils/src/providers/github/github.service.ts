@@ -947,6 +947,10 @@ export class GithubService implements GitProvider {
     throw NotImplementedError;
   }
 
+  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+    throw NotImplementedError;
+  }
+
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     throw NotImplementedError;
   }
