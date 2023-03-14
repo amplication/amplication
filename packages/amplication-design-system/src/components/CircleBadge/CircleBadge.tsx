@@ -5,6 +5,7 @@ import "./CircleBadge.scss";
 export type Props = {
   name?: string;
   color?: string;
+  border?: string;
   size?:
     | "xxsmall"
     | "xsmall"
@@ -19,12 +20,16 @@ export type Props = {
 export const CircleBadge: React.FC<Props> = ({
   name,
   color,
+  border,
   size = "medium",
   children = null,
 }) => (
   <div
     className={`circle-badge${size ? ` ${size}` : ""}`}
-    style={{ backgroundColor: color }}
+    style={{
+      backgroundColor: color,
+      border: border,
+    }}
   >
     {children ? children : name && name.slice(0, 1).toUpperCase()}
   </div>
