@@ -26,6 +26,7 @@ import {
   PullRequest,
   GitProviderArgs,
   PaginatedGitGroup,
+  BitBucketConfiguration,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
@@ -44,9 +45,13 @@ export class BitBucketService implements GitProvider {
 
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerConfiguration: BitBucketConfiguration,
     private readonly logger: ILogger
-  ) {
-    const { clientId, clientSecret } = gitProviderArgs.providerProperties;
+  ) {}
+
+  async init(): Promise<void> {
+    this.logger.info("BitbucketService init");
+    const { clientId, clientSecret } = this.providerConfiguration;
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -54,10 +59,6 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-  }
-
-  async init(): Promise<void> {
-    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -118,7 +119,7 @@ export class BitBucketService implements GitProvider {
     this.logger.info("BitBucketService completeOAuth2Flow");
 
     return {
-      providerProperties: {
+      providerOrganizationProperties: {
         ...oAuthData,
         ...currentUserData,
       },
@@ -128,7 +129,7 @@ export class BitBucketService implements GitProvider {
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     const { accessToken, refreshToken } =
-      this.gitProviderArgs.providerProperties;
+      this.gitProviderArgs.providerOrganizationProperties;
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
       accessToken,
       this.clientId,
