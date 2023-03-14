@@ -56,17 +56,18 @@ model Project {
 }
 
 model GitOrganization {
-  id                 String                   @id @default(cuid())
-  provider           EnumGitProvider
-  name               String
-  installationId     String
-  providerProperties Json                     @default("{}")
-  createdAt          DateTime                 @default(now())
-  updatedAt          DateTime                 @updatedAt
-  workspaceId        String
-  type               EnumGitOrganizationType? @default(User)
-  workspace          Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
-  gitRepositories    GitRepository[]
+  id                         String                   @id @default(cuid())
+  provider                   EnumGitProvider
+  name                       String
+  useGroupingForRepositories Boolean                  @default(false)
+  installationId             String
+  providerProperties         Json                     @default("{}")
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  workspaceId                String
+  type                       EnumGitOrganizationType? @default(User)
+  workspace                  Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
+  gitRepositories            GitRepository[]
 
   @@unique([provider, installationId])
 }

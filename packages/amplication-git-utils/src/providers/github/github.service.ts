@@ -29,7 +29,6 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitProviderConstructorArgs,
   GitUser,
   PullRequest,
   RemoteGitOrganization,
@@ -37,6 +36,9 @@ import {
   RemoteGitRepository,
   UpdateFile,
   OAuth2FlowResponse,
+  PaginatedGitGroup,
+  GitProviderArgs,
+  GitHubConfiguration,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -51,36 +53,42 @@ export class GithubService implements GitProvider {
   private appId: string;
   private privateKey: string;
   private gitInstallationUrl: string;
+  private installationId: string;
   private octokit: Octokit;
   public readonly name = EnumGitProvider.Github;
   public readonly domain = "github.com";
   constructor(
-    private readonly gitProviderArgs: GitProviderConstructorArgs,
+    private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerConfiguration: GitHubConfiguration,
     private readonly logger: ILogger
-  ) {
+  ) {}
+
+  async init(): Promise<void> {
     const {
-      GITHUB_APP_INSTALLATION_URL,
-      GITHUB_APP_APP_ID,
-      GITHUB_APP_PRIVATE_KEY,
-    } = process.env;
-    if (!GITHUB_APP_INSTALLATION_URL) {
-      throw new Error("GITHUB_APP_INSTALLATION_URL is not defined");
+      appId,
+      privateKey: envPrivateKey,
+      installationUrl,
+    } = this.providerConfiguration;
+
+    this.gitInstallationUrl = installationUrl;
+    this.appId = appId;
+    this.privateKey = envPrivateKey;
+    this.installationId =
+      this.gitProviderArgs.providerOrganizationProperties.installationId;
+
+    if (!appId || !envPrivateKey || !installationUrl) {
+      this.logger.error("Missing Github configuration");
+      throw new Error("Missing Github configuration");
     }
-    this.gitInstallationUrl = GITHUB_APP_INSTALLATION_URL;
-    if (!GITHUB_APP_APP_ID) {
-      throw new Error("GITHUB_APP_APP_ID is not defined");
-    }
-    this.appId = GITHUB_APP_APP_ID;
-    if (!GITHUB_APP_PRIVATE_KEY) {
-      throw new Error("GITHUB_APP_PRIVATE_KEY is not defined");
-    }
-    this.privateKey = GITHUB_APP_PRIVATE_KEY;
 
     const privateKey = this.getFormattedPrivateKey(this.privateKey);
     this.app = new App({
       appId: this.appId,
       privateKey,
     });
+    if (this.installationId) {
+      this.octokit = await this.getInstallationOctokit(this.installationId);
+    }
   }
 
   getCloneUrl({ owner, repositoryName, token }: CloneUrlArgs) {
@@ -214,14 +222,6 @@ export class GithubService implements GitProvider {
       login,
       id,
     };
-  }
-
-  async init(): Promise<void> {
-    if (this.gitProviderArgs.installationId) {
-      this.octokit = await this.getInstallationOctokit(
-        this.gitProviderArgs.installationId
-      );
-    }
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
@@ -383,9 +383,7 @@ export class GithubService implements GitProvider {
     const deleteInstallationRes =
       await this.octokit.rest.apps.deleteInstallation({
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        installation_id: ConverterUtil.convertToNumber(
-          this.gitProviderArgs.installationId
-        ),
+        installation_id: ConverterUtil.convertToNumber(this.installationId),
       });
 
     if (deleteInstallationRes.status != 204) {
@@ -398,9 +396,7 @@ export class GithubService implements GitProvider {
   async getOrganization(): Promise<RemoteGitOrganization> {
     const gitRemoteOrganization = await this.octokit.rest.apps.getInstallation({
       // eslint-disable-next-line @typescript-eslint/naming-convention
-      installation_id: ConverterUtil.convertToNumber(
-        this.gitProviderArgs.installationId
-      ),
+      installation_id: ConverterUtil.convertToNumber(this.installationId),
     });
     const { data: gitRemoteOrgs } = gitRemoteOrganization;
     const { account } = gitRemoteOrgs;
@@ -417,6 +413,7 @@ export class GithubService implements GitProvider {
     return {
       name: login,
       type: EnumGitOrganizationType[type],
+      useGroupingForRepositories: false, // with GitHub, we don't have the option to use grouping
     };
   }
 
@@ -465,9 +462,7 @@ export class GithubService implements GitProvider {
     } = createPullRequestFromFilesArgs;
     // We are not using this.octokit, instead we are using a local octokit client because we need the plugin
     const octokitWithPlugins = Octokit.plugin(createPullRequest);
-    const token = await this.getInstallationAuthToken(
-      this.gitProviderArgs.installationId
-    );
+    const token = await this.getInstallationAuthToken(this.installationId);
     const octokit = new octokitWithPlugins({
       auth: token,
     });
@@ -939,7 +934,7 @@ export class GithubService implements GitProvider {
   async getToken(): Promise<string> {
     const { data: installationTokenData } =
       await this.octokit.rest.apps.createInstallationAccessToken({
-        installation_id: Number(this.gitProviderArgs.installationId),
+        installation_id: Number(this.installationId),
       });
     const { token } = installationTokenData;
     return token;
@@ -950,6 +945,10 @@ export class GithubService implements GitProvider {
   async completeOAuth2Flow(
     authorizationCode: string
   ): Promise<OAuth2FlowResponse> {
+    throw NotImplementedError;
+  }
+
+  getGitGroups(): Promise<PaginatedGitGroup> {
     throw NotImplementedError;
   }
 }

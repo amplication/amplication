@@ -25,6 +25,8 @@ import {
   RemoteGitRepository,
   GetRepositoryArgs,
   OAuth2FlowResponse,
+  PaginatedGitGroup,
+  GitProvidersConfiguration,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -38,9 +40,14 @@ export class GitClientService {
 
   async create(
     gitProviderArgs: GitProviderArgs,
+    providersConfiguration: GitProvidersConfiguration,
     logger: ILogger
   ): Promise<GitClientService> {
-    this.provider = await GitFactory.getProvider(gitProviderArgs, logger);
+    this.provider = await GitFactory.getProvider(
+      gitProviderArgs,
+      providersConfiguration,
+      logger
+    );
     this.logger = logger;
     return this;
   }
@@ -53,6 +60,10 @@ export class GitClientService {
     authorizationCode: string
   ): Promise<OAuth2FlowResponse> {
     return this.provider.completeOAuth2Flow(authorizationCode);
+  }
+
+  async getGitGroups(): Promise<PaginatedGitGroup> {
+    return this.provider.getGitGroups();
   }
 
   async getRepository(

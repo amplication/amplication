@@ -15,11 +15,27 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
 }
 
+export interface BitBucketConfiguration {
+  clientId: string;
+  clientSecret: string;
+}
+
+export interface GitHubConfiguration {
+  clientId: string;
+  clientSecret: string;
+  appId: string;
+  privateKey: string;
+  installationUrl: string;
+}
+
+export interface GitProvidersConfiguration {
+  gitHubConfiguration: GitHubConfiguration;
+  bitBucketConfiguration: BitBucketConfiguration;
+}
+
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  installationId: string;
-  clientId?: string;
-  clientSecret?: string;
+  providerOrganizationProperties: Record<string, any>;
 }
 
 export interface GitProviderConstructorArgs {
@@ -29,6 +45,7 @@ export interface GitProviderConstructorArgs {
 export interface RemoteGitOrganization {
   name: string;
   type: EnumGitOrganizationType;
+  useGroupingForRepositories: boolean;
 }
 
 export interface Branch {
@@ -145,7 +162,7 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
-interface LinksMetadata {
+export interface LinksMetadata {
   href: string;
   name: string;
 }
@@ -154,10 +171,9 @@ export interface CurrentUser {
   links: {
     avatar: LinksMetadata;
   };
-  name: string;
+  username: string;
   uuid: string;
   displayName: string;
-  createdOn?: string;
 }
 
 export interface OAuthData {
@@ -168,8 +184,29 @@ export interface OAuthData {
   scopes: string[];
 }
 
-export interface OAuth2FlowResponse extends OAuthData {
-  userData: CurrentUser;
+export interface OAuth2FlowArgs {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface OAuth2FlowResponse {
+  providerOrganizationProperties: Record<string, any>;
+  useGroupingForRepositories: boolean;
+}
+
+export interface PaginatedGitGroup {
+  size: number;
+  page: number;
+  pagelen: number;
+  next: string;
+  previous: string;
+  groups: GitGroup[];
+}
+
+export interface GitGroup {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 export interface GetBranchArgs {

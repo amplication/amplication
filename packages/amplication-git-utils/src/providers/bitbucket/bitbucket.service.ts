@@ -25,12 +25,15 @@ import {
   GetBranchArgs,
   PullRequest,
   GitProviderArgs,
+  PaginatedGitGroup,
+  BitBucketConfiguration,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
+  currentUserWorkspacesRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 
@@ -42,9 +45,13 @@ export class BitBucketService implements GitProvider {
 
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerConfiguration: BitBucketConfiguration,
     private readonly logger: ILogger
-  ) {
-    const { clientId, clientSecret } = gitProviderArgs;
+  ) {}
+
+  async init(): Promise<void> {
+    this.logger.info("BitbucketService init");
+    const { clientId, clientSecret } = this.providerConfiguration;
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -52,10 +59,6 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-  }
-
-  async init(): Promise<void> {
-    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -93,13 +96,12 @@ export class BitBucketService implements GitProvider {
       this.logger
     );
 
-    const { links, created_on, display_name, username, uuid } = currentUser;
+    const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
     return {
       links,
-      createdOn: created_on,
       displayName: display_name,
-      name: username,
+      username,
       uuid,
     };
   }
@@ -107,31 +109,55 @@ export class BitBucketService implements GitProvider {
   async completeOAuth2Flow(
     authorizationCode: string
   ): Promise<OAuth2FlowResponse> {
-    const { accessToken, refreshToken, expiresIn, tokenType, scopes } =
-      await this.getAccessToken(authorizationCode);
+    const oAuthData = await this.getAccessToken(authorizationCode);
 
-    const {
-      name: username,
-      uuid: userUuid,
-      links: userLinks,
-      displayName,
-      createdOn,
-    } = await this.getCurrentUser(accessToken, refreshToken);
+    const currentUserData = await this.getCurrentUser(
+      oAuthData.accessToken,
+      oAuthData.refreshToken
+    );
 
     this.logger.info("BitBucketService completeOAuth2Flow");
+
     return {
-      accessToken,
-      refreshToken,
-      scopes,
-      tokenType,
-      expiresIn,
-      userData: {
-        name: username,
-        uuid: userUuid,
-        links: userLinks,
-        displayName,
-        createdOn,
+      providerOrganizationProperties: {
+        ...oAuthData,
+        ...currentUserData,
       },
+      useGroupingForRepositories: true,
+    };
+  }
+
+  async getGitGroups(): Promise<PaginatedGitGroup> {
+    const { accessToken, refreshToken } =
+      this.gitProviderArgs.providerOrganizationProperties;
+    const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
+      accessToken,
+      this.clientId,
+      this.clientSecret,
+      refreshToken,
+      this.logger
+    );
+
+    const { size, page, pagelen, next, previous, values } =
+      paginatedWorkspaceMembership;
+    const gitGroups = values.map(({ workspace }) => {
+      const { uuid: workspaceUuid, name, slug } = workspace;
+      return {
+        id: workspaceUuid,
+        name,
+        slug,
+      };
+    });
+
+    this.logger.info("BitBucketService getGitGroups");
+
+    return {
+      size,
+      page,
+      pagelen,
+      next,
+      previous,
+      groups: gitGroups,
     };
   }
 
@@ -160,6 +186,8 @@ export class BitBucketService implements GitProvider {
   deleteGitOrganization(): Promise<boolean> {
     throw NotImplementedError;
   }
+
+  // pull request flow
 
   getFile(file: GetFileArgs): Promise<GitFile> {
     throw NotImplementedError;
