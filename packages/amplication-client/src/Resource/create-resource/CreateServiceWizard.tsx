@@ -38,7 +38,8 @@ const CreateServiceWizard: React.FC<Props> = ({
   innerRoutes,
   ...props
 }) => {
-  const { errorCreateService } = useContext(AppContext);
+  const { errorCreateService, currentWorkspace, currentProject } =
+    useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
 
   const errorMessage = formatError(errorCreateService);
@@ -52,7 +53,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardBaseRoute={""}
+        wizardBaseRoute={`/${currentWorkspace.id}/${currentProject.id}/create-resource`}
         wizardPattern={
           defineUser === "login"
             ? [1, 2, 3, 4, 5, 6, 8]
@@ -63,21 +64,51 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardSubmit={createResource}
         moduleCss={moduleClass}
       >
-        <CreateServiceWelcome moduleClass={moduleClass} path="welcome" />
-        <CreateServiceName moduleClass={moduleClass} path="service-name" />
-        <CreateGithubSync moduleClass={moduleClass} path="github-sync" />
+        <CreateServiceWelcome
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/welcome"
+          step="welcome"
+        />
+        <CreateServiceName
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/service-name"
+          step="service-name"
+        />
+        <CreateGithubSync
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/github-sync"
+          step="github-sync"
+        />
         <CreateGenerationSettings
           moduleClass={moduleClass}
-          path="generation-settings"
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/generation-settings"
+          step="generation-settings"
         />
-        <CreateServiceRepository moduleClass={moduleClass} path="repository" />
-        <CreateServiceDatabase moduleClass={moduleClass} path="data-base" />
-        <CreateServiceAuth moduleClass={moduleClass} path="auth" />
+        <CreateServiceRepository
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/repository"
+          step="repository"
+        />
+        <CreateServiceDatabase
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/data-base"
+          step="data-base"
+        />
+        <CreateServiceAuth
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/auth"
+          step="auth"
+        />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
-          path="build"
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/build"
+          step="build"
         />
-        <CreateServiceNextSteps moduleClass={moduleClass} path="end" />
+        <CreateServiceNextSteps
+          moduleClass={moduleClass}
+          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/success"
+          step="success"
+        />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>

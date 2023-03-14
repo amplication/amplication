@@ -20,7 +20,10 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
 
   const handleOnGitRepositorySelected = useCallback(
     (data: gitRepositorySelected) => {
-      formik.setFieldValue("gitRepositoryId", data.gitOrganizationId);
+      formik.setValues([
+        { gitRepositoryName: data.repositoryName },
+        { gitOrganizationId: data.gitOrganizationId },
+      ]);
 
       refreshCurrentWorkspace();
     },

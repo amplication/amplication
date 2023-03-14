@@ -1,15 +1,11 @@
-import React, {
-  useState,
-  ReactNode,
-  useCallback,
-  MutableRefObject,
-} from "react";
+import React, { useState, ReactNode, useCallback } from "react";
+import * as analytics from "../../util/analytics";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./wizard-pages/interfaces";
-import { Form, Formik, FormikErrors } from "formik";
+import { Form, Formik, FormikErrors, FormikProps } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { Redirect } from "react-router-dom";
+import { useRouteMatch } from "react-router-dom";
 
 interface ServiceWizardProps {
   children: ReactNode;
@@ -42,16 +38,13 @@ const ContinueButton: React.FC<{
   );
 };
 
-const setWizardRoutes = (
-  pages: (
-    | string
-    | number
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
-    | React.ReactFragment
-    | React.ReactPortal
-  )[],
-  props: { [key: string]: any }
-) => {};
+const pageTracking = (path: string, url: string, params: any) => {
+  analytics.page(path.replaceAll("/", "-"), {
+    path,
+    url,
+    params: params,
+  });
+};
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardBaseRoute,
@@ -68,7 +61,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     (i) => i === activePageIndex
   );
 
-  const pages = React.Children.toArray(children);
+  const pages = React.Children.toArray(children) as (
+    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactPortal
+  )[];
 
   const currentPage = pages[activePageIndex];
 
