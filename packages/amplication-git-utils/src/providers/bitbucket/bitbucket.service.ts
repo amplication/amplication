@@ -16,7 +16,6 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  OAuth2FlowResponse,
   CloneUrlArgs,
   Commit,
   CreateBranchArgs,
@@ -26,7 +25,6 @@ import {
   PullRequest,
   GitProviderArgs,
   PaginatedGitGroup,
-  OAuthCacheProvider,
   BitBucketConfiguration,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
@@ -52,7 +50,6 @@ export class BitBucketService implements GitProvider {
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
     private readonly providerConfiguration: BitBucketConfiguration,
-    private readonly oAuthCacheProvider: OAuthCacheProvider,
     private readonly logger: ILogger
   ) {}
 
@@ -77,7 +74,7 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  private async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
     const response = await authDataRequest(
       this.clientId,
       this.clientSecret,
@@ -96,17 +93,13 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  private async getCurrentUser(
-    accessToken: string,
-    refreshToken
-  ): Promise<CurrentUser> {
+  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     const currentUser = await currentUserRequest(
       accessToken,
       this.clientId,
       this.clientSecret,
-      refreshToken,
-      this.logger,
-      this.oAuthCacheProvider
+      this.refreshToken,
+      this.logger
     );
 
     const { links, display_name, username, uuid } = currentUser;
@@ -116,26 +109,6 @@ export class BitBucketService implements GitProvider {
       displayName: display_name,
       username,
       uuid,
-    };
-  }
-
-  async completeOAuth2Flow(
-    authorizationCode: string
-  ): Promise<OAuth2FlowResponse> {
-    const oAuthData = await this.getAccessToken(authorizationCode);
-
-    const currentUserData = await this.getCurrentUser(
-      oAuthData.accessToken,
-      oAuthData.refreshToken
-    );
-
-    this.logger.info("BitBucketService: completeOAuth2Flow");
-
-    return {
-      providerOrganizationProperties: {
-        ...oAuthData,
-        ...currentUserData,
-      },
       useGroupingForRepositories: true,
     };
   }
@@ -146,8 +119,7 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger,
-      this.oAuthCacheProvider
+      this.logger
     );
 
     const { size, page, pagelen, next, previous, values } =
@@ -194,8 +166,7 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger,
-      this.oAuthCacheProvider
+      this.logger
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -226,8 +197,7 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger,
-      this.oAuthCacheProvider
+      this.logger
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -279,8 +249,7 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger,
-      this.oAuthCacheProvider
+      this.logger
     );
 
     return {

@@ -15,10 +15,6 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
 }
 
-export interface OAuthCacheProvider {
-  get: <T>(key: string) => Promise<T>;
-  set: <T>(key: string, value: T) => Promise<void>;
-}
 export interface BitBucketConfiguration {
   clientId: string;
   clientSecret: string;
@@ -181,6 +177,7 @@ export interface CurrentUser {
   username: string;
   uuid: string;
   displayName: string;
+  useGroupingForRepositories: boolean;
 }
 
 export interface OAuthData {
@@ -194,11 +191,6 @@ export interface OAuthData {
 export interface OAuth2FlowArgs {
   accessToken: string;
   refreshToken: string;
-}
-
-export interface OAuth2FlowResponse {
-  providerOrganizationProperties: Record<string, any>;
-  useGroupingForRepositories: boolean;
 }
 
 export interface PaginatedGitGroup {

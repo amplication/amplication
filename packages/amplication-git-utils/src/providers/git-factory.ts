@@ -3,7 +3,6 @@ import { GitProvider } from "../git-provider.interface";
 import {
   EnumGitProvider,
   GitProviderArgs,
-  OAuthCacheProvider,
   GitProvidersConfiguration,
 } from "../types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
@@ -13,7 +12,6 @@ import { BitBucketService } from "./bitbucket/bitbucket.service";
 export class GitFactory {
   public static async getProvider(
     gitProviderArgs: GitProviderArgs,
-    oAuthCacheProvider: OAuthCacheProvider,
     providersConfiguration: GitProvidersConfiguration,
 
     logger: ILogger
@@ -33,7 +31,6 @@ export class GitFactory {
         gitProvider = new BitBucketService(
           gitProviderArgs,
           providersConfiguration.bitBucketConfiguration,
-          oAuthCacheProvider,
           logger
         );
         await gitProvider.init();

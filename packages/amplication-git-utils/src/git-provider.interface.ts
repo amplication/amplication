@@ -8,6 +8,7 @@ import {
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  CurrentUser,
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
@@ -15,7 +16,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  OAuth2FlowResponse,
+  OAuthData,
   PaginatedGitGroup,
   PullRequest,
   RemoteGitOrganization,
@@ -28,7 +29,8 @@ export interface GitProvider {
   readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
+  getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
+  getAccessToken(authorizationCode: string): Promise<OAuthData>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs

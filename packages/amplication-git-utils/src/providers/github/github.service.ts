@@ -35,10 +35,11 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   UpdateFile,
-  OAuth2FlowResponse,
   PaginatedGitGroup,
   GitProviderArgs,
   GitHubConfiguration,
+  OAuthData,
+  CurrentUser,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -942,9 +943,11 @@ export class GithubService implements GitProvider {
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
-  async completeOAuth2Flow(
-    authorizationCode: string
-  ): Promise<OAuth2FlowResponse> {
+  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+    throw NotImplementedError;
+  }
+
+  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     throw NotImplementedError;
   }
 

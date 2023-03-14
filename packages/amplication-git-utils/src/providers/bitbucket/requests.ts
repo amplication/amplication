@@ -8,7 +8,6 @@ import {
   PaginatedWorkspaceMembership,
   Repository,
 } from "./bitbucket.types";
-import { OAuthCacheProvider } from "../../types";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -54,8 +53,7 @@ async function requestWrapper(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider: OAuthCacheProvider
+  logger: ILogger
 ) {
   try {
     let response = await fetch(url, payload);
@@ -67,9 +65,6 @@ async function requestWrapper(
         refreshToken
       );
       logger.info("Refreshed access token");
-
-      oAuthCacheProvider.set("accessToken", access_token);
-      oAuthCacheProvider.set("refreshToken", refresh_token);
 
       const newPayload = {
         ...payload,
@@ -125,8 +120,7 @@ export async function currentUserRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider: OAuthCacheProvider
+  logger: ILogger
 ): Promise<Account> {
   return requestWrapper(
     CURRENT_USER_URL,
@@ -137,8 +131,7 @@ export async function currentUserRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger,
-    oAuthCacheProvider
+    logger
   );
 }
 
@@ -147,8 +140,7 @@ export async function currentUserWorkspacesRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider
+  logger: ILogger
 ): Promise<PaginatedWorkspaceMembership> {
   return requestWrapper(
     CURRENT_USER_WORKSPACES_URL,
@@ -159,8 +151,7 @@ export async function currentUserWorkspacesRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger,
-    oAuthCacheProvider
+    logger
   );
 }
 
@@ -170,8 +161,7 @@ export async function repositoriesInWorkspaceRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider
+  logger: ILogger
 ): Promise<PaginatedRepositories> {
   return requestWrapper(
     REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug),
@@ -182,8 +172,7 @@ export async function repositoriesInWorkspaceRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger,
-    oAuthCacheProvider
+    logger
   );
 }
 
@@ -194,8 +183,7 @@ export async function repositoryRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider
+  logger: ILogger
 ): Promise<Repository> {
   return requestWrapper(
     REPOSITORY_URL(workspaceSlug, repositorySlug),
@@ -206,8 +194,7 @@ export async function repositoryRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger,
-    oAuthCacheProvider
+    logger
   );
 }
 
@@ -219,8 +206,7 @@ export async function repositoryCreateRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger,
-  oAuthCacheProvider
+  logger: ILogger
 ): Promise<Repository> {
   return requestWrapper(
     REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
@@ -235,7 +221,6 @@ export async function repositoryCreateRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger,
-    oAuthCacheProvider
+    logger
   );
 }

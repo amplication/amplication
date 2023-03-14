@@ -24,9 +24,10 @@ import {
   RemoteGitRepos,
   RemoteGitRepository,
   GetRepositoryArgs,
-  OAuth2FlowResponse,
   PaginatedGitGroup,
   GitProvidersConfiguration,
+  CurrentUser,
+  OAuthData,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -56,10 +57,12 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async completeOAuth2Flow(
-    authorizationCode: string
-  ): Promise<OAuth2FlowResponse> {
-    return this.provider.completeOAuth2Flow(authorizationCode);
+  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+    return this.provider.getAccessToken(authorizationCode);
+  }
+
+  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
+    return this.provider.getCurrentOAuthUser(accessToken);
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
