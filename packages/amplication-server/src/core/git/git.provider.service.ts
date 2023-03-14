@@ -424,40 +424,46 @@ export class GitProviderService {
       providerOrganizationProperties: initialProviderOrganizationProperties,
     };
     const gitClientService = await this.createGitClient(gitProviderArgs);
-    try {
-      const { providerOrganizationProperties, useGroupingForRepositories } =
-        await gitClientService.completeOAuth2Flow(code);
 
-      this.logger.info("server: completeOAuth2Flow");
-      return this.prisma.gitOrganization.upsert({
-        where: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          provider_installationId: {
-            provider: gitProvider,
-            installationId: providerOrganizationProperties.uuid,
-          },
-        },
-        create: {
+    const oAuthData = await gitClientService.getAccessToken(code);
+    const currentUserData = await gitClientService.getCurrentOAuthUser(
+      oAuthData.accessToken
+    );
+
+    // merge the data needed for the git organization with the OAuth2 flow
+    // and convert to JSON to save in the DB
+    const providerOrganizationProperties = JSON.stringify({
+      ...oAuthData,
+      ...currentUserData,
+    });
+
+    this.logger.info("server: completeOAuth2Flow");
+    return this.prisma.gitOrganization.upsert({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        provider_installationId: {
           provider: gitProvider,
-          installationId: providerOrganizationProperties.uuid,
-          name: providerOrganizationProperties.username,
-          type: EnumGitOrganizationType.User,
-          useGroupingForRepositories,
-          workspace: {
-            connect: {
-              id: workspaceId,
-            },
+          installationId: currentUserData.uuid,
+        },
+      },
+      create: {
+        provider: gitProvider,
+        installationId: currentUserData.uuid,
+        name: currentUserData.username,
+        type: EnumGitOrganizationType.User,
+        useGroupingForRepositories: currentUserData.useGroupingForRepositories,
+        workspace: {
+          connect: {
+            id: workspaceId,
           },
-          providerProperties: providerOrganizationProperties,
         },
-        update: {
-          name: providerOrganizationProperties.username,
-          providerProperties: providerOrganizationProperties,
-        },
-      });
-    } catch (error) {
-      this.logger.error(error);
-    }
+        providerProperties: providerOrganizationProperties,
+      },
+      update: {
+        name: currentUserData.username,
+        providerProperties: providerOrganizationProperties,
+      },
+    });
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
