@@ -26,6 +26,7 @@ import {
   PullRequest,
   GitProviderArgs,
   PaginatedGitGroup,
+  OAuthCacheProvider,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -49,6 +50,7 @@ export class BitBucketService implements GitProvider {
 
   constructor(
     private readonly gitProviderArgs: GitProviderArgs,
+    private readonly oAuthCacheProvider: OAuthCacheProvider,
     private readonly logger: ILogger
   ) {}
 
@@ -99,7 +101,8 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       refreshToken,
-      this.logger
+      this.logger,
+      this.oAuthCacheProvider
     );
 
     const { links, display_name, username, uuid } = currentUser;
@@ -139,7 +142,8 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger
+      this.logger,
+      this.oAuthCacheProvider
     );
 
     const { size, page, pagelen, next, previous, values } =
@@ -186,7 +190,8 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger
+      this.logger,
+      this.oAuthCacheProvider
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -217,7 +222,8 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger
+      this.logger,
+      this.oAuthCacheProvider
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -269,7 +275,8 @@ export class BitBucketService implements GitProvider {
       this.clientId,
       this.clientSecret,
       this.refreshToken,
-      this.logger
+      this.logger,
+      this.oAuthCacheProvider
     );
 
     return {

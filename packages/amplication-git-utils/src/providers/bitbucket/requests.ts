@@ -8,6 +8,7 @@ import {
   PaginatedWorkspaceMembership,
   Repository,
 } from "./bitbucket.types";
+import { OAuthCacheProvider } from "../../types";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -53,19 +54,28 @@ async function requestWrapper(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider: OAuthCacheProvider
 ) {
   try {
     let response = await fetch(url, payload);
     if (response.status === 401) {
       logger.error("Bitbucket unauthorized request");
-      const newPayload = await handleUnauthorizedRequest(
+      const { access_token, refresh_token } = await refreshTokenRequest(
         clientId,
         clientSecret,
-        refreshToken,
-        payload,
-        logger
+        refreshToken
       );
+      logger.info("Refreshed access token");
+
+      oAuthCacheProvider.set("accessToken", access_token);
+      oAuthCacheProvider.set("refreshToken", refresh_token);
+
+      const newPayload = {
+        ...payload,
+        headers: getRequestHeaders(access_token),
+      };
+
       logger.info("Retrying request");
       response = await fetch(url, newPayload);
     }
@@ -75,26 +85,6 @@ async function requestWrapper(
     logger.error(errorBody);
     throw new CustomError(errorBody);
   }
-}
-
-async function handleUnauthorizedRequest(
-  clientId: string,
-  clientSecret: string,
-  refreshToken: string,
-  payload: RequestPayload,
-  logger: ILogger
-) {
-  const { access_token, refresh_token } = await refreshTokenRequest(
-    clientId,
-    clientSecret,
-    refreshToken
-  );
-  logger.info("Refreshed access token");
-  refreshToken = refresh_token;
-  return {
-    ...payload,
-    headers: getRequestHeaders(access_token),
-  };
 }
 
 export async function authorizeRequest(
@@ -135,7 +125,8 @@ export async function currentUserRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider: OAuthCacheProvider
 ): Promise<Account> {
   return requestWrapper(
     CURRENT_USER_URL,
@@ -146,7 +137,8 @@ export async function currentUserRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger
+    logger,
+    oAuthCacheProvider
   );
 }
 
@@ -155,7 +147,8 @@ export async function currentUserWorkspacesRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider
 ): Promise<PaginatedWorkspaceMembership> {
   return requestWrapper(
     CURRENT_USER_WORKSPACES_URL,
@@ -166,7 +159,8 @@ export async function currentUserWorkspacesRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger
+    logger,
+    oAuthCacheProvider
   );
 }
 
@@ -176,7 +170,8 @@ export async function repositoriesInWorkspaceRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider
 ): Promise<PaginatedRepositories> {
   return requestWrapper(
     REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug),
@@ -187,7 +182,8 @@ export async function repositoriesInWorkspaceRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger
+    logger,
+    oAuthCacheProvider
   );
 }
 
@@ -198,7 +194,8 @@ export async function repositoryRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider
 ): Promise<Repository> {
   return requestWrapper(
     REPOSITORY_URL(workspaceSlug, repositorySlug),
@@ -209,7 +206,8 @@ export async function repositoryRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger
+    logger,
+    oAuthCacheProvider
   );
 }
 
@@ -221,7 +219,8 @@ export async function repositoryCreateRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string,
-  logger: ILogger
+  logger: ILogger,
+  oAuthCacheProvider
 ): Promise<Repository> {
   return requestWrapper(
     REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
@@ -236,6 +235,7 @@ export async function repositoryCreateRequest(
     clientId,
     clientSecret,
     refreshToken,
-    logger
+    logger,
+    oAuthCacheProvider
   );
 }

@@ -1,6 +1,6 @@
 import { ILogger } from "@amplication/util/logging";
 import { GitProvider } from "../git-provider.interface";
-import { EnumGitProvider, GitProviderArgs } from "../types";
+import { EnumGitProvider, GitProviderArgs, OAuthCacheProvider } from "../types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
 import { GithubService } from "./github/github.service";
 import { BitBucketService } from "./bitbucket/bitbucket.service";
@@ -8,6 +8,7 @@ import { BitBucketService } from "./bitbucket/bitbucket.service";
 export class GitFactory {
   public static async getProvider(
     gitProviderArgs: GitProviderArgs,
+    oAuthCacheProvider: OAuthCacheProvider,
     logger: ILogger
   ): Promise<GitProvider> {
     let gitProvider: GitProvider;
@@ -18,7 +19,11 @@ export class GitFactory {
         await gitProvider.init();
         return gitProvider;
       case EnumGitProvider.Bitbucket:
-        gitProvider = new BitBucketService(gitProviderArgs, logger);
+        gitProvider = new BitBucketService(
+          gitProviderArgs,
+          oAuthCacheProvider,
+          logger
+        );
         await gitProvider.init();
         return gitProvider;
       default:

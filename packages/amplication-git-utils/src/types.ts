@@ -15,6 +15,11 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
 }
 
+export interface OAuthCacheProvider {
+  get: <T>(key: string) => Promise<T>;
+  set: <T>(key: string, value: T) => Promise<void>;
+}
+
 export interface GitProviderArgs {
   provider: EnumGitProvider;
   providerProperties: Record<string, any>;
