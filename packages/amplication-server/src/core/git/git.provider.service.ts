@@ -112,20 +112,18 @@ export class GitProviderService {
       gitGroupName: args.gitGroupName,
     };
 
-    const gitProviderArgs = {
-      provider: args.gitProvider,
-      providerOrganizationProperties: {
-        installationId,
-        ...JSON.parse(JSON.stringify(organization.providerProperties)),
-      },
-    };
-
-    const refreshAccessToken = await this.refreshAccessToken(
+    const gitProviderArgs = await this.updateProviderOrganizationProperties(
       organization,
-      gitProviderArgs
+      {
+        provider: args.gitProvider,
+        providerOrganizationProperties: {
+          installationId,
+          ...JSON.parse(JSON.stringify(organization.providerProperties)),
+        },
+      }
     );
 
-    const gitClientService = await this.createGitClient(refreshAccessToken);
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     return gitClientService.getRepositories(repositoriesArgs);
   }
 
@@ -150,20 +148,18 @@ export class GitProviderService {
       isPrivateRepository: args.public,
     };
 
-    const gitProviderArgs = {
-      provider: args.gitProvider,
-      providerOrganizationProperties: {
-        installationId: organization.installationId,
-        ...JSON.parse(JSON.stringify(organization.providerProperties)),
-      },
-    };
-
-    const refreshAccessToken = await this.refreshAccessToken(
+    const gitProviderArgs = await this.updateProviderOrganizationProperties(
       organization,
-      gitProviderArgs
+      {
+        provider: args.gitProvider,
+        providerOrganizationProperties: {
+          installationId: organization.installationId,
+          ...JSON.parse(JSON.stringify(organization.providerProperties)),
+        },
+      }
     );
 
-    const gitClientService = await this.createGitClient(refreshAccessToken);
+    const gitClientService = await this.createGitClient(gitProviderArgs);
     const remoteRepository = await gitClientService.createRepository(
       repository
     );
@@ -424,7 +420,7 @@ export class GitProviderService {
     });
   }
 
-  async refreshAccessToken(
+  async updateProviderOrganizationProperties(
     gitOrganization: GitOrganization,
     gitProviderArgs: GitProviderArgs
   ): Promise<GitProviderArgs> {
@@ -541,18 +537,16 @@ export class GitProviderService {
       },
     });
 
-    const gitProviderArgs = {
-      provider: EnumGitProvider[organization.provider],
-      providerOrganizationProperties: JSON.parse(
-        JSON.stringify(organization.providerProperties)
-      ),
-    };
-
-    const refreshAccessToken = await this.refreshAccessToken(
+    const gitProviderArgs = await this.updateProviderOrganizationProperties(
       organization,
-      gitProviderArgs
+      {
+        provider: EnumGitProvider[organization.provider],
+        providerOrganizationProperties: JSON.parse(
+          JSON.stringify(organization.providerProperties)
+        ),
+      }
     );
-    const gitClientService = await this.createGitClient(refreshAccessToken);
+    const gitClientService = await this.createGitClient(gitProviderArgs);
 
     return await gitClientService.getGitGroups();
   }
