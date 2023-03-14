@@ -120,7 +120,12 @@ export class GitProviderService {
       },
     };
 
-    const gitClientService = await this.createGitClient(gitProviderArgs);
+    const refreshAccessToken = await this.refreshAccessToken(
+      organization,
+      gitProviderArgs
+    );
+
+    const gitClientService = await this.createGitClient(refreshAccessToken);
     return gitClientService.getRepositories(repositoriesArgs);
   }
 
@@ -132,6 +137,7 @@ export class GitProviderService {
         id: args.gitOrganizationId,
       },
     });
+
     const repository = {
       repositoryName: args.name,
       gitOrganization: {
@@ -143,6 +149,7 @@ export class GitProviderService {
       owner: organization.name,
       isPrivateRepository: args.public,
     };
+
     const gitProviderArgs = {
       provider: args.gitProvider,
       providerOrganizationProperties: {
@@ -150,7 +157,13 @@ export class GitProviderService {
         ...JSON.parse(JSON.stringify(organization.providerProperties)),
       },
     };
-    const gitClientService = await this.createGitClient(gitProviderArgs);
+
+    const refreshAccessToken = await this.refreshAccessToken(
+      organization,
+      gitProviderArgs
+    );
+
+    const gitClientService = await this.createGitClient(refreshAccessToken);
     const remoteRepository = await gitClientService.createRepository(
       repository
     );
@@ -411,6 +424,61 @@ export class GitProviderService {
     });
   }
 
+  async refreshAccessToken(
+    gitOrganization: GitOrganization,
+    gitProviderArgs: GitProviderArgs
+  ): Promise<GitProviderArgs> {
+    const { id, installationId, provider, providerProperties } =
+      gitOrganization;
+    const providerPropertiesObj = JSON.parse(
+      JSON.stringify(providerProperties)
+    );
+
+    const currentTime = Math.floor(Date.now() / 1000);
+    const expirationTime = providerPropertiesObj.expiresIn;
+
+    if (!expirationTime) {
+      return gitProviderArgs;
+    }
+
+    const timeLeft = expirationTime - currentTime;
+    if (timeLeft > 300) {
+      return gitProviderArgs;
+    }
+
+    const providerOrganizationProperties = { installationId };
+    const newGitProviderArgs = {
+      provider: EnumGitProvider[provider],
+      providerOrganizationProperties,
+    };
+
+    const gitClientService = await this.createGitClient(newGitProviderArgs);
+    const newOAuthData = await gitClientService.refreshAccessToken(
+      providerPropertiesObj.refreshToken
+    );
+
+    const newProviderProperties = {
+      ...providerPropertiesObj,
+      ...newOAuthData,
+    };
+
+    const updatedGitOrganization = await this.prisma.gitOrganization.update({
+      where: {
+        id,
+      },
+      data: {
+        providerProperties: JSON.stringify(newProviderProperties),
+      },
+    });
+
+    return {
+      provider: EnumGitProvider[updatedGitOrganization.provider],
+      providerOrganizationProperties: JSON.parse(
+        JSON.stringify(updatedGitOrganization.providerProperties)
+      ),
+    };
+  }
+
   async completeOAuth2Flow(
     args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
@@ -472,13 +540,19 @@ export class GitProviderService {
         id: args.where.organizationId,
       },
     });
+
     const gitProviderArgs = {
       provider: EnumGitProvider[organization.provider],
       providerOrganizationProperties: JSON.parse(
         JSON.stringify(organization.providerProperties)
       ),
     };
-    const gitClientService = await this.createGitClient(gitProviderArgs);
+
+    const refreshAccessToken = await this.refreshAccessToken(
+      organization,
+      gitProviderArgs
+    );
+    const gitClientService = await this.createGitClient(refreshAccessToken);
 
     return await gitClientService.getGitGroups();
   }
