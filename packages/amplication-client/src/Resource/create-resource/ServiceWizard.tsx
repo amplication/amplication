@@ -137,7 +137,16 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                     <ContinueButton
                       goNextPage={goNextPage}
                       disabled={isValidStep}
-                      buttonName={"continue"}
+                      {...(activePageIndex ===
+                      wizardPattern[wizardPattern.length - 1]
+                        ? { type: "submit" }
+                        : {})}
+                      buttonName={
+                        activePageIndex ===
+                        wizardPattern[wizardPattern.length - 1]
+                          ? "create service"
+                          : "continue"
+                      }
                     />
                   </div>
                 </div>
