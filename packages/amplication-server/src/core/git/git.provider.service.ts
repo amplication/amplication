@@ -24,6 +24,7 @@ import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { CreateGitRepositoryBaseInput } from "./dto/inputs/CreateGitRepositoryBaseInput";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -105,6 +106,43 @@ export class GitProviderService {
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
+  }
+
+  async createRemoteGitRepositoryWithoutConnect(
+    args: CreateGitRepositoryBaseInput
+  ): Promise<boolean> {
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId,
+      },
+    });
+    const repository = {
+      repositoryName: args.name,
+      gitOrganization: {
+        name: organization.name,
+        type: EnumGitOrganizationType[organization.type],
+      },
+      owner: organization.name,
+      isPrivateRepository: args.public,
+    };
+    const gitProviderArgs = {
+      installationId: organization.installationId,
+      provider: args.gitProvider,
+    };
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs,
+      this.logger
+    );
+    const remoteRepository = await gitClientService.createRepository(
+      repository
+    );
+
+    if (!remoteRepository) {
+      throw new AmplicationError(
+        `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
+      );
+    }
+    return true;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {

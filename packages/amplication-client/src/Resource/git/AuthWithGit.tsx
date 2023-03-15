@@ -3,7 +3,11 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
+import {
+  AuthorizeResourceWithGitResult,
+  CreateGitRepositoryInput,
+  EnumGitProvider,
+} from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
@@ -12,7 +16,7 @@ import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import { gitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
-import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
+import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 
@@ -27,19 +31,23 @@ let triggerAuthFailed = () => {};
 type Props = {
   onDone: () => void;
   onGitRepositorySelected: (data: gitRepositorySelected) => void;
+  onGitRepositoryCreated: (data: CreateGitRepositoryInput) => void;
 };
 
 export const CLASS_NAME = "auth-with-git";
 
-function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
-  const { currentProjectConfiguration, currentWorkspace } =
-    useContext(AppContext);
+function AuthWithGit({
+  onDone,
+  onGitRepositorySelected,
+  onGitRepositoryCreated,
+}: Props) {
+  const { currentWorkspace } = useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
   const [gitOrganization, setGitOrganization] =
     useState<GitOrganizationFromGitRepository | null>(null);
 
   useEffect(() => {
-    if (gitOrganizations?.length === 1) {
+    if (gitOrganizations) {
       setGitOrganization(gitOrganizations[0]);
     }
   }, [gitOrganizations]);
@@ -47,6 +55,9 @@ function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
+  const [gitRepositorySelectedData, setGitRepositorySelectedData] =
+    useState<gitRepositorySelected>(null);
+
   const { trackEvent } = useTracking();
   const [authWithGit, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -58,6 +69,46 @@ function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
         );
       },
     }
+  );
+
+  const [
+    createRemoteRepository,
+    { loading: createRepoLoading, error: createRepoError },
+  ] = useMutation(CREATE_GIT_REMOTE_REPOSITORY);
+
+  const handleCreateRepository = useCallback(
+    (data: CreateGitRepositoryInput) => {
+      createRemoteRepository({
+        variables: {
+          name: data.name,
+          gitOrganizationId: data.gitOrganizationId,
+          gitProvider: EnumGitProvider.Github,
+          public: data.public,
+        },
+        onCompleted() {
+          setCreateNewRepoOpen(false);
+          setGitRepositorySelectedData({
+            gitOrganizationId: data.gitOrganizationId,
+            repositoryName: data.name,
+            gitRepositoryUrl: `https://github.com/${data.name}`,
+          });
+          onGitRepositoryCreated(data);
+        },
+      }).catch((error) => {});
+      trackEvent({
+        eventName: AnalyticsEventNames.GitHubRepositoryCreate,
+      });
+    },
+    [createRemoteRepository, trackEvent]
+  );
+
+  const handleSelectRepository = useCallback(
+    (data: gitRepositorySelected) => {
+      setSelectRepoOpen(false);
+      onGitRepositorySelected(data);
+      setGitRepositorySelectedData(data);
+    },
+    [setSelectRepoOpen, onGitRepositorySelected, setGitRepositorySelectedData]
   );
 
   const handleSelectRepoDialogOpen = useCallback(() => {
@@ -81,30 +132,37 @@ function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
   triggerAuthFailed = () => {
     setPopupFailed(true);
   };
+
+  const handleOnDisconnectRepository = useCallback(() => {
+    setGitRepositorySelectedData(null);
+  }, [setGitRepositorySelectedData]);
+
   const errorMessage = formatError(error);
   return (
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          resource={currentProjectConfiguration}
           gitOrganizationId={gitOrganization.id}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           gitProvider={EnumGitProvider.Github}
           gitOrganizationName={gitOrganization.name}
+          src={"serviceWizard"}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
-          onSelectGitRepository={(data: gitRepositorySelected) => {
-            setSelectRepoOpen(false);
-            onGitRepositorySelected(data);
+          onSelectGitRepository={handleSelectRepository}
+          onGitCreateRepositoryClose={() => {
+            setCreateNewRepoOpen(false);
           }}
           onPopupFailedClose={() => {
             setPopupFailed(false);
           }}
-          onGitCreateRepository={() => {
-            setCreateNewRepoOpen(false);
+          onGitCreateRepository={handleCreateRepository}
+          repoCreated={{
+            isRepoCreateLoading: createRepoLoading,
+            RepoCreatedError: createRepoError,
           }}
         />
       )}
@@ -125,13 +183,14 @@ function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
           />
         )}
 
-        <RepositoryActions
+        <WizardRepositoryActions
           onCreateRepository={() => {
             setCreateNewRepoOpen(true);
           }}
-          currentResourceWithGitRepository={currentProjectConfiguration}
           onSelectRepository={handleSelectRepoDialogOpen}
+          onDisconnectGitRepository={handleOnDisconnectRepository}
           selectedGitOrganization={gitOrganization}
+          selectedGitRepository={gitRepositorySelectedData}
         />
 
         <GitSyncNotes />
@@ -143,6 +202,25 @@ function AuthWithGit({ onDone, onGitRepositorySelected }: Props) {
 }
 
 export default AuthWithGit;
+
+const CREATE_GIT_REMOTE_REPOSITORY = gql`
+  mutation createRemoteGitRepository(
+    $gitProvider: EnumGitProvider!
+    $gitOrganizationId: String!
+    $name: String!
+    $public: Boolean!
+  ) {
+    createRemoteGitRepository(
+      data: {
+        name: $name
+        public: $public
+        gitOrganizationId: $gitOrganizationId
+        gitProvider: $gitProvider
+        gitOrganizationType: Organization
+      }
+    )
+  }
+`;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {

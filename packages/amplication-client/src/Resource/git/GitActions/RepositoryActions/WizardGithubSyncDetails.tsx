@@ -1,50 +1,33 @@
-import { Snackbar } from "@amplication/design-system";
-import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import { useCallback, useContext } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { AppContext } from "../../../../context/appContext";
-import { Resource } from "../../../../models";
-import { formatError } from "../../../../util/error";
-import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
+import { gitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 
 const CLASS_NAME = "github-repo-details";
 
 type Props = {
-  resourceWithRepository: Resource;
+  repositorySelected: gitRepositorySelected;
   className?: string;
   showGitRepositoryBtn?: boolean;
+  onDisconnectGitRepository: () => void;
 };
 
-function GithubSyncDetails({
-  resourceWithRepository,
+function WizardGithubSyncDetails({
+  repositorySelected,
   className,
   showGitRepositoryBtn = true,
+  onDisconnectGitRepository,
 }: Props) {
-  const { gitRepositoryUrl, gitRepositoryFullName } = useContext(AppContext);
-
-  const [disconnectGitRepository, { error: disconnectErrorUpdate }] =
-    useMutation(DISCONNECT_GIT_REPOSITORY, {
-      variables: { resourceId: resourceWithRepository.id },
-    });
-
-  const handleDisconnectGitRepository = useCallback(() => {
-    disconnectGitRepository({
-      variables: { resourceId: resourceWithRepository.id },
-    }).catch(console.error);
-  }, [disconnectGitRepository, resourceWithRepository.id]);
-
-  const errorMessage = formatError(disconnectErrorUpdate);
+  const { repositoryName, gitRepositoryUrl } = repositorySelected;
 
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
         <div className={`${CLASS_NAME}__details`}>
           <GitRepoDetails
-            gitRepositoryFullName={gitRepositoryFullName}
+            gitRepositoryFullName={repositoryName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
           <div>
@@ -65,17 +48,15 @@ function GithubSyncDetails({
               eventData={{
                 eventName: AnalyticsEventNames.GithubRepositoryChange,
               }}
-              onClick={handleDisconnectGitRepository}
+              onClick={onDisconnectGitRepository}
             >
               Change Repository
             </Button>
           </div>
         )}
       </div>
-
-      <Snackbar open={Boolean(disconnectErrorUpdate)} message={errorMessage} />
     </div>
   );
 }
 
-export default GithubSyncDetails;
+export default WizardGithubSyncDetails;

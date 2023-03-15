@@ -1123,6 +1123,7 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
@@ -1463,6 +1464,14 @@ input CreateGitRepositoryInput {
   name: String!
   public: Boolean!
   resourceId: String!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input CreateGitRepositoryBaseInput {
+  name: String!
+  public: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!

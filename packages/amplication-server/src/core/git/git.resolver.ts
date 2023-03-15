@@ -23,6 +23,7 @@ import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
+import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -37,6 +38,18 @@ export class GitResolver {
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource> {
     return this.gitService.createRemoteGitRepository(args.data);
+  }
+
+  @Mutation(() => Boolean)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "data.gitOrganizationId"
+  )
+  async createRemoteGitRepository(
+    @Args() args: CreateGitRepositoryBaseArgs
+  ): Promise<boolean> {
+    console.log("createRemoteGitRepository");
+    return this.gitService.createRemoteGitRepositoryWithoutConnect(args.data);
   }
 
   @Query(() => GitOrganization)

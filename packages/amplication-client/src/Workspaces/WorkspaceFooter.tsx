@@ -81,7 +81,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
               size="small"
               className={`${CLASS_NAME}__github-icon`}
             />
-            <GitRepoDetails />
+            <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
             <a
               className={`${CLASS_NAME}__gh-link`}
               href={githubUrl}
