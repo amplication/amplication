@@ -118,7 +118,7 @@ export class GitProviderService {
         provider: args.gitProvider,
         providerOrganizationProperties: {
           installationId,
-          ...JSON.parse(JSON.stringify(organization.providerProperties)),
+          ...(organization.providerProperties as object),
         },
       }
     );
@@ -154,7 +154,7 @@ export class GitProviderService {
         provider: args.gitProvider,
         providerOrganizationProperties: {
           installationId: organization.installationId,
-          ...JSON.parse(JSON.stringify(organization.providerProperties)),
+          ...(organization.providerProperties as object),
         },
       }
     );
@@ -426,16 +426,13 @@ export class GitProviderService {
   ): Promise<GitProviderArgs> {
     const { id, installationId, provider, providerProperties } =
       gitOrganization;
-    const providerPropertiesObj = JSON.parse(
-      JSON.stringify(providerProperties)
-    );
 
-    if (!providerPropertiesObj.expiresAt) {
+    if (!providerProperties["expiresAt"]) {
       this.logger.info("provider does not use token refresh");
       return gitProviderArgs;
     }
 
-    const timeInMsLeft = providerPropertiesObj.expiresAt - Date.now();
+    const timeInMsLeft = providerProperties["expiresAt"] - Date.now();
     if (timeInMsLeft > 5 * 60 * 1000) {
       this.logger.info("Token is still valid");
       return gitProviderArgs;
@@ -449,11 +446,11 @@ export class GitProviderService {
 
     const gitClientService = await this.createGitClient(newGitProviderArgs);
     const newOAuthData = await gitClientService.refreshAccessToken(
-      providerPropertiesObj.refreshToken
+      providerProperties["refreshToken"]
     );
 
     const newProviderProperties = {
-      ...providerPropertiesObj,
+      ...(providerProperties as object),
       ...newOAuthData,
     };
 
@@ -468,9 +465,7 @@ export class GitProviderService {
 
     return {
       provider: EnumGitProvider[updatedGitOrganization.provider],
-      providerOrganizationProperties: JSON.parse(
-        JSON.stringify(updatedGitOrganization.providerProperties)
-      ),
+      providerOrganizationProperties: updatedGitOrganization.providerProperties,
     };
   }
 
@@ -493,7 +488,7 @@ export class GitProviderService {
       oAuthData.accessToken
     );
 
-    const providerOrganizationProperties: Record<string, any> = {
+    const providerOrganizationProperties: { [key: string]: any } = {
       ...initialProviderOrganizationProperties,
       ...oAuthData,
       ...currentUserData,
@@ -539,9 +534,7 @@ export class GitProviderService {
       organization,
       {
         provider: EnumGitProvider[organization.provider],
-        providerOrganizationProperties: JSON.parse(
-          JSON.stringify(organization.providerProperties)
-        ),
+        providerOrganizationProperties: organization.providerProperties,
       }
     );
     const gitClientService = await this.createGitClient(gitProviderArgs);
