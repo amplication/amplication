@@ -35,7 +35,7 @@ export interface GitProvidersConfiguration {
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerOrganizationProperties: Record<string, any>;
+  providerOrganizationProperties: any;
 }
 
 export interface GitProviderConstructorArgs {
