@@ -48,7 +48,6 @@ export class GitResolver {
   async createRemoteGitRepository(
     @Args() args: CreateGitRepositoryBaseArgs
   ): Promise<boolean> {
-    console.log("createRemoteGitRepository");
     return this.gitService.createRemoteGitRepositoryWithoutConnect(args.data);
   }
 
