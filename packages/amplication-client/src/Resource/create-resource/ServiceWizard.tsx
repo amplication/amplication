@@ -1,4 +1,4 @@
-import React, { useState, ReactNode, useCallback } from "react";
+import React, { useState, ReactNode, useCallback, useEffect } from "react";
 import * as analytics from "../../util/analytics";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
@@ -17,6 +17,9 @@ interface ServiceWizardProps {
   wizardInitialValues: { [key: string]: any };
   wizardSubmit: (values: ResourceSettings) => void;
   moduleCss: string;
+  submitFormPage: number;
+  goToPage: number | null;
+  submitLoader: boolean;
 }
 
 const BackButton: React.FC<{
@@ -24,7 +27,8 @@ const BackButton: React.FC<{
   activePageIndex: number;
   goPrevPage: () => void;
 }> = ({ wizardPattern, activePageIndex, goPrevPage }) =>
-  activePageIndex !== wizardPattern[0] ? (
+  activePageIndex !== wizardPattern[0] &&
+  activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
     <Button onClick={goPrevPage}>back</Button>
   ) : null;
 
@@ -57,12 +61,21 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardSubmit,
   children,
   moduleCss,
+  submitFormPage,
+  goToPage,
+  submitLoader,
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
+
+  useEffect(() => {
+    if (!goToPage) return;
+
+    setActivePageIndex(goToPage);
+  }, [goToPage]);
 
   const pages = React.Children.toArray(children) as (
     | React.ReactElement<any, string | React.JSXElementConstructor<any>>
@@ -112,12 +125,16 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             return (
               <>
                 <Form>
-                  {React.cloneElement(
-                    currentPage as React.ReactElement<
-                      any,
-                      string | React.JSXElementConstructor<any>
-                    >,
-                    { formik }
+                  {submitLoader ? (
+                    <div></div>
+                  ) : (
+                    React.cloneElement(
+                      currentPage as React.ReactElement<
+                        any,
+                        string | React.JSXElementConstructor<any>
+                      >,
+                      { formik }
+                    )
                   )}
                 </Form>
                 <div className={`${moduleCss}__footer`}>
@@ -134,20 +151,25 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                     formik={formik}
                   />
                   <div className={`${moduleCss}__continueBtn`}>
-                    <ContinueButton
-                      goNextPage={goNextPage}
-                      disabled={isValidStep}
-                      {...(activePageIndex ===
-                      wizardPattern[wizardPattern.length - 1]
-                        ? { type: "submit" }
-                        : {})}
-                      buttonName={
-                        activePageIndex ===
-                        wizardPattern[wizardPattern.length - 1]
-                          ? "create service"
-                          : "continue"
-                      }
-                    />
+                    {activePageIndex !==
+                      wizardPattern[wizardPattern.length - 1] && (
+                      <ContinueButton
+                        goNextPage={
+                          activePageIndex === submitFormPage
+                            ? formik.submitForm
+                            : goNextPage
+                        }
+                        disabled={isValidStep}
+                        {...(activePageIndex === submitFormPage
+                          ? { type: "submit" }
+                          : {})}
+                        buttonName={
+                          activePageIndex === submitFormPage
+                            ? "create service"
+                            : "continue"
+                        }
+                      />
+                    )}
                   </div>
                 </div>
               </>

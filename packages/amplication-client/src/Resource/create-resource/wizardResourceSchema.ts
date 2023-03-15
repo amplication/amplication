@@ -12,9 +12,11 @@ const GitRepository = {
   properties: {
     gitOrganizationId: {
       type: "string",
+      minLength: 2,
     },
     gitRepositoryName: {
       type: "string",
+      minLength: 2,
     },
   },
   required: ["gitOrganizationId", "gitRepositoryName"],

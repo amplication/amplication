@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
@@ -14,6 +14,10 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   formik,
 }) => {
   const { refreshCurrentWorkspace } = useContext(AppContext);
+
+  useEffect(() => {
+    formik.validateForm();
+  }, []);
 
   const handleOnDone = useCallback(() => {
     //refreshCurrentWorkspace();

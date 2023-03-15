@@ -45,6 +45,8 @@ const CreateServiceWizard: React.FC<Props> = ({
 }) => {
   const { errorCreateService, currentWorkspace, currentProject } =
     useContext(AppContext);
+  const [goToPage, setGoToPage] = useState<number | null>(null);
+  const submitLoader = false; /// TODO:  mutation data & loader
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const wizardPattern =
     defineUser === "login"
@@ -70,6 +72,8 @@ const CreateServiceWizard: React.FC<Props> = ({
   }, [wizardPattern]);
 
   const createResource = useCallback((values: ResourceSettings) => {
+    console.log("***********", values);
+    setGoToPage(8); /// check user
     // at the end of the process this function will trigger create service
   }, []);
   // on refresh if the route is not the base redirect to base
@@ -85,6 +89,9 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
+        submitFormPage={6}
+        goToPage={goToPage}
+        submitLoader={submitLoader}
       >
         <CreateServiceWelcome moduleClass={moduleClass} />
         <CreateServiceName moduleClass={moduleClass} />
