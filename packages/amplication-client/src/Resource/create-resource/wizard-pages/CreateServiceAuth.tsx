@@ -1,19 +1,21 @@
 import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
-import React, { useState } from "react";
+import React, { useCallback } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
+import { ImageLabelDescriptionSelector } from "./ImageLabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
 
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
-const CreateServiceAuth: React.FC<WizardStepProps> = ({ moduleClass }) => {
-  const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");
-
-  const handleOptionChoose = (event) => {
-    setChooseOPtion(event.target.innerText);
-  };
+const CreateServiceAuth: React.FC<WizardStepProps> = ({
+  formik,
+  moduleClass,
+}) => {
+  const handleDatabaseSelect = useCallback((database: string) => {
+    formik.handleChange({ target: { name: "authType", value: database } });
+  }, []);
 
   return (
     <Layout.Split>
@@ -29,41 +31,24 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ moduleClass }) => {
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${moduleClass}__repo_wrapper`}>
-          <div className={`${moduleClass}__db_box`}>
-            <div className={`${moduleClass}__db_up_buttons`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                onClick={handleOptionChoose}
-              >
-                <img
-                  className={`${moduleClass}_db_btn`}
-                  src={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
-                  alt={""}
-                ></img>
-              </Button>
-              <label>Include Auth Module</label>
-              <div className={`${moduleClass}__repository_btn_text`}>
-                Generate the code needed for authentication and authorization
-              </div>
-            </div>
-            <div className={`${moduleClass}__db_up_buttons`}>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                onClick={handleOptionChoose}
-              >
-                <Icon
-                  className={`${moduleClass}_db_btn`}
-                  icon="unlocked"
-                ></Icon>
-              </Button>
-              <label>Skip Authentication</label>
-              <div className={`${moduleClass}__repository_btn_text`}>
-                Do not include code for authentication
-              </div>
-            </div>
-          </div>
-        </div>
+        <Layout.SelectorWrapper>
+          <ImageLabelDescriptionSelector
+            name="basic-auth"
+            icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
+            label="Include Auth Module"
+            description="Generate the code needed for authentication and authorization"
+            onClick={handleDatabaseSelect}
+            currentValue={formik.values.authType}
+          />
+          <ImageLabelDescriptionSelector
+            name="no-auth"
+            icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
+            label="Skip Authentication"
+            description="Do not include code for authentication"
+            onClick={handleDatabaseSelect}
+            currentValue={formik.values.authType}
+          />
+        </Layout.SelectorWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );

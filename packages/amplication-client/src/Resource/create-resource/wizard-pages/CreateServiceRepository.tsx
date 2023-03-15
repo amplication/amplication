@@ -2,7 +2,7 @@ import {
   Button,
   EnumButtonStyle,
   Icon,
-  TextInput,
+  TextField,
 } from "@amplication/design-system";
 import React, { useState } from "react";
 
@@ -61,7 +61,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
               </div>
             </div>
             <div className={`${moduleClass}__repository_base_dir`}>
-              <TextInput name="base directory" label="base directory" />
+              <TextField name="baseDirectory" label="Base directory" />
             </div>
           </div>
           <hr className={`${moduleClass}__repo_hr`}></hr>
