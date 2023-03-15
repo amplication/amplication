@@ -1,0 +1,39 @@
+@import "../../../style/index.scss";
+
+.image-label-description-selector {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--default-spacing-small);
+
+  border: 1px solid var(--black10);
+  border-radius: 8px;
+
+  padding: 24px;
+
+  height: 110px;
+  min-width: 200px;
+  max-width: 200px;
+
+  label {
+    @include title-18;
+  }
+
+  &__description {
+    text-align: center;
+    font-size: 12px;
+    font-weight: 400;
+    color: var(--black80);
+  }
+
+  &__logo {
+    box-sizing: border-box;
+    gap: 10px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #22273c;
+    border-radius: 24px;
+  }
+}

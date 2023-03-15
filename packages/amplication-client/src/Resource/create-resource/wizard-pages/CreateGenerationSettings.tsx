@@ -1,15 +1,10 @@
 import React from "react";
-import "../CreateServiceWizard.scss";
-import { CircleBadge, Icon, ToggleField } from "@amplication/design-system";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
+import { IconLabelToggle } from "./IconLabelToggle";
 
-const className = "create-generation-settings";
-
-const CreateGenerationSettings: React.FC<WizardStepProps> = ({
-  moduleClass,
-}) => {
+const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
   return (
     <Layout.Split>
       <Layout.LeftSide>
@@ -24,33 +19,23 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${className}__repo_wrapper`}>
-          <div className={`${className}__db_box`}>
-            <div className={`${className}__db_up_buttons`}>
-              <CircleBadge color={"black"} size={"small"}>
-                <Icon icon="" size={"small"} />
-              </CircleBadge>
-              <label>GraphQL API</label>
-              <ToggleField name="generateGraphQL" label="" />
-            </div>
-            <div className={`${className}__db_up_buttons`}>
-              <CircleBadge color={"black"} size={"small"}>
-                <Icon icon="" size={"small"} />
-              </CircleBadge>
-              <label>REST API & Swagger UI</label>
-              <ToggleField name="generateRestApi" label="" />
-            </div>
-          </div>
-          <div className={`${className}__db_box`}>
-            <div className={`${className}__db_up_buttons`}>
-              <CircleBadge color={"black"} size={"small"}>
-                <Icon icon="" size={"small"} />
-              </CircleBadge>
-              <label>Admin UI</label>
-              <ToggleField name="generateAdminUI" label="" />
-            </div>
-          </div>
-        </div>
+        <Layout.SelectorWrapper>
+          <IconLabelToggle
+            icon="graphql"
+            label="GraphQL API"
+            name="generateGraphQL"
+          />
+          <IconLabelToggle
+            icon="graphql"
+            label="REST API & Swagger UI"
+            name="generateRestApi"
+          />
+          <IconLabelToggle
+            icon="graphql"
+            label="Admin UI"
+            name="generateAdminUI"
+          />
+        </Layout.SelectorWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );
