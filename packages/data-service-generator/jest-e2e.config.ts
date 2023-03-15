@@ -10,4 +10,5 @@ export default {
   testEnvironment: "node",
   testMatch: ["**/?(*.)+(e2e.spec).[jt]s?(x)"],
   testTimeout: 100000000,
+  maxConcurrency: 2,
 };
