@@ -20,7 +20,12 @@ import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
 import CreateServiceRepository from "./wizard-pages/CreateServiceRepository";
 import CreateServiceDatabase from "./wizard-pages/CreateServiceDatabase";
 import CreateServiceAuth from "./wizard-pages/CreateServiceAuth";
-import { schemaArray, ResourceInitialValues } from "./wizardResourceSchema";
+import {
+  schemaArray,
+  ResourceInitialValues,
+  WizardProgressBarInterface,
+  wizardProgressBarSchema,
+} from "./wizardResourceSchema";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
 import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
@@ -41,8 +46,28 @@ const CreateServiceWizard: React.FC<Props> = ({
   const { errorCreateService, currentWorkspace, currentProject } =
     useContext(AppContext);
   const defineUser = (props.location.state as "signup" | "login") || "login";
-
+  const wizardPattern =
+    defineUser === "login"
+      ? [1, 2, 3, 4, 5, 6, 8]
+      : [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const errorMessage = formatError(errorCreateService);
+  const setWizardProgressItems = useCallback(() => {
+    const pagesMap = {};
+    return wizardPattern.reduce(
+      (wizardArr: WizardProgressBarInterface[], page: number) => {
+        const findPage = wizardProgressBarSchema.find(
+          (item: WizardProgressBarInterface) => item.activePages.includes(page)
+        );
+        if (pagesMap[findPage.title]) return wizardArr;
+
+        pagesMap[findPage.title] = findPage;
+        wizardArr.push(findPage);
+
+        return wizardArr;
+      },
+      []
+    );
+  }, [wizardPattern]);
 
   const createResource = useCallback((values: ResourceSettings) => {
     // at the end of the process this function will trigger create service
@@ -54,61 +79,22 @@ const CreateServiceWizard: React.FC<Props> = ({
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
         wizardBaseRoute={`/${currentWorkspace.id}/${currentProject.id}/create-resource`}
-        wizardPattern={
-          defineUser === "login"
-            ? [1, 2, 3, 4, 5, 6, 8]
-            : [0, 1, 2, 3, 4, 5, 6, 7, 8]
-        }
+        wizardPattern={wizardPattern}
+        wizardProgressBar={setWizardProgressItems()}
         wizardSchema={schemaArray}
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
       >
-        <CreateServiceWelcome
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/welcome"
-          step="welcome"
-        />
-        <CreateServiceName
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/service-name"
-          step="service-name"
-        />
-        <CreateGithubSync
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/github-sync"
-          step="github-sync"
-        />
-        <CreateGenerationSettings
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/generation-settings"
-          step="generation-settings"
-        />
-        <CreateServiceRepository
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/repository"
-          step="repository"
-        />
-        <CreateServiceDatabase
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/data-base"
-          step="data-base"
-        />
-        <CreateServiceAuth
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/auth"
-          step="auth"
-        />
-        <CreateServiceCodeGeneration
-          moduleClass="create-service-code-generation"
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/build"
-          step="build"
-        />
-        <CreateServiceNextSteps
-          moduleClass={moduleClass}
-          path="/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource/success"
-          step="success"
-        />
+        <CreateServiceWelcome moduleClass={moduleClass} />
+        <CreateServiceName moduleClass={moduleClass} />
+        <CreateGithubSync moduleClass={moduleClass} />
+        <CreateGenerationSettings moduleClass={moduleClass} />
+        <CreateServiceRepository moduleClass={moduleClass} />
+        <CreateServiceDatabase moduleClass={moduleClass} />
+        <CreateServiceAuth moduleClass={moduleClass} />
+        <CreateServiceCodeGeneration moduleClass="create-service-code-generation" />
+        <CreateServiceNextSteps moduleClass={moduleClass} />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
