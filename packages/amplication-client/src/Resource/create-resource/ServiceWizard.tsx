@@ -160,9 +160,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                             : goNextPage
                         }
                         disabled={isValidStep}
-                        {...(activePageIndex === submitFormPage
-                          ? { type: "submit" }
-                          : {})}
                         buttonName={
                           activePageIndex === submitFormPage
                             ? "create service"

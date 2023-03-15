@@ -25,26 +25,34 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
 
   const handleOnGitRepositorySelected = useCallback(
     (data: gitRepositorySelected) => {
-      formik.setValues([
-        { gitRepositoryName: data.repositoryName },
-        { gitOrganizationId: data.gitOrganizationId },
-      ]);
+      formik.setValues(
+        {
+          ...formik.values,
+          gitRepositoryName: data.repositoryName,
+          gitOrganizationId: data.gitOrganizationId,
+        },
+        true
+      );
 
       refreshCurrentWorkspace();
     },
-    [refreshCurrentWorkspace]
+    [refreshCurrentWorkspace, formik]
   );
 
   const handleOnGitRepositoryCreated = useCallback(
     (data: CreateGitRepositoryInput) => {
-      formik.setValues([
-        { gitRepositoryName: data.name },
-        { gitOrganizationId: data.gitOrganizationId },
-      ]);
+      formik.setValues(
+        {
+          ...formik.values,
+          gitRepositoryName: data.name,
+          gitOrganizationId: data.gitOrganizationId,
+        },
+        true
+      );
 
       refreshCurrentWorkspace();
     },
-    [refreshCurrentWorkspace]
+    [refreshCurrentWorkspace, formik]
   );
 
   return (
