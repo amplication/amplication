@@ -10,7 +10,7 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
     "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
   const handleDatabaseSelect = useCallback((database: string) => {
-    formik.handleChange({ target: { name: "dataBaseType", value: database } });
+    formik.handleChange({ target: { name: "databaseType", value: database } });
   }, []);
 
   return (
@@ -47,14 +47,6 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
             icon={`${PLUGIN_LOGO_BASE_URL}db-mysql.png`}
             label="MySQL DB"
             description="Use MongoDB database in Amplication service."
-            onClick={handleDatabaseSelect}
-            currentValue={formik.values.databaseType}
-          />
-          <ImageLabelDescriptionSelector
-            name="no-database"
-            icon={`${PLUGIN_LOGO_BASE_URL}db-mysql.png`}
-            label="No database"
-            description="Start using your service without a database"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.databaseType}
           />

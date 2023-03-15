@@ -51,22 +51,22 @@ const StructureType = {
   required: ["structureType"],
 };
 
-const DataBaseType = {
+const DatabaseType = {
   properties: {
-    dataBaseType: {
+    databaseType: {
       enum: ["postgres", "mongo", "mysql"],
     },
   },
-  required: ["dataBaseType"],
+  required: ["databaseType"],
 };
 
 const Auth = {
   properties: {
-    authSwitch: {
-      type: "boolean",
+    authType: {
+      enum: ["core", "no"],
     },
   },
-  required: ["authSwitch"],
+  required: ["authType"],
 };
 
 export const schemaArray = [
@@ -75,7 +75,7 @@ export const schemaArray = [
   GitRepository,
   GenerationSettings,
   StructureType,
-  DataBaseType,
+  DatabaseType,
   Auth,
   [],
   [],
@@ -90,7 +90,7 @@ export const ResourceInitialValues = {
   generateRestApi: false,
   structureType: "monorepo",
   dataBaseType: "postgres",
-  authSwitch: false,
+  authType: "no",
 };
 
 export interface WizardProgressBarInterface {

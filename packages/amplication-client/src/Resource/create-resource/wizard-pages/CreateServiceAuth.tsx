@@ -33,7 +33,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
       <Layout.RightSide>
         <Layout.SelectorWrapper>
           <ImageLabelDescriptionSelector
-            name="basic-auth"
+            name="core"
             icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
@@ -41,7 +41,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
             currentValue={formik.values.authType}
           />
           <ImageLabelDescriptionSelector
-            name="no-auth"
+            name="no"
             icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
             label="Skip Authentication"
             description="Do not include code for authentication"

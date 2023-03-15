@@ -17,6 +17,10 @@
   min-width: 200px;
   max-width: 200px;
 
+  &.selected {
+    background: var(--black20);
+  }
+
   label {
     @include title-18;
   }
