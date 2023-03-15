@@ -28,12 +28,12 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
           <IconLabelToggle
             icon="graphql"
             label="REST API & Swagger UI"
-            name="generateGraphQL"
+            name="generateRestApi"
           />
           <IconLabelToggle
             icon="graphql"
             label="Admin UI"
-            name="generateGraphQL"
+            name="generateAdminUI"
           />
         </Layout.SelectorWrapper>
       </Layout.RightSide>
