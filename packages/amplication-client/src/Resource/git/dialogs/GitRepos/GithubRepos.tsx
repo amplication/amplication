@@ -28,7 +28,6 @@ const MAX_ITEMS_PER_PAGE = 50;
 
 type Props = {
   gitOrganizationId: string;
-  resourceId: string;
   onGitRepositoryConnected: (data: gitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
 };
@@ -36,15 +35,14 @@ type Props = {
 export type gitRepositorySelected = {
   gitOrganizationId: string;
   repositoryName: string;
+  gitRepositoryUrl?: string;
 };
 
 function GitRepos({
-  resourceId,
   gitOrganizationId,
   onGitRepositoryConnected,
   gitProvider,
 }: Props) {
-  const { trackEvent } = useTracking();
   const [page, setPage] = useState(1);
   const {
     data,
@@ -62,39 +60,21 @@ function GitRepos({
     notifyOnNetworkStatusChange: true,
   });
 
-  const [connectGitRepository, { error: errorUpdate }] = useMutation(
-    CONNECT_GIT_REPOSITORY
-  );
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
-      // connectGitRepository({
-      //   variables: {
-      //     gitOrganizationId,
-      //     resourceId,
-      //     name: data.name,
-      //   },
-      // }).catch(console.error);
-      // trackEvent({
-      //   eventName: AnalyticsEventNames.GitHubRepositorySync,
-      // });
       onGitRepositoryConnected({
         gitOrganizationId: gitOrganizationId,
         repositoryName: data.name,
+        gitRepositoryUrl: `https://github.com/${data.name}`,
       });
     },
-    [
-      resourceId,
-      //connectGitRepository,
-      gitOrganizationId,
-      onGitRepositoryConnected,
-      //trackEvent,
-    ]
+    [gitOrganizationId, onGitRepositoryConnected]
   );
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
 
-  const errorMessage = formatError(error || errorUpdate);
+  const errorMessage = formatError(error);
 
   return (
     <div className={CLASS_NAME}>
@@ -166,7 +146,7 @@ function GitRepos({
             onSelectRepo={handleRepoSelected}
           />
         ))}
-      <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 }

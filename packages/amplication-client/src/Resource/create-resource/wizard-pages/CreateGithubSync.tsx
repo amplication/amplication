@@ -5,6 +5,7 @@ import "./CreateGithubSync.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { gitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
+import { CreateGitRepositoryInput } from "@amplication/code-gen-types/models";
 
 const className = "create-github-sync";
 
@@ -15,13 +16,25 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   const { refreshCurrentWorkspace } = useContext(AppContext);
 
   const handleOnDone = useCallback(() => {
-    refreshCurrentWorkspace();
-  }, [refreshCurrentWorkspace]);
+    //refreshCurrentWorkspace();
+  }, []);
 
   const handleOnGitRepositorySelected = useCallback(
     (data: gitRepositorySelected) => {
       formik.setValues([
         { gitRepositoryName: data.repositoryName },
+        { gitOrganizationId: data.gitOrganizationId },
+      ]);
+
+      refreshCurrentWorkspace();
+    },
+    [refreshCurrentWorkspace]
+  );
+
+  const handleOnGitRepositoryCreated = useCallback(
+    (data: CreateGitRepositoryInput) => {
+      formik.setValues([
+        { gitRepositoryName: data.name },
         { gitOrganizationId: data.gitOrganizationId },
       ]);
 
@@ -43,6 +56,7 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
           <AuthWithGit
             onDone={handleOnDone}
             onGitRepositorySelected={handleOnGitRepositorySelected}
+            onGitRepositoryCreated={handleOnGitRepositoryCreated}
           ></AuthWithGit>
         </div>
       </Layout.RightSide>

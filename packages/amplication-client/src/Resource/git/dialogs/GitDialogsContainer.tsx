@@ -1,35 +1,44 @@
-import { Resource } from "@amplication/code-gen-types/models";
 import { Dialog } from "@amplication/design-system";
-import { EnumGitProvider } from "../../../models";
+import { ApolloError } from "@apollo/client";
+import { CreateGitRepositoryInput, EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
+import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
 import GitRepos, { gitRepositorySelected } from "./GitRepos/GithubRepos";
 
 type Props = {
-  resource: Resource;
   gitOrganizationId: string;
   isSelectRepositoryOpen: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
   gitOrganizationName: string;
-  onGitCreateRepository: () => void;
+  src: string;
+  repoCreated?: {
+    isRepoCreateLoading: boolean;
+    RepoCreatedError: ApolloError;
+  };
+
+  onGitCreateRepository: (data: CreateGitRepositoryInput) => void;
   onPopupFailedClose: () => void;
+  onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: gitRepositorySelected) => void;
 };
 
 export default function GitDialogsContainer({
-  resource,
   gitOrganizationId,
   isSelectRepositoryOpen,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
   gitOrganizationName,
+  repoCreated,
+  src,
   onGitCreateRepository,
   onPopupFailedClose,
   onSelectGitRepositoryDialogClose,
   onSelectGitRepository,
+  onGitCreateRepositoryClose,
 }: Props) {
   return (
     <div>
@@ -40,7 +49,6 @@ export default function GitDialogsContainer({
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
-          resourceId={resource.id}
           gitOrganizationId={gitOrganizationId}
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
@@ -58,15 +66,24 @@ export default function GitDialogsContainer({
         className="git-create-dialog"
         isOpen={gitCreateRepoOpen}
         title="Create new repository"
-        onDismiss={onGitCreateRepository}
+        onDismiss={onGitCreateRepositoryClose}
       >
-        <GitCreateRepo
-          gitProvider={gitProvider}
-          resource={resource}
-          gitOrganizationId={gitOrganizationId}
-          onCompleted={onGitCreateRepository}
-          gitOrganizationName={gitOrganizationName}
-        />
+        {src === "serviceWizard" ? (
+          <WizardGitCreateRepo
+            gitProvider={gitProvider}
+            repoCreated={repoCreated}
+            gitOrganizationName={gitOrganizationName}
+            onCreateGitRepository={onGitCreateRepository}
+            gitOrganizationId={gitOrganizationId}
+          ></WizardGitCreateRepo>
+        ) : (
+          <GitCreateRepo
+            gitProvider={gitProvider}
+            repoCreated={repoCreated}
+            gitOrganizationName={gitOrganizationName}
+            onCreateGitRepository={onGitCreateRepository}
+          />
+        )}
       </Dialog>
     </div>
   );

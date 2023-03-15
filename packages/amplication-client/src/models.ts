@@ -281,6 +281,14 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String'];
 };
 
+export type CreateGitRepositoryBaseInput = {
+  gitOrganizationId: Scalars['String'];
+  gitOrganizationType: EnumGitOrganizationType;
+  gitProvider: EnumGitProvider;
+  name: Scalars['String'];
+  public: Scalars['Boolean'];
+};
+
 export type CreateGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -830,6 +838,7 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
+  createRemoteGitRepository: Scalars['Boolean'];
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -976,6 +985,11 @@ export type MutationCreatePluginInstallationsArgs = {
 
 export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
+};
+
+
+export type MutationCreateRemoteGitRepositoryArgs = {
+  data: CreateGitRepositoryBaseInput;
 };
 
 

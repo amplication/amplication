@@ -6,36 +6,38 @@ import {
   Panel,
 } from "@amplication/design-system";
 import React from "react";
-import { EnumGitOrganizationType, Resource } from "../../../../models";
+import { EnumGitOrganizationType } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
+import { gitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
+import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
-  currentResourceWithGitRepository: Resource;
+  onDisconnectGitRepository: () => void;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
+  selectedGitRepository: gitRepositorySelected;
 };
 
 const CLASS_NAME = "repository-actions";
 export default function WizardRepositoryActions({
   onCreateRepository,
   onSelectRepository,
-  currentResourceWithGitRepository,
   selectedGitOrganization,
+  selectedGitRepository,
+  onDisconnectGitRepository,
 }: Props) {
-  const { gitRepository } = currentResourceWithGitRepository;
-
   return (
     <div className={`${CLASS_NAME}`}>
       <Panel
         className={`${CLASS_NAME}__auth`}
         panelStyle={EnumPanelStyle.Bordered}
       >
-        {gitRepository ? (
-          <GithubSyncDetails
-            resourceWithRepository={currentResourceWithGitRepository}
+        {selectedGitRepository ? (
+          <WizardGithubSyncDetails
+            repositorySelected={selectedGitRepository}
+            onDisconnectGitRepository={onDisconnectGitRepository}
           />
         ) : (
           <div className={`${CLASS_NAME}__select-repo`}>

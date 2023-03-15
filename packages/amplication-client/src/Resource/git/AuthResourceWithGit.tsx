@@ -5,6 +5,7 @@ import * as models from "../../models";
 import { AppContext } from "../../context/appContext";
 import {
   AuthorizeResourceWithGitResult,
+  CreateGitRepositoryInput,
   EnumGitProvider,
   Resource,
 } from "../../models";
@@ -22,7 +23,7 @@ import {
   CONNECT_GIT_REPOSITORY,
   gitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
+import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -102,6 +103,34 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const [connectGitRepository, { error: errorUpdate }] = useMutation(
     CONNECT_GIT_REPOSITORY
   );
+
+  const [
+    createRepository,
+    { loading: createRepoLoading, error: createRepoError },
+  ] = useMutation(CREATE_GIT_REPOSITORY_IN_ORGANIZATION);
+
+  const handleRepoCreated = useCallback(
+    (data: CreateGitRepositoryInput) => {
+      console.log({ data });
+      createRepository({
+        variables: {
+          name: data.name,
+          gitOrganizationId: gitOrganization.id,
+          gitProvider: EnumGitProvider.Github,
+          public: data.public,
+          resourceId: resource.id,
+        },
+        onCompleted() {
+          setCreateNewRepoOpen(false);
+        },
+      }).catch((error) => {});
+      trackEvent({
+        eventName: AnalyticsEventNames.GitHubRepositoryCreate,
+      });
+    },
+    [createRepository, trackEvent, gitOrganization]
+  );
+
   const handleRepoSelected = useCallback(
     (data: gitRepositorySelected) => {
       connectGitRepository({
@@ -122,13 +151,13 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          resource={resource}
           gitOrganizationId={gitOrganization.id}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           gitProvider={EnumGitProvider.Github}
           gitOrganizationName={gitOrganization.name}
+          src={"githubPage"}
           onSelectGitRepository={(data: gitRepositorySelected) => {
             setSelectRepoOpen(false);
             handleRepoSelected(data);
@@ -139,8 +168,13 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           onPopupFailedClose={() => {
             setPopupFailed(false);
           }}
-          onGitCreateRepository={() => {
+          onGitCreateRepository={handleRepoCreated}
+          onGitCreateRepositoryClose={() => {
             setCreateNewRepoOpen(false);
+          }}
+          repoCreated={{
+            isRepoCreateLoading: createRepoLoading,
+            RepoCreatedError: createRepoError,
           }}
         />
       )}
@@ -161,7 +195,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           />
         )}
 
-        <WizardRepositoryActions
+        <RepositoryActions
           onCreateRepository={() => {
             setCreateNewRepoOpen(true);
           }}
@@ -179,6 +213,32 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
 }
 
 export default AuthResourceWithGit;
+
+const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
+  mutation createGitRepository(
+    $gitProvider: EnumGitProvider!
+    $gitOrganizationId: String!
+    $resourceId: String!
+    $name: String!
+    $public: Boolean!
+  ) {
+    createGitRepository(
+      data: {
+        name: $name
+        public: $public
+        gitOrganizationId: $gitOrganizationId
+        resourceId: $resourceId
+        gitProvider: $gitProvider
+        gitOrganizationType: Organization
+      }
+    ) {
+      id
+      gitRepository {
+        id
+      }
+    }
+  }
+`;
 
 const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {

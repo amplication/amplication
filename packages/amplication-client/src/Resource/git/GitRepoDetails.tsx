@@ -1,12 +1,14 @@
-import React, { useContext } from "react";
-import { AppContext } from "../../context/appContext";
+import React from "react";
 
 type Props = {
   className?: string;
+  gitRepositoryFullName: string;
 };
 
-const GitRepoDetails: React.FC<Props> = ({ className }) => {
-  const { gitRepositoryFullName } = useContext(AppContext);
+const GitRepoDetails: React.FC<Props> = ({
+  className,
+  gitRepositoryFullName,
+}) => {
   return <div className={className}>{gitRepositoryFullName}</div>;
 };
 
