@@ -124,8 +124,26 @@ Follow these simple instructions to set up a local development environment.
   # This will serve the Amplication Client in development mode
   npx nx serve amplication-client
   ```
+> ℹ️ **Please note that in order to be able to run the app's client properly, you need to `serve` both the server and client plus any additional component for specific functionalities:**
+> - `npx nx serve amplication-client`
+> - `npx nx serve amplication-server`
+> 
+> **To allow code generation**
+> - `npx nx serve amplication-build-manager` 
+> - `npx nx serve local-data-service-generator-controller`
+> 
+> **To allow git syncronisation with selected provider**
+> - `npx nx serve amplication-git-pull-request-service` 
+> - `npx nx serve local-data-service-generator-controller`<br> _check additional documentation in [local-data-service-generator-controller](https://github.com/amplication/amplication/blob/master/packages/local-data-service-generator-controller/README.md)_
+> 
+> **To allow source code visualisation**
+> - `npx nx serve amplication-storage-gateway`
+> 
+> **To allow plugin settings configuration in client app**
+> - `npx nx serve amplication-plugin-api`
+>
+> _Consider using Nx Console VS Code extension for a better developer experience_
 
-+ **Please note that in order to be able to run the app's client properly, you need to `serve` both the server and client.**
 
 That's it, you are good to go! Happy hacking! 👾
 
