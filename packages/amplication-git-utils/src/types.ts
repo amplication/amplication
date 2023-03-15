@@ -184,7 +184,7 @@ export interface OAuthData {
   accessToken: string;
   refreshToken: string;
   tokenType: string;
-  expiresIn: number;
+  expiresAt: number; // Unix timestamp
   scopes: string[];
 }
 

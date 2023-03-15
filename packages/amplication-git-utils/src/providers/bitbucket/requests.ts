@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import { ILogger } from "@amplication/util/logging";
 import { CustomError } from "../../utils/custom-error";
 import {
   Account,
@@ -50,7 +49,7 @@ const getRequestHeaders = (accessToken: string) => ({
 async function requestWrapper(url: string, payload: RequestPayload) {
   try {
     const response = await fetch(url, payload);
-    return (await response).json();
+    return response.json();
   } catch (error) {
     const errorBody = await error.response.text();
     throw new CustomError(errorBody);
@@ -70,12 +69,11 @@ export async function refreshTokenRequest(
   clientSecret: string,
   refreshToken: string
 ): Promise<OAuth2> {
-  const response = await fetch(ACCESS_TOKEN_URL, {
+  return requestWrapper(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.RefreshToken}&refresh_token=${refreshToken}`,
   });
-  return response.json();
 }
 
 export async function authDataRequest(
@@ -83,13 +81,11 @@ export async function authDataRequest(
   clientSecret: string,
   code: string
 ): Promise<OAuth2> {
-  const response = await fetch(ACCESS_TOKEN_URL, {
+  return requestWrapper(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.AuthorizationCode}&code=${code}`,
   });
-
-  return response.json();
 }
 
 export async function currentUserRequest(
