@@ -430,15 +430,12 @@ export class GitProviderService {
       JSON.stringify(providerProperties)
     );
 
-    const currentTime = Math.floor(Date.now() / 1000);
-    const expirationTime = providerPropertiesObj.expiresIn;
-
-    if (!expirationTime) {
+    if (!providerPropertiesObj.expiresAt) {
       return gitProviderArgs;
     }
 
-    const timeLeft = expirationTime - currentTime;
-    if (timeLeft > 300) {
+    const timeInMsLeft = providerPropertiesObj.expiresAt - Date.now();
+    if (timeInMsLeft > 5 * 60 * 1000) {
       return gitProviderArgs;
     }
 
