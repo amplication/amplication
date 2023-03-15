@@ -493,10 +493,12 @@ export class GitProviderService {
 
     // merge the data needed for the git organization with the OAuth2 flow
     // and convert to JSON to save in the DB
-    const providerOrganizationProperties = JSON.stringify({
-      ...oAuthData,
-      ...currentUserData,
-    });
+    const providerOrganizationProperties = JSON.parse(
+      JSON.stringify({
+        ...oAuthData,
+        ...currentUserData,
+      })
+    );
 
     this.logger.info("server: completeOAuth2Flow");
     return this.prisma.gitOrganization.upsert({
