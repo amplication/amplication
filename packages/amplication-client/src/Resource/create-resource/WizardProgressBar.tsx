@@ -65,12 +65,16 @@ const WizardProgressBar: React.FC<Props> = ({
         return (
           <>
             <ProgressBarItem
+              key={item.title}
               title={item.title}
               isValid={formik.isValid && !!enabledPage2}
               disabled={enabledPage}
             />
             {index < wizardProgressBar.length - 1 && (
-              <div className={`${CLASS_NAME}__item_space`}></div>
+              <div
+                key={item.title}
+                className={`${CLASS_NAME}__item_space`}
+              ></div>
             )}
           </>
         );
