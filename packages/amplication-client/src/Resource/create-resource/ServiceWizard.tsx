@@ -1,17 +1,19 @@
 import React, { useState, ReactNode, useCallback } from "react";
 import * as analytics from "../../util/analytics";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
-import WizardProgressBar from "./WizardProgressBar";
 import { ResourceSettings } from "./wizard-pages/interfaces";
-import { Form, Formik, FormikErrors, FormikProps } from "formik";
+import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { useRouteMatch } from "react-router-dom";
+import { WizardProgressBarInterface } from "./wizardResourceSchema";
+import WizardProgressBar from "./WizardProgressBar";
+// import { useRouteMatch } from "react-router-dom";
 
 interface ServiceWizardProps {
   children: ReactNode;
   wizardBaseRoute: string;
   wizardPattern: number[];
   wizardSchema: { [key: string]: any };
+  wizardProgressBar: WizardProgressBarInterface[];
   wizardInitialValues: { [key: string]: any };
   wizardSubmit: (values: ResourceSettings) => void;
   moduleCss: string;
@@ -50,6 +52,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardBaseRoute,
   wizardPattern,
   wizardSchema,
+  wizardProgressBar,
   wizardInitialValues,
   wizardSubmit,
   children,
@@ -107,35 +110,41 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         >
           {(formik) => {
             return (
-              <Form>
-                {React.cloneElement(
-                  currentPage as React.ReactElement<
-                    any,
-                    string | React.JSXElementConstructor<any>
-                  >,
-                  { formik }
-                )}
-              </Form>
+              <>
+                <Form>
+                  {React.cloneElement(
+                    currentPage as React.ReactElement<
+                      any,
+                      string | React.JSXElementConstructor<any>
+                    >,
+                    { formik }
+                  )}
+                </Form>
+                <div className={`${moduleCss}__footer`}>
+                  <div className={`${moduleCss}__backButton`}>
+                    <BackButton
+                      wizardPattern={wizardPattern}
+                      activePageIndex={activePageIndex}
+                      goPrevPage={goPrevPage}
+                    />
+                  </div>
+                  <WizardProgressBar
+                    activePageIndex={activePageIndex}
+                    wizardProgressBar={wizardProgressBar}
+                    formik={formik}
+                  />
+                  <div className={`${moduleCss}__continueBtn`}>
+                    <ContinueButton
+                      goNextPage={goNextPage}
+                      disabled={isValidStep}
+                      buttonName={"continue"}
+                    />
+                  </div>
+                </div>
+              </>
             );
           }}
         </Formik>
-      </div>
-      <div className={`${moduleCss}__footer`}>
-        <div className={`${moduleCss}__backButton`}>
-          <BackButton
-            wizardPattern={wizardPattern}
-            activePageIndex={activePageIndex}
-            goPrevPage={goPrevPage}
-          />
-        </div>
-        <WizardProgressBar />
-        <div className={`${moduleCss}__continueBtn`}>
-          <ContinueButton
-            goNextPage={goNextPage}
-            disabled={isValidStep}
-            buttonName={"continue"}
-          />
-        </div>
       </div>
     </div>
   );

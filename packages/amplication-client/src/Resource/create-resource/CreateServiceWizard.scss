@@ -19,8 +19,6 @@ $max-width: 700px;
     display: flex;
     flex-direction: column;
     flex: 1;
-    // justify-content: center;
-    // align-items: center;
   }
 
   &__close {
@@ -31,10 +29,8 @@ $max-width: 700px;
 
   &__content {
     display: flex;
+    flex-direction: column;
     flex: 1;
-    // justify-content: center;
-    // align-items: center;
-    // width: 100%;
   }
 
   &__backButton {

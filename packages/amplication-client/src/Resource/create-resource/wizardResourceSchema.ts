@@ -92,3 +92,35 @@ export const ResourceInitialValues = {
   dataBaseType: "postgres",
   authSwitch: false,
 };
+
+export interface WizardProgressBarInterface {
+  title?: string;
+  activePages?: number[];
+}
+
+export const wizardProgressBarSchema = [
+  {
+    title: "create service",
+    activePages: [1],
+  },
+  {
+    title: "General Settings",
+    activePages: [2, 3, 4],
+  },
+  {
+    title: "DB Settings",
+    activePages: [5],
+  },
+  {
+    title: "Auth Settings",
+    activePages: [6],
+  },
+  {
+    title: "Generate Code",
+    activePages: [7],
+  },
+  {
+    title: "Confirmation & Next Steps",
+    activePages: [8],
+  },
+];
