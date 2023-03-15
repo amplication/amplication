@@ -431,11 +431,13 @@ export class GitProviderService {
     );
 
     if (!providerPropertiesObj.expiresAt) {
+      this.logger.info("provider does not use token refresh");
       return gitProviderArgs;
     }
 
     const timeInMsLeft = providerPropertiesObj.expiresAt - Date.now();
     if (timeInMsLeft > 5 * 60 * 1000) {
+      this.logger.info("Token is still valid");
       return gitProviderArgs;
     }
 
@@ -460,7 +462,7 @@ export class GitProviderService {
         id,
       },
       data: {
-        providerProperties: JSON.stringify(newProviderProperties),
+        providerProperties: newProviderProperties,
       },
     });
 
@@ -491,14 +493,11 @@ export class GitProviderService {
       oAuthData.accessToken
     );
 
-    // merge the data needed for the git organization with the OAuth2 flow
-    // and convert to JSON to save in the DB
-    const providerOrganizationProperties = JSON.parse(
-      JSON.stringify({
-        ...oAuthData,
-        ...currentUserData,
-      })
-    );
+    const providerOrganizationProperties: Record<string, any> = {
+      ...initialProviderOrganizationProperties,
+      ...oAuthData,
+      ...currentUserData,
+    };
 
     this.logger.info("server: completeOAuth2Flow");
     return this.prisma.gitOrganization.upsert({
