@@ -16,7 +16,6 @@ import {
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  OAuth2FlowResponse,
   CloneUrlArgs,
   Commit,
   CreateBranchArgs,
@@ -34,6 +33,7 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
   repositoryRequest,
@@ -75,36 +75,44 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  private async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    const response = await authDataRequest(
+  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+    const authData = await authDataRequest(
       this.clientId,
       this.clientSecret,
       authorizationCode
     );
 
-    this.logger.info("BitBucketService getAccessToken");
-    const authData = await response.json();
+    this.logger.info("BitBucketService: getAccessToken");
 
     return {
       accessToken: authData.access_token,
       refreshToken: authData.refresh_token,
       scopes: authData.scopes.split(" "),
       tokenType: authData.token_type,
-      expiresIn: authData.expires_in,
+      expiresAt: Date.now() + authData.expires_in,
     };
   }
 
-  private async getCurrentUser(
-    accessToken: string,
-    refreshToken
-  ): Promise<CurrentUser> {
-    const currentUser = await currentUserRequest(
-      accessToken,
+  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+    const newOAuthData = await refreshTokenRequest(
       this.clientId,
       this.clientSecret,
-      refreshToken,
-      this.logger
+      refreshToken
     );
+
+    this.logger.info("BitBucketService: refreshAccessToken");
+
+    return {
+      accessToken: newOAuthData.access_token,
+      refreshToken: newOAuthData.refresh_token,
+      scopes: newOAuthData.scopes.split(" "),
+      tokenType: newOAuthData.token_type,
+      expiresAt: Date.now() + newOAuthData.expires_in,
+    };
+  }
+
+  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
+    const currentUser = await currentUserRequest(accessToken);
 
     const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
@@ -113,37 +121,13 @@ export class BitBucketService implements GitProvider {
       displayName: display_name,
       username,
       uuid,
-    };
-  }
-
-  async completeOAuth2Flow(
-    authorizationCode: string
-  ): Promise<OAuth2FlowResponse> {
-    const oAuthData = await this.getAccessToken(authorizationCode);
-
-    const currentUserData = await this.getCurrentUser(
-      oAuthData.accessToken,
-      oAuthData.refreshToken
-    );
-
-    this.logger.info("BitBucketService: completeOAuth2Flow");
-
-    return {
-      providerOrganizationProperties: {
-        ...oAuthData,
-        ...currentUserData,
-      },
       useGroupingForRepositories: true,
     };
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     const { size, page, pagelen, next, previous, values } =
@@ -186,11 +170,7 @@ export class BitBucketService implements GitProvider {
     const repository = await repositoryRequest(
       gitGroupName,
       repositoryName,
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -217,11 +197,7 @@ export class BitBucketService implements GitProvider {
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       gitGroupName,
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -269,11 +245,7 @@ export class BitBucketService implements GitProvider {
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },
-      this.accessToken,
-      this.clientId,
-      this.clientSecret,
-      this.refreshToken,
-      this.logger
+      this.accessToken
     );
 
     return {

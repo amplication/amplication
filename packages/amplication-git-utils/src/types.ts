@@ -177,24 +177,20 @@ export interface CurrentUser {
   username: string;
   uuid: string;
   displayName: string;
+  useGroupingForRepositories: boolean;
 }
 
 export interface OAuthData {
   accessToken: string;
   refreshToken: string;
   tokenType: string;
-  expiresIn: number;
+  expiresAt: number; // Unix timestamp
   scopes: string[];
 }
 
 export interface OAuth2FlowArgs {
   accessToken: string;
   refreshToken: string;
-}
-
-export interface OAuth2FlowResponse {
-  providerOrganizationProperties: Record<string, any>;
-  useGroupingForRepositories: boolean;
 }
 
 export interface PaginatedGitGroup {
