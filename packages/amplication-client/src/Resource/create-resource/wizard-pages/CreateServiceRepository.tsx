@@ -4,22 +4,22 @@ import {
   Icon,
   TextField,
 } from "@amplication/design-system";
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 
 import "./CreateServiceRepository.scss";
 
 import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
+import { ImageLabelDescriptionSelector } from "./ImageLabelDescriptionSelector";
 
 const CreateServiceRepository: React.FC<WizardStepProps> = ({
   moduleClass,
+  formik,
 }) => {
-  const [chooseOption, setChooseOPtion] = useState<string>("Monorepo");
-
-  const handleOptionChoose = (event) => {
-    setChooseOPtion(event.target.innerText);
-  };
+  const handleDatabaseSelect = useCallback((database: string) => {
+    formik.handleChange({ target: { name: "structureType", value: database } });
+  }, []);
 
   return (
     <Layout.Split>
@@ -36,29 +36,22 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
         <div className={`${moduleClass}__repo_wrapper`}>
           <div className={`${moduleClass}__repository_box`}>
             <div className={`${moduleClass}__repository_options`}>
-              <div className={`${moduleClass}__repository_btn`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Clear}
-                  onClick={handleOptionChoose}
-                >
-                  Monorepo
-                </Button>
-                <div className={`${moduleClass}__repository_btn_text`}>
-                  Generate the service into a folder next to other services in
-                  the repository
-                </div>
-              </div>
-              <div className={`${moduleClass}__repository_btn`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Clear}
-                  onClick={handleOptionChoose}
-                >
-                  Polyrepo
-                </Button>
-                <div className={`${moduleClass}__repository_btn_text`}>
-                  Generate the services into the root of the repository
-                </div>
-              </div>
+              <ImageLabelDescriptionSelector
+                name="monorepo"
+                icon=""
+                label="Monorepo"
+                description="Generate the service into a folder next to other services in the repository"
+                onClick={handleDatabaseSelect}
+                currentValue={formik.values.structureType}
+              />
+              <ImageLabelDescriptionSelector
+                name="polyrepo"
+                icon=""
+                label="Polyrepo"
+                description="Generate the services into the root of the repository"
+                onClick={handleDatabaseSelect}
+                currentValue={formik.values.structureType}
+              />
             </div>
             <div className={`${moduleClass}__repository_base_dir`}>
               <TextField name="baseDirectory" label="Base directory" />
@@ -69,7 +62,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
             <div className={`${moduleClass}__monorepo_title`}>
               Your project will look like this:
             </div>
-            {chooseOption === "Monorepo" ? (
+            {formik.values.structureType === "monorepo" ? (
               <div className={`${moduleClass}__monorepo_example`}>
                 <div className={`${moduleClass}__monorepo_example_app`}>
                   <Icon icon={"folder"}></Icon>
