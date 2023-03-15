@@ -45,27 +45,30 @@ export default function WizardGitCreateRepo({
       public: true,
     });
 
-  const [repositoryName, setRepositoryName] = useState<string>(null);
-
   const handleChange = useCallback(
     (event) => {
-      console.log(event.target.value);
-      setRepositoryName(event.target.value);
+      setCreateRepositoryInput({
+        ...createRepositoryInput,
+        name: event.target.value,
+      });
     },
-    [setRepositoryName]
+    [setCreateRepositoryInput, createRepositoryInput]
   );
 
   const handleCreation = useCallback(() => {
-    console.log({ repositoryName });
     onCreateGitRepository({
       gitOrganizationId: gitOrganizationId,
       gitOrganizationType: EnumGitOrganizationType.Organization,
       gitProvider: EnumGitProvider.Github,
-      name: repositoryName,
+      name: createRepositoryInput.name,
       public: createRepositoryInput.public,
       resourceId: "",
     });
-  }, [onCreateGitRepository]);
+  }, [
+    onCreateGitRepository,
+    createRepositoryInput.name,
+    createRepositoryInput.public,
+  ]);
 
   return (
     <div>
@@ -82,7 +85,7 @@ export default function WizardGitCreateRepo({
           checked={createRepositoryInput.public}
           onChange={(event, checked) => {
             setCreateRepositoryInput({
-              name: createRepositoryInput.name,
+              ...createRepositoryInput,
               public: checked,
             });
           }}
