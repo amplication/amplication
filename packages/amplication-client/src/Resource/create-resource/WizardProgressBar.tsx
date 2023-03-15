@@ -61,18 +61,18 @@ const WizardProgressBar: React.FC<Props> = ({
         const enabledPage2 = !item.activePages.every(
           (page: number) => page <= activePageIndex
         );
-        console.log(item.title, enabledPage2);
+        // console.log(item.title, enabledPage2);
         return (
           <>
             <ProgressBarItem
-              key={item.title}
+              key={`${item.title}_item`}
               title={item.title}
               isValid={formik.isValid && !!enabledPage2}
               disabled={enabledPage}
             />
             {index < wizardProgressBar.length - 1 && (
               <div
-                key={item.title}
+                key={`${item.title}_space`}
                 className={`${CLASS_NAME}__item_space`}
               ></div>
             )}
