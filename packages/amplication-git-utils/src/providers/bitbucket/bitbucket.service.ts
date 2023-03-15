@@ -28,18 +28,23 @@ import {
   PaginatedGitGroup,
   BitBucketConfiguration,
 } from "../../types";
-import { NotImplementedError } from "../../utils/custom-error";
+import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  repositoriesInWorkspaceRequest,
+  repositoryCreateRequest,
+  repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
+  private accessToken: string;
+  private refreshToken: string;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
@@ -51,7 +56,10 @@ export class BitBucketService implements GitProvider {
 
   async init(): Promise<void> {
     this.logger.info("BitbucketService init");
+    const { accessToken, refreshToken } =
+      this.gitProviderArgs.providerOrganizationProperties;
     const { clientId, clientSecret } = this.providerConfiguration;
+
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
       throw new Error("Missing Bitbucket configuration");
@@ -59,6 +67,8 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
+    this.accessToken = accessToken;
+    this.refreshToken = refreshToken;
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -116,7 +126,7 @@ export class BitBucketService implements GitProvider {
       oAuthData.refreshToken
     );
 
-    this.logger.info("BitBucketService completeOAuth2Flow");
+    this.logger.info("BitBucketService: completeOAuth2Flow");
 
     return {
       providerOrganizationProperties: {
@@ -128,13 +138,11 @@ export class BitBucketService implements GitProvider {
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
-    const { accessToken, refreshToken } =
-      this.gitProviderArgs.providerOrganizationProperties;
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
-      accessToken,
+      this.accessToken,
       this.clientId,
       this.clientSecret,
-      refreshToken,
+      this.refreshToken,
       this.logger
     );
 
@@ -165,22 +173,117 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  getRepository(
+  async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw NotImplementedError;
+    const { gitGroupName, repositoryName } = getRepositoryArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const repository = await repositoryRequest(
+      gitGroupName,
+      repositoryName,
+      this.accessToken,
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken,
+      this.logger
+    );
+    const { links, name, is_private, full_name, mainbranch, accessLevel } =
+      repository;
+
+    return {
+      name,
+      url: links.self.href,
+      private: is_private,
+      fullName: full_name,
+      admin: !!(accessLevel === "admin"),
+      defaultBranch: mainbranch.name,
+    };
   }
 
-  getRepositories(
+  async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    throw NotImplementedError;
+    const { gitGroupName } = getRepositoriesArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
+      gitGroupName,
+      this.accessToken,
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken,
+      this.logger
+    );
+
+    const { size, page, pagelen, values } = repositoriesInWorkspace;
+    const gitRepos = values.map(
+      ({ name, is_private, links, full_name, mainbranch, accessLevel }) => {
+        return {
+          name,
+          url: links.self.href,
+          private: is_private,
+          fullName: full_name,
+          admin: !!(accessLevel === "admin"),
+          defaultBranch: mainbranch.name,
+        };
+      }
+    );
+
+    return {
+      repos: gitRepos,
+      totalRepos: size,
+      currentPage: page,
+      pageSize: pagelen,
+    };
   }
 
-  createRepository(
+  async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw NotImplementedError;
+    const {
+      gitGroupName,
+      repositoryName,
+      isPrivateRepository,
+      gitOrganization,
+    } = createRepositoryArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const newRepository = await repositoryCreateRequest(
+      gitGroupName,
+      repositoryName,
+      {
+        is_private: isPrivateRepository,
+        name: repositoryName,
+        full_name: `${gitOrganization.name}/${repositoryName}`,
+      },
+      this.accessToken,
+      this.clientId,
+      this.clientSecret,
+      this.refreshToken,
+      this.logger
+    );
+
+    return {
+      name: newRepository.name,
+      url: "https://bitbucket.org/" + newRepository.full_name,
+      private: newRepository.is_private,
+      fullName: newRepository.full_name,
+      admin: !!(newRepository.accessLevel === "admin"),
+      defaultBranch: newRepository.mainbranch.name,
+    };
   }
 
   deleteGitOrganization(): Promise<boolean> {

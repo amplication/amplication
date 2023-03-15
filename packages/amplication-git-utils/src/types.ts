@@ -96,6 +96,7 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
+  gitGroupName?: string;
 }
 
 export interface CreateRepositoryArgs {
@@ -103,11 +104,13 @@ export interface CreateRepositoryArgs {
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
+  gitGroupName?: string;
 }
 
 export interface GetRepositoriesArgs {
   limit: number;
   page: number;
+  gitGroupName?: string;
 }
 
 export interface GetFileArgs {

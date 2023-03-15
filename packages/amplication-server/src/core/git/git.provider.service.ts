@@ -99,18 +99,29 @@ export class GitProviderService {
     const installationId = await this.getInstallationIdByGitOrganizationId(
       args.gitOrganizationId
     );
-    const paginationArgs = {
+
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId,
+      },
+    });
+
+    const repositoriesArgs = {
       limit: args.limit,
       page: args.page,
+      gitGroupName: args.gitGroupName,
     };
+
     const gitProviderArgs = {
       provider: args.gitProvider,
       providerOrganizationProperties: {
         installationId,
+        ...JSON.parse(JSON.stringify(organization.providerProperties)),
       },
     };
+
     const gitClientService = await this.createGitClient(gitProviderArgs);
-    return gitClientService.getRepositories(paginationArgs);
+    return gitClientService.getRepositories(repositoriesArgs);
   }
 
   async createRemoteGitRepository(
@@ -126,8 +137,9 @@ export class GitProviderService {
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
-        useGroupingForRepositories: false,
+        useGroupingForRepositories: organization.useGroupingForRepositories,
       },
+      gitGroupName: args.gitGroupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -135,6 +147,7 @@ export class GitProviderService {
       provider: args.gitProvider,
       providerOrganizationProperties: {
         installationId: organization.installationId,
+        ...JSON.parse(JSON.stringify(organization.providerProperties)),
       },
     };
     const gitClientService = await this.createGitClient(gitProviderArgs);
@@ -415,6 +428,7 @@ export class GitProviderService {
       const { providerOrganizationProperties, useGroupingForRepositories } =
         await gitClientService.completeOAuth2Flow(code);
 
+      this.logger.info("server: completeOAuth2Flow");
       return this.prisma.gitOrganization.upsert({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention

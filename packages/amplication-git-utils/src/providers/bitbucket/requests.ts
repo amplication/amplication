@@ -1,7 +1,13 @@
-import { ILogger } from "@amplication/util/logging";
 import fetch from "node-fetch";
+import { ILogger } from "@amplication/util/logging";
 import { CustomError } from "../../utils/custom-error";
-import { Account, PaginatedWorkspaceMembership } from "./bitbucket.types";
+import {
+  Account,
+  OAuth2,
+  PaginatedRepositories,
+  PaginatedWorkspaceMembership,
+  Repository,
+} from "./bitbucket.types";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -19,6 +25,15 @@ const ACCESS_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
 const CURRENT_USER_URL = "https://api.bitbucket.org/2.0/user";
 const CURRENT_USER_WORKSPACES_URL =
   "https://api.bitbucket.org/2.0/user/permissions/workspaces";
+
+const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
+  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}`;
+
+const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
+
+const REPOSITORY_CREATE_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -41,9 +56,18 @@ async function requestWrapper(
   logger: ILogger
 ) {
   try {
-    const response = await fetch(url, payload);
+    let response = await fetch(url, payload);
     if (response.status === 401) {
-      return refreshTokenRequest(clientId, clientSecret, refreshToken);
+      logger.error("Bitbucket unauthorized request");
+      const newPayload = await handleUnauthorizedRequest(
+        clientId,
+        clientSecret,
+        refreshToken,
+        payload,
+        logger
+      );
+      logger.info("Retrying request");
+      response = await fetch(url, newPayload);
     }
     return (await response).json();
   } catch (error) {
@@ -51,6 +75,26 @@ async function requestWrapper(
     logger.error(errorBody);
     throw new CustomError(errorBody);
   }
+}
+
+async function handleUnauthorizedRequest(
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  payload: RequestPayload,
+  logger: ILogger
+) {
+  const { access_token, refresh_token } = await refreshTokenRequest(
+    clientId,
+    clientSecret,
+    refreshToken
+  );
+  logger.info("Refreshed access token");
+  refreshToken = refresh_token;
+  return {
+    ...payload,
+    headers: getRequestHeaders(access_token),
+  };
 }
 
 export async function authorizeRequest(
@@ -65,12 +109,13 @@ export async function refreshTokenRequest(
   clientId: string,
   clientSecret: string,
   refreshToken: string
-) {
-  return fetch(ACCESS_TOKEN_URL, {
+): Promise<OAuth2> {
+  const response = await fetch(ACCESS_TOKEN_URL, {
     method: "POST",
     headers: getAuthHeaders(clientId, clientSecret),
     body: `grant_type=${GrantType.RefreshToken}&refresh_token=${refreshToken}`,
   });
+  return response.json();
 }
 
 export async function authDataRequest(
@@ -117,6 +162,76 @@ export async function currentUserWorkspacesRequest(
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken,
+    logger
+  );
+}
+
+export async function repositoriesInWorkspaceRequest(
+  workspaceSlug: string,
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  logger: ILogger
+): Promise<PaginatedRepositories> {
+  return requestWrapper(
+    REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken,
+    logger
+  );
+}
+
+export async function repositoryRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  logger: ILogger
+): Promise<Repository> {
+  return requestWrapper(
+    REPOSITORY_URL(workspaceSlug, repositorySlug),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    },
+    clientId,
+    clientSecret,
+    refreshToken,
+    logger
+  );
+}
+
+export async function repositoryCreateRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  repositoryCreateData: Partial<Repository>,
+  accessToken: string,
+  clientId: string,
+  clientSecret: string,
+  refreshToken: string,
+  logger: ILogger
+): Promise<Repository> {
+  return requestWrapper(
+    REPOSITORY_CREATE_URL(workspaceSlug, repositorySlug),
+    {
+      method: "POST",
+      headers: {
+        ...getRequestHeaders(accessToken),
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(repositoryCreateData),
     },
     clientId,
     clientSecret,
