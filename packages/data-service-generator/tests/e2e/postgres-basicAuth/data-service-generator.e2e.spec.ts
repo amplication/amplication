@@ -22,6 +22,7 @@ import env from "../env";
 import entities from "../data/base/entities";
 import { resourceInfo } from "../data/base/resourceInfo";
 import roles from "../data/base/roles";
+import e from "express";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
@@ -334,22 +335,22 @@ describe("Data Service Generator", () => {
 
       describe("when using GraphQL Api", () => {
         it("gets all customer", async () => {
-          expect(
-            await apolloClient.query({
-              query: gql`
-                {
-                  customers(where: {}) {
-                    id
-                    createdAt
-                    updatedAt
-                    email
-                    firstName
-                    lastName
-                  }
+          const res = await apolloClient.query({
+            query: gql`
+              {
+                customers(where: {}) {
+                  id
+                  createdAt
+                  updatedAt
+                  email
+                  firstName
+                  lastName
                 }
-              `,
-            })
-          ).toEqual(
+              }
+            `,
+          });
+
+          expect(res).toEqual(
             expect.objectContaining({
               data: {
                 customers: expect.arrayContaining([
@@ -366,35 +367,34 @@ describe("Data Service Generator", () => {
         });
 
         it("adds a new customer", async () => {
-          expect(
-            await apolloClient.mutate({
+          try {
+            const resp = await apolloClient.mutate({
               mutation: gql`
-                {
-                  customers(where: {}) {
+                mutation CreateCustomer($data: CustomerCreateInput!) {
+                  createCustomer(data: $data) {
                     id
-                    createdAt
-                    updatedAt
                     email
-                    firstName
-                    lastName
                   }
                 }
               `,
-            })
-          ).toEqual(
-            expect.objectContaining({
-              data: {
-                customers: expect.arrayContaining([
-                  expect.objectContaining({
-                    ...omit(EXAMPLE_CUSTOMER, ["organization"]),
-                    id: customer.id,
-                    createdAt: expect.any(String),
-                    updatedAt: expect.any(String),
-                  }),
-                ]),
+              variables: {
+                data: EXAMPLE_CUSTOMER,
               },
-            })
-          );
+            });
+            expect(resp).toEqual(
+              expect.objectContaining({
+                data: {
+                  createCustomer: expect.objectContaining({
+                    id: expect.any(Number),
+                    email: EXAMPLE_CUSTOMER.email,
+                  }),
+                },
+              })
+            );
+          } catch (error) {
+            logger.error(error.message, { error });
+            throw error;
+          }
         });
       });
     });
