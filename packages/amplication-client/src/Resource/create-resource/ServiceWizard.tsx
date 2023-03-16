@@ -6,6 +6,7 @@ import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
+import CreateServiceLoader from "./CreateServiceLoader";
 // import { useRouteMatch } from "react-router-dom";
 
 interface ServiceWizardProps {
@@ -126,7 +127,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               <>
                 <Form>
                   {submitLoader ? (
-                    <div></div>
+                    <CreateServiceLoader />
                   ) : (
                     React.cloneElement(
                       currentPage as React.ReactElement<

@@ -1,4 +1,5 @@
 import { FormikProps } from "formik";
+import * as models from "../../../models";
 
 export interface ResourceSettings {
   serviceName: string;
@@ -7,9 +8,10 @@ export interface ResourceSettings {
   generateAdminUI: boolean;
   generateGraphQL: boolean;
   generateRestApi: boolean;
-  structureType: "monorepo" | "polyrepo";
+  structureType: models.EnumResourceStructureType;
   dataBaseType: "postgres" | "mysql" | "mongo";
   authSwitch: boolean;
+  resourceType: "sample" | "scratch";
 }
 export interface NextPage {
   nextTitle: string;

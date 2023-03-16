@@ -1,11 +1,5 @@
-import { Button, Modal, Snackbar } from "@amplication/design-system";
-import React, {
-  MutableRefObject,
-  useCallback,
-  useContext,
-  useRef,
-  useState,
-} from "react";
+import { Modal, Snackbar } from "@amplication/design-system";
+import React, { useCallback, useContext, useState } from "react";
 import { match } from "react-router-dom";
 import * as H from "history";
 import { formatError } from "../../util/error";
@@ -29,6 +23,8 @@ import {
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
 import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
+import { prepareServiceObject } from "../constants";
+import * as models from "../../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -43,10 +39,14 @@ const CreateServiceWizard: React.FC<Props> = ({
   innerRoutes,
   ...props
 }) => {
-  const { errorCreateService, currentWorkspace, currentProject } =
-    useContext(AppContext);
+  const {
+    errorCreateService,
+    currentWorkspace,
+    currentProject,
+    loadingCreateService,
+    setNewService,
+  } = useContext(AppContext);
   const [goToPage, setGoToPage] = useState<number | null>(null);
-  const submitLoader = false; /// TODO:  mutation data & loader
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const wizardPattern =
     defineUser === "login"
@@ -71,10 +71,58 @@ const CreateServiceWizard: React.FC<Props> = ({
     );
   }, [wizardPattern]);
 
+  const createStarterResource = useCallback(
+    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
+      setNewService(data, eventName);
+    },
+    [setNewService]
+  );
+
+  // const handleBackToProjectClick = () => {
+  //   history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
+  // };
+
   const createResource = useCallback((values: ResourceSettings) => {
+    const {
+      serviceName,
+      generateAdminUI,
+      generateGraphQL,
+      generateRestApi,
+      structureType,
+      gitOrganizationId,
+      gitRepositoryName,
+    } = values;
+
+    const isResourceWithEntities = values.resourceType === "sample";
+
+    if (currentProject) {
+      const resource = prepareServiceObject(
+        serviceName,
+        currentProject?.id,
+        isResourceWithEntities,
+        generateAdminUI,
+        generateGraphQL,
+        generateRestApi,
+        {
+          name: gitRepositoryName,
+          gitOrganizationId: gitOrganizationId,
+          resourceId: "",
+        },
+        {
+          baseDirectory: "", //todo: add tis field
+          structureType: structureType,
+        }
+      );
+
+      createStarterResource(
+        resource,
+        isResourceWithEntities
+          ? "createResourceFromSample"
+          : "createResourceFromScratch"
+      );
+    }
     console.log("***********", values);
-    setGoToPage(8); /// check user
-    // at the end of the process this function will trigger create service
+    if (!loadingCreateService) setGoToPage(8);
   }, []);
   // on refresh if the route is not the base redirect to base
   /// wizardHook => defineUser | createResource | loadingResource | route to go | progressBar
@@ -91,7 +139,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         moduleCss={moduleClass}
         submitFormPage={6}
         goToPage={goToPage}
-        submitLoader={submitLoader}
+        submitLoader={loadingCreateService}
       >
         <CreateServiceWelcome moduleClass={moduleClass} />
         <CreateServiceName moduleClass={moduleClass} />

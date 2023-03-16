@@ -321,6 +321,8 @@ export class ResourceService {
       }
     }
 
+    //connect resource to gitRepository
+
     return resource;
   }
 

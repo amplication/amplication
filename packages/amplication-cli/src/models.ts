@@ -682,6 +682,11 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
+export enum EnumResourceStructureType {
+  Mono = 'Mono',
+  Poly = 'Poly'
+}
+
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   ProjectConfiguration = 'ProjectConfiguration',
@@ -1744,7 +1749,9 @@ export type ResourceCreateWithEntitiesInput = {
   commitMessage: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   generationSettings: ResourceGenSettingsCreateInput;
+  gitRepository: ConnectGitRepositoryInput;
   resource: ResourceCreateInput;
+  resourceStructure: ResourceStructureInput;
 };
 
 export type ResourceGenSettingsCreateInput = {
@@ -1807,6 +1814,11 @@ export type ResourceRoleWhereInput = {
   name?: InputMaybe<StringFilter>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
+export type ResourceStructureInput = {
+  baseDirectory?: InputMaybe<Scalars['String']>;
+  structureType: EnumResourceStructureType;
 };
 
 export type ResourceUpdateInput = {

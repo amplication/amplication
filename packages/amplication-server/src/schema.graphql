@@ -1197,6 +1197,8 @@ input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
   generationSettings: ResourceGenSettingsCreateInput!
+  gitRepository: ConnectGitRepositoryInput!
+  resourceStructure: ResourceStructureInput!
   commitMessage: String!
 }
 
@@ -1215,6 +1217,22 @@ input ResourceGenSettingsCreateInput {
   generateAdminUI: Boolean!
   generateGraphQL: Boolean!
   generateRestApi: Boolean!
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+  resourceId: String!
+  gitOrganizationId: String!
+}
+
+input ResourceStructureInput {
+  structureType: EnumResourceStructureType!
+  baseDirectory: String
+}
+
+enum EnumResourceStructureType {
+  Mono
+  Poly
 }
 
 input ResourceUpdateInput {
@@ -1475,12 +1493,6 @@ input CreateGitRepositoryBaseInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-}
-
-input ConnectGitRepositoryInput {
-  name: String!
-  resourceId: String!
-  gitOrganizationId: String!
 }
 
 input GitOrganizationCreateInput {

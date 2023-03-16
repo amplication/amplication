@@ -104,6 +104,7 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
+
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
       if (!result.data?.createServiceWithEntities.id) return;
 
@@ -111,7 +112,7 @@ const useResources = (
       addEntity(currentResourceId);
       createResourcePlugins(currentResourceId);
 
-      refetch().then(() => resourceRedirect(currentResourceId as string));
+      refetch(); //.then(() => resourceRedirect(currentResourceId as string));
     });
   };
 

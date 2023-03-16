@@ -33,7 +33,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
             <div className={`${moduleClass}__repository_box`}>
               <div className={`${moduleClass}__repository_options`}>
                 <LabelDescriptionSelector
-                  name="monorepo"
+                  name="Mono"
                   image=""
                   label="Monorepo"
                   description="Generate the service into a folder next to other services in the repository"
@@ -41,7 +41,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                   currentValue={formik.values.structureType}
                 />
                 <LabelDescriptionSelector
-                  name="polyrepo"
+                  name="Poly"
                   image=""
                   label="Polyrepo"
                   description="Generate the services into the root of the repository"

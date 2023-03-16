@@ -12,7 +12,9 @@ export const sampleServiceResourceWithoutEntities = (
   projectId: string,
   generateAdminUI: boolean,
   generateGraphQL: boolean,
-  generateRestApi: boolean
+  generateRestApi: boolean,
+  gitRepository: models.ConnectGitRepositoryInput,
+  resourceStructure: models.ResourceStructureInput
 ): models.ResourceCreateWithEntitiesInput => ({
   resource: {
     name: "My service",
@@ -30,6 +32,15 @@ export const sampleServiceResourceWithoutEntities = (
     generateAdminUI: generateAdminUI,
     generateGraphQL: generateGraphQL,
     generateRestApi: generateRestApi,
+  },
+  gitRepository: {
+    name: gitRepository.resourceId,
+    gitOrganizationId: gitRepository.gitOrganizationId,
+    resourceId: "",
+  },
+  resourceStructure: {
+    structureType: resourceStructure.structureType,
+    baseDirectory: resourceStructure.baseDirectory,
   },
 });
 
@@ -126,15 +137,18 @@ export type createServiceSettings = {
 };
 
 export function prepareServiceObject(
+  serviceName: string,
   projectId: string,
   isResourceWithEntities: boolean,
   generateAdminUI: boolean,
   generateGraphQL: boolean,
-  generateRestApi: boolean
+  generateRestApi: boolean,
+  gitRepository: models.ConnectGitRepositoryInput,
+  resourceStructure: models.ResourceStructureInput
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
-      name: isResourceWithEntities ? "Sample service" : "My service",
+      name: serviceName,
       description: isResourceWithEntities
         ? "Sample service for e-commerce"
         : "",
@@ -152,6 +166,15 @@ export function prepareServiceObject(
       generateRestApi: generateRestApi,
     },
     entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
+    gitRepository: {
+      name: gitRepository.resourceId,
+      gitOrganizationId: gitRepository.gitOrganizationId,
+      resourceId: "",
+    },
+    resourceStructure: {
+      structureType: resourceStructure.structureType,
+      baseDirectory: resourceStructure.baseDirectory,
+    },
   };
 }
 
