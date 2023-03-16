@@ -2,7 +2,7 @@ import React from "react";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
-import { ImageLabelToggle } from "./IconLabelToggle";
+import { ImageLabelToggle } from "./ImageLabelToggle";
 
 import graphql from "../../../assets/images/graphql.svg";
 import swagger from "../../../assets/images/swagger.svg";
