@@ -1,7 +1,6 @@
 import * as os from "os";
 import * as fs from "fs";
 import * as path from "path";
-import base64 from "base-64";
 import * as compose from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
@@ -14,14 +13,15 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
-import { generateCodeByResourceData } from "../../src/generate-code";
-import { appInfo } from "../../src/tests/appInfo";
-import entities from "../../src/tests/entities";
-import roles from "../../src/tests/roles";
-import { EnumResourceType } from "../../src/models";
+import { generateCodeByResourceData } from "../../../src/generate-code";
+import { EnumResourceType } from "../../../src/models";
 import { Logger } from "@amplication/util/logging";
-import { postgresAndBasicAuthPlugins } from "./pluginInstallation";
+import { postgresAndBasicAuthPlugins } from "./plugins";
 import { omit } from "lodash";
+import env from "../env";
+import entities from "../data/base/entities";
+import { resourceInfo } from "../data/base/resourceInfo";
+import roles from "../data/base/roles";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
@@ -33,15 +33,16 @@ const STATUS_OK = 200;
 const STATUS_CREATED = 201;
 const NOT_FOUND = 404;
 
-const DB_USER = "admin";
-const DB_NAME = "admin";
-const DB_PASSWORD = "admin";
-const APP_USERNAME = "admin";
-const APP_PASSWORD = "admin";
-const APP_DEFAULT_USER_ROLES = ["user"];
-const APP_BASIC_AUTHORIZATION = `Basic ${base64.encode(
-  APP_USERNAME + ":" + APP_PASSWORD
-)}`;
+const {
+  DB_USER,
+  DB_NAME,
+  DB_PASSWORD,
+  APP_USERNAME,
+  APP_PASSWORD,
+  APP_DEFAULT_USER_ROLES,
+  APP_BASIC_AUTHORIZATION,
+} = env;
+
 const EXAMPLE_CUSTOMER = {
   email: "alice@example.com",
   firstName: "Alice",
@@ -80,7 +81,7 @@ describe("Data Service Generator", () => {
       const testResourceData = {
         entities,
         roles,
-        resourceInfo: appInfo,
+        resourceInfo,
         resourceType: EnumResourceType.Service,
         pluginInstallations: postgresAndBasicAuthPlugins,
       };
@@ -200,165 +201,201 @@ describe("Data Service Generator", () => {
     });
 
     describe("for customers entities", () => {
-      it("creates POST /api/customers endpoint", async () => {
-        const res = await fetch(`${host}/api/customers`, {
-          method: "POST",
-          headers: {
-            "Content-Type": JSON_MIME,
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-          body: JSON.stringify(EXAMPLE_CUSTOMER),
-        });
-        expect(res.status === STATUS_CREATED);
-        customer = await res.json();
-        expect(customer).toEqual(
-          expect.objectContaining({
-            ...EXAMPLE_CUSTOMER,
-            id: expect.any(Number),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-          })
-        );
-      });
-
-      it("creates PATCH /api/customers/:id endpoint", async () => {
-        const customer = await (
-          await fetch(`${host}/api/customers`, {
+      describe("when using REST Api", () => {
+        it("creates POST /api/customers endpoint", async () => {
+          const res = await fetch(`${host}/api/customers`, {
             method: "POST",
             headers: {
               "Content-Type": JSON_MIME,
               Authorization: APP_BASIC_AUTHORIZATION,
             },
             body: JSON.stringify(EXAMPLE_CUSTOMER),
-          })
-        ).json();
-        const res = await fetch(`${host}/api/customers/${customer.id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": JSON_MIME,
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-          body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
-        });
-        expect(res.status === STATUS_OK);
-      });
-
-      it("handles PATCH /api/customers/:id for a non-existing id", async () => {
-        const id = "nonExistingId";
-        const res = await fetch(`${host}/api/customers/${id}`, {
-          method: "PATCH",
-          headers: {
-            "Content-Type": JSON_MIME,
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-          body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
-        });
-        expect(res.status === NOT_FOUND);
-      });
-
-      it("creates DELETE /api/customers/:id endpoint", async () => {
-        const customer = await (
-          await fetch(`${host}/api/customers`, {
-            method: "POST",
-            headers: {
-              "Content-Type": JSON_MIME,
-              Authorization: APP_BASIC_AUTHORIZATION,
-            },
-            body: JSON.stringify(EXAMPLE_CUSTOMER),
-          })
-        ).json();
-        const res = await fetch(`${host}/api/customers/${customer.id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": JSON_MIME,
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-        });
-        expect(res.status === STATUS_OK);
-      });
-
-      it("handles DELETE /api/customers/:id for a non-existing id", async () => {
-        const id = "nonExistingId";
-        const res = await fetch(`${host}/api/customers/${id}`, {
-          method: "DELETE",
-          headers: {
-            "Content-Type": JSON_MIME,
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-        });
-        expect(res.status === NOT_FOUND);
-      });
-
-      it("creates GET /api/customers endpoint", async () => {
-        const res = await fetch(`${host}/api/customers`, {
-          headers: {
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
-        });
-        expect(res.status === STATUS_OK);
-        const customers = await res.json();
-        expect(customers).toEqual(
-          expect.arrayContaining([
+          });
+          expect(res.status === STATUS_CREATED);
+          customer = await res.json();
+          expect(customer).toEqual(
             expect.objectContaining({
               ...EXAMPLE_CUSTOMER,
               id: expect.any(Number),
               createdAt: expect.any(String),
               updatedAt: expect.any(String),
-            }),
-          ])
-        );
-      });
-
-      it("creates GET /api/customers/:id endpoint", async () => {
-        const customerId = 1;
-        logger.debug(`${host}/api/customers/${customerId}`);
-        const res = await fetch(`${host}/api/customers/${customerId}`, {
-          headers: {
-            Authorization: APP_BASIC_AUTHORIZATION,
-          },
+            })
+          );
         });
 
-        expect(res.status === STATUS_OK);
-        expect(await res.json()).toEqual(
-          expect.objectContaining({
-            ...EXAMPLE_CUSTOMER,
-            id: expect.any(Number),
-            createdAt: expect.any(String),
-            updatedAt: expect.any(String),
-          })
-        );
+        it("creates PATCH /api/customers/:id endpoint", async () => {
+          const customer = await (
+            await fetch(`${host}/api/customers`, {
+              method: "POST",
+              headers: {
+                "Content-Type": JSON_MIME,
+                Authorization: APP_BASIC_AUTHORIZATION,
+              },
+              body: JSON.stringify(EXAMPLE_CUSTOMER),
+            })
+          ).json();
+          const res = await fetch(`${host}/api/customers/${customer.id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": JSON_MIME,
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+            body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+          });
+          expect(res.status === STATUS_OK);
+        });
+
+        it("handles PATCH /api/customers/:id for a non-existing id", async () => {
+          const id = "nonExistingId";
+          const res = await fetch(`${host}/api/customers/${id}`, {
+            method: "PATCH",
+            headers: {
+              "Content-Type": JSON_MIME,
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+            body: JSON.stringify(EXAMPLE_CUSTOMER_UPDATE),
+          });
+          expect(res.status === NOT_FOUND);
+        });
+
+        it("creates DELETE /api/customers/:id endpoint", async () => {
+          const customer = await (
+            await fetch(`${host}/api/customers`, {
+              method: "POST",
+              headers: {
+                "Content-Type": JSON_MIME,
+                Authorization: APP_BASIC_AUTHORIZATION,
+              },
+              body: JSON.stringify(EXAMPLE_CUSTOMER),
+            })
+          ).json();
+          const res = await fetch(`${host}/api/customers/${customer.id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": JSON_MIME,
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+          });
+          expect(res.status === STATUS_OK);
+        });
+
+        it("handles DELETE /api/customers/:id for a non-existing id", async () => {
+          const id = "nonExistingId";
+          const res = await fetch(`${host}/api/customers/${id}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": JSON_MIME,
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+          });
+          expect(res.status === NOT_FOUND);
+        });
+
+        it("creates GET /api/customers endpoint", async () => {
+          const res = await fetch(`${host}/api/customers`, {
+            headers: {
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+          });
+          expect(res.status === STATUS_OK);
+          const customers = await res.json();
+          expect(customers).toEqual(
+            expect.arrayContaining([
+              expect.objectContaining({
+                ...EXAMPLE_CUSTOMER,
+                id: expect.any(Number),
+                createdAt: expect.any(String),
+                updatedAt: expect.any(String),
+              }),
+            ])
+          );
+        });
+
+        it("creates GET /api/customers/:id endpoint", async () => {
+          const customerId = 1;
+          logger.debug(`${host}/api/customers/${customerId}`);
+          const res = await fetch(`${host}/api/customers/${customerId}`, {
+            headers: {
+              Authorization: APP_BASIC_AUTHORIZATION,
+            },
+          });
+
+          expect(res.status === STATUS_OK);
+          expect(await res.json()).toEqual(
+            expect.objectContaining({
+              ...EXAMPLE_CUSTOMER,
+              id: expect.any(Number),
+              createdAt: expect.any(String),
+              updatedAt: expect.any(String),
+            })
+          );
+        });
       });
 
-      it("adds customers to root query", async () => {
-        expect(
-          await apolloClient.query({
-            query: gql`
-              {
-                customers(where: {}) {
-                  id
-                  createdAt
-                  updatedAt
-                  email
-                  firstName
-                  lastName
+      describe("when using GraphQL Api", () => {
+        it("gets all customer", async () => {
+          expect(
+            await apolloClient.query({
+              query: gql`
+                {
+                  customers(where: {}) {
+                    id
+                    createdAt
+                    updatedAt
+                    email
+                    firstName
+                    lastName
+                  }
                 }
-              }
-            `,
-          })
-        ).toEqual(
-          expect.objectContaining({
-            data: {
-              customers: expect.arrayContaining([
-                expect.objectContaining({
-                  ...omit(EXAMPLE_CUSTOMER, ["organization"]),
-                  id: customer.id,
-                  createdAt: expect.any(String),
-                  updatedAt: expect.any(String),
-                }),
-              ]),
-            },
-          })
-        );
+              `,
+            })
+          ).toEqual(
+            expect.objectContaining({
+              data: {
+                customers: expect.arrayContaining([
+                  expect.objectContaining({
+                    ...omit(EXAMPLE_CUSTOMER, ["organization"]),
+                    id: customer.id,
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                  }),
+                ]),
+              },
+            })
+          );
+        });
+
+        it("adds a new customer", async () => {
+          expect(
+            await apolloClient.mutate({
+              mutation: gql`
+                {
+                  customers(where: {}) {
+                    id
+                    createdAt
+                    updatedAt
+                    email
+                    firstName
+                    lastName
+                  }
+                }
+              `,
+            })
+          ).toEqual(
+            expect.objectContaining({
+              data: {
+                customers: expect.arrayContaining([
+                  expect.objectContaining({
+                    ...omit(EXAMPLE_CUSTOMER, ["organization"]),
+                    id: customer.id,
+                    createdAt: expect.any(String),
+                    updatedAt: expect.any(String),
+                  }),
+                ]),
+              },
+            })
+          );
+        });
       });
     });
 

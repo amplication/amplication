@@ -1,0 +1,5 @@
+{
+  "extends": "./tsconfig.spec.json",
+  "compilerOptions": {},
+  "include": ["tests/e2e"]
+}

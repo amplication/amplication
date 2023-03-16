@@ -25,7 +25,7 @@ export default {
     "src/admin/static",
     "src/server/auth/token",
   ],
-  testPathIgnorePatterns: ["amplication_modules", "test"],
+  testPathIgnorePatterns: ["amplication_modules", "tests/e2e"],
   moduleNameMapper: {
     "^axios$": require.resolve("axios"),
   },

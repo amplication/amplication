@@ -1,5 +1,0 @@
-{
-  "extends": "../tsconfig.spec.json",
-  "compilerOptions": {},
-  "include": [".", "../jest-e2e.config.ts"]
-}
