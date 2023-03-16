@@ -70,6 +70,7 @@ export class PermissionsService {
       const matching = await this.prisma.resource.count({
         where: {
           deletedAt: null,
+          archived: { not: true },
           id: originId,
           project: {
             workspace: {

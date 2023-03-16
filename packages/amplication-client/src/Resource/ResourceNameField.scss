@@ -1,0 +1,30 @@
+.resource-namefield {
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+
+  &__input {
+    text-align: center;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: inherit;
+    font-family: inherit;
+  }
+  &__text:hover {
+    cursor: pointer;
+  }
+  &__saved {
+    color: #31c587;
+  }
+  &__invalid {
+    color: #f85b6e;
+  }
+}
+
+.amplication-label__error {
+  font-size: 12px;
+  line-height: 20px;
+}

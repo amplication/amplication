@@ -1,9 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { gql } from "apollo-server-express";
-import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -14,6 +10,12 @@ import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AccountResolver } from "./account.resolver";
 import { PrismaService } from "../../prisma/prisma.service";
 import { AccountService } from "./account.service";
+import { ApolloServerBase } from "apollo-server-core";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
@@ -83,7 +85,7 @@ const GET_ACCOUNT_QUERY = gql`
 
 describe("AccountResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -113,7 +115,12 @@ describe("AccountResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -121,12 +128,11 @@ describe("AccountResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = getApolloServer(app);
   });
 
   it("should get current account", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_ACCOUNT_QUERY,
     });
     expect(res.errors).toBeUndefined();
@@ -150,7 +156,7 @@ describe("AccountResolver", () => {
         lastName: EXAMPLE_UPDATED_ACCOUNT.lastName,
       },
     };
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ACCOUNT_MUTATION,
       variables,
     });

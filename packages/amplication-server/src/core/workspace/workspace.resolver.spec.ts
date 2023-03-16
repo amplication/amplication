@@ -1,9 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
 import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -19,6 +20,7 @@ import { ProjectService } from "../project/project.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -137,7 +139,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("WorkspaceResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -197,7 +199,12 @@ describe("WorkspaceResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -205,12 +212,11 @@ describe("WorkspaceResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = getApolloServer(app);
   });
 
   it("should get an workspace", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_WORKSPACE_QUERY,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
@@ -224,7 +230,7 @@ describe("WorkspaceResolver", () => {
   });
 
   it("should get workspace's projects", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_PROJECT_QUERY,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
@@ -247,8 +253,8 @@ describe("WorkspaceResolver", () => {
   });
 
   it("should delete an workspace", async () => {
-    const res = await apolloClient.mutate({
-      mutation: DELETE_WORKSPACE_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: DELETE_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
@@ -266,8 +272,8 @@ describe("WorkspaceResolver", () => {
   });
 
   it("should update an workspace", async () => {
-    const res = await apolloClient.mutate({
-      mutation: UPDATE_WORKSPACE_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: UPDATE_WORKSPACE_MUTATION,
       variables: { id: EXAMPLE_WORKSPACE_ID },
     });
     expect(res.errors).toBeUndefined();
@@ -286,8 +292,8 @@ describe("WorkspaceResolver", () => {
   });
 
   it("should invite a user", async () => {
-    const res = await apolloClient.mutate({
-      mutation: INVITE_USER_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: INVITE_USER_MUTATION,
       variables: { email: EXAMPLE_EMAIL },
     });
     expect(res.errors).toBeUndefined();

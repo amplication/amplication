@@ -18,6 +18,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
+import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -49,7 +50,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            {currentResource?.name}
+            <ResourceNameField
+              currentResource={currentResource}
+              resourceId={resourceId}
+            />
             <CircleBadge
               name={currentResource?.name || ""}
               color={
