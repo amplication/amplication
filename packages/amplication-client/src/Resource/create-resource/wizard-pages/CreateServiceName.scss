@@ -21,5 +21,14 @@
       font-weight: 400;
       color: var(--black80);
     }
+
+    .text-input input {
+      max-width: none;
+      height: auto;
+      margin-top: 4px;
+      border-radius: 0;
+      padding: var(--default-spacing);
+      font-size: 14px;
+    }
   }
 }

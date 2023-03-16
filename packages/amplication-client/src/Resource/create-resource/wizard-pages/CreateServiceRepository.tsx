@@ -3,15 +3,13 @@ import React, { useCallback } from "react";
 
 import "./CreateServiceRepository.scss";
 
-import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 
-const CreateServiceRepository: React.FC<WizardStepProps> = ({
-  moduleClass,
-  formik,
-}) => {
+const className = "create-service-repository";
+
+const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback((database: string) => {
     formik.handleChange({ target: { name: "structureType", value: database } });
   }, []);
@@ -29,9 +27,9 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.SelectorWrapper>
-          <div className={`${moduleClass}__repo_wrapper`}>
-            <div className={`${moduleClass}__repository_box`}>
-              <div className={`${moduleClass}__repository_options`}>
+          <div className={`${className}__repo_wrapper`}>
+            <div className={`${className}__repository_box`}>
+              <div className={`${className}__repository_options`}>
                 <LabelDescriptionSelector
                   name="monorepo"
                   image=""
@@ -50,32 +48,34 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                 />
               </div>
               {formik.values.structureType === "monorepo" && (
-                <div className={`${moduleClass}__repository_base_dir`}>
-                  <TextField name="baseDirectory" label="Base directory" />
-                </div>
+                <TextField
+                  className={`${className}__repository_base_dir`}
+                  name="baseDirectory"
+                  label="Base directory"
+                />
               )}
             </div>
-            <hr className={`${moduleClass}__repo_hr`}></hr>
-            <div className={`${moduleClass}__monorepo`}>
-              <div className={`${moduleClass}__monorepo_title`}>
+            <hr className={`${className}__repo_hr`}></hr>
+            <div className={`${className}__monorepo`}>
+              <div className={`${className}__monorepo_title`}>
                 Your project will look like this:
               </div>
               {formik.values.structureType === "monorepo" ? (
-                <div className={`${moduleClass}__monorepo_example`}>
-                  <div className={`${moduleClass}__monorepo_example_app`}>
+                <div className={`${className}__monorepo_example`}>
+                  <div className={`${className}__monorepo_example_app`}>
                     <Icon icon={"folder"}></Icon>
                     apps
                   </div>
-                  <div className={`${moduleClass}__monorepo_example_tree`}>
-                    <hr className={`${moduleClass}__monorepo_hr`}></hr>
+                  <div className={`${className}__monorepo_example_tree`}>
+                    <hr className={`${className}__monorepo_hr`}></hr>
                     <div
-                      className={`${moduleClass}__monorepo_example_tree_folders`}
+                      className={`${className}__monorepo_example_tree_folders`}
                     >
-                      <div className={`${moduleClass}__monorepo_box_folder`}>
+                      <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
                         example-service
                       </div>
-                      <div className={`${moduleClass}__monorepo_box_folder`}>
+                      <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
                         example-service-admin
                       </div>
@@ -83,15 +83,15 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                   </div>
                 </div>
               ) : (
-                <div className={`${moduleClass}__monorepo_example`}>
+                <div className={`${className}__monorepo_example`}>
                   <div
-                    className={`${moduleClass}__monorepo_example_tree_folders`}
+                    className={`${className}__monorepo_example_tree_folders`}
                   >
-                    <div className={`${moduleClass}__monorepo_box_folder`}>
+                    <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
                       example-service
                     </div>
-                    <div className={`${moduleClass}__monorepo_box_folder`}>
+                    <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
                       example-service-admin
                     </div>
