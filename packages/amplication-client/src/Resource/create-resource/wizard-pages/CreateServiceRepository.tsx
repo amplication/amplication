@@ -1,17 +1,12 @@
-import {
-  Button,
-  EnumButtonStyle,
-  Icon,
-  TextField,
-} from "@amplication/design-system";
-import React, { useCallback, useState } from "react";
+import { Icon, TextField } from "@amplication/design-system";
+import React, { useCallback } from "react";
 
 import "./CreateServiceRepository.scss";
 
 import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
-import { ImageLabelDescriptionSelector } from "./ImageLabelDescriptionSelector";
+import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 
 const CreateServiceRepository: React.FC<WizardStepProps> = ({
   moduleClass,
@@ -33,43 +28,62 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${moduleClass}__repo_wrapper`}>
-          <div className={`${moduleClass}__repository_box`}>
-            <div className={`${moduleClass}__repository_options`}>
-              <ImageLabelDescriptionSelector
-                name="monorepo"
-                icon=""
-                label="Monorepo"
-                description="Generate the service into a folder next to other services in the repository"
-                onClick={handleDatabaseSelect}
-                currentValue={formik.values.structureType}
-              />
-              <ImageLabelDescriptionSelector
-                name="polyrepo"
-                icon=""
-                label="Polyrepo"
-                description="Generate the services into the root of the repository"
-                onClick={handleDatabaseSelect}
-                currentValue={formik.values.structureType}
-              />
-            </div>
-            <div className={`${moduleClass}__repository_base_dir`}>
-              <TextField name="baseDirectory" label="Base directory" />
-            </div>
-          </div>
-          <hr className={`${moduleClass}__repo_hr`}></hr>
-          <div className={`${moduleClass}__monorepo`}>
-            <div className={`${moduleClass}__monorepo_title`}>
-              Your project will look like this:
-            </div>
-            {formik.values.structureType === "monorepo" ? (
-              <div className={`${moduleClass}__monorepo_example`}>
-                <div className={`${moduleClass}__monorepo_example_app`}>
-                  <Icon icon={"folder"}></Icon>
-                  apps
+        <Layout.SelectorWrapper>
+          <div className={`${moduleClass}__repo_wrapper`}>
+            <div className={`${moduleClass}__repository_box`}>
+              <div className={`${moduleClass}__repository_options`}>
+                <LabelDescriptionSelector
+                  name="monorepo"
+                  image=""
+                  label="Monorepo"
+                  description="Generate the service into a folder next to other services in the repository"
+                  onClick={handleDatabaseSelect}
+                  currentValue={formik.values.structureType}
+                />
+                <LabelDescriptionSelector
+                  name="polyrepo"
+                  image=""
+                  label="Polyrepo"
+                  description="Generate the services into the root of the repository"
+                  onClick={handleDatabaseSelect}
+                  currentValue={formik.values.structureType}
+                />
+              </div>
+              {formik.values.structureType === "monorepo" && (
+                <div className={`${moduleClass}__repository_base_dir`}>
+                  <TextField name="baseDirectory" label="Base directory" />
                 </div>
-                <div className={`${moduleClass}__monorepo_example_tree`}>
-                  <hr className={`${moduleClass}__monorepo_hr`}></hr>
+              )}
+            </div>
+            <hr className={`${moduleClass}__repo_hr`}></hr>
+            <div className={`${moduleClass}__monorepo`}>
+              <div className={`${moduleClass}__monorepo_title`}>
+                Your project will look like this:
+              </div>
+              {formik.values.structureType === "monorepo" ? (
+                <div className={`${moduleClass}__monorepo_example`}>
+                  <div className={`${moduleClass}__monorepo_example_app`}>
+                    <Icon icon={"folder"}></Icon>
+                    apps
+                  </div>
+                  <div className={`${moduleClass}__monorepo_example_tree`}>
+                    <hr className={`${moduleClass}__monorepo_hr`}></hr>
+                    <div
+                      className={`${moduleClass}__monorepo_example_tree_folders`}
+                    >
+                      <div className={`${moduleClass}__monorepo_box_folder`}>
+                        <Icon icon={"folder"}></Icon>
+                        example-service
+                      </div>
+                      <div className={`${moduleClass}__monorepo_box_folder`}>
+                        <Icon icon={"folder"}></Icon>
+                        example-service-admin
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className={`${moduleClass}__monorepo_example`}>
                   <div
                     className={`${moduleClass}__monorepo_example_tree_folders`}
                   >
@@ -83,25 +97,10 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                     </div>
                   </div>
                 </div>
-              </div>
-            ) : (
-              <div className={`${moduleClass}__monorepo_example`}>
-                <div
-                  className={`${moduleClass}__monorepo_example_tree_folders`}
-                >
-                  <div className={`${moduleClass}__monorepo_box_folder`}>
-                    <Icon icon={"folder"}></Icon>
-                    example-service
-                  </div>
-                  <div className={`${moduleClass}__monorepo_box_folder`}>
-                    <Icon icon={"folder"}></Icon>
-                    example-service-admin
-                  </div>
-                </div>
-              </div>
-            )}
+              )}
+            </div>
           </div>
-        </div>
+        </Layout.SelectorWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );

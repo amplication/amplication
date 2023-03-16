@@ -96,11 +96,12 @@ $max-width: 700px;
   }
 
   &__repo_wrapper {
+    flex: 1;
+
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100%;
+    height: 500px;
   }
 
   &__repo_hr {
@@ -108,13 +109,13 @@ $max-width: 700px;
     height: 1px;
     border: none;
     background: #22273c;
+    margin: 32px 0px;
   }
 
   &__monorepo {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin-top: 32px;
     margin-bottom: 8px;
     width: 520px;
     height: 167px;
@@ -190,9 +191,11 @@ $max-width: 700px;
   &__repository_box {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 24px;
-    height: 250px;
+
+    .text-input label {
+      margin-bottom: 0;
+    }
   }
 
   &__db_box {
@@ -219,12 +222,6 @@ $max-width: 700px;
     border: 1px solid #373d57;
     border-radius: 8px;
   }
-
-  // label {
-  //   font-weight: 600;
-  //   font-size: 18px;
-  //   color: white;
-  // }
 
   &_db_btn {
     box-sizing: border-box;

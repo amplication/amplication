@@ -1,9 +1,8 @@
-import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
 import React, { useCallback } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
-import { ImageLabelDescriptionSelector } from "./ImageLabelDescriptionSelector";
+import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
 
 const PLUGIN_LOGO_BASE_URL =
@@ -32,17 +31,17 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.SelectorWrapper>
-          <ImageLabelDescriptionSelector
+          <LabelDescriptionSelector
             name="core"
-            icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
+            image={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.authType}
           />
-          <ImageLabelDescriptionSelector
+          <LabelDescriptionSelector
             name="no"
-            icon={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
+            icon="unlock"
             label="Skip Authentication"
             description="Do not include code for authentication"
             onClick={handleDatabaseSelect}
