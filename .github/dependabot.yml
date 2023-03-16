@@ -4,11 +4,11 @@ updates:
     directory: "/"
     target-branch: "next"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     ignore:
-      - dependency-name: "*"
-        update-types: ["version-update:semver-major"]
-    open-pull-requests-limit: 0
+      - dependency-name: "@nrwl/**" # we need to use nx migrate instead
+    open-pull-requests-limit: 3
+    
 
   - package-ecosystem: "docker"
     directory: "/"
