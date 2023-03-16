@@ -35,7 +35,7 @@ async function* getPluginFuncGenerator(
       yield func.default;
     } while (pluginListLength > index);
   } catch (error) {
-    logger.log(error); /// log error
+    logger.error(error);
     return EmptyClass;
   }
 }
