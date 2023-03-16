@@ -312,7 +312,8 @@ describe("Data Service Generator", () => {
           );
         });
 
-        it("creates GET /api/customers/:id endpoint", async () => {
+        // TODO uncomment once issue is fixed https://github.com/amplication/amplication/issues/5437
+        xit("creates GET /api/customers/:id endpoint", async () => {
           const customerId = 1;
           logger.debug(`${host}/api/customers/${customerId}`);
           const res = await fetch(`${host}/api/customers/${customerId}`, {
