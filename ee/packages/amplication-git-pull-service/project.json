@@ -29,7 +29,7 @@
         "outputPath": "dist/ee/packages/amplication-git-pull-service",
         "main": "ee/packages/amplication-git-pull-service/src/main.ts",
         "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-pull-service/webpack.config.js",
+        "generatePackageJson": true,
         "assets": [
           {
             "glob": "prisma",

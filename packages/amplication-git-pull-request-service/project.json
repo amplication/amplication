@@ -29,7 +29,7 @@
         "outputPath": "dist/packages/amplication-git-pull-request-service",
         "main": "packages/amplication-git-pull-request-service/src/main.ts",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-git-pull-request-service/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -63,7 +63,9 @@
         }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }
