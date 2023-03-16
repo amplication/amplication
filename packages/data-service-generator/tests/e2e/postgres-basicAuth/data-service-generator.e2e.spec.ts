@@ -143,7 +143,7 @@ describe("Data Service Generator", () => {
           JWT_EXPIRATION: "2d",
         },
       };
-      logger.debug("dockerComposeOptions", { dockerComposeOptions });
+      logger.debug("dockerComposeOptions", { dockerComposeDir });
 
       // Cleanup Docker Compose before run
       await down(dockerComposeOptions);
