@@ -237,7 +237,7 @@
     "graphql": "^16.6.0",
     "husky": "^8.0.2",
     "jest": "^28.1.0",
-    "jest-diff": "^28.1.0",
+    "jest-diff": "^29.5.0",
     "jest-environment-jsdom": "^28.1.0",
     "jest-environment-node": "^28.1.0",
     "jest-mock-extended": "^2.0.9",
