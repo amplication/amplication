@@ -86,8 +86,7 @@
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
-      },
-      "dependsOn": ["generate-example-input-json"]
+      }
     },
     "update-snapshot": {
       "executor": "nx:run-commands",
