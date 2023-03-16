@@ -37,7 +37,11 @@
     gap: 10px;
     width: 32px;
     height: 32px;
-    border: 1px solid #22273c;
+    border: 1px solid var(--black2);
     border-radius: 24px;
+  }
+
+  .circle-badge.medium .amp-icon {
+    color: var(--black100);
   }
 }
