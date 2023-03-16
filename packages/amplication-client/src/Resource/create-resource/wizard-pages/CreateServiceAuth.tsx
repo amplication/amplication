@@ -5,13 +5,9 @@ import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayou
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
 
-const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
+import jwt from "../../../assets/images/jwt.svg";
 
-const CreateServiceAuth: React.FC<WizardStepProps> = ({
-  formik,
-  moduleClass,
-}) => {
+const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback((database: string) => {
     formik.handleChange({ target: { name: "authType", value: database } });
   }, []);
@@ -33,8 +29,8 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
         <Layout.SelectorWrapper>
           <LabelDescriptionSelector
             name="core"
-            image={`${PLUGIN_LOGO_BASE_URL}auth-core.png`}
-            label="Include Auth Module"
+            image={jwt}
+            label="JWT"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.authType}
@@ -42,7 +38,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
           <LabelDescriptionSelector
             name="no"
             icon="unlock"
-            label="Skip Authentication"
+            label="Without  Auth"
             description="Do not include code for authentication"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.authType}
