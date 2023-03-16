@@ -28,7 +28,7 @@
         "outputPath": "dist/packages/amplication-storage-gateway",
         "main": "packages/amplication-storage-gateway/src/main.ts",
         "tsConfig": "packages/amplication-storage-gateway/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-storage-gateway/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -62,7 +62,9 @@
         }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }
