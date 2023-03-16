@@ -60,7 +60,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0px 0px 0px 15px;
+    padding-left: var(--default-spacing-small);
   }
 
   &__monorepo_example_tree_folders {
