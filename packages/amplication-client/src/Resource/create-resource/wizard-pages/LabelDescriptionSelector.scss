@@ -23,6 +23,7 @@
 
   label {
     @include title-18;
+    white-space: pre;
   }
 
   &__description {
@@ -35,10 +36,18 @@
   &__logo {
     box-sizing: border-box;
     gap: 10px;
-    width: 32px;
-    height: 32px;
     border: 1px solid var(--black2);
     border-radius: 24px;
+
+    &.medium {
+      width: 20px;
+      height: 20px;
+    }
+
+    &.large {
+      width: 32px;
+      height: 32px;
+    }
   }
 
   .circle-badge.medium .amp-icon {

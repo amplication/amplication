@@ -91,7 +91,7 @@ export const ResourceInitialValues = {
   generateGraphQL: false,
   generateRestApi: false,
   structureType: "monorepo",
-  dataBaseType: "postgres",
+  databaseType: "postgres",
   authType: "no",
 };
 
