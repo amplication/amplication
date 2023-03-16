@@ -169,7 +169,7 @@ export class WorkspaceResolver {
   ): Promise<ProvisionSubscriptionResult | null> {
     return this.billingService.provisionSubscription({
       ...args.data,
-      userId: currentUser.id,
+      userId: currentUser.account.id,
     });
   }
 }
