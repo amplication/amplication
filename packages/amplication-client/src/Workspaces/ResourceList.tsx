@@ -121,7 +121,7 @@ function ResourceList() {
         projectId: currentProject.id,
       },
     }).catch(setError);
-  }, [deleteProject, setError, trackEvent]);
+  }, [currentProject, deleteProject, setError, trackEvent]);
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
