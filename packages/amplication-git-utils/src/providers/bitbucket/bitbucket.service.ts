@@ -89,7 +89,7 @@ export class BitBucketService implements GitProvider {
       refreshToken: authData.refresh_token,
       scopes: authData.scopes.split(" "),
       tokenType: authData.token_type,
-      expiresAt: Date.now() + authData.expires_in,
+      expiresAt: Math.floor(Date.now() / 1000) + authData.expires_in, // 7200 seconds = 2 hours
     };
   }
 
@@ -107,7 +107,7 @@ export class BitBucketService implements GitProvider {
       refreshToken: newOAuthData.refresh_token,
       scopes: newOAuthData.scopes.split(" "),
       tokenType: newOAuthData.token_type,
-      expiresAt: Date.now() + newOAuthData.expires_in,
+      expiresAt: Math.floor(Date.now() / 1000) + newOAuthData.expires_in, // 7200 seconds = 2 hours
     };
   }
 
