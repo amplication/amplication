@@ -3,14 +3,6 @@ import MonacoEditor, { EditorProps, Monaco } from "@monaco-editor/react";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import "./CodeEditor.scss";
 
-export const isValidJSON = (str: string) => {
-  try {
-    return JSON.parse(str) && !!str;
-  } catch (e) {
-    return false;
-  }
-};
-
 export interface CodeEditorProps {
   width?: string;
   height?: string;

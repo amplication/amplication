@@ -17,6 +17,7 @@
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
     "ui-design-system": "libs/ui/design-system",
     "util-code-gen-utils": "libs/util/code-gen-utils",
+    "util-json": "libs/util/json",
     "util-kafka": "libs/util/kafka",
     "util-logging": "libs/util/logging",
     "util-nestjs-kafka": "libs/util/nestjs/kafka",

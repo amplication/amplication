@@ -37,6 +37,10 @@
       "@amplication/ui/design-system": [
         "libs/ui/design-system/src/lib/index.ts"
       ],
+      "@amplication/ui/design-system/icons": [
+        "libs/ui/design-system/src/lib/icons"
+      ],
+      "@amplication/util/json": ["libs/util/json/src/index.ts"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/logging": ["libs/util/logging/src/index.ts"],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
