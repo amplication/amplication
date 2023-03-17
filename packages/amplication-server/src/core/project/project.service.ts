@@ -94,7 +94,7 @@ export class ProjectService {
     await this.billingService.reportUsage(
       project.workspace.id,
       BillingFeature.Services,
-      archivedServiceCount
+      -archivedServiceCount
     );
 
     return this.prisma.project.update({
@@ -183,8 +183,12 @@ export class ProjectService {
               where: {
                 resourceType: EnumResourceType.Service,
                 deletedAt: null,
+                archived: { not: true },
               },
             },
+          },
+          where: {
+            deletedAt: null,
           },
         },
       },
