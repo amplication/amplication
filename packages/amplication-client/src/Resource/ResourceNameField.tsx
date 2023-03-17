@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Field, Form, Formik } from "formik";
 import FormikAutoSave from "../util/formikAutoSave";
-import { Icon, Label } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useTracking } from "react-tracking";
@@ -100,16 +100,23 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
                     showTick && (
                       <Icon
                         className={`${CLASS_NAME}__saved`}
-                        icon={"check"}
+                        icon="check"
                         size="medium"
                       />
                     )
                   ) : (
-                    <Icon
-                      icon="info_circle"
-                      size="small"
-                      className={`${CLASS_NAME}__invalid`}
-                    />
+                    <Tooltip
+                      noDelay
+                      direction="nw"
+                      aria-label={"Error: Unsupported character"}
+                      className={`${CLASS_NAME}__tooltip_invalid`}
+                    >
+                      <Icon
+                        icon="info_circle"
+                        size="small"
+                        className={`${CLASS_NAME}__invalid`}
+                      />
+                    </Tooltip>
                   )}
                 </Form>
               ) : (
@@ -120,7 +127,6 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
                   {currentResource?.name}
                 </span>
               )}
-              {!isValid && <Label text={errors.name.toString()} type="error" />}
             </div>
           );
         }}
