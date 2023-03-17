@@ -28,7 +28,7 @@
         "outputPath": "dist/packages/amplication-build-manager",
         "main": "packages/amplication-build-manager/src/main.ts",
         "tsConfig": "packages/amplication-build-manager/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-build-manager/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -64,7 +64,9 @@
         }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }

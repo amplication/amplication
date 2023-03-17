@@ -1,9 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
 import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -20,6 +21,7 @@ import { CommitService } from "../commit/commit.service";
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { ResourceService } from "../resource/resource.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
@@ -173,7 +175,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("BuildResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -226,7 +228,12 @@ describe("BuildResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -234,12 +241,11 @@ describe("BuildResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find many builds", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_BUILDS_QUERY,
       variables: {},
     });
@@ -257,7 +263,7 @@ describe("BuildResolver", () => {
   });
 
   it("should find one build", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ONE_BUILD_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
     });
@@ -275,7 +281,7 @@ describe("BuildResolver", () => {
   });
 
   it("should find a builds creating user", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_USER_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
     });
@@ -291,13 +297,16 @@ describe("BuildResolver", () => {
       },
     });
     expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID },
-    });
+    expect(userServiceFindUserMock).toBeCalledWith(
+      {
+        where: { id: EXAMPLE_USER_ID },
+      },
+      true
+    );
   });
 
   it("should find a builds action", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ACTION_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
     });
@@ -317,7 +326,7 @@ describe("BuildResolver", () => {
   });
 
   it("should return the build archive URI", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: ARCHIVE_URI_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
     });
@@ -330,7 +339,7 @@ describe("BuildResolver", () => {
   });
 
   it("should get a build status", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: BUILD_STATUS_QUERY,
       variables: { id: EXAMPLE_BUILD_ID },
     });
@@ -352,8 +361,8 @@ describe("BuildResolver", () => {
         message: EXAMPLE_MESSAGE,
       },
     };
-    const res = await apolloClient.mutate({
-      mutation: CREATE_BUILD_MUTATION,
+    const res = await apolloClient.executeOperation({
+      query: CREATE_BUILD_MUTATION,
       variables: {
         resourceId: EXAMPLE_RESOURCE_ID,
         commitId: EXAMPLE_COMMIT_ID,

@@ -39,7 +39,6 @@
       "outputs": ["{options.outputPath}"],
       "dependsOn": ["graphql:schema:generate", "graphql:models:generate"],
       "options": {
-        "webpackConfig": "packages/amplication-server/webpack.config.js",
         "outputPath": "dist/packages/amplication-server",
         "main": "packages/amplication-server/src/main.ts",
         "tsConfig": "packages/amplication-server/tsconfig.app.json",
@@ -59,7 +58,8 @@
             "input": "packages/amplication-prisma-db/prisma",
             "output": "./"
           }
-        ]
+        ],
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {

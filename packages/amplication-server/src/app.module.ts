@@ -16,6 +16,7 @@ import { HealthModule } from "./core/health/health.module";
 import { join } from "path";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { SERVICE_NAME } from "./constants";
       inject: [ConfigService, GoogleSecretsManagerService],
       useClass: SendgridConfigService,
     }),
-    GraphQLModule.forRootAsync({
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
       useFactory: async (configService: ConfigService) => {
         return {
           autoSchemaFile:
