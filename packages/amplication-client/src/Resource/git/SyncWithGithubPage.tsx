@@ -50,6 +50,7 @@ const SyncWithGithubPage: React.FC = () => {
           <Icon icon="github" size="xlarge" />
           <h1>Sync with GitHub</h1>
         </div>
+        <div className={`${CLASS_NAME}__separator`} />
         <div className={`${CLASS_NAME}__message`}>
           If you connect to GitHub, every time you commit your changes, it
           automatically pushes your generated code and creates a Pull Request in
