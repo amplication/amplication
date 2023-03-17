@@ -482,8 +482,8 @@ export class BuildService {
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
           pullRequestMode: (smartGitSyncEntitlement &&
-              smartGitSyncEntitlement.hasAccess &&
-              EnumPullRequestMode.Accumulative) ||
+              smartGitSyncEntitlement.hasAccess) ?
+              EnumPullRequestMode.Accumulative :
             EnumPullRequestMode.Basic; 
           };
 
