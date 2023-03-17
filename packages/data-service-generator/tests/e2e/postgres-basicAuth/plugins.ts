@@ -6,7 +6,7 @@ export const postgresAndBasicAuthPlugins: PluginInstallation[] = [
     pluginId: "plugin-db-postgres",
     npm: "@amplication/plugin-db-postgres",
     enabled: true,
-    version: "1.2.2-beta-2",
+    version: "latest",
   },
   {
     id: "auth-core-id",
