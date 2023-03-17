@@ -433,6 +433,11 @@ export class GitProviderService {
     }
 
     const timeInMsLeft = providerProperties["expiresAt"] - Date.now();
+
+    this.logger.info("Time left before token expires:", {
+      value: `${timeInMsLeft / 60000} minutes`,
+    });
+
     if (timeInMsLeft > 5 * 60 * 1000) {
       this.logger.info("Token is still valid");
       return gitProviderArgs;
@@ -445,6 +450,7 @@ export class GitProviderService {
     };
 
     const gitClientService = await this.createGitClient(newGitProviderArgs);
+    this.logger.info("Token is going to be expired, refreshing...");
     const newOAuthData = await gitClientService.refreshAccessToken(
       providerProperties["refreshToken"]
     );
