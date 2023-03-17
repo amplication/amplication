@@ -1,20 +1,19 @@
 import { ObjectType, Field } from "@nestjs/graphql";
+import { GitUserLinks } from "./GitLinks";
 
 @ObjectType({
   isAbstract: true,
 })
-export class GitUserLinks {
+export class OAuth2User {
   @Field(() => String, { nullable: false })
-  avatar!: Avatar;
-}
-
-@ObjectType({
-  isAbstract: true,
-})
-export class Avatar {
-  @Field(() => String, { nullable: false })
-  href!: string;
+  username: string;
 
   @Field(() => String, { nullable: false })
-  name!: string;
+  displayName: string;
+
+  @Field(() => String, { nullable: false })
+  uuid: string;
+
+  @Field(() => GitUserLinks, { nullable: false })
+  links: GitUserLinks;
 }
