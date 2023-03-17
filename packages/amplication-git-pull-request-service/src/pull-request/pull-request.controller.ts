@@ -9,12 +9,11 @@ import {
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
-import { KafkaMessage } from "kafkajs";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
-import { KafkaTopics } from "./pull-request.type";
-import { PullRequestService } from "./pull-request.service";
-import { QueueService } from "./queue.service";
 import { Env } from "../env";
+import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { PullRequestService } from "./pull-request.service";
+import { KafkaTopics } from "./pull-request.type";
+import { QueueService } from "./queue.service";
 
 @Controller()
 export class PullRequestController {
@@ -28,15 +27,20 @@ export class PullRequestController {
 
   @EventPattern(KafkaTopics.CreatePrRequest)
   async generatePullRequest(
-    @Payload() message: KafkaMessage,
+    @Payload() message: CreatePullRequestArgs,
     @Ctx() context: KafkaContext
   ) {
-    const validArgs = plainToInstance(CreatePullRequestArgs, message.value);
+    const validArgs = plainToInstance(CreatePullRequestArgs, message);
     await validateOrReject(validArgs);
+
+    const offset = context.getMessage().offset;
+    const topic = context.getTopic();
+    const partition = context.getPartition();
+
     this.logger.info(`Got a new generate pull request item from queue.`, {
-      topic: context.getTopic(),
-      partition: context.getPartition(),
-      offset: message.offset,
+      topic,
+      partition,
+      offset: context.getMessage().offset,
       class: this.constructor.name,
       args: validArgs,
     });
@@ -47,9 +51,9 @@ export class PullRequestController {
       );
 
       this.logger.info(`Finish process, committing`, {
-        topic: context.getTopic(),
-        partition: context.getPartition(),
-        offset: message.offset,
+        topic,
+        partition,
+        offset,
         class: this.constructor.name,
         buildId: validArgs.newBuildId,
       });
@@ -63,7 +67,7 @@ export class PullRequestController {
     } catch (error) {
       this.logger.error(error, {
         class: this.constructor.name,
-        offset: message.offset,
+        offset,
         buildId: validArgs.newBuildId,
       });
 

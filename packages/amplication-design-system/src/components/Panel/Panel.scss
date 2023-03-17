@@ -19,7 +19,7 @@ $expandable-transition-duration: 0.1s;
 
   &--transparent {
     background: transparent;
-    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+    margin: 0 calc(var(--default-spacing) * -1);
     margin-top: 0;
   }
   &--shadow {
