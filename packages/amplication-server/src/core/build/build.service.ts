@@ -481,10 +481,10 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
-          pullRequestMode: (smartGitSyncEntitlement &&
-              smartGitSyncEntitlement.hasAccess) ?
-              EnumPullRequestMode.Accumulative :
-            EnumPullRequestMode.Basic; 
+            pullRequestMode:
+              smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
+                ? EnumPullRequestMode.Accumulative
+                : EnumPullRequestMode.Basic,
           };
 
           await this.queueService.emitMessageWithKey(
