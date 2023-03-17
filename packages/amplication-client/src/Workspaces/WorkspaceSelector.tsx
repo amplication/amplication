@@ -5,7 +5,7 @@ import {
   CircleBadge,
   Dialog,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
 import NewWorkspace from "./NewWorkspace";
 import "./WorkspaceSelector.scss";

@@ -1,5 +1,5 @@
 import { capitalCase } from "capital-case";
-import { ToggleField, TextField } from "@amplication/design-system";
+import { ToggleField, TextField } from "@amplication/ui/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "./RelatedEntityFieldField";

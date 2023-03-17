@@ -5,7 +5,7 @@ import {
   SelectMenuList,
   SelectMenuModal,
   Label,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import { Resource } from "../models";
 import "./CommitSelector.scss";

@@ -1,4 +1,4 @@
-import { ConfirmationDialog } from "@amplication/design-system";
+import { ConfirmationDialog } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import React, { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";

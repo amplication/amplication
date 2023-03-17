@@ -12,7 +12,7 @@ import {
   EnumCircleIconSize,
   Icon,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {

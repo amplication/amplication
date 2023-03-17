@@ -1,7 +1,11 @@
 import { useContext } from "react";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
-import { Tooltip, Button, EnumButtonStyle } from "@amplication/design-system";
+import {
+  Tooltip,
+  Button,
+  EnumButtonStyle,
+} from "@amplication/ui/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";

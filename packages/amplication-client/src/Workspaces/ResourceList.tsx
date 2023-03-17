@@ -8,7 +8,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";

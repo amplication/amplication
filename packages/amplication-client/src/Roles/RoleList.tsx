@@ -8,7 +8,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
 import "./RoleList.scss";

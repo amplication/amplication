@@ -1,4 +1,4 @@
-import { SelectField, TextField, Icon } from "@amplication/design-system";
+import { SelectField, TextField, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import { Draggable } from "react-beautiful-dnd";

@@ -1,5 +1,5 @@
 import { Resource } from "@amplication/code-gen-types/models";
-import { Dialog } from "@amplication/design-system";
+import { Dialog } from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";

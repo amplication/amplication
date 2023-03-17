@@ -1,4 +1,4 @@
-import { HorizontalRule, ToggleField } from "@amplication/design-system";
+import { HorizontalRule, ToggleField } from "@amplication/ui/design-system";
 import { Formik } from "formik";
 import React, { useMemo } from "react";
 import { Form } from "../Components/Form";

@@ -6,7 +6,7 @@ import {
   SelectMenuModal,
   Tooltip,
   Dialog,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";

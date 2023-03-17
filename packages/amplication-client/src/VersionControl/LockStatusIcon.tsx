@@ -1,5 +1,5 @@
 import React from "react";
-import { Tooltip } from "@amplication/design-system";
+import { Tooltip } from "@amplication/ui/design-system";
 import * as models from "../models";
 import "./LockStatusIcon.scss";
 

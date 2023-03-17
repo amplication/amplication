@@ -9,7 +9,7 @@ import {
   EnumButtonStyle,
   EnumIconPosition,
   Modal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
 

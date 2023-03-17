@@ -4,7 +4,7 @@ import {
   Panel,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import React, { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";

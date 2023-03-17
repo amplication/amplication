@@ -9,7 +9,7 @@ import CommitResourceList from "./CommitResourceList";
 import useCommit from "./hooks/useCommits";
 import "./CommitsPage.scss";
 import { EmptyState } from "../Components/EmptyState";
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{

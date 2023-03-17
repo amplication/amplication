@@ -1,4 +1,4 @@
-import { Loader, AnimationType, Modal } from "@amplication/design-system";
+import { Loader, AnimationType, Modal } from "@amplication/ui/design-system";
 import "./PurchaseLoader.scss";
 
 const CLASS_NAME = "purchase-loader";

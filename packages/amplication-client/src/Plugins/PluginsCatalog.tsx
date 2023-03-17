@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { keyBy } from "lodash";
 import React, { useCallback, useMemo } from "react";
 import { match } from "react-router-dom";

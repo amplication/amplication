@@ -8,7 +8,7 @@ import {
   SelectMenuModal,
   HorizontalRule,
   EnumHorizontalRuleStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import React, { useCallback, useState } from "react";

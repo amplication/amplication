@@ -1,4 +1,4 @@
-import { Icon, Snackbar } from "@amplication/design-system";
+import { Icon, Snackbar } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";

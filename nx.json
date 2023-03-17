@@ -14,7 +14,9 @@
           "lint",
           "test:e2e",
           "graphql:schema:generate",
-          "graphql:models:generate"
+          "graphql:models:generate",
+          "test:cov",
+          "build-storybook"
         ],
         "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }
@@ -81,7 +83,8 @@
       },
       "library": {
         "style": "scss",
-        "linter": "eslint"
+        "linter": "eslint",
+        "unitTestRunner": "none"
       }
     }
   },
