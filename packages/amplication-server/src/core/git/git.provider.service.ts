@@ -436,8 +436,6 @@ export class GitProviderService {
 
     this.logger.info("Time left before token expires:", {
       value: `${timeInMsLeft / 60000} minutes`,
-      exporisAt: providerProperties["expiresAt"],
-      now: Date.now(),
     });
 
     if (timeInMsLeft > 5 * 60 * 1000) {
