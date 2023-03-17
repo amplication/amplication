@@ -432,8 +432,10 @@ export class GitProviderService {
       return gitProviderArgs;
     }
 
-    const timeInMsLeft = providerProperties["expiresAt"] - Date.now();
-    if (timeInMsLeft > 5 * 60 * 1000) {
+    const notificationUnixTimestamp = providerProperties["expiresAt"] - 300; // 5 minutes before token expires
+    const currentUnixTimestamp = Math.floor(Date.now() / 1000);
+
+    if (currentUnixTimestamp < notificationUnixTimestamp) {
       this.logger.info("Token is still valid");
       return gitProviderArgs;
     }
