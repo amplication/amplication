@@ -87,8 +87,7 @@ const DiscardChanges = ({
           <div>
             <div>This action cannot be undone. </div>
             <div>
-              This will permanently delete the resource and its content. Are you
-              sure you want to continue?
+             This will permanently delete the entire project and all its resources. Are you sure you want to continue?
             </div>
           </div>
         }
