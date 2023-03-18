@@ -89,14 +89,20 @@ jobs:
       - name: Lint
         run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
 
-      - name: Test
-        run: npx nx affected --target=test --parallel=3 --coverage $NX_FORCE_ALL
-
       - name: Build
         run: |
           npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
+      - name: Test
+        run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=lcov $NX_FORCE_ALL
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with: 
+          token: ${{ secrets.CODECOV_TOKEN }}
+          directory: ./coverage/
+      
   nx:
     name: Nx
     needs: ci
