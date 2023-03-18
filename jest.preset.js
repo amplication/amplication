@@ -4,6 +4,7 @@ module.exports = {
   ...nxPreset,
   reporters: ["default", "github-actions"],
   coverageProvider: "v8",
+  collectCoverage: true,
   collectCoverageFrom: [
     "**/*.{ts,tsx}",
     "!**/*.types.{ts,tsx}",
