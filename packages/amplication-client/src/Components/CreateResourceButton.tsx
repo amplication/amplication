@@ -15,6 +15,7 @@ export type CreateResourceButtonItemType = {
   type: models.EnumResourceType;
   label: string;
   route: string;
+  info: string;
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
@@ -22,11 +23,13 @@ const ITEMS: CreateResourceButtonItemType[] = [
     type: models.EnumResourceType.Service,
     label: "Service",
     route: "create-resource",
+    info: "Create a service with GraphQL API, REST API, and a database",
   },
   {
     type: models.EnumResourceType.MessageBroker,
     label: "Message Broker",
     route: "create-broker",
+    info: "Use Kafka to build real-time streaming data pipelines",
   },
 ];
 
