@@ -265,7 +265,7 @@ export class BitBucketService implements GitProvider {
 
   // pull request flow
 
-  async getFile(file: GetFileArgs): Promise<GitFile> {
+  async getFile(file: GetFileArgs): Promise<GitFile | null> {
     const { owner, repositoryName, baseBranchName, path } = file;
 
     if (!baseBranchName) {
