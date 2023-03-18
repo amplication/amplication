@@ -2,6 +2,7 @@ import fetch from "node-fetch";
 import { CustomError } from "../../utils/custom-error";
 import {
   Account,
+  Commit,
   OAuth2,
   PaginatedRepositories,
   PaginatedTreeEntry,
@@ -38,6 +39,13 @@ const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
 
 const REPOSITORY_CREATE_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
+
+const CREATE_COMMIT_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  commit: string
+) =>
+  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/commit/${commit}/comments`;
 
 const GET_FILE_URL = (
   workspaceSlug: string,
@@ -168,6 +176,23 @@ export async function getFileRequest(
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
+    }
+  );
+}
+
+export function createCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  commit: string,
+  commitData: Partial<Commit>,
+  accessToken: string
+) {
+  return requestWrapper(
+    CREATE_COMMIT_URL(workspaceSlug, repositorySlug, commit),
+    {
+      method: "POST",
+      headers: getRequestHeaders(accessToken),
+      body: JSON.stringify(commitData),
     }
   );
 }

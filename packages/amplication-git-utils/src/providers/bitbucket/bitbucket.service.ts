@@ -31,6 +31,7 @@ import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
+  createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
   getFileRequest,
@@ -305,8 +306,16 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    throw NotImplementedError;
+  async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
+    const { repositoryName, owner, files, branchName, commitMessage } =
+      createCommitArgs;
+    const commit = await createCommitRequest(
+      owner,
+      repositoryName,
+      commitMessage,
+      {},
+      this.accessToken
+    );
   }
 
   getPullRequestForBranch(
