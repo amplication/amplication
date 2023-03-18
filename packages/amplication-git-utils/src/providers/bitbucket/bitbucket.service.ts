@@ -33,6 +33,7 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  getFileRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -264,8 +265,32 @@ export class BitBucketService implements GitProvider {
 
   // pull request flow
 
-  getFile(file: GetFileArgs): Promise<GitFile> {
-    throw NotImplementedError;
+  async getFile(file: GetFileArgs): Promise<GitFile> {
+    const { owner, repositoryName, baseBranchName, path } = file;
+
+    if (!baseBranchName) {
+      this.logger.error("Missing baseBranchName");
+      throw new CustomError("Missing baseBranchName");
+    }
+
+    const fileResponse = await getFileRequest(
+      owner,
+      repositoryName,
+      baseBranchName,
+      path,
+      this.accessToken
+    );
+
+    const [gitFile] = fileResponse.values.map(
+      ({ path, commit, content, name }) => ({
+        path,
+        name,
+        content,
+        commit: commit.hash,
+        htmlUrl: commit.html.href,
+      })
+    );
+    return gitFile;
   }
 
   createPullRequestFromFiles(

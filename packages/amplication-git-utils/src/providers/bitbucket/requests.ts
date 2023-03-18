@@ -4,6 +4,7 @@ import {
   Account,
   OAuth2,
   PaginatedRepositories,
+  PaginatedTreeEntry,
   PaginatedWorkspaceMembership,
   Repository,
 } from "./bitbucket.types";
@@ -19,20 +20,32 @@ interface RequestPayload {
   body?: string;
 }
 
-const AUTHORIZE_URL = "https://bitbucket.org/site/oauth2/authorize";
-const ACCESS_TOKEN_URL = "https://bitbucket.org/site/oauth2/access_token";
-const CURRENT_USER_URL = "https://api.bitbucket.org/2.0/user";
-const CURRENT_USER_WORKSPACES_URL =
-  "https://api.bitbucket.org/2.0/user/permissions/workspaces";
+const BITBUCKET_API_VERSION = "2.0";
+const BITBUCKET_API_URL = `https://api.bitbucket.org/${BITBUCKET_API_VERSION}`;
+const BITBUCKET_SITE_URL = "https://bitbucket.org/site";
+
+const AUTHORIZE_URL = `${BITBUCKET_SITE_URL}/oauth2/authorize`;
+const ACCESS_TOKEN_URL = `${BITBUCKET_SITE_URL}/oauth2/access_token`;
+
+const CURRENT_USER_URL = `${BITBUCKET_API_URL}/2.0/user`;
+const CURRENT_USER_WORKSPACES_URL = `${BITBUCKET_API_URL}/user/permissions/workspaces`;
 
 const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
-  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}`;
 
 const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
-  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
 
 const REPOSITORY_CREATE_URL = (workspaceSlug: string, repositorySlug: string) =>
-  `https://api.bitbucket.org/2.0/repositories/${workspaceSlug}/${repositorySlug}`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
+
+const GET_FILE_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  pathToFile: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -59,7 +72,7 @@ async function requestWrapper(url: string, payload: RequestPayload) {
 export async function authorizeRequest(
   clientId: string,
   amplicationWorkspaceId: string
-) {
+): Promise<string> {
   const callbackUrl = `${AUTHORIZE_URL}?client_id=${clientId}&response_type=code&state={state}`;
   return callbackUrl.replace("{state}", amplicationWorkspaceId);
 }
@@ -141,4 +154,20 @@ export async function repositoryCreateRequest(
     },
     body: JSON.stringify(repositoryCreateData),
   });
+}
+
+export async function getFileRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  pathToFile: string,
+  accessToken: string
+): Promise<PaginatedTreeEntry> {
+  return requestWrapper(
+    GET_FILE_URL(workspaceSlug, repositorySlug, branchName, pathToFile),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
 }
