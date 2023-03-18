@@ -29,7 +29,7 @@ const ITEMS: CreateResourceButtonItemType[] = [
     type: models.EnumResourceType.MessageBroker,
     label: "Message Broker",
     route: "create-broker",
-    info: "Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet",
+    info: "Use Kafka to build real-time streaming data pipelines",
   },
 ];
 
