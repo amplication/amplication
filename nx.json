@@ -13,7 +13,8 @@
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov"
+          "graphql:schema:generate",
+          "graphql:models:generate"
         ],
         "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }
