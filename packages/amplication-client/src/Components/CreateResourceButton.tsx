@@ -15,6 +15,7 @@ export type CreateResourceButtonItemType = {
   type: models.EnumResourceType;
   label: string;
   route: string;
+  info: string;
 };
 
 const ITEMS: CreateResourceButtonItemType[] = [
@@ -22,11 +23,13 @@ const ITEMS: CreateResourceButtonItemType[] = [
     type: models.EnumResourceType.Service,
     label: "Service",
     route: "create-resource",
+    info: "Without Database",
   },
   {
     type: models.EnumResourceType.MessageBroker,
     label: "Message Broker",
     route: "create-broker",
+    info: "Lorem ipsum dolor sit amet Lorem ipsum dolor sit amet",
   },
 ];
 
