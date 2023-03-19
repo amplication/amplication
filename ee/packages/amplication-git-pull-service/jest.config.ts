@@ -12,5 +12,12 @@ export default {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/packages/amplication-git-pull-service",
+  coverageDirectory:
+    "../../../coverage/ee/packages/amplication-git-pull-service",
+  coverageThreshold: {
+    global: {
+      branches: 13.04,
+      lines: 1.84,
+    },
+  },
 };
