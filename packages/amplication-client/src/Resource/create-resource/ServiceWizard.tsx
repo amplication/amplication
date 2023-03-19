@@ -20,6 +20,7 @@ interface ServiceWizardProps {
   submitFormPage: number;
   goToPage: number | null;
   submitLoader: boolean;
+  handleCloseWizard: () => void;
 }
 
 const BackButton: React.FC<{
@@ -67,6 +68,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitFormPage,
   goToPage,
   submitLoader,
+  handleCloseWizard,
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
@@ -125,6 +127,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <Button
         buttonStyle={EnumButtonStyle.Clear}
         className={`${moduleCss}__close`}
+        onClick={handleCloseWizard}
       >
         x close
       </Button>

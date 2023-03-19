@@ -1,6 +1,6 @@
 import { Modal, Snackbar } from "@amplication/design-system";
 import React, { useCallback, useContext, useState } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory } from "react-router-dom";
 import * as H from "history";
 import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
@@ -42,9 +42,11 @@ const CreateServiceWizard: React.FC<Props> = ({
   const {
     errorCreateService,
     currentProject,
+    currentWorkspace,
     loadingCreateService,
     setNewService,
   } = useContext(AppContext);
+  const history = useHistory();
   const [goToPage, setGoToPage] = useState<number | null>(null);
   const defineUser = (props.location.state as "signup" | "login") || "login";
   const wizardPattern =
@@ -81,6 +83,10 @@ const CreateServiceWizard: React.FC<Props> = ({
     },
     [setNewService]
   );
+
+  const handleCloseWizard = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/${currentProject.id}`);
+  }, [currentWorkspace, currentProject]);
 
   const createResource = useCallback((values: ResourceSettings) => {
     const {
@@ -128,8 +134,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     console.log("***********", values);
     if (!loadingCreateService) setGoToPage(8);
   }, []);
-  // on refresh if the route is not the base redirect to base
-  /// wizardHook => defineUser | createResource | loadingResource | route to go | progressBar
 
   return (
     <Modal open fullScreen css={moduleClass}>
@@ -143,6 +147,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         submitFormPage={6}
         goToPage={goToPage}
         submitLoader={loadingCreateService}
+        handleCloseWizard={handleCloseWizard}
       >
         <CreateServiceWelcome moduleClass={moduleClass} />
         <CreateServiceName moduleClass={moduleClass} />

@@ -1,5 +1,5 @@
 import { Icon, TextField } from "@amplication/design-system";
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 
 import "./CreateServiceRepository.scss";
 
@@ -22,6 +22,18 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
     },
     [formik.values]
   );
+
+  useEffect(() => {
+    if (formik.values.structureType !== "Mono" && formik.values.baseDir) {
+      delete formik.values.baseDir;
+      formik.setValues(
+        {
+          ...formik.values,
+        },
+        true
+      );
+    }
+  }, [formik.values]);
 
   return (
     <Layout.Split>
@@ -59,7 +71,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
               {formik.values.structureType === "Mono" && (
                 <TextField
                   className={`${className}__repository_base_dir`}
-                  name="baseDirectory"
+                  name="baseDir"
                   label="Base directory"
                 />
               )}
