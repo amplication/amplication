@@ -54,6 +54,8 @@ const pageTracking = (path: string, url: string, params: any) => {
   });
 };
 
+const MIN_TIME_OUT_LOADER = 2000;
+
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardPattern,
   wizardSchema,
@@ -100,13 +102,23 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   }, [activePageIndex]);
 
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
-    useState<boolean>(true);
+    useState<boolean>(false);
 
-  const handleTimeout = useCallback(() => {
-    setKeepLoadingAnimation(false);
-  }, []);
+  useEffect(() => {
+    if (!submitLoader) return;
 
-  const showLoadingAnimation = keepLoadingAnimation || submitLoader;
+    setKeepLoadingAnimation(true);
+  }, [submitLoader]);
+
+  useEffect(() => {
+    if (!keepLoadingAnimation) return;
+
+    const timer = setTimeout(() => {
+      setKeepLoadingAnimation(false);
+    }, MIN_TIME_OUT_LOADER);
+
+    return () => clearTimeout(timer);
+  }, [keepLoadingAnimation]);
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
@@ -135,8 +147,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             return (
               <>
                 <Form>
-                  {submitLoader ? (
-                    <CreateServiceLoader handleTimeout={handleTimeout} />
+                  {keepLoadingAnimation ? (
+                    <CreateServiceLoader />
                   ) : (
                     React.cloneElement(
                       currentPage as React.ReactElement<
