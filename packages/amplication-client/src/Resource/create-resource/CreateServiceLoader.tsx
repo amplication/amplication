@@ -2,13 +2,7 @@ import { AnimationType, Loader } from "@amplication/design-system";
 import React from "react";
 import "./CreateServiceWizard.scss";
 
-type Props = {
-  handleTimeout: () => void;
-};
-
-const MIN_ANIMATION_TIME = 2000;
-// eslint-disable-next-line @typescript-eslint/ban-types
-const CreateServiceLoader: React.FC<Props> = ({ handleTimeout }) => {
+const CreateServiceLoader: React.FC = () => {
   const CLASS_NAME = "create-service-wizard";
 
   return (
