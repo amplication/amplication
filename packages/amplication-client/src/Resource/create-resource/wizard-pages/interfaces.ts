@@ -9,6 +9,7 @@ export interface ResourceSettings {
   generateGraphQL: boolean;
   generateRestApi: boolean;
   structureType: models.EnumResourceStructureType;
+  baseDir: string;
   databaseType: "postgres" | "mysql" | "mongo";
   authType: string;
   resourceType: "sample" | "scratch";

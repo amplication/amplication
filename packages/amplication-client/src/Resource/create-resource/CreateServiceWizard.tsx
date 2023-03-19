@@ -99,6 +99,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       gitRepositoryName,
       authType,
       databaseType,
+      baseDir,
     } = values;
 
     const isResourceWithEntities = values.resourceType === "sample";
@@ -117,7 +118,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           resourceId: "",
         },
         {
-          baseDirectory: "", //todo: add tis field
+          baseDirectory: baseDir,
           structureType: structureType,
         }
       );

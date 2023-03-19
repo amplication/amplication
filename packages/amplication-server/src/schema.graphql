@@ -771,6 +771,7 @@ type ServiceSettings implements IBlock {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
+  structureSettings: StructureSettings!
 }
 
 interface IBlock {
@@ -813,6 +814,16 @@ type ServerSettings {
   generateGraphQL: Boolean!
   generateRestApi: Boolean!
   serverPath: String!
+}
+
+type StructureSettings {
+  structureType: EnumResourceStructureType!
+  baseDirectory: String
+}
+
+enum EnumResourceStructureType {
+  Mono
+  Poly
 }
 
 input BlockWhereInput {
@@ -1228,11 +1239,6 @@ input ConnectGitRepositoryInput {
 input ResourceStructureInput {
   structureType: EnumResourceStructureType!
   baseDirectory: String
-}
-
-enum EnumResourceStructureType {
-  Mono
-  Poly
 }
 
 input ResourceUpdateInput {

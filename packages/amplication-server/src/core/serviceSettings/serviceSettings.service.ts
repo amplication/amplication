@@ -11,6 +11,7 @@ import {
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ResourceGenSettingsCreateInput } from "../resource/dto/ResourceGenSettingsCreateInput";
+import { ResourceStructureInput } from "../resource/dto/ResourceStructureInput";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
@@ -33,6 +34,7 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
+      structureSettings,
     } = await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -45,6 +47,7 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
+      structureSettings,
     };
   }
 
@@ -160,12 +163,17 @@ export class ServiceSettingsService {
   async createDefaultServiceSettings(
     resourceId: string,
     user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
+    generationSettings: ResourceGenSettingsCreateInput = null,
+    resourceStructure: ResourceStructureInput = null
   ): Promise<ServiceSettings> {
     const settings = DEFAULT_SERVICE_SETTINGS;
 
-    if (generationSettings)
-      this.updateServiceGenerationSettings(settings, generationSettings);
+    if (generationSettings && resourceStructure)
+      this.updateServiceGenerationSettings(
+        settings,
+        generationSettings,
+        resourceStructure
+      );
 
     return this.blockService.create<ServiceSettings>(
       {
@@ -184,7 +192,8 @@ export class ServiceSettingsService {
   }
   private updateServiceGenerationSettings(
     settings: ServiceSettingsValuesExtended,
-    generationSettings: ResourceGenSettingsCreateInput
+    generationSettings: ResourceGenSettingsCreateInput,
+    resourceStructure: ResourceStructureInput
   ): void {
     (settings.adminUISettings = {
       generateAdminUI: generationSettings.generateAdminUI,
@@ -194,6 +203,10 @@ export class ServiceSettingsService {
         generateGraphQL: generationSettings.generateGraphQL,
         generateRestApi: generationSettings.generateRestApi,
         serverPath: "",
+      }),
+      (settings.structureSettings = {
+        structureType: resourceStructure.structureType,
+        baseDirectory: resourceStructure.baseDirectory,
       });
   }
 }

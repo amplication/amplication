@@ -6,6 +6,7 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { DEFAULT_SERVICE_SETTINGS } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
+import { EnumResourceStructureType } from "../resource/dto/EnumResourceStructureType";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
@@ -55,6 +56,10 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
     adminUIPath: "",
   },
   resourceId: EXAMPLE_RESOURCE_ID,
+  structureSettings: {
+    structureType: EnumResourceStructureType.Mono,
+    baseDirectory: "",
+  },
 };
 
 const createMock = jest.fn(() => {

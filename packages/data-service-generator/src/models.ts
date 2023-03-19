@@ -1877,6 +1877,7 @@ export type ServiceSettings = IBlock & {
   parentBlock?: Maybe<Block>;
   resourceId?: Maybe<Scalars['String']>;
   serverSettings: ServerSettings;
+  structureSettings: StructureSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1978,6 +1979,11 @@ export type StringFilter = {
   not?: InputMaybe<Scalars['String']>;
   notIn?: InputMaybe<Array<Scalars['String']>>;
   startsWith?: InputMaybe<Scalars['String']>;
+};
+
+export type StructureSettings = {
+  baseDirectory?: Maybe<Scalars['String']>;
+  structureType: EnumResourceStructureType;
 };
 
 export type Subscription = {

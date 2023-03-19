@@ -47,6 +47,7 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { ResourceStructureInput } from "./dto/ResourceStructureInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -217,7 +218,8 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null,
-    gitRepository: ConnectGitRepositoryInput = null
+    gitRepository: ConnectGitRepositoryInput = null,
+    resourceStructure: ResourceStructureInput = null
   ): Promise<Resource> {
     const resource = await this.createResource(
       {
@@ -240,7 +242,8 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      generationSettings
+      generationSettings,
+      resourceStructure
     );
 
     const project = await this.projectService.findUnique({
@@ -277,7 +280,8 @@ export class ResourceService {
       },
       user,
       data.generationSettings,
-      data.gitRepository
+      data.gitRepository,
+      data.resourceStructure
     );
 
     const newEntities: {

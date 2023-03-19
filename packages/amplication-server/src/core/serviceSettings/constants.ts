@@ -2,6 +2,7 @@ import { ServiceSettings } from "./dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { BlockValues, BlockValuesExtended } from "../block/types";
+import { EnumResourceStructureType } from "../resource/dto/EnumResourceStructureType";
 
 export type ServiceSettingsValues = BlockValues<ServiceSettingsValuesExtended>;
 
@@ -28,5 +29,9 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: "",
+  },
+  structureSettings: {
+    structureType: EnumResourceStructureType.Mono,
+    baseDirectory: "",
   },
 };
