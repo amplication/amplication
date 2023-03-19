@@ -46,6 +46,7 @@ import { TopicService } from "../topic/topic.service";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -102,7 +103,10 @@ export class ResourceService {
    * Create a resource
    * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  private async createResource(args: CreateOneResourceArgs): Promise<Resource> {
+  private async createResource(
+    args: CreateOneResourceArgs,
+    gitRepositoryToCreate: ConnectGitRepositoryInput = null
+  ): Promise<Resource> {
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         "Resource of type Project Configuration cannot be created manually"
@@ -146,16 +150,44 @@ export class ResourceService {
     let gitRepository:
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
-    if (projectConfiguration.gitRepositoryId) {
+
+    let isOverride = false;
+
+    if (
+      projectConfiguration.gitRepositoryId &&
+      args.data.resourceType !== EnumResourceType.Service
+    ) {
       gitRepository = {
         connect: { id: projectConfiguration.gitRepositoryId || "" },
       };
     }
+    if (args.data.resourceType === EnumResourceType.Service) {
+      if (!gitRepositoryToCreate) {
+        throw new AmplicationError("Git Repository settings are missing");
+      }
 
-    return this.prisma.resource.create({
+      isOverride = true;
+
+      const wizardGitRepository = await this.prisma.gitRepository.create({
+        data: {
+          name: gitRepositoryToCreate.name,
+          resources: {},
+          gitOrganization: {
+            connect: { id: gitRepositoryToCreate.gitOrganizationId },
+          },
+        },
+      });
+
+      gitRepository = {
+        connect: { id: wizardGitRepository.id },
+      };
+    }
+
+    return await this.prisma.resource.create({
       data: {
         ...args.data,
         gitRepository,
+        gitRepositoryOverride: isOverride,
       },
     });
   }
@@ -184,14 +216,18 @@ export class ResourceService {
   async createService(
     args: CreateOneResourceArgs,
     user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
+    generationSettings: ResourceGenSettingsCreateInput = null,
+    gitRepository: ConnectGitRepositoryInput = null
   ): Promise<Resource> {
-    const resource = await this.createResource({
-      data: {
-        ...args.data,
-        resourceType: EnumResourceType.Service,
+    const resource = await this.createResource(
+      {
+        data: {
+          ...args.data,
+          resourceType: EnumResourceType.Service,
+        },
       },
-    });
+      gitRepository
+    );
 
     await this.prisma.resourceRole.create({
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
@@ -240,7 +276,8 @@ export class ResourceService {
         data: data.resource,
       },
       user,
-      data.generationSettings
+      data.generationSettings,
+      data.gitRepository
     );
 
     const newEntities: {
@@ -460,7 +497,7 @@ export class ResourceService {
       return resource;
     }
 
-    await this.deleteResourceGitRepository(resource);
+    return this.deleteResourceGitRepository(resource);
   }
 
   async deleteResourceGitRepository(resource: Resource): Promise<Resource> {

@@ -167,7 +167,7 @@ export function prepareServiceObject(
     },
     entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
     gitRepository: {
-      name: gitRepository.resourceId,
+      name: gitRepository.name,
       gitOrganizationId: gitRepository.gitOrganizationId,
       resourceId: "",
     },
