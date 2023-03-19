@@ -13,8 +13,7 @@
           "db:init",
           "lint",
           "test:e2e",
-          "graphql:schema:generate",
-          "graphql:models:generate",
+          "e2e",
           "test:cov",
           "build-storybook"
         ],
