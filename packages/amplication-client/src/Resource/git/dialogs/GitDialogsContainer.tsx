@@ -1,9 +1,12 @@
 import { Dialog } from "@amplication/design-system";
 import { ApolloError } from "@apollo/client";
-import { CreateGitRepositoryInput, EnumGitProvider } from "../../../models";
+import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
-import GitRepos, { GitRepositorySelected } from "./GitRepos/GithubRepos";
+import GitRepos, {
+  GitRepositoryCreatedData,
+  GitRepositorySelected,
+} from "./GitRepos/GithubRepos";
 
 type Props = {
   gitOrganizationId: string;
@@ -18,7 +21,7 @@ type Props = {
     RepoCreatedError: ApolloError;
   };
 
-  onGitCreateRepository: (data: CreateGitRepositoryInput) => void;
+  onGitCreateRepository: (data: GitRepositoryCreatedData) => void;
   onPopupFailedClose: () => void;
   onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;

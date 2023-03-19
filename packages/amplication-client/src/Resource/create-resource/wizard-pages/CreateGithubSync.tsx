@@ -3,9 +3,11 @@ import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
-import { GitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
+import {
+  GitRepositoryCreatedData,
+  GitRepositorySelected,
+} from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
-import { CreateGitRepositoryInput } from "@amplication/code-gen-types/models";
 
 const className = "create-github-sync";
 
@@ -34,24 +36,22 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
         },
         true
       );
-
       refreshCurrentWorkspace();
     },
     [refreshCurrentWorkspace, formik]
   );
 
   const handleOnGitRepositoryCreated = useCallback(
-    (data: CreateGitRepositoryInput) => {
+    (data: GitRepositoryCreatedData) => {
       formik.setValues(
         {
           ...formik.values,
           gitRepositoryName: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          // gitRepositoryUrl: data.gitRepositoryUrl
+          gitRepositoryUrl: data.gitRepositoryUrl,
         },
         true
       );
-
       refreshCurrentWorkspace();
     },
     [refreshCurrentWorkspace, formik]

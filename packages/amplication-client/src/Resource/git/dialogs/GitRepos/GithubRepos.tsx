@@ -17,6 +17,7 @@ import {
   EnumGitProvider,
   RemoteGitRepository,
   RemoteGitRepos,
+  EnumGitOrganizationType,
 } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
@@ -35,6 +36,15 @@ type Props = {
 export type GitRepositorySelected = {
   gitOrganizationId: string;
   repositoryName: string;
+  gitRepositoryUrl?: string;
+};
+
+export type GitRepositoryCreatedData = {
+  name: string;
+  gitOrganizationId: string;
+  gitOrganizationType: EnumGitOrganizationType;
+  gitProvider: EnumGitProvider;
+  public: boolean;
   gitRepositoryUrl?: string;
 };
 

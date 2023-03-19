@@ -7,12 +7,9 @@ import {
 } from "@amplication/design-system";
 import { ApolloError } from "@apollo/client";
 import { useCallback, useState } from "react";
-import {
-  EnumGitProvider,
-  CreateGitRepositoryInput,
-  EnumGitOrganizationType,
-} from "../../../../models";
+import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
 import { formatError } from "../../../../util/error";
+import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
 
 type createRepositoryInput = {
@@ -27,7 +24,7 @@ type Props = {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
   };
-  onCreateGitRepository: (data: CreateGitRepositoryInput) => void;
+  onCreateGitRepository: (data: GitRepositoryCreatedData) => void;
 };
 
 const CLASS_NAME = "git-create-repo";
@@ -62,7 +59,7 @@ export default function WizardGitCreateRepo({
       gitProvider: EnumGitProvider.Github,
       name: createRepositoryInput.name,
       public: createRepositoryInput.public,
-      resourceId: "",
+      gitRepositoryUrl: `https://github.com/${createRepositoryInput.name}`,
     });
   }, [
     onCreateGitRepository,

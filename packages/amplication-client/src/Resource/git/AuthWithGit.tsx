@@ -3,17 +3,16 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import {
-  AuthorizeResourceWithGitResult,
-  CreateGitRepositoryInput,
-  EnumGitProvider,
-} from "../../models";
+import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./AuthWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
-import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import {
+  GitRepositoryCreatedData,
+  GitRepositorySelected,
+} from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
@@ -31,7 +30,7 @@ let triggerAuthFailed = () => {};
 type Props = {
   onDone: () => void;
   onGitRepositorySelected: (data: GitRepositorySelected) => void;
-  onGitRepositoryCreated: (data: CreateGitRepositoryInput) => void;
+  onGitRepositoryCreated: (data: GitRepositoryCreatedData) => void;
   gitRepositorySelected?: GitRepositorySelected;
 };
 
@@ -79,7 +78,7 @@ function AuthWithGit({
   ] = useMutation(CREATE_GIT_REMOTE_REPOSITORY);
 
   const handleCreateRepository = useCallback(
-    (data: CreateGitRepositoryInput) => {
+    (data: GitRepositoryCreatedData) => {
       createRemoteRepository({
         variables: {
           name: data.name,
@@ -89,19 +88,19 @@ function AuthWithGit({
         },
         onCompleted() {
           setCreateNewRepoOpen(false);
+          onGitRepositoryCreated(data);
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
             gitRepositoryUrl: `https://github.com/${data.name}`,
           });
-          onGitRepositoryCreated(data);
         },
       }).catch((error) => {});
       trackEvent({
         eventName: AnalyticsEventNames.GitHubRepositoryCreate,
       });
     },
-    [createRemoteRepository, trackEvent]
+    [createRemoteRepository, setGitRepositorySelectedData, trackEvent]
   );
 
   const handleSelectRepository = useCallback(
