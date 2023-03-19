@@ -1,13 +1,19 @@
 import React from "react";
-import { Meta } from "@storybook/react/types-6-0";
+import { ComponentMeta, ComponentStory } from "@storybook/react";
 import SearchField from "./SearchField";
 
-export default {
+const Story: ComponentMeta<typeof SearchField> = {
   title: "SearchField",
-  argTypes: { onChange: { action: "change" } },
   component: SearchField,
-} as Meta;
+  argTypes: { onChange: { action: "change" } },
+};
+export default Story;
 
-export const Default = (props: any) => {
-  return <SearchField {...props} label="Search" placeholder="Search" />;
+export const Primary: ComponentStory<typeof SearchField> = (props: any) => {
+  return <SearchField {...props} />;
+};
+
+Primary.args = {
+  label: "Search",
+  placeholder: "search",
 };

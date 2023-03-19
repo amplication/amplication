@@ -1,5 +1,5 @@
 import React from "react";
-import { Meta } from "@storybook/react/types-6-0";
+import { Meta } from "@storybook/react";
 import { Panel, EnumPanelStyle, PanelHeader } from "./Panel";
 import { Button, EnumButtonStyle } from "../Button/Button";
 

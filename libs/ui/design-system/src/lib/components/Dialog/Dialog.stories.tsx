@@ -1,6 +1,6 @@
 import React from "react";
 import { Formik } from "formik";
-import { Meta } from "@storybook/react/types-6-0";
+import { Meta } from "@storybook/react";
 import { Dialog } from "./Dialog";
 
 export default {

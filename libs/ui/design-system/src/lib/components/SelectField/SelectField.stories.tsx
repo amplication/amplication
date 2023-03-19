@@ -5,8 +5,8 @@ import { Form, Formik } from "formik";
 import { OptionItem } from "../types";
 export default {
   title: "SelectField",
-  component: SelectField,
-} as Meta;
+};
+export default Story;
 
 const OPTIONS: OptionItem[] = [
   {

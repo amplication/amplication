@@ -1,7 +1,12 @@
 # ui-design-system
 
-This library was generated with [Nx](https://nx.dev).
+Amplication component library with storybook support.
 
-## Running unit tests
+## Generating a new story
 
-Run `nx test ui-design-system` to execute the unit tests via [Jest](https://jestjs.io).
+Once a new component is added, run `nx g @nrwl/react:component-story ...` [usage](https://nx.dev/packages/react/generators/component-story) passing the component path and project. 
+More info here https://nx.dev/packages/storybook/documents/overview-react#auto-generate-stories
+
+## Testing
+
+For each component, there must be a story and an e2e test in `ui-design-system-e2e` to cover that the story render properly.

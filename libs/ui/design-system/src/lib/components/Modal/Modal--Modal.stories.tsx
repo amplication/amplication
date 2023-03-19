@@ -7,7 +7,11 @@ const Story: ComponentMeta<typeof Modal> = {
 };
 export default Story;
 
-const Template: ComponentStory<typeof Modal> = (args) => <Modal {...args} />;
+const Template: ComponentStory<typeof Modal> = (args) => (
+  <Modal {...args}>
+    <p>Lorem ipsum</p>
+  </Modal>
+);
 
 export const Primary = Template.bind({});
 Primary.args = {};

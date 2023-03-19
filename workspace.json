@@ -16,6 +16,7 @@
     "data-service-generator": "packages/data-service-generator",
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
     "ui-design-system": "libs/ui/design-system",
+    "ui-design-system-e2e": "packages/ui-design-system-e2e",
     "util-code-gen-utils": "libs/util/code-gen-utils",
     "util-json": "libs/util/json",
     "util-kafka": "libs/util/kafka",

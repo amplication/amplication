@@ -4,6 +4,11 @@ import { LimitationDialog } from "./LimitationDialog";
 const Story: ComponentMeta<typeof LimitationDialog> = {
   component: LimitationDialog,
   title: "LimitationDialog",
+  argTypes: {
+    isOpen: {
+      control: "boolean",
+    },
+  },
 };
 export default Story;
 
