@@ -52,6 +52,16 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
+  const createResourceMatch:
+    | (match & {
+        params: { workspace: string; project: string };
+      })
+    | null = useRouteMatch<{
+    workspace: string;
+    project: string;
+  }>(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
+  );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
 
@@ -113,9 +123,8 @@ const useResources = (
       const currentResourceId = result.data?.createServiceWithEntities.id;
       addEntity(currentResourceId);
       createResourcePlugins(currentResourceId, databaseType, authType);
-      refetch().then(() =>
-        setCurrentResource(result.data?.createServiceWithEntities)
-      );
+      setCurrentResource(result.data?.createServiceWithEntities);
+      refetch();
     });
   };
 
@@ -194,7 +203,7 @@ const useResources = (
   );
 
   useEffect(() => {
-    if (resourceMatch) return;
+    if (resourceMatch || createResourceMatch) return;
 
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
