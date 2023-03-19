@@ -54,9 +54,9 @@ Amplication provides the following features:
 
 # Getting Started
 
-You can get started with Amplication immediately on the Amplication Cloud. 
+You can get started with Amplication immediately with the hosted service at [app.amplication.com](http://app.amplication.com/)
 
-Alternatively you can set up a local development environment.
+Alternatively you can set up a local development environment with the instructions [below](#development-environment-local)
 
 See the [Amplication Website](http://amplication.com/) or [Amplication Docs](http://docs.amplication.com/) for more details.
 
@@ -65,9 +65,7 @@ See the [Amplication Website](http://amplication.com/) or [Amplication Docs](htt
 - [Todo Application using Amplication and Angular](https://docs.amplication.com/tutorials/angular-todos/)
 - [Todo Application using Amplication and React](https://docs.amplication.com/tutorials/react-todos/)
 
-## Amplication Cloud (SaaS)
 
-Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
 # Development Environment (Local)
 
