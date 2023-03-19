@@ -25,6 +25,9 @@ export type TrackData = {
         [key: string]: unknown;
       }
     | undefined;
+  context?: {
+    traits?: IdentifyData;
+  };
 };
 
 @Injectable()
