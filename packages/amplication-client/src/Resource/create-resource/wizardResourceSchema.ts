@@ -98,7 +98,7 @@ export const ResourceInitialValues = {
   baseDir: "",
   databaseType: "postgres",
   resourceType: "scratch",
-  authType: "no",
+  authType: "core",
 };
 
 export interface WizardProgressBarInterface {
