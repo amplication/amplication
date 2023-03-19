@@ -145,9 +145,9 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                     />
                   </div>
                   <WizardProgressBar
+                    lastPage={wizardPattern[wizardPattern.length - 1]}
                     activePageIndex={activePageIndex}
                     wizardProgressBar={wizardProgressBar}
-                    formik={formik}
                   />
                   <div className={`${moduleCss}__continueBtn`}>
                     {activePageIndex !==

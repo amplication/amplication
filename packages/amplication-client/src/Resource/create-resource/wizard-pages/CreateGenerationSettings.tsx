@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
@@ -8,7 +8,17 @@ import graphql from "../../../assets/images/graphql.svg";
 import swagger from "../../../assets/images/swagger.svg";
 import adminUI from "../../../assets/images/admin-ui.svg";
 
-const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
+const CreateGenerationSettings: React.FC<WizardStepProps> = ({ formik }) => {
+  useEffect(() => {
+    if (!formik.values.generateGraphQL) {
+      formik.values.generateAdminUI &&
+        formik.setValues({
+          ...formik.values,
+          generateAdminUI: false,
+        });
+    }
+  }, [formik.values]);
+
   return (
     <Layout.Split>
       <Layout.LeftSide>
@@ -37,6 +47,7 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = () => {
           <ImageLabelToggle
             name="generateAdminUI"
             image={adminUI}
+            disabled={!formik.values.generateGraphQL}
             label="Admin UI"
           />
         </Layout.SelectorWrapper>
