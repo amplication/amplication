@@ -99,6 +99,8 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
+    dataBaseType: "postgres" | "mysql" | "mongo",
+    authType: string,
     eventName: AnalyticsEventNames
   ) => {
     trackEvent({
@@ -110,7 +112,7 @@ const useResources = (
 
       const currentResourceId = result.data?.createServiceWithEntities.id;
       addEntity(currentResourceId);
-      createResourcePlugins(currentResourceId);
+      createResourcePlugins(currentResourceId, dataBaseType, authType);
 
       refetch(); //.then(() => resourceRedirect(currentResourceId as string));
     });
@@ -138,38 +140,54 @@ const useResources = (
     });
   };
 
-  const createResourcePlugins = useCallback((resourceId: string) => {
-    //create auth-core and auth-jwt as default plugins
-    const data: models.PluginInstallationsCreateInput = {
-      plugins: [
-        {
-          displayName: "Auth-core",
-          pluginId: "auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-        {
-          displayName: "Auth-jwt",
-          pluginId: "auth-jwt",
-          enabled: true,
-          npm: "@amplication/plugin-auth-jwt",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-      ],
-    };
+  const createResourcePlugins = useCallback(
+    (
+      resourceId: string,
+      dataBaseType: "postgres" | "mysql" | "mongo",
+      authType: string
+    ) => {
+      const data: models.PluginInstallationsCreateInput = {
+        plugins: [
+          {
+            displayName: dataBaseType,
+            pluginId: `db-${dataBaseType}`,
+            enabled: true,
+            npm: `@amplication/plugin-db-${dataBaseType}`,
+            version: "latest",
+            resource: { connect: { id: resourceId } },
+          },
+          authType === "core" && {
+            displayName: "Auth-core",
+            pluginId: "auth-core",
+            enabled: true,
+            npm: "@amplication/plugin-auth-core",
+            version: "latest",
+            resource: { connect: { id: resourceId } },
+          },
+          authType === "core" && {
+            displayName: "Auth-jwt",
+            pluginId: "auth-jwt",
+            enabled: true,
+            npm: "@amplication/plugin-auth-jwt",
+            version: "latest",
+            resource: { connect: { id: resourceId } },
+          },
+        ],
+      };
 
-    createPluginInstallations({
-      variables: {
-        data: data,
-        where: {
-          id: resourceId,
+      console.log("plugins", data.plugins);
+
+      createPluginInstallations({
+        variables: {
+          data: data,
+          where: {
+            id: resourceId,
+          },
         },
-      },
-    }).catch(console.error);
-  }, []);
+      }).catch(console.error);
+    },
+    []
+  );
 
   useEffect(() => {
     if (resourceMatch) return;

@@ -18,6 +18,8 @@ export interface AppContextInterface {
   resources: models.Resource[];
   setNewService: (
     data: models.ResourceCreateWithEntitiesInput,
+    dataBaseType: "postgres" | "mysql" | "mongo",
+    authType: string,
     eventName: string
   ) => void;
   setResource: (resource: models.Resource) => void;

@@ -72,8 +72,13 @@ const CreateServiceWizard: React.FC<Props> = ({
   }, [wizardPattern]);
 
   const createStarterResource = useCallback(
-    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
-      setNewService(data, eventName);
+    (
+      data: models.ResourceCreateWithEntitiesInput,
+      databaseType: "postgres" | "mysql" | "mongo",
+      authType: string,
+      eventName: string
+    ) => {
+      setNewService(data, databaseType, authType, eventName);
     },
     [setNewService]
   );
@@ -91,6 +96,8 @@ const CreateServiceWizard: React.FC<Props> = ({
       structureType,
       gitOrganizationId,
       gitRepositoryName,
+      authType,
+      dataBaseType,
     } = values;
 
     const isResourceWithEntities = values.resourceType === "sample";
@@ -116,6 +123,8 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       createStarterResource(
         resource,
+        dataBaseType,
+        authType,
         isResourceWithEntities
           ? "createResourceFromSample"
           : "createResourceFromScratch"

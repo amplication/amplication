@@ -10,7 +10,7 @@ export interface ResourceSettings {
   generateRestApi: boolean;
   structureType: models.EnumResourceStructureType;
   dataBaseType: "postgres" | "mysql" | "mongo";
-  authSwitch: boolean;
+  authType: string;
   resourceType: "sample" | "scratch";
 }
 export interface NextPage {
