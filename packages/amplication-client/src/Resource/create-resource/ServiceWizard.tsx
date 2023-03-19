@@ -11,7 +11,6 @@ import CreateServiceLoader from "./CreateServiceLoader";
 
 interface ServiceWizardProps {
   children: ReactNode;
-  wizardBaseRoute: string;
   wizardPattern: number[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
@@ -54,7 +53,6 @@ const pageTracking = (path: string, url: string, params: any) => {
 };
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
-  wizardBaseRoute,
   wizardPattern,
   wizardSchema,
   wizardProgressBar,

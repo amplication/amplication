@@ -28,11 +28,11 @@ const MAX_ITEMS_PER_PAGE = 50;
 
 type Props = {
   gitOrganizationId: string;
-  onGitRepositoryConnected: (data: gitRepositorySelected) => void;
+  onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
 };
 
-export type gitRepositorySelected = {
+export type GitRepositorySelected = {
   gitOrganizationId: string;
   repositoryName: string;
   gitRepositoryUrl?: string;

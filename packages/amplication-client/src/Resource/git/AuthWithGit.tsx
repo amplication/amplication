@@ -13,7 +13,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./AuthWithGit.scss";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
-import { gitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import NewConnection from "./GitActions/NewConnection";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
@@ -30,8 +30,9 @@ let triggerAuthFailed = () => {};
 
 type Props = {
   onDone: () => void;
-  onGitRepositorySelected: (data: gitRepositorySelected) => void;
+  onGitRepositorySelected: (data: GitRepositorySelected) => void;
   onGitRepositoryCreated: (data: CreateGitRepositoryInput) => void;
+  gitRepositorySelected?: GitRepositorySelected;
 };
 
 export const CLASS_NAME = "auth-with-git";
@@ -40,6 +41,7 @@ function AuthWithGit({
   onDone,
   onGitRepositorySelected,
   onGitRepositoryCreated,
+  gitRepositorySelected,
 }: Props) {
   const { currentWorkspace } = useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
@@ -56,7 +58,7 @@ function AuthWithGit({
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
-    useState<gitRepositorySelected>(null);
+    useState<GitRepositorySelected>(gitRepositorySelected || null);
 
   const { trackEvent } = useTracking();
   const [authWithGit, { error }] = useMutation<DType>(
@@ -103,7 +105,7 @@ function AuthWithGit({
   );
 
   const handleSelectRepository = useCallback(
-    (data: gitRepositorySelected) => {
+    (data: GitRepositorySelected) => {
       setSelectRepoOpen(false);
       onGitRepositorySelected(data);
       setGitRepositorySelectedData(data);

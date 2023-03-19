@@ -10,9 +10,18 @@ import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 const className = "create-service-repository";
 
 const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
-  const handleDatabaseSelect = useCallback((database: string) => {
-    formik.handleChange({ target: { name: "structureType", value: database } });
-  }, []);
+  const handleDatabaseSelect = useCallback(
+    (database: string) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          structureType: database,
+        },
+        true
+      );
+    },
+    [formik.values]
+  );
 
   return (
     <Layout.Split>
@@ -47,7 +56,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
                   currentValue={formik.values.structureType}
                 />
               </div>
-              {formik.values.structureType === "monorepo" && (
+              {formik.values.structureType === "Mono" && (
                 <TextField
                   className={`${className}__repository_base_dir`}
                   name="baseDirectory"

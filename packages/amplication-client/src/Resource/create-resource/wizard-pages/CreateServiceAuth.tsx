@@ -8,9 +8,18 @@ import { WizardStepProps } from "./interfaces";
 import jwt from "../../../assets/images/jwt.svg";
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
-  const handleDatabaseSelect = useCallback((database: string) => {
-    formik.handleChange({ target: { name: "authType", value: database } });
-  }, []);
+  const handleDatabaseSelect = useCallback(
+    (database: string) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          authType: database,
+        },
+        true
+      );
+    },
+    [formik.values]
+  );
 
   return (
     <Layout.Split>

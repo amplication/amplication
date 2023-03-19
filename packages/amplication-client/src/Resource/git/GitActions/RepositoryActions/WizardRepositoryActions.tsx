@@ -8,7 +8,7 @@ import {
 import React from "react";
 import { EnumGitOrganizationType } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
-import { gitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
+import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import "./RepositoryActions.scss";
 import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
@@ -17,7 +17,7 @@ type Props = {
   onSelectRepository: () => void;
   onDisconnectGitRepository: () => void;
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  selectedGitRepository: gitRepositorySelected;
+  selectedGitRepository: GitRepositorySelected;
 };
 
 const CLASS_NAME = "repository-actions";
@@ -34,7 +34,7 @@ export default function WizardRepositoryActions({
         className={`${CLASS_NAME}__auth`}
         panelStyle={EnumPanelStyle.Bordered}
       >
-        {selectedGitRepository ? (
+        {selectedGitRepository?.gitOrganizationId ? (
           <WizardGithubSyncDetails
             repositorySelected={selectedGitRepository}
             onDisconnectGitRepository={onDisconnectGitRepository}

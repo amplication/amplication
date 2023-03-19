@@ -139,7 +139,6 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardBaseRoute={`/${currentWorkspace.id}/${currentProject.id}/create-resource`}
         wizardPattern={wizardPattern}
         wizardProgressBar={setWizardProgressItems()}
         wizardSchema={schemaArray}

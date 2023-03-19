@@ -18,6 +18,10 @@ const GitRepository = {
       type: "string",
       minLength: 2,
     },
+    gitRepositoryUrl: {
+      type: "string",
+      minLength: 2,
+    },
   },
   required: ["gitOrganizationId", "gitRepositoryName"],
 };
@@ -43,7 +47,7 @@ const GenerationSettings = {
 const StructureType = {
   properties: {
     structureType: {
-      enum: ["monorepo", "polyrepo"],
+      enum: ["Mono", "Poly"],
     },
     baseDir: {
       type: "string",
@@ -87,11 +91,12 @@ export const ResourceInitialValues = {
   serviceName: null,
   gitOrganizationId: null,
   gitRepositoryName: null,
+  gitRepositoryUrl: null,
   generateAdminUI: false,
   generateGraphQL: false,
   generateRestApi: false,
   structureType: "Mono",
-  dataBaseType: "postgres",
+  databaseType: "postgres",
   resourceType: "scratch",
   authType: "no",
 };

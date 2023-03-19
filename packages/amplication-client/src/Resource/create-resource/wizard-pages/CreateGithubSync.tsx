@@ -3,7 +3,7 @@ import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
-import { gitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
+import { GitRepositorySelected } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
 import { CreateGitRepositoryInput } from "@amplication/code-gen-types/models";
 
@@ -24,12 +24,13 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   }, []);
 
   const handleOnGitRepositorySelected = useCallback(
-    (data: gitRepositorySelected) => {
+    (data: GitRepositorySelected) => {
       formik.setValues(
         {
           ...formik.values,
           gitRepositoryName: data.repositoryName,
           gitOrganizationId: data.gitOrganizationId,
+          gitRepositoryUrl: data.gitRepositoryUrl,
         },
         true
       );
@@ -46,6 +47,7 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
           ...formik.values,
           gitRepositoryName: data.name,
           gitOrganizationId: data.gitOrganizationId,
+          // gitRepositoryUrl: data.gitRepositoryUrl
         },
         true
       );
@@ -69,6 +71,11 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
             onDone={handleOnDone}
             onGitRepositorySelected={handleOnGitRepositorySelected}
             onGitRepositoryCreated={handleOnGitRepositoryCreated}
+            gitRepositorySelected={{
+              gitOrganizationId: formik.values.gitOrganizationId,
+              repositoryName: formik.values.gitRepositoryName,
+              gitRepositoryUrl: formik.values.gitRepositoryUrl,
+            }}
           ></AuthWithGit>
         </div>
       </Layout.RightSide>

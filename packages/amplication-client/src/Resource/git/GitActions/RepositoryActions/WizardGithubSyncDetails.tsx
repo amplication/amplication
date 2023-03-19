@@ -3,12 +3,12 @@ import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
-import { gitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
+import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 
 const CLASS_NAME = "github-repo-details";
 
 type Props = {
-  repositorySelected: gitRepositorySelected;
+  repositorySelected: GitRepositorySelected;
   className?: string;
   showGitRepositoryBtn?: boolean;
   onDisconnectGitRepository: () => void;

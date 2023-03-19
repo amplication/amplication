@@ -3,7 +3,7 @@ import { ApolloError } from "@apollo/client";
 import { CreateGitRepositoryInput, EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
-import GitRepos, { gitRepositorySelected } from "./GitRepos/GithubRepos";
+import GitRepos, { GitRepositorySelected } from "./GitRepos/GithubRepos";
 
 type Props = {
   gitOrganizationId: string;
@@ -22,7 +22,7 @@ type Props = {
   onPopupFailedClose: () => void;
   onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
-  onSelectGitRepository: (data: gitRepositorySelected) => void;
+  onSelectGitRepository: (data: GitRepositorySelected) => void;
 };
 
 export default function GitDialogsContainer({

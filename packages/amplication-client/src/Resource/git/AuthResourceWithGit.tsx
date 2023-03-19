@@ -21,7 +21,7 @@ import { isEmpty } from "lodash";
 import NewConnection from "./GitActions/NewConnection";
 import {
   CONNECT_GIT_REPOSITORY,
-  gitRepositorySelected,
+  GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 
@@ -132,7 +132,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   );
 
   const handleRepoSelected = useCallback(
-    (data: gitRepositorySelected) => {
+    (data: GitRepositorySelected) => {
       connectGitRepository({
         variables: {
           name: data.repositoryName,
@@ -158,7 +158,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           gitProvider={EnumGitProvider.Github}
           gitOrganizationName={gitOrganization.name}
           src={"githubPage"}
-          onSelectGitRepository={(data: gitRepositorySelected) => {
+          onSelectGitRepository={(data: GitRepositorySelected) => {
             setSelectRepoOpen(false);
             handleRepoSelected(data);
           }}

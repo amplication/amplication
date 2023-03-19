@@ -9,10 +9,18 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
   const PLUGIN_LOGO_BASE_URL =
     "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
-  const handleDatabaseSelect = useCallback((database: string) => {
-    formik.handleChange({ target: { name: "databaseType", value: database } });
-  }, []);
-
+  const handleDatabaseSelect = useCallback(
+    (database: string) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          databaseType: database,
+        },
+        true
+      );
+    },
+    [formik.values]
+  );
   return (
     <Layout.Split>
       <Layout.LeftSide>
