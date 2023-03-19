@@ -29,7 +29,9 @@ const BackButton: React.FC<{
 }> = ({ wizardPattern, activePageIndex, goPrevPage }) =>
   activePageIndex !== wizardPattern[0] &&
   activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
-    <Button onClick={goPrevPage}>back</Button>
+    <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
+      back
+    </Button>
   ) : null;
 
 const ContinueButton: React.FC<{
