@@ -113,8 +113,9 @@ const useResources = (
       const currentResourceId = result.data?.createServiceWithEntities.id;
       addEntity(currentResourceId);
       createResourcePlugins(currentResourceId, databaseType, authType);
-
-      refetch(); //.then(() => resourceRedirect(currentResourceId as string));
+      refetch().then(() =>
+        setCurrentResource(result.data?.createServiceWithEntities)
+      );
     });
   };
 
