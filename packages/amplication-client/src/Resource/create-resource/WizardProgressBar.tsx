@@ -1,15 +1,13 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./CreateServiceWizard.scss";
-import { AppContext } from "../../context/appContext";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import { Icon } from "@amplication/design-system";
 import "./wizardProgressBar.scss";
-import { FormikProps } from "formik";
 
 interface Props {
+  lastPage: number;
   wizardProgressBar: WizardProgressBarInterface[];
   activePageIndex: number;
-  formik: FormikProps<{ [key: string]: any }>;
 }
 
 const CLASS_NAME = "wizard-progress-bar";
@@ -48,27 +46,28 @@ const ProgressBarItem: React.FC<{
 );
 
 const WizardProgressBar: React.FC<Props> = ({
+  lastPage,
   wizardProgressBar,
   activePageIndex,
-  formik,
 }) => {
   return (
     <div className={`${CLASS_NAME}__container`}>
       {wizardProgressBar.map((item: WizardProgressBarInterface, index) => {
-        const enabledPage = !item.activePages.some(
+        const enabledPage = item.activePages.some(
           (page: number) => page <= activePageIndex
         );
-        const enabledPage2 = !item.activePages.every(
-          (page: number) => page <= activePageIndex
+
+        const validPage = item.activePages.every(
+          (page: number) => page < activePageIndex
         );
-        // console.log(item.title, enabledPage2);
+
         return (
           <>
             <ProgressBarItem
               key={`${item.title}_item`}
               title={item.title}
-              isValid={formik.isValid && !!enabledPage2}
-              disabled={enabledPage}
+              isValid={validPage || activePageIndex === lastPage}
+              disabled={!enabledPage}
             />
             {index < wizardProgressBar.length - 1 && (
               <div

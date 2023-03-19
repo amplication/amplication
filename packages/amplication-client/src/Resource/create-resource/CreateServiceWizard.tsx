@@ -41,7 +41,6 @@ const CreateServiceWizard: React.FC<Props> = ({
 }) => {
   const {
     errorCreateService,
-    currentWorkspace,
     currentProject,
     loadingCreateService,
     setNewService,
@@ -62,7 +61,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         );
         if (pagesMap[findPage.title]) return wizardArr;
 
-        pagesMap[findPage.title] = findPage;
+        pagesMap[findPage.title] = { ...findPage, pageIndex: page };
         wizardArr.push(findPage);
 
         return wizardArr;
@@ -82,10 +81,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     },
     [setNewService]
   );
-
-  // const handleBackToProjectClick = () => {
-  //   history.push(`/${currentWorkspace?.id}/${currentProject?.id}/`);
-  // };
 
   const createResource = useCallback((values: ResourceSettings) => {
     const {
