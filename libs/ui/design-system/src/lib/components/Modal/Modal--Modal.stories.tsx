@@ -4,6 +4,11 @@ import { Modal } from "./Modal";
 const Story: ComponentMeta<typeof Modal> = {
   component: Modal,
   title: "Modal",
+  argTypes: {
+    open: {
+      control: "boolean",
+    },
+  },
 };
 export default Story;
 

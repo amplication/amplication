@@ -7,34 +7,23 @@ export default {
   component: Button,
 } as Meta;
 
-export const Default = () => {
-  return <Button>Example</Button>;
+export const Default = (args: any) => {
+  return <Button {...args}>Example</Button>;
 };
 
-export const Primary = () => {
-  return <Button buttonStyle={EnumButtonStyle.Primary}>Example</Button>;
-};
-
-export const Secondary = () => {
-  return <Button buttonStyle={EnumButtonStyle.Secondary}>Example</Button>;
-};
-
-export const Clear = () => {
-  return <Button buttonStyle={EnumButtonStyle.Clear}>Example</Button>;
-};
-
-export const CallToAction = () => {
-  return <Button buttonStyle={EnumButtonStyle.CallToAction}>Example</Button>;
-};
-
-export const WithSplit = () => {
-  return <Button isSplit />;
-};
-
-export const WithSplitAndValue = () => {
-  return <Button isSplit splitValue="Example" />;
-};
-
-export const WithIcon = () => {
-  return <Button icon="info" />;
+export const WithIcon = (props: any) => {
+  return (
+    <Button
+      buttonStyle={props.buttonStyle}
+      isSplit={props.isSplit}
+      splitValue={props.splitValue}
+      icon="info"
+      iconSize={props.iconSize}
+      iconStyle={props.iconStyle}
+      iconPosition={props.iconPosition}
+      to={props.to}
+    >
+      Example
+    </Button>
+  );
 };

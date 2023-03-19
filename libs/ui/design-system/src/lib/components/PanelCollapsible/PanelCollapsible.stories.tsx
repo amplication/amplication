@@ -13,6 +13,7 @@ export const Default = (props: any) => {
     <PanelCollapsible
       headerContent="Header"
       onCollapseChange={props.onCollapseChange}
+      {...props}
     >
       <p>
         Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod

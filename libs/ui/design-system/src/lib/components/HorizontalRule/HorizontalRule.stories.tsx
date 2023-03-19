@@ -8,5 +8,5 @@ export default {
 } as Meta;
 
 export const Default = (props: any) => {
-  return <HorizontalRule />;
+  return <HorizontalRule style={props.style} />;
 };

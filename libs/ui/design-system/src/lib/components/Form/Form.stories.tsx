@@ -44,7 +44,7 @@ export const Default = (props: any) => {
         }}
         onSubmit={() => {}}
       >
-        <Form>
+        <Form formStyle={props.formStyle}>
           <TextField name="name" label="Name" />
           <TextField name="description" textarea label="Description" />
           <SelectField label="Color" name="color" options={OPTIONS} />
@@ -77,66 +77,7 @@ export const WithHeader = (props: any) => {
               <Button type="submit">Save</Button>
             </FormHeader>
           }
-        >
-          <TextField name="name" label="Name" />
-          <TextField name="description" textarea label="Description" />
-          <SelectField label="Color" name="color" options={OPTIONS} />
-          <ToggleField name="required" label="Required Field" />
-          <TextField name="lastName" label="Last Name" />
-        </Form>
-      </Formik>
-    </Page>
-  );
-};
-
-export const Horizontal = (props: any) => {
-  return (
-    <Page>
-      <Formik
-        initialValues={{
-          name: "name",
-          lastName: "last name",
-          description: "description",
-          color: "Red",
-          required: false,
-          enabled: false,
-        }}
-        onSubmit={() => {}}
-      >
-        <Form formStyle={EnumFormStyle.Horizontal}>
-          <TextField name="name" label="Name" />
-          <TextField name="description" textarea label="Description" />
-          <SelectField label="Color" name="color" options={OPTIONS} />
-          <ToggleField name="required" label="Required Field" />
-          <TextField name="lastName" label="Last Name" />
-        </Form>
-      </Formik>
-    </Page>
-  );
-};
-
-export const HorizontalWithHeader = (props: any) => {
-  return (
-    <Page>
-      <Formik
-        initialValues={{
-          name: "name",
-          lastName: "last name",
-          description: "description",
-          color: "Red",
-          required: false,
-          enabled: false,
-        }}
-        onSubmit={() => {}}
-      >
-        <Form
-          formStyle={EnumFormStyle.Horizontal}
-          formHeaderContent={
-            <FormHeader title="Form Title">
-              <Button buttonStyle={EnumButtonStyle.Secondary}>Cancel</Button>
-              <Button type="submit">Save</Button>
-            </FormHeader>
-          }
+          formStyle={props.formStyle}
         >
           <TextField name="name" label="Name" />
           <TextField name="description" textarea label="Description" />

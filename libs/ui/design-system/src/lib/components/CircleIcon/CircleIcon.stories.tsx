@@ -8,40 +8,18 @@ import CircleIcon, {
 export default {
   title: "CircleIcon",
   component: CircleIcon,
+  argTypes: {
+    size: {
+      control: "inline-radio",
+      options: Object.values(EnumCircleIconSize),
+    },
+    style: {
+      control: "inline-radio",
+      options: Object.values(EnumCircleIconStyle),
+    },
+  },
 } as Meta;
 
-export const Default = () => {
-  return <CircleIcon icon="check" />;
-};
-
-export const Primary = () => {
-  return <CircleIcon icon="check" style={EnumCircleIconStyle.Primary} />;
-};
-
-export const Secondary = () => {
-  return <CircleIcon icon="check" style={EnumCircleIconStyle.Secondary} />;
-};
-
-export const Positive = () => {
-  return <CircleIcon icon="check" style={EnumCircleIconStyle.Positive} />;
-};
-
-export const Negative = () => {
-  return <CircleIcon icon="check" style={EnumCircleIconStyle.Negative} />;
-};
-
-export const Warning = () => {
-  return <CircleIcon icon="check" style={EnumCircleIconStyle.Warning} />;
-};
-
-export const SmallSize = () => {
-  return <CircleIcon icon="check" size={EnumCircleIconSize.Small} />;
-};
-
-export const DefaultSize = () => {
-  return <CircleIcon icon="check" size={EnumCircleIconSize.Default} />;
-};
-
-export const LargeSize = () => {
-  return <CircleIcon icon="check" size={EnumCircleIconSize.Large} />;
+export const Default = (args: any) => {
+  return <CircleIcon icon="check" {...args} />;
 };

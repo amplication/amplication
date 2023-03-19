@@ -10,10 +10,6 @@ export default {
   },
 } as Meta;
 
-export const Default = (props: any) => {
-  return <CircleBadge name="Amplication" />;
-};
-
-export const ChangeColor = (props: any) => {
-  return <CircleBadge name="Amplication" color={props.color} />;
+export const Default = (args: any) => {
+  return <CircleBadge name="Amplication" {...args} />;
 };

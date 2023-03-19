@@ -8,5 +8,5 @@ export default {
 } as Meta;
 
 export const Default = (props: any) => {
-  return <Icon icon="arrow_left" />;
+  return <Icon icon="arrow_left" size={props.size} />;
 };

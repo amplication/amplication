@@ -7,7 +7,7 @@ export type Props = {
   className?: string;
 };
 
-const Page: React.FC<Props> = ({ children, className }) => {
+export const Page: React.FC<Props> = ({ children, className }) => {
   return (
     <div className={classNames("amp-page", className)}>
       <main>{children}</main>

@@ -1,12 +1,14 @@
 import React from "react";
-import { Meta } from "@storybook/react/types-6-0";
+import type { ComponentStory, ComponentMeta } from "@storybook/react";
+
 import { SelectField } from "./SelectField";
 import { Form, Formik } from "formik";
 import { OptionItem } from "../types";
-export default {
+
+const Story: ComponentMeta<typeof SelectField> = {
+  component: SelectField,
   title: "SelectField",
 };
-export default Story;
 
 const OPTIONS: OptionItem[] = [
   {
@@ -23,42 +25,15 @@ const OPTIONS: OptionItem[] = [
   },
 ];
 
-export const Default = () => {
+const Template: ComponentStory<typeof SelectField> = (args: any) => {
   return (
     <Formik initialValues={[]} onSubmit={() => {}}>
       <Form>
-        <SelectField label="Label" name="name" options={OPTIONS} />
+        <SelectField label="Label" name="name" options={OPTIONS} {...args} />
       </Form>
     </Formik>
   );
 };
 
-export const Multi = () => {
-  return (
-    <Formik initialValues={[]} onSubmit={() => {}}>
-      <Form>
-        <SelectField label="Label" name="name" options={OPTIONS} isMulti />
-      </Form>
-    </Formik>
-  );
-};
-
-export const Clearable = () => {
-  return (
-    <Formik initialValues={[]} onSubmit={() => {}}>
-      <Form>
-        <SelectField label="Label" name="name" options={OPTIONS} isClearable />
-      </Form>
-    </Formik>
-  );
-};
-
-export const Disabled = () => {
-  return (
-    <Formik initialValues={[]} onSubmit={() => {}}>
-      <Form>
-        <SelectField label="Label" name="name" options={OPTIONS} disabled />
-      </Form>
-    </Formik>
-  );
-};
+export const Primary = Template.bind({});
+Primary.args = {};
