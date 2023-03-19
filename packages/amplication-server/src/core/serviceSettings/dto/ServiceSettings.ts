@@ -10,31 +10,6 @@ import { ServerSettings } from "./ServerSettings";
   isAbstract: true,
 })
 export class ServiceSettings extends IBlock {
-  @Field(() => String, {
-    nullable: false,
-  })
-  dbHost!: string;
-
-  @Field(() => String, {
-    nullable: false,
-  })
-  dbName!: string;
-
-  @Field(() => String, {
-    nullable: false,
-  })
-  dbUser!: string;
-
-  @Field(() => String, {
-    nullable: false,
-  })
-  dbPassword!: string;
-
-  @Field(() => Int, {
-    nullable: false,
-  })
-  dbPort!: number;
-
   @Field(() => EnumAuthProviderType, {
     nullable: false,
   })

@@ -753,11 +753,6 @@ type ServiceSettings implements IBlock {
   outputParameters: [BlockInputOutput!]!
   lockedByUserId: String
   lockedAt: DateTime
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
@@ -1312,11 +1307,6 @@ input EntityFieldUpdateInput {
 input ServiceSettingsUpdateInput {
   displayName: String
   description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettingsUpdateInput!
   serverSettings: ServerSettingsUpdateInput!
