@@ -69,9 +69,9 @@ See the [Amplication Website](http://amplication.com/) or [Amplication Docs](htt
 
 Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 
-## Development Environment (Local)
+# Development Environment (Local)
 
-### System Requirements
+## System Requirements
 
 :bulb: Before you begin, make sure you have the following installed:
 
@@ -79,7 +79,7 @@ Launch Amplication from [app.amplication.com](http://app.amplication.com/)
 - [Docker](https://docs.docker.com/desktop/)
 - [Git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git/)
 
-### Getting Started With Local Development
+## Getting Started With Local Development
 
 Amplication is using a monorepo (powered by [Nx Workspaces](https://nx.dev/)) with multiple apps and libraries.
 
@@ -115,59 +115,33 @@ Follow these simple instructions to set up a local development environment.
   npm run db:migrate:deploy
   ```
 
-5. To start developing, run the `serve` target of the desired app:
-
-  ```bash
-  # This will serve the Amplication Server in development mode
-  npx nx serve amplication-server
-
-  # This will serve the Amplication Client in development mode
-  npx nx serve amplication-client
-  ```
-> ℹ️ **Please note that in order to be able to run the app's client properly, you need to `serve` both the server and client plus any additional component for specific functionalities:**
-> - `npx nx serve amplication-client`
-> - `npx nx serve amplication-server`
-> 
-> **To allow code generation**
-> - `npx nx serve amplication-build-manager` 
-> - `npx nx serve local-data-service-generator-controller`
-> 
-> **To allow git syncronisation with selected provider**
-> - `npx nx serve amplication-git-pull-request-service` 
-> - `npx nx serve local-data-service-generator-controller`<br> _check additional documentation in [local-data-service-generator-controller](https://github.com/amplication/amplication/blob/master/packages/local-data-service-generator-controller/README.md)_
-> 
-> **To allow source code visualisation**
-> - `npx nx serve amplication-storage-gateway`
-> 
-> **To allow plugin settings configuration in client app**
-> - `npx nx serve amplication-plugin-api`
->
-> _Consider using Nx Console VS Code extension for a better developer experience_
+5. To start developing, run one or more of the `serve:[app]` scripts from package.json The available scripts are:
 
 
-That's it, you are good to go! Happy hacking! 👾
+    `npm run serve:server` : runs Amplication server
+
+    `npm run serve:client`: runs Amplication client
+
+    `npm run serve:dsg`: runs the Build Manager and the local version of Data Service Generator 
+
+    `npm run serve:git`: runs the Git Pull Request service needed to push code to Git providers
+    
+    `npm run serve:storage`: runs the Storage service needed to view the generated code in the client (code view)
+    
+    `npm run serve:plugins`: runs the plugin catalog API
+
+    > ℹ️ Please note that in order to be able to run the app's client properly, you need to `serve` both the server and client plus any additional component for specific functionalities:
+
+
+
+
+**That's it, you are good to go! Happy hacking! 👾**
 
 You can always find more information in each app/library's respective README.md file.
 
-### Setting Up Amplication Manually
 
-You can use a manual step-by-step approach to set up Amplication in a local development environment. To do so, you should follow the following instructions for **Setting Up Amplication Server**, and **Setting Up Amplication Client**.
 
-#### Setting up [Amplication Server](https://github.com/amplication/amplication/blob/master/packages/amplication-server/README.md)
-
-Amplication Server is the main component of the platform that provides all the core functionality to design and create low-code applications.
-The server exposes a GraphQL API for all actions. The server is built with the following awesome open-source technologies: Node.js, NestJS, Prisma over PostgreSQL, GraphQL API, and many more...
-
-#### Setting Up [Amplication Client](https://github.com/amplication/amplication/blob/master/packages/amplication-client/README.md)
-
-Amplication Client is the front end of the platform that provides you with an easy-to-drive UI for building your next low-code application.
-The client is based on React, Apollo client, Primer components, React Material Web Components, Formik, and more.
-
-# Version 1
-
-Amplication is currently in version 1. This is the first major release of Amplication with enterprise-grade production readiness & scale. In this version, we have introduced multiple new features and enhanced the existing ones. The feature set is listed above in the [Features](#features) section.
-
-## Support
+# Support
 
 Ask your questions and participate in discussions regarding Amplication-related and web-dev topics at the Amplication Discord server. 
 
