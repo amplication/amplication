@@ -99,7 +99,7 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    dataBaseType: "postgres" | "mysql" | "mongo",
+    databaseType: "postgres" | "mysql" | "mongo",
     authType: string,
     eventName: AnalyticsEventNames
   ) => {
@@ -112,7 +112,7 @@ const useResources = (
 
       const currentResourceId = result.data?.createServiceWithEntities.id;
       addEntity(currentResourceId);
-      createResourcePlugins(currentResourceId, dataBaseType, authType);
+      createResourcePlugins(currentResourceId, databaseType, authType);
 
       refetch(); //.then(() => resourceRedirect(currentResourceId as string));
     });
@@ -143,39 +143,42 @@ const useResources = (
   const createResourcePlugins = useCallback(
     (
       resourceId: string,
-      dataBaseType: "postgres" | "mysql" | "mongo",
+      databaseType: "postgres" | "mysql" | "mongo",
       authType: string
     ) => {
+      const authCorePlugins = authType === "core" && [
+        {
+          displayName: "Auth-core",
+          pluginId: "auth-core",
+          enabled: true,
+          npm: "@amplication/plugin-auth-core",
+          version: "latest",
+          resource: { connect: { id: resourceId } },
+        },
+        {
+          displayName: "Auth-jwt",
+          pluginId: "auth-jwt",
+          enabled: true,
+          npm: "@amplication/plugin-auth-jwt",
+          version: "latest",
+          resource: { connect: { id: resourceId } },
+        },
+      ];
+
       const data: models.PluginInstallationsCreateInput = {
         plugins: [
           {
-            displayName: dataBaseType,
-            pluginId: `db-${dataBaseType}`,
+            displayName: databaseType,
+            pluginId: `db-${databaseType}`,
             enabled: true,
-            npm: `@amplication/plugin-db-${dataBaseType}`,
-            version: "latest",
-            resource: { connect: { id: resourceId } },
-          },
-          authType === "core" && {
-            displayName: "Auth-core",
-            pluginId: "auth-core",
-            enabled: true,
-            npm: "@amplication/plugin-auth-core",
-            version: "latest",
-            resource: { connect: { id: resourceId } },
-          },
-          authType === "core" && {
-            displayName: "Auth-jwt",
-            pluginId: "auth-jwt",
-            enabled: true,
-            npm: "@amplication/plugin-auth-jwt",
+            npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: resourceId } },
           },
         ],
       };
 
-      console.log("plugins", data.plugins);
+      if (authCorePlugins) data.plugins.push(...authCorePlugins);
 
       createPluginInstallations({
         variables: {

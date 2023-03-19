@@ -97,7 +97,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       gitOrganizationId,
       gitRepositoryName,
       authType,
-      dataBaseType,
+      databaseType,
     } = values;
 
     const isResourceWithEntities = values.resourceType === "sample";
@@ -123,7 +123,7 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       createStarterResource(
         resource,
-        dataBaseType,
+        databaseType,
         authType,
         isResourceWithEntities
           ? "createResourceFromSample"

@@ -97,6 +97,15 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
+  const [keepLoadingAnimation, setKeepLoadingAnimation] =
+    useState<boolean>(true);
+
+  const handleTimeout = useCallback(() => {
+    setKeepLoadingAnimation(false);
+  }, []);
+
+  const showLoadingAnimation = keepLoadingAnimation || submitLoader;
+
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -125,13 +134,14 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               <>
                 <Form>
                   {submitLoader ? (
-                    <CreateServiceLoader />
+                    <CreateServiceLoader handleTimeout={handleTimeout} />
                   ) : (
                     React.cloneElement(
                       currentPage as React.ReactElement<
                         any,
                         string | React.JSXElementConstructor<any>
                       >,
+
                       { formik }
                     )
                   )}
