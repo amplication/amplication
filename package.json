@@ -240,7 +240,7 @@
     "jest-diff": "^29.5.0",
     "jest-environment-jsdom": "^28.1.0",
     "jest-environment-node": "^28.1.0",
-    "jest-mock-extended": "^2.0.9",
+    "jest-mock-extended": "^3.0.3",
     "json-schema-to-typescript": "^10.1.5",
     "lint-staged": "^13.0.3",
     "normalize-path": "^3.0.0",
