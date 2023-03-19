@@ -25,8 +25,10 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   }, []);
 
   const handleDone = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/${currentProject.id}`);
-  }, [currentWorkspace, currentProject]);
+    history.push(
+      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
+    );
+  }, [currentWorkspace, currentProject, currentResource]);
 
   return (
     <div className={className}>
