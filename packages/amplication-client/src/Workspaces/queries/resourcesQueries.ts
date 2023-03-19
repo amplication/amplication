@@ -71,6 +71,7 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
       }
+      resourceType
     }
   }
 `;
