@@ -59,6 +59,7 @@ export async function prepareContext(
   context.entities = normalizedEntities;
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
+  context.pluginInstallations = resourcePlugins;
 
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")

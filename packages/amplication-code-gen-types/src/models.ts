@@ -1858,11 +1858,6 @@ export type ServiceSettings = IBlock & {
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
@@ -1880,11 +1875,6 @@ export type ServiceSettings = IBlock & {
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   serverSettings: ServerSettingsUpdateInput;

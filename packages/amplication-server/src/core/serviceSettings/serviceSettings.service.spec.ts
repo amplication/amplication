@@ -39,11 +39,6 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
   displayName: EXAMPLE_NAME,
   parentBlock: null,
   versionNumber: 0,
-  dbHost: "localhost",
-  dbName: "myDb",
-  dbPassword: "1234",
-  dbPort: 5432,
-  dbUser: "admin",
   authProvider: EnumAuthProviderType.Http,
   serverSettings: {
     generateGraphQL: true,

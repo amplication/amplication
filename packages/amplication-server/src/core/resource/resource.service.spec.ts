@@ -257,11 +257,6 @@ const EXAMPLE_BUILD: Build = {
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   resourceId: EXAMPLE_RESOURCE_ID,
-  dbHost: "exampleDbHost",
-  dbName: "exampleDbName",
-  dbUser: "exampleDbUser",
-  dbPassword: "exampleDbPassword",
-  dbPort: 5532,
   authProvider: EnumAuthProviderType.Http,
   adminUISettings: undefined,
   serverSettings: undefined,

@@ -170,20 +170,6 @@ export function prepareMessageBrokerObject(
   };
 }
 
-export const GET_APP_SETTINGS = gql`
-  query serviceSettings($id: String!) {
-    serviceSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
-
 export const resourceThemeMap: {
   [key in models.EnumResourceType]: {
     icon: string;

@@ -14,11 +14,6 @@ const EXAMPLE_APP_INFO: AppInfo = {
   id: "EXAMPLE_ID",
   url: "EXAMPLE_URL",
   settings: {
-    dbHost: "localhost",
-    dbName: "",
-    dbPort: 5432,
-    dbPassword: "admin",
-    dbUser: "admin",
     authProvider: EnumAuthProviderType.Http,
     serverSettings: {
       generateGraphQL: false,

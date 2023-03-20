@@ -24,23 +24,10 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const {
-      dbHost,
-      dbName,
-      dbPassword,
-      dbPort,
-      dbUser,
-      authProvider,
-      serverSettings,
-      adminUISettings,
-    } = await this.getServiceSettingsBlock(args, user);
+    const { authProvider, serverSettings, adminUISettings } =
+      await this.getServiceSettingsBlock(args, user);
 
     return {
-      dbHost,
-      dbName,
-      dbPassword,
-      dbPort,
-      dbUser,
       resourceId: args.where.id,
       authProvider,
       serverSettings,
