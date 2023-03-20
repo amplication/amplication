@@ -65,13 +65,18 @@ export const GET_RESOURCES = gql`
 export const CREATE_SERVICE_WITH_ENTITIES = gql`
   mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
     createServiceWithEntities(data: $data) {
-      id
-      name
-      description
-      builds(orderBy: { createdAt: Desc }, take: 1) {
+      resource {
+        id
+        name
+        description
+        builds(orderBy: { createdAt: Desc }, take: 1) {
+          id
+        }
+        resourceType
+      }
+      build {
         id
       }
-      resourceType
     }
   }
 `;

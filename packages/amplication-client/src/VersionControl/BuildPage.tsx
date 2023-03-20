@@ -15,7 +15,7 @@ import DataPanel, { TitleDataType } from "./DataPanel";
 import { BackNavigation } from "../Components/BackNavigation";
 import { AppContext } from "../context/appContext";
 
-type LogData = {
+export type LogData = {
   action: models.Action;
   title: string;
   versionNumber: string;

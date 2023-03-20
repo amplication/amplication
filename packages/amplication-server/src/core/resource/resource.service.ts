@@ -22,6 +22,7 @@ import {
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
@@ -264,7 +265,7 @@ export class ResourceService {
   async createServiceWithEntities(
     data: ResourceCreateWithEntitiesInput,
     user: User
-  ): Promise<Resource> {
+  ): Promise<ResourceCreateWithEntitiesResult> {
     if (
       data.entities.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
@@ -361,9 +362,33 @@ export class ResourceService {
       }
     }
 
-    //connect resource to gitRepository
+    await this.projectService.commit({
+      data: {
+        message: INITIAL_COMMIT_MESSAGE,
+        project: {
+          connect: {
+            id: resource.projectId,
+          },
+        },
+        user: {
+          connect: {
+            id: user.id,
+          },
+        },
+      },
+    });
 
-    return resource;
+    const resourceBuilds = await this.prisma.resource.findUnique({
+      where: { id: resource.id },
+      select: {
+        builds: true,
+      },
+    });
+
+    return {
+      resource: resource,
+      build: resourceBuilds.builds[0],
+    };
   }
 
   async resource(args: FindOneArgs): Promise<Resource | null> {

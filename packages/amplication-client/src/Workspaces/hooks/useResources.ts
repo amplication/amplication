@@ -16,7 +16,7 @@ type TGetResources = {
 };
 
 type TCreateService = {
-  createServiceWithEntities: models.Resource;
+  createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
 };
 
 type TCreateMessageBroker = {
@@ -64,6 +64,8 @@ const useResources = (
   );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
+  const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
+    useState<models.ResourceCreateWithEntitiesResult>();
 
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
@@ -118,12 +120,17 @@ const useResources = (
     });
 
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      if (!result.data?.createServiceWithEntities.id) return;
+      if (!result.data?.createServiceWithEntities.resource.id) return;
 
-      const currentResourceId = result.data?.createServiceWithEntities.id;
+      setCreateServiceWithEntitiesResult(
+        result.data?.createServiceWithEntities
+      );
+
+      const currentResourceId =
+        result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
       createResourcePlugins(currentResourceId, databaseType, authType);
-      setCurrentResource(result.data?.createServiceWithEntities);
+      setCurrentResource(result.data?.createServiceWithEntities.resource);
       refetch();
     });
   };
@@ -289,6 +296,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    createServiceWithEntitiesResult,
   };
 };
 

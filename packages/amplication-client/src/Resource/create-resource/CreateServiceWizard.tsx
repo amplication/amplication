@@ -49,10 +49,13 @@ const CreateServiceWizard: React.FC<Props> = ({
     currentWorkspace,
     loadingCreateService,
     setNewService,
+    createServiceWithEntitiesResult: createResult,
   } = useContext(AppContext);
+
   const { trackEvent } = useTracking();
   const history = useHistory();
   const [goToPage, setGoToPage] = useState<number | null>(null);
+
   const defineUser = signupCookie === "1" ? "signup" : "login";
   const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7];
   // defineUser === "login"
@@ -179,7 +182,11 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceRepository moduleClass={moduleClass} />
         <CreateServiceDatabase moduleClass={moduleClass} />
         <CreateServiceAuth moduleClass={moduleClass} />
-        <CreateServiceCodeGeneration moduleClass="create-service-code-generation" />
+        <CreateServiceCodeGeneration
+          moduleClass="create-service-code-generation"
+          resource={createResult?.resource}
+          build={createResult?.build}
+        />
         <CreateServiceNextSteps moduleClass={moduleClass} />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />

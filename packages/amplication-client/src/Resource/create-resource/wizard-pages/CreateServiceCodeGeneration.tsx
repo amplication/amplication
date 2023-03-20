@@ -1,30 +1,40 @@
-import React from "react";
+import React, { useMemo } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
 // import { Action } from "../../../models";
 
-import CodeGenerationCompleted from "../../../../src/assets/images/code-generation-completed.svg";
+import CodeGenerationCompleted from "../../../assets/images/code-generation-completed.svg";
 import { Button } from "@amplication/design-system";
 import { WizardStepProps } from "./interfaces";
+import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
+import { LogData } from "../../../VersionControl/BuildPage";
+import * as models from "../../../models";
 
 const className = "create-service-code-generation";
 
-const CreateServiceCodeGeneration: React.FC<WizardStepProps> = ({
-  moduleClass,
-}) => {
-  const actionLog = {
-    action: {
-      createdAt: new Date(),
-      id: "",
-      steps: [],
-    },
-    title: "Generating service",
-    versionNumber: "1.0.0",
-  };
+const CreateServiceCodeGeneration: React.FC<
+  WizardStepProps & {
+    resource?: models.Resource;
+    build?: models.Build;
+  }
+> = ({ moduleClass, build, resource }) => {
+  const { data } = useBuildWatchStatus(build);
 
-  const completed = true;
+  const actionLog = useMemo<LogData | null>(() => {
+    if (!data?.build) return null;
 
+    if (!data.build.action) return null;
+
+    return {
+      action: data.build.action,
+      title: "Build log",
+      versionNumber: data.build.version,
+    };
+  }, [data]);
+
+  const buildCompleted =
+    data?.build?.status === models.EnumBuildStatus.Completed;
   return (
     <div className={className}>
       <div className={`${className}__title`}>
@@ -32,7 +42,7 @@ const CreateServiceCodeGeneration: React.FC<WizardStepProps> = ({
         <h3>It should only take a few seconds to finish. Don't go away!</h3>
       </div>
       <div className={`${className}__status`}>
-        {!completed ? (
+        {!buildCompleted ? (
           <ActionLog
             action={actionLog?.action}
             title={actionLog?.title || ""}

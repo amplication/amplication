@@ -4,7 +4,6 @@ import type { JsonValue } from "type-fest";
 import { AdminUISettings } from "./AdminUISettings";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettings } from "./ServerSettings";
-import { StructureSettings } from "./StructureSettings";
 
 @ObjectType({
   implements: IBlock,
@@ -50,9 +49,4 @@ export class ServiceSettings extends IBlock {
     nullable: false,
   })
   serverSettings: ServerSettings & JsonValue;
-
-  @Field(() => StructureSettings, {
-    nullable: false,
-  })
-  structureSettings: StructureSettings & JsonValue;
 }

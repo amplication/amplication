@@ -33,7 +33,6 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
-      structureSettings,
     } = await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -46,7 +45,6 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
-      structureSettings,
     };
   }
 

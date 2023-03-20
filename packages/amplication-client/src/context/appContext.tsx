@@ -53,6 +53,7 @@ export interface AppContextInterface {
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
   openHubSpotChat: () => void;
+  createServiceWithEntitiesResult: models.ResourceCreateWithEntitiesResult;
 }
 
 const initialContext: AppContextInterface = {
@@ -96,6 +97,7 @@ const initialContext: AppContextInterface = {
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
   openHubSpotChat: () => {},
+  createServiceWithEntitiesResult: undefined,
 };
 
 export const AppContext =

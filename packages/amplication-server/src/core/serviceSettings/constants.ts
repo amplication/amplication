@@ -30,8 +30,4 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
     generateAdminUI: true,
     adminUIPath: "",
   },
-  structureSettings: {
-    structureType: EnumResourceStructureType.Mono,
-    baseDirectory: "",
-  },
 };

@@ -58,6 +58,8 @@ export class ResourceCreateWithEntitiesInput {
   })
   generationSettings!: ResourceGenSettingsCreateInput;
 
+  //serviceSettings: ServiceSettingsUpdateInput;
+
   @Field(() => ConnectGitRepositoryInput, {
     nullable: false,
   })

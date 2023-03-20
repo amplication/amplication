@@ -771,7 +771,6 @@ type ServiceSettings implements IBlock {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
-  structureSettings: StructureSettings!
 }
 
 interface IBlock {
@@ -814,16 +813,6 @@ type ServerSettings {
   generateGraphQL: Boolean!
   generateRestApi: Boolean!
   serverPath: String!
-}
-
-type StructureSettings {
-  structureType: EnumResourceStructureType!
-  baseDirectory: String
-}
-
-enum EnumResourceStructureType {
-  Mono
-  Poly
 }
 
 input BlockWhereInput {
@@ -1092,7 +1081,7 @@ type Mutation {
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createService(data: ResourceCreateInput!): Resource!
-  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
@@ -1202,6 +1191,11 @@ input ResourceCreateInput {
   description: String!
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
+}
+
+type ResourceCreateWithEntitiesResult {
+  resource: Resource!
+  build: Build!
 }
 
 input ResourceCreateWithEntitiesInput {

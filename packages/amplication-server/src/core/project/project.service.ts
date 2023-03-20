@@ -282,12 +282,12 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources
+    const promises = resources
       .filter(
         (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
       )
-      .forEach((resource: Resource) =>
-        this.buildService.create(
+      .map((resource: Resource) => {
+        return this.buildService.create(
           {
             data: {
               resource: {
@@ -307,8 +307,10 @@ export class ProjectService {
             },
           },
           skipPublish
-        )
-      );
+        );
+      });
+
+    await Promise.all(promises);
 
     return commit;
   }

@@ -56,10 +56,6 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
     adminUIPath: "",
   },
   resourceId: EXAMPLE_RESOURCE_ID,
-  structureSettings: {
-    structureType: EnumResourceStructureType.Mono,
-    baseDirectory: "",
-  },
 };
 
 const createMock = jest.fn(() => {

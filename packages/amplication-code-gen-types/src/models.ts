@@ -682,11 +682,6 @@ export enum EnumPendingChangeOriginType {
   Entity = 'Entity'
 }
 
-export enum EnumResourceStructureType {
-  Mono = 'Mono',
-  Poly = 'Poly'
-}
-
 export enum EnumResourceType {
   MessageBroker = 'MessageBroker',
   ProjectConfiguration = 'ProjectConfiguration',
@@ -847,7 +842,7 @@ export type Mutation = {
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
-  createServiceWithEntities: Resource;
+  createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -1754,6 +1749,11 @@ export type ResourceCreateWithEntitiesInput = {
   resource: ResourceCreateInput;
 };
 
+export type ResourceCreateWithEntitiesResult = {
+  build: Build;
+  resource: Resource;
+};
+
 export type ResourceGenSettingsCreateInput = {
   generateAdminUI: Scalars['Boolean'];
   generateGraphQL: Scalars['Boolean'];
@@ -1872,7 +1872,6 @@ export type ServiceSettings = IBlock & {
   parentBlock?: Maybe<Block>;
   resourceId?: Maybe<Scalars['String']>;
   serverSettings: ServerSettings;
-  structureSettings: StructureSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
 };
@@ -1974,11 +1973,6 @@ export type StringFilter = {
   not?: InputMaybe<Scalars['String']>;
   notIn?: InputMaybe<Array<Scalars['String']>>;
   startsWith?: InputMaybe<Scalars['String']>;
-};
-
-export type StructureSettings = {
-  baseDirectory?: Maybe<Scalars['String']>;
-  structureType: EnumResourceStructureType;
 };
 
 export type Subscription = {
