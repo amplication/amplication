@@ -242,7 +242,7 @@
     "base-64": "^1.0.0",
     "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.7.3",
-    "cypress": "^11.0.0", 
+    "cypress": "^11.0.0",
     "docker-compose": "^0.23.19",
     "dockerode": "^3.3.4",
     "eslint": "^8.24.0",
