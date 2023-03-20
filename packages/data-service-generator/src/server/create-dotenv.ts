@@ -4,7 +4,6 @@ import {
   Module,
   VariableDictionary,
 } from "@amplication/code-gen-types";
-import { isEmpty } from "lodash";
 import DsgContext from "../dsg-context";
 import pluginWrapper from "../plugin-wrapper";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
@@ -37,14 +36,6 @@ export async function createDotEnvModuleInternal({
     "",
     formattedAdditionalVariables
   );
-
-  if (
-    !isEmpty(appInfo.settings.dbName) &&
-    !appInfo.settings.dbName.startsWith("/")
-  ) {
-    appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
-  }
-
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   return [
