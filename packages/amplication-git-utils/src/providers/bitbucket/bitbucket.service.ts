@@ -290,7 +290,16 @@ export class BitBucketService implements GitProvider {
         htmlUrl: commit.html.href,
       })
     );
-    return gitFile;
+
+    const buff = Buffer.from(gitFile.content, "base64");
+    this.logger.info("BitBucketService getFile");
+
+    return {
+      content: buff.toString("utf-8"),
+      htmlUrl: gitFile.htmlUrl,
+      name: gitFile.name,
+      path: gitFile.path,
+    };
   }
 
   createPullRequestFromFiles(
