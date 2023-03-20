@@ -76,15 +76,15 @@ const Auth = {
 };
 
 export const schemaArray = [
-  [],
+  {},
   ResourceName,
   GitRepository,
   GenerationSettings,
   StructureType,
   DatabaseType,
   Auth,
-  [],
-  [],
+  {},
+  {},
 ];
 
 export const ResourceInitialValues = {

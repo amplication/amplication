@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { PURCHASE_URL } from "../../routes/routesUtil";
+import { getCookie, setCookie } from "../../util/cookie";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -87,6 +88,8 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
+    const isSignupCookieExist = getCookie("signup");
+    isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);
 
     if (isFromPurchase) {
@@ -100,9 +103,8 @@ const useProjectSelector = (
     !!(!workspaceUtil && currentWorkspace?.id) &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup ? "/create-resource" : ""
-        }`,
-        { userStatus: isFromSignup ? "signup" : "login" }
+          isFromSignup ? "/welcome" : ""
+        }`
       );
   }, [
     currentWorkspace?.id,

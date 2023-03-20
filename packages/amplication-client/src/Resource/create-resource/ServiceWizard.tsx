@@ -21,6 +21,8 @@ interface ServiceWizardProps {
   goToPage: number | null;
   submitLoader: boolean;
   handleCloseWizard: () => void;
+  handleWizardProgress: (dir: "next" | "prev", page: number) => void;
+  notShowWizardFooter: number[];
 }
 
 const BackButton: React.FC<{
@@ -69,12 +71,24 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   goToPage,
   submitLoader,
   handleCloseWizard,
+  handleWizardProgress,
+  notShowWizardFooter,
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
+  const [showFooter, setShowFooter] = useState(true);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
+
+  useEffect(() => {
+    !showFooter &&
+      !notShowWizardFooter.includes(activePageIndex) &&
+      setShowFooter(true);
+    if (!notShowWizardFooter.includes(activePageIndex)) return;
+
+    setShowFooter(false);
+  }, [activePageIndex]);
 
   useEffect(() => {
     if (!goToPage) return;
@@ -83,7 +97,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   }, [goToPage]);
 
   const pages = React.Children.toArray(children) as (
-    | React.ReactElement<any, string | React.JSXElementConstructor<any>>
+    | React.ReactElement<any, React.JSXElementConstructor<any>>
     | React.ReactPortal
   )[];
 
@@ -94,12 +108,16 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       currWizardPatternIndex === wizardPattern.length - 1
         ? currWizardPatternIndex
         : currWizardPatternIndex + 1;
+    //@ts-ignore
+    // console.log(pages[wizardPattern[wizardIndex]].type.name)
+    handleWizardProgress("next", wizardIndex);
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
   const goPrevPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
+    handleWizardProgress("prev", wizardIndex);
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
@@ -159,7 +177,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                         string | React.JSXElementConstructor<any>
                       >,
 
-                      { formik }
+                      { formik, goNextPage }
                     )
                   )}
                 </Form>

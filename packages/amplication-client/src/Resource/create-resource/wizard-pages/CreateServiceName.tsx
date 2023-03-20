@@ -1,11 +1,18 @@
 import { TextField } from "@amplication/design-system";
-import React from "react";
+import React, { useEffect } from "react";
 import "./CreateServiceName.scss";
 import { WizardStepProps } from "./interfaces";
 
 const className = "create-service-name";
 
-const CreateServiceName: React.FC<WizardStepProps> = ({ moduleClass }) => {
+const CreateServiceName: React.FC<WizardStepProps> = ({
+  moduleClass,
+  formik,
+}) => {
+  useEffect(() => {
+    formik.validateForm();
+  }, []);
+
   return (
     <div className={className}>
       <div className={`${className}__description`}>
@@ -22,5 +29,7 @@ const CreateServiceName: React.FC<WizardStepProps> = ({ moduleClass }) => {
     </div>
   );
 };
+
+CreateServiceName.displayName = "CreateServiceName";
 
 export default CreateServiceName;

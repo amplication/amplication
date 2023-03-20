@@ -6,7 +6,6 @@ import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
-import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
 import ServiceWizard from "./ServiceWizard";
 import CreateServiceName from "./wizard-pages/CreateServiceName";
 import CreateGithubSync from "./wizard-pages/CreateGithubSync";
@@ -25,6 +24,9 @@ import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGenerat
 import { CreateServiceNextSteps } from "./wizard-pages/CreateServiceNextSteps";
 import { prepareServiceObject } from "../constants";
 import * as models from "../../models";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useTracking } from "../../util/analytics";
+import { getCookie } from "../../util/cookie";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -33,6 +35,8 @@ type Props = AppRouteProps & {
   }>;
   location: H.Location;
 };
+
+const signupCookie = getCookie("signup");
 
 const CreateServiceWizard: React.FC<Props> = ({
   moduleClass,
@@ -46,13 +50,14 @@ const CreateServiceWizard: React.FC<Props> = ({
     loadingCreateService,
     setNewService,
   } = useContext(AppContext);
+  const { trackEvent } = useTracking();
   const history = useHistory();
   const [goToPage, setGoToPage] = useState<number | null>(null);
-  const defineUser = (props.location.state as "signup" | "login") || "login";
-  const wizardPattern =
-    defineUser === "login"
-      ? [1, 2, 3, 4, 5, 6, 8]
-      : [0, 1, 2, 3, 4, 5, 6, 7, 8];
+  const defineUser = signupCookie === "1" ? "signup" : "login";
+  const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7];
+  // defineUser === "login"
+  //   ? [0, 1, 2, 3, 4, 5, 7]
+  //   : [0, 1, 2, 3, 4, 5, 6, 7];
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
@@ -61,6 +66,8 @@ const CreateServiceWizard: React.FC<Props> = ({
         const findPage = wizardProgressBarSchema.find(
           (item: WizardProgressBarInterface) => item.activePages.includes(page)
         );
+        if (!findPage) return wizardArr;
+
         if (pagesMap[findPage.title]) return wizardArr;
 
         pagesMap[findPage.title] = { ...findPage, pageIndex: page };
@@ -87,6 +94,23 @@ const CreateServiceWizard: React.FC<Props> = ({
   const handleCloseWizard = useCallback(() => {
     history.push(`/${currentWorkspace.id}/${currentProject.id}`);
   }, [currentWorkspace, currentProject]);
+
+  const handleWizardProgress = useCallback(
+    (dir: "next" | "prev", page: number) => {
+      trackEvent({
+        eventName:
+          AnalyticsEventNames[
+            dir === "next"
+              ? "ServiceWizardStep_ContinueClick"
+              : "ServiceWizardStep_BackClick"
+          ],
+        category: "Service Wizard",
+        WizardType: defineUser === "login" ? "Create Service" : "Onboarding",
+        step: "",
+      });
+    },
+    []
+  );
 
   const createResource = useCallback((values: ResourceSettings) => {
     const {
@@ -145,8 +169,9 @@ const CreateServiceWizard: React.FC<Props> = ({
         goToPage={goToPage}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
+        handleWizardProgress={handleWizardProgress}
+        notShowWizardFooter={[0]}
       >
-        <CreateServiceWelcome moduleClass={moduleClass} />
         <CreateServiceName moduleClass={moduleClass} />
         <CreateGithubSync moduleClass={moduleClass} />
         <CreateGenerationSettings moduleClass={moduleClass} />
