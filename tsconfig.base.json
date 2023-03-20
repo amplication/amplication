@@ -43,6 +43,9 @@
       "@amplication/util/json": ["libs/util/json/src/index.ts"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/logging": ["libs/util/logging/src/index.ts"],
+      "@amplication/util/logging/test-utils": [
+        "libs/util/nestjs/logging/tests/utils/index.ts"
+      ],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
       "@amplication/util/nestjs/logging": [
         "libs/util/nestjs/logging/src/index.ts"
