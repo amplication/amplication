@@ -51,9 +51,10 @@ const StructureType = {
     },
     baseDir: {
       type: "string",
+      minLength: 4,
     },
   },
-  required: ["structureType"],
+  required: ["baseDir", "structureType"],
 };
 
 const DatabaseType = {
@@ -94,8 +95,7 @@ export const ResourceInitialValues = {
   generateAdminUI: true,
   generateGraphQL: true,
   generateRestApi: true,
-  structureType: "Mono",
-  baseDir: "",
+  baseDir: "./apps",
   databaseType: "postgres",
   resourceType: "scratch",
   authType: "core",

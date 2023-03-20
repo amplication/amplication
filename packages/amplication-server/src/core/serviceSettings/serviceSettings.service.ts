@@ -11,7 +11,6 @@ import {
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { ResourceGenSettingsCreateInput } from "../resource/dto/ResourceGenSettingsCreateInput";
-import { ResourceStructureInput } from "../resource/dto/ResourceStructureInput";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
@@ -164,15 +163,15 @@ export class ServiceSettingsService {
     resourceId: string,
     user: User,
     generationSettings: ResourceGenSettingsCreateInput = null,
-    resourceStructure: ResourceStructureInput = null
+    baseDir: string = null
   ): Promise<ServiceSettings> {
     const settings = DEFAULT_SERVICE_SETTINGS;
 
-    if (generationSettings && resourceStructure)
+    if (generationSettings)
       this.updateServiceGenerationSettings(
         settings,
         generationSettings,
-        resourceStructure
+        baseDir
       );
 
     return this.blockService.create<ServiceSettings>(
@@ -193,20 +192,16 @@ export class ServiceSettingsService {
   private updateServiceGenerationSettings(
     settings: ServiceSettingsValuesExtended,
     generationSettings: ResourceGenSettingsCreateInput,
-    resourceStructure: ResourceStructureInput
+    baseDir: string
   ): void {
     (settings.adminUISettings = {
       generateAdminUI: generationSettings.generateAdminUI,
-      adminUIPath: "",
+      adminUIPath: baseDir,
     }),
       (settings.serverSettings = {
         generateGraphQL: generationSettings.generateGraphQL,
         generateRestApi: generationSettings.generateRestApi,
-        serverPath: "",
-      }),
-      (settings.structureSettings = {
-        structureType: resourceStructure.structureType,
-        baseDirectory: resourceStructure.baseDirectory,
+        serverPath: baseDir,
       });
   }
 }

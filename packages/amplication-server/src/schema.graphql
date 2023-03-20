@@ -1209,7 +1209,7 @@ input ResourceCreateWithEntitiesInput {
   entities: [ResourceCreateWithEntitiesEntityInput!]!
   generationSettings: ResourceGenSettingsCreateInput!
   gitRepository: ConnectGitRepositoryInput!
-  resourceStructure: ResourceStructureInput!
+  baseDir: String
   commitMessage: String!
 }
 
@@ -1234,11 +1234,6 @@ input ConnectGitRepositoryInput {
   name: String!
   resourceId: String!
   gitOrganizationId: String!
-}
-
-input ResourceStructureInput {
-  structureType: EnumResourceStructureType!
-  baseDirectory: String
 }
 
 input ResourceUpdateInput {

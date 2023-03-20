@@ -94,7 +94,6 @@ const CreateServiceWizard: React.FC<Props> = ({
       generateAdminUI,
       generateGraphQL,
       generateRestApi,
-      structureType,
       gitOrganizationId,
       gitRepositoryName,
       authType,
@@ -117,10 +116,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           gitOrganizationId: gitOrganizationId,
           resourceId: "",
         },
-        {
-          baseDirectory: baseDir,
-          structureType: structureType,
-        }
+        baseDir
       );
 
       createStarterResource(

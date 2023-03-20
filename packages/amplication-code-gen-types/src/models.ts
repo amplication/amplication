@@ -1746,12 +1746,12 @@ export type ResourceCreateWithEntitiesFieldInput = {
 };
 
 export type ResourceCreateWithEntitiesInput = {
+  baseDir?: InputMaybe<Scalars['String']>;
   commitMessage: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   generationSettings: ResourceGenSettingsCreateInput;
   gitRepository: ConnectGitRepositoryInput;
   resource: ResourceCreateInput;
-  resourceStructure: ResourceStructureInput;
 };
 
 export type ResourceGenSettingsCreateInput = {
@@ -1814,11 +1814,6 @@ export type ResourceRoleWhereInput = {
   name?: InputMaybe<StringFilter>;
   resource?: InputMaybe<WhereUniqueInput>;
   updatedAt?: InputMaybe<DateTimeFilter>;
-};
-
-export type ResourceStructureInput = {
-  baseDirectory?: InputMaybe<Scalars['String']>;
-  structureType: EnumResourceStructureType;
 };
 
 export type ResourceUpdateInput = {

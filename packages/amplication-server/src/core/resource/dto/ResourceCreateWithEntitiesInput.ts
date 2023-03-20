@@ -3,7 +3,6 @@ import { ResourceCreateInput } from "./ResourceCreateInput";
 import { EnumDataType } from "../../../enums/EnumDataType";
 import { ResourceGenSettingsCreateInput } from "./ResourceGenSettingsCreateInput";
 import { ConnectGitRepositoryInput } from "../../git/dto/inputs/ConnectGitRepositoryInput";
-import { ResourceStructureInput } from "./ResourceStructureInput";
 
 @InputType({
   isAbstract: true,
@@ -64,10 +63,10 @@ export class ResourceCreateWithEntitiesInput {
   })
   gitRepository!: ConnectGitRepositoryInput;
 
-  @Field(() => ResourceStructureInput, {
-    nullable: false,
+  @Field(() => String, {
+    nullable: true,
   })
-  resourceStructure!: ResourceStructureInput;
+  baseDir?: string;
 
   @Field(() => String, {
     nullable: false,

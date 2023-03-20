@@ -8,42 +8,6 @@ export const serviceSettingsFieldsInitValues = {
   resourceType: "scratch",
 };
 
-export const sampleServiceResourceWithoutEntities = (
-  projectId: string,
-  generateAdminUI: boolean,
-  generateGraphQL: boolean,
-  generateRestApi: boolean,
-  gitRepository: models.ConnectGitRepositoryInput,
-  resourceStructure: models.ResourceStructureInput
-): models.ResourceCreateWithEntitiesInput => ({
-  resource: {
-    name: "My service",
-    description: "",
-    resourceType: models.EnumResourceType.Service,
-    project: {
-      connect: {
-        id: projectId,
-      },
-    },
-  },
-  commitMessage: "",
-  entities: [],
-  generationSettings: {
-    generateAdminUI: generateAdminUI,
-    generateGraphQL: generateGraphQL,
-    generateRestApi: generateRestApi,
-  },
-  gitRepository: {
-    name: gitRepository.resourceId,
-    gitOrganizationId: gitRepository.gitOrganizationId,
-    resourceId: "",
-  },
-  resourceStructure: {
-    structureType: resourceStructure.structureType,
-    baseDirectory: resourceStructure.baseDirectory,
-  },
-});
-
 export const sampleServiceResourceWithEntities = [
   {
     name: "Orders",
@@ -144,7 +108,7 @@ export function prepareServiceObject(
   generateGraphQL: boolean,
   generateRestApi: boolean,
   gitRepository: models.ConnectGitRepositoryInput,
-  resourceStructure: models.ResourceStructureInput
+  baseDir: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
@@ -171,10 +135,7 @@ export function prepareServiceObject(
       gitOrganizationId: gitRepository.gitOrganizationId,
       resourceId: "",
     },
-    resourceStructure: {
-      structureType: resourceStructure.structureType,
-      baseDirectory: resourceStructure.baseDirectory,
-    },
+    baseDir,
   };
 }
 
