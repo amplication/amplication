@@ -63,7 +63,7 @@
     "@octokit/rest": "^19.0.5",
     "@octokit/webhooks": "^10.6.2",
     "@octokit/webhooks-types": "^6.9.0",
-    "@primer/octicons-react": "^16.3.1",
+    "@primer/octicons-react": "^18.2.0",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.6.1",
     "@sendgrid/mail": "^7.7.0",
