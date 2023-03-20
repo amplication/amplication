@@ -15,12 +15,18 @@ export default {
     "generated",
     "src/server/static",
     "src/admin/static",
-    "src/server/auth/token",
   ],
+  testPathIgnorePatterns: ["amplication_modules", "tests/e2e"],
   moduleNameMapper: {
     "^axios$": require.resolve("axios"),
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
+  collectCoverageFrom: [
+    "**/*.{ts,tsx}",
+    "!**/*.template.{ts,tsx}",
+    "!**/node_modules/**",
+    "!**/tests/e2e/**",
+  ],
   coverageDirectory: "../../coverage/packages/data-service-generator",
   coverageThreshold: {
     global: {

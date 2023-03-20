@@ -17,11 +17,6 @@ on:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
-  pull_request:
-    types: [opened, reopened, synchronize]
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
   push:
     branches:
       - master
@@ -29,6 +24,7 @@ on:
     paths-ignore:
       - "**/*.md"
       - ".all-contributorsrc"
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -37,9 +33,23 @@ env:
   BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
 
 jobs:
-  ci:
-    name: Continuous Integration
+  nx:
+    name: Nx
+    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: ${{ github.head_ref || github.ref_name }}
+      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
+      nx-skip-cache: ${{ inputs.nx-force-all || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+      nx-force-all: ${{ inputs.nx-skip-cache || false }}
+
+  e2e:
     runs-on: ubuntu-20.04
+    needs: nx
+    if: ${{ needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != ''}}
+    strategy:
+        matrix:
+          project: ${{ fromJson(needs.nx.outputs.affected-apps) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -79,48 +89,5 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
-      - name: Nx Workspace Lint
-        run: npx nx workspace-lint
-
-      - name: Nx Format Check
-        run: npx nx format:check $NX_FORCE_ALL
-
-      - name: Lint
-        run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
-
-      - name: Build
-        run: |
-          npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
-          npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
-
-      - name: Test
-        run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=text-summary $NX_FORCE_ALL
-      
-  nx:
-    name: Nx
-    needs: ci
-    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
-    uses: ./.github/workflows/nx.template.yml
-    with:
-      nx-head: ${{ github.head_ref || github.ref_name }}
-      nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
-      nx-skip-cache: ${{ inputs.nx-force-all || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
-      nx-force-all: ${{ inputs.nx-skip-cache || false }}
-
-  release:
-    name: Release
-    needs: nx
-    uses: ./.github/workflows/release.template.yml
-    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
-    with:
-      branch: ${{ github.ref_name }}
-      affected-apps: ${{ needs.nx.outputs.affected-apps }}
-      affected-lib: ${{ needs.nx.outputs.affected-lib }}
-      affected-dockerable: ${{ needs.nx.outputs.affected-dockerable }}
-      affected-deployable: ${{ needs.nx.outputs.affected-deployable }}
-    secrets:
-      nx-cloud-access-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
-      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
-      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
-      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      - name: e2e 
+        run: npx nx docker:build ${{ matrix.project }} --prod
