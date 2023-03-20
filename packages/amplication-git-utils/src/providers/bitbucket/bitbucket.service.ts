@@ -1,4 +1,4 @@
-import * as fs from "fs";
+import { parse } from "path";
 import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
@@ -34,6 +34,7 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  getFileMetaRequest,
   getFileRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
@@ -275,7 +276,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing baseBranchName");
     }
 
-    const fileResponse = await getFileRequest(
+    const fileResponse = await getFileMetaRequest(
       owner,
       repositoryName,
       baseBranchName,
@@ -283,33 +284,32 @@ export class BitBucketService implements GitProvider {
       this.accessToken
     );
 
-    // if path is a directory, fileREsponse will be an array of files: PaginatedTreeEntry
-    if (fs.lstatSync(path).isDirectory()) {
-      (fileResponse as PaginatedTreeEntry).values.map(
-        ({ path, commit, content, name }) => ({
-          path,
-          name,
-          content,
-          commit: commit.hash,
-          htmlUrl: commit.links.html.href,
-        })
+    const fileBufferResponse = await getFileRequest(
+      owner,
+      repositoryName,
+      baseBranchName,
+      path,
+      this.accessToken
+    );
+
+    if ((fileResponse as PaginatedTreeEntry).values) {
+      this.logger.error(
+        "BitbucketService getFile: Path points to a directory, please provide a file path"
+      );
+      throw new CustomError(
+        "Path points to a directory, please provide a file path"
       );
     }
 
-    // if path is a file, fileResponse will be an object: TreeEntry
-    if (fs.lstatSync(path).isFile()) {
-      const gitFileResponse = fileResponse as TreeEntry;
-      const buff = Buffer.from(gitFileResponse.content, "base64");
-      this.logger.info("BitBucketService getFile");
+    const gitFileResponse = fileResponse as TreeEntry;
+    this.logger.info("BitBucketService getFile");
 
-      return {
-        content: buff.toString("utf-8"),
-        htmlUrl: gitFileResponse.commit.links.html.href,
-        name: gitFileResponse.name,
-        path: gitFileResponse.path,
-      };
-    }
-    return null;
+    return {
+      content: fileBufferResponse.toString("utf-8"),
+      htmlUrl: gitFileResponse.commit.links.html.href,
+      name: parse(gitFileResponse.path).name,
+      path: gitFileResponse.path,
+    };
   }
 
   createPullRequestFromFiles(

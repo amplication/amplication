@@ -117,7 +117,6 @@ export interface PaginatedTreeEntry {
 export interface TreeEntry {
   type: string;
   path: string;
-  name: string;
   content: string;
   commit: Commit;
 }

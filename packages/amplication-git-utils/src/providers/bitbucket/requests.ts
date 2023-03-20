@@ -157,7 +157,7 @@ export async function repositoryCreateRequest(
   });
 }
 
-export async function getFileRequest(
+export async function getFileMetaRequest(
   workspaceSlug: string,
   repositorySlug: string,
   branchName: string,
@@ -176,4 +176,21 @@ export async function getFileRequest(
       headers: getRequestHeaders(accessToken),
     }
   );
+}
+
+export async function getFileRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  pathToFile: string,
+  accessToken: string
+): Promise<Buffer> {
+  const response = await fetch(
+    GET_FILE_URL(workspaceSlug, repositorySlug, branchName, pathToFile),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return response.buffer();
 }
