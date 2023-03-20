@@ -1,5 +1,5 @@
 import { httpClient } from "./utils/http-client";
-import { defaultLogger as logger } from "./server/logging";
+import { defaultLogger as logger } from "./logging";
 import { LogEntry } from "winston";
 
 export const createLog = async (log: LogEntry): Promise<void> => {

@@ -7,7 +7,7 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
-import { defaultLogger } from "./server/logging";
+import { defaultLogger } from "./logging";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,

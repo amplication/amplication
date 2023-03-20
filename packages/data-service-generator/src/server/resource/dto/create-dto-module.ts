@@ -46,7 +46,7 @@ import {
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import DsgContext from "../../../dsg-context";
-import { defaultLogger as logger } from "../../logging";
+import { defaultLogger as logger } from "../../../logging";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
