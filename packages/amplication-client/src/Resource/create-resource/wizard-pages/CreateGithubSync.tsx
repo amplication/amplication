@@ -22,8 +22,8 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   }, []);
 
   const handleOnDone = useCallback(() => {
-    //refreshCurrentWorkspace();
-  }, []);
+    refreshCurrentWorkspace();
+  }, [refreshCurrentWorkspace]);
 
   const handleOnGitRepositorySelected = useCallback(
     (data: GitRepositorySelected) => {
