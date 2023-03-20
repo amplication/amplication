@@ -30,7 +30,7 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
-  const { id, name, description, gitRepository } = resource;
+  const { id, name, description, gitRepository, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const handleDelete = useCallback(
@@ -66,10 +66,16 @@ function ResourceListItem({ resource, onDelete }: Props) {
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete '${resource.name}' ?`}
+        title={`Delete '${name}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "
+        message={
+          <span>
+            {resourceType === models.EnumResourceType.ProjectConfiguration
+              ? "This will permanently delete the entire project and all its resources. Are you sure you want to continue?"
+              : "This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "}
+          </span>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
