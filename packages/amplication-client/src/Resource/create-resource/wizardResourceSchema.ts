@@ -76,7 +76,6 @@ const Auth = {
 };
 
 export const schemaArray = [
-  {},
   ResourceName,
   GitRepository,
   GenerationSettings,
@@ -95,6 +94,7 @@ export const ResourceInitialValues = {
   generateAdminUI: true,
   generateGraphQL: true,
   generateRestApi: true,
+  structureType: "Mono",
   baseDir: "./apps",
   databaseType: "postgres",
   resourceType: "scratch",
@@ -109,26 +109,26 @@ export interface WizardProgressBarInterface {
 export const wizardProgressBarSchema = [
   {
     title: "create service",
-    activePages: [1],
+    activePages: [0],
   },
   {
     title: "General Settings",
-    activePages: [2, 3, 4],
+    activePages: [1, 2, 3],
   },
   {
     title: "DB Settings",
-    activePages: [5],
+    activePages: [4],
   },
   {
     title: "Auth Settings",
-    activePages: [6],
+    activePages: [5],
   },
   {
     title: "Generate Code",
-    activePages: [7],
+    activePages: [6],
   },
   {
     title: "Confirmation & Next Steps",
-    activePages: [8],
+    activePages: [7],
   },
 ];

@@ -15,14 +15,13 @@ interface ServiceWizardProps {
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
   wizardInitialValues: { [key: string]: any };
-  wizardSubmit: (values: ResourceSettings) => void;
+  wizardSubmit: (activeIndex: number, values: ResourceSettings) => void;
   moduleCss: string;
   submitFormPage: number;
   goToPage: number | null;
   submitLoader: boolean;
   handleCloseWizard: () => void;
   handleWizardProgress: (dir: "next" | "prev", page: number) => void;
-  notShowWizardFooter: number[];
 }
 
 const BackButton: React.FC<{
@@ -72,24 +71,13 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
-  notShowWizardFooter,
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
-  const [showFooter, setShowFooter] = useState(true);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
-
-  useEffect(() => {
-    !showFooter &&
-      !notShowWizardFooter.includes(activePageIndex) &&
-      setShowFooter(true);
-    if (!notShowWizardFooter.includes(activePageIndex)) return;
-
-    setShowFooter(false);
-  }, [activePageIndex]);
-
+  console.log(currWizardPatternIndex);
   useEffect(() => {
     if (!goToPage) return;
 
@@ -102,7 +90,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   )[];
 
   const currentPage = pages[activePageIndex];
-
+  console.log();
   const goNextPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === wizardPattern.length - 1
@@ -152,7 +140,9 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
-          onSubmit={wizardSubmit}
+          onSubmit={(values: ResourceSettings) =>
+            wizardSubmit(activePageIndex, values)
+          }
           validateOnMount
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =
@@ -200,7 +190,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                       <ContinueButton
                         goNextPage={
                           activePageIndex === submitFormPage
-                            ? formik.submitForm
+                            ? () => {
+                                formik.submitForm();
+                                goNextPage();
+                              }
                             : goNextPage
                         }
                         disabled={isValidStep}

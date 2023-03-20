@@ -112,49 +112,51 @@ const CreateServiceWizard: React.FC<Props> = ({
     []
   );
 
-  const createResource = useCallback((values: ResourceSettings) => {
-    const {
-      serviceName,
-      generateAdminUI,
-      generateGraphQL,
-      generateRestApi,
-      gitOrganizationId,
-      gitRepositoryName,
-      authType,
-      databaseType,
-      baseDir,
-    } = values;
-
-    const isResourceWithEntities = values.resourceType === "sample";
-
-    if (currentProject) {
-      const resource = prepareServiceObject(
+  const createResource = useCallback(
+    (activeIndex: number, values: ResourceSettings) => {
+      const {
         serviceName,
-        currentProject?.id,
-        isResourceWithEntities,
         generateAdminUI,
         generateGraphQL,
         generateRestApi,
-        {
-          name: gitRepositoryName,
-          gitOrganizationId: gitOrganizationId,
-          resourceId: "",
-        },
-        baseDir
-      );
-
-      createStarterResource(
-        resource,
-        databaseType,
+        gitOrganizationId,
+        gitRepositoryName,
         authType,
-        isResourceWithEntities
-          ? "createResourceFromSample"
-          : "createResourceFromScratch"
-      );
-    }
-    console.log("***********", values);
-    if (!loadingCreateService) setGoToPage(8);
-  }, []);
+        databaseType,
+        baseDir,
+      } = values;
+
+      const isResourceWithEntities = values.resourceType === "sample";
+
+      if (currentProject) {
+        const resource = prepareServiceObject(
+          serviceName,
+          currentProject?.id,
+          isResourceWithEntities,
+          generateAdminUI,
+          generateGraphQL,
+          generateRestApi,
+          {
+            name: gitRepositoryName,
+            gitOrganizationId: gitOrganizationId,
+            resourceId: "",
+          },
+          baseDir
+        );
+
+        createStarterResource(
+          resource,
+          databaseType,
+          authType,
+          isResourceWithEntities
+            ? "createResourceFromSample"
+            : "createResourceFromScratch"
+        );
+      }
+      console.log("***********", values, goToPage);
+    },
+    []
+  );
 
   return (
     <Modal open fullScreen css={moduleClass}>
@@ -165,12 +167,11 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={6}
+        submitFormPage={5}
         goToPage={goToPage}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
-        notShowWizardFooter={[0]}
       >
         <CreateServiceName moduleClass={moduleClass} />
         <CreateGithubSync moduleClass={moduleClass} />
