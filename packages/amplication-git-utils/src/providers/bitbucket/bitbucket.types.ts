@@ -126,8 +126,10 @@ export interface Commit {
   repository: Repository;
   message: string;
   hash: string;
-  html: {
-    href: string;
+  links: {
+    html: {
+      href: string;
+    };
   };
   author: {
     raw: string;

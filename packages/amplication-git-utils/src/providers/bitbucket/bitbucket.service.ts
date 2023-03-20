@@ -1,3 +1,4 @@
+import * as fs from "fs";
 import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
@@ -40,6 +41,7 @@ import {
   repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
+import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -281,25 +283,33 @@ export class BitBucketService implements GitProvider {
       this.accessToken
     );
 
-    const [gitFile] = fileResponse.values.map(
-      ({ path, commit, content, name }) => ({
-        path,
-        name,
-        content,
-        commit: commit.hash,
-        htmlUrl: commit.html.href,
-      })
-    );
+    // if path is a directory, fileREsponse will be an array of files: PaginatedTreeEntry
+    if (fs.lstatSync(path).isDirectory()) {
+      (fileResponse as PaginatedTreeEntry).values.map(
+        ({ path, commit, content, name }) => ({
+          path,
+          name,
+          content,
+          commit: commit.hash,
+          htmlUrl: commit.links.html.href,
+        })
+      );
+    }
 
-    const buff = Buffer.from(gitFile.content, "base64");
-    this.logger.info("BitBucketService getFile");
+    // if path is a file, fileResponse will be an object: TreeEntry
+    if (fs.lstatSync(path).isFile()) {
+      const gitFileResponse = fileResponse as TreeEntry;
+      const buff = Buffer.from(gitFileResponse.content, "base64");
+      this.logger.info("BitBucketService getFile");
 
-    return {
-      content: buff.toString("utf-8"),
-      htmlUrl: gitFile.htmlUrl,
-      name: gitFile.name,
-      path: gitFile.path,
-    };
+      return {
+        content: buff.toString("utf-8"),
+        htmlUrl: gitFileResponse.commit.links.html.href,
+        name: gitFileResponse.name,
+        path: gitFileResponse.path,
+      };
+    }
+    return null;
   }
 
   createPullRequestFromFiles(

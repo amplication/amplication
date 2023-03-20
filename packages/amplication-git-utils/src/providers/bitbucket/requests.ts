@@ -4,6 +4,7 @@ import {
   Account,
   OAuth2,
   PaginatedRepositories,
+  TreeEntry,
   PaginatedTreeEntry,
   PaginatedWorkspaceMembership,
   Repository,
@@ -162,9 +163,14 @@ export async function getFileRequest(
   branchName: string,
   pathToFile: string,
   accessToken: string
-): Promise<PaginatedTreeEntry> {
+): Promise<TreeEntry | PaginatedTreeEntry> {
   return requestWrapper(
-    GET_FILE_URL(workspaceSlug, repositorySlug, branchName, pathToFile),
+    `${GET_FILE_URL(
+      workspaceSlug,
+      repositorySlug,
+      branchName,
+      pathToFile
+    )}?format=meta`,
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
