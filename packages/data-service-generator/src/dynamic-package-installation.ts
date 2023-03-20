@@ -1,6 +1,6 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 import { join } from "path";
-import { AMPLICATION_MODULES } from "./main";
+import { AMPLICATION_MODULES } from "./generate-code";
 import {
   DynamicPackageInstallationManager,
   PackageInstallation,
@@ -12,7 +12,7 @@ export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],
   logger: Logger
 ): Promise<void> {
-  console.info("Installing dynamic packages");
+  logger.info("Installing dynamic packages");
   const manager = new DynamicPackageInstallationManager(
     join(__dirname, "..", AMPLICATION_MODULES)
   );

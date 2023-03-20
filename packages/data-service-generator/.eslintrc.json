@@ -61,7 +61,9 @@
     },
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
-      "rules": {}
+      "rules": {
+        "no-console": "error"
+      }
     },
     {
       "files": ["*.ts", "*.tsx"],
