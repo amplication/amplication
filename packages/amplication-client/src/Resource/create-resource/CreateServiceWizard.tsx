@@ -26,7 +26,7 @@ import { prepareServiceObject } from "../constants";
 import * as models from "../../models";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
-import { getCookie } from "../../util/cookie";
+import { expireCookie, getCookie } from "../../util/cookie";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -157,6 +157,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         );
       }
       console.log("***********", values, goToPage);
+      expireCookie("signup");
     },
     []
   );
