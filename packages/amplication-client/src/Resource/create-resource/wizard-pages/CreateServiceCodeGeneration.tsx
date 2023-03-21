@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -28,6 +28,13 @@ const CreateServiceCodeGeneration: React.FC<
     );
   }, []);
 
+  useEffect(() => {
+    if (!data && data?.build?.status !== models.EnumBuildStatus.Completed)
+      return;
+
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
+  }, [data]);
+
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
 
@@ -39,6 +46,10 @@ const CreateServiceCodeGeneration: React.FC<
       versionNumber: data.build.version,
     };
   }, [data]);
+
+  const handleViewCodeClick = useCallback(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_ViewCodeClicked);
+  }, [trackWizardPageEvent]);
 
   const buildCompleted =
     data?.build?.status === models.EnumBuildStatus.Completed;
@@ -76,7 +87,7 @@ const CreateServiceCodeGeneration: React.FC<
               </div>
               <div />
             </div>
-            <Button>View my code</Button>
+            <Button onClick={handleViewCodeClick}>View my code</Button>
           </div>
         )}
       </div>
