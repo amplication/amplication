@@ -116,8 +116,8 @@ export interface GetRepositoriesArgs {
 export interface GetFileArgs {
   owner: string;
   repositoryName: string;
-  baseBranchName?: string;
   path: string;
+  baseBranchName?: string;
 }
 
 export interface CreatePullRequestArgs {

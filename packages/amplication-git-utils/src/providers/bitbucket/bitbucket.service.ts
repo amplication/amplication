@@ -1,3 +1,4 @@
+import { parse } from "path";
 import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
@@ -33,12 +34,15 @@ import {
   authorizeRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  getFileMetaRequest,
+  getFileRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
   repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
+import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -264,8 +268,48 @@ export class BitBucketService implements GitProvider {
 
   // pull request flow
 
-  getFile(file: GetFileArgs): Promise<GitFile> {
-    throw NotImplementedError;
+  async getFile(file: GetFileArgs): Promise<GitFile | null> {
+    const { owner, repositoryName, baseBranchName, path } = file;
+
+    if (!baseBranchName) {
+      this.logger.error("Missing baseBranchName");
+      throw new CustomError("Missing baseBranchName");
+    }
+
+    const fileResponse = await getFileMetaRequest(
+      owner,
+      repositoryName,
+      baseBranchName,
+      path,
+      this.accessToken
+    );
+
+    const fileBufferResponse = await getFileRequest(
+      owner,
+      repositoryName,
+      baseBranchName,
+      path,
+      this.accessToken
+    );
+
+    if ((fileResponse as PaginatedTreeEntry).values) {
+      this.logger.error(
+        "BitbucketService getFile: Path points to a directory, please provide a file path"
+      );
+      throw new CustomError(
+        "Path points to a directory, please provide a file path"
+      );
+    }
+
+    const gitFileResponse = fileResponse as TreeEntry;
+    this.logger.info("BitBucketService getFile");
+
+    return {
+      content: fileBufferResponse.toString("utf-8"),
+      htmlUrl: gitFileResponse.commit.links.html.href,
+      name: parse(gitFileResponse.path).name,
+      path: gitFileResponse.path,
+    };
   }
 
   createPullRequestFromFiles(

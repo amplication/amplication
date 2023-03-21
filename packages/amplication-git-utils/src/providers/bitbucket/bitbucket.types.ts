@@ -100,3 +100,38 @@ interface Branch {
   merge_strategies: string[];
   default_merge_strategy: string;
 }
+
+/**
+ * https://developer.atlassian.com/cloud/bitbucket/rest/api-group-source/#api-repositories-workspace-repo-slug-src-commit-path-get
+ */
+
+export interface PaginatedTreeEntry {
+  size: number;
+  page: number;
+  pagelen: number;
+  next: string;
+  previous: string;
+  values: TreeEntry[];
+}
+
+export interface TreeEntry {
+  type: string;
+  path: string;
+  content: string;
+  commit: Commit;
+}
+
+export interface Commit {
+  repository: Repository;
+  message: string;
+  hash: string;
+  links: {
+    html: {
+      href: string;
+    };
+  };
+  author: {
+    raw: string;
+    user: Account;
+  };
+}
