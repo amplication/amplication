@@ -126,6 +126,12 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     return () => clearTimeout(timer);
   }, [keepLoadingAnimation]);
 
+  const onKeyDown = (keyEvent) => {
+    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+      keyEvent.preventDefault();
+    }
+  };
+
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -155,7 +161,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           {(formik) => {
             return (
               <>
-                <Form>
+                <Form onKeyDown={onKeyDown}>
                   {keepLoadingAnimation ? (
                     <CreateServiceLoader />
                   ) : (
