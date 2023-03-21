@@ -144,9 +144,9 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
-          onSubmit={(values: ResourceSettings) =>
-            wizardSubmit(activePageIndex, values)
-          }
+          onSubmit={(values: ResourceSettings) => {
+            wizardSubmit(activePageIndex, values);
+          }}
           validateOnMount
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =

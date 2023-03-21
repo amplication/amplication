@@ -50,6 +50,7 @@ export default function WizardRepositoryActions({
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
+                      type="button"
                       buttonStyle={EnumButtonStyle.Primary}
                       onClick={onSelectRepository}
                     >
@@ -60,6 +61,7 @@ export default function WizardRepositoryActions({
                     EnumGitOrganizationType.Organization && (
                     <div className={`${CLASS_NAME}__action`}>
                       <Button
+                        type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
                         icon="plus"

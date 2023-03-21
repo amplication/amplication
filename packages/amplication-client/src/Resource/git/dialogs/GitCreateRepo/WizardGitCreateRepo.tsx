@@ -107,7 +107,6 @@ export default function WizardGitCreateRepo({
         </tr>
       </table>
       <Button
-        type="submit"
         className={`${CLASS_NAME}__button`}
         disabled={repoCreated.isRepoCreateLoading}
         onClick={handleCreation}
