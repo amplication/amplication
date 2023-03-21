@@ -12,6 +12,7 @@ export interface ResourceSettings {
   databaseType: "postgres" | "mysql" | "mongo";
   templateType: "empty" | "orderManagement";
   authType: string;
+  isGenerateCompleted: string;
 }
 export interface NextPage {
   nextTitle: string;

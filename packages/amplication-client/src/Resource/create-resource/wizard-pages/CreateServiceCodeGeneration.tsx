@@ -26,7 +26,7 @@ const CreateServiceCodeGeneration: React.FC<
     resource?: models.Resource;
     build?: models.Build;
   }
-> = ({ moduleClass, build, resource, trackWizardPageEvent }) => {
+> = ({ moduleClass, build, resource, formik, trackWizardPageEvent }) => {
   const { data } = useBuildWatchStatus(build);
   const { currentResource } = useContext(AppContext);
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
@@ -37,8 +37,6 @@ const CreateServiceCodeGeneration: React.FC<
     if (!currentResource) return;
     setResourceRepo(currentResource.gitRepository);
   }, [currentResource]);
-
-  console.log(currentResource);
 
   useEffect(() => {
     trackWizardPageEvent(
@@ -52,6 +50,17 @@ const CreateServiceCodeGeneration: React.FC<
 
     trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
   }, [data]);
+
+  useEffect(() => {
+    formik.validateForm();
+  }, []);
+
+  useEffect(() => {
+    if (formik.values.isGenerateCompleted || !data) return;
+    const codeGenStatus =
+      data?.build?.status === models.EnumBuildStatus.Completed;
+    codeGenStatus && formik.setFieldValue("isGenerateCompleted", "completed");
+  }, [formik.values, data?.build?.status]);
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;

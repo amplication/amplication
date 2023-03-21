@@ -1,5 +1,4 @@
 import React, { useState, ReactNode, useCallback, useEffect } from "react";
-import * as analytics from "../../util/analytics";
 import { Button, EnumButtonStyle } from "@amplication/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
@@ -150,7 +149,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
-
             setIsValidStep(!!Object.keys(errors).length);
 
             return errors;

@@ -29,6 +29,16 @@ const GitRepository = {
   required: ["gitOrganizationId", "gitRepositoryName"],
 };
 
+const codeGeneration = {
+  properties: {
+    isGenerateCompleted: {
+      type: "string",
+      minLength: 2,
+    },
+  },
+  required: ["isGenerateCompleted"],
+};
+
 const GenerationSettings = {
   properties: {
     generateAdminUI: {
@@ -95,7 +105,7 @@ export const schemaArray = [
   DatabaseType,
   TemplateType,
   Auth,
-  {},
+  codeGeneration,
   {},
 ];
 
@@ -107,6 +117,7 @@ export const ResourceInitialValues = {
   generateAdminUI: true,
   generateGraphQL: true,
   generateRestApi: true,
+  isGenerateCompleted: null,
   structureType: "Mono",
   baseDir: "./apps",
   databaseType: "postgres",
