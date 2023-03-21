@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { PURCHASE_URL } from "../../routes/routesUtil";
-import { getCookie, setCookie } from "../../util/cookie";
+import { expireCookie, getCookie, setCookie } from "../../util/cookie";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -73,6 +73,20 @@ const useProjectSelector = (
     },
     [projectRedirect, refetch]
   );
+
+  useEffect(() => {
+    const signupCookie = getCookie("signup");
+
+    if (signupCookie) {
+      let refreshTimes = Number(signupCookie);
+      refreshTimes += 1;
+      if (refreshTimes < 4) {
+        history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
+      } else {
+        expireCookie("signup");
+      }
+    }
+  }, []);
 
   useEffect(() => {
     if (loadingList || !projectListData) return;

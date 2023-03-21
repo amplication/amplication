@@ -126,6 +126,12 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     return () => clearTimeout(timer);
   }, [keepLoadingAnimation]);
 
+  const onKeyDown = (keyEvent) => {
+    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
+      keyEvent.preventDefault();
+    }
+  };
+
   return (
     <div className={`${moduleCss}__wizard_container`}>
       <Button
@@ -138,9 +144,9 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
-          onSubmit={(values: ResourceSettings) =>
-            wizardSubmit(activePageIndex, values)
-          }
+          onSubmit={(values: ResourceSettings) => {
+            wizardSubmit(activePageIndex, values);
+          }}
           validateOnMount
           validate={(values: ResourceSettings) => {
             const errors: FormikErrors<ResourceSettings> =
@@ -155,7 +161,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           {(formik) => {
             return (
               <>
-                <Form>
+                <Form onKeyDown={onKeyDown}>
                   {keepLoadingAnimation ? (
                     <CreateServiceLoader />
                   ) : (
