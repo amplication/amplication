@@ -74,7 +74,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
                   className={`${className}__repository_base_dir`}
                   name="baseDir"
                   label="Base directory"
-                  placeholder="packages/[SERVICE-NAME]"
+                  placeholder="./"
                 />
               )}
             </div>
