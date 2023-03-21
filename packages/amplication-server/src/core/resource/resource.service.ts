@@ -49,6 +49,10 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -67,7 +71,8 @@ export class ResourceService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly topicService: TopicService,
     private readonly billingService: BillingService,
-    private readonly pluginInstallationService: PluginInstallationService
+    private readonly pluginInstallationService: PluginInstallationService,
+    private readonly analytics: SegmentAnalyticsService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -394,6 +399,25 @@ export class ResourceService {
       where: { id: resource.id },
       select: {
         builds: true,
+      },
+    });
+
+    await this.analytics.track({
+      userId: user.id,
+      event: EnumEventType.ServiceWizardServiceGenerated,
+      properties: {
+        category: "Service Wizard",
+        // wizardType: "",
+        resourceName: resource.name,
+        gitProvider: resource.gitRepository.gitOrganization.provider,
+        gitOrganizationName: resource.gitRepository.gitOrganization.name,
+        repoName: resource.gitRepository.name,
+        graphQlApi: String(data.serviceSettings.serverSettings.generateGraphQL),
+        restApi: String(data.serviceSettings.serverSettings.generateRestApi),
+        adminUI: String(data.serviceSettings.adminUISettings.generateAdminUI),
+        // repoType: "",
+        // dbType: "",
+        // auth: ""
       },
     });
 
