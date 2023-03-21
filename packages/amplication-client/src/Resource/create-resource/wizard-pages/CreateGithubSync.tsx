@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect } from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
@@ -15,11 +15,32 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   moduleClass,
   formik,
 }) => {
-  const { refreshCurrentWorkspace } = useContext(AppContext);
+  const { refreshCurrentWorkspace, currentProjectConfiguration } =
+    useContext(AppContext);
+
+  const { gitRepository } = currentProjectConfiguration;
+
+  const projectConfigGitRepository = {
+    gitOrganizationId: gitRepository?.gitOrganizationId,
+    repositoryName: gitRepository?.name,
+    gitRepositoryUrl: `https://github.com/${gitRepository?.name}`,
+  };
 
   useEffect(() => {
     formik.validateForm();
   }, []);
+
+  useEffect(() => {
+    formik.setValues(
+      {
+        ...formik.values,
+        gitRepositoryName: projectConfigGitRepository?.repositoryName,
+        gitOrganizationId: projectConfigGitRepository?.gitOrganizationId,
+        gitRepositoryUrl: projectConfigGitRepository?.gitRepositoryUrl,
+      },
+      true
+    );
+  }, [gitRepository]);
 
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
