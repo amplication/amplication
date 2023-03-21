@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useContext, useEffect, useMemo, useState } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -10,6 +10,7 @@ import { WizardStepProps } from "./interfaces";
 import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";
 import * as models from "../../../models";
+import { AppContext } from "../../..//context/appContext";
 
 const className = "create-service-code-generation";
 
@@ -20,7 +21,17 @@ const CreateServiceCodeGeneration: React.FC<
   }
 > = ({ moduleClass, build, resource }) => {
   const { data } = useBuildWatchStatus(build);
-  const { gitRepository } = resource;
+  const { currentResource } = useContext(AppContext);
+  const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
+    resource?.gitRepository || null
+  );
+
+  useEffect(() => {
+    if (!currentResource) return;
+    setResourceRepo(currentResource.gitRepository);
+  }, [currentResource]);
+
+  console.log(currentResource);
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
@@ -66,7 +77,8 @@ const CreateServiceCodeGeneration: React.FC<
               <div
                 className={`${className}__status__completed__description__link`}
               >
-                ` https://github.com/{gitRepository.name}/${resource.name}`
+                ` https://github.com/${resourceRepo?.name}/$
+                {currentResource?.name}`
               </div>
               <div />
             </div>
