@@ -23,6 +23,7 @@ export type LabelDescriptionSelectorProps = {
   name: string;
   label: string;
   description: string;
+  subDescription?: string;
   icon?: string;
   image?: string;
   imageSize?: string;
@@ -37,6 +38,7 @@ export const LabelDescriptionSelector: React.FC<
   name,
   label,
   description,
+  subDescription,
   icon,
   image,
   imageSize = "medium",
@@ -72,6 +74,9 @@ export const LabelDescriptionSelector: React.FC<
       {children}
 
       <label>{label}</label>
+      {subDescription && (
+        <div className={`${className}__subDescription`}>{subDescription}</div>
+      )}
       <div className={`${className}__description`}>{description}</div>
     </div>
   );

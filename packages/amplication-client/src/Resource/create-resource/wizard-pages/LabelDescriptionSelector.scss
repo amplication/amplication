@@ -33,6 +33,12 @@
     color: var(--black80);
   }
 
+  &__subDescription {
+    line-height: 15px;
+    font-size: 10px;
+    color: #53dbee;
+  }
+
   &__logo {
     box-sizing: border-box;
     gap: 10px;
