@@ -77,7 +77,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
-  console.log(currWizardPatternIndex);
   useEffect(() => {
     if (!goToPage) return;
 
@@ -90,7 +89,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   )[];
 
   const currentPage = pages[activePageIndex];
-  console.log();
   const goNextPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === wizardPattern.length - 1
