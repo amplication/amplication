@@ -50,17 +50,28 @@ function AuthWithGit({
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
 
-  console.log({ gitRepositorySelected });
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
 
-  console.log({ gitRepositorySelectedData });
+  useEffect(() => {
+    if (!gitRepositorySelected?.gitOrganizationId) return;
+
+    setGitRepositorySelectedData(gitRepositorySelected);
+  }, [gitRepositorySelected?.gitOrganizationId]);
 
   useEffect(() => {
-    if (gitOrganizations) {
-      setGitOrganization(gitOrganizations[0]);
-    }
-  }, [gitOrganizations]);
+    if (
+      !gitOrganizations.length ||
+      !gitRepositorySelectedData?.gitOrganizationId
+    )
+      return;
+    const gitOrganizationRepo =
+      gitOrganizations.findIndex(
+        (organization) =>
+          organization.id === gitRepositorySelectedData.gitOrganizationId
+      ) || 0;
+    setGitOrganization(gitOrganizations[gitOrganizationRepo]);
+  }, [gitOrganizations, gitRepositorySelectedData]);
 
   const { trackEvent } = useTracking();
   const [authWithGit, { error }] = useMutation<DType>(
