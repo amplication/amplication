@@ -1,0 +1,7 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "module": "nodenext",
+    "moduleResolution": "nodenext"
+  }
+}
