@@ -1,5 +1,6 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
+import { EnumAuthProviderType } from "../models";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
@@ -108,7 +109,8 @@ export function prepareServiceObject(
   generateGraphQL: boolean,
   generateRestApi: boolean,
   gitRepository: models.ConnectGitRepositoryInput,
-  baseDir: string
+  serverDir: string,
+  adminDir: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
@@ -124,10 +126,22 @@ export function prepareServiceObject(
       },
     },
     commitMessage: "",
-    generationSettings: {
-      generateAdminUI: generateAdminUI,
-      generateGraphQL: generateGraphQL,
-      generateRestApi: generateRestApi,
+    serviceSettings: {
+      adminUISettings: {
+        generateAdminUI: generateAdminUI,
+        adminUIPath: adminDir,
+      },
+      serverSettings: {
+        generateGraphQL: generateGraphQL,
+        generateRestApi: generateRestApi,
+        serverPath: serverDir,
+      },
+      authProvider: EnumAuthProviderType.Jwt,
+      dbHost: "12345",
+      dbName: "mor",
+      dbPassword: "535348",
+      dbPort: 8888,
+      dbUser: "test",
     },
     entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
     gitRepository: {
@@ -135,7 +149,6 @@ export function prepareServiceObject(
       gitOrganizationId: gitRepository.gitOrganizationId,
       resourceId: "",
     },
-    baseDir,
   };
 }
 

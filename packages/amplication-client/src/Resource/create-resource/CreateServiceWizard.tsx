@@ -129,6 +129,9 @@ const CreateServiceWizard: React.FC<Props> = ({
         baseDir,
       } = values;
 
+      const serverDir = `${baseDir}/${serviceName}`;
+      const adminDir = `${baseDir}/${serviceName}-admin`;
+
       const isResourceWithEntities = values.resourceType === "sample";
 
       if (currentProject) {
@@ -144,7 +147,8 @@ const CreateServiceWizard: React.FC<Props> = ({
             gitOrganizationId: gitOrganizationId,
             resourceId: "",
           },
-          baseDir
+          serverDir,
+          adminDir
         );
 
         createStarterResource(

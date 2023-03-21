@@ -1201,9 +1201,8 @@ type ResourceCreateWithEntitiesResult {
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
-  generationSettings: ResourceGenSettingsCreateInput!
+  serviceSettings: ServiceSettingsUpdateInput!
   gitRepository: ConnectGitRepositoryInput!
-  baseDir: String
   commitMessage: String!
 }
 
@@ -1218,10 +1217,28 @@ input ResourceCreateWithEntitiesFieldInput {
   dataType: EnumDataType
 }
 
-input ResourceGenSettingsCreateInput {
-  generateAdminUI: Boolean!
-  generateGraphQL: Boolean!
-  generateRestApi: Boolean!
+input ServiceSettingsUpdateInput {
+  displayName: String
+  description: String
+  dbHost: String!
+  dbName: String!
+  dbUser: String!
+  dbPassword: String!
+  dbPort: Int!
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
 }
 
 input ConnectGitRepositoryInput {
@@ -1310,30 +1327,6 @@ input EntityFieldUpdateInput {
   searchable: Boolean
   description: String
   position: Int
-}
-
-input ServiceSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
-  adminUISettings: AdminUISettingsUpdateInput!
-  serverSettings: ServerSettingsUpdateInput!
-}
-
-input AdminUISettingsUpdateInput {
-  generateAdminUI: Boolean
-  adminUIPath: String
-}
-
-input ServerSettingsUpdateInput {
-  generateGraphQL: Boolean
-  generateRestApi: Boolean
-  serverPath: String
 }
 
 input ServiceTopicsCreateInput {

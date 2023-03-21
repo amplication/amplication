@@ -40,7 +40,6 @@ export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
-import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateInput";
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
@@ -48,6 +47,7 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -217,9 +217,8 @@ export class ResourceService {
   async createService(
     args: CreateOneResourceArgs,
     user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null,
-    gitRepository: ConnectGitRepositoryInput = null,
-    baseDir: string = null
+    serviceSettings: ServiceSettingsUpdateInput = null,
+    gitRepository: ConnectGitRepositoryInput = null
   ): Promise<Resource> {
     const resource = await this.createResource(
       {
@@ -242,8 +241,7 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      generationSettings,
-      baseDir
+      serviceSettings
     );
 
     const project = await this.projectService.findUnique({
@@ -279,9 +277,8 @@ export class ResourceService {
         data: data.resource,
       },
       user,
-      data.generationSettings,
-      data.gitRepository,
-      data.baseDir
+      data.serviceSettings,
+      data.gitRepository
     );
 
     const newEntities: {

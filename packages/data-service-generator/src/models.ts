@@ -1741,23 +1741,16 @@ export type ResourceCreateWithEntitiesFieldInput = {
 };
 
 export type ResourceCreateWithEntitiesInput = {
-  baseDir?: InputMaybe<Scalars['String']>;
   commitMessage: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
-  generationSettings: ResourceGenSettingsCreateInput;
   gitRepository: ConnectGitRepositoryInput;
   resource: ResourceCreateInput;
+  serviceSettings: ServiceSettingsUpdateInput;
 };
 
 export type ResourceCreateWithEntitiesResult = {
   build: Build;
   resource: Resource;
-};
-
-export type ResourceGenSettingsCreateInput = {
-  generateAdminUI: Scalars['Boolean'];
-  generateGraphQL: Scalars['Boolean'];
-  generateRestApi: Scalars['Boolean'];
 };
 
 export type ResourceListRelationFilter = {
