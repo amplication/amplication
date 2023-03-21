@@ -264,6 +264,7 @@ export class BillingService {
       const stiggClient = await this.getStiggClient();
       await stiggClient.provisionCustomer({
         customerId: workspaceId,
+        shouldSyncFree: false,
         subscriptionParams: {
           planId: plan,
         },
