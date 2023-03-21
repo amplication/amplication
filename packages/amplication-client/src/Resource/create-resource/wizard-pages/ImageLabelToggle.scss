@@ -15,6 +15,14 @@
   min-width: 250px;
   max-width: 250px;
 
+  .toggle-field {
+    .MuiSwitch-root {
+      .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+        background-color: #31c587;
+      }
+    }
+  }
+
   label {
     @include title-18;
   }
