@@ -76,6 +76,26 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
       }
       build {
         id
+        version
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
       }
     }
   }
