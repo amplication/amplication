@@ -111,7 +111,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
 
   const handleRepoCreated = useCallback(
     (data: CreateGitRepositoryInput) => {
-      console.log({ data });
       createRepository({
         variables: {
           name: data.name,

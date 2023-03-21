@@ -94,7 +94,7 @@ export default function WizardGitCreateRepo({
           <th>Repository name</th>
         </tr>
         <tr>
-          <td>{gitOrganizationName}/</td>
+          <td style={{ color: "#FFFFFF" }}>{gitOrganizationName}/</td>
           <td>
             <TextField
               autoFocus

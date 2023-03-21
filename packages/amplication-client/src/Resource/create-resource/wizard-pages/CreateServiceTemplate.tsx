@@ -5,7 +5,10 @@ import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayou
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { EnumTemplateType, WizardStepProps } from "./interfaces";
 
-const CreateServiceTemplate: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateServiceTemplate: React.FC<WizardStepProps> = ({
+  formik,
+  trackWizardPageEvent,
+}) => {
   const handleTemplateSelect = useCallback(
     (templateType: EnumTemplateType) => {
       formik.setValues(

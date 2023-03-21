@@ -31,7 +31,7 @@ export default function WizardRepositoryActions({
   return (
     <div className={`${CLASS_NAME}`}>
       <Panel
-        className={`${CLASS_NAME}__auth`}
+        className={`${CLASS_NAME}__wizard_auth`}
         panelStyle={EnumPanelStyle.Bordered}
       >
         {selectedGitRepository?.gitOrganizationId ? (
@@ -51,7 +51,7 @@ export default function WizardRepositoryActions({
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
                       type="button"
-                      buttonStyle={EnumButtonStyle.Primary}
+                      buttonStyle={EnumButtonStyle.Outline}
                       onClick={onSelectRepository}
                     >
                       Select repository

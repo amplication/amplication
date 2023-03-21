@@ -4,6 +4,13 @@
   margin-left: 0 !important;
   padding-left: 0 !important;
 
+  &__selectOrganization {
+    font-size: 10px;
+    line-height: 15px;
+    color: var(--black80);
+    margin-bottom: 4px;
+  }
+
   .toggle-field {
     margin: 0;
   }
@@ -49,9 +56,5 @@
         text-decoration: underline;
       }
     }
-  }
-
-  .select-menu__modal {
-    right: 24.8%;
   }
 }

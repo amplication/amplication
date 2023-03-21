@@ -190,6 +190,9 @@ function AuthWithGit({
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
+        <div className={`${CLASS_NAME}__selectOrganization`}>
+          Select Organization
+        </div>
         {isEmpty(gitOrganizations) ? (
           <NewConnection
             onSyncNewGitOrganizationClick={handleAuthWithGitClick}
