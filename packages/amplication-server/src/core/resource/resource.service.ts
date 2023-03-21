@@ -362,21 +362,25 @@ export class ResourceService {
       }
     }
 
-    await this.projectService.commit({
-      data: {
-        message: INITIAL_COMMIT_MESSAGE,
-        project: {
-          connect: {
-            id: resource.projectId,
+    try {
+      await this.projectService.commit({
+        data: {
+          message: INITIAL_COMMIT_MESSAGE,
+          project: {
+            connect: {
+              id: resource.projectId,
+            },
+          },
+          user: {
+            connect: {
+              id: user.id,
+            },
           },
         },
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
-      },
-    });
+      });
+    } catch (error) {
+      console.log({ error });
+    }
 
     const resourceBuilds = await this.prisma.resource.findUnique({
       where: { id: resource.id },
