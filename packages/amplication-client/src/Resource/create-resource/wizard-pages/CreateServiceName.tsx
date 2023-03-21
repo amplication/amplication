@@ -27,7 +27,11 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
         </h3>
       </div>
       <div className={`${className}__service_input`}>
-        <TextField name="serviceName" label="Service name" />
+        <TextField
+          name="serviceName"
+          label="Service name"
+          placeholder="Service 1"
+        />
       </div>
     </div>
   );
