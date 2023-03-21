@@ -2,7 +2,6 @@ import fetch from "node-fetch";
 import { CustomError } from "../../utils/custom-error";
 import {
   Account,
-  Commit,
   OAuth2,
   PaginatedRepositories,
   TreeEntry,
@@ -41,13 +40,6 @@ const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
 const REPOSITORY_CREATE_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
 
-const CREATE_COMMIT_URL = (
-  workspaceSlug: string,
-  repositorySlug: string,
-  commit: string
-) =>
-  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/commit/${commit}/comments`;
-
 const GET_FILE_URL = (
   workspaceSlug: string,
   repositorySlug: string,
@@ -55,6 +47,9 @@ const GET_FILE_URL = (
   pathToFile: string
 ) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
+
+const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -206,16 +201,15 @@ export async function getFileRequest(
 export function createCommitRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  commit: string,
-  commitData: Partial<Commit>,
+  commitData: any,
   accessToken: string
 ) {
-  return requestWrapper(
-    CREATE_COMMIT_URL(workspaceSlug, repositorySlug, commit),
-    {
-      method: "POST",
-      headers: getRequestHeaders(accessToken),
-      body: JSON.stringify(commitData),
-    }
-  );
+  return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: JSON.stringify(commitData),
+  });
 }

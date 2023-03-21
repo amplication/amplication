@@ -328,11 +328,16 @@ export class BitBucketService implements GitProvider {
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
     const { repositoryName, owner, files, branchName, commitMessage } =
       createCommitArgs;
-    const commit = await createCommitRequest(
-      owner,
+
+    await createCommitRequest(
+      owner, // organization name?
       repositoryName,
-      commitMessage,
-      {},
+      {
+        branch: { name: branchName },
+        message: commitMessage,
+        parents: "latestCommit", // TODO: get latest commit
+        fileContent: files,
+      },
       this.accessToken
     );
   }

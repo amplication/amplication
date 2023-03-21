@@ -122,6 +122,7 @@ export interface TreeEntry {
 }
 
 export interface Commit {
+  branch: Branch;
   repository: Repository;
   message: string;
   hash: string;
