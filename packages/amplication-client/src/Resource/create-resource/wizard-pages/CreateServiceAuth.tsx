@@ -39,7 +39,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
           <LabelDescriptionSelector
             name="core"
             image={jwt}
-            label="JWT"
+            label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.authType}
@@ -47,7 +47,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
           <LabelDescriptionSelector
             name="no"
             icon="unlock"
-            label="Without  Auth"
+            label="Skip Authentication"
             description="Do not include code for authentication"
             onClick={handleDatabaseSelect}
             currentValue={formik.values.authType}
