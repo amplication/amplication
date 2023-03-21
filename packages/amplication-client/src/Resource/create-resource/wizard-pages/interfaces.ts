@@ -1,4 +1,5 @@
 import { FormikProps } from "formik";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 export interface ResourceSettings {
   serviceName: string;
@@ -19,5 +20,9 @@ export interface NextPage {
 
 export interface WizardStepProps {
   moduleClass: string;
+  trackWizardPageEvent: (
+    eventName: AnalyticsEventNames,
+    additionalData?: { [key: string]: string }
+  ) => void;
   formik?: FormikProps<{ [key: string]: any }>;
 }

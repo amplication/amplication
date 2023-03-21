@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -10,6 +10,7 @@ import { WizardStepProps } from "./interfaces";
 import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";
 import * as models from "../../../models";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-service-code-generation";
 
@@ -18,8 +19,14 @@ const CreateServiceCodeGeneration: React.FC<
     resource?: models.Resource;
     build?: models.Build;
   }
-> = ({ moduleClass, build, resource }) => {
+> = ({ moduleClass, build, resource, trackWizardPageEvent }) => {
   const { data } = useBuildWatchStatus(build);
+
+  useEffect(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration
+    );
+  }, []);
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;

@@ -6,10 +6,20 @@ import "./CreateServiceRepository.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-service-repository";
 
-const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateServiceRepository: React.FC<WizardStepProps> = ({
+  formik,
+  trackWizardPageEvent,
+}) => {
+  useEffect(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ViewServiceWizardStep_RepoSettings
+    );
+  }, []);
+
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(

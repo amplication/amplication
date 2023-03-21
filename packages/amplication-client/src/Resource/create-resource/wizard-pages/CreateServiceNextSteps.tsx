@@ -1,30 +1,48 @@
 import { CircleBadge, Icon } from "@amplication/design-system";
-import { useCallback, useContext } from "react";
+import { useCallback, useContext, useEffect } from "react";
 import "./CreateServiceNextSteps.scss";
 import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-service-next-steps";
 
 export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   moduleClass,
+  trackWizardPageEvent,
 }) => {
   const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
+  useEffect(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Finish);
+  }, []);
+
   const handleClickEntities = useCallback(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      { action: "Create Entities" }
+    );
     history.push(
       `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`
     );
   }, [currentWorkspace, currentProject, currentResource]);
 
   const handleClickCreateNewService = useCallback(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      { action: "Create Another Service" }
+    );
     window.location.reload();
   }, []);
 
   const handleDone = useCallback(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      { action: "View Service" }
+    );
     history.push(
       `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
     );

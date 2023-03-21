@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React, { useCallback, useEffect } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
@@ -6,8 +6,18 @@ import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
 
 import jwt from "../../../assets/images/jwt.svg";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
-const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateServiceAuth: React.FC<WizardStepProps> = ({
+  formik,
+  trackWizardPageEvent,
+}) => {
+  useEffect(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ViewServiceWizardStep_AuthSettings
+    );
+  }, []);
+
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(
