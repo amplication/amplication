@@ -3,7 +3,7 @@ import classNames from "classnames";
 import PendingChangesBar from "../VersionControl/PendingChangesBar";
 import "./PendingChangesMenuItem.scss";
 import { AsidePanel } from "../util/teleporter";
-import { Tooltip } from "@amplication/design-system";
+import { Tooltip } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 

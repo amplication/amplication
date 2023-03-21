@@ -4,7 +4,7 @@ import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 
 import { useHistory } from "react-router-dom";
-import { CircleBadge, Icon } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/ui/design-system";
 
 import * as models from "../models";
 import { AppContext } from "../context/appContext";

@@ -5,7 +5,7 @@ import {
   Label,
   TextField,
   ToggleField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import "./CreateServiceWizardForm.scss";
-import { RadioButtonField, ToggleField } from "@amplication/design-system";
+import { RadioButtonField, ToggleField } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { serviceSettingsFieldsInitValues } from "../constants";

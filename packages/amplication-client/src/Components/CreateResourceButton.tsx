@@ -3,7 +3,7 @@ import {
   SelectMenu,
   SelectMenuList,
   SelectMenuModal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import * as models from "../models";
 import "./CreateResourceButton.scss";

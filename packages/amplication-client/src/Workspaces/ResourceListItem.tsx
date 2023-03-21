@@ -13,7 +13,7 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
   Icon,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";

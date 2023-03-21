@@ -8,7 +8,7 @@ import {
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { useTracking } from "../util/analytics";
 import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";

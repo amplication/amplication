@@ -6,7 +6,7 @@ import {
   Snackbar,
   Loader,
   AnimationType,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React, {
   MutableRefObject,
   useCallback,

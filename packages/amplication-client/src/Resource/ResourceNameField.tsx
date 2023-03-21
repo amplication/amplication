@@ -1,7 +1,7 @@
 import React, { useCallback, useState } from "react";
 import { Field, Form, Formik } from "formik";
 import FormikAutoSave from "../util/formikAutoSave";
-import { Icon, Tooltip } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useTracking } from "react-tracking";

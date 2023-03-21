@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 
 import * as models from "../models";
-import { ToggleButton } from "@amplication/design-system";
+import { ToggleButton } from "@amplication/ui/design-system";
 
 type Props = {
   role: models.ResourceRole;

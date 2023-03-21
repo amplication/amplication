@@ -8,7 +8,7 @@ import {
   CircularProgress,
   Snackbar,
   Tooltip,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
 import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";

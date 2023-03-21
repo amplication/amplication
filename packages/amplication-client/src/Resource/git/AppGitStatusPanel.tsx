@@ -5,7 +5,7 @@ import {
   Icon,
   Label,
   Tooltip,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import * as models from "../../models";
 import { isEmpty } from "lodash";

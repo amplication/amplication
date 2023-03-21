@@ -6,7 +6,7 @@ import PendingChangeDiffEntity, {
   EnumCompareType,
 } from "./PendingChangeDiffEntity";
 import PendingChangeDiffBlock from "./PendingChangeDiffBlock";
-import { PanelCollapsible } from "@amplication/design-system";
+import { PanelCollapsible } from "@amplication/ui/design-system";
 
 import "./PendingChangeWithCompare.scss";
 

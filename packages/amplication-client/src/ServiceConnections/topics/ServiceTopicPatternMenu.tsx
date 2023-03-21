@@ -4,7 +4,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import { EnumMessagePatternConnectionOptions } from "../../models";
 import "./ServiceTopicPatternMenu.scss";

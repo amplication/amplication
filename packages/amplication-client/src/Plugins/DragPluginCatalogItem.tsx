@@ -12,7 +12,7 @@ import {
   Icon,
   Panel,
   Toggle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import "./PluginsCatalogItem.scss";
 
 export interface XYCoord {
