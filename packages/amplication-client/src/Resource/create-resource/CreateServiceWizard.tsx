@@ -18,6 +18,7 @@ import {
   ResourceInitialValues,
   WizardProgressBarInterface,
   wizardProgressBarSchema,
+  templateMapping,
 } from "./wizardResourceSchema";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import CreateServiceCodeGeneration from "./wizard-pages/CreateServiceCodeGeneration";
@@ -27,6 +28,7 @@ import * as models from "../../models";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { expireCookie, getCookie } from "../../util/cookie";
+import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -59,7 +61,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   const defineUser = signupCookie === "1" ? "signup" : "login";
   const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7];
   // defineUser === "login"
-  //   ? [0, 1, 2, 3, 4, 5, 7]
+  //   ? [0, 1, 2, 3, 4, 5, 6, 8]
   //   : [0, 1, 2, 3, 4, 5, 6, 7];
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
@@ -126,19 +128,19 @@ const CreateServiceWizard: React.FC<Props> = ({
         gitRepositoryName,
         authType,
         databaseType,
+        templateType,
         baseDir,
       } = values;
 
       const serverDir = `${baseDir}/${serviceName}`;
       const adminDir = `${baseDir}/${serviceName}-admin`;
-
-      const isResourceWithEntities = values.resourceType === "sample";
+      const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
-          isResourceWithEntities,
+          templateSettings,
           generateAdminUI,
           generateGraphQL,
           generateRestApi,
@@ -155,12 +157,9 @@ const CreateServiceWizard: React.FC<Props> = ({
           resource,
           databaseType,
           authType,
-          isResourceWithEntities
-            ? "createResourceFromSample"
-            : "createResourceFromScratch"
+          templateSettings.eventName
         );
       }
-      console.log("***********", values, goToPage);
       expireCookie("signup");
     },
     []
@@ -175,7 +174,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={5}
+        submitFormPage={6}
         goToPage={goToPage}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
@@ -186,6 +185,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateGenerationSettings moduleClass={moduleClass} />
         <CreateServiceRepository moduleClass={moduleClass} />
         <CreateServiceDatabase moduleClass={moduleClass} />
+        <CreateServiceTemplate moduleClass={moduleClass} />
         <CreateServiceAuth moduleClass={moduleClass} />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"

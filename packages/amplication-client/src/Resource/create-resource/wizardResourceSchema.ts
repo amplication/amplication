@@ -1,3 +1,6 @@
+import { sampleServiceResourceWithEntities } from "../constants";
+import { EnumTemplateType } from "./wizard-pages/interfaces";
+
 const ResourceName = {
   properties: {
     serviceName: {
@@ -66,6 +69,15 @@ const DatabaseType = {
   required: ["databaseType"],
 };
 
+const TemplateType = {
+  properties: {
+    templateType: {
+      enum: ["empty", "orderManagement"],
+    },
+  },
+  required: ["templateType"],
+};
+
 const Auth = {
   properties: {
     authType: {
@@ -81,6 +93,7 @@ export const schemaArray = [
   GenerationSettings,
   StructureType,
   DatabaseType,
+  TemplateType,
   Auth,
   {},
   {},
@@ -97,7 +110,7 @@ export const ResourceInitialValues = {
   structureType: "Mono",
   baseDir: "./apps",
   databaseType: "postgres",
-  resourceType: "scratch",
+  templateType: "empty",
   authType: "core",
 };
 
@@ -105,6 +118,28 @@ export interface WizardProgressBarInterface {
   title?: string;
   activePages?: number[];
 }
+
+export interface TemplateSettings {
+  type: EnumTemplateType;
+  description: string;
+  eventName: string;
+  entities: any;
+}
+
+export const templateMapping: { [key: string]: TemplateSettings } = {
+  [EnumTemplateType.empty]: {
+    type: EnumTemplateType.empty,
+    description: "",
+    eventName: "createResourceFromScratch",
+    entities: [],
+  },
+  [EnumTemplateType.orderManagement]: {
+    type: EnumTemplateType.orderManagement,
+    description: "Sample service for e-commerce",
+    eventName: "createResourceFromSample",
+    entities: sampleServiceResourceWithEntities,
+  },
+};
 
 export const wizardProgressBarSchema = [
   {
@@ -117,18 +152,18 @@ export const wizardProgressBarSchema = [
   },
   {
     title: "DB Settings",
-    activePages: [4],
+    activePages: [4, 5],
   },
   {
     title: "Auth Settings",
-    activePages: [5],
-  },
-  {
-    title: "Generate Code",
     activePages: [6],
   },
   {
-    title: "Confirmation & Next Steps",
+    title: "Generate Code",
     activePages: [7],
+  },
+  {
+    title: "Confirmation & Next Steps",
+    activePages: [8],
   },
 ];

@@ -1,12 +1,12 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
 import { EnumAuthProviderType } from "../models";
+import { TemplateSettings } from "./create-resource/wizardResourceSchema";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
   generateGraphQL: true,
   generateRestApi: true,
-  resourceType: "scratch",
 };
 
 export const sampleServiceResourceWithEntities = [
@@ -104,7 +104,7 @@ export type createServiceSettings = {
 export function prepareServiceObject(
   serviceName: string,
   projectId: string,
-  isResourceWithEntities: boolean,
+  templateSettings: TemplateSettings,
   generateAdminUI: boolean,
   generateGraphQL: boolean,
   generateRestApi: boolean,
@@ -115,9 +115,7 @@ export function prepareServiceObject(
   return {
     resource: {
       name: serviceName,
-      description: isResourceWithEntities
-        ? "Sample service for e-commerce"
-        : "",
+      description: templateSettings.description,
       resourceType: models.EnumResourceType.Service,
       project: {
         connect: {
@@ -143,7 +141,7 @@ export function prepareServiceObject(
       dbPort: 8888,
       dbUser: "test",
     },
-    entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
+    entities: templateSettings.entities,
     gitRepository: {
       name: gitRepository.name,
       gitOrganizationId: gitRepository.gitOrganizationId,

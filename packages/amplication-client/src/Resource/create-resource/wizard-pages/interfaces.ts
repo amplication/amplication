@@ -9,12 +9,17 @@ export interface ResourceSettings {
   generateRestApi: boolean;
   baseDir: string;
   databaseType: "postgres" | "mysql" | "mongo";
+  templateType: "empty" | "orderManagement";
   authType: string;
-  resourceType: "sample" | "scratch";
 }
 export interface NextPage {
   nextTitle: string;
   isValid: boolean;
+}
+
+export enum EnumTemplateType {
+  empty = "empty",
+  orderManagement = "orderManagement",
 }
 
 export interface WizardStepProps {
