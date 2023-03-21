@@ -20,6 +20,7 @@ const CreateServiceCodeGeneration: React.FC<
   }
 > = ({ moduleClass, build, resource }) => {
   const { data } = useBuildWatchStatus(build);
+  const { gitRepository } = resource;
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
@@ -65,7 +66,7 @@ const CreateServiceCodeGeneration: React.FC<
               <div
                 className={`${className}__status__completed__description__link`}
               >
-                https://github.com/yuval/myservice/
+                ` https://github.com/4{gitRepository.name}/${resource.name}`
               </div>
               <div />
             </div>
