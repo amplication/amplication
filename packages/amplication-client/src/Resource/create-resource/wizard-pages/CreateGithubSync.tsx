@@ -31,6 +31,7 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   }, []);
 
   useEffect(() => {
+    if (formik.values.gitOrganizationId) return;
     formik.setValues(
       {
         ...formik.values,

@@ -73,6 +73,14 @@ function AuthWithGit({
     setGitOrganization(gitOrganizations[gitOrganizationRepo]);
   }, [gitOrganizations, gitRepositorySelectedData]);
 
+  const handleGitOrganizationChange = useCallback(
+    (organization: GitOrganizationFromGitRepository) => {
+      setGitOrganization(organization);
+      setGitRepositorySelectedData(null);
+    },
+    [gitOrganization, gitRepositorySelectedData]
+  );
+
   const { trackEvent } = useTracking();
   const [authWithGit, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -190,9 +198,7 @@ function AuthWithGit({
         ) : (
           <ExistingConnectionsMenu
             gitOrganizations={gitOrganizations}
-            onSelectGitOrganization={(organization) => {
-              setGitOrganization(organization);
-            }}
+            onSelectGitOrganization={handleGitOrganizationChange}
             selectedGitOrganization={gitOrganization}
             onAddGitOrganization={handleAuthWithGitClick}
           />
