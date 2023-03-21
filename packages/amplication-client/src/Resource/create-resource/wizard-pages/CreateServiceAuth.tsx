@@ -35,13 +35,8 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
     <Layout.Split>
       <Layout.LeftSide>
         <Layout.Description
-          header="One last step - Authentication"
-          text={`Choose whether you want to add authentication and authorization layer on your service or not. 
-        
-        When needed, Amplication will generate your service with guards, decorators, user entity, roles, etc. By default, the service will use “passport-jwt” provider, but you can easily change that later.
-        
-        You can skip this step if you don’t want to authenticate users on this service. It may be needed for internal services that are not exposed to users, or if you are building a fully public API.
-        `}
+          header="Does your service need Authentication?"
+          text={`Choose whether or not to enable authentication and authorization for  your service.`}
         />
       </Layout.LeftSide>
       <Layout.RightSide>
