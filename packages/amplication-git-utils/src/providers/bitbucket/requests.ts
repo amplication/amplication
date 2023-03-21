@@ -5,6 +5,7 @@ import {
   Commit,
   OAuth2,
   PaginatedRepositories,
+  TreeEntry,
   PaginatedTreeEntry,
   PaginatedWorkspaceMembership,
   Repository,
@@ -164,20 +165,42 @@ export async function repositoryCreateRequest(
   });
 }
 
+export async function getFileMetaRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  pathToFile: string,
+  accessToken: string
+): Promise<TreeEntry | PaginatedTreeEntry> {
+  return requestWrapper(
+    `${GET_FILE_URL(
+      workspaceSlug,
+      repositorySlug,
+      branchName,
+      pathToFile
+    )}?format=meta`,
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+}
+
 export async function getFileRequest(
   workspaceSlug: string,
   repositorySlug: string,
   branchName: string,
   pathToFile: string,
   accessToken: string
-): Promise<PaginatedTreeEntry> {
-  return requestWrapper(
+): Promise<Buffer> {
+  const response = await fetch(
     GET_FILE_URL(workspaceSlug, repositorySlug, branchName, pathToFile),
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
     }
   );
+  return response.buffer();
 }
 
 export function createCommitRequest(

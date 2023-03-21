@@ -1,3 +1,4 @@
+import { parse } from "path";
 import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
@@ -34,6 +35,7 @@ import {
   createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  getFileMetaRequest,
   getFileRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
@@ -41,6 +43,7 @@ import {
   repositoryRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
+import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -274,7 +277,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing baseBranchName");
     }
 
-    const fileResponse = await getFileRequest(
+    const fileResponse = await getFileMetaRequest(
       owner,
       repositoryName,
       baseBranchName,
@@ -282,16 +285,32 @@ export class BitBucketService implements GitProvider {
       this.accessToken
     );
 
-    const [gitFile] = fileResponse.values.map(
-      ({ path, commit, content, name }) => ({
-        path,
-        name,
-        content,
-        commit: commit.hash,
-        htmlUrl: commit.html.href,
-      })
+    const fileBufferResponse = await getFileRequest(
+      owner,
+      repositoryName,
+      baseBranchName,
+      path,
+      this.accessToken
     );
-    return gitFile;
+
+    if ((fileResponse as PaginatedTreeEntry).values) {
+      this.logger.error(
+        "BitbucketService getFile: Path points to a directory, please provide a file path"
+      );
+      throw new CustomError(
+        "Path points to a directory, please provide a file path"
+      );
+    }
+
+    const gitFileResponse = fileResponse as TreeEntry;
+    this.logger.info("BitBucketService getFile");
+
+    return {
+      content: fileBufferResponse.toString("utf-8"),
+      htmlUrl: gitFileResponse.commit.links.html.href,
+      name: parse(gitFileResponse.path).name,
+      path: gitFileResponse.path,
+    };
   }
 
   createPullRequestFromFiles(

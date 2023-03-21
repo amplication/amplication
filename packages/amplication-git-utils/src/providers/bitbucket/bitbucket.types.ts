@@ -117,7 +117,6 @@ export interface PaginatedTreeEntry {
 export interface TreeEntry {
   type: string;
   path: string;
-  name: string;
   content: string;
   commit: Commit;
 }
@@ -126,8 +125,10 @@ export interface Commit {
   repository: Repository;
   message: string;
   hash: string;
-  html: {
-    href: string;
+  links: {
+    html: {
+      href: string;
+    };
   };
   author: {
     raw: string;
