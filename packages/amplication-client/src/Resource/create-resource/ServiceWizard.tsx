@@ -7,7 +7,6 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
-// import { useRouteMatch } from "react-router-dom";
 
 interface ServiceWizardProps {
   children: ReactNode;
@@ -18,10 +17,9 @@ interface ServiceWizardProps {
   wizardSubmit: (activeIndex: number, values: ResourceSettings) => void;
   moduleCss: string;
   submitFormPage: number;
-  goToPage: number | null;
   submitLoader: boolean;
-  handleCloseWizard: () => void;
-  handleWizardProgress: (dir: "next" | "prev", page: number) => void;
+  handleCloseWizard: (currentPage: string) => void;
+  handleWizardProgress: (dir: "next" | "prev", page: string) => void;
 }
 
 const BackButton: React.FC<{
@@ -48,14 +46,6 @@ const ContinueButton: React.FC<{
   );
 };
 
-const pageTracking = (path: string, url: string, params: any) => {
-  analytics.page(path.replaceAll("/", "-"), {
-    path,
-    url,
-    params: params,
-  });
-};
-
 const MIN_TIME_OUT_LOADER = 2000;
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
@@ -67,7 +57,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   children,
   moduleCss,
   submitFormPage,
-  goToPage,
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
@@ -77,11 +66,6 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
-  useEffect(() => {
-    if (!goToPage) return;
-
-    setActivePageIndex(goToPage);
-  }, [goToPage]);
 
   const pages = React.Children.toArray(children) as (
     | React.ReactElement<any, React.JSXElementConstructor<any>>
@@ -94,16 +78,27 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       currWizardPatternIndex === wizardPattern.length - 1
         ? currWizardPatternIndex
         : currWizardPatternIndex + 1;
-    //@ts-ignore
-    // console.log(pages[wizardPattern[wizardIndex]].type.name)
-    handleWizardProgress("next", wizardIndex);
+
+    handleWizardProgress(
+      "next",
+      (
+        pages[wizardPattern[wizardIndex]]
+          .type as React.JSXElementConstructor<any>
+      ).name
+    );
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
   const goPrevPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
-    handleWizardProgress("prev", wizardIndex);
+    handleWizardProgress(
+      "prev",
+      (
+        pages[wizardPattern[wizardIndex]]
+          .type as React.JSXElementConstructor<any>
+      ).name
+    );
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
 
@@ -137,7 +132,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
       <Button
         buttonStyle={EnumButtonStyle.Clear}
         className={`${moduleCss}__close`}
-        onClick={handleCloseWizard}
+        onClick={() =>
+          handleCloseWizard(
+            (currentPage.type as React.JSXElementConstructor<any>).name
+          )
+        }
       >
         x close
       </Button>

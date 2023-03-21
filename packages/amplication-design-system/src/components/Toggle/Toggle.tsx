@@ -11,10 +11,11 @@ export type Props = SwitchProps & {
   name?: string;
   label?: string;
   onValueChange?: (checked: boolean) => void;
+  forwardRef?: React.MutableRefObject<HTMLButtonElement>;
 };
 
 export const Toggle = (props: Props) => {
-  const { label, onChange, onValueChange, ...rest } = props;
+  const { label, onChange, onValueChange, forwardRef, ...rest } = props;
 
   const handleChange = useCallback(
     (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -28,7 +29,13 @@ export const Toggle = (props: Props) => {
     [onChange, onValueChange]
   );
 
-  const switchNode = <Switch {...rest} onChange={handleChange} />;
+  const switchNode = (
+    <Switch
+      {...rest}
+      {...(forwardRef ? { inputRef: forwardRef } : {})}
+      onChange={handleChange}
+    />
+  );
 
   const componentNode = !isEmpty(label) ? (
     <div className={classNames(CLASS_NAME, `${CLASS_NAME}--with-label`)}>

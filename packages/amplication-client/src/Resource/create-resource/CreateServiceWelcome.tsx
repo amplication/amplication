@@ -1,15 +1,34 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import "./CreateServiceWelcome.scss";
 import { Button, Modal } from "@amplication/design-system";
 import { WizardStepProps } from "./wizard-pages/interfaces";
 import { AppContext } from "../../context/appContext";
 import { useHistory } from "react-router-dom";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { getCookie } from "../../util/cookie";
 
 const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleClass }) => {
+  const signupCookie = getCookie("signup");
+  const defineUser = signupCookie === "1" ? "Onboarding" : "Create Service";
   const { currentWorkspace, currentProject } = useContext(AppContext);
+  const { trackEvent } = useTracking();
   const history = useHistory();
 
+  useEffect(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ViewServiceWizardStep_Welcome,
+      category: "Service Wizard",
+      wizardType: defineUser,
+    });
+  }, []);
+
   const handleStart = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ServiceWizardStep_Welcome_CTAClick,
+      category: "Service Wizard",
+      wizardType: defineUser,
+    });
     history.push(
       `/${currentWorkspace.id}/${currentProject.id}/create-resource`
     );

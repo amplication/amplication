@@ -1,5 +1,5 @@
 import { Modal, Snackbar } from "@amplication/design-system";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext } from "react";
 import { match, useHistory } from "react-router-dom";
 import * as H from "history";
 import { formatError } from "../../util/error";
@@ -56,12 +56,12 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const { trackEvent } = useTracking();
   const history = useHistory();
-  const [goToPage, setGoToPage] = useState<number | null>(null);
 
-  const defineUser = signupCookie === "1" ? "signup" : "login";
+  const defineUser = signupCookie === "1" ? "Onboarding" : "Create Service";
   const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7];
-  // defineUser === "login"
+  // defineUser === "Create Service"
   //   ? [0, 1, 2, 3, 4, 5, 6, 8]
+
   //   : [0, 1, 2, 3, 4, 5, 6, 7];
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
@@ -96,12 +96,15 @@ const CreateServiceWizard: React.FC<Props> = ({
     [setNewService]
   );
 
-  const handleCloseWizard = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/${currentProject.id}`);
-  }, [currentWorkspace, currentProject]);
+  const handleCloseWizard = useCallback(
+    (currentPage: string) => {
+      history.push(`/${currentWorkspace.id}/${currentProject.id}`);
+    },
+    [currentWorkspace, currentProject]
+  );
 
   const handleWizardProgress = useCallback(
-    (dir: "next" | "prev", page: number) => {
+    (dir: "next" | "prev", page: string) => {
       trackEvent({
         eventName:
           AnalyticsEventNames[
@@ -110,8 +113,23 @@ const CreateServiceWizard: React.FC<Props> = ({
               : "ServiceWizardStep_BackClick"
           ],
         category: "Service Wizard",
-        WizardType: defineUser === "login" ? "Create Service" : "Onboarding",
-        step: "",
+        WizardType: defineUser,
+        step: page,
+      });
+    },
+    []
+  );
+
+  const trackWizardPageEvent = useCallback(
+    (
+      eventName: AnalyticsEventNames,
+      additionalData?: { [key: string]: string }
+    ) => {
+      trackEvent({
+        eventName,
+        category: "Service Wizard",
+        WizardType: defineUser,
+        ...additionalData,
       });
     },
     []
@@ -175,24 +193,49 @@ const CreateServiceWizard: React.FC<Props> = ({
         wizardSubmit={createResource}
         moduleCss={moduleClass}
         submitFormPage={6}
-        goToPage={goToPage}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
       >
-        <CreateServiceName moduleClass={moduleClass} />
-        <CreateGithubSync moduleClass={moduleClass} />
-        <CreateGenerationSettings moduleClass={moduleClass} />
-        <CreateServiceRepository moduleClass={moduleClass} />
-        <CreateServiceDatabase moduleClass={moduleClass} />
-        <CreateServiceTemplate moduleClass={moduleClass} />
-        <CreateServiceAuth moduleClass={moduleClass} />
+        <CreateServiceName
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+        <CreateGithubSync
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+        <CreateGenerationSettings
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+        <CreateServiceRepository
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+        <CreateServiceDatabase
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+        <CreateServiceTemplate
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
+
+        <CreateServiceAuth
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
           resource={createResult?.resource}
           build={createResult?.build}
+          trackWizardPageEvent={trackWizardPageEvent}
         />
-        <CreateServiceNextSteps moduleClass={moduleClass} />
+        <CreateServiceNextSteps
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>

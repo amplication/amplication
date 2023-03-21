@@ -7,8 +7,16 @@ import { ImageLabelToggle } from "./ImageLabelToggle";
 import graphql from "../../../assets/images/graphql.svg";
 import swagger from "../../../assets/images/swagger.svg";
 import adminUI from "../../../assets/images/admin-ui.svg";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
-const CreateGenerationSettings: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateGenerationSettings: React.FC<WizardStepProps> = ({
+  formik,
+  trackWizardPageEvent,
+}) => {
+  useEffect(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_APISettings);
+  }, []);
+
   useEffect(() => {
     if (!formik.values.generateGraphQL) {
       formik.values.generateAdminUI &&

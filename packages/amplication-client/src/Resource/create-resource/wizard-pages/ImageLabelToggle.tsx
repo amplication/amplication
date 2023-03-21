@@ -1,4 +1,5 @@
 import { CircleBadge, ToggleField } from "@amplication/design-system";
+import { useCallback, useRef } from "react";
 import "./ImageLabelToggle.scss";
 
 const className = "image-label-toggle";
@@ -16,13 +17,23 @@ export const ImageLabelToggle: React.FC<Props> = ({
   label,
   disabled,
 }) => {
+  const toggleRef = useRef<HTMLInputElement>(null);
+  const handleContainerClick = useCallback(() => {
+    toggleRef.current.click();
+  }, [toggleRef]);
+
   return (
-    <div className={className}>
+    <div className={className} onClick={handleContainerClick}>
       <CircleBadge color="#22273C" border="1px solid #373D57" size="medium">
         <img src={image} alt="" />
       </CircleBadge>
       <label>{label}</label>
-      <ToggleField name={name} label="" disabled={disabled} />
+      <ToggleField
+        name={name}
+        label=""
+        disabled={disabled}
+        forwardRef={toggleRef}
+      />
     </div>
   );
 };

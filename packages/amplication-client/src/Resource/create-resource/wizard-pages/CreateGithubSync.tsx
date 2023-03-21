@@ -8,12 +8,14 @@ import {
   GitRepositorySelected,
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-github-sync";
 
 const CreateGithubSync: React.FC<WizardStepProps> = ({
   moduleClass,
   formik,
+  trackWizardPageEvent,
 }) => {
   const { refreshCurrentWorkspace, currentProjectConfiguration } =
     useContext(AppContext);
@@ -27,6 +29,7 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   };
 
   useEffect(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Git);
     formik.validateForm();
   }, []);
 

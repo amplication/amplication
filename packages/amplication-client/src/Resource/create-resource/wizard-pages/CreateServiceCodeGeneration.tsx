@@ -1,4 +1,10 @@
-import React, { useContext, useEffect, useMemo, useState } from "react";
+import React, {
+  useContext,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -11,6 +17,7 @@ import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";
 import * as models from "../../../models";
 import { AppContext } from "../../..//context/appContext";
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-service-code-generation";
 
@@ -19,7 +26,7 @@ const CreateServiceCodeGeneration: React.FC<
     resource?: models.Resource;
     build?: models.Build;
   }
-> = ({ moduleClass, build, resource }) => {
+> = ({ moduleClass, build, resource, trackWizardPageEvent }) => {
   const { data } = useBuildWatchStatus(build);
   const { currentResource } = useContext(AppContext);
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
@@ -33,6 +40,19 @@ const CreateServiceCodeGeneration: React.FC<
 
   console.log(currentResource);
 
+  useEffect(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration
+    );
+  }, []);
+
+  useEffect(() => {
+    if (!data && data?.build?.status !== models.EnumBuildStatus.Completed)
+      return;
+
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
+  }, [data]);
+
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
 
@@ -44,6 +64,10 @@ const CreateServiceCodeGeneration: React.FC<
       versionNumber: data.build.version,
     };
   }, [data]);
+
+  const handleViewCodeClick = useCallback(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_ViewCodeClicked);
+  }, [trackWizardPageEvent]);
 
   const buildCompleted =
     data?.build?.status === models.EnumBuildStatus.Completed;
@@ -82,7 +106,7 @@ const CreateServiceCodeGeneration: React.FC<
               </div>
               <div />
             </div>
-            <Button>View my code</Button>
+            <Button onClick={handleViewCodeClick}>View my code</Button>
           </div>
         )}
       </div>

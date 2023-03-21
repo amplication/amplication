@@ -68,7 +68,7 @@ export const Routes: RouteDef[] = [
             moduleClass: "create-service-welcome",
             routeTrackType: "",
             exactPath: true,
-            isAnalytics: true,
+            isAnalytics: false,
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
