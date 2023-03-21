@@ -26,6 +26,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
   useEffect(() => {
     if (formik.values.structureType !== "Mono" && formik.values.baseDir) {
       delete formik.values.baseDir;
+
       formik.setValues(
         {
           ...formik.values,
@@ -82,7 +83,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
               <div className={`${className}__monorepo_title`}>
                 Your project will look like this:
               </div>
-              {formik.values.structureType === "monorepo" ? (
+              {formik.values.structureType === "Mono" ? (
                 <div className={`${className}__monorepo_example`}>
                   <div className={`${className}__monorepo_example_app`}>
                     <Icon icon={"folder"}></Icon>
