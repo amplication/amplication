@@ -27,6 +27,7 @@ export type LabelDescriptionSelectorProps = {
   icon?: string;
   image?: string;
   imageSize?: string;
+  customClassName?: string;
   onClick: (name) => void;
   currentValue: string;
   children?: React.ReactNode;
@@ -42,6 +43,7 @@ export const LabelDescriptionSelector: React.FC<
   icon,
   image,
   imageSize = "medium",
+  customClassName,
   onClick,
   currentValue,
   children,
@@ -53,7 +55,9 @@ export const LabelDescriptionSelector: React.FC<
   return (
     <div
       onClick={onSelectorClick}
-      className={classNames(className, { selected: name === currentValue })}
+      className={classNames(className, customClassName, {
+        selected: name === currentValue,
+      })}
     >
       {icon && (
         <CreateServiceCircleBadge>
@@ -71,12 +75,12 @@ export const LabelDescriptionSelector: React.FC<
         </CreateServiceCircleBadge>
       )}
 
-      {children}
-
       <label>{label}</label>
       {subDescription && (
         <div className={`${className}__subDescription`}>{subDescription}</div>
       )}
+      {children}
+
       <div className={`${className}__description`}>{description}</div>
     </div>
   );

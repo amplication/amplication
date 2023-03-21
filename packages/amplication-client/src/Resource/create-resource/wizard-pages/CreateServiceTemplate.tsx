@@ -37,6 +37,7 @@ const CreateServiceTemplate: React.FC<WizardStepProps> = ({
             name="empty"
             label="Empty"
             subDescription="(Start from scratch)"
+            customClassName="label-description-selector__template"
             description="Manually define your own entities and fields"
             onClick={handleTemplateSelect}
             currentValue={formik.values.templateType}
@@ -44,11 +45,17 @@ const CreateServiceTemplate: React.FC<WizardStepProps> = ({
           <LabelDescriptionSelector
             name="orderManagement"
             subDescription="Order Management"
+            customClassName="label-description-selector__template"
             label="Use a Template"
-            description="Pre-defined set of entities and fields such as(Address, Orders, User)"
+            description=""
             onClick={handleTemplateSelect}
             currentValue={formik.values.templateType}
-          />
+          >
+            <div className="label-description-selector__template_description">
+              Pre-defined set of entities and fields such as <br />
+              (Address, Orders, User)
+            </div>
+          </LabelDescriptionSelector>
         </Layout.SelectorWrapper>
       </Layout.RightSide>
     </Layout.Split>
