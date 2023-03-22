@@ -237,3 +237,19 @@ export async function getLastCommitRequest(
   );
   return branchCommits.values;
 }
+
+export async function getFirstCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Commit> {
+  const branchCommits = await requestWrapper(
+    GET_LAST_COMMIT_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return branchCommits.values.pop();
+}
