@@ -245,6 +245,7 @@ export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
   token: string;
+  gitGroupName?: string;
 }
 
 export interface PreCommitProcessArgs {
