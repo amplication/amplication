@@ -9,6 +9,7 @@ export interface ResourceSettings {
   generateGraphQL: boolean;
   generateRestApi: boolean;
   baseDir: string;
+  structureType: "Mono" | " Poly";
   databaseType: "postgres" | "mysql" | "mongo";
   templateType: "empty" | "orderManagement";
   authType: string;

@@ -33,19 +33,6 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
     [formik.values]
   );
 
-  useEffect(() => {
-    if (formik.values.structureType !== "Mono" && formik.values.baseDir) {
-      delete formik.values.baseDir;
-
-      formik.setValues(
-        {
-          ...formik.values,
-        },
-        true
-      );
-    }
-  }, [formik.values]);
-
   return (
     <Layout.Split>
       <Layout.LeftSide>
@@ -97,7 +84,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                 <div className={`${className}__monorepo_example`}>
                   <div className={`${className}__monorepo_example_app`}>
                     <Icon icon={"folder"}></Icon>
-                    apps
+                    {formik.values.baseDir}
                   </div>
                   <div className={`${className}__monorepo_example_tree`}>
                     <hr className={`${className}__monorepo_hr`}></hr>
@@ -106,11 +93,11 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                     >
                       <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
-                        example-service
+                        {formik.values.serviceName}
                       </div>
                       <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
-                        example-service-admin
+                        {`${formik.values.serviceName}-admin`}
                       </div>
                     </div>
                   </div>
@@ -122,11 +109,11 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                   >
                     <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
-                      example-service
+                      {formik.values.serviceName}
                     </div>
                     <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
-                      example-service-admin
+                      {`${formik.values.serviceName}-admin`}
                     </div>
                   </div>
                 </div>

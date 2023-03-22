@@ -58,11 +58,11 @@ const CreateServiceWizard: React.FC<Props> = ({
   const history = useHistory();
 
   const defineUser = signupCookie === "1" ? "Onboarding" : "Create Service";
-  const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7];
+  const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   // defineUser === "Create Service"
   //   ? [0, 1, 2, 3, 4, 5, 6, 8]
 
-  //   : [0, 1, 2, 3, 4, 5, 6, 7];
+  //   : [0, 1, 2, 3, 4, 5, 6, 7,8];
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
@@ -147,11 +147,14 @@ const CreateServiceWizard: React.FC<Props> = ({
         authType,
         databaseType,
         templateType,
+        structureType,
         baseDir,
       } = values;
 
-      const serverDir = `${baseDir}/${serviceName}`;
-      const adminDir = `${baseDir}/${serviceName}-admin`;
+      const serverDir =
+        structureType === "Mono" ? `${baseDir}/${serviceName}` : "";
+      const adminDir =
+        structureType === "Mono" ? `${baseDir}/${serviceName}-admin` : "";
       const templateSettings = templateMapping[templateType];
 
       if (currentProject) {

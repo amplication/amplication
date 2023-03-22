@@ -147,6 +147,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           }}
           validateOnMount
           validate={(values: ResourceSettings) => {
+            if (activePageIndex === 3 && values.structureType !== "Mono") {
+              setIsValidStep(false);
+              return;
+            }
+
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
             setIsValidStep(!!Object.keys(errors).length);
