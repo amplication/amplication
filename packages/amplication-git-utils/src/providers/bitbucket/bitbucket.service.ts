@@ -387,25 +387,16 @@ export class BitBucketService implements GitProvider {
     };
   }
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
-    const { gitGroupName, repositoryName, branchName, owner } = args;
+    const { gitGroupName, repositoryName, branchName, pointingSha } = args;
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
       throw new CustomError("Missing gitGroupName");
     }
-    const branchRef = await this.getBranch({
-      owner,
-      gitGroupName,
-      repositoryName,
-      branchName,
-    });
-    if (!branchRef) {
-      this.logger.error("Missing branchRef");
-      throw new CustomError("Missing branchRef");
-    }
+
     const branch = await createBranchRequest(
       gitGroupName,
       repositoryName,
-      { name: branchName, target: { hash: branchRef.sha } },
+      { name: branchName, target: { hash: pointingSha } },
       this.accessToken
     );
 
