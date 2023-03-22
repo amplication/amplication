@@ -3,7 +3,7 @@ import { BitBucketService } from "./bitbucket.service";
 import { EnumGitProvider } from "../../types";
 import { ILogger } from "@amplication/util/logging";
 import * as requests from "./requests";
-import { TreeEntry, PaginatedTreeEntry } from "./bitbucket.types";
+import { TreeEntry, PaginatedTreeEntry, Commit } from "./bitbucket.types";
 
 jest.mock("fs");
 
@@ -140,6 +140,144 @@ describe("bitbucket.service", () => {
 
       expect(spyOnGetFileMetaRequest).toHaveBeenCalledTimes(1);
       expect(result).toEqual(expectedResult);
+    });
+  });
+
+  describe("createCommit", () => {
+    it("throws when git group name wasn't provider", async () => {
+      expect.assertions(1);
+      try {
+        await service.createCommit({
+          owner: "maccheroni",
+          commitMessage: "commit message",
+          files: [{ path: "path/file.me", content: "content" }],
+          branchName: "master",
+          repositoryName: "myrepo",
+        });
+      } catch (e) {
+        expect(e.message).toBe("Missing gitGroupName");
+      }
+    });
+
+    it("create commit successfully - response status 201", async () => {
+      const mockedGetLastCommitResponse = {
+        type: "commit",
+        hash: "bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
+        date: "2023-03-18T14:05:31+00:00",
+        author: {
+          type: "author",
+          raw: "Amit Barletz <barletz.amit19@gmail.com>",
+          user: {
+            display_name: "Amit Barletz",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/users/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D",
+              },
+              avatar: {
+                href: "https://secure.gravatar.com/avatar/616027f81a603dc0c8a139eb11af65f7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-3.png",
+              },
+              html: {
+                href: "https://bitbucket.org/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D/",
+              },
+            },
+            type: "user",
+            uuid: "{c3f8c1a5-185c-4fee-9bc1-bbceae764ab4}",
+            account_id: "5c0cb3e50ecb4f1b2ffaad26",
+            nickname: "amit barletz",
+          },
+        },
+        message: "new-test.txt created online with Bitbucket",
+        summary: {
+          type: "rendered",
+          raw: "new-test.txt created online with Bitbucket",
+          markup: "markdown",
+          html: "<p>new-test.txt created online with Bitbucket</p>",
+        },
+        links: {
+          self: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
+          },
+          html: {
+            href: "https://bitbucket.org/ab-2/best-repo/commits/bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
+          },
+          diff: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/diff/bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
+          },
+          approve: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/bc3412a0a22c5e06f8350b841d1d5f91304e5e58/approve",
+          },
+          comments: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/bc3412a0a22c5e06f8350b841d1d5f91304e5e58/comments",
+          },
+          statuses: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/bc3412a0a22c5e06f8350b841d1d5f91304e5e58/statuses",
+          },
+          patch: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/patch/bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
+          },
+        },
+        parents: [
+          {
+            type: "commit",
+            hash: "714235717e951465925b28b84673368ca70a6e94",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/714235717e951465925b28b84673368ca70a6e94",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo/commits/714235717e951465925b28b84673368ca70a6e94",
+              },
+            },
+          },
+        ],
+        rendered: {
+          message: {
+            type: "rendered",
+            raw: "new-test.txt created online with Bitbucket",
+            markup: "markdown",
+            html: "<p>new-test.txt created online with Bitbucket</p>",
+          },
+        },
+        repository: {
+          type: "repository",
+          full_name: "ab-2/best-repo",
+          links: {
+            self: {
+              href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo",
+            },
+            html: {
+              href: "https://bitbucket.org/ab-2/best-repo",
+            },
+            avatar: {
+              href: "https://bytebucket.org/ravatar/%7B23203fef-f9de-4268-9a81-a8402af296b6%7D?ts=default",
+            },
+          },
+          name: "best-repo",
+          uuid: "{23203fef-f9de-4268-9a81-a8402af296b6}",
+        },
+      } as unknown as Commit;
+
+      const spyOnGetLastCommitRequest = jest
+        .spyOn(requests, "getLastCommitRequest")
+        .mockResolvedValue(mockedGetLastCommitResponse);
+
+      const spyOnCreateCommitRequest = jest
+        .spyOn(requests, "createCommitRequest")
+        .mockResolvedValue({ status: 201 });
+
+      await service.createCommit({
+        owner: "maccheroni",
+        commitMessage: mockedGetLastCommitResponse.message,
+        files: [{ path: "path/file.me", content: "content" }],
+        branchName: "master",
+        repositoryName: mockedGetLastCommitResponse.repository.name,
+        gitGroupName:
+          mockedGetLastCommitResponse.repository.full_name.split("/")[0],
+      });
+
+      expect(spyOnGetLastCommitRequest).toHaveBeenCalledTimes(1);
+      expect(spyOnCreateCommitRequest).toHaveBeenCalledTimes(1);
+      expect(spyOnCreateCommitRequest).toHaveBeenCalledTimes(1);
     });
   });
 });
