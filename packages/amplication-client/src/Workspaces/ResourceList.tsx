@@ -96,7 +96,7 @@ function ResourceList() {
   });
 
   const handleResourceDelete = useCallback(
-    (resource: any) => {
+    (resource) => {
       trackEvent({
         eventName: AnalyticsEventNames.ResourceDelete,
       });
@@ -113,7 +113,7 @@ function ResourceList() {
   );
 
   const handleProjectDelete = useCallback(
-    (project: any) => {
+    (project) => {
       trackEvent({
         eventName: AnalyticsEventNames.ProjectDelete,
       });
