@@ -568,7 +568,9 @@
       "avatar_url": "https://avatars.githubusercontent.com/u/2861984?v=4",
       "profile": "https://github.com/overbit",
       "contributions": [
-        "code"
+        "code",
+        "bug",
+        "doc"
       ]
     }
   ],
