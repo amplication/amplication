@@ -29,6 +29,7 @@ describe("bitbucket.service", () => {
       },
       logger
     );
+    service.init();
   });
   afterEach(() => {
     jest.clearAllMocks();
@@ -396,6 +397,33 @@ describe("bitbucket.service", () => {
 
       expect(spyOnGetFirstCommitRequest).toHaveBeenCalledTimes(1);
       expect(result).toEqual(expected);
+    });
+  });
+
+  describe("getCloneUrl", () => {
+    it("throws when git group name wasn't provider", async () => {
+      expect.assertions(1);
+      try {
+        await service.getCloneUrl({
+          owner: "maccheroni",
+          repositoryName: "myrepo",
+          token: "my-token",
+        });
+      } catch (e) {
+        expect(e.message).toBe("Missing gitGroupName");
+      }
+    });
+    it("returns the clone url", async () => {
+      const result = await service.getCloneUrl({
+        owner: "maccheroni",
+        repositoryName: "myrepo",
+        gitGroupName: "mygroup",
+        token: "my-token",
+      });
+
+      expect(result).toEqual(
+        "https://x-token-auth:my-token@bitbucket.org/mygroup/myrepo.git"
+      );
     });
   });
 });
