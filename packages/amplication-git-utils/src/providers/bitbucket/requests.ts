@@ -9,6 +9,7 @@ import {
   PaginatedWorkspaceMembership,
   Repository,
   Commit,
+  Branch,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -58,6 +59,16 @@ const GET_BRANCH_COMMITS_URL = (
   branchName: string
 ) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/commits/${branchName}`;
+
+const GET_BRANCH_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/refs/branches/${branchName}`;
+
+const CREATE_BRANCH_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/refs/branches`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -252,4 +263,32 @@ export async function getFirstCommitRequest(
     }
   );
   return branchCommits.values.pop();
+}
+
+export async function getBranchRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Branch> {
+  return requestWrapper(
+    GET_BRANCH_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+}
+
+export async function createBranchRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchData: { name: string; target: { hash: string } },
+  accessToken: string
+): Promise<Branch> {
+  return requestWrapper(CREATE_BRANCH_URL(workspaceSlug, repositorySlug), {
+    method: "POST",
+    headers: getRequestHeaders(accessToken),
+    body: JSON.stringify(branchData),
+  });
 }

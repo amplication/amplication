@@ -230,6 +230,7 @@ export interface CreateBranchArgs {
   repositoryName: string;
   branchName: string;
   pointingSha: string;
+  gitGroupName?: string;
 }
 
 export interface Commit {

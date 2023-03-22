@@ -32,9 +32,11 @@ import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
+  createBranchRequest,
   createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
+  getBranchRequest,
   getFileMetaRequest,
   getFileRequest,
   getFirstCommitRequest,
@@ -367,11 +369,50 @@ export class BitBucketService implements GitProvider {
   ): Promise<PullRequest> {
     throw NotImplementedError;
   }
-  getBranch(args: GetBranchArgs): Promise<Branch | null> {
-    throw NotImplementedError;
+  async getBranch(args: GetBranchArgs): Promise<Branch | null> {
+    const { gitGroupName, repositoryName, branchName } = args;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const branch = await getBranchRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+    return {
+      name: branch.name,
+      sha: branch.target.hash,
+    };
   }
-  createBranch(args: CreateBranchArgs): Promise<Branch> {
-    throw NotImplementedError;
+  async createBranch(args: CreateBranchArgs): Promise<Branch> {
+    const { gitGroupName, repositoryName, branchName, owner } = args;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const branchRef = await this.getBranch({
+      owner,
+      gitGroupName,
+      repositoryName,
+      branchName,
+    });
+    if (!branchRef) {
+      this.logger.error("Missing branchRef");
+      throw new CustomError("Missing branchRef");
+    }
+    const branch = await createBranchRequest(
+      gitGroupName,
+      repositoryName,
+      { name: branchName, target: { hash: branchRef.sha } },
+      this.accessToken
+    );
+
+    return {
+      name: branch.name,
+      sha: branch.target.hash,
+    };
   }
 
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {

@@ -95,9 +95,10 @@ interface Project {
   name: string;
 }
 
-interface Branch {
+export interface Branch {
   name: string;
   merge_strategies: string[];
+  target: { hash: string };
   default_merge_strategy: string;
 }
 
