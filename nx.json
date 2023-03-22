@@ -66,8 +66,9 @@
     "docker:build": {
       "dependsOn": ["prebuild", "build", "postbuild"]
     },
-    "test:e2e": {
-      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    "e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "dependsOn": ["build"]
     }
   },
   "generators": {

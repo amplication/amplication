@@ -51,6 +51,7 @@ jobs:
     needs: nx
     if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
+        fail-fast: false
         matrix:
           project: ${{ fromJson(needs.nx.outputs.affected-e2e) }}
     steps:

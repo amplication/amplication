@@ -25,11 +25,11 @@
         "passWithNoTests": true
       }
     },
-    "test:e2e": {
+    "e2e": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
-        "jestConfig": "packages/amplication-server/jest.config.e2e.ts",
+        "jestConfig": "packages/amplication-server/jest.e2e.config.ts",
         "passWithNoTests": true,
         "runInBand": true
       }
