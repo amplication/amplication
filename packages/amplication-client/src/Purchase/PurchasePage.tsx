@@ -70,6 +70,7 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the main flow
     history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
@@ -80,6 +81,7 @@ const PurchasePage = (props) => {
   }, [openHubSpotChat, currentWorkspace.id]);
 
   const handleDowngradeClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
     history.push("?downgrade=true");
     openHubSpotChat();
   }, [openHubSpotChat]);
