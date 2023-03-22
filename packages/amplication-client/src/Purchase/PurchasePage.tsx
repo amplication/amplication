@@ -160,7 +160,6 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
-        <PromoBanner />
         <Paywall
           textOverrides={{
             entitlementsTitle: (plan) => {
