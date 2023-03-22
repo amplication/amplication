@@ -151,6 +151,7 @@ export class GitClientService {
         owner,
         repositoryName,
         token: cloneToken,
+        gitGroupName,
       });
 
       const cloneDir = normalize(
