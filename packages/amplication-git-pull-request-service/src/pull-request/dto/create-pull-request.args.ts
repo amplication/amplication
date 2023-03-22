@@ -25,4 +25,6 @@ export class CreatePullRequestArgs {
   gitResourceMeta: GitResourceMeta;
   @IsString()
   pullRequestMode: EnumPullRequestMode;
+  @IsString()
+  gitGroupName?: string;
 }
