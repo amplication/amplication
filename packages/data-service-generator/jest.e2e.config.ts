@@ -8,7 +8,8 @@ export default {
   },
   moduleFileExtensions: ["js", "json", "ts"],
   testEnvironment: "node",
-  testMatch: ["**/?(*.)+(e2e.spec).[jt]s?(x)"],
+  testMatch: ["**/e2e/**/*.spec.ts"],
   testTimeout: 100000000,
   maxConcurrency: 2,
+  collectCoverage: false,
 };
