@@ -214,6 +214,7 @@ export interface GetBranchArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
+  gitGroupName?: string;
 }
 
 export interface CreateBranchIfNotExistsArgs {
@@ -221,6 +222,7 @@ export interface CreateBranchIfNotExistsArgs {
   repositoryName: string;
   branchName: string;
   gitClient: GitClient;
+  gitGroupName?: string;
 }
 
 export interface CreateBranchArgs {

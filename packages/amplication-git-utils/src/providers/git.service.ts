@@ -295,7 +295,7 @@ export class GitClientService {
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, gitClient } = args;
+    const { branchName, owner, repositoryName, gitClient, gitGroupName } = args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
@@ -306,6 +306,7 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName: defaultBranch,
+        gitGroupName,
       });
     const newBranch = await this.provider.createBranch({
       owner,
