@@ -1,5 +1,5 @@
 name: E2E
-concurrency: ${{ github.ref }}
+concurrency: ${{ github.ref }}-e2e
 
 on:
   workflow_dispatch:
@@ -40,7 +40,6 @@ env:
 jobs:
   nx:
     name: Nx
-    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
     uses: ./.github/workflows/nx.template.yml
     with:
       nx-head: ${{ github.head_ref || github.ref_name }}
