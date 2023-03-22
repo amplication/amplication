@@ -112,22 +112,19 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const handleProjectDelete = useCallback(
-    (project) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.ProjectDelete,
-      });
-      deleteProject({
-        onCompleted: () => {
-          addEntity();
-        },
-        variables: {
-          projectId: currentProject.id,
-        },
-      }).catch(setError);
-    },
-    [currentProject, deleteProject, setError, trackEvent]
-  );
+  const handleProjectDelete = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ProjectDelete,
+    });
+    deleteProject({
+      onCompleted: () => {
+        addEntity();
+      },
+      variables: {
+        projectId: currentProject.id,
+      },
+    }).catch(setError);
+  }, [currentProject, deleteProject, setError, trackEvent]);
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
