@@ -37,6 +37,7 @@ import {
   currentUserWorkspacesRequest,
   getFileMetaRequest,
   getFileRequest,
+  getFirstCommitRequest,
   getLastCommitRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
@@ -372,9 +373,25 @@ export class BitBucketService implements GitProvider {
   createBranch(args: CreateBranchArgs): Promise<Branch> {
     throw NotImplementedError;
   }
-  getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
-    throw NotImplementedError;
+
+  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
+    const { gitGroupName, repositoryName, branchName } = args;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const firstCommit = await getFirstCommitRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+
+    return {
+      sha: firstCommit.hash,
+    };
   }
+
   getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     throw NotImplementedError;
   }

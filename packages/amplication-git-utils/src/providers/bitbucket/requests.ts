@@ -52,7 +52,7 @@ const GET_FILE_URL = (
 const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
 
-const GET_LAST_COMMIT_URL = (
+const GET_BRANCH_COMMITS_URL = (
   workspaceSlug: string,
   repositorySlug: string,
   branchName: string
@@ -229,11 +229,27 @@ export async function getLastCommitRequest(
   accessToken: string
 ): Promise<Commit> {
   const [branchCommits] = await requestWrapper(
-    GET_LAST_COMMIT_URL(workspaceSlug, repositorySlug, branchName),
+    GET_BRANCH_COMMITS_URL(workspaceSlug, repositorySlug, branchName),
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
     }
   );
   return branchCommits.values;
+}
+
+export async function getFirstCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Commit> {
+  const branchCommits = await requestWrapper(
+    GET_BRANCH_COMMITS_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return branchCommits.values.pop();
 }
