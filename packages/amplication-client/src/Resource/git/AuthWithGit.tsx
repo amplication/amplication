@@ -31,6 +31,7 @@ type Props = {
   onDone: () => void;
   onGitRepositorySelected: (data: GitRepositorySelected) => void;
   onGitRepositoryCreated: (data: GitRepositoryCreatedData) => void;
+  onGitRepositoryDisconnected: () => void;
   gitRepositorySelected?: GitRepositorySelected;
 };
 
@@ -40,6 +41,7 @@ function AuthWithGit({
   onDone,
   onGitRepositorySelected,
   onGitRepositoryCreated,
+  onGitRepositoryDisconnected,
   gitRepositorySelected,
 }: Props) {
   const { currentWorkspace } = useContext(AppContext);
@@ -158,6 +160,7 @@ function AuthWithGit({
 
   const handleOnDisconnectRepository = useCallback(() => {
     setGitRepositorySelectedData(null);
+    onGitRepositoryDisconnected();
   }, [setGitRepositorySelectedData]);
 
   const errorMessage = formatError(error);

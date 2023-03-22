@@ -96,6 +96,17 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
             onDone={handleOnDone}
             onGitRepositorySelected={handleOnGitRepositorySelected}
             onGitRepositoryCreated={handleOnGitRepositoryCreated}
+            onGitRepositoryDisconnected={() => {
+              formik.setValues(
+                {
+                  ...formik.values,
+                  gitRepositoryName: null,
+                  gitOrganizationId: null,
+                  gitRepositoryUrl: null,
+                },
+                true
+              );
+            }}
             gitRepositorySelected={{
               gitOrganizationId: formik.values.gitOrganizationId,
               repositoryName: formik.values.gitRepositoryName,
