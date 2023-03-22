@@ -1,5 +1,5 @@
-name: Continuous Integration
-concurrency: ${{ github.ref }}
+name: E2E
+concurrency: ${{ github.ref }}-e2e
 
 on:
   workflow_dispatch:
@@ -17,6 +17,11 @@ on:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
   push:
     branches:
       - master
@@ -34,8 +39,6 @@ env:
 
 jobs:
   nx:
-    name: Nx
-    if: ${{ github.ref_name == 'master' || github.ref_name == 'next' }}
     uses: ./.github/workflows/nx.template.yml
     with:
       nx-head: ${{ github.head_ref || github.ref_name }}
@@ -46,18 +49,14 @@ jobs:
   e2e:
     runs-on: ubuntu-20.04
     needs: nx
-    if: ${{ needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != ''}}
+    if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
         matrix:
-          project: ${{ fromJson(needs.nx.outputs.affected-apps) }}
+          project: ${{ fromJson(needs.nx.outputs.affected-e2e) }}
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-
-      - uses: nrwl/nx-set-shas@v3
-        with:
-          main-branch-name: ${{ env.BASE }}
 
       - uses: actions/setup-node@v3
         with:
@@ -90,4 +89,4 @@ jobs:
         run: npm ci
 
       - name: e2e 
-        run: npx nx docker:build ${{ matrix.project }} --prod
+        run: npx nx e2e ${{ matrix.project }} --prod
