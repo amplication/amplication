@@ -8,6 +8,7 @@ import {
   PaginatedTreeEntry,
   PaginatedWorkspaceMembership,
   Repository,
+  Commit,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -47,6 +48,16 @@ const GET_FILE_URL = (
   pathToFile: string
 ) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
+
+const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
+
+const GET_BRANCH_COMMITS_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/commits/${branchName}`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -193,4 +204,52 @@ export async function getFileRequest(
     }
   );
   return response.buffer();
+}
+
+export function createCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  commitData: any,
+  accessToken: string
+) {
+  return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: JSON.stringify(commitData),
+  });
+}
+
+export async function getLastCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Commit> {
+  const [branchCommits] = await requestWrapper(
+    GET_BRANCH_COMMITS_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return branchCommits.values;
+}
+
+export async function getFirstCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Commit> {
+  const branchCommits = await requestWrapper(
+    GET_BRANCH_COMMITS_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return branchCommits.values.pop();
 }

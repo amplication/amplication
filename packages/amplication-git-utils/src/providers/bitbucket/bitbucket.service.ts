@@ -32,10 +32,13 @@ import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
   authDataRequest,
   authorizeRequest,
+  createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
   getFileMetaRequest,
   getFileRequest,
+  getFirstCommitRequest,
+  getLastCommitRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -324,8 +327,33 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    throw NotImplementedError;
+  async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
+    const { repositoryName, files, branchName, commitMessage, gitGroupName } =
+      createCommitArgs;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const lastCommit = await getLastCommitRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+
+    await createCommitRequest(
+      gitGroupName,
+      repositoryName,
+      {
+        branch: { name: branchName },
+        message: commitMessage,
+        parents: lastCommit.hash,
+        fileContent: files,
+      },
+      this.accessToken
+    );
   }
 
   getPullRequestForBranch(
@@ -345,9 +373,25 @@ export class BitBucketService implements GitProvider {
   createBranch(args: CreateBranchArgs): Promise<Branch> {
     throw NotImplementedError;
   }
-  getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
-    throw NotImplementedError;
+
+  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
+    const { gitGroupName, repositoryName, branchName } = args;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const firstCommit = await getFirstCommitRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+
+    return {
+      sha: firstCommit.hash,
+    };
   }
+
   getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     throw NotImplementedError;
   }
