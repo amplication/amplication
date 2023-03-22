@@ -570,7 +570,8 @@
       "contributions": [
         "code",
         "bug",
-        "doc"
+        "doc",
+        "infra"
       ]
     }
   ],
