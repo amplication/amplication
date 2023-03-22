@@ -130,6 +130,7 @@ export interface CreatePullRequestArgs {
   pullRequestMode: EnumPullRequestMode;
   gitResourceMeta: GitResourceMeta;
   files: File[];
+  gitGroupName?: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {
@@ -163,6 +164,7 @@ export interface CreateCommitArgs {
   commitMessage: string;
   branchName: string;
   files: UpdateFile[];
+  gitGroupName?: string;
 }
 
 export interface LinksMetadata {

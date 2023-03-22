@@ -112,6 +112,7 @@ export class GitClientService {
       pullRequestMode,
       gitResourceMeta,
       files,
+      gitGroupName,
     } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
@@ -189,6 +190,7 @@ export class GitClientService {
         commitMessage,
         branchName,
         files: preparedFiles,
+        gitGroupName,
       });
 
       if (diff) {
