@@ -110,7 +110,8 @@ export function prepareServiceObject(
   generateRestApi: boolean,
   gitRepository: models.ConnectGitRepositoryInput,
   serverDir: string,
-  adminDir: string
+  adminDir: string,
+  plugins: models.PluginInstallationsCreateInput
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
@@ -147,6 +148,7 @@ export function prepareServiceObject(
       gitOrganizationId: gitRepository.gitOrganizationId,
       resourceId: "",
     },
+    plugins: plugins,
   };
 }
 

@@ -48,6 +48,7 @@ import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -65,7 +66,8 @@ export class ResourceService {
     private readonly projectService: ProjectService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly topicService: TopicService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly pluginInstallationService: PluginInstallationService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -357,6 +359,15 @@ export class ResourceService {
           );
         }
       }
+    }
+
+    for (let index = 0; index < data.plugins.plugins.length; index++) {
+      const currentPlugin = data.plugins.plugins[index];
+      currentPlugin.resource = { connect: { id: resource.id } };
+      await this.pluginInstallationService.create(
+        { data: currentPlugin },
+        user
+      );
     }
 
     try {

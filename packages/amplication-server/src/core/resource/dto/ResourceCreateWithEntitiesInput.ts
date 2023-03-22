@@ -3,6 +3,7 @@ import { ResourceCreateInput } from "./ResourceCreateInput";
 import { EnumDataType } from "../../../enums/EnumDataType";
 import { ConnectGitRepositoryInput } from "../../git/dto/inputs/ConnectGitRepositoryInput";
 import { ServiceSettingsUpdateInput } from "../../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { PluginInstallationsCreateInput } from "../../pluginInstallation/dto/PluginInstallationsCreateInput";
 
 @InputType({
   isAbstract: true,
@@ -67,4 +68,9 @@ export class ResourceCreateWithEntitiesInput {
     nullable: false,
   })
   commitMessage!: string;
+
+  @Field(() => PluginInstallationsCreateInput, {
+    nullable: true,
+  })
+  plugins?: PluginInstallationsCreateInput;
 }

@@ -96,6 +96,49 @@ const CreateServiceWizard: React.FC<Props> = ({
     [setNewService]
   );
 
+  const createResourcePlugins = useCallback(
+    (
+      databaseType: "postgres" | "mysql" | "mongo",
+      authType: string
+    ): models.PluginInstallationsCreateInput => {
+      const authCorePlugins = authType === "core" && [
+        {
+          displayName: "Auth-core",
+          pluginId: "auth-core",
+          enabled: true,
+          npm: "@amplication/plugin-auth-core",
+          version: "latest",
+          resource: { connect: { id: "" } },
+        },
+        {
+          displayName: "Auth-jwt",
+          pluginId: "auth-jwt",
+          enabled: true,
+          npm: "@amplication/plugin-auth-jwt",
+          version: "latest",
+          resource: { connect: { id: "" } },
+        },
+      ];
+
+      const data: models.PluginInstallationsCreateInput = {
+        plugins: [
+          {
+            displayName: databaseType,
+            pluginId: `db-${databaseType}`,
+            enabled: true,
+            npm: `@amplication/plugin-db-${databaseType}`,
+            version: "latest",
+            resource: { connect: { id: "" } },
+          },
+        ],
+      };
+
+      if (authCorePlugins) data.plugins.push(...authCorePlugins);
+      return data;
+    },
+    []
+  );
+
   const handleCloseWizard = useCallback(
     (currentPage: string) => {
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
@@ -158,6 +201,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
+        const plugins = createResourcePlugins(databaseType, authType);
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -171,7 +215,8 @@ const CreateServiceWizard: React.FC<Props> = ({
             resourceId: "",
           },
           serverDir,
-          adminDir
+          adminDir,
+          plugins
         );
 
         createStarterResource(

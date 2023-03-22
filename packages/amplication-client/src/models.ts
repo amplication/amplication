@@ -1744,6 +1744,7 @@ export type ResourceCreateWithEntitiesInput = {
   commitMessage: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   gitRepository: ConnectGitRepositoryInput;
+  plugins?: InputMaybe<PluginInstallationsCreateInput>;
   resource: ResourceCreateInput;
   serviceSettings: ServiceSettingsUpdateInput;
 };

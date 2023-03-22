@@ -129,7 +129,6 @@ const useResources = (
       const currentResourceId =
         result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
-      createResourcePlugins(currentResourceId, databaseType, authType);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
       refetch();
     });

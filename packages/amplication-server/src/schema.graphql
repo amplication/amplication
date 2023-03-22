@@ -1204,6 +1204,7 @@ input ResourceCreateWithEntitiesInput {
   serviceSettings: ServiceSettingsUpdateInput!
   gitRepository: ConnectGitRepositoryInput!
   commitMessage: String!
+  plugins: PluginInstallationsCreateInput
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1245,6 +1246,39 @@ input ConnectGitRepositoryInput {
   name: String!
   resourceId: String!
   gitOrganizationId: String!
+}
+
+input PluginInstallationsCreateInput {
+  plugins: [PluginInstallationCreateInput!]
+}
+
+input PluginInstallationCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  pluginId: String!
+  enabled: Boolean!
+  npm: String!
+  settings: JSONObject
+  version: String!
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
 }
 
 input ResourceUpdateInput {
@@ -1341,21 +1375,6 @@ input ServiceTopicsCreateInput {
   patterns: [MessagePatternCreateInput!]
 }
 
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
-}
-
 input MessagePatternCreateInput {
   topicId: String!
   type: EnumMessagePatternConnectionOptions!
@@ -1404,30 +1423,12 @@ input ResourceRoleUpdateInput {
   displayName: String!
 }
 
-input PluginInstallationCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  pluginId: String!
-  enabled: Boolean!
-  npm: String!
-  settings: JSONObject
-  version: String!
-}
-
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
   enabled: Boolean!
   settings: JSONObject
   version: String!
-}
-
-input PluginInstallationsCreateInput {
-  plugins: [PluginInstallationCreateInput!]
 }
 
 input PluginSetOrderInput {
