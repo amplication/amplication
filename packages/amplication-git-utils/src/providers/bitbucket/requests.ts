@@ -8,6 +8,7 @@ import {
   PaginatedTreeEntry,
   PaginatedWorkspaceMembership,
   Repository,
+  Commit,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -50,6 +51,13 @@ const GET_FILE_URL = (
 
 const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
+
+const GET_LAST_COMMIT_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/commits/${branchName}`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -212,4 +220,20 @@ export function createCommitRequest(
     },
     body: JSON.stringify(commitData),
   });
+}
+
+export async function getLastCommitRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<Commit> {
+  const [branchCommits] = await requestWrapper(
+    GET_LAST_COMMIT_URL(workspaceSlug, repositorySlug, branchName),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+  return branchCommits.values;
 }

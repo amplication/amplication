@@ -37,6 +37,7 @@ import {
   currentUserWorkspacesRequest,
   getFileMetaRequest,
   getFileRequest,
+  getLastCommitRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -326,16 +327,28 @@ export class BitBucketService implements GitProvider {
   }
 
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    const { repositoryName, owner, files, branchName, commitMessage } =
+    const { repositoryName, files, branchName, commitMessage, gitGroupName } =
       createCommitArgs;
 
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const lastCommit = await getLastCommitRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+
     await createCommitRequest(
-      owner, // organization name?
+      gitGroupName,
       repositoryName,
       {
         branch: { name: branchName },
         message: commitMessage,
-        parents: "latestCommit", // TODO: get latest commit
+        parents: lastCommit.hash,
         fileContent: files,
       },
       this.accessToken
