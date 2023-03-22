@@ -84,10 +84,10 @@ function ResourceList() {
 
       cache.modify({
         fields: {
-          projects(existingResourceRefs, { readField }) {
-            return existingResourceRefs.filter(
-              (resourceRef: Reference) =>
-                deletedProjectId !== readField("id", resourceRef)
+          projects(existingProjectRefs, { readField }) {
+            return existingProjectRefs.filter(
+              (projectRef: Reference) =>
+                deletedProjectId !== readField("id", projectRef)
             );
           },
         },
@@ -96,7 +96,7 @@ function ResourceList() {
   });
 
   const handleResourceDelete = useCallback(
-    (resource) => {
+    (resource: any) => {
       trackEvent({
         eventName: AnalyticsEventNames.ResourceDelete,
       });
@@ -112,16 +112,22 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const handleProjectDelete = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.ProjectDelete,
-    });
-    deleteProject({
-      variables: {
-        projectId: currentProject.id,
-      },
-    }).catch(setError);
-  }, [currentProject, deleteProject, setError, trackEvent]);
+  const handleProjectDelete = useCallback(
+    (project: any) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.ProjectDelete,
+      });
+      deleteProject({
+        onCompleted: () => {
+          addEntity();
+        },
+        variables: {
+          projectId: currentProject.id,
+        },
+      }).catch(setError);
+    },
+    [currentProject, deleteProject, setError, trackEvent]
+  );
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
