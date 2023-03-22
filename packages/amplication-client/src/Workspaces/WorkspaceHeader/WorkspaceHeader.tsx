@@ -100,6 +100,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   }, [currentWorkspace, window.location.pathname]);
 
   const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
     history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
