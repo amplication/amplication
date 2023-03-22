@@ -1,4 +1,4 @@
-name: Continuous Integration
+name: E2E
 concurrency: ${{ github.ref }}
 
 on:
@@ -17,6 +17,11 @@ on:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
+  pull_request:
+    types: [opened, reopened, synchronize]
+    paths-ignore:
+      - "**/*.md"
+      - ".all-contributorsrc"
   push:
     branches:
       - master
@@ -46,10 +51,10 @@ jobs:
   e2e:
     runs-on: ubuntu-20.04
     needs: nx
-    if: ${{ needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != ''}}
+    if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
         matrix:
-          project: ${{ fromJson(needs.nx.outputs.affected-apps) }}
+          project: ${{ fromJson(needs.nx.outputs.affected-e2e) }}
     steps:
       - uses: actions/checkout@v3
         with:
