@@ -1,4 +1,4 @@
-import { Icon, TextField } from "@amplication/design-system";
+import { Icon, TextField } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect } from "react";
 
 import "./CreateServiceRepository.scss";

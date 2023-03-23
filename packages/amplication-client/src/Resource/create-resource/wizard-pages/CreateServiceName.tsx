@@ -1,4 +1,4 @@
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import React, { useEffect } from "react";
 import "./CreateServiceName.scss";

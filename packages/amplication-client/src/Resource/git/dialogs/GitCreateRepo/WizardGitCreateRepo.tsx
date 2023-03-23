@@ -4,7 +4,7 @@ import {
   Label,
   TextField,
   Toggle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
 import { useCallback, useState } from "react";
 import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";

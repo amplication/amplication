@@ -1,5 +1,5 @@
 import React, { useState, ReactNode, useCallback, useEffect } from "react";
-import { Button, EnumButtonStyle } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";

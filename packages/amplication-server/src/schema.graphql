@@ -1231,11 +1231,6 @@ input ResourceCreateWithEntitiesFieldInput {
 input ServiceSettingsUpdateInput {
   displayName: String
   description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettingsUpdateInput!
   serverSettings: ServerSettingsUpdateInput!
@@ -1491,6 +1486,7 @@ input CreateGitRepositoryBaseInput {
   name: String!
   public: Boolean!
   gitOrganizationId: String!
+  gitGroupName: String
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
 }

@@ -1,4 +1,4 @@
-import { CircleBadge, Icon } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import { useCallback, useContext, useEffect } from "react";
 import "./CreateServiceNextSteps.scss";
 import { WizardStepProps } from "./interfaces";

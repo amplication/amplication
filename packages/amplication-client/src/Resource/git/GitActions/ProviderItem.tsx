@@ -1,4 +1,4 @@
-import { Button, EnumButtonStyle, Icon } from "@amplication/design-system";
+import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import { EnumGitProvider } from "../../../models";
 import React, { useCallback } from "react";
 

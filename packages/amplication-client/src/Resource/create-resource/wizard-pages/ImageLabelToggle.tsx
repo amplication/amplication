@@ -1,4 +1,4 @@
-import { CircleBadge, ToggleField } from "@amplication/design-system";
+import { CircleBadge, ToggleField } from "@amplication/ui/design-system";
 import { useCallback, useRef } from "react";
 import "./ImageLabelToggle.scss";
 

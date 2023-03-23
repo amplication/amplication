@@ -1,4 +1,4 @@
-import { CircleBadge, Icon } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { useCallback } from "react";
 import "./LabelDescriptionSelector.scss";

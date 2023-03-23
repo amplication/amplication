@@ -11,7 +11,7 @@ import ActionLog from "../../../VersionControl/ActionLog";
 // import { Action } from "../../../models";
 
 import CodeGenerationCompleted from "../../../assets/images/code-generation-completed.svg";
-import { Button } from "@amplication/design-system";
+import { Button } from "@amplication/ui/design-system";
 import { WizardStepProps } from "./interfaces";
 import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";

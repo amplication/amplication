@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import "./CreateServiceWelcome.scss";
-import { Button, Modal } from "@amplication/design-system";
+import { Button, Modal } from "@amplication/ui/design-system";
 import { WizardStepProps } from "./wizard-pages/interfaces";
 import { AppContext } from "../../context/appContext";
 import { useHistory } from "react-router-dom";

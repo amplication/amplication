@@ -1,4 +1,4 @@
-import { AnimationType, Loader } from "@amplication/design-system";
+import { AnimationType, Loader } from "@amplication/ui/design-system";
 import React from "react";
 import "./CreateServiceWizard.scss";
 

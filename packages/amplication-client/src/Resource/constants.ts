@@ -142,11 +142,6 @@ export function prepareServiceObject(
         serverPath: serverDir,
       },
       authProvider: EnumAuthProviderType.Jwt,
-      dbHost: "12345",
-      dbName: "mor",
-      dbPassword: "535348",
-      dbPort: 8888,
-      dbUser: "test",
     },
     entities: templateSettings.entities,
     gitRepository: {

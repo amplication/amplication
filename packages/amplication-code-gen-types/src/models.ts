@@ -282,6 +282,7 @@ export type ConnectGitRepositoryInput = {
 };
 
 export type CreateGitRepositoryBaseInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;

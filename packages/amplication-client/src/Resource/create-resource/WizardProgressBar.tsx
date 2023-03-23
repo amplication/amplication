@@ -1,7 +1,7 @@
 import React from "react";
 import "./CreateServiceWizard.scss";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import "./wizardProgressBar.scss";
 
 interface Props {

@@ -2,7 +2,7 @@ import {
   Button,
   EnumButtonStyle,
   EnumIconPosition,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React, { useContext } from "react";
 import "./CreateServiceWizard.scss";
 import { AppContext } from "../../context/appContext";
