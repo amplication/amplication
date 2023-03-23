@@ -4,6 +4,7 @@ import {
   print,
   removeTSVariableDeclares,
   removeTSClassDeclares,
+  removeTSInterfaceDeclares,
 } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
@@ -14,7 +15,6 @@ import {
   interpolate,
   importNames,
   addImports,
-  removeTSInterfaceDeclares,
   removeTSIgnoreComments,
 } from "../../../utils/ast";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";

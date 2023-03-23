@@ -287,21 +287,6 @@ export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
 }
 
 /**
- * Removes all TypeScript interface declares
- * @param ast the AST to remove the declares from
- */
-export function removeTSInterfaceDeclares(ast: ASTNode): void {
-  visit(ast, {
-    visitTSInterfaceDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
  * Adds auto-generated static comments to top of given file
  * @param file file to add comments to
  */

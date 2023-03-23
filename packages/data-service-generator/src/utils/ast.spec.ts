@@ -10,7 +10,6 @@ import {
   importContainedIdentifiers,
   importNames,
   interpolate,
-  removeTSInterfaceDeclares,
   transformTemplateLiteralToStringLiteral,
 } from "./ast";
 
@@ -112,14 +111,6 @@ describe("transformTemplateLiteralToStringLiteral", () => {
     const stringLiteral =
       transformTemplateLiteralToStringLiteral(templateLiteral);
     expect(stringLiteral.value).toBe("Hello, World!");
-  });
-});
-
-describe("removeTSInterfaceDeclares", () => {
-  test("removes interface declares", () => {
-    const file = parse(`declare interface A {}; interface B {}`);
-    removeTSInterfaceDeclares(file);
-    expect(print(file).code).toEqual(`interface B {}`);
   });
 });
 
