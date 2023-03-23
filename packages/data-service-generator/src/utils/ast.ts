@@ -1,10 +1,5 @@
 import { NamedClassProperty } from "@amplication/code-gen-types";
-import {
-  parse,
-  partialParse,
-  print,
-  removeTSIgnoreComments,
-} from "@amplication/code-gen-utils";
+import { parse, partialParse, print } from "@amplication/code-gen-utils";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
@@ -259,20 +254,6 @@ export function transformTemplateLiteralToStringLiteral(
     })
     .join("");
   return builders.stringLiteral(value);
-}
-
-/**
- * Like removeTSIgnoreComments but removes TypeScript ignore comments from
- * imports only
- * @param file file to remove comments from
- */
-export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
-  for (const statement of file.program.body) {
-    if (!namedTypes.ImportDeclaration.check(statement)) {
-      break;
-    }
-    removeTSIgnoreComments(statement);
-  }
 }
 
 /**

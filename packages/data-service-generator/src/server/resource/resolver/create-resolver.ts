@@ -7,6 +7,7 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
   removeTSIgnoreComments,
+  removeImportsTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -33,7 +34,6 @@ import {
   addImports,
   getClassDeclarationById,
   importContainedIdentifiers,
-  removeImportsTSIgnoreComments,
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
