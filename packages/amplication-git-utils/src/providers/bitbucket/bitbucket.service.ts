@@ -33,6 +33,7 @@ import {
   authDataRequest,
   authorizeRequest,
   createBranchRequest,
+  createCommentOnPrRequest,
   createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
@@ -435,8 +436,25 @@ export class BitBucketService implements GitProvider {
     }
     return `https://x-token-auth:${token}@bitbucket.org/${gitGroupName}/${repositoryName}.git`;
   }
-  commentOnPullRequest(args: CreatePullRequestCommentArgs): Promise<void> {
-    throw NotImplementedError;
+  async commentOnPullRequest(
+    args: CreatePullRequestCommentArgs
+  ): Promise<void> {
+    const {
+      data: { body },
+      where: { gitGroupName, repositoryName, issueNumber: pullRequestId },
+    } = args;
+
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    await createCommentOnPrRequest(
+      gitGroupName,
+      repositoryName,
+      pullRequestId,
+      body,
+      this.accessToken
+    );
   }
 
   async getToken(): Promise<string> {

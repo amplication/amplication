@@ -234,7 +234,12 @@ export class GitClientService {
       }
 
       await this.provider.commentOnPullRequest({
-        where: { issueNumber: pullRequest.number, owner, repositoryName },
+        where: {
+          issueNumber: pullRequest.number,
+          owner,
+          repositoryName,
+          gitGroupName,
+        },
         data: { body: pullRequestBody },
       });
 
