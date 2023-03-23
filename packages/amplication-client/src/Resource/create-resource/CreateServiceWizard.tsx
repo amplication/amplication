@@ -38,6 +38,8 @@ type Props = AppRouteProps & {
   location: H.Location;
 };
 
+export type DefineUser = "Onboarding" | "Create Service";
+
 const signupCookie = getCookie("signup");
 
 const CreateServiceWizard: React.FC<Props> = ({
@@ -57,7 +59,8 @@ const CreateServiceWizard: React.FC<Props> = ({
   const { trackEvent } = useTracking();
   const history = useHistory();
 
-  const defineUser = signupCookie === "1" ? "Onboarding" : "Create Service";
+  const defineUser: DefineUser =
+    signupCookie === "1" ? "Onboarding" : "Create Service";
   const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7, 8];
   // defineUser === "Create Service"
   //   ? [0, 1, 2, 3, 4, 5, 6, 8]
@@ -216,7 +219,12 @@ const CreateServiceWizard: React.FC<Props> = ({
           },
           serverDir,
           adminDir,
-          plugins
+          plugins,
+          defineUser,
+          structureType,
+          databaseType,
+          authType
+          // gitOrganizationName
         );
 
         createStarterResource(

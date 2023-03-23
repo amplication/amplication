@@ -1741,12 +1741,16 @@ export type ResourceCreateWithEntitiesFieldInput = {
 };
 
 export type ResourceCreateWithEntitiesInput = {
+  authType: Scalars['String'];
   commitMessage: Scalars['String'];
+  dbType: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   gitRepository: ConnectGitRepositoryInput;
   plugins?: InputMaybe<PluginInstallationsCreateInput>;
+  repoType: Scalars['String'];
   resource: ResourceCreateInput;
   serviceSettings: ServiceSettingsUpdateInput;
+  wizardType: Scalars['String'];
 };
 
 export type ResourceCreateWithEntitiesResult = {

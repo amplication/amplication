@@ -1,6 +1,7 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
 import { EnumAuthProviderType } from "../models";
+import { DefineUser } from "./create-resource/CreateServiceWizard";
 import { TemplateSettings } from "./create-resource/wizardResourceSchema";
 
 export const serviceSettingsFieldsInitValues = {
@@ -111,7 +112,12 @@ export function prepareServiceObject(
   gitRepository: models.ConnectGitRepositoryInput,
   serverDir: string,
   adminDir: string,
-  plugins: models.PluginInstallationsCreateInput
+  plugins: models.PluginInstallationsCreateInput,
+  wizardType: DefineUser,
+  repoType: string,
+  dbType: string,
+  auth: string
+  // gitOrganizationName: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
@@ -149,6 +155,11 @@ export function prepareServiceObject(
       resourceId: "",
     },
     plugins: plugins,
+    wizardType,
+    repoType,
+    dbType,
+    authType: auth,
+    // gitOrganizationName
   };
 }
 

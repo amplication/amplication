@@ -3,6 +3,7 @@ import {
   GitRepository,
   Prisma,
   EnumResourceType,
+  EnumGitProvider,
 } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
@@ -407,17 +408,17 @@ export class ResourceService {
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
-        // wizardType: "",
+        wizardType: data.wizardType,
         resourceName: resource.name,
-        gitProvider: resource.gitRepository.gitOrganization.provider,
-        gitOrganizationName: resource.gitRepository.gitOrganization.name,
-        repoName: resource.gitRepository.name,
+        gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
+        gitOrganizationName: data.gitRepository.name,
+        repoName: data.gitRepository.name,
         graphQlApi: String(data.serviceSettings.serverSettings.generateGraphQL),
         restApi: String(data.serviceSettings.serverSettings.generateRestApi),
         adminUI: String(data.serviceSettings.adminUISettings.generateAdminUI),
-        // repoType: "",
-        // dbType: "",
-        // auth: ""
+        repoType: data.repoType,
+        dbType: data.dbType,
+        auth: data.authType,
       },
     });
 

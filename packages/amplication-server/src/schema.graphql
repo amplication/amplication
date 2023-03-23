@@ -1205,6 +1205,10 @@ input ResourceCreateWithEntitiesInput {
   gitRepository: ConnectGitRepositoryInput!
   commitMessage: String!
   plugins: PluginInstallationsCreateInput
+  wizardType: String!
+  authType: String!
+  dbType: String!
+  repoType: String!
 }
 
 input ResourceCreateWithEntitiesEntityInput {

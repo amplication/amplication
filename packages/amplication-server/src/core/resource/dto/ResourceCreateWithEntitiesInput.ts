@@ -73,4 +73,29 @@ export class ResourceCreateWithEntitiesInput {
     nullable: true,
   })
   plugins?: PluginInstallationsCreateInput;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  wizardType!: "create resource" | "onboarding";
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  authType!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  dbType!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  repoType!: string;
+
+  // @Field(() => String, {
+  //   nullable: false,
+  // })
+  // gitOrganizationName!: string;
 }
