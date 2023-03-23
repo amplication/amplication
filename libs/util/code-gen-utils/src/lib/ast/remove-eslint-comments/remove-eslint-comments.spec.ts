@@ -1,3 +1,7 @@
+import { print } from "recast";
+import { parse } from "../../parse/main";
+import { removeESLintComments } from "./main";
+
 describe("removeESLintComments", () => {
   test("removes ESLint block comments", () => {
     const file = parse(`/* eslint-disable */ function f(x) { return x * 2 }`);
