@@ -8,6 +8,7 @@ import {
   PaginatedTreeEntry,
   Commit,
   Branch,
+  PullRequestComment,
 } from "./bitbucket.types";
 
 jest.mock("fs");
@@ -167,6 +168,7 @@ describe("bitbucket.service", () => {
 
     it("create commit successfully - response status 201", async () => {
       const mockedGetLastCommitResponse = {
+        // TODO: change name
         type: "commit",
         hash: "bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
         date: "2023-03-18T14:05:31+00:00",
@@ -702,6 +704,95 @@ describe("bitbucket.service", () => {
 
       expect(spyOnGetBranchRequest).toBeCalledTimes(1);
       expect(result).toEqual(mockedResult);
+    });
+  });
+
+  describe("commentOnPullRequest", () => {
+    it("throws when git group name wasn't provider", async () => {
+      expect.assertions(1);
+      try {
+        await service.commentOnPullRequest({
+          where: {
+            issueNumber: 1,
+            owner: "maccheroni",
+            repositoryName: "my-repo",
+          },
+          data: { body: "this is my comment for the pull request" },
+        });
+      } catch (e) {
+        expect(e.message).toBe("Missing gitGroupName");
+      }
+    });
+
+    it("create a comment on a pull request successfully - response status 201", async () => {
+      const mockedCreateCommentOnResponse = {
+        id: 380826942,
+        created_on: "2023-03-23T11:08:07.188285+00:00",
+        updated_on: "2023-03-23T11:08:07.188336+00:00",
+        content: {
+          type: "rendered",
+          raw: "test for bitbucket task",
+          markup: "markdown",
+          html: "<p>test for bitbucket task</p>",
+        },
+        user: {
+          display_name: "Amit Barletz",
+          links: {
+            self: {
+              href: "https://api.bitbucket.org/2.0/users/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D",
+            },
+            avatar: {
+              href: "https://secure.gravatar.com/avatar/616027f81a603dc0c8a139eb11af65f7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-3.png",
+            },
+            html: {
+              href: "https://bitbucket.org/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D/",
+            },
+          },
+          type: "user",
+          uuid: "{c3f8c1a5-185c-4fee-9bc1-bbceae764ab4}",
+          account_id: "5c0cb3e50ecb4f1b2ffaad26",
+          nickname: "amit barletz",
+        },
+        deleted: false,
+        type: "pullrequest_comment",
+        links: {
+          self: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/comments/380826942",
+          },
+          html: {
+            href: "https://bitbucket.org/ab-2/best-repo/pull-requests/1/_/diff#comment-380826942",
+          },
+        },
+        pullrequest: {
+          type: "pullrequest",
+          id: 1,
+          title: "new-test.txt created online with Bitbucket",
+          links: {
+            self: {
+              href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1",
+            },
+            html: {
+              href: "https://bitbucket.org/ab-2/best-repo/pull-requests/1",
+            },
+          },
+        },
+      } as unknown as PullRequestComment;
+
+      const spyOnCreateCommentOnPrRequest = jest
+        .spyOn(requests, "createCommentOnPrRequest")
+        .mockResolvedValue(mockedCreateCommentOnResponse);
+
+      await service.commentOnPullRequest({
+        where: {
+          issueNumber: 1,
+          owner: "maccheroni",
+          repositoryName: "my-repo",
+          gitGroupName: "my-group",
+        },
+        data: { body: "this is my comment for the pull request" },
+      });
+
+      expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledTimes(1);
     });
   });
 });
