@@ -1,5 +1,9 @@
 import { builders, namedTypes } from "ast-types";
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+} from "@amplication/code-gen-utils";
 import {
   EventNames,
   Module,
@@ -15,7 +19,6 @@ import {
   addAutoGenerationComment,
   addImports,
   removeTSClassDeclares,
-  removeESLintComments,
 } from "../../../utils/ast";
 import { removeIdentifierFromModuleDecorator } from "../../../utils/nestjs-code-generation";
 import { createControllerId } from "../controller/create-controller";

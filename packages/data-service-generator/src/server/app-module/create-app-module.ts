@@ -1,4 +1,8 @@
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+} from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
   EventNames,
@@ -13,7 +17,6 @@ import {
   importNames,
   addImports,
   removeTSVariableDeclares,
-  removeESLintComments,
   removeTSIgnoreComments,
   importDeclaration,
   callExpression,

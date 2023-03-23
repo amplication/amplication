@@ -4,7 +4,7 @@ import { print } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
-import { readFile } from "@amplication/code-gen-utils";
+import { readFile, removeESLintComments } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../../../utils/module";
 import {
   interpolate,
@@ -14,7 +14,6 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
   removeTSIgnoreComments,
-  removeESLintComments,
 } from "../../../utils/ast";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import {

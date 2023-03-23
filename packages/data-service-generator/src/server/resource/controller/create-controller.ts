@@ -1,4 +1,8 @@
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+} from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import {
@@ -24,7 +28,6 @@ import {
   removeTSInterfaceDeclares,
   removeTSClassDeclares,
   getClassDeclarationById,
-  removeESLintComments,
   importContainedIdentifiers,
   getMethods,
   removeTSIgnoreComments,

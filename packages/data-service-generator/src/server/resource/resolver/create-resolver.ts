@@ -1,5 +1,9 @@
 import { EnumEntityAction } from "../../../models";
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+} from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import pluginWrapper from "../../../plugin-wrapper";
@@ -27,7 +31,6 @@ import {
   removeTSInterfaceDeclares,
   removeTSClassDeclares,
   getClassDeclarationById,
-  removeESLintComments,
   importContainedIdentifiers,
   removeImportsTSIgnoreComments,
   getMethods,
