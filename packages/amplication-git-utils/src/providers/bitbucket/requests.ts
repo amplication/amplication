@@ -10,6 +10,7 @@ import {
   Repository,
   Commit,
   Branch,
+  PullRequestComment,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -69,6 +70,13 @@ const GET_BRANCH_URL = (
 
 const CREATE_BRANCH_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/refs/branches`;
+
+const CREATE_COMMENT_ON_PULL_REQUEST_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  pullRequestId: number
+) =>
+  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -291,4 +299,25 @@ export async function createBranchRequest(
     headers: getRequestHeaders(accessToken),
     body: JSON.stringify(branchData),
   });
+}
+
+export async function createCommentOnPrRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  pullRequestId: number,
+  comment: string,
+  accessToken: string
+): Promise<PullRequestComment> {
+  return requestWrapper(
+    CREATE_COMMENT_ON_PULL_REQUEST_URL(
+      workspaceSlug,
+      repositorySlug,
+      pullRequestId
+    ),
+    {
+      method: "POST",
+      headers: getRequestHeaders(accessToken),
+      body: JSON.stringify({ content: { raw: comment } }),
+    }
+  );
 }

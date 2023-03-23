@@ -7,6 +7,13 @@ enum AccessLevel {
   CONTRIBUTOR = "contributor",
 }
 
+enum PullRequestStat {
+  OPEN = "OPEN",
+  MERGED = "MERGED",
+  DECLINED = "DECLINED",
+  SUPERSEDED = "SUPERSEDED",
+}
+
 /**
  * These types are based on the Bitbucket API documentation:
  * https://developer.atlassian.com/cloud/bitbucket/rest
@@ -136,4 +143,31 @@ export interface Commit {
     raw: string;
     user: Account;
   };
+}
+
+export interface PullRequestComment {
+  pullRequest: PullRequest;
+}
+
+export interface PullRequest {
+  id: number;
+  title: string;
+  author: Account;
+  source: PullRequestEndpoint;
+  destination: PullRequestEndpoint;
+  state: PullRequestStat;
+}
+
+export interface PullRequestEndpoint {
+  branch: Branch;
+  repository: Repository;
+  commit: Commit;
+}
+
+export interface Comment {
+  id: number;
+  content: {
+    raw: string;
+  };
+  user: Account;
 }

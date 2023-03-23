@@ -269,6 +269,7 @@ export interface FindOneIssueInput {
   owner: string;
   repositoryName: string;
   issueNumber: number;
+  gitGroupName?: string;
 }
 
 interface CreatePullRequestCommentInput {
