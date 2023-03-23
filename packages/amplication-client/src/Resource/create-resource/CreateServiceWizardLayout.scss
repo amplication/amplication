@@ -28,15 +28,19 @@
     display: flex;
     align-items: flex-start;
     flex-direction: column;
-    width: 552px;
+    font-size: 14px;
 
     &__header {
       @include title-24;
+      font-size: 1.5em;
+      line-height: 1.5em;
       margin-bottom: var(--large-spacing);
     }
 
     &__text {
       @include regular-14;
+      font-size: 1em;
+      line-height: 1.5em;
       white-space: pre-line;
     }
 

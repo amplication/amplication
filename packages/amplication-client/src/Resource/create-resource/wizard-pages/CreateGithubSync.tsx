@@ -85,9 +85,16 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
   return (
     <Layout.Split>
       <Layout.LeftSide>
-        <Layout.Description
+        <Layout.DescriptionCustom
           header="Now, let`s connect to a Git repository"
-          text="Amplication automatically pushes the generated code of your services to a git repository. You are the owner of the code and can freely customize it."
+          text={
+            <div className={`create-service-wizard-layout__description__text`}>
+              Amplication automatically pushes the generated code of your
+              services to a git repository.
+              <br />
+              You are the owner of the code and can freely customize it.
+            </div>
+          }
         />
       </Layout.LeftSide>
       <Layout.RightSide>

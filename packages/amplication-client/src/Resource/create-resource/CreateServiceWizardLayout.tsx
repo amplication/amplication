@@ -22,6 +22,14 @@ CreateServiceWizardLayout.Description = ({ header, text }) => {
     </div>
   );
 };
+CreateServiceWizardLayout.DescriptionCustom = ({ header, text }) => {
+  return (
+    <div className={`${className}__description`}>
+      <div className={`${className}__description__header`}>{header}</div>
+      {text}
+    </div>
+  );
+};
 
 CreateServiceWizardLayout.RightSide = ({ children }) => {
   return <div className={`${className}__right`}>{children}</div>;
