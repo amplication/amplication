@@ -1,5 +1,9 @@
 import * as path from "path";
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeTSVariableDeclares,
+} from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import { Module } from "@amplication/code-gen-types";
 import {
@@ -7,7 +11,6 @@ import {
   importNames,
   interpolate,
   removeTSIgnoreComments,
-  removeTSVariableDeclares,
 } from "../../utils/ast";
 import { relativeImportPath } from "../../utils/module";
 

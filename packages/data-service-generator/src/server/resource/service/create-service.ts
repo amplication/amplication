@@ -4,6 +4,7 @@ import {
   print,
   readFile,
   removeESLintComments,
+  removeTSVariableDeclares,
 } from "@amplication/code-gen-utils";
 import {
   Entity,
@@ -25,7 +26,6 @@ import {
   removeTSClassDeclares,
   removeTSIgnoreComments,
   removeTSInterfaceDeclares,
-  removeTSVariableDeclares,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,

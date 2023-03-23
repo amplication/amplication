@@ -1,6 +1,6 @@
 import { namedTypes, builders } from "ast-types";
 import * as kinds from "ast-types/gen/kinds";
-import { print } from "@amplication/code-gen-utils";
+import { print, removeTSVariableDeclares } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
@@ -8,7 +8,6 @@ import { readFile, removeESLintComments } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../../../utils/module";
 import {
   interpolate,
-  removeTSVariableDeclares,
   importNames,
   addImports,
   removeTSClassDeclares,

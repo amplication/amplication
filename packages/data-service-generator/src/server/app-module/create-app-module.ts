@@ -2,6 +2,7 @@ import {
   print,
   readFile,
   removeESLintComments,
+  removeTSVariableDeclares,
 } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
@@ -16,7 +17,6 @@ import {
   interpolate,
   importNames,
   addImports,
-  removeTSVariableDeclares,
   removeTSIgnoreComments,
   importDeclaration,
   callExpression,
