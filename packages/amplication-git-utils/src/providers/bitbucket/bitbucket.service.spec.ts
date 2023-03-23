@@ -169,8 +169,7 @@ describe("bitbucket.service", () => {
     });
 
     it("create commit successfully - response status 201", async () => {
-      const mockedGetLastCommitResponse = {
-        // TODO: change name
+      const mockedCreateCommitResponse = {
         type: "commit",
         hash: "bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
         date: "2023-03-18T14:05:31+00:00",
@@ -269,7 +268,7 @@ describe("bitbucket.service", () => {
 
       const spyOnGetLastCommitRequest = jest
         .spyOn(requests, "getLastCommitRequest")
-        .mockResolvedValue(mockedGetLastCommitResponse);
+        .mockResolvedValue(mockedCreateCommitResponse);
 
       const spyOnCreateCommitRequest = jest
         .spyOn(requests, "createCommitRequest")
@@ -277,12 +276,12 @@ describe("bitbucket.service", () => {
 
       await service.createCommit({
         owner: "maccheroni",
-        commitMessage: mockedGetLastCommitResponse.message,
+        commitMessage: mockedCreateCommitResponse.message,
         files: [{ path: "path/file.me", content: "content" }],
         branchName: "master",
-        repositoryName: mockedGetLastCommitResponse.repository.name,
+        repositoryName: mockedCreateCommitResponse.repository.name,
         gitGroupName:
-          mockedGetLastCommitResponse.repository.full_name.split("/")[0],
+          mockedCreateCommitResponse.repository.full_name.split("/")[0],
       });
 
       expect(spyOnGetLastCommitRequest).toHaveBeenCalledTimes(1);
