@@ -27,7 +27,9 @@ describe("bitbucket.service", () => {
     service = new BitBucketService(
       {
         provider: EnumGitProvider.Bitbucket,
-        providerOrganizationProperties: {},
+        providerOrganizationProperties: {
+          accessToken: "my-token",
+        },
       },
       {
         clientId: "id",
@@ -724,7 +726,7 @@ describe("bitbucket.service", () => {
       }
     });
 
-    it("create a comment on a pull request successfully - response status 201", async () => {
+    it("create a comment on a pull request successfully", async () => {
       const mockedCreateCommentOnResponse = {
         id: 380826942,
         created_on: "2023-03-23T11:08:07.188285+00:00",
@@ -793,6 +795,13 @@ describe("bitbucket.service", () => {
       });
 
       expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledTimes(1);
+      expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledWith(
+        "my-group",
+        "my-repo",
+        1,
+        "this is my comment for the pull request",
+        "my-token"
+      );
     });
   });
 });
