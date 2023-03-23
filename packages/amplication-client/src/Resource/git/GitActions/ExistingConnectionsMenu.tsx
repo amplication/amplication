@@ -4,7 +4,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";

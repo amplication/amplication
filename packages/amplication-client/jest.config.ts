@@ -8,4 +8,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../coverage/packages/amplication-client",
+  coverageThreshold: {
+    global: {
+      branches: 0,
+      lines: 0,
+    },
+  },
 };

@@ -1,6 +1,6 @@
 import React from "react";
 import { useField, ErrorMessage } from "formik";
-import { TextInput, TextInputProps } from "@amplication/design-system";
+import { TextInput, TextInputProps } from "@amplication/ui/design-system";
 import "./NameField.scss";
 
 const TOPIC_REGEX = /^[a-zA-Z0-9._-]+$/;

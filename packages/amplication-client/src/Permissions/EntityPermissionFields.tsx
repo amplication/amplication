@@ -10,7 +10,7 @@ import {
   SelectMenuModal,
   SelectMenuItem,
   SelectMenuList,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { EntityPermissionField } from "./EntityPermissionField";
 import { EnumButtonStyle } from "../Components/Button";
 import "./EntityPermissionFields.scss";

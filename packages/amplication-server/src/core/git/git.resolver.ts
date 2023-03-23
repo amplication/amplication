@@ -24,6 +24,8 @@ import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryA
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -131,6 +133,15 @@ export class GitResolver {
     @Args() args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
     return await this.gitService.completeOAuth2Flow(args);
+  }
+
+  @Query(() => PaginatedGitGroup)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "where.organizationId"
+  )
+  gitGroups(@Args() args: GitGroupArgs) {
+    return this.gitService.getGitGroups(args);
   }
 
   @Query(() => RemoteGitRepos)

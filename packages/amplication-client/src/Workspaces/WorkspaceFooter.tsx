@@ -1,4 +1,4 @@
-import { Icon, SkeletonWrapper } from "@amplication/design-system";
+import { Icon, SkeletonWrapper } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";

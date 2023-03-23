@@ -3,7 +3,7 @@ import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { FixedMenuPanel } from "../util/teleporter";
 
-import { Icon, Tooltip } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/ui/design-system";
 
 type Props = {
   /** Text to be displayed as a tooltip */

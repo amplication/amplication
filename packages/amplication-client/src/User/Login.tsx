@@ -2,7 +2,7 @@ import {
   CircularProgress,
   Snackbar,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import { Location } from "history";

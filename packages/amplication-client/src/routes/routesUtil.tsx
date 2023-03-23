@@ -3,7 +3,7 @@ import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 import NotFoundPage from "../404/NotFoundPage";
 
 export type AppRouteProps = {

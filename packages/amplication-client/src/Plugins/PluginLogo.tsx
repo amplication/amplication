@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import React from "react";
 import { Plugin } from "./hooks/usePlugins";
 import "./PluginLogo.scss";

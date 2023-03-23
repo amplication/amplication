@@ -3,7 +3,7 @@ import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { formatError } from "../util/error";
 import BuildSteps from "./BuildSteps";
 import ActionLog from "./ActionLog";

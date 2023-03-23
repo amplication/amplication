@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { gql, useMutation, useQuery } from "@apollo/client";
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 
 import { formatError } from "../util/error";
 import RoleForm from "./RoleForm";

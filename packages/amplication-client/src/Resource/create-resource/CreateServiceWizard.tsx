@@ -1,4 +1,4 @@
-import { Modal, Snackbar } from "@amplication/design-system";
+import { Modal, Snackbar } from "@amplication/ui/design-system";
 import React, { useCallback, useContext } from "react";
 import { match, useHistory } from "react-router-dom";
 import * as H from "history";

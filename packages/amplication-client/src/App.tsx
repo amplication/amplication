@@ -12,7 +12,7 @@ import {
   AnimationType,
   FullScreenLoader,
   PlanUpgradeConfirmation,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 

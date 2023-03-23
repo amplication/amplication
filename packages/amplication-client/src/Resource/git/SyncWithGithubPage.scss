@@ -7,9 +7,9 @@ $icon-font-size: 40px;
   &__header {
     display: flex;
     align-items: center;
-    margin-bottom: 24px;
+    margin-bottom: 20px;
     .amp-icon {
-      margin-right: var(--default-spacing-small);
+      margin-right: var(--large-spacing);
       font-size: $icon-font-size;
     }
   }
@@ -21,5 +21,12 @@ $icon-font-size: 40px;
     line-height: 1.5;
     margin-bottom: var(--default-spacing);
     max-width: $max-width;
+  }
+
+  &__separator {
+    margin: var(--large-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
   }
 }

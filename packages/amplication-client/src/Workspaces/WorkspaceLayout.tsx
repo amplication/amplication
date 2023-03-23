@@ -1,4 +1,4 @@
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 import { StiggProvider } from "@stigg/react-sdk";
 import React, { lazy, useEffect, useState } from "react";
 import { isMobileOnly } from "react-device-detect";

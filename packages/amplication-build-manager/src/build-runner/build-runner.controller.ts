@@ -1,16 +1,15 @@
+import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { EventPattern, Payload } from "@nestjs/microservices";
+import axios from "axios";
+import { plainToInstance } from "class-transformer";
 import { Env } from "../env";
 import { QueueService } from "../queue/queue.service";
 import { BuildRunnerService } from "./build-runner.service";
-import { EnvironmentVariables } from "@amplication/util/kafka";
-import { EventPattern, Payload } from "@nestjs/microservices";
-import { KafkaMessage } from "kafkajs";
-import { plainToInstance } from "class-transformer";
-import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
-import axios from "axios";
-import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailure } from "./dto/CodeGenerationFailure";
+import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
+import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -60,12 +59,12 @@ export class BuildRunnerController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
   async onCodeGenerationRequest(
-    @Payload() message: KafkaMessage
+    @Payload() message: CodeGenerationRequest
   ): Promise<void> {
     console.log("Code generation request received");
     let args: CodeGenerationRequest;
     try {
-      args = plainToInstance(CodeGenerationRequest, message.value);
+      args = plainToInstance(CodeGenerationRequest, message);
       console.log("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,

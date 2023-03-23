@@ -15,11 +15,6 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
   blockType: EnumBlockType.ServiceSettings,
   description: "Default service settings",
   displayName: "Service Settings",
-  dbHost: "localhost",
-  dbName: "",
-  dbUser: "admin",
-  dbPassword: "admin",
-  dbPort: 5432,
   authProvider: EnumAuthProviderType.Jwt,
   serverSettings: {
     generateGraphQL: true,

@@ -290,6 +290,7 @@ export type CreateGitRepositoryBaseInput = {
 };
 
 export type CreateGitRepositoryInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
@@ -729,6 +730,16 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+export type GitGroup = {
+  id: Scalars['String'];
+  name: Scalars['String'];
+  slug: Scalars['String'];
+};
+
+export type GitGroupInput = {
+  organizationId: Scalars['String'];
+};
+
 export type GitOAuth2FlowInput = {
   code: Scalars['String'];
   gitProvider: EnumGitProvider;
@@ -740,9 +751,9 @@ export type GitOrganization = {
   installationId: Scalars['String'];
   name: Scalars['String'];
   provider: EnumGitProvider;
-  providerProperties?: Maybe<ProviderProperties>;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
+  useGroupingForRepositories: Scalars['Boolean'];
 };
 
 export type GitOrganizationCreateInput = {
@@ -852,6 +863,7 @@ export type Mutation = {
   deleteGitOrganization: Scalars['Boolean'];
   deleteGitRepository: Resource;
   deletePluginInstallation: PluginInstallation;
+  deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
   deleteResourceRole?: Maybe<ResourceRole>;
   deleteServiceTopics: ServiceTopics;
@@ -1059,6 +1071,11 @@ export type MutationDeletePluginInstallationArgs = {
 };
 
 
+export type MutationDeleteProjectArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type MutationDeleteResourceArgs = {
   where: WhereUniqueInput;
 };
@@ -1238,6 +1255,15 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+export type PaginatedGitGroup = {
+  groups?: Maybe<Array<GitGroup>>;
+  next?: Maybe<Scalars['String']>;
+  page: Scalars['Float'];
+  pagelen: Scalars['Float'];
+  previous?: Maybe<Scalars['String']>;
+  size: Scalars['Float'];
+};
+
 export type PendingChange = {
   action: EnumPendingChangeAction;
   origin: PendingChangeOrigin;
@@ -1411,17 +1437,6 @@ export type PropertySelectorInput = {
   propertyName: Scalars['String'];
 };
 
-export type ProviderProperties = {
-  accessToken?: Maybe<Scalars['String']>;
-  expiresIn?: Maybe<Scalars['Float']>;
-  installationId?: Maybe<Scalars['String']>;
-  refreshToken?: Maybe<Scalars['String']>;
-  scopes?: Maybe<Array<Scalars['String']>>;
-  tokenType?: Maybe<Scalars['String']>;
-  username?: Maybe<Scalars['String']>;
-  uuid?: Maybe<Scalars['String']>;
-};
-
 export type ProvisionSubscriptionInput = {
   billingPeriod: Scalars['String'];
   cancelUrl?: InputMaybe<Scalars['String']>;
@@ -1454,6 +1469,7 @@ export type Query = {
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
+  gitGroups: PaginatedGitGroup;
   gitOrganization: GitOrganization;
   gitOrganizations: Array<GitOrganization>;
   me: User;
@@ -1573,6 +1589,11 @@ export type QueryEntityArgs = {
 };
 
 
+export type QueryGitGroupsArgs = {
+  where: GitGroupInput;
+};
+
+
 export type QueryGitOrganizationArgs = {
   where: WhereUniqueInput;
 };
@@ -1672,6 +1693,7 @@ export type RemoteGitRepos = {
 };
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
   limit: Scalars['Float'];
@@ -1855,11 +1877,6 @@ export type ServiceSettings = IBlock & {
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
@@ -1877,11 +1894,6 @@ export type ServiceSettings = IBlock & {
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   serverSettings: ServerSettingsUpdateInput;

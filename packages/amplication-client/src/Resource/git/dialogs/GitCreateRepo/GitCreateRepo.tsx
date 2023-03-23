@@ -4,7 +4,7 @@ import {
   Label,
   TextField,
   ToggleField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback } from "react";

@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { Button, EnumButtonStyle } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 
 import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";

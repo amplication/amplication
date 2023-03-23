@@ -3,7 +3,7 @@ import { Formik } from "formik";
 import { Form } from "../Components/Form";
 import { omit } from "lodash";
 import * as models from "../models";
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
 import FormikAutoSave from "../util/formikAutoSave";

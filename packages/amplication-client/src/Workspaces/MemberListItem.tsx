@@ -11,7 +11,7 @@ import {
   Panel,
   UserAvatar,
   Tooltip,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 

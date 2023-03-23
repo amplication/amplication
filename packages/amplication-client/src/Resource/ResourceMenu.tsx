@@ -1,4 +1,4 @@
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge } from "@amplication/ui/design-system";
 import React, { useContext } from "react";
 import { AppContext } from "../context/appContext";
 import MenuItem from "../Layout/MenuItem";

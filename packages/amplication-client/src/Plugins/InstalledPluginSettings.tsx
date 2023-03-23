@@ -7,8 +7,8 @@ import {
   SelectMenuModal,
   SelectMenuList,
   SelectMenuItem,
-} from "@amplication/design-system";
-import { isValidJSON } from "@amplication/design-system/components/CodeEditor/CodeEditor";
+} from "@amplication/ui/design-system";
+import { isValidJSON } from "@amplication/util/json";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import React, {
   useCallback,

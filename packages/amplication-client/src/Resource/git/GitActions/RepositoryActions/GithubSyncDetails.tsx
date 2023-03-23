@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";

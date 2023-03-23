@@ -31,7 +31,7 @@
         "outputPath": "dist/ee/packages/amplication-git-push-webhook-service",
         "main": "ee/packages/amplication-git-push-webhook-service/src/main.ts",
         "tsConfig": "ee/packages/amplication-git-push-webhook-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-push-webhook-service/webpack.config.js",
+        "generatePackageJson": true,
         "assets": [
           {
             "glob": "prisma",

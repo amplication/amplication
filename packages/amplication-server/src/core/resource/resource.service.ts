@@ -139,6 +139,7 @@ export class ResourceService {
         },
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
       },
       select: {
         name: true,
@@ -433,6 +434,7 @@ export class ResourceService {
       where: {
         id: args.where.id,
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -443,6 +445,7 @@ export class ResourceService {
       where: {
         ...args.where,
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -457,6 +460,7 @@ export class ResourceService {
         ...args.where,
         id: { in: ids },
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -679,5 +683,40 @@ export class ResourceService {
       },
     });
     return resource.project.workspace;
+  }
+
+  /**
+   *  Archives all resources of a project when a project is archived or deleted.
+   *
+   * @param id Project's unique identifier
+   * @returns List of archived resources
+   */
+  async archiveProjectResources(id: string): Promise<Resource[]> {
+    const { resources } = await this.projectService.findUnique({
+      where: { id },
+      include: {
+        resources: {
+          where: { deletedAt: null, archived: { not: true } },
+        },
+      },
+    } as FindOneArgs);
+
+    for (const resource of resources) {
+      if (isEmpty(resource)) {
+        throw new Error(INVALID_RESOURCE_ID);
+      }
+    }
+
+    const archiveResources = resources.map((resource) =>
+      this.prisma.resource.update({
+        where: { id: resource.id },
+        data: {
+          name: prepareDeletedItemName(resource.name, resource.id),
+          archived: true,
+        },
+      })
+    );
+
+    return this.prisma.$transaction(archiveResources);
   }
 }

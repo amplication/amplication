@@ -1,5 +1,5 @@
 import React from "react";
-import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
+import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
 import { ServiceSettings, EnumAuthProviderType } from "../../models";

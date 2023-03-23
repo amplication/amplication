@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/design-system";
+import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useState } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";

@@ -10,7 +10,7 @@ import {
   PanelCollapsible,
   Toggle,
   Icon,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";

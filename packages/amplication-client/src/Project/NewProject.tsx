@@ -1,4 +1,4 @@
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { formatError } from "../util/error";

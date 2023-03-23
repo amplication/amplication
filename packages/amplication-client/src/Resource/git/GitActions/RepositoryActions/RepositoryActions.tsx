@@ -4,7 +4,7 @@ import {
   EnumPanelStyle,
   Icon,
   Panel,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";

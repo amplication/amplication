@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/design-system";
+import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as models from "../../models";

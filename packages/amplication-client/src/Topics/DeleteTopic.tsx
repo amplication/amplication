@@ -1,6 +1,6 @@
 import React, { useCallback, useState } from "react";
 import * as models from "../models";
-import { ConfirmationDialog, Snackbar } from "@amplication/design-system";
+import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import useTopic from "./hooks/useTopic";
 import { formatError } from "../util/error";

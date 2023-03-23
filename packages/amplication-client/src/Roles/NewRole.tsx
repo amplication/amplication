@@ -4,7 +4,7 @@ import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
 import classNames from "classnames";
 import { camelCase } from "camel-case";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { formatError } from "../util/error";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";

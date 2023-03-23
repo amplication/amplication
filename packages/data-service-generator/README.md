@@ -4,11 +4,15 @@ DSG (Data Service Generator) is the component responsible for the generation of 
 
 ## Testing
 
-### Generate test data service application
+### Run data-service-generator based on test data
 
 Generate an application according to the test data definitions. Once generated you can install its dependencies and start it with npm and spin a database with Docker.
 
-```
+```sh
+# Generate an example input used by data-service-generator during the generation process
+npx nx generate-example-input-json
+
+# Trigger the code generation process based on the example input
 npx nx generate-local-code data-service-generator
 ```
 

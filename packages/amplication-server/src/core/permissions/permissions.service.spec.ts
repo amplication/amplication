@@ -90,6 +90,9 @@ describe("PermissionsService", () => {
     const countArgs = {
       where: {
         deletedAt: null,
+        archived: {
+          not: true,
+        },
         id: args.originId,
         project: {
           workspace: {

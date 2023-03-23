@@ -8,7 +8,7 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { Snackbar, TextField } from "@amplication/design-system";
+import { Snackbar, TextField } from "@amplication/ui/design-system";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { AnalyticsEventNames } from "../util/analytics-events.types";

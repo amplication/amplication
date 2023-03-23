@@ -6,7 +6,7 @@ import {
   CircularProgress,
   Button,
   EnumButtonStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 
 import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";

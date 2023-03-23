@@ -4,16 +4,11 @@ import { EnumResourceType } from "../src/models";
 import { appInfo } from "../src/tests/appInfo";
 import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
-import { writeFileSync } from "fs";
 import { join } from "path";
 import { format } from "prettier";
 import { plugins } from "../src/tests/constants/example-plugins";
 
-if (require.main === module) {
-  createInputJsonFile();
-}
-
-function createInputJsonFile() {
+async function createInputJsonFile() {
   const object = {
     entities,
     roles,
@@ -30,17 +25,16 @@ function createInputJsonFile() {
 
   const relativePath = join(process.cwd(), buildSpecPath);
 
-  fs.mkdir(path.dirname(relativePath), { recursive: true }, (err) => {
-    if (err) {
-      console.error;
-      throw err;
-    }
-  });
+  fs.mkdirSync(path.dirname(relativePath), { recursive: true });
 
-  writeFileSync(
+  fs.writeFileSync(
     relativePath,
     format(JSON.stringify(object), { parser: "json" })
   );
 
   console.log(`Finish writing the ${relativePath} file`);
+}
+
+if (require.main === module) {
+  createInputJsonFile();
 }

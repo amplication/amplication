@@ -1,5 +1,5 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge } from "@amplication/ui/design-system";
 import { gql } from "@apollo/client";
 import React, { useContext } from "react";
 import { match } from "react-router-dom";
