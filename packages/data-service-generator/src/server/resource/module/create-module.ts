@@ -4,6 +4,7 @@ import {
   readFile,
   removeESLintComments,
   removeTSClassDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import {
   EventNames,
@@ -15,7 +16,6 @@ import { relativeImportPath } from "../../../utils/module";
 
 import {
   interpolate,
-  removeTSIgnoreComments,
   importNames,
   addAutoGenerationComment,
   addImports,

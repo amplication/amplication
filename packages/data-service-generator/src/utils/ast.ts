@@ -1,12 +1,16 @@
 import { NamedClassProperty } from "@amplication/code-gen-types";
-import { parse, partialParse, print } from "@amplication/code-gen-utils";
+import {
+  parse,
+  partialParse,
+  print,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
 import { ASTNode, builders, namedTypes } from "ast-types";
 import * as K from "ast-types/gen/kinds";
 import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import { visit } from "recast";
 
-const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
 const ARRAY_ID = builders.identifier("Array");
 const STATIC_COMMENT = `
@@ -255,21 +259,6 @@ export function transformTemplateLiteralToStringLiteral(
     })
     .join("");
   return builders.stringLiteral(value);
-}
-
-/**
- * Removes all TypeScript ignore comments
- * @param ast the AST to remove the comments from
- */
-export function removeTSIgnoreComments(ast: ASTNode): void {
-  visit(ast, {
-    visitComment(path) {
-      if (path.value.value.includes(TS_IGNORE_TEXT)) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
 }
 
 /**

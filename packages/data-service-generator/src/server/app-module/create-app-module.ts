@@ -3,6 +3,7 @@ import {
   readFile,
   removeESLintComments,
   removeTSVariableDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
@@ -17,7 +18,6 @@ import {
   interpolate,
   importNames,
   addImports,
-  removeTSIgnoreComments,
   importDeclaration,
   callExpression,
 } from "../../utils/ast";

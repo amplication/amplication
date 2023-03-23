@@ -5,6 +5,7 @@ import {
   removeTSVariableDeclares,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -30,7 +31,6 @@ import {
   getClassDeclarationById,
   importContainedIdentifiers,
   getMethods,
-  removeTSIgnoreComments,
 } from "../../../utils/ast";
 import { isToManyRelationField } from "../../../utils/field";
 import { getDTONameToPath } from "../create-dtos";

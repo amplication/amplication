@@ -7,6 +7,7 @@ import {
   removeTSVariableDeclares,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import {
   Entity,
@@ -25,7 +26,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  removeTSIgnoreComments,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,

@@ -6,6 +6,7 @@ import {
   removeTSVariableDeclares,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -36,7 +37,6 @@ import {
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
-  removeTSIgnoreComments,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,

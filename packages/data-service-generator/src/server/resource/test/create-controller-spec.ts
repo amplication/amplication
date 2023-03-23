@@ -5,18 +5,14 @@ import {
   removeTSVariableDeclares,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
 import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
 import { readFile, removeESLintComments } from "@amplication/code-gen-utils";
 import { relativeImportPath } from "../../../utils/module";
-import {
-  interpolate,
-  importNames,
-  addImports,
-  removeTSIgnoreComments,
-} from "../../../utils/ast";
+import { interpolate, importNames, addImports } from "../../../utils/ast";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import {
   CreateEntityControllerSpecParams,

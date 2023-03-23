@@ -3,15 +3,11 @@ import {
   print,
   readFile,
   removeTSVariableDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import { Module } from "@amplication/code-gen-types";
-import {
-  addImports,
-  importNames,
-  interpolate,
-  removeTSIgnoreComments,
-} from "../../utils/ast";
+import { addImports, importNames, interpolate } from "../../utils/ast";
 import { relativeImportPath } from "../../utils/module";
 
 import { jsxElement, jsxFragment } from "../util";

@@ -4,6 +4,7 @@ import {
   print,
   readFile,
   removeTSVariableDeclares,
+  removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
 import {
   AppInfo,
@@ -11,7 +12,7 @@ import {
   EventNames,
   Module,
 } from "@amplication/code-gen-types";
-import { interpolate, removeTSIgnoreComments } from "../../utils/ast";
+import { interpolate } from "../../utils/ast";
 
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
