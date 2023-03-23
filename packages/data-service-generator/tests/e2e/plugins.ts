@@ -1,6 +1,6 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
 
-export const postgresAndBasicAuthPlugins: PluginInstallation[] = [
+export const postgres: PluginInstallation[] = [
   {
     id: "postgres-id",
     pluginId: "plugin-db-postgres",
@@ -8,6 +8,29 @@ export const postgresAndBasicAuthPlugins: PluginInstallation[] = [
     enabled: true,
     version: "latest",
   },
+];
+
+export const mongo: PluginInstallation[] = [
+  {
+    id: "mongo-id",
+    pluginId: "plugin-db-mongo",
+    npm: "@amplication/plugin-db-mongo",
+    enabled: true,
+    version: "latest",
+  },
+];
+
+export const mysql: PluginInstallation[] = [
+  {
+    id: "mysql-id",
+    pluginId: "plugin-db-mysql",
+    npm: "@amplication/plugin-db-mysql",
+    enabled: true,
+    version: "latest",
+  },
+];
+
+export const basicAuth: PluginInstallation[] = [
   {
     id: "auth-core-id",
     pluginId: "auth-core",
