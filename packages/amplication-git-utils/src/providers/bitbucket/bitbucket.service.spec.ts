@@ -695,13 +695,13 @@ describe("bitbucket.service", () => {
         gitGroupName: "my-group",
       });
 
-      const mockedResult = {
+      const expectedResult = {
         name: mockedCreateBranchResponse.name,
         sha: mockedCreateBranchResponse.target.hash,
       };
 
       expect(spyOnGetBranchRequest).toBeCalledTimes(1);
-      expect(result).toEqual(mockedResult);
+      expect(result).toEqual(expectedResult);
     });
   });
 });
