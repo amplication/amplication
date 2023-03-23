@@ -14,8 +14,8 @@ import {
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
-import NewConnection from "./GitActions/NewConnection";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
+import WizardNewConnection from "./GitActions/WizardNewConnection";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 
@@ -192,33 +192,33 @@ function AuthWithGit({
         />
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
-        <div className={`${CLASS_NAME}__selectOrganization`}>
-          Select Organization
-        </div>
         {isEmpty(gitOrganizations) ? (
-          <NewConnection
+          <WizardNewConnection
             onSyncNewGitOrganizationClick={handleAuthWithGitClick}
             provider={EnumGitProvider.Github}
           />
         ) : (
-          <ExistingConnectionsMenu
-            gitOrganizations={gitOrganizations}
-            onSelectGitOrganization={handleGitOrganizationChange}
-            selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAuthWithGitClick}
-          />
+          <div>
+            <div className={`${CLASS_NAME}__selectOrganization`}>
+              Select Organization
+            </div>
+            <ExistingConnectionsMenu
+              gitOrganizations={gitOrganizations}
+              onSelectGitOrganization={handleGitOrganizationChange}
+              selectedGitOrganization={gitOrganization}
+              onAddGitOrganization={handleAuthWithGitClick}
+            />
+            <WizardRepositoryActions
+              onCreateRepository={() => {
+                setCreateNewRepoOpen(true);
+              }}
+              onSelectRepository={handleSelectRepoDialogOpen}
+              onDisconnectGitRepository={handleOnDisconnectRepository}
+              selectedGitOrganization={gitOrganization}
+              selectedGitRepository={gitRepositorySelectedData}
+            />
+          </div>
         )}
-
-        <WizardRepositoryActions
-          onCreateRepository={() => {
-            setCreateNewRepoOpen(true);
-          }}
-          onSelectRepository={handleSelectRepoDialogOpen}
-          onDisconnectGitRepository={handleOnDisconnectRepository}
-          selectedGitOrganization={gitOrganization}
-          selectedGitRepository={gitRepositorySelectedData}
-        />
-
         <GitSyncNotes />
       </Panel>
 
