@@ -62,23 +62,22 @@ function AuthWithGit({
   }, [gitRepositorySelected?.gitOrganizationId]);
 
   useEffect(() => {
-    if (
-      !gitOrganizations.length ||
-      !gitRepositorySelectedData?.gitOrganizationId
-    )
-      return;
-    const gitOrganizationRepo =
-      gitOrganizations.findIndex(
-        (organization) =>
-          organization.id === gitRepositorySelectedData.gitOrganizationId
-      ) || 0;
-    setGitOrganization(gitOrganizations[gitOrganizationRepo]);
-  }, [gitOrganizations, gitRepositorySelectedData]);
+    if (!gitOrganizations.length) return;
+    const gitOrganizationRepo = gitRepositorySelectedData?.gitOrganizationId
+      ? gitOrganizations.find(
+          (organization) =>
+            organization.id === gitRepositorySelectedData?.gitOrganizationId
+        )
+      : gitOrganizations[0];
+
+    setGitOrganization(gitOrganizationRepo);
+  }, [gitOrganizations]);
 
   const handleGitOrganizationChange = useCallback(
     (organization: GitOrganizationFromGitRepository) => {
       setGitOrganization(organization);
       setGitRepositorySelectedData(null);
+      onGitRepositoryDisconnected();
     },
     [gitOrganization, gitRepositorySelectedData]
   );
