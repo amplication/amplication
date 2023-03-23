@@ -332,22 +332,6 @@ export function removeTSInterfaceDeclares(ast: ASTNode): void {
 }
 
 /**
- * Removes all ESLint comments
- * @param ast the AST to remove the comments from
- */
-export function removeESLintComments(ast: ASTNode): void {
-  visit(ast, {
-    visitComment(path) {
-      const comment = path.value as namedTypes.Comment;
-      if (comment.value.match(/^\s+eslint-disable/)) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
  * Adds auto-generated static comments to top of given file
  * @param file file to add comments to
  */
