@@ -42,6 +42,7 @@ import {
   getFileRequest,
   getFirstCommitRequest,
   getLastCommitRequest,
+  getUserCommitListRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -425,8 +426,23 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    throw NotImplementedError;
+  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
+    const { gitGroupName, repositoryName, branchName } = args;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const currentUser = await this.getCurrentOAuthUser(this.accessToken);
+    const commits = await getUserCommitListRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      "master",
+      currentUser.username, // TODO: this is the username on Bitbucket that gave us permissions, and not us, we may need to change it
+      this.accessToken
+    );
+
+    return commits.values.map((commit) => ({ sha: commit.hash }));
   }
   getCloneUrl(args: CloneUrlArgs): string {
     const { gitGroupName, repositoryName, token } = args;

@@ -11,6 +11,7 @@ import {
   Commit,
   Branch,
   PullRequestComment,
+  PaginatedCommits,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -77,6 +78,9 @@ const CREATE_COMMENT_ON_PULL_REQUEST_URL = (
   pullRequestId: number
 ) =>
   `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
+
+const GET_COMMIT_LIST_URL = (workspaceSlug: string, repositorySlug: string) =>
+  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/commits/`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -320,4 +324,28 @@ export async function createCommentOnPrRequest(
       body: JSON.stringify({ content: { raw: comment } }),
     }
   );
+}
+
+export function getUserCommitListRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  branchToExclude: string | undefined,
+  author: string,
+  accessToken: string
+): Promise<PaginatedCommits> {
+  const reqUrl = branchToExclude
+    ? `${GET_COMMIT_LIST_URL(
+        workspaceSlug,
+        repositorySlug
+      )}/?include=${branchName}&exclude=${branchToExclude}`
+    : `${GET_COMMIT_LIST_URL(
+        workspaceSlug,
+        repositorySlug
+      )}/?include=${branchName}`;
+
+  return requestWrapper(reqUrl, {
+    method: "GET",
+    headers: getRequestHeaders(accessToken),
+  });
 }
