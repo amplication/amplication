@@ -13,7 +13,7 @@
   }
 
   &__wizard_auth {
-    margin: var(--double-spacing) 0;
+    margin: var(--default-spacing-small) 0 var(--double-spacing) 0;
     min-height: var(--min-height-of-banner);
     display: flex;
     background: transparent;
