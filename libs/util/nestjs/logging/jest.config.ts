@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
   coverageDirectory: "../../../../coverage/libs/util/nestjs/logging",
+  coverageThreshold: {
+    global: {
+      branches: 75,
+      lines: 67.74,
+    },
+  },
 };

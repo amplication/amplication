@@ -11,7 +11,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";

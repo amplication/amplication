@@ -71,6 +71,12 @@ export class ProjectResolver {
     return this.projectService.createProject(args, user.id);
   }
 
+  @Mutation(() => Project, { nullable: true })
+  @Roles("ORGANIZATION_ADMIN")
+  async deleteProject(@Args() args: FindOneArgs): Promise<Project | null> {
+    return this.projectService.deleteProject(args);
+  }
+
   @Mutation(() => Project, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {

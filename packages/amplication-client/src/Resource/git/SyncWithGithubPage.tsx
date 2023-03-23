@@ -1,4 +1,4 @@
-import { Icon, Snackbar } from "@amplication/design-system";
+import { Icon, Snackbar } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
@@ -50,6 +50,7 @@ const SyncWithGithubPage: React.FC = () => {
           <Icon icon="github" size="xlarge" />
           <h1>Sync with GitHub</h1>
         </div>
+        <div className={`${CLASS_NAME}__separator`} />
         <div className={`${CLASS_NAME}__message`}>
           If you connect to GitHub, every time you commit your changes, it
           automatically pushes your generated code and creates a Pull Request in

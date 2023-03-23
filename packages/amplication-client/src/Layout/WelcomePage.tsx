@@ -1,7 +1,7 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import "./PageContent.scss";
-import { Panel } from "@amplication/design-system";
+import { Panel } from "@amplication/ui/design-system";
 import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
 import "./WelcomePage.scss";
 

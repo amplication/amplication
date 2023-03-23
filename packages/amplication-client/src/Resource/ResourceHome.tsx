@@ -1,5 +1,5 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge } from "@amplication/ui/design-system";
 import { gql } from "@apollo/client";
 import React, { useContext } from "react";
 import { match } from "react-router-dom";
@@ -18,6 +18,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
+import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -49,7 +50,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
-            {currentResource?.name}
+            <ResourceNameField
+              currentResource={currentResource}
+              resourceId={resourceId}
+            />
             <CircleBadge
               name={currentResource?.name || ""}
               color={

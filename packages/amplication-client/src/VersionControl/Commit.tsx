@@ -2,7 +2,7 @@ import {
   LimitationDialog,
   Snackbar,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";

@@ -1,0 +1,18 @@
+@import "../style/index.scss";
+
+.entity-field-list-item-property {
+  &__container {
+    color: var(--black100);
+    height: var(--icon-size-xsmall);
+    border-radius: var(--xxlarge-border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--default-spacing);
+    background-color: var(--black20);
+    .amp-icon {
+      font-size: small;
+      margin-right: var(--icon-spacing);
+    }
+  }
+}

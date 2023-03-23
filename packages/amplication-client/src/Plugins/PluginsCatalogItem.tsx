@@ -9,7 +9,7 @@ import {
   HorizontalRule,
   Panel,
   Toggle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { Plugin, PluginVersion } from "./hooks/usePlugins";

@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "./context/appContext";
 import "./hubSpotChat.scss";

@@ -9,7 +9,7 @@ import { EntitiesDiagramRelations } from "./EntitiesDiagramRelations";
 import { EntitiesDiagramEntity } from "./EntitiesDiagramEntity";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 
 export type EntitiesDiagramFormData = models.ResourceCreateWithEntitiesInput;
 

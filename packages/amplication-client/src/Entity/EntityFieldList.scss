@@ -1,12 +1,15 @@
 @import "../style/index.scss";
 
+$search-field-width: 220px;
+
 .entity-field-list {
   &__header {
     @include flexFullRowWithSpacing;
+    border-bottom: 1px solid var(--black5);
     margin-bottom: var(--large-spacing);
-
-    .search-field {
-      flex: 1;
+    padding-bottom: var(--large-spacing);
+    .search-field input {
+      width: $search-field-width;
     }
   }
   &__title {

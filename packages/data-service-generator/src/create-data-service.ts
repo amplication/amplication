@@ -52,8 +52,8 @@ export async function createDataService(
     }));
   } catch (error) {
     await createLog({
-      level: "info",
-      message: "Failed to run createDataServiceImpl",
+      level: "error",
+      message: "Failed to run createDataService",
       data: JSON.stringify(dSGResourceData),
     });
     logger.error((error as Error).stack);

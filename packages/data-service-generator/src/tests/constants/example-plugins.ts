@@ -24,7 +24,11 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
     version: "latest",
     pluginId: "db-postgres",
     settings: {
-      defaultPort: "5432",
+      host: "localhost",
+      port: 5432,
+      user: "admin",
+      password: "admin",
+      dbName: "my-db",
       enableLogging: true,
     },
   },

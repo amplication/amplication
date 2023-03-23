@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Switch, match } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";

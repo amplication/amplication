@@ -3,7 +3,7 @@ import {
   Dialog,
   EnumButtonStyle,
   EnumIconPosition,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React, { useCallback, useState } from "react";
 import "./AddNewProject.scss";
 import NewProject from "./NewProject";

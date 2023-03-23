@@ -27,6 +27,9 @@ on:
       affected-lib: 
         description: Nx libraries affected by the changes
         value: ${{ jobs.nx.outputs.affected-lib }}
+      affected-e2e:
+        description: Nx e2e projects affected by the changes
+        value: ${{ jobs.nx.outputs.affected-e2e }}
       affected-dockerable: 
         description: Nx projects configured with docker:build affected by the changes
         value: ${{ jobs.nx.outputs.affected-dockerable }}
@@ -48,6 +51,7 @@ jobs:
     outputs:
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
       affected-dockerable: ${{ steps.configure-nx.outputs.affected-dockerable }}
       affected-deployable: ${{ steps.configure-nx.outputs.affected-deployable }}
     steps:
@@ -97,6 +101,7 @@ jobs:
         run: |
           echo affected-apps=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-lib=$(npx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(npx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-dockerable=$(npx nx print-affected --target=docker:build --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-deployable=$(npx nx print-affected --target=deploy --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected

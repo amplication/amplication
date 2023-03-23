@@ -7,12 +7,15 @@ import { UserRoleArgs } from "./dto";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findUser(args: Prisma.UserFindUniqueArgs): Promise<User> {
+  findUser(
+    args: Prisma.UserFindUniqueArgs,
+    includeDeleted = false
+  ): Promise<User> {
     return this.prisma.user.findFirst({
       ...args,
       where: {
         ...args.where,
-        deletedAt: null,
+        deletedAt: includeDeleted ? undefined : null,
       },
     });
   }

@@ -13,7 +13,9 @@
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov"
+          "e2e",
+          "test:cov",
+          "build-storybook"
         ],
         "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }
@@ -64,8 +66,9 @@
     "docker:build": {
       "dependsOn": ["prebuild", "build", "postbuild"]
     },
-    "test:e2e": {
-      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    "e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "dependsOn": ["build"]
     }
   },
   "generators": {
@@ -80,7 +83,8 @@
       },
       "library": {
         "style": "scss",
-        "linter": "eslint"
+        "linter": "eslint",
+        "unitTestRunner": "none"
       }
     }
   },

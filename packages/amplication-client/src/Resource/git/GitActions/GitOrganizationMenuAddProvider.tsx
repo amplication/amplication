@@ -1,7 +1,7 @@
 import React, { useCallback } from "react";
 import * as models from "../../../models";
-import { SelectMenuItem } from "@amplication/design-system";
-import { Icon } from "@amplication/design-system";
+import { SelectMenuItem } from "@amplication/ui/design-system";
+import { Icon } from "@amplication/ui/design-system";
 
 export const GitOrganizationMenuAddProvider = ({
   provider,

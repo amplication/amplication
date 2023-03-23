@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-storage-gateway",
+  coverageThreshold: {
+    global: {
+      branches: 8.77,
+      lines: 1.03,
+    },
+  },
 };
