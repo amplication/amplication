@@ -64,7 +64,6 @@ export default function WizardRepositoryActions({
                         type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
-                        icon="plus"
                       >
                         Create repository
                       </Button>
