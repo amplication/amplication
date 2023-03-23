@@ -4,6 +4,7 @@ import {
   readFile,
   removeESLintComments,
   removeTSVariableDeclares,
+  removeTSClassDeclares,
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
@@ -29,7 +30,6 @@ import {
   addAutoGenerationComment,
   addImports,
   removeTSInterfaceDeclares,
-  removeTSClassDeclares,
   getClassDeclarationById,
   importContainedIdentifiers,
   removeImportsTSIgnoreComments,

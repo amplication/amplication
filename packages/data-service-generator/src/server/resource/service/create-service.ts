@@ -5,6 +5,7 @@ import {
   readFile,
   removeESLintComments,
   removeTSVariableDeclares,
+  removeTSClassDeclares,
 } from "@amplication/code-gen-utils";
 import {
   Entity,
@@ -23,7 +24,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  removeTSClassDeclares,
   removeTSIgnoreComments,
   removeTSInterfaceDeclares,
 } from "../../../utils/ast";

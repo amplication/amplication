@@ -3,6 +3,7 @@ import {
   print,
   readFile,
   removeESLintComments,
+  removeTSClassDeclares,
 } from "@amplication/code-gen-utils";
 import {
   EventNames,
@@ -18,7 +19,6 @@ import {
   importNames,
   addAutoGenerationComment,
   addImports,
-  removeTSClassDeclares,
 } from "../../../utils/ast";
 import { removeIdentifierFromModuleDecorator } from "../../../utils/nestjs-code-generation";
 import { createControllerId } from "../controller/create-controller";

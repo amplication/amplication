@@ -287,21 +287,6 @@ export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
 }
 
 /**
- * Removes all TypeScript class declares
- * @param ast the AST to remove the declares from
- */
-export function removeTSClassDeclares(ast: ASTNode): void {
-  visit(ast, {
-    visitClassDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
  * Removes all TypeScript interface declares
  * @param ast the AST to remove the declares from
  */
