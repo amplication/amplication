@@ -1,11 +1,7 @@
-import winston from "winston";
+import { Logger, LogLevel } from "@amplication/util/logging";
 
-export const defaultLogger = winston.createLogger({
-  transports: [new winston.transports.Console()],
-  format: winston.format.combine(
-    winston.format.errors({ stack: true }),
-    winston.format.timestamp(),
-    winston.format.colorize(),
-    winston.format.simple()
-  ),
+export const logger = new Logger({
+  isProduction: true,
+  serviceName: "data-service-generator",
+  logLevel: LogLevel[process.env.LOG_LEVEL],
 });

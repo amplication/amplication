@@ -27,3 +27,9 @@ export interface ILogger {
   ) => void;
   child: (metadata?: Pick<LoggerOptions, "metadata">) => ILogger;
 }
+
+export interface LogEntry {
+  level: string;
+  message: string;
+  [optionName: string]: unknown;
+}

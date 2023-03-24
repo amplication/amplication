@@ -8,7 +8,7 @@ import {
   importDeclaration,
 } from "../../../utils/ast";
 import { createDTOFile } from "./create-dto-module";
-import { defaultLogger as logger } from "../../../logging";
+import { logger } from "../../../logging";
 
 const REGISTER_ENUM_TYPE_ID = builders.identifier("registerEnumType");
 

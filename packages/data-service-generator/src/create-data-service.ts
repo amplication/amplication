@@ -7,11 +7,11 @@ import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
-import { defaultLogger } from "./logging";
+import { ILogger } from "@amplication/util/logging";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger = defaultLogger,
+  logger: ILogger,
   pluginInstallationPath?: string
 ): Promise<Module[]> {
   try {
@@ -20,8 +20,7 @@ export async function createDataService(
       return [];
     }
 
-    const timer = logger.startTimer();
-
+    const startTime = Date.now();
     await prepareContext(dSGResourceData, logger, pluginInstallationPath);
     await createLog({ level: "info", message: "Creating application..." });
     logger.info("Creating application...");
@@ -43,7 +42,10 @@ export async function createDataService(
     // Use concat for the best performance (https://jsbench.me/o8kqzo8olz/1)
     const modules = serverModules.concat(adminUIModules);
 
-    timer.done({ message: "Application creation time" });
+    const endTime = Date.now();
+    logger.info("Application creation time", {
+      durationInMs: endTime - startTime,
+    });
 
     /** @todo make module paths to always use Unix path separator */
     return modules.map((module) => ({

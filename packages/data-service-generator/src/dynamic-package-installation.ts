@@ -5,12 +5,12 @@ import {
   DynamicPackageInstallationManager,
   PackageInstallation,
 } from "./utils/dynamic-installation/DynamicPackageInstallationManager";
-import { Logger } from "winston";
 import { createLog } from "./create-log";
+import { ILogger } from "@amplication/util/logging";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],
-  logger: Logger
+  logger: ILogger
 ): Promise<void> {
   logger.info("Installing dynamic packages");
   const manager = new DynamicPackageInstallationManager(
