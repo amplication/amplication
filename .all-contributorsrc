@@ -561,6 +561,18 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "overbit",
+      "name": "Daniele Iasella",
+      "avatar_url": "https://avatars.githubusercontent.com/u/2861984?v=4",
+      "profile": "https://github.com/overbit",
+      "contributions": [
+        "code",
+        "bug",
+        "doc",
+        "infra"
+      ]
     }
   ],
   "contributorsPerLine": 7,

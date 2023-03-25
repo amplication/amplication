@@ -14,4 +14,5 @@ export default {
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-server",
   testMatch: ["**/e2e/**/*.spec.ts"],
+  collectCoverage: false,
 };
