@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -9,6 +15,8 @@ import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";
 import * as models from "../../../models";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { AppContext } from "../../../context/appContext";
+import { useHistory } from "react-router-dom";
 
 const className = "create-service-code-generation";
 
@@ -22,6 +30,10 @@ const CreateServiceCodeGeneration: React.FC<
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
     resource?.gitRepository || null
   );
+  const history = useHistory();
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
+
   useEffect(() => {
     if (!resource) return;
     setResourceRepo(resource.gitRepository);
@@ -67,22 +79,61 @@ const CreateServiceCodeGeneration: React.FC<
     trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_ViewCodeClicked);
   }, [trackWizardPageEvent]);
 
-  const buildCompleted =
-    data?.build?.status === models.EnumBuildStatus.Completed;
+  const handleContinueClick = useCallback(() => {
+    history.push(
+      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
+    );
+  }, [currentWorkspace, currentProject, currentResource]);
+
+  const buildCompleted = true;
+  //data?.build?.status === models.EnumBuildStatus.Completed;
+
+  const buildFailed = true; //data?.build?.status === models.EnumBuildStatus.Failed;
   return (
     <div className={className}>
-      <div className={`${className}__title`}>
-        <h2>All set! We’re currently generating your service.</h2>
-        <h3>It should only take a few seconds to finish. Don't go away!</h3>
-      </div>
-      <div className={`${className}__status`}>
-        {!buildCompleted ? (
-          <ActionLog
-            action={actionLog?.action}
-            title={actionLog?.title || ""}
-            versionNumber={actionLog?.versionNumber || ""}
-          />
-        ) : (
+      {!buildCompleted ? (
+        <div className={`${className}__buildLog`}>
+          <div className={`${className}__title`}>
+            <h1>We’re generating your service...</h1>
+          </div>
+          <div className={`${className}__status`}>
+            <ActionLog
+              action={actionLog?.action}
+              title={actionLog?.title || ""}
+              versionNumber={actionLog?.versionNumber || ""}
+            />
+          </div>
+        </div>
+      ) : buildFailed ? (
+        <div className={`${className}__buildLog`}>
+          <div className={`${className}__title`}>
+            <h1>We’re generating your service...</h1>
+          </div>
+          <div className={`${className}__negative_status`}>
+            <ActionLog
+              action={actionLog?.action}
+              title={actionLog?.title || ""}
+              versionNumber={actionLog?.versionNumber || ""}
+            />
+          </div>
+          <div className={`${className}__error_message_box`}>
+            <div>
+              <h2>Oops, something went wrong.</h2>
+              <h2>You can try again, or continue anyway to see your service</h2>
+            </div>
+            <div className={`${className}__btn_actions`}>
+              <Button buttonStyle={EnumButtonStyle.Primary}>Try again</Button>
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                onClick={handleContinueClick}
+              >
+                Continue anyway
+              </Button>
+            </div>
+          </div>
+        </div>
+      ) : (
+        <div className={`${className}__status`}>
           <div className={`${className}__status__completed`}>
             <img
               className={`${className}__status__completed__image`}
@@ -119,8 +170,8 @@ const CreateServiceCodeGeneration: React.FC<
               }
             </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 };

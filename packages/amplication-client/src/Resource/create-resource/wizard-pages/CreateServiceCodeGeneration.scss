@@ -6,6 +6,11 @@
   flex-direction: column;
   padding-top: 80px;
 
+  &__buildLog {
+    display: flex;
+    flex-direction: column;
+  }
+
   &__title {
     display: flex;
     flex-direction: column;
@@ -13,6 +18,44 @@
     gap: 8px;
   }
 
+  &__negative_status {
+    display: flex;
+    flex: 1;
+    margin: 64px 100px 40px 100px;
+    max-height: 50vh;
+    .action-log {
+      max-width: 1500px;
+      margin: auto;
+      border: 1px solid #f85b6e;
+    }
+  }
+
+  &__error_message_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__error_message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__btn_actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  h2 {
+    font-size: 18px;
+    line-height: 27px;
+    font-weight: 400;
+  }
   &__status {
     display: flex;
     flex: 1;
