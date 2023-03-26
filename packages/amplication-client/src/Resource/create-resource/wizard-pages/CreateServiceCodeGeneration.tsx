@@ -110,8 +110,7 @@ const CreateServiceCodeGeneration: React.FC<
               <div
                 className={`${className}__status__completed__description__link`}
               >
-                ` https://github.com/${resourceRepo?.name}/$
-                {currentResource?.name}`
+                https://github.com/{resourceRepo?.name}/{currentResource?.name}
               </div>
               <div />
             </div>

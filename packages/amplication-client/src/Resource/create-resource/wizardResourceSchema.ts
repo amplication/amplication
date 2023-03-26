@@ -33,7 +33,6 @@ const codeGeneration = {
   properties: {
     isGenerateCompleted: {
       type: "string",
-      minLength: 2,
     },
   },
   required: ["isGenerateCompleted"],

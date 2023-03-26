@@ -10,7 +10,7 @@ const POLL_INTERVAL = 5000;
 const useBuildWatchStatus = (
   build?: models.Build
 ): { data: { build?: models.Build } } => {
-  const { data, startPolling, stopPolling } = useQuery<{
+  const { data, startPolling, stopPolling, refetch } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
@@ -27,6 +27,10 @@ const useBuildWatchStatus = (
       startPolling(POLL_INTERVAL);
     }
   }, [data, stopPolling, startPolling]);
+
+  useEffect(() => {
+    if (build) refetch();
+  }, [build]);
 
   //cleanup polling
   useEffect(() => {
