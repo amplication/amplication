@@ -2,7 +2,9 @@ import { PrismaClient } from "../src/prisma";
 
 async function main() {
   const prisma = new PrismaClient();
-  const gitOrganizations = await prisma.gitOrganization.findMany();
+  const gitOrganizations = await prisma.gitOrganization.findMany({
+    where: { providerProperties: {} },
+  });
 
   for (const gitOrg of gitOrganizations) {
     const updatedProviderProps = { installationId: gitOrg.installationId };
