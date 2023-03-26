@@ -8,29 +8,27 @@ $max-width: 700px;
   display: flex;
   flex-direction: column;
   background-color: var(--black2);
-  display: flex;
-  flex-direction: column;
   flex: 1;
+  gap: 16px;
+  align-items: center;
 
   &__welcome {
+    justify-content: center;
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 4px;
   }
 
   &__start_btn {
-    margin-top: 32px;
     text-align: center;
   }
-  h2 {
-    @include title-32;
-    text-align: center;
+  h1 {
+    font-size: 32px;
+    font-weight: 600;
   }
 
   h3 {
-    @include title-24;
-    text-align: center;
+    font-size: 24px;
     font-weight: 500;
   }
 }

@@ -35,15 +35,17 @@ const CreateServiceWelcome: React.FC<WizardStepProps> = ({ moduleClass }) => {
   }, [history]);
 
   return (
-    <Modal open fullScreen css={moduleClass}>
+    <Modal open fullScreen>
       <div className={moduleClass}>
-        <h2>
-          Welcome to amplication!{" "}
-          <span role="img" aria-label="party emoji">
-            🎉
-          </span>
-        </h2>
-        <h3>Let’s create together your first service</h3>
+        <div className={`${moduleClass}__welcome`}>
+          <h1>
+            Welcome to amplication!{" "}
+            <span role="img" aria-label="party emoji">
+              🎉
+            </span>
+          </h1>
+          <h3>Let’s create together your first service</h3>
+        </div>
         <div className={`${moduleClass}__start_btn`}>
           <Button onClick={handleStart}>Let's start</Button>
         </div>
