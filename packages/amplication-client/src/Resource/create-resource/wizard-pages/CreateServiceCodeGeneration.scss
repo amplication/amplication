@@ -16,8 +16,14 @@
   &__status {
     display: flex;
     flex: 1;
-    margin: 250px;
+    margin: 100px;
     margin-top: 64px;
+    max-height: 50vh;
+
+    .action-log {
+      max-width: 1500px;
+      margin: auto;
+    }
 
     &__completed {
       display: flex;
