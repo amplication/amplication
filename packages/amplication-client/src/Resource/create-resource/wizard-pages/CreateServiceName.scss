@@ -31,5 +31,8 @@
       padding: var(--default-spacing);
       font-size: 14px;
     }
+    .text-input__invalid {
+      bottom: 16px;
+    }
   }
 }
