@@ -1,22 +1,13 @@
-import React, {
-  useContext,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
-// import { Action } from "../../../models";
-
 import CodeGenerationCompleted from "../../../assets/images/code-generation-completed.svg";
-import { Button } from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { WizardStepProps } from "./interfaces";
 import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
 import { LogData } from "../../../VersionControl/BuildPage";
 import * as models from "../../../models";
-import { AppContext } from "../../..//context/appContext";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const className = "create-service-code-generation";
@@ -28,15 +19,13 @@ const CreateServiceCodeGeneration: React.FC<
   }
 > = ({ moduleClass, build, resource, formik, trackWizardPageEvent }) => {
   const { data } = useBuildWatchStatus(build);
-  const { currentResource } = useContext(AppContext);
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
     resource?.gitRepository || null
   );
-
   useEffect(() => {
-    if (!currentResource) return;
-    setResourceRepo(currentResource.gitRepository);
-  }, [currentResource]);
+    if (!resource) return;
+    setResourceRepo(resource.gitRepository);
+  }, [resource]);
 
   useEffect(() => {
     trackWizardPageEvent(
@@ -110,11 +99,25 @@ const CreateServiceCodeGeneration: React.FC<
               <div
                 className={`${className}__status__completed__description__link`}
               >
-                https://github.com/{resourceRepo?.name}/{currentResource?.name}
+                https://github.com/{resourceRepo?.gitOrganization?.name}/
+                {resourceRepo?.name}
               </div>
               <div />
             </div>
-            <Button onClick={handleViewCodeClick}>View my code</Button>
+            <Button
+              buttonStyle={EnumButtonStyle.Clear}
+              onClick={handleViewCodeClick}
+            >
+              {
+                <a
+                  style={{ color: "white" }}
+                  href={`https://github.com/${resourceRepo?.gitOrganization?.name}/${resourceRepo?.name}`}
+                  target="docs"
+                >
+                  View my code
+                </a>
+              }
+            </Button>
           </div>
         )}
       </div>

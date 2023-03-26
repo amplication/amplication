@@ -28,7 +28,8 @@ const createGitRepositoryFullName = (
 ) => {
   return (
     (gitRepository &&
-      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
+      gitRepository?.gitOrganization &&
+      `${gitRepository.gitOrganization?.name}/${gitRepository?.name}`) ||
     "connect to GitHub"
   );
 };

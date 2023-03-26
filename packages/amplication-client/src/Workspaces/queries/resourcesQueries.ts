@@ -72,9 +72,14 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
         builds(orderBy: { createdAt: Desc }, take: 1) {
           id
         }
-        # gitRepository {
-        #   id
-        # }
+        gitRepository {
+          id
+          name
+          gitOrganization {
+            id
+            name
+          }
+        }
         resourceType
       }
       build {
