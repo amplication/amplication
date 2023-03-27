@@ -330,15 +330,14 @@ export function getUserCommitListRequest(
   workspaceSlug: string,
   repositorySlug: string,
   branchName: string,
-  branchToExclude: string | undefined,
-  author: string,
+  mainBranch: string,
   accessToken: string
 ): Promise<PaginatedCommits> {
-  const reqUrl = branchToExclude
+  const reqUrl = mainBranch
     ? `${GET_COMMIT_LIST_URL(
         workspaceSlug,
         repositorySlug
-      )}/?include=${branchName}&exclude=${branchToExclude}`
+      )}/?include=${branchName}&exclude=${mainBranch}`
     : `${GET_COMMIT_LIST_URL(
         workspaceSlug,
         repositorySlug
