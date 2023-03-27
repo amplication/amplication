@@ -32,7 +32,7 @@ const BITBUCKET_SITE_URL = "https://bitbucket.org/site";
 const AUTHORIZE_URL = `${BITBUCKET_SITE_URL}/oauth2/authorize`;
 const ACCESS_TOKEN_URL = `${BITBUCKET_SITE_URL}/oauth2/access_token`;
 
-const CURRENT_USER_URL = `${BITBUCKET_API_URL}/2.0/user`;
+const CURRENT_USER_URL = `${BITBUCKET_API_URL}/user`;
 const CURRENT_USER_WORKSPACES_URL = `${BITBUCKET_API_URL}/user/permissions/workspaces`;
 
 const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
