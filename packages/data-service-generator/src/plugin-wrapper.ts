@@ -83,15 +83,18 @@ const pluginWrapper: PluginWrapper = async (
     context.modules.push(finalModules);
     return finalModules;
   } catch (error) {
-    context.logger.error(`failed to execute plugin event ${event}`, {
+    const errorMessage = `Failed to execute plugin event ${event}`;
+    context.logger.error(errorMessage, {
       errorMessage: JSON.stringify((error as Error).message),
     });
     context.logger.error((error as Error).stack);
     await createLog({
       level: "error",
-      message: `failed to execute plugin event: ${event}. Error message: ${JSON.stringify(
-        error
-      )}`,
+      message: errorMessage,
+    });
+    await createLog({
+      level: "error",
+      message: `Error message: ${error.message}`,
     });
 
     if (context.utils.abort) {
