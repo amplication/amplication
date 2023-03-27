@@ -1,5 +1,5 @@
 import { generateCode } from "./generate-code";
-import { defaultLogger as logger } from "./server/logging";
+import { logger } from "./logging";
 
 if (require.main === module) {
   generateCode().catch(async (err) => {

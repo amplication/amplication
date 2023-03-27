@@ -25,13 +25,15 @@ export default {
     "**/*.{ts,tsx}",
     "!**/*.template.{ts,tsx}",
     "!**/node_modules/**",
+    "!**/scripts/**",
     "!**/tests/e2e/**",
+    "!**/amplication_modules/**",
   ],
   coverageDirectory: "../../coverage/packages/data-service-generator",
   coverageThreshold: {
     global: {
-      branches: 89.5,
-      lines: 92.43,
+      branches: 89.6,
+      lines: 93,
     },
   },
 };

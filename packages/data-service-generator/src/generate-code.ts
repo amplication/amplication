@@ -4,7 +4,7 @@ import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { BuildManagerNotifier } from "./notify-build-manager";
-import { defaultLogger as logger } from "./server/logging";
+import { logger } from "./logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 
 export const AMPLICATION_MODULES = "amplication_modules";
