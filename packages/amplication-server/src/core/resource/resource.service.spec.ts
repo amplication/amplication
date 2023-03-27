@@ -52,6 +52,7 @@ import { BillingService } from "../billing/billing.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -406,6 +407,10 @@ describe("ResourceService", () => {
           useValue: { get: () => "" },
         },
         {
+          provide: PluginInstallationService,
+          useValue: { get: () => "" },
+        },
+        {
           provide: BillingService,
           useValue: {
             getMeteredEntitlement: jest.fn(() => {
@@ -584,10 +589,23 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
+          gitRepository: {
+            name: "gitRepositoryName",
+            resourceId: "",
+            gitOrganizationId: "12345678",
+          },
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
+          serviceSettings: {
+            adminUISettings: { generateAdminUI: true, adminUIPath: "" },
+            serverSettings: {
+              generateGraphQL: true,
+              generateRestApi: true,
+              serverPath: "",
+            },
+            authProvider: EnumAuthProviderType.Jwt,
           },
         },
 
@@ -635,10 +653,23 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
+          gitRepository: {
+            name: "gitRepositoryName",
+            resourceId: "",
+            gitOrganizationId: "12345678",
+          },
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
+          serviceSettings: {
+            adminUISettings: { generateAdminUI: true, adminUIPath: "" },
+            serverSettings: {
+              generateGraphQL: true,
+              generateRestApi: true,
+              serverPath: "",
+            },
+            authProvider: EnumAuthProviderType.Jwt,
           },
         },
 
