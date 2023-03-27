@@ -14,6 +14,7 @@ function generateCode(req: Request, res: Response) {
     BUILD_OUTPUT_PATH: buildOutputPath,
     BUILD_SPEC_PATH: buildSpecPath,
     BUILD_MANAGER_URL: buildMangerUrl,
+    BUILD_MANAGER_URL_LINUX: buildManagerUrlLinux,
     AUTOREMOVE_CONTAINER: autoRemove,
   } = process.env;
 
@@ -37,7 +38,9 @@ function generateCode(req: Request, res: Response) {
         `BUILD_ID=${buildId}`,
         `RESOURCE_ID=${resourceId}`,
         `BUILD_SPEC_PATH=${buildSpecPath}`,
-        `BUILD_MANAGER_URL=${buildMangerUrl}`,
+        `BUILD_MANAGER_URL=${
+          process.platform === "linux" ? buildManagerUrlLinux : buildMangerUrl
+        }`,
         "REMOTE_ENV=true",
       ],
     })
