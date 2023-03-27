@@ -6,7 +6,6 @@ import { EnumBlockType } from "../../enums/EnumBlockType";
 import { DEFAULT_SERVICE_SETTINGS } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
-import { EnumResourceStructureType } from "../resource/dto/EnumResourceStructureType";
 
 const EXAMPLE_INPUT_PARAMETERS = [];
 const EXAMPLE_OUTPUT_PARAMETERS = [];
