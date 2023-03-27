@@ -16,6 +16,7 @@ module.exports = {
     "!**/scripts/**",
     "!**/jest.config.ts",
     "!**/index.ts",
+    "!**/*.mock.ts",
   ],
   coverageThreshold: {
     global: {
