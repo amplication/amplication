@@ -36,8 +36,20 @@ export class Tarball {
     }
 
     if (!requestedVersion.version) {
+      const suggestionMessage = `Please try to install another version, or the latest version: ${latestVersion}.`;
+      await createLog({
+        level: "error",
+        message: [
+          `${name}@${version} is not available`,
+          suggestionMessage,
+        ].join(". "),
+      });
+
       throw new Error(
-        `Could not find version ${version} for ${name}, please try to install another version, or the latest version: ${latestVersion}`
+        [
+          `Could not find version ${version} for ${name}`,
+          suggestionMessage,
+        ].join(". ")
       );
     }
 
