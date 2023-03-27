@@ -1,6 +1,5 @@
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
-import winston from "winston";
 import { createAdminModules } from "./admin/create-admin";
 import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
