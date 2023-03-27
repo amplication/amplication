@@ -61,7 +61,12 @@ function WorkspaceSelector() {
               <span className={`${CLASS_NAME}__current__name`}>
                 {currentWorkspace.name}
               </span>
-              <span className={`${CLASS_NAME}__current__plan`}>
+              <span
+                className={classNames(
+                  `${CLASS_NAME}__current__plan`,
+                  currentWorkspace.subscription?.subscriptionPlan?.toLocaleLowerCase()
+                )}
+              >
                 {currentWorkspace.subscription?.subscriptionPlan ||
                   EnumSubscriptionPlan.Free}{" "}
                 Plan
