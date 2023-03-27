@@ -142,6 +142,21 @@
   border-bottom: 1px solid #373d57 !important;
 }
 
+.stigg-plan-offering-container:nth-child(1).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #a787ff !important;
+}
+
+.stigg-plan-offering-container:nth-child(2).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #20a4f3 !important;
+}
+
+.stigg-plan-offering-container:nth-child(3).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #31c587 !important;
+}
+
 .stigg-plan-header {
   font-weight: 700 !important;
   margin-bottom: 4px !important;
