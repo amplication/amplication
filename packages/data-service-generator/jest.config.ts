@@ -25,6 +25,7 @@ export default {
     "**/*.{ts,tsx}",
     "!**/*.template.{ts,tsx}",
     "!**/node_modules/**",
+    "!**/scripts/**",
     "!**/tests/e2e/**",
     "!**/amplication_modules/**",
   ],
@@ -32,7 +33,7 @@ export default {
   coverageThreshold: {
     global: {
       branches: 89.6,
-      lines: 92.7,
+      lines: 93,
     },
   },
 };
