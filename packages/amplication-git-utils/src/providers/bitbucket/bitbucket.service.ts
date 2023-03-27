@@ -331,6 +331,9 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
+  // override the author of the commit: {author: "amplication[bot] <100755160+amplication[bot]@users.noreply.github.com>"}
+  // override the author of the commit: {author: "amplication-sandbox[bot] <114579408+amplication-sandbox[bot]@users.noreply.github.com>"}
+  // override the author of the commit: {author: "amplication-staging[bot] <100274687+amplication-staging[bot]@users.noreply.github.com>"}
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
     const { repositoryName, files, branchName, commitMessage, gitGroupName } =
       createCommitArgs;
@@ -353,8 +356,8 @@ export class BitBucketService implements GitProvider {
       {
         branch: { name: branchName },
         message: commitMessage,
-        parents: lastCommit.hash,
-        fileContent: files,
+        parents: [lastCommit.hash],
+        content: files,
       },
       this.accessToken
     );
@@ -427,18 +430,21 @@ export class BitBucketService implements GitProvider {
   }
 
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    const { gitGroupName, repositoryName, branchName } = args;
+    const { gitGroupName, repositoryName, branchName, owner } = args;
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
       throw new CustomError("Missing gitGroupName");
     }
-    const currentUser = await this.getCurrentOAuthUser(this.accessToken);
+    const repository = await this.getRepository({
+      owner,
+      repositoryName,
+      gitGroupName,
+    });
     const commits = await getUserCommitListRequest(
       gitGroupName,
       repositoryName,
       branchName,
-      "master",
-      currentUser.username, // TODO: this is the username on Bitbucket that gave us permissions, and not us, we may need to change it
+      repository.defaultBranch,
       this.accessToken
     );
 
