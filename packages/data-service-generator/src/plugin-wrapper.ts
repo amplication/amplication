@@ -104,7 +104,7 @@ const pluginWrapper: PluginWrapper = async (
       throw Error();
     }
 
-    return [];
+    throw error;
   }
 };
 
