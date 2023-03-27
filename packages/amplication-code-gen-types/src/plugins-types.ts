@@ -1,14 +1,24 @@
 import type { Promisable } from "type-fest";
-import winston from "winston";
 import {
   clientDirectories,
   DTOs,
-  EntityField,
   Module,
   serverDirectories,
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events";
+
+interface ILogger {
+  debug: (message: string, params?: Record<string, unknown>) => void;
+  info: (message: string, params?: Record<string, unknown>) => void;
+  warn: (message: string, params?: Record<string, unknown>) => void;
+  error: (
+    message: string,
+    params?: Record<string, unknown>,
+    err?: Error
+  ) => void;
+  child: (metadata?: Record<string, unknown>) => ILogger;
+}
 
 export interface EventParams {}
 
@@ -45,7 +55,7 @@ export interface DsgContext extends DSGResourceData {
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
-  logger: winston.Logger;
+  logger: ILogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
