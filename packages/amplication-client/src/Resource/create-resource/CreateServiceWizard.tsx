@@ -61,11 +61,10 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const defineUser: DefineUser =
     signupCookie === "1" ? "Onboarding" : "Create Service";
-  const wizardPattern = [0, 1, 2, 3, 4, 5, 6, 7, 8];
-  // defineUser === "Create Service"
-  //   ? [0, 1, 2, 3, 4, 5, 6, 8]
-
-  //   : [0, 1, 2, 3, 4, 5, 6, 7,8];
+  const wizardPattern =
+    defineUser === "Create Service"
+      ? [0, 1, 2, 3, 4, 5, 6, 8]
+      : [0, 1, 2, 3, 4, 5, 6, 7, 8];
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};

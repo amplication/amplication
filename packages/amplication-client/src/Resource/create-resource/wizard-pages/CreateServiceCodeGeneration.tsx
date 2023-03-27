@@ -17,8 +17,14 @@ import * as models from "../../../models";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
+import { useMutation } from "@apollo/client";
+import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
 
 const className = "create-service-code-generation";
+
+type TData = {
+  commit: models.Commit;
+};
 
 const CreateServiceCodeGeneration: React.FC<
   WizardStepProps & {
@@ -26,13 +32,24 @@ const CreateServiceCodeGeneration: React.FC<
     build?: models.Build;
   }
 > = ({ moduleClass, build, resource, formik, trackWizardPageEvent }) => {
-  const { data } = useBuildWatchStatus(build);
+  const [currentBuild, setCurrentBuild] = useState<models.Build>(build || null);
+  const { data } = useBuildWatchStatus(currentBuild);
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
     resource?.gitRepository || null
   );
+
   const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
+
+  const [commit] = useMutation<TData>(COMMIT_CHANGES, {
+    onCompleted: (response) => {
+      const newBuild = response.commit.builds?.find(
+        (build) => build.resourceId === resource.id
+      );
+      setCurrentBuild(newBuild);
+    },
+  });
 
   useEffect(() => {
     if (!resource) return;
@@ -85,13 +102,24 @@ const CreateServiceCodeGeneration: React.FC<
     );
   }, [currentWorkspace, currentProject, currentResource]);
 
-  const buildCompleted = true;
-  //data?.build?.status === models.EnumBuildStatus.Completed;
+  const handleTryAgainClick = useCallback(() => {
+    commit({
+      variables: {
+        message: "Initial commit test",
+        projectId: currentProject.id,
+      },
+    }).catch(console.error);
+  }, [commit, currentProject.id, currentBuild?.id]);
 
-  const buildFailed = true; //data?.build?.status === models.EnumBuildStatus.Failed;
+  const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
+  // const buildCompleted =
+  //   data?.build?.status === models.EnumBuildStatus.Completed;
+
+  const buildFailed = data?.build?.status === models.EnumBuildStatus.Failed;
+
   return (
     <div className={className}>
-      {!buildCompleted ? (
+      {buildRunning ? (
         <div className={`${className}__buildLog`}>
           <div className={`${className}__title`}>
             <h1>We’re generating your service...</h1>
@@ -122,7 +150,12 @@ const CreateServiceCodeGeneration: React.FC<
               <h2>You can try again, or continue anyway to see your service</h2>
             </div>
             <div className={`${className}__btn_actions`}>
-              <Button buttonStyle={EnumButtonStyle.Primary}>Try again</Button>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleTryAgainClick}
+              >
+                Try again
+              </Button>
               <Button
                 buttonStyle={EnumButtonStyle.Clear}
                 onClick={handleContinueClick}

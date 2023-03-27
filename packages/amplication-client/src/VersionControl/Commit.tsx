@@ -193,12 +193,16 @@ const Commit = ({ projectId, noChanges }: Props) => {
 
 export default Commit;
 
-const COMMIT_CHANGES = gql`
+export const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $projectId: String!) {
     commit(
       data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
+      builds {
+        id
+        resourceId
+      }
     }
   }
 `;
