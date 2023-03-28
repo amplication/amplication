@@ -2,19 +2,31 @@ import { logger as applicationLogger } from "./logging";
 import { httpClient } from "./utils/http-client";
 import { LogLevel } from "@amplication/util/logging";
 import { BuildLogger } from "./build-logger";
-
 jest.mock("./logging");
 jest.mock("./utils/http-client");
 
 describe("BuildLogger", () => {
   let buildLogger: BuildLogger;
+  const OLD_ENV = process.env;
 
   beforeEach(() => {
+    jest.resetModules();
+    process.env = {
+      ...OLD_ENV,
+      REMOTE_ENV: "true",
+      BUILD_MANAGER_URL: "http://localhost",
+    };
+    const mockedHttpClient = httpClient as jest.Mocked<typeof httpClient>;
+    mockedHttpClient.post.mockResolvedValue("OK");
+
     buildLogger = new BuildLogger();
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
+  });
+  afterAll(() => {
+    process.env = OLD_ENV; // Restore old environment
   });
 
   describe("info", () => {

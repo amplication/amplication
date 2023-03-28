@@ -14,7 +14,6 @@ export class BuildLogger implements IBuildLogger {
         );
         return;
       }
-
       await httpClient.post(
         new URL("build-logger/create-log", process.env.BUILD_MANAGER_URL).href,
         logContext

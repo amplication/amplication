@@ -8,11 +8,12 @@ import roles from "./roles";
 
 jest.setTimeout(100000);
 
-jest.mock("./create-log", () => ({
-  createLog: jest.fn(),
-}));
+jest.mock("./build-logger");
 
 describe("createDataService", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("creates resource as expected", async () => {
     const modules = await createDataService(
       {
