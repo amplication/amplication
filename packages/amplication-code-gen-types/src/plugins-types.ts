@@ -8,16 +8,45 @@ import {
 import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events";
 
-interface ILogger {
-  debug: (message: string, params?: Record<string, unknown>) => void;
-  info: (message: string, params?: Record<string, unknown>) => void;
-  warn: (message: string, params?: Record<string, unknown>) => void;
+export interface BuildLogger {
+  /**
+   *
+   * @param message  Log message
+   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
+   * @returns
+   */
+  info: (
+    message: string,
+    params?: Record<string, unknown>,
+    userFriendlyMessage?: string
+  ) => Promise<void>;
+  /**
+   *
+   * @param message  Log message
+   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
+   * @returns
+   */
+  warn: (
+    message: string,
+    params?: Record<string, unknown>,
+    userFriendlyMessage?: string
+  ) => Promise<void>;
+  /**
+   *
+   * @param message  Log message
+   * @param params Additional application internal log params. Not diplayed in the build log.
+   * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
+   * @param error Error
+   * @returns
+   */
   error: (
     message: string,
     params?: Record<string, unknown>,
-    err?: Error
-  ) => void;
-  child: (metadata?: Record<string, unknown>) => ILogger;
+    userFriendlyMessage?: string,
+    error?: Error
+  ) => Promise<void>;
 }
 
 export interface EventParams {}
@@ -62,7 +91,7 @@ export interface DsgContext extends DSGResourceData {
   /*
    * Logger for user facing logs. Logs will be visible in the build log.
    */
-  logger: ILogger;
+  logger: BuildLogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
