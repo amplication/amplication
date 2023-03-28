@@ -39,9 +39,10 @@ export async function dynamicPackagesInstallations(
           message: `Successfully Installed plugin: ${plugin.name}@${plugin.version}`,
         });
       },
-      onError: async (plugin) => {
+      onError: async (plugin, error) => {
         logger.error(
-          `Failed to installed plugin: ${plugin.name}@${plugin.version}`
+          `Failed to installed plugin: ${plugin.name}@${plugin.version}`,
+          { ...error }
         );
         await createLog({
           level: "error",

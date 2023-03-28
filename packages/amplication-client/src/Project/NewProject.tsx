@@ -108,7 +108,6 @@ const NewProject = ({ onProjectCreated }: Props) => {
               />
               <Button
                 className={CLASS_NAME}
-                style={{ backgroundColor: "#7950ED", color: "#FFFFFF" }}
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}

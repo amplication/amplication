@@ -1,4 +1,5 @@
 import { EnvironmentVariables } from "@amplication/util/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { EventPattern, Payload } from "@nestjs/microservices";
@@ -16,7 +17,8 @@ export class BuildRunnerController {
   constructor(
     private readonly buildRunnerService: BuildRunnerService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService
+    private readonly queueService: QueueService,
+    private readonly logger: AmplicationLogger
   ) {}
 
   @Post("code-generation-success")
@@ -33,7 +35,7 @@ export class BuildRunnerController {
         JSON.stringify({ buildId: dto.buildId })
       );
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
         JSON.stringify({ buildId: dto.buildId, error })
@@ -51,7 +53,7 @@ export class BuildRunnerController {
         JSON.stringify({ buildId: dto.buildId, error: dto.error })
       );
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
     }
   }
 
@@ -61,11 +63,11 @@ export class BuildRunnerController {
   async onCodeGenerationRequest(
     @Payload() message: CodeGenerationRequest
   ): Promise<void> {
-    console.log("Code generation request received");
+    this.logger.info("Code generation request received");
     let args: CodeGenerationRequest;
     try {
       args = plainToInstance(CodeGenerationRequest, message);
-      console.log("Code Generation Request", args);
+      this.logger.info("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,
         args.dsgResourceData
@@ -76,7 +78,7 @@ export class BuildRunnerController {
         buildId: args.buildId,
       });
     } catch (error) {
-      console.error(error);
+      this.logger.error(error);
       await this.queueService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
         JSON.stringify({ buildId: args?.buildId, error })

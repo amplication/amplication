@@ -57,7 +57,6 @@ export async function createDataService(
       message: "Failed to run createDataService",
       data: JSON.stringify(dSGResourceData),
     });
-    logger.error((error as Error).stack);
-    return [];
+    throw error;
   }
 }
