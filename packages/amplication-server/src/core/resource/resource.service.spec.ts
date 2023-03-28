@@ -35,6 +35,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { PendingChange } from "./dto/PendingChange";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
@@ -54,6 +55,8 @@ import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -68,6 +71,22 @@ const EXAMPLE_CUID = "EXAMPLE_CUID";
 
 const EXAMPLE_BUILD_ID = "ExampleBuildId";
 const EXAMPLE_WORKSPACE_ID = "ExampleWorkspaceId";
+
+const EXAMPLE_GIT_REPOSITORY_INPUT: ConnectGitRepositoryInput = {
+  name: "exampleGitRepositoryInput",
+  resourceId: "",
+  gitOrganizationId: "ExampleGitOrganizationId",
+};
+
+const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
+  authProvider: EnumAuthProviderType.Jwt,
+  adminUISettings: { generateAdminUI: true, adminUIPath: "" },
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: "",
+  },
+};
 
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: "exampleGitRepositoryId",
@@ -93,6 +112,18 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  builds: [
+    {
+      id: EXAMPLE_BUILD_ID,
+      createdAt: new Date(),
+      userId: "exampleUserId",
+      resourceId: EXAMPLE_RESOURCE_ID,
+      version: "1.0.0",
+      message: "new build",
+      actionId: "ExampleActionId",
+      commitId: "exampleCommitId",
+    },
+  ],
 };
 
 const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
@@ -274,6 +305,11 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   outputParameters: [],
 };
 
+const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
+  resource: EXAMPLE_RESOURCE,
+  build: EXAMPLE_BUILD,
+};
+
 const EXAMPLE_TOPIC: Topic = {
   displayName: "exampleTopicDisplayName",
   name: "exampleTopicName",
@@ -370,6 +406,7 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
+const analyticServiceTrack = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
@@ -413,7 +450,9 @@ describe("ResourceService", () => {
         },
         {
           provide: SegmentAnalyticsService,
-          useValue: { get: () => "" },
+          useClass: jest.fn(() => ({
+            track: analyticServiceTrack,
+          })),
         },
         {
           provide: BillingService,
@@ -526,6 +565,7 @@ describe("ResourceService", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             findUnique: projectServiceFindUniqueMock,
+            commit: projectServiceFindUniqueMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -563,7 +603,9 @@ describe("ResourceService", () => {
     expect(
       await service.createService(
         createResourceArgs.args,
-        createResourceArgs.user
+        createResourceArgs.user,
+        EXAMPLE_SERVICE_SETTINGS,
+        EXAMPLE_GIT_REPOSITORY_INPUT
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -613,7 +655,7 @@ describe("ResourceService", () => {
             },
             authProvider: EnumAuthProviderType.Jwt,
           },
-          plugins: {},
+          // plugins: {},
         },
 
         EXAMPLE_USER
@@ -678,12 +720,11 @@ describe("ResourceService", () => {
             },
             authProvider: EnumAuthProviderType.Jwt,
           },
-          plugins: {},
         },
 
         EXAMPLE_USER
       )
-    ).resolves.toEqual(EXAMPLE_RESOURCE);
+    ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);

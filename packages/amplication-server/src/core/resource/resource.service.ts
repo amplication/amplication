@@ -368,13 +368,15 @@ export class ResourceService {
       }
     }
 
-    for (let index = 0; index < data.plugins.plugins.length; index++) {
-      const currentPlugin = data.plugins.plugins[index];
-      currentPlugin.resource = { connect: { id: resource.id } };
-      await this.pluginInstallationService.create(
-        { data: currentPlugin },
-        user
-      );
+    if (data.plugins?.plugins) {
+      for (let index = 0; index < data.plugins.plugins.length; index++) {
+        const currentPlugin = data.plugins.plugins[index];
+        currentPlugin.resource = { connect: { id: resource.id } };
+        await this.pluginInstallationService.create(
+          { data: currentPlugin },
+          user
+        );
+      }
     }
 
     try {
