@@ -39,14 +39,16 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const { AT_LEAST_TWO_CHARARCTERS: AT_LEAST_TWO_CHARACTERS } =
+const { AT_LEAST_TWO_CHARARCTERS: AT_LEAST_TWO_CHARACTERS, NAME_HELP_TEXT } =
   validationErrorMessages;
 
 const SYMBOL_REGEX = new RegExp("^[a-zA-Z0-9\\s]+$");
 
 const entitySchema = Yup.object().shape({
   displayName: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS),
-  name: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS).matches(SYMBOL_REGEX),
+  name: Yup.string()
+    .min(2, AT_LEAST_TWO_CHARACTERS)
+    .matches(SYMBOL_REGEX, NAME_HELP_TEXT),
   pluralDisplayName: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS),
 });
 
