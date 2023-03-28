@@ -159,6 +159,10 @@ describe("bitbucket.service", () => {
         await service.createCommit({
           owner: "maccheroni",
           commitMessage: "commit message",
+          author: {
+            name: "Spaghetti Monster",
+            email: "monster@spagetti.com",
+          },
           files: [{ path: "path/file.me", content: "content" }],
           branchName: "master",
           repositoryName: "myrepo",
@@ -276,6 +280,10 @@ describe("bitbucket.service", () => {
 
       await service.createCommit({
         owner: "maccheroni",
+        author: {
+          name: "Spaghetti Monster",
+          email: "monster@spagetti.com",
+        },
         commitMessage: mockedCreateCommitResponse.message,
         files: [{ path: "path/file.me", content: "content" }],
         branchName: "master",
