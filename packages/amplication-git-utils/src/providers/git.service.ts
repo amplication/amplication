@@ -39,6 +39,13 @@ export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
 
+  private getAmplicationGitUser(): { name: string; email: string } {
+    return {
+      name: "amplication",
+      email: "bot@amplication.com",
+    };
+  }
+
   async create(
     gitProviderArgs: GitProviderArgs,
     providersConfiguration: GitProvidersConfiguration,
@@ -187,6 +194,7 @@ export class GitClientService {
 
       await this.provider.createCommit({
         owner,
+        author: this.getAmplicationGitUser(),
         repositoryName,
         commitMessage,
         branchName,
@@ -252,35 +260,32 @@ export class GitClientService {
   private async preCommitProcess({
     gitClient,
     branchName,
-    owner,
-    repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     this.logger.info("Pre commit process");
     await gitClient.git.checkout(branchName);
 
-    const commitsList = await this.provider.getCurrentUserCommitList({
-      branchName,
-      owner,
-      repositoryName,
+    const lastUserCommitOnBranch = await gitClient.git.log({
+      "--author": `${this.getAmplicationGitUser().name} <${
+        this.getAmplicationGitUser().email
+      }>`,
+      "--max-count": "1",
     });
 
-    const latestCommit = commitsList[0];
-
-    if (!latestCommit) {
+    if (!lastUserCommitOnBranch || !lastUserCommitOnBranch.latest) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
       );
       return { diff: null };
     }
 
-    const { sha } = latestCommit;
-    const diff = await gitClient.git.diff([sha]);
+    const hash = lastUserCommitOnBranch.latest.hash;
+    const diff = await gitClient.git.diff([hash]);
     if (diff.length === 0) {
       this.logger.info("Diff returned empty");
       return { diff: null };
     }
     // Reset the branch to the latest commit
-    await gitClient.git.reset([sha]);
+    await gitClient.git.reset([hash]);
     await gitClient.git.push(["--force"]);
     await gitClient.resetState();
     this.logger.info("Diff returned");

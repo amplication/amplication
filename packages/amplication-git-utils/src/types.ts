@@ -160,6 +160,10 @@ export interface CreatePullRequestForBranchArgs {
 
 export interface CreateCommitArgs {
   owner: string;
+  author: {
+    name: string;
+    email: string;
+  };
   repositoryName: string;
   commitMessage: string;
   branchName: string;
