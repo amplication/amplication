@@ -164,15 +164,6 @@ export interface PullRequestEndpoint {
   commit: Commit;
 }
 
-export interface PaginatedCommits {
-  size: number;
-  page: number;
-  pagelen: number;
-  next: string;
-  previous: string;
-  values: Commit[];
-}
-
 export interface Comment {
   id: number;
   content: {
