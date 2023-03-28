@@ -492,6 +492,7 @@ export class GithubService implements GitProvider {
 
   async createCommit({
     owner,
+    author,
     repositoryName,
     commitMessage,
     branchName,
@@ -527,6 +528,7 @@ export class GithubService implements GitProvider {
     const { data: commit } = await this.octokit.rest.git.createCommit({
       message: commitMessage,
       owner,
+      author,
       repo: repositoryName,
       tree: lastTreeSha,
       parents: [lastCommit.sha],
