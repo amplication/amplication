@@ -3,6 +3,7 @@ import {
   EnumMessagePatternConnectionOptions,
   Topic,
 } from "@amplication/code-gen-types";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
@@ -65,7 +66,7 @@ describe("createDataService", () => {
         },
       ],
     };
-    const modules = await createDataService(service);
+    const modules = await createDataService(service, MockedLogger);
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

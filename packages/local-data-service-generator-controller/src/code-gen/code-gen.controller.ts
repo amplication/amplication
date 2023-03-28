@@ -33,6 +33,7 @@ function generateCode(req: Request, res: Response) {
       },
       Cmd: ["node", "./src/main.js"],
       Env: [
+        "NODE_ENV=Development",
         `BUILD_OUTPUT_PATH=${buildOutputPath}`,
         `BUILD_ID=${buildId}`,
         `RESOURCE_ID=${resourceId}`,

@@ -58,7 +58,7 @@ export class ExampleService {
 ## Testing utils
 
 A mocked provider can be used in unit tests. 
-The folliwng example explain how to use it
+The following example explain how to use it
 
 ```ts
 /// myservice.spec.ts

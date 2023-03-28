@@ -1,3 +1,4 @@
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
@@ -13,13 +14,16 @@ jest.mock("./create-log", () => ({
 
 describe("createDataService", () => {
   test("creates resource as expected", async () => {
-    const modules = await createDataService({
-      entities,
-      roles,
-      resourceInfo: appInfo,
-      resourceType: EnumResourceType.Service,
-      pluginInstallations: installedPlugins,
-    });
+    const modules = await createDataService(
+      {
+        entities,
+        roles,
+        resourceInfo: appInfo,
+        resourceType: EnumResourceType.Service,
+        pluginInstallations: installedPlugins,
+      },
+      MockedLogger
+    );
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)
