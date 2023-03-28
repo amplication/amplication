@@ -34,7 +34,12 @@ function WorkspaceSelectorListItem({
       />
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
-        <span className={`${CLASS_NAME}__plan`}>
+        <span
+          className={classNames(
+            `${CLASS_NAME}__plan`,
+            workspace.subscription?.subscriptionPlan?.toLocaleLowerCase()
+          )}
+        >
           {workspace.subscription?.subscriptionPlan ||
             models.EnumSubscriptionPlan.Free}{" "}
           Plan
