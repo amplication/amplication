@@ -42,7 +42,6 @@ import {
   getFileRequest,
   getFirstCommitRequest,
   getLastCommitRequest,
-  getUserCommitListRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -331,12 +330,15 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  // override the author of the commit: {author: "amplication[bot] <100755160+amplication[bot]@users.noreply.github.com>"}
-  // override the author of the commit: {author: "amplication-sandbox[bot] <114579408+amplication-sandbox[bot]@users.noreply.github.com>"}
-  // override the author of the commit: {author: "amplication-staging[bot] <100274687+amplication-staging[bot]@users.noreply.github.com>"}
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    const { repositoryName, files, branchName, commitMessage, gitGroupName } =
-      createCommitArgs;
+    const {
+      repositoryName,
+      files,
+      branchName,
+      commitMessage,
+      author,
+      gitGroupName,
+    } = createCommitArgs;
 
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
@@ -356,6 +358,7 @@ export class BitBucketService implements GitProvider {
       {
         branch: { name: branchName },
         message: commitMessage,
+        author: `${author.name} <${author.email}>`,
         parents: [lastCommit.hash],
         content: files,
       },
@@ -430,25 +433,7 @@ export class BitBucketService implements GitProvider {
   }
 
   async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    const { gitGroupName, repositoryName, branchName, owner } = args;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
-    }
-    const repository = await this.getRepository({
-      owner,
-      repositoryName,
-      gitGroupName,
-    });
-    const commits = await getUserCommitListRequest(
-      gitGroupName,
-      repositoryName,
-      branchName,
-      repository.defaultBranch,
-      this.accessToken
-    );
-
-    return commits.values.map((commit) => ({ sha: commit.hash }));
+    throw NotImplementedError;
   }
   getCloneUrl(args: CloneUrlArgs): string {
     const { gitGroupName, repositoryName, token } = args;
