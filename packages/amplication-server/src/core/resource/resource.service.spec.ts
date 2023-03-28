@@ -53,6 +53,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -411,6 +412,10 @@ describe("ResourceService", () => {
           useValue: { get: () => "" },
         },
         {
+          provide: SegmentAnalyticsService,
+          useValue: { get: () => "" },
+        },
+        {
           provide: BillingService,
           useValue: {
             getMeteredEntitlement: jest.fn(() => {
@@ -450,6 +455,7 @@ describe("ResourceService", () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock,
+              create: prismaGitRepositoryCreateMock,
             },
             resourceRole: {
               create: prismaResourceRoleCreateMock,
@@ -607,6 +613,7 @@ describe("ResourceService", () => {
             },
             authProvider: EnumAuthProviderType.Jwt,
           },
+          plugins: {},
         },
 
         EXAMPLE_USER
@@ -671,6 +678,7 @@ describe("ResourceService", () => {
             },
             authProvider: EnumAuthProviderType.Jwt,
           },
+          plugins: {},
         },
 
         EXAMPLE_USER

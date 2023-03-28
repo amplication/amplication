@@ -202,6 +202,7 @@ export const COMMIT_CHANGES = gql`
       builds {
         id
         resourceId
+        status
       }
     }
   }

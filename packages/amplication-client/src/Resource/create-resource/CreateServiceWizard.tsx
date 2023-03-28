@@ -1,5 +1,5 @@
 import { Modal, Snackbar } from "@amplication/ui/design-system";
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { match, useHistory } from "react-router-dom";
 import * as H from "history";
 import { formatError } from "../../util/error";
@@ -58,6 +58,9 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const { trackEvent } = useTracking();
   const history = useHistory();
+  const [currentBuild, setCurrentBuild] = useState<models.Build>(
+    createResult?.build || null
+  );
 
   const defineUser: DefineUser =
     signupCookie === "1" ? "Onboarding" : "Create Service";
@@ -85,6 +88,17 @@ const CreateServiceWizard: React.FC<Props> = ({
       []
     );
   }, [wizardPattern]);
+
+  useEffect(() => {
+    if (createResult?.build) setCurrentBuild(createResult?.build);
+  }, [createResult?.build]);
+
+  const handleRebuildClick = useCallback(
+    (build: models.Build) => {
+      setCurrentBuild(build);
+    },
+    [currentBuild]
+  );
 
   const createStarterResource = useCallback(
     (
@@ -284,8 +298,9 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceCodeGeneration
           moduleClass="create-service-code-generation"
           resource={createResult?.resource}
-          build={createResult?.build}
+          build={currentBuild}
           trackWizardPageEvent={trackWizardPageEvent}
+          rebuildClick={handleRebuildClick}
         />
         <CreateServiceNextSteps
           moduleClass={moduleClass}

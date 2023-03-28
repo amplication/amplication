@@ -30,10 +30,17 @@ const CreateServiceCodeGeneration: React.FC<
   WizardStepProps & {
     resource?: models.Resource;
     build?: models.Build;
+    rebuildClick: (build: models.Build) => void;
   }
-> = ({ moduleClass, build, resource, formik, trackWizardPageEvent }) => {
-  const [currentBuild, setCurrentBuild] = useState<models.Build>(build || null);
-  const { data } = useBuildWatchStatus(currentBuild);
+> = ({
+  moduleClass,
+  build,
+  resource,
+  formik,
+  trackWizardPageEvent,
+  rebuildClick,
+}) => {
+  const { data } = useBuildWatchStatus(build);
   const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
     resource?.gitRepository || null
   );
@@ -47,7 +54,7 @@ const CreateServiceCodeGeneration: React.FC<
       const newBuild = response.commit.builds?.find(
         (build) => build.resourceId === resource.id
       );
-      setCurrentBuild(newBuild);
+      rebuildClick(newBuild);
     },
   });
 
@@ -109,11 +116,9 @@ const CreateServiceCodeGeneration: React.FC<
         projectId: currentProject.id,
       },
     }).catch(console.error);
-  }, [commit, currentProject.id, currentBuild?.id]);
+  }, [commit, currentProject.id]);
 
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
-  // const buildCompleted =
-  //   data?.build?.status === models.EnumBuildStatus.Completed;
 
   const buildFailed = data?.build?.status === models.EnumBuildStatus.Failed;
 
