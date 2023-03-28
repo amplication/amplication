@@ -164,13 +164,21 @@ Amplication is an open-source project. We are committed to a fully transparent d
 
 # Useful Links
 
-- [Docs](https://docs.amplication.com/)
-- [Blog](https://amplication.com/blog)
-- [Twitter](https://twitter.com/amplication)
-- [Discord](https://amplication.com/discord)
-- [Youtube](https://www.youtube.com/c/Amplicationcom)
+<a href="https://docs.amplication.com/"><img src="https://img.icons8.com/nolan/512/google-docs.png" height="60px"></img></a>
+<a href="https://amplication.com/blog"><img src="https://img.icons8.com/nolan/2x/google-blog-search.png" height="60px"></img></a>
+<a href="https://twitter.com/amplication"><img src="https://img.icons8.com/fluency/2x/twitter.png" height="60px"></img></a>
+<a href="https://amplication.com/discord"><img src="https://img.icons8.com/color/2x/discord--v2.png" height="60px"></img></a>
+<a href="https://www.youtube.com/c/Amplicationcom"><img src="https://img.icons8.com/color/512/youtube-play.png" height="60px"></img></a>
 
-Please refer to our [Contribution Guidelines](./CONTRIBUTING.md) and [Code of Conduct](./CODE_OF_CONDUCT.md).
+## Contribute
+
+We welcome contributions in our community.<br>
+Before contributing,see <a href="https://github.com/amplication/amplication/blob/master/CONTRIBUTING.md">Contribution guide</a> for more information.
+
+## Code of Conduct
+
+Check out <a href="https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md">Code of Conduct</a> to know inclusive environment that respects all contributions.
+
 
 # Contributors ✨
 
