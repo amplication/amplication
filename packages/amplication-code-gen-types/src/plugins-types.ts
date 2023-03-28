@@ -51,10 +51,17 @@ export interface ContextUtil {
   abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
+
 export interface DsgContext extends DSGResourceData {
+  /*
+   * List of generated files.
+   */
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
+  /*
+   * Logger for user facing logs. Logs will be visible in the build log.
+   */
   logger: ILogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
