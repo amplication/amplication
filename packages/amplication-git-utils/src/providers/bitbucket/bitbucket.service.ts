@@ -432,7 +432,7 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
+  getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
     throw NotImplementedError;
   }
   getCloneUrl(args: CloneUrlArgs): string {
