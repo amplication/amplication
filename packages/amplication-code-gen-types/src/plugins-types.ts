@@ -46,9 +46,6 @@ export interface PrintResultType {
 
 export interface ContextUtil {
   skipDefaultBehavior: boolean;
-  abortGeneration: (msg: string) => void;
-  abortMessage?: string;
-  abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
 
