@@ -96,32 +96,6 @@ export class GithubService implements GitProvider {
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
-  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    const { branchName, owner, repositoryName } = args;
-    const currentUserData = await this.getCurrentUser();
-
-    let moreCommitsPagination = true;
-    let commitsList: Commit[] = [];
-    let cursor: string | undefined = undefined;
-
-    do {
-      const { commits, hasNextPage, endCursor } =
-        await this.paginatedCommitsList({
-          botData: currentUserData,
-          branchName,
-          owner,
-          repositoryName,
-          cursor,
-          paginationLimit: 100,
-        });
-      moreCommitsPagination = hasNextPage;
-      commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
-      cursor = endCursor;
-    } while (moreCommitsPagination);
-
-    return commitsList;
-  }
-
   private async paginatedCommitsList(
     args: GetBranchArgs & {
       cursor: string | undefined;
