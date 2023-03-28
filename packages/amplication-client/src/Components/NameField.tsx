@@ -4,15 +4,15 @@ import { TextInput, TextInputProps } from "@amplication/ui/design-system";
 import "./NameField.scss";
 
 /** @todo share code with server */
-const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
+const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9]+$/;
 const NAME_PATTERN = NAME_REGEX.toString().slice(1, -1);
 const HELP_TEXT =
-  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
+  "Name must only contain letters, numbers and must not start with a number";
 
-const CAPITALIZED_NAME_REGEX = /^[A-Z][a-zA-Z0-9$_]+$/;
+const CAPITALIZED_NAME_REGEX = /^[A-Z][a-zA-Z0-9]+$/;
 const CAPITALIZED_NAME_PATTERN = CAPITALIZED_NAME_REGEX.toString().slice(1, -1);
 const CAPITALIZED_HELP_TEXT =
-  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must start with a capital letter";
+  "Name must only contain letters, numbers and must start with a capital letter";
 
 const CLASS_NAME = "amp-name-field";
 
