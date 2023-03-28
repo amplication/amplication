@@ -13,6 +13,7 @@ import {
 } from "../util/formikValidateJsonSchema";
 import { USER_ENTITY } from "./constants";
 import { isEqual } from "../util/customValidations";
+import * as Yup from "yup";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -38,32 +39,16 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "__typename",
 ];
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARARCTERS: AT_LEAST_TWO_CHARACTERS } =
+  validationErrorMessages;
 
-const FORM_SCHEMA = {
-  required: ["name", "displayName", "pluralDisplayName"],
-  properties: {
-    displayName: {
-      type: "string",
-      minLength: 2,
-    },
-    name: {
-      type: "string",
-      minLength: 2,
-    },
-    pluralDisplayName: {
-      type: "string",
-      minLength: 2,
-    },
-  },
-  errorMessage: {
-    properties: {
-      displayName: AT_LEAST_TWO_CHARARCTERS,
-      name: AT_LEAST_TWO_CHARARCTERS,
-      pluralDisplayName: AT_LEAST_TWO_CHARARCTERS,
-    },
-  },
-};
+const SYMBOL_REGEX = new RegExp("^[a-zA-Z0-9\\s]+$");
+
+const entitySchema = Yup.object().shape({
+  displayName: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS),
+  name: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS).matches(SYMBOL_REGEX),
+  pluralDisplayName: Yup.string().min(2, AT_LEAST_TWO_CHARACTERS),
+});
 
 const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
   "Name and plural display names cannot be equal. The ‘plural display name’ field must be in a plural form and ‘name’ field must be in a singular form";
@@ -91,8 +76,8 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
               pluralDisplayName: EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT,
             };
           }
-          return validate(values, FORM_SCHEMA);
         }}
+        validationSchema={entitySchema}
         enableReinitialize
         onSubmit={onSubmit}
       >
