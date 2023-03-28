@@ -228,7 +228,7 @@ export async function getFileRequest(
 export function createCommitRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  commitData: any,
+  commitData: unknown,
   accessToken: string
 ) {
   return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {
