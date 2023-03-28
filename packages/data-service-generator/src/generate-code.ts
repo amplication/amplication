@@ -74,7 +74,7 @@ export const generateCode = async (): Promise<void> => {
     await generateCodeByResourceData(resourceData, buildOutputPath);
     await buildManagerNotifier.success();
   } catch (error) {
-    logger.error(error);
     await buildManagerNotifier.failure();
+    throw error;
   }
 };
