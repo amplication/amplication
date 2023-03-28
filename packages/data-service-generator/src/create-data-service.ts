@@ -1,7 +1,6 @@
 import { DSGResourceData, Module } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
 import { createAdminModules } from "./admin/create-admin";
-import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
@@ -13,6 +12,7 @@ export async function createDataService(
   logger: ILogger,
   pluginInstallationPath?: string
 ): Promise<Module[]> {
+  const context = DsgContext.getInstance;
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
       logger.info("No code to generate for a message broker");
@@ -21,15 +21,13 @@ export async function createDataService(
 
     const startTime = Date.now();
     await prepareContext(dSGResourceData, logger, pluginInstallationPath);
-    await createLog({ level: "info", message: "Creating application..." });
-    logger.info("Creating application...");
 
-    const context = DsgContext.getInstance;
+    await context.logger.info("Creating application...");
+
     const { appInfo } = context;
     const { settings } = appInfo;
 
-    await createLog({ level: "info", message: "Copying static modules..." });
-    logger.info("Copying static modules...");
+    await context.logger.info("Copying static modules...");
     const serverModules = await createServer();
 
     const { adminUISettings } = settings;
@@ -52,10 +50,9 @@ export async function createDataService(
       path: normalize(module.path),
     }));
   } catch (error) {
-    await createLog({
-      level: "error",
-      message: "Failed to run createDataService",
-      data: JSON.stringify(dSGResourceData),
+    await context.logger.error("Failed to run createDataService", {
+      ...error,
+      data: dSGResourceData,
     });
     throw error;
   }

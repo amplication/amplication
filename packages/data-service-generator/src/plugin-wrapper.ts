@@ -5,7 +5,6 @@ import {
   PluginAfterEvent,
   PluginBeforeEvent,
 } from "@amplication/code-gen-types";
-import { createLog } from "./create-log";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
@@ -83,24 +82,14 @@ const pluginWrapper: PluginWrapper = async (
     context.modules.push(finalModules);
     return finalModules;
   } catch (error) {
-    const friendlyErrorMessage = `Failed to execute plugin event ${event}`;
+    const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;
 
-    context.logger.error(friendlyErrorMessage, {
+    await context.logger.error(friendlyErrorMessage, {
       error: { message: error.message, stack: error.stack },
     });
-    await createLog({
-      level: "error",
-      message: friendlyErrorMessage,
-    });
-    if (error.message) {
-      await createLog({
-        level: "error",
-        message: `${error.message}`,
-      });
-    }
 
     if (context.utils.abort) {
-      context.logger.error(context.utils.abortMessage);
+      await context.logger.error(context.utils.abortMessage);
       throw Error();
     }
 

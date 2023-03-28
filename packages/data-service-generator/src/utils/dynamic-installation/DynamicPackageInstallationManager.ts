@@ -1,8 +1,12 @@
+import { BuildLogger } from "@amplication/code-gen-types";
 import { valid } from "semver";
 import type { Promisable } from "type-fest";
 import { Tarball } from "./Tarball";
 export class DynamicPackageInstallationManager {
-  constructor(private pluginInstallationPath: string) {}
+  constructor(
+    private pluginInstallationPath: string,
+    private readonly logger: BuildLogger
+  ) {}
 
   public async install(
     plugin: PackageInstallation,
@@ -21,7 +25,8 @@ export class DynamicPackageInstallationManager {
 
       const tarball = new Tarball(
         { name, version: validVersion },
-        this.pluginInstallationPath
+        this.pluginInstallationPath,
+        this.logger
       );
       await tarball.download();
       onAfterInstall && (await onAfterInstall(plugin));
