@@ -9,7 +9,7 @@ export class DynamicPackageInstallationManager {
     hooks: {
       onBeforeInstall?: HookFunction;
       onAfterInstall?: HookFunction;
-      onError?: HookFunction;
+      onError?: HookErrorFunction;
     }
   ): Promise<void> {
     const { onAfterInstall, onBeforeInstall, onError } = hooks;
@@ -40,3 +40,7 @@ export interface PackageInstallation {
 }
 
 export type HookFunction = (plugin: PackageInstallation) => Promisable<void>;
+export type HookErrorFunction = (
+  plugin: PackageInstallation,
+  error?: Error
+) => Promisable<void>;
