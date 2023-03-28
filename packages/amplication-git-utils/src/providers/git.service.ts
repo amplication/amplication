@@ -34,6 +34,7 @@ import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-requ
 import { GitClient } from "./git-client";
 import { GitFactory } from "./git-factory";
 import { ILogger } from "@amplication/util/logging";
+import { LogResult } from "simple-git";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -325,11 +326,14 @@ export class GitClientService {
       repositoryName,
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
-    const amplicationCommits = await this.provider.getCurrentUserCommitList({
-      owner,
-      repositoryName,
-      branchName: defaultBranch,
+    const amplicationCommits = await gitClient.git.log({
+      "--author": `${this.getAmplicationGitUser().name} <${
+        this.getAmplicationGitUser().email
+      }>`,
     });
+
+    this.logger.debug("---- amplicationCommits -----", { amplicationCommits });
+
     await this.cherryPickCommits(
       amplicationCommits,
       gitClient,
@@ -340,7 +344,7 @@ export class GitClientService {
   }
 
   private async cherryPickCommits(
-    commits: Commit[],
+    commits: LogResult,
     gitClient: GitClient,
     branchName: string,
     firstCommitOnDefaultBranch: Commit
@@ -348,12 +352,12 @@ export class GitClientService {
     await gitClient.resetState();
     await gitClient.checkout(branchName);
 
-    for (let index = commits.length - 1; index >= 0; index--) {
-      const commit = commits[index];
-      if (firstCommitOnDefaultBranch.sha === commit.sha) {
+    for (let index = commits.total - 1; index >= 0; index--) {
+      const commit = commits.all[index];
+      if (firstCommitOnDefaultBranch.sha === commit.hash) {
         continue;
       }
-      await gitClient.cherryPick(commit.sha);
+      await gitClient.cherryPick(commit.hash);
     }
 
     await gitClient.git.push();
