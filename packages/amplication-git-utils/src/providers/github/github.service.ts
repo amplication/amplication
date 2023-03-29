@@ -9,12 +9,10 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { PaginationLimit } from "../../errors/PaginationLimit";
 import { GitProvider } from "../../git-provider.interface";
 import {
   Branch,
   CloneUrlArgs,
-  Commit,
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestCommentArgs,
