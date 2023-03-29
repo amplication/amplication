@@ -129,26 +129,26 @@ export function prepareServiceObject(
           id: projectId,
         },
       },
+      serviceSettings: {
+        adminUISettings: {
+          generateAdminUI: generateAdminUI,
+          adminUIPath: adminDir,
+        },
+        serverSettings: {
+          generateGraphQL: generateGraphQL,
+          generateRestApi: generateRestApi,
+          serverPath: serverDir,
+        },
+        authProvider: EnumAuthProviderType.Jwt,
+      },
+      gitRepository: {
+        name: gitRepository.name,
+        gitOrganizationId: gitRepository.gitOrganizationId,
+        resourceId: "",
+      },
     },
     commitMessage: "",
-    serviceSettings: {
-      adminUISettings: {
-        generateAdminUI: generateAdminUI,
-        adminUIPath: adminDir,
-      },
-      serverSettings: {
-        generateGraphQL: generateGraphQL,
-        generateRestApi: generateRestApi,
-        serverPath: serverDir,
-      },
-      authProvider: EnumAuthProviderType.Jwt,
-    },
     entities: templateSettings.entities,
-    gitRepository: {
-      name: gitRepository.name,
-      gitOrganizationId: gitRepository.gitOrganizationId,
-      resourceId: "",
-    },
     plugins: plugins,
     wizardType,
     repoType,

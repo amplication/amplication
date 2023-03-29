@@ -1747,9 +1747,11 @@ export type ResourceEntitiesArgs = {
 
 export type ResourceCreateInput = {
   description: Scalars['String'];
+  gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String'];
   project: WhereParentIdInput;
   resourceType: EnumResourceType;
+  serviceSettings?: InputMaybe<ServiceSettingsUpdateInput>;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {
@@ -1768,11 +1770,9 @@ export type ResourceCreateWithEntitiesInput = {
   commitMessage: Scalars['String'];
   dbType: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
-  gitRepository: ConnectGitRepositoryInput;
   plugins?: InputMaybe<PluginInstallationsCreateInput>;
   repoType: Scalars['String'];
   resource: ResourceCreateInput;
-  serviceSettings: ServiceSettingsUpdateInput;
   wizardType: Scalars['String'];
 };
 

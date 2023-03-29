@@ -101,6 +101,8 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   name: "My sample service",
   resourceType: EnumResourceType.Service,
   project: { connect: { id: "exampleProjectId" } },
+  serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+  gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -596,6 +598,8 @@ describe("ResourceService", () => {
               id: EXAMPLE_PROJECT_ID,
             },
           },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
         },
       },
       user: EXAMPLE_USER,
@@ -603,9 +607,7 @@ describe("ResourceService", () => {
     expect(
       await service.createService(
         createResourceArgs.args,
-        createResourceArgs.user,
-        EXAMPLE_SERVICE_SETTINGS,
-        EXAMPLE_GIT_REPOSITORY_INPUT
+        createResourceArgs.user
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -637,24 +639,10 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          gitRepository: {
-            name: "gitRepositoryName",
-            resourceId: "",
-            gitOrganizationId: "12345678",
-          },
           wizardType: "onboarding",
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
-          serviceSettings: {
-            adminUISettings: { generateAdminUI: true, adminUIPath: "" },
-            serverSettings: {
-              generateGraphQL: true,
-              generateRestApi: true,
-              serverPath: "",
-            },
-            authProvider: EnumAuthProviderType.Jwt,
-          },
           // plugins: {},
         },
 
@@ -702,24 +690,10 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          gitRepository: {
-            name: "gitRepositoryName",
-            resourceId: "",
-            gitOrganizationId: "12345678",
-          },
           wizardType: "onboarding",
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
-          serviceSettings: {
-            adminUISettings: { generateAdminUI: true, adminUIPath: "" },
-            serverSettings: {
-              generateGraphQL: true,
-              generateRestApi: true,
-              serverPath: "",
-            },
-            authProvider: EnumAuthProviderType.Jwt,
-          },
         },
 
         EXAMPLE_USER

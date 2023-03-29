@@ -48,7 +48,6 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
-import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import {
   EnumEventType,
@@ -225,9 +224,7 @@ export class ResourceService {
    */
   async createService(
     args: CreateOneResourceArgs,
-    user: User,
-    serviceSettings: ServiceSettingsUpdateInput = null,
-    gitRepository: ConnectGitRepositoryInput = null
+    user: User
   ): Promise<Resource> {
     const resource = await this.createResource(
       {
@@ -236,7 +233,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
-      gitRepository
+      args.data.gitRepository
     );
 
     await this.prisma.resourceRole.create({
@@ -250,7 +247,7 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      serviceSettings
+      args.data.serviceSettings
     );
 
     const project = await this.projectService.findUnique({
@@ -285,9 +282,7 @@ export class ResourceService {
       {
         data: data.resource,
       },
-      user,
-      data.serviceSettings,
-      data.gitRepository
+      user
     );
 
     const newEntities: {
@@ -406,6 +401,8 @@ export class ResourceService {
       },
     });
 
+    const { gitRepository, serviceSettings } = data.resource;
+
     await this.analytics.track({
       userId: user.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -414,11 +411,11 @@ export class ResourceService {
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
-        gitOrganizationName: data.gitRepository.name,
-        repoName: data.gitRepository.name,
-        graphQlApi: String(data.serviceSettings.serverSettings.generateGraphQL),
-        restApi: String(data.serviceSettings.serverSettings.generateRestApi),
-        adminUI: String(data.serviceSettings.adminUISettings.generateAdminUI),
+        gitOrganizationName: gitRepository.name,
+        repoName: gitRepository.name,
+        graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
+        restApi: String(serviceSettings.serverSettings.generateRestApi),
+        adminUI: String(serviceSettings.adminUISettings.generateAdminUI),
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,

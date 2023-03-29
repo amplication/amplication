@@ -101,13 +101,8 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const createStarterResource = useCallback(
-    (
-      data: models.ResourceCreateWithEntitiesInput,
-      databaseType: "postgres" | "mysql" | "mongo",
-      authType: string,
-      eventName: string
-    ) => {
-      setNewService(data, databaseType, authType, eventName);
+    (data: models.ResourceCreateWithEntitiesInput, eventName: string) => {
+      setNewService(data, eventName);
     },
     [setNewService]
   );
@@ -240,12 +235,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           // gitOrganizationName
         );
 
-        createStarterResource(
-          resource,
-          databaseType,
-          authType,
-          templateSettings.eventName
-        );
+        createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");
     },

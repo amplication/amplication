@@ -1197,35 +1197,8 @@ input ResourceCreateInput {
   description: String!
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
-}
-
-type ResourceCreateWithEntitiesResult {
-  resource: Resource!
-  build: Build!
-}
-
-input ResourceCreateWithEntitiesInput {
-  resource: ResourceCreateInput!
-  entities: [ResourceCreateWithEntitiesEntityInput!]!
-  serviceSettings: ServiceSettingsUpdateInput!
-  gitRepository: ConnectGitRepositoryInput!
-  commitMessage: String!
-  plugins: PluginInstallationsCreateInput
-  wizardType: String!
-  authType: String!
-  dbType: String!
-  repoType: String!
-}
-
-input ResourceCreateWithEntitiesEntityInput {
-  name: String!
-  fields: [ResourceCreateWithEntitiesFieldInput!]!
-  relationsToEntityIndex: [Int!]
-}
-
-input ResourceCreateWithEntitiesFieldInput {
-  name: String!
-  dataType: EnumDataType
+  serviceSettings: ServiceSettingsUpdateInput
+  gitRepository: ConnectGitRepositoryInput
 }
 
 input ServiceSettingsUpdateInput {
@@ -1251,6 +1224,33 @@ input ConnectGitRepositoryInput {
   name: String!
   resourceId: String!
   gitOrganizationId: String!
+}
+
+type ResourceCreateWithEntitiesResult {
+  resource: Resource!
+  build: Build!
+}
+
+input ResourceCreateWithEntitiesInput {
+  resource: ResourceCreateInput!
+  entities: [ResourceCreateWithEntitiesEntityInput!]!
+  commitMessage: String!
+  plugins: PluginInstallationsCreateInput
+  wizardType: String!
+  authType: String!
+  dbType: String!
+  repoType: String!
+}
+
+input ResourceCreateWithEntitiesEntityInput {
+  name: String!
+  fields: [ResourceCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
+}
+
+input ResourceCreateWithEntitiesFieldInput {
+  name: String!
+  dataType: EnumDataType
 }
 
 input PluginInstallationsCreateInput {

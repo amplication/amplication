@@ -112,8 +112,6 @@ const useResources = (
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    databaseType: "postgres" | "mysql" | "mongo",
-    authType: string,
     eventName: AnalyticsEventNames
   ) => {
     trackEvent({
