@@ -10,7 +10,7 @@ import { Events } from "./plugin-events";
 
 export interface BuildLogger {
   /**
-   *
+   * Log an info message
    * @param message  Log message
    * @param params Additional application internal log params. Not diplayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
@@ -22,7 +22,7 @@ export interface BuildLogger {
     userFriendlyMessage?: string
   ) => Promise<void>;
   /**
-   *
+   * Log a warning message
    * @param message  Log message
    * @param params Additional application internal log params. Not diplayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
@@ -34,7 +34,7 @@ export interface BuildLogger {
     userFriendlyMessage?: string
   ) => Promise<void>;
   /**
-   *
+   * Log an error message
    * @param message  Log message
    * @param params Additional application internal log params. Not diplayed in the build log.
    * @param userFriendlyMessage  User facing log message. It will be displayed in the build log. Default: @param message
@@ -82,13 +82,13 @@ export interface ContextUtil {
 }
 
 export interface DsgContext extends DSGResourceData {
-  /*
+  /**
    * List of generated files.
    */
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
-  /*
+  /**
    * Logger for user facing logs. Logs will be visible in the build log.
    */
   logger: BuildLogger;
