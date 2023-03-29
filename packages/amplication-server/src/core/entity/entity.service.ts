@@ -121,9 +121,9 @@ export type EntityPendingChange = {
 /**
  * Expect format for entity field name, matches the format of JavaScript variable name
  */
-const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9]+$/;
+const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
-  "Name must only contain letters, numbers and must not start with a number";
+  "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
 
 export const NUMBER_WITH_INVALID_MINIMUM_VALUE =
   "Minimum value can not be greater than or equal to, the Maximum value";
