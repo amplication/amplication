@@ -122,7 +122,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         onCompleted() {
           setCreateNewRepoOpen(false);
         },
-      }).catch((error) => {});
+      }).catch(console.error);
       trackEvent({
         eventName: AnalyticsEventNames.GitHubRepositoryCreate,
       });
