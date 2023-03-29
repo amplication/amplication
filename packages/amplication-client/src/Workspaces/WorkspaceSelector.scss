@@ -19,6 +19,18 @@
   &__plan {
     font-size: 10px;
     color: var(--black60);
+
+    &.free {
+      color: var(--secondary);
+    }
+
+    &.pro {
+      color: var(--secondary-light-blue);
+    }
+
+    &.enterprise {
+      color: var(--positive-default);
+    }
   }
 
   &__details {

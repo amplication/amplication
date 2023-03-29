@@ -5,7 +5,6 @@ import {
   serverDirectories,
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
-import winston from "winston";
 import { readPluginStaticModules } from "./utils/read-static-modules";
 import {
   USER_ENTITY_NAME,
@@ -13,6 +12,7 @@ import {
   USER_PASSWORD_FIELD_NAME,
   USER_ROLES_FIELD_NAME,
 } from "./server/user-entity/user-entity";
+import { ILogger } from "@amplication/util/logging";
 
 // const contextUtil = {
 //   skipDefaultBehavior: false,
@@ -33,7 +33,7 @@ class DsgContext implements types.DsgContext {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
-  public logger: winston.Logger = winston.createLogger();
+  public logger: ILogger;
   public utils: ContextUtil = {
     skipDefaultBehavior: false,
     abortGeneration: (msg: string) => {

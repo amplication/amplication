@@ -12,7 +12,23 @@ import "./WorkspaceSelector.scss";
 import { AppContext } from "../context/appContext";
 import { EnumSubscriptionPlan } from "../models";
 
-export const WORKSPACE_COLOR = "#A787FF";
+export const FREE_WORKSPACE_COLOR = "#A787FF";
+export const PRO_WORKSPACE_COLOR = "#20a4f3";
+export const ENTERPRISE_WORKSPACE_COLOR = "#31c587";
+
+export const getWorkspaceColor = (plan: EnumSubscriptionPlan) => {
+  switch (plan) {
+    case EnumSubscriptionPlan.Free:
+      return FREE_WORKSPACE_COLOR;
+    case EnumSubscriptionPlan.Pro:
+      return PRO_WORKSPACE_COLOR;
+    case EnumSubscriptionPlan.Enterprise:
+      return ENTERPRISE_WORKSPACE_COLOR;
+    default:
+      return FREE_WORKSPACE_COLOR;
+  }
+};
+
 const CLASS_NAME = "workspaces-selector";
 
 function WorkspaceSelector() {
@@ -55,13 +71,20 @@ function WorkspaceSelector() {
           <>
             <CircleBadge
               name={currentWorkspace.name || ""}
-              color={WORKSPACE_COLOR}
+              color={getWorkspaceColor(
+                currentWorkspace.subscription?.subscriptionPlan
+              )}
             />
             <div className={`${CLASS_NAME}__current__details`}>
               <span className={`${CLASS_NAME}__current__name`}>
                 {currentWorkspace.name}
               </span>
-              <span className={`${CLASS_NAME}__current__plan`}>
+              <span
+                className={classNames(
+                  `${CLASS_NAME}__current__plan`,
+                  currentWorkspace.subscription?.subscriptionPlan?.toLocaleLowerCase()
+                )}
+              >
                 {currentWorkspace.subscription?.subscriptionPlan ||
                   EnumSubscriptionPlan.Free}{" "}
                 Plan
