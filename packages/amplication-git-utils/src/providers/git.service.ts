@@ -332,8 +332,6 @@ export class GitClientService {
       }>`,
     });
 
-    this.logger.debug("---- amplicationCommits -----", { amplicationCommits });
-
     await this.cherryPickCommits(
       amplicationCommits,
       gitClient,
