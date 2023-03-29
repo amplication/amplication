@@ -25,6 +25,15 @@ export class KafkaProducerService {
     schemaIds?: SchemaIds
   ): Promise<void> {
     const kafkaMessage = await this.serializer.serialize(message, schemaIds);
-    this.kafkaClient.emit(topic, kafkaMessage);
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, kafkaMessage).subscribe({
+        error: (err: Error) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
   }
 }
