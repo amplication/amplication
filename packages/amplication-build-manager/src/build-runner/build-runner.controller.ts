@@ -76,7 +76,7 @@ export class BuildRunnerController {
     let args: CodeGenerationRequest;
     try {
       args = plainToInstance(CodeGenerationRequest, message);
-      this.logger.info("Code Generation Request", args);
+      this.logger.debug("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,
         args.dsgResourceData
