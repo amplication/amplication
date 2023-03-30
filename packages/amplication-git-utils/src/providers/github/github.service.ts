@@ -87,6 +87,7 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
+
     if (this.installationId) {
       this.octokit = await this.getInstallationOctokit(this.installationId);
     }
@@ -211,10 +212,12 @@ export class GithubService implements GitProvider {
   async getCurrentUser(): Promise<GitUser> {
     const data: { viewer: { id: string; login: string } } = await this.octokit
       .graphql(`{
-      viewer{
-        id
-        login
-      }
+  viewer {
+    id
+    login
+    name
+    email
+  }
     }`);
     const {
       viewer: { id, login },
