@@ -401,7 +401,7 @@ export class BuildService {
     });
 
     if (!resource) {
-      this.logger.info("Resource was not found during pushing code to git");
+      this.logger.warn("Resource was not found during pushing code to git");
       return;
     }
 
