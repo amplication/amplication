@@ -18,6 +18,7 @@ import { BuildLogger } from "./build-logger";
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;
   public entities: types.Entity[] = [];
+  public buildId: string;
   public roles: types.Role[] = [];
   public modules: types.Module[] = [];
   // eslint-disable-next-line @typescript-eslint/naming-convention

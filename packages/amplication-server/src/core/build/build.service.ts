@@ -610,6 +610,7 @@ export class BuildService {
       serviceTopics: await this.serviceTopicsService.findMany({
         where: { resource: { id: resourceId } },
       }),
+      buildId: buildId,
       resourceInfo: {
         name: resource.name,
         description: resource.description,
