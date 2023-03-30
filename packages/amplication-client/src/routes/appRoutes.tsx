@@ -36,7 +36,7 @@ export const Routes: RouteDef[] = [
             moduleName: "CodeViewPage",
             moduleClass: "code-view-page",
             routeTrackType: "",
-            exactPath: false,
+            exactPath: true,
             isAnalytics: true,
           },
           {
@@ -60,6 +60,17 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
+            Component: lazy(
+              () => import("../Resource/create-resource/CreateServiceWelcome")
+            ),
+            moduleName: "CreateServiceWelcome",
+            moduleClass: "create-service-welcome",
+            routeTrackType: "",
+            exactPath: true,
+            isAnalytics: false,
+          },
+          {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
             Component: lazy(
               () => import("../Resource/create-resource/CreateServiceWizard")
@@ -67,8 +78,9 @@ export const Routes: RouteDef[] = [
             moduleName: "CreateServiceWizard",
             moduleClass: "create-service-wizard",
             routeTrackType: "",
-            exactPath: true,
+            exactPath: false,
             isAnalytics: true,
+            routes: [],
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",

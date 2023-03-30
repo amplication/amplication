@@ -1,7 +1,7 @@
 import { Field, InputType, Int } from "@nestjs/graphql";
 import { ResourceCreateInput } from "./ResourceCreateInput";
 import { EnumDataType } from "../../../enums/EnumDataType";
-import { ResourceGenSettingsCreateInput } from "./ResourceGenSettingsCreateInput";
+import { PluginInstallationsCreateInput } from "../../pluginInstallation/dto/PluginInstallationsCreateInput";
 
 @InputType({
   isAbstract: true,
@@ -52,13 +52,38 @@ export class ResourceCreateWithEntitiesInput {
   })
   entities!: ResourceCreateWithEntitiesEntityInput[];
 
-  @Field(() => ResourceGenSettingsCreateInput, {
-    nullable: false,
-  })
-  generationSettings!: ResourceGenSettingsCreateInput;
-
   @Field(() => String, {
     nullable: false,
   })
   commitMessage!: string;
+
+  @Field(() => PluginInstallationsCreateInput, {
+    nullable: true,
+  })
+  plugins?: PluginInstallationsCreateInput;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  wizardType!: "create resource" | "onboarding";
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  authType!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  dbType!: string;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  repoType!: string;
+
+  // @Field(() => String, {
+  //   nullable: false,
+  // })
+  // gitOrganizationName!: string;
 }

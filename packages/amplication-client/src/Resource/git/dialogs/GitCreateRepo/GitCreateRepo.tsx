@@ -1,4 +1,3 @@
-import { Resource } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircularProgress,
@@ -6,67 +5,40 @@ import {
   TextField,
   ToggleField,
 } from "@amplication/ui/design-system";
-import { gql, useMutation } from "@apollo/client";
+import { ApolloError } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
-import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 
 type Props = {
   gitProvider: EnumGitProvider;
-  resource: Resource;
-  gitOrganizationId: string;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  onCompleted: Function;
   gitOrganizationName: string;
+  repoCreated: {
+    isRepoCreateLoading: boolean;
+    RepoCreatedError: ApolloError;
+  };
+  onCreateGitRepository: (data: CreateGitRepositoryInput) => void;
 };
 
 const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
-  resource,
-  gitOrganizationId,
   gitProvider,
-  onCompleted,
   gitOrganizationName,
+  repoCreated,
+  onCreateGitRepository,
 }: Props) {
   const initialValues: Partial<CreateGitRepositoryInput> = {
     name: "",
     public: true,
   };
-  const { trackEvent } = useTracking();
 
-  const [triggerCreation, { loading, error }] = useMutation(
-    CREATE_GIT_REPOSITORY_IN_ORGANIZATION,
-    {
-      onCompleted: (data) => {
-        onCompleted();
-
-        trackEvent({
-          eventName: AnalyticsEventNames.GitHubRepositoryCreate,
-        });
-      },
-    }
-  );
-
-  const handleCreation = useCallback(
-    (data: CreateGitRepositoryInput) => {
-      triggerCreation({
-        variables: {
-          name: data.name,
-          gitOrganizationId,
-          gitProvider,
-          public: data.public,
-          resourceId: resource.id,
-        },
-      }).catch((error) => {});
-    },
-    [resource.id, gitOrganizationId, gitProvider, triggerCreation]
-  );
+  const handleCreation = useCallback((data: CreateGitRepositoryInput) => {
+    onCreateGitRepository(data);
+  }, []);
 
   return (
     <Formik
@@ -112,9 +84,9 @@ export default function GitCreateRepo({
           <Button
             type="submit"
             className={`${CLASS_NAME}__button`}
-            disabled={loading}
+            disabled={repoCreated.isRepoCreateLoading}
           >
-            {loading ? (
+            {repoCreated.isRepoCreateLoading ? (
               <CircularProgress
                 className={`${CLASS_NAME}__progress`}
                 centerToParent
@@ -124,7 +96,9 @@ export default function GitCreateRepo({
             )}
           </Button>
           <Label
-            text={formError.name || formatError(error) || ""}
+            text={
+              formError.name || formatError(repoCreated.RepoCreatedError) || ""
+            }
             type="error"
           />
         </Form>
@@ -132,29 +106,3 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
-
-const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
-  mutation createGitRepository(
-    $gitProvider: EnumGitProvider!
-    $gitOrganizationId: String!
-    $resourceId: String!
-    $name: String!
-    $public: Boolean!
-  ) {
-    createGitRepository(
-      data: {
-        name: $name
-        public: $public
-        gitOrganizationId: $gitOrganizationId
-        resourceId: $resourceId
-        gitProvider: $gitProvider
-        gitOrganizationType: Organization
-      }
-    ) {
-      id
-      gitRepository {
-        id
-      }
-    }
-  }
-`;

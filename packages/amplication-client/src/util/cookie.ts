@@ -14,6 +14,14 @@ export const getCookie = (cname: string) => {
   return "";
 };
 
+export const setCookie = (cname: string, value: string, days = 30) => {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = "; expires=" + date.toUTCString();
+
+  document.cookie = cname + "=" + (value || "") + expires + "; path=/";
+};
+
 export const expireCookie = (cname: string, domain?: string): void => {
   const cookieDomain = domain ? `domain=${domain};` : "";
   document.cookie = `${cname}=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;${cookieDomain}`;
