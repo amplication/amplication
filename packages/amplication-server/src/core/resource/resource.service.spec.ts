@@ -643,7 +643,20 @@ describe("ResourceService", () => {
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
-          // plugins: {},
+          plugins: {
+            plugins: [
+              {
+                id: "clb3p3uxx009bjn01zfbim7p1",
+                displayName: "jwtAuth",
+                npm: "@amplication/plugin-auth-jwt",
+                enabled: true,
+                version: "latest",
+                pluginId: "auth-jwt",
+                settings: {},
+                resource: { connect: { id: "" } },
+              },
+            ],
+          },
         },
 
         EXAMPLE_USER
