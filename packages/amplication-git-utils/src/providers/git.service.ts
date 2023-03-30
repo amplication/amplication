@@ -43,12 +43,10 @@ export class GitClientService {
   private getAmplicationGitUser(): {
     name: string;
     email: string;
-    fullName: string;
   } {
     return {
       name: "amplication",
       email: "bot@amplication.com",
-      fullName: "amplication <bot@amplication.com>",
     };
   }
 
@@ -263,6 +261,55 @@ export class GitClientService {
     throw new InvalidPullRequestMode();
   }
 
+  private async gitLogByAuthor(
+    gitClient: GitClient,
+    limitCommits: boolean,
+    maxCount = "1"
+  ): Promise<{
+    amplicationGitUser: LogResult;
+    amplicationBot: LogResult;
+  }> {
+    const amplicationBot = await this.provider.getCurrentGitUser();
+    const amplicationBotLoginRegex = amplicationBot.login.replace(
+      /([[\]])/g,
+      "\\$1"
+    );
+
+    if (limitCommits) {
+      const lastAmplicationBotCommitOnBranch = await gitClient.git.log({
+        "--author": amplicationBotLoginRegex,
+        "--max-count": maxCount,
+      });
+
+      const lastAmplicationGitUserCommitOnBranch = await gitClient.git.log({
+        "--author": `${this.getAmplicationGitUser().name} <${
+          this.getAmplicationGitUser().email
+        }>`,
+        "--max-count": maxCount,
+      });
+
+      return {
+        amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
+        amplicationBot: lastAmplicationBotCommitOnBranch,
+      };
+    }
+
+    const botCommitListOnBranch = await gitClient.git.log({
+      "--author": amplicationBotLoginRegex,
+    });
+
+    const amplicationGitUserCommitOnBranch = await gitClient.git.log({
+      "--author": `${this.getAmplicationGitUser().name} <${
+        this.getAmplicationGitUser().email
+      }>`,
+    });
+
+    return {
+      amplicationGitUser: amplicationGitUserCommitOnBranch,
+      amplicationBot: botCommitListOnBranch,
+    };
+  }
+
   private async preCommitProcess({
     gitClient,
     branchName,
@@ -270,29 +317,15 @@ export class GitClientService {
     this.logger.info("Pre commit process");
     await gitClient.git.checkout(branchName);
 
-    const currentGitUser = await this.provider.getCurrentGitUser();
-
-    const lastGitUserCommitOnBranch = await gitClient.git.log({
-      "--author": `"${currentGitUser.login}"`,
-    });
-
-    const lastAmplicationCommitOnBranch = await gitClient.git.log({
-      "--author": `"${this.getAmplicationGitUser().fullName}"`,
-      "--max-count": "1",
-    });
-
-    this.logger.debug("lastGitUserCommitOnBranch", {
-      lastGitUserCommitOnBranch,
-    });
-    this.logger.debug("lastAmplicationCommitOnBranch", {
-      lastAmplicationCommitOnBranch,
-    });
-
+    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
+      gitClient,
+      true
+    );
     if (
-      !lastGitUserCommitOnBranch ||
-      !lastGitUserCommitOnBranch.latest ||
-      !lastAmplicationCommitOnBranch ||
-      !lastAmplicationCommitOnBranch.latest
+      !amplicationGitUser ||
+      !amplicationGitUser.latest ||
+      !amplicationBot ||
+      !amplicationBot.latest
     ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
@@ -300,9 +333,7 @@ export class GitClientService {
       return { diff: null };
     }
 
-    const { hash } =
-      lastAmplicationCommitOnBranch.latest || lastGitUserCommitOnBranch.latest;
-    this.logger.debug("hash", { hash });
+    const { hash } = amplicationGitUser.latest || amplicationBot.latest;
     const diff = await gitClient.git.diff([hash]);
     if (diff.length === 0) {
       this.logger.info("Diff returned empty");
@@ -350,18 +381,13 @@ export class GitClientService {
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
-    const currentGitUser = await this.provider.getCurrentGitUser();
-
-    const amplicationBotCommits = await gitClient.git.log({
-      "--author": `"${currentGitUser.login}"`,
-    });
-
-    const amplicationCommits = await gitClient.git.log({
-      "--author": `"${this.getAmplicationGitUser().fullName}"`,
-    });
+    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
+      gitClient,
+      false
+    );
 
     await this.cherryPickCommits(
-      { ...amplicationCommits, ...amplicationBotCommits },
+      { ...amplicationBot, ...amplicationGitUser },
       gitClient,
       branchName,
       firstCommitOnDefaultBranch
