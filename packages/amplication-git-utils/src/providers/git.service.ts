@@ -192,8 +192,6 @@ export class GitClientService {
       const { diff } = await this.preCommitProcess({
         branchName,
         gitClient,
-        owner,
-        repositoryName,
       });
 
       await this.provider.createCommit({
@@ -310,7 +308,7 @@ export class GitClientService {
     };
   }
 
-  private async preCommitProcess({
+  async preCommitProcess({
     gitClient,
     branchName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
@@ -322,10 +320,8 @@ export class GitClientService {
       true
     );
     if (
-      !amplicationGitUser ||
-      !amplicationGitUser.latest ||
-      !amplicationBot ||
-      !amplicationBot.latest
+      (!amplicationGitUser || !amplicationGitUser.latest) &&
+      (!amplicationBot || !amplicationBot.latest)
     ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
@@ -333,9 +329,13 @@ export class GitClientService {
       return { diff: null };
     }
 
-    const { hash } = amplicationGitUser.latest || amplicationBot.latest;
+    const hash = amplicationGitUser.latest?.hash || amplicationBot.latest?.hash;
+    if (!hash) {
+      this.logger.info("Didn't find a commit hash");
+      return { diff: null };
+    }
     const diff = await gitClient.git.diff([hash]);
-    if (diff.length === 0) {
+    if (!diff) {
       this.logger.info("Diff returned empty");
       return { diff: null };
     }

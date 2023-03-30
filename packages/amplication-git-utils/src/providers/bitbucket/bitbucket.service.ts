@@ -467,7 +467,12 @@ export class BitBucketService implements GitProvider {
     return authData.accessToken;
   }
 
-  getCurrentGitUser(): Promise<GitUser> {
-    throw NotImplementedError;
+  async getCurrentGitUser(): Promise<GitUser> {
+    const currentGitUser = await this.getCurrentOAuthUser(this.accessToken);
+    return {
+      id: currentGitUser.uuid,
+      // it should be safe to use the username as the author for bitbucket is the "{currentOAuthUser.display_name} <{currentOAuthUser.email}>"
+      login: currentGitUser.username,
+    };
   }
 }
