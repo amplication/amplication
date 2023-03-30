@@ -27,6 +27,7 @@ import {
   GitProviderArgs,
   PaginatedGitGroup,
   BitBucketConfiguration,
+  GitUser,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -464,5 +465,9 @@ export class BitBucketService implements GitProvider {
   async getToken(): Promise<string> {
     const authData = await this.refreshAccessToken(this.accessToken);
     return authData.accessToken;
+  }
+
+  getCurrentGitUser(): Promise<GitUser> {
+    throw NotImplementedError;
   }
 }

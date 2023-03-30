@@ -94,21 +94,16 @@ export class GithubService implements GitProvider {
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
-  async getCurrentUser(): Promise<GitUser> {
-    const data: { viewer: { id: string; login: string } } = await this.octokit
-      .graphql(`{
+  async getCurrentGitUser(): Promise<GitUser> {
+    const data: {
+      viewer: { id: string; login: string };
+    } = await this.octokit.graphql(`{
       viewer{
         id
         login
       }
     }`);
-    const {
-      viewer: { id, login },
-    } = data;
-    return {
-      login,
-      id,
-    };
+    return data.viewer;
   }
 
   private getFormattedPrivateKey(privateKey: string): string {

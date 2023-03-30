@@ -265,6 +265,13 @@ export class GitClientService {
     this.logger.info("Pre commit process");
     await gitClient.git.checkout(branchName);
 
+    const currentGitUser = await this.provider.getCurrentGitUser();
+
+    const lastGitUserCommitOnBranch = await gitClient.git.log({
+      "--author": `${currentGitUser.login}`,
+      "--max-count": "1",
+    });
+
     const lastUserCommitOnBranch = await gitClient.git.log({
       "--author": `${this.getAmplicationGitUser().name} <${
         this.getAmplicationGitUser().email
@@ -272,7 +279,12 @@ export class GitClientService {
       "--max-count": "1",
     });
 
-    if (!lastUserCommitOnBranch || !lastUserCommitOnBranch.latest) {
+    if (
+      !lastGitUserCommitOnBranch ||
+      !lastUserCommitOnBranch.latest ||
+      !lastUserCommitOnBranch ||
+      !lastUserCommitOnBranch.latest
+    ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
       );
