@@ -25,15 +25,17 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
-jest.mock("./create-log", () => ({
-  createLog: jest.fn(),
-}));
+jest.mock("./build-logger");
 
 describe("createDataService", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("creates app as expected", async () => {
     const modules = await createDataService(
       {
         entities,
+        buildId: "example_build_id",
         roles,
         resourceInfo: newAppInfo,
         resourceType: EnumResourceType.Service,
