@@ -1,9 +1,9 @@
-import { KafkaProducerModule } from "@amplication/util/nestjs/kafka";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { Module } from "@nestjs/common";
 import { BuildLoggerController } from "./build-logger.controller";
 
 @Module({
-  imports: [KafkaProducerModule],
+  imports: [KafkaModule],
   controllers: [BuildLoggerController],
   providers: [],
 })

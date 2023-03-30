@@ -13,10 +13,10 @@ To produce messages with serialised key and value, import the `KafkaProducerServ
 // ...
 import { Module } from "@nestjs/common";
 import { BuildLoggerController } from "./build-logger.controller";
-import { KafkaProducerModule } from "@amplication/util/nestjs/kafka";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
 
 @Module({
-  imports: [KafkaProducerModule],
+  imports: [KafkaModule],
   controllers: [BuildLoggerController],
   providers: [],
 })

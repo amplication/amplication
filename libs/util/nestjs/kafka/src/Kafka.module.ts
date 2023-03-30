@@ -7,8 +7,8 @@ import { ClientsModule } from "@nestjs/microservices";
 import {
   createNestjsKafkaConfig,
   KAFKA_CLIENT,
-} from "../createNestjsKafkaConfig";
-import { KafkaProducerService } from "./KafkaProducer.service";
+} from "./createNestjsKafkaConfig";
+import { KafkaProducerService } from "./producer/KafkaProducer.service";
 
 @Module({
   imports: [
@@ -28,4 +28,4 @@ import { KafkaProducerService } from "./KafkaProducer.service";
   ],
   exports: [KAFKA_SERIALIZER, KafkaProducerService],
 })
-export class KafkaProducerModule {}
+export class KafkaModule {}
