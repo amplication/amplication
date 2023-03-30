@@ -35,6 +35,7 @@ describe("createDataService", () => {
     const modules = await createDataService(
       {
         entities,
+        buildId: "example_build_id",
         roles,
         resourceInfo: newAppInfo,
         resourceType: EnumResourceType.Service,

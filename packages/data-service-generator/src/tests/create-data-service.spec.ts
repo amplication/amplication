@@ -19,6 +19,7 @@ describe("createDataService", () => {
       {
         entities,
         roles,
+        buildId: "example_build_id",
         resourceInfo: appInfo,
         resourceType: EnumResourceType.Service,
         pluginInstallations: installedPlugins,

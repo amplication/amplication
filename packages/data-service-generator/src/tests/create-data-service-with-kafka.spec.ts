@@ -27,6 +27,7 @@ describe("createDataService", () => {
       roles: [],
       serviceTopics: [],
       topics: [gitPullTopic],
+      buildId: "example_build_id",
       resourceInfo: {
         id: "messageBrokerId",
         description: "This is the message broker description",
@@ -42,6 +43,7 @@ describe("createDataService", () => {
       entities,
       roles,
       resourceInfo: appInfo,
+      buildId: "example_build_id",
       resourceType: EnumResourceType.Service,
       serviceTopics: [
         {
