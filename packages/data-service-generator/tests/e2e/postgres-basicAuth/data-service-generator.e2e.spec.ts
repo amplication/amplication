@@ -83,6 +83,7 @@ describe("Data Service Generator", () => {
         entities,
         roles,
         resourceInfo,
+        buildId: "example_build_id",
         resourceType: EnumResourceType.Service,
         pluginInstallations: postgresAndBasicAuthPlugins,
       };
