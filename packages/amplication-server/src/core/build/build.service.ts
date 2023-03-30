@@ -396,6 +396,15 @@ export class BuildService {
       build.createdAt
     );
 
+    const resource = await this.resourceService.resource({
+      where: { id: build.resourceId },
+    });
+
+    if (!resource) {
+      this.logger.info("Resource was not found during pushing code to git");
+      return;
+    }
+
     const user = await this.userService.findUser({
       where: { id: build.userId },
     });
@@ -407,10 +416,6 @@ export class BuildService {
       user
     );
     const { resourceInfo } = dSGResourceData;
-
-    const resource = await this.resourceService.findOne({
-      where: { id: build.resourceId },
-    });
 
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
@@ -568,6 +573,8 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    this.logger.info(`getDSGResourceData url ${url}`);
+    this.logger.info(`getDSGResourceData resource ${resource}`);
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
