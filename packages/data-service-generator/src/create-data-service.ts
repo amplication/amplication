@@ -22,7 +22,10 @@ export async function createDataService(
     const startTime = Date.now();
     await prepareContext(dSGResourceData, logger, pluginInstallationPath);
 
-    await context.logger.info("Creating application...");
+    await context.logger.info("Creating application...", {
+      resourceId: dSGResourceData.resourceInfo.id,
+      buildId: dSGResourceData.buildId,
+    });
 
     const { appInfo } = context;
     const { settings } = appInfo;
