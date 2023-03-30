@@ -52,7 +52,7 @@ const GET_FILE_URL = (
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
 
 const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
-  `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
+  `${BITBUCKET_API_URL}/repositories//${workspaceSlug}/${repositorySlug}/src`;
 
 const GET_BRANCH_COMMITS_URL = (
   workspaceSlug: string,
@@ -76,7 +76,7 @@ const CREATE_COMMENT_ON_PULL_REQUEST_URL = (
   repositorySlug: string,
   pullRequestId: number
 ) =>
-  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
