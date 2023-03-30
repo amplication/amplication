@@ -226,10 +226,11 @@ export class ResourceService {
     args: CreateOneResourceArgs,
     user: User
   ): Promise<Resource> {
+    const { serviceSettings, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
-          ...args.data,
+          ...rest,
           resourceType: EnumResourceType.Service,
         },
       },
@@ -247,7 +248,7 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      args.data.serviceSettings
+      serviceSettings
     );
 
     const project = await this.projectService.findUnique({
