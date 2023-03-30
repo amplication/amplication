@@ -273,11 +273,11 @@ export class GitClientService {
     const currentGitUser = await this.provider.getCurrentGitUser();
 
     const lastGitUserCommitOnBranch = await gitClient.git.log({
-      "--author": `${currentGitUser.login}`,
+      "--author": `"${currentGitUser.login}"`,
     });
 
     const lastAmplicationCommitOnBranch = await gitClient.git.log({
-      "--author": `${this.getAmplicationGitUser().fullName}`,
+      "--author": `"${this.getAmplicationGitUser().fullName}"`,
       "--max-count": "1",
     });
 
@@ -349,14 +349,15 @@ export class GitClientService {
       repositoryName,
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
-    const amplicationCommits = await gitClient.git.log({
-      "--author": `${this.getAmplicationGitUser().fullName}`,
-    });
 
     const currentGitUser = await this.provider.getCurrentGitUser();
 
     const amplicationBotCommits = await gitClient.git.log({
-      "--author": `${currentGitUser.login}`,
+      "--author": `"${currentGitUser.login}"`,
+    });
+
+    const amplicationCommits = await gitClient.git.log({
+      "--author": `"${this.getAmplicationGitUser().fullName}"`,
     });
 
     await this.cherryPickCommits(
