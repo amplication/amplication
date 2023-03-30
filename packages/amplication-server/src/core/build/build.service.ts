@@ -573,8 +573,6 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
-    this.logger.info(`getDSGResourceData url ${url}`);
-    this.logger.info(`getDSGResourceData resource ${resource}`);
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
