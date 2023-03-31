@@ -259,55 +259,51 @@ export class GitClientService {
     throw new InvalidPullRequestMode();
   }
 
+  /**
+   * Returns git commits by amplication author
+   * @param gitClient Git client
+   * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
+   */
   private async gitLogByAuthor(
     gitClient: GitClient,
-    limitCommits: boolean,
-    maxCount = "1"
+    maxCount = -1
   ): Promise<{
     amplicationGitUser: LogResult;
-    amplicationBot: LogResult;
+    amplicationBot: LogResult | null;
   }> {
-    const amplicationBot = await this.provider.getCurrentGitUser();
-    const amplicationBotLoginRegex = amplicationBot.login.replace(
-      /([[\]])/g,
-      "\\$1"
-    );
+    const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
-    if (limitCommits) {
-      const lastAmplicationBotCommitOnBranch = await gitClient.git.log({
+    let lastAmplicationBotCommitOnBranch: LogResult | null = null;
+
+    if (amplicationBot) {
+      const amplicationBotLoginRegex = amplicationBot.login.replace(
+        /([[\]])/g,
+        "\\$1"
+      );
+
+      lastAmplicationBotCommitOnBranch = await gitClient.git.log({
         "--author": amplicationBotLoginRegex,
         "--max-count": maxCount,
       });
-
-      const lastAmplicationGitUserCommitOnBranch = await gitClient.git.log({
-        "--author": `${this.getAmplicationGitUser().name} <${
-          this.getAmplicationGitUser().email
-        }>`,
-        "--max-count": maxCount,
-      });
-
-      return {
-        amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
-        amplicationBot: lastAmplicationBotCommitOnBranch,
-      };
     }
 
-    const botCommitListOnBranch = await gitClient.git.log({
-      "--author": amplicationBotLoginRegex,
-    });
-
-    const amplicationGitUserCommitOnBranch = await gitClient.git.log({
+    const lastAmplicationGitUserCommitOnBranch = await gitClient.git.log({
       "--author": `${this.getAmplicationGitUser().name} <${
         this.getAmplicationGitUser().email
       }>`,
+      "--max-count": maxCount,
     });
 
     return {
-      amplicationGitUser: amplicationGitUserCommitOnBranch,
-      amplicationBot: botCommitListOnBranch,
+      amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
+      amplicationBot: lastAmplicationBotCommitOnBranch,
     };
   }
 
+  /**
+   * Return the git diff of the latest amplication commit in the branchName.
+   * Return null when no amplication commits are found in the branch.
+   */
   async preCommitProcess({
     gitClient,
     branchName,
@@ -317,7 +313,7 @@ export class GitClientService {
 
     const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
       gitClient,
-      true
+      1
     );
     if (
       (!amplicationGitUser || !amplicationGitUser.latest) &&
@@ -329,7 +325,8 @@ export class GitClientService {
       return { diff: null };
     }
 
-    const hash = amplicationGitUser.latest?.hash || amplicationBot.latest?.hash;
+    const hash =
+      amplicationGitUser.latest?.hash || amplicationBot?.latest?.hash;
     if (!hash) {
       this.logger.info("Didn't find a commit hash");
       return { diff: null };
@@ -339,7 +336,7 @@ export class GitClientService {
       this.logger.info("Diff returned empty");
       return { diff: null };
     }
-    // Reset the branch to the latest commit
+    // Reset the branch to the latest commit of the user / bot
     await gitClient.git.reset([hash]);
     await gitClient.git.push(["--force"]);
     await gitClient.resetState();
@@ -382,8 +379,7 @@ export class GitClientService {
     });
 
     const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
-      gitClient,
-      false
+      gitClient
     );
 
     await this.cherryPickCommits(
@@ -396,7 +392,7 @@ export class GitClientService {
   }
 
   private async cherryPickCommits(
-    commits: LogResult,
+    commitsFromLatest: LogResult,
     gitClient: GitClient,
     branchName: string,
     firstCommitOnDefaultBranch: Commit
@@ -404,8 +400,8 @@ export class GitClientService {
     await gitClient.resetState();
     await gitClient.checkout(branchName);
 
-    for (let index = commits.total - 1; index >= 0; index--) {
-      const commit = commits.all[index];
+    for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
+      const commit = commitsFromLatest.all[index];
       if (firstCommitOnDefaultBranch.sha === commit.hash) {
         continue;
       }

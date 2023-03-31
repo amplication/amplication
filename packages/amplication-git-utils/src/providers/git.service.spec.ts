@@ -17,6 +17,9 @@ const logger: ILogger = {
   error: jest.fn(),
   child: jest.fn(),
 };
+
+const amplicationBotOrIntegrationApp = { id: "2", login: "amplication[bot]" };
+
 describe("GitClientService", () => {
   let service: GitClientService;
   const mockedGitLog = jest.fn();
@@ -35,57 +38,117 @@ describe("GitClientService", () => {
     git: mockedSimpleGit,
   } as unknown as GitClient;
 
+  const mockedAmplicationBotIdentity = jest
+    .fn()
+    .mockResolvedValue(amplicationBotOrIntegrationApp);
+
   beforeEach(() => {
     const mockedProvider: GitProvider = {
-      getCurrentGitUser: jest
-        .fn()
-        .mockResolvedValue({ id: "2", login: "amplication[bot]" }),
+      getAmplicationBotIdentity: mockedAmplicationBotIdentity,
     } as unknown as GitProvider;
+
     jest.spyOn(GitFactory, "getProvider").mockResolvedValue(mockedProvider);
+
     service = new GitClientService();
 
     service.create(null, null, logger);
   });
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
-  it("should return the diff from the github application bot latest commit when there are no commits from amplication <bot@amplication.com>", async () => {
-    mockedGitLog.mockImplementation((args) => {
-      if (args["--author"] === "amplication <bot@amplication.com>")
+  describe("when there are no commits from amplication <bot@amplication.com> and there are commits for amplication[bot] (or amplication provider integration)", () => {
+    beforeEach(() => {
+      mockedGitLog.mockImplementation((args) => {
+        if (args["--author"] === "amplication <bot@amplication.com>")
+          return {
+            all: [],
+            total: 0,
+            latest: null,
+          };
         return {
-          all: [],
-          total: 0,
-          latest: null,
+          all: [
+            {
+              hash: "sghfsjfdsfd34234",
+              author_name: amplicationBotOrIntegrationApp.login,
+              author_email: "monster@spagetti.com",
+            },
+            {
+              hash: "hhfdfdgdf34234gd",
+              author_name: amplicationBotOrIntegrationApp.login,
+              author_email: "monster@spagetti.com",
+            },
+          ],
+          total: 2,
+          latest: {
+            hash: "sghfsjfdsfd34234",
+            author_name: amplicationBotOrIntegrationApp.login,
+            author_email: "monster@spagetti.com",
+          },
         };
-      return {
+      });
+    });
+
+    it("should return the diff of the latest commit of amplication[bot] (or amplication provider integration)", async () => {
+      await service.preCommitProcess({
+        branchName: "amplication",
+        gitClient: mockedGitClient,
+      });
+
+      expect(mockedGitLog).toBeCalledTimes(2);
+      expect(mockedGitDiff).toBeCalledWith(["sghfsjfdsfd34234"]);
+    });
+  });
+
+  describe("when there is not amplication app (or amplication provider integration)", () => {
+    beforeEach(() => {
+      mockedAmplicationBotIdentity.mockResolvedValue(null);
+    });
+
+    it("should return the diff of the latest commit of 'amplication <bot@amplication.com>'", async () => {
+      mockedGitLog.mockResolvedValue({
         all: [
           {
             hash: "sghfsjfdsfd34234",
-            author_name: "Spaghetti Monster",
-            author_email: "monster@spagetti.com",
+            author_name: "amplication",
+            author_email: "bot@amplication.com",
           },
           {
             hash: "hhfdfdgdf34234gd",
-            author_name: "Spaghetti Monster",
-            author_email: "monster@spagetti.com",
+            author_name: "amplication",
+            author_email: "bot@amplication.com",
           },
         ],
         total: 2,
         latest: {
           hash: "sghfsjfdsfd34234",
-          author_name: "Spaghetti Monster",
-          author_email: "monster@spagetti.com",
+          author_name: "amplication",
+          author_email: "bot@amplication.com",
         },
-      };
+      });
+
+      await service.preCommitProcess({
+        branchName: "amplication",
+        gitClient: mockedGitClient,
+      });
+
+      expect(mockedGitLog).toBeCalledTimes(1);
+      expect(mockedGitDiff).toBeCalledWith(["sghfsjfdsfd34234"]);
     });
 
-    await service.preCommitProcess({
-      branchName: "amplication",
-      gitClient: mockedGitClient,
-    });
+    it("should not call the gitlog for author amplication[bot] (or amplication provider integration)", async () => {
+      await service.preCommitProcess({
+        branchName: "amplication",
+        gitClient: mockedGitClient,
+      });
 
-    expect(mockedGitLog).toBeCalledTimes(2);
-    expect(mockedGitDiff).toBeCalledWith(["sghfsjfdsfd34234"]);
+      expect(mockedGitLog).toHaveBeenCalledTimes(1);
+
+      expect(mockedGitLog).toBeCalledWith(
+        expect.objectContaining({
+          "--author": "amplication <bot@amplication.com>",
+        })
+      );
+    });
   });
 });
