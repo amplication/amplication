@@ -249,7 +249,7 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLogByAuthor(
+  private async gitLog(
     gitCli: GitCli,
     maxCount = -1
   ): Promise<{
@@ -294,13 +294,10 @@ export class GitClientService {
     this.logger.info("Pre commit process");
     await gitCli.git.checkout(branchName);
 
-    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
-      gitCli,
-      1
-    );
+    const gitLogs = await this.gitLog(gitCli, 1);
     if (
-      (!amplicationGitUser || !amplicationGitUser.latest) &&
-      (!amplicationBot || !amplicationBot.latest)
+      (!gitLogs.amplicationGitUser || !gitLogs.amplicationGitUser.latest) &&
+      (!gitLogs.amplicationBot || !gitLogs.amplicationBot.latest)
     ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
@@ -309,7 +306,8 @@ export class GitClientService {
     }
 
     const hash =
-      amplicationGitUser.latest?.hash || amplicationBot?.latest?.hash;
+      gitLogs.amplicationGitUser.latest?.hash ||
+      gitLogs.amplicationBot?.latest?.hash;
     if (!hash) {
       this.logger.info("Didn't find a commit hash");
       return { diff: null };
@@ -378,12 +376,10 @@ export class GitClientService {
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
-    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
-      gitCli
-    );
+    const gitLogs = await this.gitLog(gitCli);
 
     await this.cherryPickCommits(
-      { ...amplicationBot, ...amplicationGitUser },
+      { ...gitLogs.amplicationBot, ...gitLogs.amplicationGitUser },
       gitCli,
       branchName,
       firstCommitOnDefaultBranch
