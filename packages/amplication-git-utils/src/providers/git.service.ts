@@ -40,15 +40,7 @@ export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
 
-  private getAmplicationGitUser(): {
-    name: string;
-    email: string;
-  } {
-    return {
-      name: "amplication",
-      email: "bot@amplication.com",
-    };
-  }
+  private amplicationGitUser = "amplication <bot@amplication.com>";
 
   async create(
     gitProviderArgs: GitProviderArgs,
@@ -185,7 +177,7 @@ export class GitClientService {
 
       await this.provider.createCommit({
         owner,
-        author: this.getAmplicationGitUser(),
+        author: this.getAmplicationGitUser,
         repositoryName,
         commitMessage,
         branchName,
@@ -281,9 +273,7 @@ export class GitClientService {
     }
 
     const lastAmplicationGitUserCommitOnBranch = await gitCli.git.log({
-      "--author": `${this.getAmplicationGitUser().name} <${
-        this.getAmplicationGitUser().email
-      }>`,
+      "--author": this.amplicationGitUser,
       "--max-count": maxCount,
     });
 
