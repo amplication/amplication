@@ -143,13 +143,13 @@ export interface CreatePullRequestFromFilesArgs {
   files: UpdateFile[];
 }
 
-export interface GetPullRequestForBranchArgs {
+export interface GitProviderGetPullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
 }
 
-export interface CreatePullRequestForBranchArgs {
+export interface GitProviderCreatePullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;

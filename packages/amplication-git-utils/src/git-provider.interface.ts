@@ -5,14 +5,14 @@ import {
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestCommentArgs,
-  CreatePullRequestForBranchArgs,
+  GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
-  GetPullRequestForBranchArgs,
+  GitProviderGetPullRequestArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
@@ -50,11 +50,11 @@ export interface GitProvider {
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
   createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
-  getPullRequestForBranch: (
-    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
+  getPullRequest: (
+    getPullRequestArgs: GitProviderGetPullRequestArgs
   ) => Promise<PullRequest | null>;
-  createPullRequestForBranch: (
-    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
+  createPullRequest: (
+    createPullRequestArgs: GitProviderCreatePullRequestArgs
   ) => Promise<PullRequest>;
   getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;

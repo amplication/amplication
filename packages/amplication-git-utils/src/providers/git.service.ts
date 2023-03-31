@@ -224,7 +224,7 @@ export class GitClientService {
         repositoryName,
       });
 
-      const existingPullRequest = await this.provider.getPullRequestForBranch({
+      const existingPullRequest = await this.provider.getPullRequest({
         owner,
         repositoryName,
         branchName,
@@ -233,7 +233,7 @@ export class GitClientService {
       let pullRequest = existingPullRequest;
 
       if (!pullRequest) {
-        pullRequest = await this.provider.createPullRequestForBranch({
+        pullRequest = await this.provider.createPullRequest({
           owner,
           repositoryName,
           pullRequestTitle: accumulativePullRequestTitle,

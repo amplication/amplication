@@ -5,12 +5,12 @@ import {
   Branch,
   CreateBranchIfNotExistsArgs,
   CreateCommitArgs,
-  CreatePullRequestForBranchArgs,
+  GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   GetFileArgs,
-  GetPullRequestForBranchArgs,
+  GitProviderGetPullRequestArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
@@ -367,14 +367,14 @@ export class BitBucketService implements GitProvider {
     );
   }
 
-  getPullRequestForBranch(
-    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
+  getPullRequest(
+    getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<{ url: string; number: number }> {
     throw NotImplementedError;
   }
 
-  createPullRequestForBranch(
-    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
+  createPullRequest(
+    createPullRequestArgs: GitProviderCreatePullRequestArgs
   ): Promise<PullRequest> {
     throw NotImplementedError;
   }
