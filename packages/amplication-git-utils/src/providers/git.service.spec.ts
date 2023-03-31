@@ -19,6 +19,11 @@ const logger: ILogger = {
 };
 
 const amplicationBotOrIntegrationApp = { id: "2", login: "amplication[bot]" };
+const amplicationGitUser = {
+  name: "amplication",
+  email: "bot@amplication.com",
+};
+const amplicationGitUserAuthor = `${amplicationGitUser.name} <${amplicationGitUser.email}>`;
 
 describe("GitClientService", () => {
   let service: GitClientService;
@@ -60,7 +65,7 @@ describe("GitClientService", () => {
   describe("when there are no commits from amplication <bot@amplication.com> and there are commits for amplication[bot] (or amplication provider integration)", () => {
     beforeEach(() => {
       mockedGitLog.mockImplementation((args) => {
-        if (args["--author"] === "amplication <bot@amplication.com>")
+        if (args["--author"] === amplicationGitUserAuthor)
           return {
             all: [],
             total: 0,
@@ -100,12 +105,12 @@ describe("GitClientService", () => {
     });
   });
 
-  describe("when there is not amplication app (or amplication provider integration)", () => {
+  describe("when there is not amplication[bot] (or amplication provider integration)", () => {
     beforeEach(() => {
       mockedAmplicationBotIdentity.mockResolvedValue(null);
     });
 
-    it("should return the diff of the latest commit of 'amplication <bot@amplication.com>'", async () => {
+    it("should return the diff of the latest commit of amplication <bot@amplication.com>", async () => {
       mockedGitLog.mockResolvedValue({
         all: [
           {
@@ -115,14 +120,14 @@ describe("GitClientService", () => {
           },
           {
             hash: "hhfdfdgdf34234gd",
-            author_name: "amplication",
+            author_name: amplicationGitUserAuthor,
             author_email: "bot@amplication.com",
           },
         ],
         total: 2,
         latest: {
           hash: "sghfsjfdsfd34234",
-          author_name: "amplication",
+          author_name: amplicationGitUserAuthor,
           author_email: "bot@amplication.com",
         },
       });
@@ -146,7 +151,7 @@ describe("GitClientService", () => {
 
       expect(mockedGitLog).toBeCalledWith(
         expect.objectContaining({
-          "--author": "amplication <bot@amplication.com>",
+          "--author": amplicationGitUserAuthor,
         })
       );
     });
