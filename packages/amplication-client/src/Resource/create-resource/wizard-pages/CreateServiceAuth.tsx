@@ -5,7 +5,7 @@ import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayou
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
 
-import jwt from "../../../assets/images/jwt.svg";
+import authModuleImage from "../../../assets/images/auth-module.svg";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({
@@ -43,7 +43,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({
         <Layout.SelectorWrapper>
           <LabelDescriptionSelector
             name="core"
-            image={jwt}
+            image={authModuleImage}
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
