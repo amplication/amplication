@@ -160,6 +160,10 @@ export interface CreatePullRequestForBranchArgs {
 
 export interface CreateCommitArgs {
   owner: string;
+  author: {
+    name: string;
+    email: string;
+  };
   repositoryName: string;
   commitMessage: string;
   branchName: string;
@@ -237,7 +241,7 @@ export interface Commit {
   sha: string;
 }
 
-export interface GitUser {
+export interface Bot {
   id: string;
   login: string;
 }
@@ -252,8 +256,6 @@ export interface CloneUrlArgs {
 export interface PreCommitProcessArgs {
   gitClient: GitClient;
   branchName: string;
-  owner: string;
-  repositoryName: string;
 }
 
 export type PreCommitProcessResult = Promise<{

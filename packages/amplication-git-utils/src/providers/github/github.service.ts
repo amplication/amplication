@@ -9,12 +9,10 @@ import {
   TreeParameter,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
-import { PaginationLimit } from "../../errors/PaginationLimit";
 import { GitProvider } from "../../git-provider.interface";
 import {
   Branch,
   CloneUrlArgs,
-  Commit,
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestCommentArgs,
@@ -29,7 +27,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitUser,
+  Bot,
   PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -96,133 +94,16 @@ export class GithubService implements GitProvider {
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
-  async getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    const { branchName, owner, repositoryName } = args;
-    const currentUserData = await this.getCurrentUser();
-
-    let moreCommitsPagination = true;
-    let commitsList: Commit[] = [];
-    let cursor: string | undefined = undefined;
-
-    do {
-      const { commits, hasNextPage, endCursor } =
-        await this.paginatedCommitsList({
-          botData: currentUserData,
-          branchName,
-          owner,
-          repositoryName,
-          cursor,
-          paginationLimit: 100,
-        });
-      moreCommitsPagination = hasNextPage;
-      commitsList = commitsList.concat(commits); // The list is in ascending order ( newest commits are first )
-      cursor = endCursor;
-    } while (moreCommitsPagination);
-
-    return commitsList;
-  }
-
-  private async paginatedCommitsList(
-    args: GetBranchArgs & {
-      cursor: string | undefined;
-      botData: GitUser;
-      paginationLimit: number;
-    }
-  ): Promise<{ commits: Commit[]; hasNextPage: boolean; endCursor: string }> {
-    const {
-      branchName,
-      owner,
-      repositoryName,
-      cursor,
-      botData,
-      paginationLimit,
-    } = args;
-    if (paginationLimit > 100 || paginationLimit < 1) {
-      throw new PaginationLimit(paginationLimit);
-    }
-
+  async getAmplicationBotIdentity(): Promise<Bot | null> {
     const data: {
-      repository: {
-        ref: {
-          target: {
-            history: {
-              nodes: {
-                oid: string;
-              }[];
-              pageInfo: {
-                hasNextPage: boolean;
-                endCursor: string;
-              };
-            };
-          };
-        };
-      };
-    } = await this.octokit.graphql(
-      `query ($owner: String!, $repo: String!, $branch: String!, $author: ID!, $paginationLimit: Int!) {
-        repository(name: $repo, owner: $owner) {
-          ref(qualifiedName: $branch) {
-            target {
-              ... on Commit {
-                history(author:{id: $author},first: $paginationLimit ${
-                  cursor ? `,after:"${cursor}"` : ""
-                }) {
-                  nodes {
-                    oid
-                  }
-                  pageInfo {
-                    hasNextPage
-                    endCursor
-                  }
-                }
-              }
-            }
-          }
-        }
-      }`,
-      {
-        owner,
-        repo: repositoryName,
-        branch: branchName,
-        author: botData.id,
-        paginationLimit,
-      }
-    );
-    const {
-      repository: {
-        ref: {
-          target: {
-            history: {
-              nodes,
-              pageInfo: { endCursor, hasNextPage },
-            },
-          },
-        },
-      },
-    } = data;
-    return {
-      commits: nodes.map(({ oid }) => ({
-        sha: oid,
-      })),
-      hasNextPage,
-      endCursor,
-    };
-  }
-
-  async getCurrentUser(): Promise<GitUser> {
-    const data: { viewer: { id: string; login: string } } = await this.octokit
-      .graphql(`{
+      viewer: { id: string; login: string };
+    } = await this.octokit.graphql(`{
       viewer{
         id
         login
       }
     }`);
-    const {
-      viewer: { id, login },
-    } = data;
-    return {
-      login,
-      id,
-    };
+    return data.viewer;
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
@@ -492,6 +373,7 @@ export class GithubService implements GitProvider {
 
   async createCommit({
     owner,
+    author,
     repositoryName,
     commitMessage,
     branchName,
@@ -527,6 +409,7 @@ export class GithubService implements GitProvider {
     const { data: commit } = await this.octokit.rest.git.createCommit({
       message: commitMessage,
       owner,
+      author,
       repo: repositoryName,
       tree: lastTreeSha,
       parents: [lastCommit.sha],

@@ -159,6 +159,10 @@ describe("bitbucket.service", () => {
         await service.createCommit({
           owner: "maccheroni",
           commitMessage: "commit message",
+          author: {
+            name: "Spaghetti Monster",
+            email: "monster@spagetti.com",
+          },
           files: [{ path: "path/file.me", content: "content" }],
           branchName: "master",
           repositoryName: "myrepo",
@@ -168,8 +172,8 @@ describe("bitbucket.service", () => {
       }
     });
 
-    it("create commit successfully - response status 201", async () => {
-      const mockedCreateCommitResponse = {
+    it("create commit with a provided author and the last commit hash", async () => {
+      const mockedGetLastCommitResponse = {
         type: "commit",
         hash: "bc3412a0a22c5e06f8350b841d1d5f91304e5e58",
         date: "2023-03-18T14:05:31+00:00",
@@ -268,7 +272,7 @@ describe("bitbucket.service", () => {
 
       const spyOnGetLastCommitRequest = jest
         .spyOn(requests, "getLastCommitRequest")
-        .mockResolvedValue(mockedCreateCommitResponse);
+        .mockResolvedValue(mockedGetLastCommitResponse);
 
       const spyOnCreateCommitRequest = jest
         .spyOn(requests, "createCommitRequest")
@@ -276,17 +280,31 @@ describe("bitbucket.service", () => {
 
       await service.createCommit({
         owner: "maccheroni",
-        commitMessage: mockedCreateCommitResponse.message,
+        author: {
+          name: "Spaghetti Monster",
+          email: "monster@spagetti.com",
+        },
+        commitMessage: "commit message",
         files: [{ path: "path/file.me", content: "content" }],
         branchName: "master",
-        repositoryName: mockedCreateCommitResponse.repository.name,
-        gitGroupName:
-          mockedCreateCommitResponse.repository.full_name.split("/")[0],
+        repositoryName: "my-repo",
+        gitGroupName: "my-group",
       });
 
       expect(spyOnGetLastCommitRequest).toHaveBeenCalledTimes(1);
       expect(spyOnCreateCommitRequest).toHaveBeenCalledTimes(1);
-      expect(spyOnCreateCommitRequest).toHaveBeenCalledTimes(1);
+      expect(spyOnCreateCommitRequest).toHaveBeenCalledWith(
+        "my-group",
+        "my-repo",
+        {
+          branch: { name: "master" },
+          message: "commit message",
+          author: "Spaghetti Monster <monster@spagetti.com>",
+          parents: [mockedGetLastCommitResponse.hash],
+          content: [{ path: "path/file.me", content: "content" }],
+        },
+        "my-token"
+      );
     });
   });
 

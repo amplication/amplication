@@ -31,7 +31,7 @@ const BITBUCKET_SITE_URL = "https://bitbucket.org/site";
 const AUTHORIZE_URL = `${BITBUCKET_SITE_URL}/oauth2/authorize`;
 const ACCESS_TOKEN_URL = `${BITBUCKET_SITE_URL}/oauth2/access_token`;
 
-const CURRENT_USER_URL = `${BITBUCKET_API_URL}/2.0/user`;
+const CURRENT_USER_URL = `${BITBUCKET_API_URL}/user`;
 const CURRENT_USER_WORKSPACES_URL = `${BITBUCKET_API_URL}/user/permissions/workspaces`;
 
 const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
@@ -52,7 +52,7 @@ const GET_FILE_URL = (
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
 
 const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
-  `${BITBUCKET_API_URL}/2.0/repositories//${workspaceSlug}/${repositorySlug}/src`;
+  `${BITBUCKET_API_URL}/repositories//${workspaceSlug}/${repositorySlug}/src`;
 
 const GET_BRANCH_COMMITS_URL = (
   workspaceSlug: string,
@@ -76,7 +76,7 @@ const CREATE_COMMENT_ON_PULL_REQUEST_URL = (
   repositorySlug: string,
   pullRequestId: number
 ) =>
-  `${BITBUCKET_API_URL}/2.0/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -228,7 +228,7 @@ export async function getFileRequest(
 export function createCommitRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  commitData: any,
+  commitData: unknown,
   accessToken: string
 ) {
   return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {

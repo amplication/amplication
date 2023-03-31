@@ -27,6 +27,7 @@ import {
   GitProviderArgs,
   PaginatedGitGroup,
   BitBucketConfiguration,
+  Bot,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -331,8 +332,14 @@ export class BitBucketService implements GitProvider {
   }
 
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    const { repositoryName, files, branchName, commitMessage, gitGroupName } =
-      createCommitArgs;
+    const {
+      repositoryName,
+      files,
+      branchName,
+      commitMessage,
+      author,
+      gitGroupName,
+    } = createCommitArgs;
 
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
@@ -352,8 +359,9 @@ export class BitBucketService implements GitProvider {
       {
         branch: { name: branchName },
         message: commitMessage,
-        parents: lastCommit.hash,
-        fileContent: files,
+        author: `${author.name} <${author.email}>`,
+        parents: [lastCommit.hash],
+        content: files,
       },
       this.accessToken
     );
@@ -425,9 +433,6 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  getCurrentUserCommitList(args: GetBranchArgs): Promise<Commit[]> {
-    throw NotImplementedError;
-  }
   getCloneUrl(args: CloneUrlArgs): string {
     const { gitGroupName, repositoryName, token } = args;
     if (!gitGroupName) {
@@ -460,5 +465,9 @@ export class BitBucketService implements GitProvider {
   async getToken(): Promise<string> {
     const authData = await this.refreshAccessToken(this.accessToken);
     return authData.accessToken;
+  }
+
+  async getAmplicationBotIdentity(): Promise<Bot | null> {
+    return null;
   }
 }

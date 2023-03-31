@@ -26,5 +26,6 @@ export class CreatePullRequestArgs {
   @IsString()
   pullRequestMode: EnumPullRequestMode;
   @IsString()
+  @IsOptional()
   gitGroupName?: string;
 }
