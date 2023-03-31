@@ -187,7 +187,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
                     <PendingChanges projectId={currentProject.id} />
                   ) : null}
                   {currentProject && (
-                    <LastCommit resourceId={currentResource?.id} />
+                    <LastCommit projectId={currentProject.id} />
                   )}
                 </div>
               </div>
