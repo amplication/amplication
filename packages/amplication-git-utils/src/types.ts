@@ -263,7 +263,8 @@ export type PreCommitProcessResult = Promise<{
 }>;
 
 export interface PostCommitProcessArgs {
-  diffPath: string;
+  diffFolder: string;
+  diff: string;
   gitClient: GitClient;
 }
 

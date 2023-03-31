@@ -178,17 +178,6 @@ export class GitClientService {
         gitClient,
       });
 
-      const diffFolder = normalize(
-        join(
-          `.amplication/diffs`,
-          this.provider.name,
-          owner,
-
-          repositoryName,
-          randomUUID
-        )
-      );
-
       const { diff } = await this.preCommitProcess({
         branchName,
         gitClient,
@@ -205,16 +194,20 @@ export class GitClientService {
       });
 
       if (diff) {
-        await mkdir(diffFolder, { recursive: true });
-        const diffPath = join(diffFolder, "diff.patch");
-        await writeFile(diffPath, diff);
-        const fullDiffPath = resolve(diffPath);
-        this.logger.info(`Saving diff to: ${fullDiffPath}`);
+        const diffFolder = normalize(
+          join(
+            `.amplication/diffs`,
+            this.provider.name,
+            owner,
+            repositoryName,
+            randomUUID
+          )
+        );
         await this.postCommitProcess({
-          diffPath: fullDiffPath,
+          diffFolder,
+          diff,
           gitClient,
         });
-        await rm(fullDiffPath);
       }
 
       await rm(cloneDir, { recursive: true, force: true });
@@ -344,15 +337,32 @@ export class GitClientService {
     return { diff };
   }
 
-  async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
+  /**
+   * @param diff File containing the git diff
+   * @param diffFolder Location where the git patch will be generated
+   * @param gitClient
+   */
+  private async postCommitProcess({
+    diff,
+    diffFolder,
+    gitClient,
+  }: PostCommitProcessArgs) {
+    await mkdir(diffFolder, { recursive: true });
+    const diffPatchRelativePath = join(diffFolder, "diff.patch");
+    await writeFile(diffPatchRelativePath, diff);
+    const diffPatchAbsolutePath = resolve(diffPatchRelativePath);
+    this.logger.info(`Saving diff to: ${diffPatchAbsolutePath}`);
+
     await gitClient.resetState();
     await gitClient.git
-      .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
+      .applyPatch(diffPatchAbsolutePath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
         "--author": "Amplication diff <info@amplication.com>",
       })
       .push();
+
+    await rm(diffPatchAbsolutePath);
   }
 
   private async restoreAmplicationBranchIfNotExists(
