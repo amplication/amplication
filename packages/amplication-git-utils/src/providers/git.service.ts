@@ -177,7 +177,7 @@ export class GitClientService {
 
       await this.provider.createCommit({
         owner,
-        author: this.getAmplicationGitUser,
+        author: { name: this.amplicationGitUser, email: "" },
         repositoryName,
         commitMessage,
         branchName,
