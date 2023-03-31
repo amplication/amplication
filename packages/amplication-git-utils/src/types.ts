@@ -1,4 +1,4 @@
-import { GitClient } from "./providers/git-client";
+import { GitCli } from "./providers/git-cli";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
@@ -225,7 +225,7 @@ export interface CreateBranchIfNotExistsArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  gitClient: GitClient;
+  gitCli: GitCli;
   gitGroupName?: string;
 }
 
@@ -254,7 +254,7 @@ export interface CloneUrlArgs {
 }
 
 export interface PreCommitProcessArgs {
-  gitClient: GitClient;
+  gitCli: GitCli;
   branchName: string;
 }
 
@@ -265,7 +265,7 @@ export type PreCommitProcessResult = Promise<{
 export interface PostCommitProcessArgs {
   diffFolder: string;
   diff: string;
-  gitClient: GitClient;
+  gitCli: GitCli;
 }
 
 export interface FindOneIssueInput {

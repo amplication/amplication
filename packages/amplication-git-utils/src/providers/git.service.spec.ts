@@ -2,11 +2,11 @@ import { GitClientService } from "./git.service";
 // test the GitClientService class
 import { ILogger } from "@amplication/util/logging";
 import { SimpleGit } from "simple-git";
-import { GitClient } from "./git-client";
+import { GitCli } from "./git-cli";
 import { GitFactory } from "./git-factory";
 import { GitProvider } from "../git-provider.interface";
 
-jest.mock("./git-client");
+jest.mock("./git-cli");
 jest.mock("simple-git");
 jest.mock("./git-factory");
 
@@ -39,9 +39,9 @@ describe("GitClientService", () => {
     diff: mockedGitDiff,
   } as unknown as SimpleGit;
 
-  const mockedGitClient: GitClient = {
+  const mockedGitCli: GitCli = {
     git: mockedSimpleGit,
-  } as unknown as GitClient;
+  } as unknown as GitCli;
 
   const mockedAmplicationBotIdentity = jest
     .fn()
@@ -97,7 +97,7 @@ describe("GitClientService", () => {
     it("should return the diff of the latest commit of amplication[bot] (or amplication provider integration)", async () => {
       await service.preCommitProcess({
         branchName: "amplication",
-        gitClient: mockedGitClient,
+        gitCli: mockedGitCli,
       });
 
       expect(mockedGitLog).toBeCalledTimes(2);
@@ -134,7 +134,7 @@ describe("GitClientService", () => {
 
       await service.preCommitProcess({
         branchName: "amplication",
-        gitClient: mockedGitClient,
+        gitCli: mockedGitCli,
       });
 
       expect(mockedGitLog).toBeCalledTimes(1);
@@ -144,7 +144,7 @@ describe("GitClientService", () => {
     it("should not call the gitlog for author amplication[bot] (or amplication provider integration)", async () => {
       await service.preCommitProcess({
         branchName: "amplication",
-        gitClient: mockedGitClient,
+        gitCli: mockedGitCli,
       });
 
       expect(mockedGitLog).toHaveBeenCalledTimes(1);
