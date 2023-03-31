@@ -75,7 +75,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                 />
               )}
             </div>
-            <hr className={`${className}__repo_hr`}></hr>
+            <hr className={`${className}__repo_hr`} />
             <div className={`${className}__monorepo`}>
               <div className={`${className}__monorepo_title`}>
                 Your project will look like this:
@@ -87,7 +87,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                     {formik.values.baseDir}
                   </div>
                   <div className={`${className}__monorepo_example_tree`}>
-                    <hr className={`${className}__monorepo_hr`}></hr>
+                    <hr className={`${className}__monorepo_hr`} />
                     <div
                       className={`${className}__monorepo_example_tree_folders`}
                     >
@@ -104,9 +104,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                 </div>
               ) : (
                 <div className={`${className}__monorepo_example`}>
-                  <div
-                    className={`${className}__monorepo_example_tree_folders`}
-                  >
+                  <div className={`${className}__repo_example_list_folders`}>
                     <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
                       {formik.values.serviceName}
