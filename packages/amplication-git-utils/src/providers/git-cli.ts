@@ -1,4 +1,4 @@
-import { CleanOptions, simpleGit, SimpleGit } from "simple-git";
+import { CleanOptions, CommitResult, simpleGit, SimpleGit } from "simple-git";
 
 export class GitCli {
   git: SimpleGit;
@@ -34,5 +34,19 @@ export class GitCli {
       .pull()
       .reset(["--hard"])
       .clean(CleanOptions.FORCE);
+  }
+
+  async commit(
+    branchName: string,
+    message: string,
+    filesPath: string[],
+    author: string
+  ): Promise<string> {
+    await this.git.checkout(branchName);
+
+    const { commit: commitSha } = await this.git.commit(message, filesPath, {
+      "--author": author,
+    });
+    return commitSha;
   }
 }

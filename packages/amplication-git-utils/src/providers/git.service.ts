@@ -175,15 +175,13 @@ export class GitClientService {
         gitCli,
       });
 
-      await this.provider.createCommit({
-        owner,
-        author: { name: this.amplicationGitUser, email: "" },
-        repositoryName,
-        commitMessage,
+      const sha = await gitCli.commit(
         branchName,
-        files: preparedFiles,
-        gitGroupName,
-      });
+        commitMessage,
+        preparedFiles.map((file) => file.path),
+        this.amplicationGitUser
+      );
+      this.logger.debug("New commit added", { sha });
 
       if (diff) {
         const diffFolder = normalize(
