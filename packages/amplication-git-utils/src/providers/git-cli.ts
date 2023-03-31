@@ -43,10 +43,15 @@ export class GitCli {
     author: string
   ): Promise<string> {
     await this.git.checkout(branchName);
+    await this.git.add("./*");
 
     const { commit: commitSha } = await this.git.commit(message, filesPath, {
       "--author": author,
     });
     return commitSha;
+  }
+
+  async push() {
+    return this.push();
   }
 }

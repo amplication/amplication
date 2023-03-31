@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile } from "fs/promises";
+import { mkdir, rm, writeFile, copyFile } from "fs/promises";
 import { join, normalize, resolve } from "path";
 import { v4 } from "uuid";
 import {
@@ -175,6 +175,23 @@ export class GitClientService {
         gitCli,
       });
 
+      preparedFiles.forEach(async (file) => {
+        if (typeof file.content === "string") {
+          const filePath = join(cloneDir, file.path);
+          const dir = filePath.split("/").slice(0, -1);
+          try {
+            await mkdir(dir.join("/"), { recursive: true });
+            await writeFile(join(dir.join("/"), file.path), file.content);
+          } catch (error) {
+            this.logger.error(error, { ...error });
+          }
+        } else {
+          this.logger.error("File content not supported", {
+            filePath: file.path,
+          });
+        }
+      });
+
       const sha = await gitCli.commit(
         branchName,
         commitMessage,
@@ -182,6 +199,7 @@ export class GitClientService {
         this.amplicationGitUser
       );
       this.logger.debug("New commit added", { sha });
+      await gitCli.push();
 
       if (diff) {
         const diffFolder = normalize(
