@@ -26,8 +26,6 @@ import { set } from "lodash";
 export const validationErrorMessages = {
   AT_LEAST_TWO_CHARARCTERS: "Must be at least 2 characters long",
   NO_SYMBOLS_ERROR: "Unsupported character",
-  NAME_HELP_TEXT:
-    "Name must only contain letters, numbers and must not start with a number",
 };
 
 export function validate<T>(

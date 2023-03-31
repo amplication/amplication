@@ -74,6 +74,7 @@ export default function ExistingConnectionsMenu({
               <hr className={`${CLASS_NAME}__hr`} />
               {GIT_PROVIDERS.map((provider) => (
                 <GitOrganizationMenuAddProvider
+                  key={provider.provider}
                   label={provider.label}
                   provider={provider.provider}
                   onAddGitOrganization={onAddGitOrganization}

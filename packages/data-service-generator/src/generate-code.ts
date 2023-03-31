@@ -37,6 +37,12 @@ export const generateCodeByResourceData = async (
   destination: string
 ): Promise<void> => {
   const { pluginInstallations } = resourceData;
+  const dsgLogger = logger.child({
+    metadata: {
+      resourceId: resourceData.resourceInfo?.id,
+      buildId: resourceData.buildId,
+    },
+  });
 
   const allPlugins = prepareDefaultPlugins(pluginInstallations);
 
@@ -44,7 +50,7 @@ export const generateCodeByResourceData = async (
 
   const modules = await createDataService(
     { ...resourceData, pluginInstallations: allPlugins },
-    logger,
+    dsgLogger,
     join(__dirname, "..", AMPLICATION_MODULES)
   );
 

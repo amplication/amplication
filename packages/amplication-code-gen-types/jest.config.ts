@@ -19,4 +19,11 @@ export default {
       lines: 70.4,
     },
   },
+  collectCoverageFrom: [
+    "**/*.{ts,tsx}",
+    "!**/*.types.{ts,tsx}",
+    "!**/*.spec.{ts,tsx}",
+    "!**/*.e2e-spec.{ts,tsx}",
+    "!**/types/**",
+  ],
 };

@@ -88,6 +88,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     createMessageBroker,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
+    createServiceWithEntitiesResult,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
@@ -163,6 +164,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         resetPendingChangesIndicator,
         setResetPendingChangesIndicator,
         openHubSpotChat,
+        createServiceWithEntitiesResult,
       }}
     >
       {isMobileOnly ? (
