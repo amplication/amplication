@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import classNames from "classnames";
 import { isEmpty } from "lodash";
 import {
@@ -17,16 +17,20 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import useCommit from "./hooks/useCommits";
 
 type Props = {
-  projectId: string;
+  resourceId?: string;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ projectId }: Props) => {
+const LastCommit = ({ resourceId }: Props) => {
   const { currentWorkspace, currentProject, commitRunning } =
     useContext(AppContext);
 
-  const { lastCommit } = useCommit();
+  const { lastCommit, refetchCommits } = useCommit();
+
+  useEffect(() => {
+    refetchCommits();
+  }, [resourceId]);
 
   const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
