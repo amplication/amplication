@@ -27,7 +27,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitUser,
+  Bot,
   PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -94,7 +94,7 @@ export class GithubService implements GitProvider {
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
-  async getCurrentGitUser(): Promise<GitUser> {
+  async getAmplicationBotIdentity(): Promise<Bot | null> {
     const data: {
       viewer: { id: string; login: string };
     } = await this.octokit.graphql(`{

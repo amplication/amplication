@@ -241,7 +241,7 @@ export interface Commit {
   sha: string;
 }
 
-export interface GitUser {
+export interface Bot {
   id: string;
   login: string;
 }

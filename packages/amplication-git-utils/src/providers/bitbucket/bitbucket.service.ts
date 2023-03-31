@@ -27,7 +27,7 @@ import {
   GitProviderArgs,
   PaginatedGitGroup,
   BitBucketConfiguration,
-  GitUser,
+  Bot,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -467,12 +467,7 @@ export class BitBucketService implements GitProvider {
     return authData.accessToken;
   }
 
-  async getCurrentGitUser(): Promise<GitUser> {
-    const currentGitUser = await this.getCurrentOAuthUser(this.accessToken);
-    return {
-      id: currentGitUser.uuid,
-      // it should be safe to use the username as the author for bitbucket is the "{currentOAuthUser.display_name} <{currentOAuthUser.email}>"
-      login: currentGitUser.username,
-    };
+  async getAmplicationBotIdentity(): Promise<Bot | null> {
+    return null;
   }
 }

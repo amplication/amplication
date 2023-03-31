@@ -16,7 +16,7 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  GitUser,
+  Bot,
   OAuthData,
   PaginatedGitGroup,
   PullRequest,
@@ -62,5 +62,5 @@ export interface GitProvider {
   getCloneUrl: (args: CloneUrlArgs) => string;
   commentOnPullRequest: (args: CreatePullRequestCommentArgs) => Promise<void>;
   getToken(): Promise<string>;
-  getCurrentGitUser(): Promise<GitUser>;
+  getAmplicationBotIdentity(): Promise<Bot | null>;
 }
