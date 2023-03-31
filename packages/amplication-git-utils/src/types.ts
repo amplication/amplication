@@ -1,4 +1,4 @@
-import { GitClient } from "./providers/git-client";
+import { GitCli } from "./providers/git-cli";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
@@ -143,13 +143,13 @@ export interface CreatePullRequestFromFilesArgs {
   files: UpdateFile[];
 }
 
-export interface GetPullRequestForBranchArgs {
+export interface GitProviderGetPullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
 }
 
-export interface CreatePullRequestForBranchArgs {
+export interface GitProviderCreatePullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
@@ -225,7 +225,7 @@ export interface CreateBranchIfNotExistsArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  gitClient: GitClient;
+  gitCli: GitCli;
   gitGroupName?: string;
 }
 
@@ -254,7 +254,7 @@ export interface CloneUrlArgs {
 }
 
 export interface PreCommitProcessArgs {
-  gitClient: GitClient;
+  gitCli: GitCli;
   branchName: string;
 }
 
@@ -263,8 +263,9 @@ export type PreCommitProcessResult = Promise<{
 }>;
 
 export interface PostCommitProcessArgs {
-  diffPath: string;
-  gitClient: GitClient;
+  diffFolder: string;
+  diff: string;
+  gitCli: GitCli;
 }
 
 export interface FindOneIssueInput {

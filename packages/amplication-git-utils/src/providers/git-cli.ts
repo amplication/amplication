@@ -1,6 +1,6 @@
 import { CleanOptions, simpleGit, SimpleGit } from "simple-git";
 
-export class GitClient {
+export class GitCli {
   git: SimpleGit;
 
   constructor() {

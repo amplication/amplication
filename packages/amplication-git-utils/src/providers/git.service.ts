@@ -31,7 +31,7 @@ import {
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
-import { GitClient } from "./git-client";
+import { GitCli } from "./git-cli";
 import { GitFactory } from "./git-factory";
 import { ILogger } from "@amplication/util/logging";
 import { LogResult } from "simple-git";
@@ -40,15 +40,7 @@ export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
 
-  private getAmplicationGitUser(): {
-    name: string;
-    email: string;
-  } {
-    return {
-      name: "amplication",
-      email: "bot@amplication.com",
-    };
-  }
+  private amplicationGitUser = "amplication <bot@amplication.com>";
 
   async create(
     gitProviderArgs: GitProviderArgs,
@@ -149,7 +141,7 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const gitClient = new GitClient();
+      const gitCli = new GitCli();
       const cloneFolder = process.env.CLONES_FOLDER;
       if (!cloneFolder) {
         throw new MissingEnvParam("CLONES_FOLDER");
@@ -169,34 +161,23 @@ export class GitClientService {
         join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
       );
 
-      await gitClient.clone(cloneUrl, cloneDir);
+      await gitCli.clone(cloneUrl, cloneDir);
 
       await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
         branchName,
-        gitClient,
+        gitCli,
       });
-
-      const diffFolder = normalize(
-        join(
-          `.amplication/diffs`,
-          this.provider.name,
-          owner,
-
-          repositoryName,
-          randomUUID
-        )
-      );
 
       const { diff } = await this.preCommitProcess({
         branchName,
-        gitClient,
+        gitCli,
       });
 
       await this.provider.createCommit({
         owner,
-        author: this.getAmplicationGitUser(),
+        author: { name: this.amplicationGitUser, email: "" },
         repositoryName,
         commitMessage,
         branchName,
@@ -205,16 +186,20 @@ export class GitClientService {
       });
 
       if (diff) {
-        await mkdir(diffFolder, { recursive: true });
-        const diffPath = join(diffFolder, "diff.patch");
-        await writeFile(diffPath, diff);
-        const fullDiffPath = resolve(diffPath);
-        this.logger.info(`Saving diff to: ${fullDiffPath}`);
+        const diffFolder = normalize(
+          join(
+            `.amplication/diffs`,
+            this.provider.name,
+            owner,
+            repositoryName,
+            randomUUID
+          )
+        );
         await this.postCommitProcess({
-          diffPath: fullDiffPath,
-          gitClient,
+          diffFolder,
+          diff,
+          gitCli,
         });
-        await rm(fullDiffPath);
       }
 
       await rm(cloneDir, { recursive: true, force: true });
@@ -224,7 +209,7 @@ export class GitClientService {
         repositoryName,
       });
 
-      const existingPullRequest = await this.provider.getPullRequestForBranch({
+      const existingPullRequest = await this.provider.getPullRequest({
         owner,
         repositoryName,
         branchName,
@@ -233,7 +218,7 @@ export class GitClientService {
       let pullRequest = existingPullRequest;
 
       if (!pullRequest) {
-        pullRequest = await this.provider.createPullRequestForBranch({
+        pullRequest = await this.provider.createPullRequest({
           owner,
           repositoryName,
           pullRequestTitle: accumulativePullRequestTitle,
@@ -261,11 +246,11 @@ export class GitClientService {
 
   /**
    * Returns git commits by amplication author
-   * @param gitClient Git client
+   * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLogByAuthor(
-    gitClient: GitClient,
+  private async gitLog(
+    gitCli: GitCli,
     maxCount = -1
   ): Promise<{
     amplicationGitUser: LogResult;
@@ -281,16 +266,14 @@ export class GitClientService {
         "\\$1"
       );
 
-      lastAmplicationBotCommitOnBranch = await gitClient.git.log({
+      lastAmplicationBotCommitOnBranch = await gitCli.git.log({
         "--author": amplicationBotLoginRegex,
         "--max-count": maxCount,
       });
     }
 
-    const lastAmplicationGitUserCommitOnBranch = await gitClient.git.log({
-      "--author": `${this.getAmplicationGitUser().name} <${
-        this.getAmplicationGitUser().email
-      }>`,
+    const lastAmplicationGitUserCommitOnBranch = await gitCli.git.log({
+      "--author": this.amplicationGitUser,
       "--max-count": maxCount,
     });
 
@@ -305,19 +288,16 @@ export class GitClientService {
    * Return null when no amplication commits are found in the branch.
    */
   async preCommitProcess({
-    gitClient,
+    gitCli,
     branchName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     this.logger.info("Pre commit process");
-    await gitClient.git.checkout(branchName);
+    await gitCli.git.checkout(branchName);
 
-    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
-      gitClient,
-      1
-    );
+    const gitLogs = await this.gitLog(gitCli, 1);
     if (
-      (!amplicationGitUser || !amplicationGitUser.latest) &&
-      (!amplicationBot || !amplicationBot.latest)
+      (!gitLogs.amplicationGitUser || !gitLogs.amplicationGitUser.latest) &&
+      (!gitLogs.amplicationBot || !gitLogs.amplicationBot.latest)
     ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
@@ -326,39 +306,57 @@ export class GitClientService {
     }
 
     const hash =
-      amplicationGitUser.latest?.hash || amplicationBot?.latest?.hash;
+      gitLogs.amplicationGitUser.latest?.hash ||
+      gitLogs.amplicationBot?.latest?.hash;
     if (!hash) {
       this.logger.info("Didn't find a commit hash");
       return { diff: null };
     }
-    const diff = await gitClient.git.diff([hash]);
+    const diff = await gitCli.git.diff([hash]);
     if (!diff) {
       this.logger.info("Diff returned empty");
       return { diff: null };
     }
     // Reset the branch to the latest commit of the user / bot
-    await gitClient.git.reset([hash]);
-    await gitClient.git.push(["--force"]);
-    await gitClient.resetState();
+    await gitCli.git.reset([hash]);
+    await gitCli.git.push(["--force"]);
+    await gitCli.resetState();
     this.logger.info("Diff returned");
     return { diff };
   }
 
-  async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
-    await gitClient.resetState();
-    await gitClient.git
-      .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
+  /**
+   * @param diff File containing the git diff
+   * @param diffFolder Location where the git patch will be generated
+   * @param gitCli
+   */
+  private async postCommitProcess({
+    diff,
+    diffFolder,
+    gitCli,
+  }: PostCommitProcessArgs) {
+    await mkdir(diffFolder, { recursive: true });
+    const diffPatchRelativePath = join(diffFolder, "diff.patch");
+    await writeFile(diffPatchRelativePath, diff);
+    const diffPatchAbsolutePath = resolve(diffPatchRelativePath);
+    this.logger.info(`Saving diff to: ${diffPatchAbsolutePath}`);
+
+    await gitCli.resetState();
+    await gitCli.git
+      .applyPatch(diffPatchAbsolutePath, ["--3way", "--whitespace=nowarn"])
       .add(["."])
       .commit("Amplication diff restoration", undefined, {
         "--author": "Amplication diff <info@amplication.com>",
       })
       .push();
+
+    await rm(diffPatchAbsolutePath);
   }
 
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, gitClient, gitGroupName } = args;
+    const { branchName, owner, repositoryName, gitCli, gitGroupName } = args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
@@ -378,13 +376,11 @@ export class GitClientService {
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
-    const { amplicationGitUser, amplicationBot } = await this.gitLogByAuthor(
-      gitClient
-    );
+    const gitLogs = await this.gitLog(gitCli);
 
     await this.cherryPickCommits(
-      { ...amplicationBot, ...amplicationGitUser },
-      gitClient,
+      { ...gitLogs.amplicationBot, ...gitLogs.amplicationGitUser },
+      gitCli,
       branchName,
       firstCommitOnDefaultBranch
     );
@@ -393,22 +389,22 @@ export class GitClientService {
 
   private async cherryPickCommits(
     commitsFromLatest: LogResult,
-    gitClient: GitClient,
+    gitCli: GitCli,
     branchName: string,
     firstCommitOnDefaultBranch: Commit
   ) {
-    await gitClient.resetState();
-    await gitClient.checkout(branchName);
+    await gitCli.resetState();
+    await gitCli.checkout(branchName);
 
     for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
       const commit = commitsFromLatest.all[index];
       if (firstCommitOnDefaultBranch.sha === commit.hash) {
         continue;
       }
-      await gitClient.cherryPick(commit.hash);
+      await gitCli.cherryPick(commit.hash);
     }
 
-    await gitClient.git.push();
+    await gitCli.git.push();
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {

@@ -16,14 +16,14 @@ import {
   CreateBranchArgs,
   CreateCommitArgs,
   CreatePullRequestCommentArgs,
-  CreatePullRequestForBranchArgs,
+  GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   EnumGitOrganizationType,
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
-  GetPullRequestForBranchArgs,
+  GitProviderGetPullRequestArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
@@ -429,11 +429,11 @@ export class GithubService implements GitProvider {
     );
   }
 
-  async getPullRequestForBranch({
+  async getPullRequest({
     owner,
     repositoryName,
     branchName,
-  }: GetPullRequestForBranchArgs): Promise<PullRequest | null> {
+  }: GitProviderGetPullRequestArgs): Promise<PullRequest | null> {
     const branchInfo: {
       repository: {
         ref: {
@@ -479,14 +479,14 @@ export class GithubService implements GitProvider {
     return existingPullRequest || null;
   }
 
-  async createPullRequestForBranch({
+  async createPullRequest({
     owner,
     repositoryName,
     branchName,
     pullRequestTitle,
     pullRequestBody,
     defaultBranchName,
-  }: CreatePullRequestForBranchArgs): Promise<PullRequest> {
+  }: GitProviderCreatePullRequestArgs): Promise<PullRequest> {
     const { data: pullRequest } = await this.octokit.rest.pulls.create({
       owner,
       repo: repositoryName,
