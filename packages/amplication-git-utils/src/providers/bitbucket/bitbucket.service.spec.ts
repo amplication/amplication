@@ -9,6 +9,8 @@ import {
   Commit,
   Branch,
   PullRequestComment,
+  PullRequest,
+  PaginatedPullRequest,
 } from "./bitbucket.types";
 
 jest.mock("fs");
@@ -819,6 +821,401 @@ describe("bitbucket.service", () => {
         "this is my comment for the pull request",
         "my-token"
       );
+    });
+  });
+
+  describe("getPullRequest", () => {
+    it("throws when git group name wasn't provider", async () => {
+      expect.assertions(1);
+      try {
+        await service.getPullRequest({
+          owner: "maccheroni",
+          branchName: "master",
+          repositoryName: "myrepo",
+        });
+      } catch (e) {
+        expect(e.message).toBe("Missing gitGroupName");
+      }
+    });
+
+    it("returns the pull request", async () => {
+      const mockedGetPullRequestResponse = {
+        values: [
+          {
+            comment_count: 1,
+            task_count: 0,
+            type: "pullrequest",
+            id: 1,
+            title: "amplication pull reequest",
+            description: "",
+            state: "OPEN",
+            merge_commit: null,
+            close_source_branch: false,
+            closed_by: null,
+            author: {
+              display_name: "Amit Barletz",
+              links: {
+                self: {
+                  href: "https://api.bitbucket.org/2.0/users/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D",
+                },
+                avatar: {
+                  href: "https://secure.gravatar.com/avatar/616027f81a603dc0c8a139eb11af65f7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-3.png",
+                },
+                html: {
+                  href: "https://bitbucket.org/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D/",
+                },
+              },
+              type: "user",
+              uuid: "{c3f8c1a5-185c-4fee-9bc1-bbceae764ab4}",
+              account_id: "5c0cb3e50ecb4f1b2ffaad26",
+              nickname: "amit barletz",
+            },
+            reason: "",
+            created_on: "2023-03-23T11:05:17.777468+00:00",
+            updated_on: "2023-03-29T08:33:38.345104+00:00",
+            destination: {
+              branch: {
+                name: "master",
+              },
+              commit: {
+                type: "commit",
+                hash: "4f2b7ade662f",
+                links: {
+                  self: {
+                    href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/4f2b7ade662f",
+                  },
+                  html: {
+                    href: "https://bitbucket.org/ab-2/best-repo/commits/4f2b7ade662f",
+                  },
+                },
+              },
+              repository: {
+                type: "repository",
+                full_name: "ab-2/best-repo",
+                links: {
+                  self: {
+                    href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo",
+                  },
+                  html: {
+                    href: "https://bitbucket.org/ab-2/best-repo",
+                  },
+                  avatar: {
+                    href: "https://bytebucket.org/ravatar/%7B23203fef-f9de-4268-9a81-a8402af296b6%7D?ts=default",
+                  },
+                },
+                name: "best-repo",
+                uuid: "{23203fef-f9de-4268-9a81-a8402af296b6}",
+              },
+            },
+            source: {
+              branch: {
+                name: "dev",
+              },
+              commit: {
+                type: "commit",
+                hash: "e0c79bbe1aec",
+                links: {
+                  self: {
+                    href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/e0c79bbe1aec",
+                  },
+                  html: {
+                    href: "https://bitbucket.org/ab-2/best-repo/commits/e0c79bbe1aec",
+                  },
+                },
+              },
+              repository: {
+                type: "repository",
+                full_name: "ab-2/best-repo",
+                links: {
+                  self: {
+                    href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo",
+                  },
+                  html: {
+                    href: "https://bitbucket.org/ab-2/best-repo",
+                  },
+                  avatar: {
+                    href: "https://bytebucket.org/ravatar/%7B23203fef-f9de-4268-9a81-a8402af296b6%7D?ts=default",
+                  },
+                },
+                name: "best-repo",
+                uuid: "{23203fef-f9de-4268-9a81-a8402af296b6}",
+              },
+            },
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo/pull-requests/1",
+              },
+              commits: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/commits",
+              },
+              approve: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/approve",
+              },
+              "request-changes": {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/request-changes",
+              },
+              diff: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/diff/ab-2/best-repo:e0c79bbe1aec%0D4f2b7ade662f?from_pullrequest_id=1&topic=true",
+              },
+              diffstat: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/diffstat/ab-2/best-repo:e0c79bbe1aec%0D4f2b7ade662f?from_pullrequest_id=1&topic=true",
+              },
+              comments: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/comments",
+              },
+              activity: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/activity",
+              },
+              merge: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/merge",
+              },
+              decline: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/decline",
+              },
+              statuses: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/1/statuses",
+              },
+            },
+            summary: {
+              type: "rendered",
+              raw: "",
+              markup: "markdown",
+              html: "",
+            },
+          },
+        ],
+        pagelen: 10,
+        size: 1,
+        page: 1,
+      } as unknown as PaginatedPullRequest;
+
+      const spyOnGetPullRequestByBranchNameRequest = jest
+        .spyOn(requests, "getPullRequestByBranchNameRequest")
+        .mockResolvedValue(mockedGetPullRequestResponse);
+
+      const pullRequest = mockedGetPullRequestResponse.values[0];
+      const result = await service.getPullRequest({
+        owner: "maccheroni",
+        branchName: pullRequest.source.branch.name,
+        repositoryName: pullRequest.source.repository.name,
+        gitGroupName: pullRequest.source.repository.full_name.split("/")[0],
+      });
+
+      const expectedResult = {
+        url: "https://bitbucket.org/ab-2/best-repo/pull-requests/1",
+        number: 1,
+      };
+
+      expect(spyOnGetPullRequestByBranchNameRequest).toBeCalledTimes(1);
+      expect(result).toEqual(expectedResult);
+    });
+  });
+
+  describe("createPullRequest", () => {
+    it("throws when git group name wasn't provider", async () => {
+      expect.assertions(1);
+      try {
+        await service.createPullRequest({
+          owner: "maccheroni",
+          repositoryName: "myrepo",
+          branchName: "feat/my-feature",
+          defaultBranchName: "dev",
+          pullRequestTitle: "my pull request title",
+          pullRequestBody: "my pull request body",
+        });
+      } catch (e) {
+        expect(e.message).toBe("Missing gitGroupName");
+      }
+    });
+
+    it("create the branch", async () => {
+      const mockedCreatePullRequestResponse = {
+        comment_count: 0,
+        task_count: 0,
+        type: "pullrequest",
+        id: 2,
+        title: "remove unused file",
+        description: "",
+        rendered: {
+          title: {
+            type: "rendered",
+            raw: "remove unused file",
+            markup: "markdown",
+            html: "<p>remove unused file</p>",
+          },
+          description: {
+            type: "rendered",
+            raw: "",
+            markup: "markdown",
+            html: "",
+          },
+        },
+        state: "OPEN",
+        merge_commit: null,
+        close_source_branch: false,
+        closed_by: null,
+        author: {
+          display_name: "Amit Barletz",
+          links: {
+            self: {
+              href: "https://api.bitbucket.org/2.0/users/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D",
+            },
+            avatar: {
+              href: "https://secure.gravatar.com/avatar/616027f81a603dc0c8a139eb11af65f7?d=https%3A%2F%2Favatar-management--avatars.us-west-2.prod.public.atl-paas.net%2Finitials%2FAB-3.png",
+            },
+            html: {
+              href: "https://bitbucket.org/%7Bc3f8c1a5-185c-4fee-9bc1-bbceae764ab4%7D/",
+            },
+          },
+          type: "user",
+          uuid: "{c3f8c1a5-185c-4fee-9bc1-bbceae764ab4}",
+          account_id: "5c0cb3e50ecb4f1b2ffaad26",
+          nickname: "amit barletz",
+        },
+        reason: "",
+        created_on: "2023-04-01T10:49:58.856095+00:00",
+        updated_on: "2023-04-01T10:49:59.853796+00:00",
+        destination: {
+          branch: {
+            name: "dev",
+          },
+          commit: {
+            type: "commit",
+            hash: "e0c79bbe1aec",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/e0c79bbe1aec",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo/commits/e0c79bbe1aec",
+              },
+            },
+          },
+          repository: {
+            type: "repository",
+            full_name: "ab-2/best-repo",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo",
+              },
+              avatar: {
+                href: "https://bytebucket.org/ravatar/%7B23203fef-f9de-4268-9a81-a8402af296b6%7D?ts=default",
+              },
+            },
+            name: "best-repo",
+            uuid: "{23203fef-f9de-4268-9a81-a8402af296b6}",
+          },
+        },
+        source: {
+          branch: {
+            name: "amit",
+          },
+          commit: {
+            type: "commit",
+            hash: "4e878018c732",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/commit/4e878018c732",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo/commits/4e878018c732",
+              },
+            },
+          },
+          repository: {
+            type: "repository",
+            full_name: "ab-2/best-repo",
+            links: {
+              self: {
+                href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo",
+              },
+              html: {
+                href: "https://bitbucket.org/ab-2/best-repo",
+              },
+              avatar: {
+                href: "https://bytebucket.org/ravatar/%7B23203fef-f9de-4268-9a81-a8402af296b6%7D?ts=default",
+              },
+            },
+            name: "best-repo",
+            uuid: "{23203fef-f9de-4268-9a81-a8402af296b6}",
+          },
+        },
+        reviewers: [],
+        participants: [],
+        links: {
+          self: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2",
+          },
+          html: {
+            href: "https://bitbucket.org/ab-2/best-repo/pull-requests/2",
+          },
+          commits: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/commits",
+          },
+          approve: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/approve",
+          },
+          "request-changes": {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/request-changes",
+          },
+          diff: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/diff/ab-2/best-repo:4e878018c732%0De0c79bbe1aec?from_pullrequest_id=2&topic=true",
+          },
+          diffstat: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/diffstat/ab-2/best-repo:4e878018c732%0De0c79bbe1aec?from_pullrequest_id=2&topic=true",
+          },
+          comments: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/comments",
+          },
+          activity: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/activity",
+          },
+          merge: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/merge",
+          },
+          decline: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/decline",
+          },
+          statuses: {
+            href: "https://api.bitbucket.org/2.0/repositories/ab-2/best-repo/pullrequests/2/statuses",
+          },
+        },
+        summary: {
+          type: "rendered",
+          raw: "",
+          markup: "markdown",
+          html: "",
+        },
+      } as unknown as PullRequest;
+
+      const spyOnCreatePullRequestFromRequest = jest
+        .spyOn(requests, "createPullRequestFromRequest")
+        .mockResolvedValue(mockedCreatePullRequestResponse);
+
+      const result = await service.createPullRequest({
+        owner: "maccheroni",
+        repositoryName: "best-repo",
+        branchName: mockedCreatePullRequestResponse.source.branch.name,
+        defaultBranchName:
+          mockedCreatePullRequestResponse.destination.branch.name,
+        pullRequestTitle: mockedCreatePullRequestResponse.title,
+        pullRequestBody: "my pull request body",
+        gitGroupName: "ab-2",
+      });
+
+      const expectedResult = {
+        url: "https://bitbucket.org/ab-2/best-repo/pull-requests/2",
+        number: 2,
+      };
+
+      expect(spyOnCreatePullRequestFromRequest).toBeCalledTimes(1);
+      expect(result).toEqual(expectedResult);
     });
   });
 });
