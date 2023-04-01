@@ -377,10 +377,11 @@ export class BitBucketService implements GitProvider {
       branchName,
       this.accessToken
     );
+    const { links, id: pullRequestId } = pullRequest.values[0];
 
     return {
-      url: pullRequest.links.html.href,
-      number: pullRequest.id,
+      url: links.html.href,
+      number: pullRequestId,
     };
   }
 

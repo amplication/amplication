@@ -355,8 +355,8 @@ export async function getPullRequestByBranchNameRequest(
   repositorySlug: string,
   branchName: string,
   accessToken: string
-): Promise<PullRequest> {
-  const pullRequestOnBranch: PaginatedPullRequest = await requestWrapper(
+): Promise<PaginatedPullRequest> {
+  return requestWrapper(
     GET_PULL_REQUESTS_URL(
       workspaceSlug,
       repositorySlug,
@@ -367,7 +367,6 @@ export async function getPullRequestByBranchNameRequest(
       headers: getRequestHeaders(accessToken),
     }
   );
-  return pullRequestOnBranch.values[0];
 }
 
 export async function createPullRequestFromRequest(
