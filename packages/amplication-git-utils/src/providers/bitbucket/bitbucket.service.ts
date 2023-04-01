@@ -441,7 +441,8 @@ export class BitBucketService implements GitProvider {
     }
     return `https://x-token-auth:${token}@bitbucket.org/${gitGroupName}/${repositoryName}.git`;
   }
-  async commentOnPullRequest(
+
+  async createPullRequestComment(
     args: CreatePullRequestCommentArgs
   ): Promise<void> {
     const {

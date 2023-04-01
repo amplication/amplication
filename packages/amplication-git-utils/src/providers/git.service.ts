@@ -228,7 +228,7 @@ export class GitClientService {
         });
       }
 
-      await this.provider.commentOnPullRequest({
+      await this.provider.createPullRequestComment({
         where: {
           issueNumber: pullRequest.number,
           owner,
