@@ -11,7 +11,9 @@ import {
   Commit,
   Branch,
   PullRequestComment,
+  CreateCommitData,
 } from "./bitbucket.types";
+import { stringify } from "query-string";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -228,7 +230,7 @@ export async function getFileRequest(
 export function createCommitRequest(
   workspaceSlug: string,
   repositorySlug: string,
-  commitData: unknown,
+  commitData: CreateCommitData,
   accessToken: string
 ) {
   return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {
@@ -237,7 +239,7 @@ export function createCommitRequest(
       Authorization: `Bearer ${accessToken}`,
       "Content-Type": "application/x-www-form-urlencoded",
     },
-    body: JSON.stringify(commitData),
+    body: stringify(commitData),
   });
 }
 

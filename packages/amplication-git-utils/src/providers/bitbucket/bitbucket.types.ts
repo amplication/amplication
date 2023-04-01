@@ -142,6 +142,13 @@ export interface Commit {
   };
 }
 
+export interface CreateCommitData {
+  message: string;
+  author: string;
+  parents: string[];
+  branch: { name: string };
+}
+
 export interface PullRequestComment {
   pullRequest: PullRequest;
 }

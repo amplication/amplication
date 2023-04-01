@@ -353,15 +353,22 @@ export class BitBucketService implements GitProvider {
       this.accessToken
     );
 
+    const filesInCommit = Object.entries(files).map(([path, content]) => {
+      return {
+        path,
+        content,
+      };
+    });
+
     await createCommitRequest(
       gitGroupName,
       repositoryName,
       {
-        branch: { name: branchName },
         message: commitMessage,
         author: `${author.name} <${author.email}>`,
         parents: [lastCommit.hash],
-        content: files,
+        branch: { name: branchName },
+        ...filesInCommit,
       },
       this.accessToken
     );
