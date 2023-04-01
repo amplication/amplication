@@ -285,7 +285,10 @@ describe("bitbucket.service", () => {
           email: "monster@spagetti.com",
         },
         commitMessage: "commit message",
-        files: [{ path: "path/file.me", content: "content" }],
+        files: [
+          { path: "server/file1.txt", content: "New content of file1.txt" },
+          { path: "admin/file2.txt", content: "New content of file2.txt" },
+        ],
         branchName: "master",
         repositoryName: "my-repo",
         gitGroupName: "my-group",
@@ -297,11 +300,12 @@ describe("bitbucket.service", () => {
         "my-group",
         "my-repo",
         {
-          branch: { name: "master" },
           message: "commit message",
           author: "Spaghetti Monster <monster@spagetti.com>",
           parents: [mockedGetLastCommitResponse.hash],
-          content: [{ path: "path/file.me", content: "content" }],
+          branch: { name: "master" },
+          "server/file1.txt": "New content of file1.txt",
+          "admin/file2.txt": "New content of file2.txt",
         },
         "my-token"
       );
