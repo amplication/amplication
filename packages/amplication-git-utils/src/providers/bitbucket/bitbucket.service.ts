@@ -47,6 +47,8 @@ import {
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
   repositoryRequest,
+  getPullRequestByBranchNameRequest,
+  createPullRequestFromRequest,
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
@@ -325,12 +327,6 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  createBranchIfNotExists(
-    createBranchIfNotExistsArgs: CreateBranchIfNotExistsArgs
-  ): Promise<Branch> {
-    throw NotImplementedError;
-  }
-
   async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
     const {
       repositoryName,
@@ -367,17 +363,69 @@ export class BitBucketService implements GitProvider {
     );
   }
 
-  getPullRequest(
+  async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<{ url: string; number: number }> {
-    throw NotImplementedError;
+    const { gitGroupName, repositoryName, branchName } = getPullRequestArgs;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+    const pullRequest = await getPullRequestByBranchNameRequest(
+      gitGroupName,
+      repositoryName,
+      branchName,
+      this.accessToken
+    );
+
+    return {
+      url: pullRequest.links.html.href,
+      number: pullRequest.id,
+    };
   }
 
-  createPullRequest(
+  async createPullRequest(
     createPullRequestArgs: GitProviderCreatePullRequestArgs
   ): Promise<PullRequest> {
-    throw NotImplementedError;
+    const {
+      gitGroupName,
+      repositoryName,
+      branchName,
+      defaultBranchName,
+      pullRequestTitle,
+    } = createPullRequestArgs;
+    if (!gitGroupName) {
+      this.logger.error("Missing gitGroupName");
+      throw new CustomError("Missing gitGroupName");
+    }
+
+    const pullRequestData = {
+      title: pullRequestTitle,
+      source: {
+        branch: {
+          name: branchName,
+        },
+      },
+      destination: {
+        branch: {
+          name: defaultBranchName,
+        },
+      },
+    };
+
+    const newPullRequest = await createPullRequestFromRequest(
+      gitGroupName,
+      repositoryName,
+      pullRequestData,
+      this.accessToken
+    );
+
+    return {
+      url: newPullRequest.links.html.href,
+      number: newPullRequest.id,
+    };
   }
+
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
     const { gitGroupName, repositoryName, branchName } = args;
     if (!gitGroupName) {
@@ -395,6 +443,7 @@ export class BitBucketService implements GitProvider {
       sha: branch.target.hash,
     };
   }
+
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
     const { gitGroupName, repositoryName, branchName, pointingSha } = args;
     if (!gitGroupName) {
