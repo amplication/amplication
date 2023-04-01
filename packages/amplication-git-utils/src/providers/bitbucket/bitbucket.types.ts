@@ -146,7 +146,10 @@ export interface CreateCommitData {
   message: string;
   author: string;
   parents: string[];
-  branch: { name: string };
+  branch: {
+    name: string;
+  };
+  [path: string]: string | string[] | { name: string };
 }
 
 export interface PullRequestComment {
