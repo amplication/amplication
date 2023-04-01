@@ -800,7 +800,7 @@ export class GithubService implements GitProvider {
     }, {} as Omit<Required<Changes["files"]>, "undefined">);
   }
 
-  async commentOnPullRequest(
+  async createPullRequestComment(
     args: CreatePullRequestCommentArgs
   ): Promise<void> {
     const { data, where } = args;

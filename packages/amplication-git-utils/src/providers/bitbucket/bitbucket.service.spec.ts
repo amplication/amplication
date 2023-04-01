@@ -726,11 +726,11 @@ describe("bitbucket.service", () => {
     });
   });
 
-  describe("commentOnPullRequest", () => {
+  describe("createPullRequestComment", () => {
     it("throws when git group name wasn't provider", async () => {
       expect.assertions(1);
       try {
-        await service.commentOnPullRequest({
+        await service.createPullRequestComment({
           where: {
             issueNumber: 1,
             owner: "maccheroni",
@@ -801,7 +801,7 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "createCommentOnPrRequest")
         .mockResolvedValue(mockedCreateCommentOnResponse);
 
-      await service.commentOnPullRequest({
+      await service.createPullRequestComment({
         where: {
           issueNumber: 1,
           owner: "maccheroni",
