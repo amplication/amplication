@@ -52,9 +52,6 @@ export interface PaginatedWorkspaceMembership {
 }
 
 interface WorkspaceMembership {
-  links: {
-    self: LinksMetadata;
-  };
   user: Account;
   workspace: Workspace;
 }
@@ -62,7 +59,7 @@ interface WorkspaceMembership {
 interface Workspace {
   links: {
     avatar: LinksMetadata;
-    self: LinksMetadata;
+    html: LinksMetadata;
   };
   uuid: string;
   name: string;
@@ -84,7 +81,7 @@ export interface PaginatedRepositories {
 
 export interface Repository {
   links: {
-    self: LinksMetadata;
+    html: LinksMetadata;
   };
   uuid: string;
   full_name: string; // The concatenation of the repository owner's username and the slugified name, e.g. "evzijst/interruptingcow". This is the same string used in Bitbucket URLs.

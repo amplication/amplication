@@ -188,7 +188,7 @@ export class BitBucketService implements GitProvider {
 
     return {
       name,
-      url: links.self.href,
+      url: links.html.href,
       private: is_private,
       fullName: full_name,
       admin: !!(accessLevel === "admin"),
@@ -216,7 +216,7 @@ export class BitBucketService implements GitProvider {
       ({ name, is_private, links, full_name, mainbranch, accessLevel }) => {
         return {
           name,
-          url: links.self.href,
+          url: links.html.href,
           private: is_private,
           fullName: full_name,
           admin: !!(accessLevel === "admin"),
