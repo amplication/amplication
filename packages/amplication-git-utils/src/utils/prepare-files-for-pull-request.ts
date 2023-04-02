@@ -36,11 +36,16 @@ export async function prepareFilesForPullRequest(
       return {
         path: join(AMPLICATION_IGNORED_FOLDER, module.path),
         content: module.content,
+        skipIfExists: false,
       };
     }
     // Deleted file
     if (module.content === null) {
-      return { path: module.path, content: module.content };
+      return {
+        path: module.path,
+        content: module.content,
+        skipIfExists: false,
+      };
     }
     // Regex ignored file
     if (
@@ -49,16 +54,12 @@ export async function prepareFilesForPullRequest(
     ) {
       return {
         path: module.path,
-        content: ({ exists }) => {
-          // do not create the file if it already exist
-          if (exists) return null;
-
-          return module.content;
-        },
+        content: module.content,
+        skipIfExists: true,
       };
     }
     // Regular file
-    return { path: module.path, content: module.content };
+    return { path: module.path, content: module.content, skipIfExists: false };
   });
   return files;
 }

@@ -76,7 +76,8 @@ export type File = {
 
 export type UpdateFile = {
   path: string;
-  content: string | null | UpdateFileFn;
+  content: string | null;
+  skipIfExists: boolean;
 };
 
 export type UpdateFileFn = ({ exists }: { exists: boolean }) => string | null;
