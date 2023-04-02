@@ -394,6 +394,7 @@ export class BitBucketService implements GitProvider {
       branchName,
       defaultBranchName,
       pullRequestTitle,
+      pullRequestBody,
     } = createPullRequestArgs;
     if (!gitGroupName) {
       this.logger.error("Missing gitGroupName");
@@ -402,6 +403,7 @@ export class BitBucketService implements GitProvider {
 
     const pullRequestData = {
       title: pullRequestTitle,
+      description: pullRequestBody,
       source: {
         branch: {
           name: branchName,
