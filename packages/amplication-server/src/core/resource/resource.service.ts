@@ -375,24 +375,27 @@ export class ResourceService {
       }
     }
 
-    try {
-      await this.projectService.commit({
-        data: {
-          message: INITIAL_COMMIT_MESSAGE,
-          project: {
-            connect: {
-              id: resource.projectId,
+    const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
+    if (isOnboarding) {
+      try {
+        await this.projectService.commit({
+          data: {
+            message: INITIAL_COMMIT_MESSAGE,
+            project: {
+              connect: {
+                id: resource.projectId,
+              },
+            },
+            user: {
+              connect: {
+                id: user.id,
+              },
             },
           },
-          user: {
-            connect: {
-              id: user.id,
-            },
-          },
-        },
-      });
-    } catch (error) {
-      console.log({ error });
+        });
+      } catch (error) {
+        console.log({ error });
+      }
     }
 
     const resourceBuilds = await this.prisma.resource.findUnique({
@@ -425,7 +428,7 @@ export class ResourceService {
 
     return {
       resource: resource,
-      build: resourceBuilds.builds[0],
+      build: isOnboarding ? resourceBuilds.builds[0] : null,
     };
   }
 
