@@ -1048,7 +1048,7 @@ describe("bitbucket.service", () => {
           },
           description: {
             type: "rendered",
-            raw: "",
+            raw: "description for my pull request",
             markup: "markdown",
             html: "",
           },
@@ -1205,7 +1205,7 @@ describe("bitbucket.service", () => {
         defaultBranchName:
           mockedCreatePullRequestResponse.destination.branch.name,
         pullRequestTitle: mockedCreatePullRequestResponse.title,
-        pullRequestBody: "my pull request body",
+        pullRequestBody: "description for my pull request",
         gitGroupName: "ab-2",
       });
 

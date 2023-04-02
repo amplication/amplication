@@ -403,7 +403,9 @@ export class BitBucketService implements GitProvider {
 
     const pullRequestData = {
       title: pullRequestTitle,
-      description: pullRequestBody,
+      description: {
+        raw: pullRequestBody,
+      },
       source: {
         branch: {
           name: branchName,
