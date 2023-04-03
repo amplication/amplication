@@ -7,6 +7,9 @@ export enum EnumEventType {
   WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
   WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
   WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
+  CommitCreate = "commit",
+  WorkspaceSelected = "selectWorkspace",
+  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
 }
 
 export type IdentifyData = {
@@ -56,6 +59,12 @@ export class SegmentAnalyticsService {
 
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
-    this.analytics.track(data);
+    this.analytics.track({
+      ...data,
+      properties: {
+        ...data.properties,
+        source: "amplication-server",
+      },
+    });
   }
 }

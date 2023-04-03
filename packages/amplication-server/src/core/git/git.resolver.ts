@@ -25,6 +25,8 @@ import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGi
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
+import { User } from "../../models";
+import { UserEntity } from "../../decorators/user.decorator";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -70,9 +72,10 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
+    @UserEntity() currentUser: User,
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    return await this.gitService.createGitOrganization(args);
+    return await this.gitService.createGitOrganization(args, currentUser);
   }
 
   @Mutation(() => Resource)
@@ -118,9 +121,10 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async completeGitOAuth2Flow(
+    @UserEntity() currentUser: User,
     @Args() args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
-    return await this.gitService.completeOAuth2Flow(args);
+    return await this.gitService.completeOAuth2Flow(args, currentUser);
   }
 
   @Query(() => PaginatedGitGroup)
