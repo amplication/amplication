@@ -76,7 +76,9 @@ export type File = {
 
 export type UpdateFile = {
   path: string;
-  content: string | null | UpdateFileFn;
+  content: string | null;
+  skipIfExists: boolean;
+  deleted: boolean;
 };
 
 export type UpdateFileFn = ({ exists }: { exists: boolean }) => string | null;
@@ -131,6 +133,7 @@ export interface CreatePullRequestArgs {
   gitResourceMeta: GitResourceMeta;
   files: File[];
   gitGroupName?: string;
+  cloneDirPath: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {

@@ -14,6 +14,7 @@ import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 @Injectable()
 export class PullRequestService {
   gitProvidersConfiguration: GitProvidersConfiguration;
+
   constructor(
     private readonly diffService: DiffService,
     private readonly configService: ConfigService,
@@ -89,10 +90,13 @@ export class PullRequestService {
         providerOrganizationProperties: { installationId },
       },
       this.gitProvidersConfiguration,
-      this.logger
+      this.logger.child({ resourceId, buildId: newBuildId })
     );
+    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
+
     const prUrl = await gitClientService.createPullRequest({
       owner,
+      cloneDirPath,
       repositoryName: repo,
       branchName: head,
       commitMessage: commit.body,

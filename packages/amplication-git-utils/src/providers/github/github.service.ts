@@ -7,6 +7,7 @@ import {
   Changes,
   File as OctokitFile,
   TreeParameter,
+  UpdateFunction,
   UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../../git-provider.interface";
@@ -795,7 +796,18 @@ export class GithubService implements GitProvider {
     files: UpdateFile[]
   ): Required<Changes["files"]> {
     return files.reduce((acc, file) => {
-      acc[file.path] = file.content;
+      if (file.skipIfExists) {
+        // do not create the file if it already exist
+        const gitHubUpdateFn: UpdateFunction = ({ exists }) => {
+          if (exists) {
+            return null;
+          }
+          return file.content;
+        };
+        acc[file.path] = gitHubUpdateFn;
+      } else {
+        acc[file.path] = file.content;
+      }
       return acc;
     }, {} as Omit<Required<Changes["files"]>, "undefined">);
   }
