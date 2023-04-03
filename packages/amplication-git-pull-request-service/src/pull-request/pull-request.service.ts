@@ -90,7 +90,7 @@ export class PullRequestService {
         providerOrganizationProperties: { installationId },
       },
       this.gitProvidersConfiguration,
-      this.logger
+      this.logger.child({ resourceId, buildId: newBuildId })
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 

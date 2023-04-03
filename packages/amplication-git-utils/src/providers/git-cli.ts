@@ -4,10 +4,19 @@ import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 
 export class GitCli {
-  git: SimpleGit;
+  private git: SimpleGit;
+
+  private gitAuthorUserName = "amplication";
+  private gitAuthorUserEmail = "bot@amplication.com";
+  public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
 
   constructor(private readonly repositoryDir: string) {
-    this.git = simpleGit();
+    this.git = simpleGit({
+      config: [
+        `user.name=${this.gitAuthorUserName}`,
+        `user.email=${this.gitAuthorUserEmail}`,
+      ],
+    });
   }
 
   async clone(cloneUrl: string): Promise<void> {
@@ -18,7 +27,7 @@ export class GitCli {
 
   async cherryPick(sha: string) {
     await this.git.raw([
-      `cherry-pick`,
+      "cherry-pick",
       "-m 1",
       "--strategy=recursive",
       "-X",
@@ -66,9 +75,7 @@ export class GitCli {
     );
 
     await this.git.add(["."]);
-    const { commit: commitSha } = await this.git.commit(message, {
-      "--author": author,
-    });
+    const { commit: commitSha } = await this.git.commit(message);
     return commitSha;
   }
 
@@ -76,16 +83,24 @@ export class GitCli {
     return this.git.push();
   }
 
-  // /**
-  //  * Returns git commits by amplication author
-  //  * @param author Author of commits returned by the log
-  //  * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
-  //  */
-  // async log(author: string, maxCount?: number) {
-  //   maxCount = maxCount ?? -1;
-  //   return this.git.log({
-  //     "--author": author,
-  //     "--max-count": maxCount,
-  //   });
-  // }
+  async applyPatch(patches: string[], options?: string[]) {
+    options = options ?? ["--3way", "--whitespace=nowarn"];
+    await this.git
+      .applyPatch(patches, options)
+      .commit("Amplication auto merge-conflicts resolution")
+      .push();
+  }
+
+  /**
+   * Returns git commits by amplication author
+   * @param author Author of commits returned by the log
+   * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
+   */
+  async log(author: string, maxCount?: number) {
+    maxCount = maxCount ?? -1;
+    return this.git.log({
+      "--author": author,
+      "--max-count": maxCount,
+    });
+  }
 }

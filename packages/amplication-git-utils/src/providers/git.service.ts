@@ -1,4 +1,4 @@
-import { mkdir, rm, writeFile, copyFile } from "fs/promises";
+import { mkdir, rm, writeFile } from "fs/promises";
 import { join, normalize, resolve } from "path";
 import { v4 } from "uuid";
 import {
@@ -38,8 +38,6 @@ import { LogResult } from "simple-git";
 export class GitClientService {
   private provider: GitProvider;
   private logger: ILogger;
-
-  private amplicationGitUser = "amplication <bot@amplication.com>";
 
   async create(
     gitProviderArgs: GitProviderArgs,
@@ -176,12 +174,8 @@ export class GitClientService {
         gitCli,
       });
 
-      const sha = await gitCli.commit(
-        branchName,
-        commitMessage,
-        preparedFiles,
-        this.amplicationGitUser
-      );
+      const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
+      await gitCli.push();
       this.logger.debug("New commit added", { sha });
 
       if (diff) {
@@ -265,16 +259,16 @@ export class GitClientService {
         "\\$1"
       );
 
-      lastAmplicationBotCommitOnBranch = await gitCli.git.log({
-        "--author": amplicationBotLoginRegex,
-        "--max-count": maxCount,
-      });
+      lastAmplicationBotCommitOnBranch = await gitCli.log(
+        amplicationBotLoginRegex,
+        maxCount
+      );
     }
 
-    const lastAmplicationGitUserCommitOnBranch = await gitCli.git.log({
-      "--author": this.amplicationGitUser,
-      "--max-count": maxCount,
-    });
+    const lastAmplicationGitUserCommitOnBranch = await gitCli.log(
+      gitCli.gitAuthorUser,
+      maxCount
+    );
 
     return {
       amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
@@ -341,13 +335,10 @@ export class GitClientService {
     this.logger.info(`Saving diff to: ${diffPatchAbsolutePath}`);
 
     await gitCli.resetState();
-    await gitCli.git
-      .applyPatch(diffPatchAbsolutePath, ["--3way", "--whitespace=nowarn"])
-      .add(["."])
-      .commit("Amplication diff restoration", undefined, {
-        "--author": "Amplication diff <info@amplication.com>",
-      })
-      .push();
+    await gitCli.applyPatch(
+      [diffPatchAbsolutePath],
+      ["--3way", "--whitespace=nowarn"]
+    );
 
     await rm(diffPatchAbsolutePath);
   }
