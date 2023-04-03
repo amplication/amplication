@@ -5,7 +5,7 @@ import {
   PluginMap,
 } from "@amplication/code-gen-types";
 import { join } from "path";
-import { defaultLogger as logger } from "./server/logging";
+import { logger } from "./logging";
 
 class EmptyClass {}
 

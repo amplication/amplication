@@ -16,7 +16,7 @@ type TGetResources = {
 };
 
 type TCreateService = {
-  createServiceWithEntities: models.Resource;
+  createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
 };
 
 type TCreateMessageBroker = {
@@ -28,7 +28,8 @@ const createGitRepositoryFullName = (
 ) => {
   return (
     (gitRepository &&
-      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
+      gitRepository?.gitOrganization &&
+      `${gitRepository.gitOrganization?.name}/${gitRepository?.name}`) ||
     "connect to GitHub"
   );
 };
@@ -52,8 +53,20 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
+  const createResourceMatch:
+    | (match & {
+        params: { workspace: string; project: string };
+      })
+    | null = useRouteMatch<{
+    workspace: string;
+    project: string;
+  }>(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
+  );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
+  const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
+    useState<models.ResourceCreateWithEntitiesResult>();
 
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
@@ -86,7 +99,7 @@ const useResources = (
   const resourceRedirect = useCallback(
     (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
+        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
       });
     },
     [currentWorkspace, history, currentProject]
@@ -104,14 +117,19 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
+
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      if (!result.data?.createServiceWithEntities.id) return;
+      if (!result.data?.createServiceWithEntities.resource.id) return;
 
-      const currentResourceId = result.data?.createServiceWithEntities.id;
+      setCreateServiceWithEntitiesResult(
+        result.data?.createServiceWithEntities
+      );
+
+      const currentResourceId =
+        result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
-      createResourcePlugins(currentResourceId);
-
-      refetch().then(() => resourceRedirect(currentResourceId as string));
+      setCurrentResource(result.data?.createServiceWithEntities.resource);
+      refetch();
     });
   };
 
@@ -137,10 +155,13 @@ const useResources = (
     });
   };
 
-  const createResourcePlugins = useCallback((resourceId: string) => {
-    //create auth-core and auth-jwt as default plugins
-    const data: models.PluginInstallationsCreateInput = {
-      plugins: [
+  const createResourcePlugins = useCallback(
+    (
+      resourceId: string,
+      databaseType: "postgres" | "mysql" | "mongo",
+      authType: string
+    ) => {
+      const authCorePlugins = authType === "core" && [
         {
           displayName: "Auth-core",
           pluginId: "auth-core",
@@ -157,21 +178,37 @@ const useResources = (
           version: "latest",
           resource: { connect: { id: resourceId } },
         },
-      ],
-    };
+      ];
 
-    createPluginInstallations({
-      variables: {
-        data: data,
-        where: {
-          id: resourceId,
+      const data: models.PluginInstallationsCreateInput = {
+        plugins: [
+          {
+            displayName: databaseType,
+            pluginId: `db-${databaseType}`,
+            enabled: true,
+            npm: `@amplication/plugin-db-${databaseType}`,
+            version: "latest",
+            resource: { connect: { id: resourceId } },
+          },
+        ],
+      };
+
+      if (authCorePlugins) data.plugins.push(...authCorePlugins);
+
+      createPluginInstallations({
+        variables: {
+          data: data,
+          where: {
+            id: resourceId,
+          },
         },
-      },
-    }).catch(console.error);
-  }, []);
+      }).catch(console.error);
+    },
+    []
+  );
 
   useEffect(() => {
-    if (resourceMatch) return;
+    if (resourceMatch || createResourceMatch) return;
 
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
@@ -257,6 +294,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    createServiceWithEntitiesResult,
   };
 };
 

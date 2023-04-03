@@ -28,6 +28,7 @@ import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
   UpdateOneResourceArgs,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 
 @Resolver(() => Resource)
@@ -123,7 +124,7 @@ export class ResourceResolver {
     return this.resourceService.createService(args, user);
   }
 
-  @Mutation(() => Resource, { nullable: false })
+  @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
@@ -132,7 +133,7 @@ export class ResourceResolver {
   async createServiceWithEntities(
     @Args() args: CreateServiceWithEntitiesArgs,
     @UserEntity() user: User
-  ): Promise<Resource> {
+  ): Promise<ResourceCreateWithEntitiesResult> {
     return this.resourceService.createServiceWithEntities(args.data, user);
   }
 

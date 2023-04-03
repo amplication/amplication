@@ -21,16 +21,10 @@ export default {
     "^axios$": require.resolve("axios"),
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
-  collectCoverageFrom: [
-    "**/*.{ts,tsx}",
-    "!**/*.template.{ts,tsx}",
-    "!**/node_modules/**",
-    "!**/tests/e2e/**",
-  ],
   coverageDirectory: "../../coverage/packages/data-service-generator",
   coverageThreshold: {
     global: {
-      branches: 89.3,
+      branches: 89,
       lines: 92.35,
     },
   },

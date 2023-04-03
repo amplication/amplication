@@ -1,4 +1,5 @@
 import type { Promisable } from "type-fest";
+import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
@@ -7,18 +8,6 @@ import {
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { Events } from "./plugin-events";
-
-interface ILogger {
-  debug: (message: string, params?: Record<string, unknown>) => void;
-  info: (message: string, params?: Record<string, unknown>) => void;
-  warn: (message: string, params?: Record<string, unknown>) => void;
-  error: (
-    message: string,
-    params?: Record<string, unknown>,
-    err?: Error
-  ) => void;
-  child: (metadata?: Record<string, unknown>) => ILogger;
-}
 
 export interface EventParams {}
 
@@ -51,11 +40,18 @@ export interface ContextUtil {
   abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
+
 export interface DsgContext extends DSGResourceData {
+  /**
+   * List of generated files.
+   */
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
-  logger: ILogger;
+  /**
+   * Logger for user facing logs. Logs will be visible in the build log.
+   */
+  logger: BuildLogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;

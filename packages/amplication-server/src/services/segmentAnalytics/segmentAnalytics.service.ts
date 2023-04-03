@@ -7,6 +7,7 @@ export enum EnumEventType {
   WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
   WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
   WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
+  ServiceWizardServiceGenerated = "ServiceWizard_ServiceGenerated",
 }
 
 export type IdentifyData = {
