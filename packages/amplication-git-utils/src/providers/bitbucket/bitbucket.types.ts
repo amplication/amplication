@@ -146,13 +146,31 @@ export interface PullRequestComment {
   pullRequest: PullRequest;
 }
 
+export interface PaginatedPullRequest {
+  size: number;
+  page: number;
+  pagelen: number;
+  next: string;
+  previous: string;
+  values: PullRequest[];
+}
 export interface PullRequest {
   id: number;
   title: string;
+  links: {
+    html: LinksMetadata;
+  };
   author: Account;
   source: PullRequestEndpoint;
   destination: PullRequestEndpoint;
   state: PullRequestStat;
+}
+
+export interface CreatePullRequestData {
+  title: string;
+  description: { raw: string };
+  source: { branch: { name: string } };
+  destination: { branch: { name: string } };
 }
 
 export interface PullRequestEndpoint {

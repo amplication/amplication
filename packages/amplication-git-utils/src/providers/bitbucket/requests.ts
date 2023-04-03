@@ -11,6 +11,9 @@ import {
   Commit,
   Branch,
   PullRequestComment,
+  PaginatedPullRequest,
+  PullRequest,
+  CreatePullRequestData,
 } from "./bitbucket.types";
 
 enum GrantType {
@@ -77,6 +80,31 @@ const CREATE_COMMENT_ON_PULL_REQUEST_URL = (
   pullRequestId: number
 ) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/pullrequests/${pullRequestId}/comments`;
+
+/**
+  Objects can be filtered based on their properties. 
+  In principle, every element in an object's JSON document schema can be used as a filter criterion.
+  Note that while the array of objects in a paginated response is wrapped in an envelope with a values element, 
+  this prefix should not be included in the query fields: 
+  so use /2.0/repositories/foo/bar/issues?q=state="new", not /2.0/repositories/foo/bar/issues?q=values.state="new".
+  
+   * @param workspaceSlug  The workspace name or UUID.
+   * @param repositorySlug The repository name or UUID.
+   * @param query         The query string (including the question mark) ?q=source.branch.name="master"
+   * @returns Paginated pull requests [values (Pull Request), pagelen, page, size, next, previous]
+   */
+const GET_PULL_REQUESTS_URL = (
+  workspaceSlug: string,
+  repositorySlug: string,
+  query?: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/pullrequests${query}`;
+
+const CREATE_PULL_REQUEST_URL = (
+  workspaceSlug: string,
+  repositorySlug: string
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/pullrequests`;
 
 const getAuthHeaders = (clientId: string, clientSecret: string) => ({
   "Content-Type": "application/x-www-form-urlencoded",
@@ -318,6 +346,41 @@ export async function createCommentOnPrRequest(
       method: "POST",
       headers: getRequestHeaders(accessToken),
       body: JSON.stringify({ content: { raw: comment } }),
+    }
+  );
+}
+
+export async function getPullRequestByBranchNameRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  branchName: string,
+  accessToken: string
+): Promise<PaginatedPullRequest> {
+  return requestWrapper(
+    GET_PULL_REQUESTS_URL(
+      workspaceSlug,
+      repositorySlug,
+      `?q=source.branch.name="${branchName}"`
+    ),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
+}
+
+export async function createPullRequestFromRequest(
+  workspaceSlug: string,
+  repositorySlug: string,
+  pullRequestData: CreatePullRequestData,
+  accessToken: string
+): Promise<PullRequest> {
+  return requestWrapper(
+    CREATE_PULL_REQUEST_URL(workspaceSlug, repositorySlug),
+    {
+      method: "POST",
+      headers: getRequestHeaders(accessToken),
+      body: JSON.stringify(pullRequestData),
     }
   );
 }

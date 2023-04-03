@@ -213,6 +213,7 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName,
+        gitGroupName,
       });
 
       let pullRequest = existingPullRequest;

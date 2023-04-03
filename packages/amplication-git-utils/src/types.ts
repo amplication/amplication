@@ -147,6 +147,7 @@ export interface GitProviderGetPullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
+  gitGroupName?: string;
 }
 
 export interface GitProviderCreatePullRequestArgs {
@@ -156,6 +157,7 @@ export interface GitProviderCreatePullRequestArgs {
   defaultBranchName: string;
   pullRequestTitle: string;
   pullRequestBody: string;
+  gitGroupName?: string;
 }
 
 export interface CreateCommitArgs {
