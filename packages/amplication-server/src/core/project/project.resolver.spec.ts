@@ -272,12 +272,15 @@ describe("ProjectResolver", () => {
       },
     });
     expect(commitMock).toBeCalledTimes(1);
-    expect(commitMock).toBeCalledWith({
-      data: {
-        message: EXAMPLE_MESSAGE,
-        project: { connect: { id: EXAMPLE_PROJECT_ID } },
+    expect(commitMock).toBeCalledWith(
+      {
+        data: {
+          message: EXAMPLE_MESSAGE,
+          project: { connect: { id: EXAMPLE_PROJECT_ID } },
+        },
       },
-    });
+      EXAMPLE_USER
+    );
   });
 
   it("should discard pending changes", async () => {

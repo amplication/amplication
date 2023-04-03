@@ -100,9 +100,12 @@ export class ProjectResolver {
     "data.project.connect.id"
   )
   @InjectContextValue(InjectableOriginParameter.UserId, "data.user.connect.id")
-  async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
+  async commit(
+    @UserEntity() currentUser: User,
+    @Args() args: CreateCommitArgs
+  ): Promise<Commit | null> {
     try {
-      return await this.projectService.commit(args);
+      return await this.projectService.commit(args, currentUser);
     } catch (error) {
       this.logger.error(error);
       throw error;
