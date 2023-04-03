@@ -6,7 +6,6 @@ import {
   accumulativePullRequestTitle,
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
-import { MissingEnvParam } from "../errors/MissingEnvParam";
 import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
@@ -141,13 +140,19 @@ export class GitClientService {
     }
 
     if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const gitCli = new GitCli();
-      const cloneFolder = process.env.CLONES_FOLDER;
-      if (!cloneFolder) {
-        throw new MissingEnvParam("CLONES_FOLDER");
-      }
-
       const randomUUID = v4();
+      const gitRepoDir = normalize(
+        join(
+          createPullRequestArgs.cloneDirPath,
+          this.provider.name,
+          owner,
+          repositoryName,
+          randomUUID
+        )
+      );
+
+      const gitCli = new GitCli(gitRepoDir);
+
       const cloneToken = await this.provider.getToken();
 
       const cloneUrl = this.provider.getCloneUrl({
@@ -157,11 +162,7 @@ export class GitClientService {
         gitGroupName,
       });
 
-      const cloneDir = normalize(
-        join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
-      );
-
-      await gitCli.clone(cloneUrl, cloneDir);
+      await gitCli.clone(cloneUrl);
 
       await this.restoreAmplicationBranchIfNotExists({
         owner,
@@ -218,7 +219,7 @@ export class GitClientService {
         });
       }
 
-      await rm(cloneDir, { recursive: true, force: true });
+      await rm(gitRepoDir, { recursive: true, force: true });
 
       const { defaultBranch } = await this.provider.getRepository({
         owner,

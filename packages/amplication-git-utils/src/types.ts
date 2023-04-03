@@ -132,6 +132,7 @@ export interface CreatePullRequestArgs {
   gitResourceMeta: GitResourceMeta;
   files: File[];
   gitGroupName?: string;
+  cloneDirPath: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {

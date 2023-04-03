@@ -3,13 +3,13 @@ import { CleanOptions, CommitResult, simpleGit, SimpleGit } from "simple-git";
 export class GitCli {
   git: SimpleGit;
 
-  constructor() {
+  constructor(private readonly repositoryDir: string) {
     this.git = simpleGit();
   }
 
-  async clone(cloneUrl: string, cloneDir: string): Promise<void> {
-    await this.git.clone(cloneUrl, cloneDir, ["--no-checkout"]);
-    await this.git.cwd(cloneDir);
+  async clone(cloneUrl: string): Promise<void> {
+    await this.git.clone(cloneUrl, this.repositoryDir, ["--no-checkout"]);
+    await this.git.cwd(this.repositoryDir);
     return;
   }
 
