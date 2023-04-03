@@ -1,5 +1,5 @@
 import { Icon, TextField } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 
 import "./CreateServiceRepository.scss";
 
@@ -7,6 +7,7 @@ import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayou
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { kebabCase } from "lodash";
 
 const className = "create-service-repository";
 
@@ -31,6 +32,11 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
       );
     },
     [formik.values]
+  );
+
+  const kebabCaseServiceName = useMemo(
+    () => kebabCase(formik.values.serviceName),
+    [formik.values.serviceName]
   );
 
   return (
@@ -93,11 +99,11 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                     >
                       <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
-                        {formik.values.serviceName}
+                        {kebabCaseServiceName}
                       </div>
                       <div className={`${className}__monorepo_box_folder`}>
                         <Icon icon={"folder"}></Icon>
-                        {`${formik.values.serviceName}-admin`}
+                        {`${kebabCaseServiceName}-admin`}
                       </div>
                     </div>
                   </div>
@@ -107,11 +113,11 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({
                   <div className={`${className}__repo_example_list_folders`}>
                     <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
-                      {formik.values.serviceName}
+                      {kebabCaseServiceName}
                     </div>
                     <div className={`${className}__monorepo_box_folder`}>
                       <Icon icon={"folder"}></Icon>
-                      {`${formik.values.serviceName}-admin`}
+                      {`${kebabCaseServiceName}-admin`}
                     </div>
                   </div>
                 </div>
