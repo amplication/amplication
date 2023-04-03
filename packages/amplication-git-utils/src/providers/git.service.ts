@@ -175,7 +175,6 @@ export class GitClientService {
       });
 
       const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
-      await gitCli.push();
       this.logger.debug("New commit added", { sha });
 
       if (diff) {
@@ -285,7 +284,7 @@ export class GitClientService {
     branchName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     this.logger.info("Pre commit process");
-    await gitCli.git.checkout(branchName);
+    await gitCli.checkout(branchName);
 
     const gitLogs = await this.gitLog(gitCli, 1);
     if (
@@ -302,17 +301,19 @@ export class GitClientService {
       gitLogs.amplicationGitUser.latest?.hash ||
       gitLogs.amplicationBot?.latest?.hash;
     if (!hash) {
-      this.logger.info("Didn't find a commit hash");
+      this.logger.warn("Didn't find a commit hash");
       return { diff: null };
     }
-    const diff = await gitCli.git.diff([hash]);
+
+    const diff = await gitCli.diff([hash]);
     if (!diff) {
-      this.logger.info("Diff returned empty");
+      this.logger.warn("Diff returned empty");
       return { diff: null };
     }
+
     // Reset the branch to the latest commit of the user / bot
-    await gitCli.git.reset([hash]);
-    await gitCli.git.push(["--force"]);
+    await gitCli.reset([hash]);
+    await gitCli.push(["--force"]);
     await gitCli.resetState();
     this.logger.info("Diff returned");
     return { diff };
@@ -394,7 +395,7 @@ export class GitClientService {
       await gitCli.cherryPick(commit.hash);
     }
 
-    await gitCli.git.push();
+    await gitCli.push();
   }
 
   private async manageAmplicationIgnoreFile(owner, repositoryName) {

@@ -48,11 +48,14 @@ export class GitCli {
       .clean(CleanOptions.FORCE);
   }
 
+  async diff(ref: string[]) {
+    return this.git.diff(ref);
+  }
+
   async commit(
     branchName: string,
     message: string,
-    files: UpdateFile[],
-    author: string
+    files: UpdateFile[]
   ): Promise<string> {
     await this.checkout(branchName);
 
@@ -76,11 +79,16 @@ export class GitCli {
 
     await this.git.add(["."]);
     const { commit: commitSha } = await this.git.commit(message);
+    await this.git.push();
     return commitSha;
   }
 
-  async push() {
-    return this.git.push();
+  async reset(options: string[]) {
+    return this.git.reset(options);
+  }
+
+  async push(options?: string[]) {
+    return this.git.push(options);
   }
 
   async applyPatch(patches: string[], options?: string[]) {
