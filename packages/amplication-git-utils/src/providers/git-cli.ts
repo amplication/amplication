@@ -6,9 +6,10 @@ import { join } from "node:path";
 export class GitCli {
   private git: SimpleGit;
 
-  private gitAuthorUserName = "amplication";
+  private gitAuthorUserName = "amplication[bot]";
   private gitAuthorUserEmail = "bot@amplication.com";
   public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
+  private gitConflictsResolverAuthor = `amplication[branch whisperer] <${this.gitAuthorUserEmail}>`;
 
   constructor(private readonly repositoryDir: string) {
     this.git = simpleGit({
@@ -95,7 +96,9 @@ export class GitCli {
     options = options ?? ["--3way", "--whitespace=nowarn"];
     await this.git
       .applyPatch(patches, options)
-      .commit("Amplication auto merge-conflicts resolution")
+      .commit("Amplication merge conflicts auto-resolution", undefined, {
+        "--author": this.gitConflictsResolverAuthor,
+      })
       .push();
   }
 
