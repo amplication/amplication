@@ -1,4 +1,4 @@
-import { CleanOptions, simpleGit, SimpleGit } from "simple-git";
+import { CleanOptions, ResetMode, simpleGit, SimpleGit } from "simple-git";
 import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
@@ -44,7 +44,7 @@ export class GitCli {
     await this.git
       .fetch(["--all"])
       .pull()
-      .reset(["--hard"])
+      .reset(ResetMode.HARD)
       .clean(CleanOptions.FORCE);
   }
 
@@ -83,8 +83,8 @@ export class GitCli {
     return commitSha;
   }
 
-  async reset(options: string[]) {
-    return this.git.reset(options);
+  async reset(options: string[], mode: ResetMode = ResetMode.HARD) {
+    return this.git.reset(mode, options);
   }
 
   async push(options?: string[]) {
