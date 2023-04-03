@@ -108,9 +108,11 @@ export class GitCli {
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
   async log(author: string, maxCount?: number) {
+    const authorEscaped = author.replace("[", "\\[").replace("]", "\\]");
+
     maxCount = maxCount ?? -1;
     return this.git.log({
-      "--author": author,
+      "--author": authorEscaped,
       "--max-count": maxCount,
     });
   }

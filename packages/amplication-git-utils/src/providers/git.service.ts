@@ -253,13 +253,8 @@ export class GitClientService {
     let lastAmplicationBotCommitOnBranch: LogResult | null = null;
 
     if (amplicationBot) {
-      const amplicationBotLoginRegex = amplicationBot.login.replace(
-        /([[\]])/g,
-        "\\$1"
-      );
-
       lastAmplicationBotCommitOnBranch = await gitCli.log(
-        amplicationBotLoginRegex,
+        amplicationBot.login,
         maxCount
       );
     }
