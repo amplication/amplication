@@ -23,7 +23,9 @@
     "serve:plugins": "npx nx serve amplication-plugin-api"
   },
   "lint-staged": {
-    "*": ["nx format:write --files"]
+    "*": [
+      "nx format:write --files"
+    ]
   },
   "dependencies": {
     "@amplication/react-compound-timer": "^2.1.0",
