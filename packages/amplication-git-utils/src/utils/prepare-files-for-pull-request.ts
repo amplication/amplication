@@ -37,6 +37,7 @@ export async function prepareFilesForPullRequest(
         path: join(AMPLICATION_IGNORED_FOLDER, module.path),
         content: module.content,
         skipIfExists: false,
+        deleted: false,
       };
     }
     // Deleted file
@@ -45,6 +46,7 @@ export async function prepareFilesForPullRequest(
         path: module.path,
         content: module.content,
         skipIfExists: false,
+        deleted: true,
       };
     }
     // Regex ignored file
@@ -56,10 +58,16 @@ export async function prepareFilesForPullRequest(
         path: module.path,
         content: module.content,
         skipIfExists: true,
+        deleted: false,
       };
     }
     // Regular file
-    return { path: module.path, content: module.content, skipIfExists: false };
+    return {
+      path: module.path,
+      content: module.content,
+      skipIfExists: false,
+      deleted: false,
+    };
   });
   return files;
 }

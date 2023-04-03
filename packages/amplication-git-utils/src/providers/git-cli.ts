@@ -1,4 +1,7 @@
-import { CleanOptions, CommitResult, simpleGit, SimpleGit } from "simple-git";
+import { CleanOptions, simpleGit, SimpleGit } from "simple-git";
+import { UpdateFile } from "../types";
+import { mkdir, writeFile, rm } from "node:fs/promises";
+import { join } from "node:path";
 
 export class GitCli {
   git: SimpleGit;
@@ -39,19 +42,50 @@ export class GitCli {
   async commit(
     branchName: string,
     message: string,
-    filesPath: string[],
+    files: UpdateFile[],
     author: string
   ): Promise<string> {
-    await this.git.checkout(branchName);
-    await this.git.add("./*");
+    await this.checkout(branchName);
 
-    const { commit: commitSha } = await this.git.commit(message, filesPath, {
+    await Promise.all(
+      files.map(async (file) => {
+        const filePath = join(this.repositoryDir, file.path);
+        const fileParentDir = filePath.split("/").slice(0, -1).join("/");
+
+        if (file.deleted) {
+          await rm(filePath);
+          return filePath;
+        }
+
+        if (!file.skipIfExists) {
+          await mkdir(fileParentDir, { recursive: true });
+          await writeFile(filePath, file.content ?? "");
+          return filePath;
+        }
+      })
+    );
+
+    await this.git.add(["."]);
+    const { commit: commitSha } = await this.git.commit(message, {
       "--author": author,
     });
     return commitSha;
   }
 
   async push() {
-    return this.push();
+    return this.git.push();
   }
+
+  // /**
+  //  * Returns git commits by amplication author
+  //  * @param author Author of commits returned by the log
+  //  * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
+  //  */
+  // async log(author: string, maxCount?: number) {
+  //   maxCount = maxCount ?? -1;
+  //   return this.git.log({
+  //     "--author": author,
+  //     "--max-count": maxCount,
+  //   });
+  // }
 }
