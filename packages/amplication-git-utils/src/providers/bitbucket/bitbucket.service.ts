@@ -3,8 +3,6 @@ import { GitProvider } from "../../git-provider.interface";
 import {
   OAuthData,
   Branch,
-  CreateBranchIfNotExistsArgs,
-  CreateCommitArgs,
   GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
@@ -325,42 +323,6 @@ export class BitBucketService implements GitProvider {
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
     throw NotImplementedError;
-  }
-
-  async createCommit(createCommitArgs: CreateCommitArgs): Promise<void> {
-    const {
-      repositoryName,
-      files,
-      branchName,
-      commitMessage,
-      author,
-      gitGroupName,
-    } = createCommitArgs;
-
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
-    }
-
-    const lastCommit = await getLastCommitRequest(
-      gitGroupName,
-      repositoryName,
-      branchName,
-      this.accessToken
-    );
-
-    await createCommitRequest(
-      gitGroupName,
-      repositoryName,
-      {
-        branch: { name: branchName },
-        message: commitMessage,
-        author: `${author.name} <${author.email}>`,
-        parents: [lastCommit.hash],
-        content: files,
-      },
-      this.accessToken
-    );
   }
 
   async getPullRequest(

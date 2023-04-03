@@ -3,7 +3,6 @@ import {
   CloneUrlArgs,
   Commit,
   CreateBranchArgs,
-  CreateCommitArgs,
   CreatePullRequestCommentArgs,
   GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
@@ -49,7 +48,6 @@ export interface GitProvider {
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
-  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
   getPullRequest: (
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ) => Promise<PullRequest | null>;

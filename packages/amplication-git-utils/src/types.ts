@@ -163,19 +163,6 @@ export interface GitProviderCreatePullRequestArgs {
   gitGroupName?: string;
 }
 
-export interface CreateCommitArgs {
-  owner: string;
-  author: {
-    name: string;
-    email: string;
-  };
-  repositoryName: string;
-  commitMessage: string;
-  branchName: string;
-  files: UpdateFile[];
-  gitGroupName?: string;
-}
-
 export interface LinksMetadata {
   href: string;
   name: string;
