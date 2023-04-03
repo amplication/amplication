@@ -20,7 +20,7 @@ const logger: ILogger = {
 
 const amplicationBotOrIntegrationApp = { id: "2", login: "amplication[bot]" };
 const amplicationGitUser = {
-  name: "amplication",
+  name: "amplication[bot]",
   email: "bot@amplication.com",
 };
 const amplicationGitUserAuthor = `${amplicationGitUser.name} <${amplicationGitUser.email}>`;
@@ -30,17 +30,14 @@ describe("GitClientService", () => {
   const mockedGitLog = jest.fn();
   const mockedGitDiff = jest.fn();
 
-  const mockedSimpleGit: SimpleGit = {
+  const mockedGitCli: GitCli = {
+    gitAuthorUser: amplicationGitUserAuthor,
     log: mockedGitLog,
     checkout: jest.fn(),
     reset: jest.fn(),
     push: jest.fn(),
     resetState: jest.fn(),
     diff: mockedGitDiff,
-  } as unknown as SimpleGit;
-
-  const mockedGitCli: GitCli = {
-    git: mockedSimpleGit,
   } as unknown as GitCli;
 
   const mockedAmplicationBotIdentity = jest
@@ -64,8 +61,8 @@ describe("GitClientService", () => {
 
   describe("when there are no commits from amplication <bot@amplication.com> and there are commits for amplication[bot] (or amplication provider integration)", () => {
     beforeEach(() => {
-      mockedGitLog.mockImplementation((args) => {
-        if (args["--author"] === amplicationGitUserAuthor)
+      mockedGitLog.mockImplementation((author, maxCount) => {
+        if (author === amplicationGitUserAuthor)
           return {
             all: [],
             total: 0,
@@ -149,11 +146,7 @@ describe("GitClientService", () => {
 
       expect(mockedGitLog).toHaveBeenCalledTimes(1);
 
-      expect(mockedGitLog).toBeCalledWith(
-        expect.objectContaining({
-          "--author": amplicationGitUserAuthor,
-        })
-      );
+      expect(mockedGitLog).toBeCalledWith(amplicationGitUserAuthor, 1);
     });
   });
 });
