@@ -151,6 +151,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               setIsValidStep(false);
               return;
             }
+            if (!values.isOverrideGitRepository) {
+              setIsValidStep(false);
+              return;
+            }
 
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);

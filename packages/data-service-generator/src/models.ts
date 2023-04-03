@@ -277,6 +277,7 @@ export type CompleteInvitationInput = {
 
 export type ConnectGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
+  isOverrideGitRepository?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   resourceId: Scalars['String'];
 };
@@ -1777,7 +1778,7 @@ export type ResourceCreateWithEntitiesInput = {
 };
 
 export type ResourceCreateWithEntitiesResult = {
-  build: Build;
+  build?: Maybe<Build>;
   resource: Resource;
 };
 

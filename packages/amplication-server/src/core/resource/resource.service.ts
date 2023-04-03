@@ -113,7 +113,8 @@ export class ResourceService {
    */
   private async createResource(
     args: CreateOneResourceArgs,
-    gitRepositoryToCreate: ConnectGitRepositoryInput = null
+    gitRepositoryToCreate: ConnectGitRepositoryInput = null,
+    wizardType: string = null
   ): Promise<Resource> {
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
@@ -160,22 +161,23 @@ export class ResourceService {
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
 
-    let isOverride = false;
-
     if (
-      projectConfiguration.gitRepositoryId &&
-      args.data.resourceType !== EnumResourceType.Service
+      projectConfiguration.gitRepositoryId ||
+      (args.data.resourceType === EnumResourceType.Service &&
+        !gitRepositoryToCreate.isOverrideGitRepository)
     ) {
       gitRepository = {
-        connect: { id: projectConfiguration.gitRepositoryId || "" },
+        connect: { id: projectConfiguration.gitRepositoryId },
       };
     }
-    if (args.data.resourceType === EnumResourceType.Service) {
+
+    if (
+      args.data.resourceType === EnumResourceType.Service &&
+      gitRepositoryToCreate.isOverrideGitRepository
+    ) {
       if (!gitRepositoryToCreate) {
         throw new AmplicationError("Git Repository settings are missing");
       }
-
-      isOverride = true;
 
       const wizardGitRepository = await this.prisma.gitRepository.create({
         data: {
@@ -192,11 +194,22 @@ export class ResourceService {
       };
     }
 
+    if (wizardType.toLowerCase() === "onboarding") {
+      await this.prisma.resource.update({
+        data: {
+          gitRepository: gitRepository,
+        },
+        where: {
+          id: projectConfiguration.id,
+        },
+      });
+    }
+
     return await this.prisma.resource.create({
       data: {
         ...args.data,
         gitRepository,
-        gitRepositoryOverride: isOverride,
+        gitRepositoryOverride: gitRepositoryToCreate.isOverrideGitRepository,
       },
     });
   }
@@ -224,7 +237,8 @@ export class ResourceService {
    */
   async createService(
     args: CreateOneResourceArgs,
-    user: User
+    user: User,
+    wizardType: string = null
   ): Promise<Resource> {
     const { serviceSettings, ...rest } = args.data;
     const resource = await this.createResource(
@@ -234,7 +248,8 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
-      args.data.gitRepository
+      args.data.gitRepository,
+      wizardType
     );
 
     await this.prisma.resourceRole.create({
@@ -283,7 +298,8 @@ export class ResourceService {
       {
         data: data.resource,
       },
-      user
+      user,
+      data.wizardType
     );
 
     const newEntities: {
@@ -668,6 +684,9 @@ export class ResourceService {
       where: {
         resourceType: EnumResourceType.ProjectConfiguration,
         project: { id: projectId },
+      },
+      include: {
+        gitRepository: true,
       },
     });
   }
