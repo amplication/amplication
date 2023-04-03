@@ -194,7 +194,7 @@ export class ResourceService {
       };
     }
 
-    if (wizardType.toLowerCase() === "onboarding") {
+    if (wizardType?.toLowerCase() === "onboarding") {
       await this.prisma.resource.update({
         data: {
           gitRepository: gitRepository,

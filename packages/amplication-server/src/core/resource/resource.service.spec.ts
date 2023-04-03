@@ -593,6 +593,7 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
