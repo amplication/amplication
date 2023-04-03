@@ -210,7 +210,7 @@
     "@types/jest": "^28.1.0",
     "@types/json-schema": "^7.0.11",
     "@types/jsonwebtoken": "^9.0.0",
-    "@types/lodash": "^4.14.186",
+    "@types/lodash": "^4.14.192",
     "@types/minimatch": "^3.0.5",
     "@types/node": "^18.11.9",
     "@types/node-fetch": "^2.6.2",
