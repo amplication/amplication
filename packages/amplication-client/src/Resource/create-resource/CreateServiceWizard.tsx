@@ -263,6 +263,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateGithubSync
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          defineUser={defineUser}
         />
         <CreateGenerationSettings
           moduleClass={moduleClass}

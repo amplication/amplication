@@ -145,6 +145,7 @@ export function prepareServiceObject(
         name: gitRepository.name,
         gitOrganizationId: gitRepository.gitOrganizationId,
         resourceId: "",
+        isOverrideGitRepository: gitRepository.isOverrideGitRepository,
       },
     },
     commitMessage: "",

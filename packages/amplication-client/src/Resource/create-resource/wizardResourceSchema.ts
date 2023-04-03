@@ -25,6 +25,10 @@ const GitRepository = {
       type: "string",
       minLength: 2,
     },
+    isOverrideGitRepository: {
+      type: "boolean",
+      default: false,
+    },
   },
   required: ["gitOrganizationId", "gitRepositoryName"],
 };
@@ -112,6 +116,7 @@ export const ResourceInitialValues = {
   serviceName: null,
   gitOrganizationId: null,
   gitRepositoryName: null,
+  isOverrideGitRepository: false,
   gitRepositoryUrl: null,
   generateAdminUI: true,
   generateGraphQL: true,

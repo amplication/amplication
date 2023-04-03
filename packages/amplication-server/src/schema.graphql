@@ -1224,11 +1224,12 @@ input ConnectGitRepositoryInput {
   name: String!
   resourceId: String!
   gitOrganizationId: String!
+  isOverrideGitRepository: Boolean
 }
 
 type ResourceCreateWithEntitiesResult {
   resource: Resource!
-  build: Build!
+  build: Build
 }
 
 input ResourceCreateWithEntitiesInput {

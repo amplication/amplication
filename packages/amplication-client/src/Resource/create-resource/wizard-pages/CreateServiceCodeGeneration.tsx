@@ -112,7 +112,7 @@ const CreateServiceCodeGeneration: React.FC<
   const handleTryAgainClick = useCallback(() => {
     commit({
       variables: {
-        message: "Initial commit test",
+        message: "Initial commit",
         projectId: currentProject.id,
       },
     }).catch(console.error);

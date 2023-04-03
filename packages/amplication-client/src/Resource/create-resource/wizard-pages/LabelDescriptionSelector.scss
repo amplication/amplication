@@ -34,6 +34,7 @@
   label {
     @include title-18;
     white-space: pre;
+    cursor: pointer;
   }
 
   &__description {

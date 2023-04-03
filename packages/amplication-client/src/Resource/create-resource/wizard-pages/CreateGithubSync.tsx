@@ -9,12 +9,19 @@ import {
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { DefineUser } from "../CreateServiceWizard";
+import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 
 const className = "create-github-sync";
 
-const CreateGithubSync: React.FC<WizardStepProps> = ({
+type props = {
+  defineUser: DefineUser;
+} & WizardStepProps;
+
+const CreateGithubSync: React.FC<props> = ({
   moduleClass,
   formik,
+  defineUser,
   trackWizardPageEvent,
 }) => {
   const { refreshCurrentWorkspace, currentProjectConfiguration } =
@@ -99,27 +106,36 @@ const CreateGithubSync: React.FC<WizardStepProps> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <div className={`${className}__github_box`}>
-          <AuthWithGit
-            onDone={handleOnDone}
-            onGitRepositorySelected={handleOnGitRepositorySelected}
-            onGitRepositoryCreated={handleOnGitRepositoryCreated}
-            onGitRepositoryDisconnected={() => {
-              formik.setValues(
-                {
-                  ...formik.values,
-                  gitRepositoryName: null,
-                  gitOrganizationId: null,
-                  gitRepositoryUrl: null,
-                },
-                true
-              );
-            }}
-            gitRepositorySelected={{
-              gitOrganizationId: formik.values.gitOrganizationId,
-              repositoryName: formik.values.gitRepositoryName,
-              gitRepositoryUrl: formik.values.gitRepositoryUrl,
-            }}
-          ></AuthWithGit>
+          {defineUser === "Onboarding" ? (
+            <AuthWithGit
+              onDone={handleOnDone}
+              onGitRepositorySelected={handleOnGitRepositorySelected}
+              onGitRepositoryCreated={handleOnGitRepositoryCreated}
+              onGitRepositoryDisconnected={() => {
+                formik.setValues(
+                  {
+                    ...formik.values,
+                    gitRepositoryName: null,
+                    gitOrganizationId: null,
+                    gitRepositoryUrl: null,
+                  },
+                  true
+                );
+              }}
+              gitRepositorySelected={{
+                gitOrganizationId: formik.values.gitOrganizationId,
+                repositoryName: formik.values.gitRepositoryName,
+                gitRepositoryUrl: formik.values.gitRepositoryUrl,
+              }}
+            ></AuthWithGit>
+          ) : (
+            <ServiceWizardConfigurationGitSettings
+              onDone={handleOnDone}
+              formik={formik}
+              onGitRepositorySelected={handleOnGitRepositorySelected}
+              onGitRepositoryCreated={handleOnGitRepositoryCreated}
+            ></ServiceWizardConfigurationGitSettings>
+          )}
         </div>
       </Layout.RightSide>
     </Layout.Split>
