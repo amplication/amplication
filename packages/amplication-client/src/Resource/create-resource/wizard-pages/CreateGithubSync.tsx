@@ -93,7 +93,7 @@ const CreateGithubSync: React.FC<props> = ({
     <Layout.Split>
       <Layout.LeftSide>
         <Layout.DescriptionCustom
-          header="Now, let`s connect to a Git repository"
+          header="Now, let's connect to a Git repository"
           text={
             <div className={`create-service-wizard-layout__description__text`}>
               Amplication automatically pushes the generated code of your
