@@ -13,15 +13,15 @@ import { Env } from "../env";
 // import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
-import { QueueService } from "./queue.service";
 import { CreatePrRequestValue } from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 @Controller()
 export class PullRequestController {
   constructor(
     private readonly pullRequestService: PullRequestService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService,
+    private readonly producerService: KafkaProducerService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
@@ -61,10 +61,10 @@ export class PullRequestController {
 
       const response = { url: pullRequest, buildId: validArgs.newBuildId };
 
-      this.queueService.emitMessage(
-        KafkaTopics.CreatePrSuccess,
-        JSON.stringify(response)
-      );
+      await this.producerService.emitMessage(KafkaTopics.CreatePrSuccess, {
+        key: null,
+        value: response,
+      });
     } catch (error) {
       this.logger.error(error, {
         class: this.constructor.name,
@@ -77,10 +77,10 @@ export class PullRequestController {
         errorMessage: error.message,
       };
 
-      this.queueService.emitMessage(
-        KafkaTopics.CreatePrFailure,
-        JSON.stringify(response)
-      );
+      await this.producerService.emitMessage(KafkaTopics.CreatePrFailure, {
+        key: null,
+        value: response,
+      });
     }
   }
 }
