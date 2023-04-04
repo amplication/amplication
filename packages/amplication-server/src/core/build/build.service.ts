@@ -36,8 +36,8 @@ import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
-import { SendPullRequestArgs } from "./dto/sendPullRequest";
 import { BillingFeature } from "../billing/billing.types";
+import { CreatePrRequest } from "@amplication/schema-registry";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -386,7 +386,7 @@ export class BuildService {
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
-  async saveToGitHub(buildId: string): Promise<void> {
+  public async saveToGitProvider(buildId: string): Promise<void> {
     const build = await this.findOne({ where: { id: buildId } });
 
     const oldBuild = await previousBuild(
@@ -466,7 +466,7 @@ export class BuildService {
               )
             : false;
 
-          const createPullRequestArgs: SendPullRequestArgs = {
+          const createPullRequestEvent: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -495,7 +495,7 @@ export class BuildService {
           await this.queueService.emitMessageWithKey(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
             resourceRepository.id,
-            JSON.stringify(createPullRequestArgs)
+            JSON.stringify(createPullRequestEvent)
           );
         } catch (error) {
           this.logger.error(
@@ -541,6 +541,7 @@ export class BuildService {
       (entity) => entity.createdAt
     ) as unknown as CodeGenTypes.Entity[];
   }
+
   async canUserAccess({
     userId,
     buildId,

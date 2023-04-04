@@ -9,7 +9,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { CreatePrRequest } from "@amplication/schema-registry";
 
 @Injectable()
 export class PullRequestService {
@@ -68,7 +68,7 @@ export class PullRequestService {
     gitResourceMeta,
     pullRequestMode,
     gitGroupName,
-  }: CreatePullRequestArgs): Promise<string> {
+  }: CreatePrRequest.Value): Promise<string> {
     const { body, title } = commit;
     const head =
       commit.head || pullRequestMode === EnumPullRequestMode.Accumulative

@@ -10,10 +10,11 @@ import {
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { Env } from "../env";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+// import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
 import { QueueService } from "./queue.service";
+import { CreatePrRequest } from "@amplication/schema-registry";
 
 @Controller()
 export class PullRequestController {
@@ -27,10 +28,10 @@ export class PullRequestController {
 
   @EventPattern(KafkaTopics.CreatePrRequest)
   async generatePullRequest(
-    @Payload() message: CreatePullRequestArgs,
+    @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
   ) {
-    const validArgs = plainToInstance(CreatePullRequestArgs, message);
+    const validArgs = plainToInstance(CreatePrRequest.Value, message);
     await validateOrReject(validArgs);
 
     const offset = context.getMessage().offset;

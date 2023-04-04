@@ -1,9 +1,24 @@
-import { EnumPullRequestMode, GitResourceMeta } from "@amplication/git-utils";
+import {
+  EnumGitProvider,
+  EnumPullRequestMode,
+  GitResourceMeta,
+} from "@amplication/git-utils";
 import { IsOptional, IsString, ValidateNested } from "class-validator";
-import { EnumGitProvider } from "../../models";
-import { CreateCommit } from "./create-commit.dto";
 
-export class CreatePullRequestArgs {
+class Commit {
+  @IsString()
+  @IsOptional()
+  base?: string | undefined;
+  @IsOptional()
+  @IsString()
+  head?: string | undefined;
+  @IsString()
+  title!: string;
+  @IsString()
+  body!: string;
+}
+
+export class Value {
   @IsString()
   resourceId!: string;
   @IsString()
@@ -20,11 +35,11 @@ export class CreatePullRequestArgs {
   @IsString()
   gitRepositoryName!: string;
   @ValidateNested()
-  commit: CreateCommit;
+  commit!: Commit;
   @ValidateNested()
-  gitResourceMeta: GitResourceMeta;
+  gitResourceMeta!: GitResourceMeta;
   @IsString()
-  pullRequestMode: EnumPullRequestMode;
+  pullRequestMode!: EnumPullRequestMode;
   @IsString()
   @IsOptional()
   gitGroupName?: string;
