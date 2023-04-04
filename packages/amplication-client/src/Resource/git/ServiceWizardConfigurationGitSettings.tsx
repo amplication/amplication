@@ -56,6 +56,17 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
           },
           true
         );
+      } else {
+        formik.setValues(
+          {
+            ...formik.values,
+            gitRepositoryName: null,
+            gitOrganizationId: null,
+            gitRepositoryUrl: null,
+            isOverrideGitRepository: true,
+          },
+          true
+        );
       }
       trackEvent({
         eventName: AnalyticsEventNames.ResourceInfoUpdate,
