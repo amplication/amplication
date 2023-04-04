@@ -50,7 +50,7 @@ export class BuildController {
       args.buildId,
       EnumActionStepStatus.Success
     );
-    await this.buildService.saveToGitHub(args.buildId);
+    await this.buildService.saveToGitProvider(args.buildId);
   }
 
   @EventPattern(
