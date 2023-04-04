@@ -2,7 +2,7 @@ import React from "react";
 import { Link, LinkProps } from "react-router-dom";
 import classNames from "classnames";
 import "./BackNavigation.scss";
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 
 type Props = LinkProps & {
   label?: string;

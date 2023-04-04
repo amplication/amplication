@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { SelectField, SelectFieldProps } from "@amplication/design-system";
+import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 
 type TEntities = {
   entities: [

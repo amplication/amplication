@@ -1,4 +1,4 @@
-import { SelectMenuItem } from "@amplication/design-system";
+import { SelectMenuItem } from "@amplication/ui/design-system";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";

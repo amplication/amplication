@@ -1,21 +1,18 @@
 import { namedTypes, builders } from "ast-types";
 import * as kinds from "ast-types/gen/kinds";
-import { print } from "@amplication/code-gen-utils";
-import { camelCase } from "camel-case";
-import replaceExt from "replace-ext";
-import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
-import { readFile } from "@amplication/code-gen-utils";
-import { relativeImportPath } from "../../../utils/module";
 import {
-  interpolate,
+  print,
   removeTSVariableDeclares,
-  importNames,
-  addImports,
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
   removeTSIgnoreComments,
-  removeESLintComments,
-} from "../../../utils/ast";
+} from "@amplication/code-gen-utils";
+import { camelCase } from "camel-case";
+import replaceExt from "replace-ext";
+import { ScalarType, ObjectField, ScalarField } from "prisma-schema-dsl-types";
+import { readFile, removeESLintComments } from "@amplication/code-gen-utils";
+import { relativeImportPath } from "../../../utils/module";
+import { interpolate, importNames, addImports } from "../../../utils/ast";
 import { createPrismaFields } from "../../prisma/create-prisma-schema-fields";
 import {
   CreateEntityControllerSpecParams,

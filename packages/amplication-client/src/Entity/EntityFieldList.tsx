@@ -6,7 +6,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";

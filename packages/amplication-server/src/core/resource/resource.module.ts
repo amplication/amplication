@@ -15,6 +15,7 @@ import { ProjectModule } from "../project/project.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
 import { TopicModule } from "../topic/topic.module";
 import { BillingModule } from "../billing/billing.module";
+import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { BillingModule } from "../billing/billing.module";
     ProjectConfigurationSettingsModule,
     forwardRef(() => ProjectModule),
     BillingModule,
+    PluginInstallationModule,
   ],
   providers: [ResourceService, ResourceResolver],
   exports: [ResourceService, ResourceResolver],

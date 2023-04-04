@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import "./EntityFieldProperty.scss";
 
 const CLASS_NAME = "entity-field-list-item-property";

@@ -9,7 +9,7 @@ import {
   EnumButtonStyle,
   EnumIconPosition,
   Modal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
 
@@ -79,6 +79,8 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the main flow
+    history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
@@ -86,6 +88,12 @@ const PurchasePage = (props) => {
       workspaceId: currentWorkspace.id,
     });
   }, [openHubSpotChat, currentWorkspace.id]);
+
+  const handleDowngradeClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
+    history.push("?downgrade=true");
+    openHubSpotChat();
+  }, [openHubSpotChat]);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -132,6 +140,9 @@ const PurchasePage = (props) => {
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
+        case "plan-amplication-free":
+          handleDowngradeClick();
+          break;
       }
     },
     [upgradeToPro, handleContactUsClick]
@@ -160,7 +171,6 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
-        <PromoBanner />
         <Paywall
           textOverrides={{
             entitlementsTitle: (plan) => {

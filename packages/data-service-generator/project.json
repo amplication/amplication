@@ -68,7 +68,7 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/data-service-generator"],
       "options": {
-        "jestConfig": "packages/data-service-generator/test/jest-e2e.config.ts",
+        "jestConfig": "packages/data-service-generator/jest.e2e.config.ts",
         "passWithNoTests": false
       }
     },
@@ -86,8 +86,7 @@
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
-      },
-      "dependsOn": ["generate-example-input-json"]
+      }
     },
     "update-snapshot": {
       "executor": "nx:run-commands",

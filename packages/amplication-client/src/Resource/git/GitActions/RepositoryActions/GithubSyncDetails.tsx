@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
@@ -24,7 +24,7 @@ function GithubSyncDetails({
   className,
   showGitRepositoryBtn = true,
 }: Props) {
-  const { gitRepositoryUrl } = useContext(AppContext);
+  const { gitRepositoryUrl, gitRepositoryFullName } = useContext(AppContext);
 
   const [disconnectGitRepository, { error: disconnectErrorUpdate }] =
     useMutation(DISCONNECT_GIT_REPOSITORY, {
@@ -44,6 +44,7 @@ function GithubSyncDetails({
       <div className={`${CLASS_NAME}__body`}>
         <div className={`${CLASS_NAME}__details`}>
           <GitRepoDetails
+            gitRepositoryFullName={gitRepositoryFullName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
           <div>

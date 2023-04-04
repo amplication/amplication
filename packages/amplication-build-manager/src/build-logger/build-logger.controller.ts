@@ -1,21 +1,26 @@
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { LogEntry } from "winston";
 import { Env } from "../env";
-import { QueueService } from "../queue/queue.service";
+import { OnCodeGenerationLogRequest } from "./dto/OnCodeGenerationLogRequest";
 
 @Controller("build-logger")
 export class BuildLoggerController {
   constructor(
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService
+    private readonly producerService: KafkaProducerService
   ) {}
 
   @Post("create-log")
-  async completeCodeGenerationStep(@Body() logEntry: LogEntry): Promise<void> {
-    await this.queueService.emitMessage(
+  async onCodeGenerationLog(
+    @Body() logEntry: OnCodeGenerationLogRequest
+  ): Promise<void> {
+    await this.producerService.emitMessage(
       this.configService.get(Env.DSG_LOG_TOPIC),
-      JSON.stringify(logEntry)
+      {
+        key: logEntry.buildId,
+        value: logEntry,
+      }
     );
   }
 }

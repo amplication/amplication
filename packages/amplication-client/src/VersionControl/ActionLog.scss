@@ -4,10 +4,12 @@ $log-line-number-width: 30px;
 $step-status-width: 20px;
 
 .action-log {
+  display: flex;
+  flex: 1;
+
   background-color: var(--action-log-background-color);
   height: 100%;
   overflow: auto;
-  display: flex;
   flex-direction: column;
   justify-content: stretch;
   align-items: stretch;

@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-plugin-api",
+  coverageThreshold: {
+    global: {
+      branches: 4,
+      lines: 0.82,
+    },
+  },
 };

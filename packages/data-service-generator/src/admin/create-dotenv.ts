@@ -1,5 +1,4 @@
-import { Module, AppInfo } from "@amplication/code-gen-types";
-import { isEmpty } from "lodash";
+import { AppInfo, Module } from "@amplication/code-gen-types";
 import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 
@@ -16,13 +15,6 @@ export async function createDotEnvModule(
 ): Promise<Module> {
   const MODULE_PATH = `${baseDirectory}/.env`;
   const code = await readCode(templatePath);
-
-  if (
-    !isEmpty(appInfo.settings.dbName) &&
-    !appInfo.settings.dbName.startsWith("/")
-  ) {
-    appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
-  }
 
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 

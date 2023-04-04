@@ -7,7 +7,7 @@ import {
   CircularProgress,
   Button,
   EnumButtonStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 
 import { GET_TOPICS } from "../Topics/TopicList";
 import { useTracking } from "../util/analytics";

@@ -1,7 +1,6 @@
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
 import { flatten } from "lodash";
-import * as winston from "winston";
 import { Entity, Module } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../utils/entity";
 import {
@@ -15,29 +14,25 @@ import { createEntityControllerSpec } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
-import { createLog } from "../../create-log";
 
 export async function createResourcesModules(
-  entities: Entity[],
-  logger: winston.Logger
+  entities: Entity[]
 ): Promise<Module[]> {
   const resourceModuleLists = await Promise.all(
-    entities.map((entity) => createResourceModules(entity, logger))
+    entities.map((entity) => createResourceModules(entity))
   );
   const resourcesModules = flatten(resourceModuleLists);
   return resourcesModules;
 }
 
-async function createResourceModules(
-  entity: Entity,
-  logger: winston.Logger
-): Promise<Module[]> {
+async function createResourceModules(entity: Entity): Promise<Module[]> {
   const entityType = entity.name;
-  const { appInfo } = DsgContext.getInstance;
+  const context = DsgContext.getInstance;
+  const { appInfo } = context;
 
   validateEntityName(entity);
 
-  await createLog({ level: "info", message: `Creating ${entityType}...` });
+  await context.logger.info(`Creating ${entityType}...`);
   const entityName = camelCase(entityType);
   const resource = camelCase(plural(entityName));
   const serviceId = createServiceId(entityType);

@@ -6,7 +6,7 @@ import {
   UserAndTime,
   Panel,
   EnumPanelStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";

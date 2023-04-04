@@ -85,6 +85,7 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
+
     if (this.installationId) {
       this.octokit = await this.getInstallationOctokit(this.installationId);
     }

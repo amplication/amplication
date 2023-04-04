@@ -35,6 +35,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { PendingChange } from "./dto/PendingChange";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
@@ -52,6 +53,10 @@ import { BillingService } from "../billing/billing.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
 import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -67,6 +72,22 @@ const EXAMPLE_CUID = "EXAMPLE_CUID";
 const EXAMPLE_BUILD_ID = "ExampleBuildId";
 const EXAMPLE_WORKSPACE_ID = "ExampleWorkspaceId";
 
+const EXAMPLE_GIT_REPOSITORY_INPUT: ConnectGitRepositoryInput = {
+  name: "exampleGitRepositoryInput",
+  resourceId: "",
+  gitOrganizationId: "ExampleGitOrganizationId",
+};
+
+const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
+  authProvider: EnumAuthProviderType.Jwt,
+  adminUISettings: { generateAdminUI: true, adminUIPath: "" },
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: "",
+  },
+};
+
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: "exampleGitRepositoryId",
   name: "repositoryTest",
@@ -80,6 +101,8 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   name: "My sample service",
   resourceType: EnumResourceType.Service,
   project: { connect: { id: "exampleProjectId" } },
+  serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+  gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -91,6 +114,18 @@ const EXAMPLE_RESOURCE: Resource = {
   description: EXAMPLE_RESOURCE_DESCRIPTION,
   deletedAt: null,
   gitRepositoryOverride: false,
+  builds: [
+    {
+      id: EXAMPLE_BUILD_ID,
+      createdAt: new Date(),
+      userId: "exampleUserId",
+      resourceId: EXAMPLE_RESOURCE_ID,
+      version: "1.0.0",
+      message: "new build",
+      actionId: "ExampleActionId",
+      commitId: "exampleCommitId",
+    },
+  ],
 };
 
 const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
@@ -257,11 +292,6 @@ const EXAMPLE_BUILD: Build = {
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   resourceId: EXAMPLE_RESOURCE_ID,
-  dbHost: "exampleDbHost",
-  dbName: "exampleDbName",
-  dbUser: "exampleDbUser",
-  dbPassword: "exampleDbPassword",
-  dbPort: 5532,
   authProvider: EnumAuthProviderType.Http,
   adminUISettings: undefined,
   serverSettings: undefined,
@@ -275,6 +305,11 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
+};
+
+const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
+  resource: EXAMPLE_RESOURCE,
+  build: EXAMPLE_BUILD,
 };
 
 const EXAMPLE_TOPIC: Topic = {
@@ -373,6 +408,7 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
+const analyticServiceTrack = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
 
@@ -409,6 +445,16 @@ describe("ResourceService", () => {
         {
           provide: ConfigService,
           useValue: { get: () => "" },
+        },
+        {
+          provide: PluginInstallationService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: analyticServiceTrack,
+          })),
         },
         {
           provide: BillingService,
@@ -450,6 +496,7 @@ describe("ResourceService", () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock,
+              create: prismaGitRepositoryCreateMock,
             },
             resourceRole: {
               create: prismaResourceRoleCreateMock,
@@ -520,6 +567,7 @@ describe("ResourceService", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             findUnique: projectServiceFindUniqueMock,
+            commit: projectServiceFindUniqueMock,
           })),
         },
         MockedAmplicationLoggerProvider,
@@ -545,11 +593,14 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
             },
           },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
         },
       },
       user: EXAMPLE_USER,
@@ -589,10 +640,23 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
+          plugins: {
+            plugins: [
+              {
+                id: "clb3p3uxx009bjn01zfbim7p1",
+                displayName: "jwtAuth",
+                npm: "@amplication/plugin-auth-jwt",
+                enabled: true,
+                version: "latest",
+                pluginId: "auth-jwt",
+                settings: {},
+                resource: { connect: { id: "" } },
+              },
+            ],
           },
         },
 
@@ -640,16 +704,15 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
-          },
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
         },
 
         EXAMPLE_USER
       )
-    ).resolves.toEqual(EXAMPLE_RESOURCE);
+    ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);

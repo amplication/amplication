@@ -1,11 +1,11 @@
 import * as types from "@amplication/code-gen-types";
 import {
+  BuildLogger as IBuildLogger,
   clientDirectories,
   ContextUtil,
   serverDirectories,
 } from "@amplication/code-gen-types";
 import { EnumResourceType } from "./models";
-import winston from "winston";
 import { readPluginStaticModules } from "./utils/read-static-modules";
 import {
   USER_ENTITY_NAME,
@@ -13,27 +13,18 @@ import {
   USER_PASSWORD_FIELD_NAME,
   USER_ROLES_FIELD_NAME,
 } from "./server/user-entity/user-entity";
-
-// const contextUtil = {
-//   skipDefaultBehavior: false,
-//   abortGeneration: (msg: string) => {
-//     DsgContext.utils.abortMessage = msg;
-//     DsgContext.utils.abort = true;
-//   },
-//   abort: false,
-//   abortMessage: "",
-//   importStaticModules: readPluginStaticModules,
-// };
+import { BuildLogger } from "./build-logger";
 
 class DsgContext implements types.DsgContext {
   public appInfo!: types.AppInfo;
   public entities: types.Entity[] = [];
+  public buildId: string;
   public roles: types.Role[] = [];
   public modules: types.Module[] = [];
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
-  public logger: winston.Logger = winston.createLogger();
+  public readonly logger: IBuildLogger;
   public utils: ContextUtil = {
     skipDefaultBehavior: false,
     abortGeneration: (msg: string) => {
@@ -63,6 +54,7 @@ class DsgContext implements types.DsgContext {
 
   private constructor() {
     //prevent external code from creating instances of the context
+    this.logger = new BuildLogger();
   }
 
   public get resourceInfo(): types.AppInfo {

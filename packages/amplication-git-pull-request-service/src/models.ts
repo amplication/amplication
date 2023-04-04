@@ -277,8 +277,18 @@ export type CompleteInvitationInput = {
 
 export type ConnectGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
+  isOverrideGitRepository?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   resourceId: Scalars['String'];
+};
+
+export type CreateGitRepositoryBaseInput = {
+  gitGroupName?: InputMaybe<Scalars['String']>;
+  gitOrganizationId: Scalars['String'];
+  gitOrganizationType: EnumGitOrganizationType;
+  gitProvider: EnumGitProvider;
+  name: Scalars['String'];
+  public: Scalars['Boolean'];
 };
 
 export type CreateGitRepositoryInput = {
@@ -841,10 +851,11 @@ export type Mutation = {
   createPluginInstallation: PluginInstallation;
   createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
+  createRemoteGitRepository: Scalars['Boolean'];
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
-  createServiceWithEntities: Resource;
+  createServiceWithEntities: ResourceCreateWithEntitiesResult;
   createTopic: Topic;
   createWorkspace?: Maybe<Workspace>;
   deleteApiToken: ApiToken;
@@ -988,6 +999,11 @@ export type MutationCreatePluginInstallationsArgs = {
 
 export type MutationCreateProjectArgs = {
   data: ProjectCreateInput;
+};
+
+
+export type MutationCreateRemoteGitRepositoryArgs = {
+  data: CreateGitRepositoryBaseInput;
 };
 
 
@@ -1732,9 +1748,11 @@ export type ResourceEntitiesArgs = {
 
 export type ResourceCreateInput = {
   description: Scalars['String'];
+  gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String'];
   project: WhereParentIdInput;
   resourceType: EnumResourceType;
+  serviceSettings?: InputMaybe<ServiceSettingsUpdateInput>;
 };
 
 export type ResourceCreateWithEntitiesEntityInput = {
@@ -1749,16 +1767,19 @@ export type ResourceCreateWithEntitiesFieldInput = {
 };
 
 export type ResourceCreateWithEntitiesInput = {
+  authType: Scalars['String'];
   commitMessage: Scalars['String'];
+  dbType: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
-  generationSettings: ResourceGenSettingsCreateInput;
+  plugins?: InputMaybe<PluginInstallationsCreateInput>;
+  repoType: Scalars['String'];
   resource: ResourceCreateInput;
+  wizardType: Scalars['String'];
 };
 
-export type ResourceGenSettingsCreateInput = {
-  generateAdminUI: Scalars['Boolean'];
-  generateGraphQL: Scalars['Boolean'];
-  generateRestApi: Scalars['Boolean'];
+export type ResourceCreateWithEntitiesResult = {
+  build?: Maybe<Build>;
+  resource: Resource;
 };
 
 export type ResourceListRelationFilter = {
@@ -1858,11 +1879,6 @@ export type ServiceSettings = IBlock & {
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
@@ -1880,11 +1896,6 @@ export type ServiceSettings = IBlock & {
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authProvider: EnumAuthProviderType;
-  dbHost: Scalars['String'];
-  dbName: Scalars['String'];
-  dbPassword: Scalars['String'];
-  dbPort: Scalars['Int'];
-  dbUser: Scalars['String'];
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   serverSettings: ServerSettingsUpdateInput;

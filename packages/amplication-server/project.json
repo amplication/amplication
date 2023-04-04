@@ -25,11 +25,11 @@
         "passWithNoTests": true
       }
     },
-    "test:e2e": {
+    "e2e": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
-        "jestConfig": "packages/amplication-server/jest.config.e2e.ts",
+        "jestConfig": "packages/amplication-server/jest.e2e.config.ts",
         "passWithNoTests": true,
         "runInBand": true
       }
@@ -94,6 +94,13 @@
     "graphql:models:generate": {
       "executor": "nx:run-commands",
       "inputs": ["{projectRoot}/src/schema.graphql"],
+      "outputs": [
+        "packages/amplication-cli/src/models.ts",
+        "packages/amplication-client/src/models.ts",
+        "packages/amplication-code-gen-types/src/models.ts",
+        "packages/amplication-git-pull-request-service/src/models.ts",
+        "packages/data-service-generator/src/models.ts"
+      ],
       "dependsOn": ["graphql:schema:generate"],
       "options": {
         "command": "graphql-codegen"

@@ -1,4 +1,4 @@
-import { MultiStateToggle, Snackbar } from "@amplication/design-system";
+import { MultiStateToggle, Snackbar } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useState } from "react";
 import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";

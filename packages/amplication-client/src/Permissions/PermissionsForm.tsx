@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 
 import "./PermissionsForm.scss";
 

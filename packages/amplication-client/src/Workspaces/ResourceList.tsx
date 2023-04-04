@@ -8,7 +8,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
@@ -84,10 +84,10 @@ function ResourceList() {
 
       cache.modify({
         fields: {
-          projects(existingResourceRefs, { readField }) {
-            return existingResourceRefs.filter(
-              (resourceRef: Reference) =>
-                deletedProjectId !== readField("id", resourceRef)
+          projects(existingProjectRefs, { readField }) {
+            return existingProjectRefs.filter(
+              (projectRef: Reference) =>
+                deletedProjectId !== readField("id", projectRef)
             );
           },
         },
@@ -117,6 +117,9 @@ function ResourceList() {
       eventName: AnalyticsEventNames.ProjectDelete,
     });
     deleteProject({
+      onCompleted: () => {
+        addEntity();
+      },
       variables: {
         projectId: currentProject.id,
       },

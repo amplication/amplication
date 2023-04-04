@@ -2,7 +2,7 @@ import React, { useState, useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { MultiStateToggle, Snackbar } from "@amplication/design-system";
+import { MultiStateToggle, Snackbar } from "@amplication/ui/design-system";
 import "./PendingChangesPage.scss";
 import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";

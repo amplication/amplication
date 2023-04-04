@@ -1,4 +1,4 @@
-import { Icon, SkeletonWrapper } from "@amplication/design-system";
+import { Icon, SkeletonWrapper } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useContext, useMemo } from "react";
 import { Link } from "react-router-dom";
@@ -81,7 +81,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
               size="small"
               className={`${CLASS_NAME}__github-icon`}
             />
-            <GitRepoDetails />
+            <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
             <a
               className={`${CLASS_NAME}__gh-link`}
               href={githubUrl}

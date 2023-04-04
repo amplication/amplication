@@ -1,6 +1,6 @@
 import React from "react";
 import { useField, ErrorMessage } from "formik";
-import { TextInput, TextInputProps } from "@amplication/design-system";
+import { TextInput, TextInputProps } from "@amplication/ui/design-system";
 import "./NameField.scss";
 
 /** @todo share code with server */

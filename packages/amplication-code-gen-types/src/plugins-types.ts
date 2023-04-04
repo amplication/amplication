@@ -1,9 +1,8 @@
 import type { Promisable } from "type-fest";
-import winston from "winston";
+import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
-  EntityField,
   Module,
   serverDirectories,
 } from "./code-gen-types";
@@ -41,11 +40,18 @@ export interface ContextUtil {
   abort: boolean;
   importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
 }
+
 export interface DsgContext extends DSGResourceData {
+  /**
+   * List of generated files.
+   */
   modules: Module[];
   DTOs: DTOs;
   plugins: PluginMap;
-  logger: winston.Logger;
+  /**
+   * Logger for user facing logs. Logs will be visible in the build log.
+   */
+  logger: BuildLogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;

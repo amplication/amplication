@@ -1,4 +1,8 @@
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeTSVariableDeclares,
+} from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import {
   CreateSeedParams,
@@ -15,7 +19,6 @@ import {
   importContainedIdentifiers,
   interpolate,
   memberExpression,
-  removeTSVariableDeclares,
 } from "../../utils/ast";
 import { getDTONameToPath } from "../resource/create-dtos";
 import { getImportableDTOs } from "../resource/dto/create-dto-module";

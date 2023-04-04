@@ -3,7 +3,7 @@ import { useRouteMatch, NavLink } from "react-router-dom";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
-import { Icon, Tooltip } from "@amplication/design-system";
+import { Icon, Tooltip } from "@amplication/ui/design-system";
 import "./MenuItem.scss";
 
 type Props = {

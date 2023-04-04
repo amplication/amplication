@@ -6,7 +6,7 @@ import {
   SelectMenuModal,
   Tooltip,
   Dialog,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
@@ -128,6 +128,8 @@ const WorkspaceHeader: React.FC<{}> = () => {
   }, [currentWorkspace, window.location.pathname]);
 
   const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
+    history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.HelpMenuItemClick,

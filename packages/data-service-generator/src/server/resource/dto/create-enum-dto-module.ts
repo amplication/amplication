@@ -8,6 +8,7 @@ import {
   importDeclaration,
 } from "../../../utils/ast";
 import { createDTOFile } from "./create-dto-module";
+import { logger } from "../../../logging";
 
 const REGISTER_ENUM_TYPE_ID = builders.identifier("registerEnumType");
 
@@ -33,7 +34,7 @@ export function createEnumDTOModule(
       path: dtoNameToPath[dto.id.name],
     };
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     throw error;
   }
 }
