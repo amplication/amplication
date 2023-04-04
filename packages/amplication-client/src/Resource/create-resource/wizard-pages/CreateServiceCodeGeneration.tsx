@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -41,9 +35,6 @@ const CreateServiceCodeGeneration: React.FC<
   rebuildClick,
 }) => {
   const { data } = useBuildWatchStatus(build);
-  const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
-    resource?.gitRepository || null
-  );
 
   const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
@@ -57,11 +48,6 @@ const CreateServiceCodeGeneration: React.FC<
       rebuildClick(newBuild);
     },
   });
-
-  useEffect(() => {
-    if (!resource) return;
-    setResourceRepo(resource.gitRepository);
-  }, [resource]);
 
   useEffect(() => {
     trackWizardPageEvent(
@@ -122,9 +108,12 @@ const CreateServiceCodeGeneration: React.FC<
 
   const buildFailed = data?.build?.status === models.EnumBuildStatus.Failed;
 
+  const buildCompleted =
+    data?.build?.status === models.EnumBuildStatus.Completed;
+
   return (
     <div className={className}>
-      {buildRunning ? (
+      {buildRunning || buildRunning === undefined ? (
         <div className={`${className}__buildLog`}>
           <div className={`${className}__title`}>
             <h1>We’re generating your service...</h1>
@@ -171,44 +160,47 @@ const CreateServiceCodeGeneration: React.FC<
           </div>
         </div>
       ) : (
-        <div className={`${className}__status`}>
-          <div className={`${className}__status__completed`}>
-            <img
-              className={`${className}__status__completed__image`}
-              src={CodeGenerationCompleted}
-              alt=""
-            />
+        buildCompleted && (
+          <div className={`${className}__status`}>
+            <div className={`${className}__status__completed`}>
+              <img
+                className={`${className}__status__completed__image`}
+                src={CodeGenerationCompleted}
+                alt=""
+              />
 
-            <div className={`${className}__status__completed__description`}>
-              <div
-                className={`${className}__status__completed__description__header`}
-              >
-                The code for your service is ready on
-              </div>
-              <div
-                className={`${className}__status__completed__description__link`}
-              >
-                https://github.com/{resourceRepo?.gitOrganization?.name}/
-                {resourceRepo?.name}
-              </div>
-              <div />
-            </div>
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={handleViewCodeClick}
-            >
-              {
-                <a
-                  style={{ color: "white" }}
-                  href={`https://github.com/${resourceRepo?.gitOrganization?.name}/${resourceRepo?.name}`}
-                  target="docs"
+              <div className={`${className}__status__completed__description`}>
+                <div
+                  className={`${className}__status__completed__description__header`}
                 >
-                  View my code
-                </a>
-              }
-            </Button>
+                  The code for your service is ready on
+                </div>
+                <div
+                  className={`${className}__status__completed__description__link`}
+                >
+                  https://github.com/
+                  {currentResource?.gitRepository?.gitOrganization?.name}/
+                  {currentResource?.gitRepository?.name}
+                </div>
+                <div />
+              </div>
+              <Button
+                buttonStyle={EnumButtonStyle.Clear}
+                onClick={handleViewCodeClick}
+              >
+                {
+                  <a
+                    style={{ color: "white" }}
+                    href={`https://github.com/${currentResource?.gitRepository?.gitOrganization?.name}/${currentResource?.gitRepository?.name}`}
+                    target="docs"
+                  >
+                    View my code
+                  </a>
+                }
+              </Button>
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );

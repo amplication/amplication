@@ -151,7 +151,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               setIsValidStep(false);
               return;
             }
-            if (!values.isOverrideGitRepository) {
+            if (activePageIndex === 1 && !values.isOverrideGitRepository) {
               setIsValidStep(false);
               return;
             }
