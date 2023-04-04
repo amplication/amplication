@@ -29,6 +29,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { expireCookie, getCookie } from "../../util/cookie";
 import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
+import { kebabCase } from "lodash";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -206,10 +207,14 @@ const CreateServiceWizard: React.FC<Props> = ({
         baseDir,
       } = values;
 
+      const kebabCaseServiceName = kebabCase(serviceName);
+
       const serverDir =
-        structureType === "Mono" ? `${baseDir}/${serviceName}` : "";
+        structureType === "Mono" ? `${baseDir}/${kebabCaseServiceName}` : "";
       const adminDir =
-        structureType === "Mono" ? `${baseDir}/${serviceName}-admin` : "";
+        structureType === "Mono"
+          ? `${baseDir}/${kebabCaseServiceName}-admin`
+          : "";
       const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
