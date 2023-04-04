@@ -1,6 +1,6 @@
 import { IHeaders, KafkaMessage as FullKafkaMessage } from "kafkajs";
 
-export type Json = Record<string, unknown>;
+export type Json = Record<string, any>;
 
 export interface DecodedKafkaMessage {
   key: string | Json | null;

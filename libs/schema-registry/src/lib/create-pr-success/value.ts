@@ -1,5 +1,6 @@
 import { IsString, IsUrl } from "class-validator";
-export class CreatePRSuccess {
+
+export class Value {
   @IsString()
   buildId!: string;
 

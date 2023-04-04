@@ -13,7 +13,11 @@ import { Env } from "../env";
 // import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
-import { CreatePrRequestValue } from "@amplication/schema-registry";
+import {
+  CreatePrFailureValue,
+  CreatePrRequestValue,
+  CreatePrSuccessValue,
+} from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 @Controller()
@@ -59,7 +63,10 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response = { url: pullRequest, buildId: validArgs.newBuildId };
+      const response: CreatePrSuccessValue = {
+        url: pullRequest,
+        buildId: validArgs.newBuildId,
+      };
 
       await this.producerService.emitMessage(KafkaTopics.CreatePrSuccess, {
         key: null,
@@ -72,7 +79,7 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response = {
+      const response: CreatePrFailureValue = {
         buildId: validArgs.newBuildId,
         errorMessage: error.message,
       };
