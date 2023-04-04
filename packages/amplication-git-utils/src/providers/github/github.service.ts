@@ -98,13 +98,25 @@ export class GithubService implements GitProvider {
   async getAmplicationBotIdentity(): Promise<Bot | null> {
     const data: {
       viewer: { id: string; login: string };
-    } = await this.octokit.graphql(`{
-      viewer{
+    } = await this.octokit.graphql(
+      `{
+      viewer {
         id
         login
       }
-    }`);
-    return data.viewer;
+    }`,
+      {}
+    );
+
+    const { id, login } = data.viewer;
+    // amplication[bot] <123123+amplication[bot]@users.noreply.github.com>
+    const oldAmplicationBotPattern = `${login} <.*\\+${login}@users.noreply.github.com>`;
+
+    return {
+      id,
+      login,
+      email: oldAmplicationBotPattern,
+    };
   }
 
   private getFormattedPrivateKey(privateKey: string): string {
