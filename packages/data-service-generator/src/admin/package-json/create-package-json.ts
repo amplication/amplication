@@ -12,13 +12,12 @@ import { paramCase } from "param-case";
 import { promises as fs } from "fs";
 
 const PACKAGE_JSON_ENCODING = "utf-8";
-const PACKAGE_JSON_TEMPLATE = "package.template.json";
 const PACKAGE_JSON_FILE_NAME = "package.json";
 
-const filePath = resolve(__dirname, PACKAGE_JSON_TEMPLATE);
+const filePath = resolve(__dirname, PACKAGE_JSON_FILE_NAME);
 
 export async function createAdminUIPackageJson(): Promise<Module[]> {
-  const fileContent = await fs.readFile(filePath, "utf-8");
+  const fileContent = await fs.readFile(filePath, PACKAGE_JSON_ENCODING);
   const { appInfo } = DsgContext.getInstance;
   const updateProperties = [
     {
@@ -39,7 +38,7 @@ async function createAdminUIPackageJsonInternal({
 }: CreateAdminUIPackageJsonParams): Promise<Module[]> {
   const { clientDirectories } = DsgContext.getInstance;
   const packageJsonModule = await readFile(
-    resolve(__dirname, PACKAGE_JSON_TEMPLATE),
+    resolve(__dirname, PACKAGE_JSON_FILE_NAME),
     PACKAGE_JSON_ENCODING
   );
   const mutatedPackageJson = updatePackageJSONs(
