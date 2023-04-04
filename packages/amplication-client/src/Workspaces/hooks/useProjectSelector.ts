@@ -81,7 +81,7 @@ const useProjectSelector = (
       let refreshTimes = Number(signupCookie);
       refreshTimes += 1;
       if (refreshTimes < 4) {
-        history.push(`/${currentWorkspace?.id}/${projectsList[0].id}/welcome`);
+        setCookie("signup", refreshTimes.toString());
       } else {
         expireCookie("signup");
       }
@@ -103,7 +103,7 @@ const useProjectSelector = (
 
     const isFromSignup = location.search.includes("complete-signup=1");
     const isSignupCookieExist = getCookie("signup");
-    isSignupCookieExist && isFromSignup && setCookie("signup", "1");
+    !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);
 
     if (isFromPurchase) {
@@ -117,7 +117,7 @@ const useProjectSelector = (
     !!(!workspaceUtil && currentWorkspace?.id) &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup ? "/welcome" : ""
+          isFromSignup || isSignupCookieExist ? "/welcome" : ""
         }`
       );
   }, [

@@ -192,6 +192,7 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
+      if (activeIndex < 6) return;
       const {
         serviceName,
         generateAdminUI,

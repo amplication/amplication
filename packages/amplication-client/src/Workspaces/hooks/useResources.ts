@@ -5,6 +5,7 @@ import * as models from "../../models";
 import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie } from "../../util/cookie";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -129,6 +130,7 @@ const useResources = (
         result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
+      expireCookie("signup");
       refetch();
     });
   };

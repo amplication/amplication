@@ -161,6 +161,8 @@ export class ResourceService {
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
 
+    const isOnBoarding = wizardType?.toLowerCase() === "onboarding";
+
     if (
       projectConfiguration.gitRepositoryId ||
       (args.data.resourceType === EnumResourceType.Service &&
@@ -173,7 +175,7 @@ export class ResourceService {
 
     if (
       args.data.resourceType === EnumResourceType.Service &&
-      gitRepositoryToCreate.isOverrideGitRepository
+      (gitRepositoryToCreate.isOverrideGitRepository || isOnBoarding)
     ) {
       if (!gitRepositoryToCreate) {
         throw new AmplicationError("Git Repository settings are missing");
@@ -194,7 +196,7 @@ export class ResourceService {
       };
     }
 
-    if (wizardType?.toLowerCase() === "onboarding") {
+    if (isOnBoarding) {
       await this.prisma.resource.update({
         data: {
           gitRepository: gitRepository,
