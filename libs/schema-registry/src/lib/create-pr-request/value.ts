@@ -18,7 +18,7 @@ class Commit {
   body!: string;
 }
 
-export class CreatePrRequestValue {
+export class Value {
   @IsString()
   resourceId!: string;
   @IsString()
