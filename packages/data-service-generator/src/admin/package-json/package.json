@@ -28,12 +28,7 @@
     "eject": "react-scripts eject",
     "docker:build": "docker build ."
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "eslintConfig": {},
   "browserslist": {
     "production": [
       ">0.2%",
