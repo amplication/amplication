@@ -12,7 +12,7 @@ import { validateOrReject } from "class-validator";
 import { Env } from "../env";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
-import { QueueService } from "./queue.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CreatePrFailure,
   CreatePrRequest,
@@ -24,7 +24,7 @@ export class PullRequestController {
   constructor(
     private readonly pullRequestService: PullRequestService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService,
+    private readonly producerService: KafkaProducerService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
@@ -62,14 +62,16 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response: CreatePrSuccess.Value = {
-        url: pullRequest,
-        buildId: validArgs.newBuildId,
+      const successEvent: CreatePrSuccess.KafkaEvent = {
+        key: null,
+        value: {
+          url: pullRequest,
+          buildId: validArgs.newBuildId,
+        },
       };
-
-      this.queueService.emitMessage(
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrSuccess,
-        JSON.stringify(response)
+        successEvent
       );
     } catch (error) {
       this.logger.error(error, {
@@ -78,14 +80,17 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response: CreatePrFailure.Value = {
-        buildId: validArgs.newBuildId,
-        errorMessage: error.message,
+      const failureEvent: CreatePrFailure.KafkaEvent = {
+        key: null,
+        value: {
+          buildId: validArgs.newBuildId,
+          errorMessage: error.message,
+        },
       };
 
-      this.queueService.emitMessage(
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrFailure,
-        JSON.stringify(response)
+        failureEvent
       );
     }
   }
