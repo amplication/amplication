@@ -113,7 +113,7 @@ const CreateServiceCodeGeneration: React.FC<
 
   return (
     <div className={className}>
-      {buildRunning || buildRunning === undefined ? (
+      {buildRunning ? (
         <div className={`${className}__buildLog`}>
           <div className={`${className}__title`}>
             <h1>We’re generating your service...</h1>
