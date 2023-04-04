@@ -66,7 +66,9 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
-  const { data: pluginsVersionData, refetch } = useQuery<{
+  const [pluginsVersion, setPluginsVersion] = useState<Plugin[]>(null);
+
+  const { data: pluginsVersionData } = useQuery<{
     plugins: Plugin[];
   }>(GET_PLUGIN_VERSIONS_CATALOG, {
     context: {
@@ -78,9 +80,6 @@ const CreateServiceWizard: React.FC<Props> = ({
           equals: null,
         },
       },
-    },
-    onCompleted: () => {
-      if (!pluginsVersionData) refetch();
     },
   });
 
@@ -115,6 +114,11 @@ const CreateServiceWizard: React.FC<Props> = ({
     if (createResult?.build) setCurrentBuild(createResult?.build);
   }, [createResult?.build]);
 
+  useEffect(() => {
+    if (!pluginsVersionData) return;
+    setPluginsVersion(pluginsVersionData?.plugins);
+  }, [pluginsVersionData?.plugins]);
+
   const handleRebuildClick = useCallback(
     (build: models.Build) => {
       setCurrentBuild(build);
@@ -137,7 +141,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       const dbPlugin = pluginsVersionData?.plugins.find(
         (x) => x.pluginId === `db-${databaseType}`
       );
-      const dbLastVersion = dbPlugin?.versions[dbPlugin.versions.length - 1];
+      const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
 
       const authCorePlugins = authType === "core" && [
         {
@@ -175,7 +179,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    []
+    [pluginsVersionData?.plugins, pluginsVersion]
   );
 
   const handleCloseWizard = useCallback(
