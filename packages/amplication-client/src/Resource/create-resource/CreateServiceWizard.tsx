@@ -30,6 +30,9 @@ import { useTracking } from "../../util/analytics";
 import { expireCookie, getCookie } from "../../util/cookie";
 import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
 import { kebabCase } from "lodash";
+import { Plugin } from "../../Plugins/hooks/usePlugins";
+import { useQuery } from "@apollo/client";
+import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -62,6 +65,24 @@ const CreateServiceWizard: React.FC<Props> = ({
   const [currentBuild, setCurrentBuild] = useState<models.Build>(
     createResult?.build || null
   );
+
+  const { data: pluginsVersionData, refetch } = useQuery<{
+    plugins: Plugin[];
+  }>(GET_PLUGIN_VERSIONS_CATALOG, {
+    context: {
+      clientName: "pluginApiHttpLink",
+    },
+    variables: {
+      where: {
+        deprecated: {
+          equals: null,
+        },
+      },
+    },
+    onCompleted: () => {
+      if (!pluginsVersionData) refetch();
+    },
+  });
 
   const defineUser: DefineUser =
     signupCookie === "1" ? "Onboarding" : "Create Service";
@@ -113,6 +134,11 @@ const CreateServiceWizard: React.FC<Props> = ({
       databaseType: "postgres" | "mysql" | "mongo",
       authType: string
     ): models.PluginInstallationsCreateInput => {
+      const dbPlugin = pluginsVersionData?.plugins.find(
+        (x) => x.pluginId === `db-${databaseType}`
+      );
+      const dbLastVersion = dbPlugin?.versions[dbPlugin.versions.length - 1];
+
       const authCorePlugins = authType === "core" && [
         {
           displayName: "Auth-core",
@@ -141,6 +167,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
+            settings: JSON.parse(dbLastVersion?.settings),
           },
         ],
       };
