@@ -141,8 +141,14 @@ export class BitBucketService implements GitProvider {
       this.accessToken
     );
 
-    const { size, page, pagelen, next, previous, values } =
-      paginatedWorkspaceMembership;
+    const {
+      size: total,
+      page,
+      pagelen: pageSize,
+      next,
+      previous,
+      values,
+    } = paginatedWorkspaceMembership;
     const gitGroups = values.map(({ workspace }) => {
       const { uuid: workspaceUuid, name, slug } = workspace;
       return {
@@ -155,9 +161,9 @@ export class BitBucketService implements GitProvider {
     this.logger.info("BitBucketService getGitGroups");
 
     return {
-      size,
+      total,
       page,
-      pagelen,
+      pageSize,
       next,
       previous,
       groups: gitGroups,
@@ -227,7 +233,7 @@ export class BitBucketService implements GitProvider {
 
     return {
       repos: gitRepos,
-      totalRepos: size,
+      total: size,
       currentPage: page,
       pageSize: pagelen,
     };

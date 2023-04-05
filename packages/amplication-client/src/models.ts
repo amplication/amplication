@@ -1257,13 +1257,15 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+/** Returns a paginated list of repository groups available to select. */
 export type PaginatedGitGroup = {
   groups?: Maybe<Array<GitGroup>>;
-  next?: Maybe<Scalars['String']>;
+  /** Page number */
   page: Scalars['Float'];
-  pagelen: Scalars['Float'];
-  previous?: Maybe<Scalars['String']>;
-  size: Scalars['Float'];
+  /** Number of groups per page */
+  pageSize: Scalars['Float'];
+  /** Total number of groups */
+  total: Scalars['Float'];
 };
 
 export type PendingChange = {
@@ -1691,11 +1693,10 @@ export type RemoteGitRepos = {
   currentPage: Scalars['Float'];
   pageSize: Scalars['Float'];
   repos: Array<RemoteGitRepository>;
-  totalRepos: Scalars['Float'];
+  total: Scalars['Float'];
 };
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
   limit: Scalars['Float'];

@@ -64,7 +64,7 @@ export interface RemoteGitRepository {
 
 export interface RemoteGitRepos {
   repos: RemoteGitRepository[];
-  totalRepos: number | null;
+  total: number | null;
   currentPage: number | null;
   pageSize: number | null;
 }
@@ -192,9 +192,9 @@ export interface OAuth2FlowArgs {
 }
 
 export interface PaginatedGitGroup {
-  size: number;
+  total: number;
   page: number;
-  pagelen: number;
+  pageSize: number;
   next: string;
   previous: string;
   groups: GitGroup[];

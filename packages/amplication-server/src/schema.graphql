@@ -1023,15 +1023,20 @@ type ApiToken {
   lastAccessAt: DateTime!
 }
 
+"""Returns a paginated list of repository groups available to select."""
 type PaginatedGitGroup {
-  size: Float!
+  """Total number of groups"""
+  total: Float!
+
+  """Page number"""
   page: Float!
-  pagelen: Float!
-  next: String
-  previous: String
+
+  """Number of groups per page"""
+  pageSize: Float!
   groups: [GitGroup!]
 }
 
+"""Group of Repositories"""
 type GitGroup {
   id: String!
   name: String!
@@ -1044,7 +1049,7 @@ input GitGroupInput {
 
 type RemoteGitRepos {
   repos: [RemoteGitRepository!]!
-  totalRepos: Float!
+  total: Float!
   currentPage: Float!
   pageSize: Float!
 }

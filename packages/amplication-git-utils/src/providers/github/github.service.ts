@@ -184,7 +184,7 @@ export class GithubService implements GitProvider {
     }));
 
     return {
-      totalRepos: results.data.total_count,
+      total: results.data.total_count,
       repos: repos,
       pageSize: limit,
       currentPage: page,
