@@ -10,12 +10,12 @@ import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
 import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
 import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { LogEntryDto } from "./dto/LogEntryDto";
 import {
   CodeGenerationFailure,
   CodeGenerationSuccess,
+  CreatePrFailure,
+  CreatePrSuccess,
 } from "@amplication/schema-registry";
 
 @Controller("generated-apps")
@@ -73,10 +73,10 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CREATE_PR_SUCCESS_TOPIC, true)
   )
   async onPullRequestCreated(
-    @Payload() message: CreatePRSuccess
+    @Payload() message: CreatePrSuccess.Value
   ): Promise<void> {
     try {
-      const args = plainToInstance(CreatePRSuccess, message);
+      const args = plainToInstance(CreatePrSuccess.Value, message);
       await this.buildService.onCreatePRSuccess(args);
     } catch (error) {
       console.error(error);
@@ -86,9 +86,11 @@ export class BuildController {
   @EventPattern(
     EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
   )
-  async onCreatePRFailure(@Payload() message: CreatePRFailure): Promise<void> {
+  async onCreatePRFailure(
+    @Payload() message: CreatePrFailure.Value
+  ): Promise<void> {
     try {
-      const args = plainToInstance(CreatePRFailure, message);
+      const args = plainToInstance(CreatePrFailure.Value, message);
       await this.buildService.onCreatePRFailure(args);
     } catch (error) {
       console.error(error);

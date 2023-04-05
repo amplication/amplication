@@ -30,14 +30,16 @@ import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
-import { CreatePrRequest } from "@amplication/schema-registry";
+import {
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -336,7 +338,9 @@ export class BuildService {
     });
   }
 
-  public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
+  public async onCreatePRSuccess(
+    response: CreatePrSuccess.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -371,7 +375,9 @@ export class BuildService {
     }
   }
 
-  public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
+  public async onCreatePRFailure(
+    response: CreatePrFailure.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
