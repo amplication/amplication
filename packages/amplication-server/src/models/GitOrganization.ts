@@ -28,7 +28,11 @@ export class GitOrganization {
   @Field(() => EnumGitOrganizationType, { nullable: false })
   type!: keyof typeof EnumGitOrganizationType;
 
-  @Field(() => Boolean, { nullable: false })
+  @Field(() => Boolean, {
+    nullable: false,
+    description:
+      "Defines if a git organisation needs defined repository groups",
+  })
   useGroupingForRepositories!: boolean;
 
   // don't use field decorator to avoid exposing properties to the client
