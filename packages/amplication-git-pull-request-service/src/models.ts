@@ -277,27 +277,29 @@ export type CompleteInvitationInput = {
 
 export type ConnectGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
   isOverrideGitRepository?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   resourceId: Scalars['String'];
 };
 
 export type CreateGitRepositoryBaseInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
+  repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
 export type CreateGitRepositoryInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
+  repositoryGroupName?: InputMaybe<Scalars['String']>;
   resourceId: Scalars['String'];
 };
 
@@ -732,6 +734,7 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+/** Group of Repositories */
 export type GitGroup = {
   id: Scalars['String'];
   name: Scalars['String'];
@@ -755,6 +758,7 @@ export type GitOrganization = {
   provider: EnumGitProvider;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
+  /** Defines if a git organisation needs defined repository groups */
   useGroupingForRepositories: Scalars['Boolean'];
 };
 
@@ -1697,11 +1701,11 @@ export type RemoteGitRepos = {
 };
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
   limit: Scalars['Float'];
   page: Scalars['Float'];
+  repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
 export type RemoteGitRepository = {

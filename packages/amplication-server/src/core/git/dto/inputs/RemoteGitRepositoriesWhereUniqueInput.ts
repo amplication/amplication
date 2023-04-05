@@ -16,5 +16,5 @@ export class RemoteGitRepositoriesWhereUniqueInput {
   page!: number;
 
   @Field(() => String, { nullable: true })
-  gitGroupName?: string;
+  repositoryGroupName?: string;
 }

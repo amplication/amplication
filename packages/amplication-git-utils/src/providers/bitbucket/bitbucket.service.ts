@@ -177,15 +177,15 @@ export class BitBucketService implements GitProvider {
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { gitGroupName, repositoryName } = getRepositoryArgs;
+    const { repositoryGroupName, repositoryName } = getRepositoryArgs;
 
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const repository = await repositoryRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       this.accessToken
     );
@@ -205,15 +205,15 @@ export class BitBucketService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const { gitGroupName } = getRepositoriesArgs;
+    const { repositoryGroupName } = getRepositoriesArgs;
 
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
-      gitGroupName,
+      repositoryGroupName,
       this.accessToken
     );
 
@@ -243,19 +243,19 @@ export class BitBucketService implements GitProvider {
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
     const {
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       isPrivateRepository,
       gitOrganization,
     } = createRepositoryArgs;
 
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const newRepository = await repositoryCreateRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       {
         is_private: isPrivateRepository,
@@ -334,13 +334,14 @@ export class BitBucketService implements GitProvider {
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<{ url: string; number: number }> {
-    const { gitGroupName, repositoryName, branchName } = getPullRequestArgs;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    const { repositoryGroupName, repositoryName, branchName } =
+      getPullRequestArgs;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
     const pullRequest = await getPullRequestByBranchNameRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       branchName,
       this.accessToken
@@ -357,16 +358,16 @@ export class BitBucketService implements GitProvider {
     createPullRequestArgs: GitProviderCreatePullRequestArgs
   ): Promise<PullRequest> {
     const {
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       branchName,
       defaultBranchName,
       pullRequestTitle,
       pullRequestBody,
     } = createPullRequestArgs;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const pullRequestData = {
@@ -387,7 +388,7 @@ export class BitBucketService implements GitProvider {
     };
 
     const newPullRequest = await createPullRequestFromRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       pullRequestData,
       this.accessToken
@@ -400,13 +401,13 @@ export class BitBucketService implements GitProvider {
   }
 
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
-    const { gitGroupName, repositoryName, branchName } = args;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    const { repositoryGroupName, repositoryName, branchName } = args;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
     const branch = await getBranchRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       branchName,
       this.accessToken
@@ -418,14 +419,15 @@ export class BitBucketService implements GitProvider {
   }
 
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
-    const { gitGroupName, repositoryName, branchName, pointingSha } = args;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    const { repositoryGroupName, repositoryName, branchName, pointingSha } =
+      args;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const branch = await createBranchRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       { name: branchName, target: { hash: pointingSha } },
       this.accessToken
@@ -438,13 +440,13 @@ export class BitBucketService implements GitProvider {
   }
 
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
-    const { gitGroupName, repositoryName, branchName } = args;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    const { repositoryGroupName, repositoryName, branchName } = args;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
     const firstCommit = await getFirstCommitRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       branchName,
       this.accessToken
@@ -456,12 +458,12 @@ export class BitBucketService implements GitProvider {
   }
 
   getCloneUrl(args: CloneUrlArgs): string {
-    const { gitGroupName, repositoryName, token } = args;
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    const { repositoryGroupName, repositoryName, token } = args;
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
-    return `https://x-token-auth:${token}@bitbucket.org/${gitGroupName}/${repositoryName}.git`;
+    return `https://x-token-auth:${token}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
   }
 
   async createPullRequestComment(
@@ -469,15 +471,19 @@ export class BitBucketService implements GitProvider {
   ): Promise<void> {
     const {
       data: { body },
-      where: { gitGroupName, repositoryName, issueNumber: pullRequestId },
+      where: {
+        repositoryGroupName,
+        repositoryName,
+        issueNumber: pullRequestId,
+      },
     } = args;
 
-    if (!gitGroupName) {
-      this.logger.error("Missing gitGroupName");
-      throw new CustomError("Missing gitGroupName");
+    if (!repositoryGroupName) {
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
     await createCommentOnPrRequest(
-      gitGroupName,
+      repositoryGroupName,
       repositoryName,
       pullRequestId,
       body,

@@ -164,7 +164,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -261,7 +261,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: mockedGetFirstCommitResponse.repository.name,
-        gitGroupName:
+        repositoryGroupName:
           mockedGetFirstCommitResponse.repository.full_name.split("/")[0],
       });
 
@@ -282,14 +282,14 @@ describe("bitbucket.service", () => {
           token: "my-token",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
     it("returns the clone url", async () => {
       const result = await service.getCloneUrl({
         owner: "maccheroni",
         repositoryName: "myrepo",
-        gitGroupName: "mygroup",
+        repositoryGroupName: "mygroup",
         token: "my-token",
       });
 
@@ -309,7 +309,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -422,7 +422,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: "my-repo",
-        gitGroupName: "my-group",
+        repositoryGroupName: "my-group",
       });
 
       const expectedResult = {
@@ -445,7 +445,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -559,7 +559,7 @@ describe("bitbucket.service", () => {
         repositoryName: "my-repo",
         branchName: "amit-test",
         pointingSha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
-        gitGroupName: "my-group",
+        repositoryGroupName: "my-group",
       });
 
       const expectedResult = {
@@ -585,7 +585,7 @@ describe("bitbucket.service", () => {
           data: { body: "this is my comment for the pull request" },
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -652,7 +652,7 @@ describe("bitbucket.service", () => {
           issueNumber: 1,
           owner: "maccheroni",
           repositoryName: "my-repo",
-          gitGroupName: "my-group",
+          repositoryGroupName: "my-group",
         },
         data: { body: "this is my comment for the pull request" },
       });
@@ -678,7 +678,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -845,7 +845,8 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: pullRequest.source.branch.name,
         repositoryName: pullRequest.source.repository.name,
-        gitGroupName: pullRequest.source.repository.full_name.split("/")[0],
+        repositoryGroupName:
+          pullRequest.source.repository.full_name.split("/")[0],
       });
 
       const expectedResult = {
@@ -871,7 +872,7 @@ describe("bitbucket.service", () => {
           pullRequestBody: "my pull request body",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing gitGroupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -1050,7 +1051,7 @@ describe("bitbucket.service", () => {
           mockedCreatePullRequestResponse.destination.branch.name,
         pullRequestTitle: mockedCreatePullRequestResponse.title,
         pullRequestBody: "description for my pull request",
-        gitGroupName: "ab-2",
+        repositoryGroupName: "ab-2",
       });
 
       const expectedResult = {

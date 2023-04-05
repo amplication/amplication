@@ -150,7 +150,7 @@ export class GitProviderService {
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      gitGroupName: args.gitGroupName,
+      repositoryGroupName: args.repositoryGroupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
