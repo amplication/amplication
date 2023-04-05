@@ -8,9 +8,13 @@ import axios from "axios";
 import { plainToInstance } from "class-transformer";
 import { Env } from "../env";
 import { BuildRunnerService } from "./build-runner.service";
-import { CodeGenerationFailure as CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
-import { CodeGenerationRequest as CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
-import { CodeGenerationSuccess as CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
+import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
+import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
+import {
+  CodeGenerationFailure,
+  CodeGenerationSuccess,
+} from "@amplication/schema-registry";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -31,21 +35,26 @@ export class BuildRunnerController {
         dto.buildId
       );
 
+      const successEvent: CodeGenerationSuccess.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId },
+      };
+
       await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
-        {
-          key: null,
-          value: { buildId: dto.buildId },
-        }
+        successEvent
       );
     } catch (error) {
       this.logger.error(error);
+
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId, error },
+      };
+
       await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        {
-          key: null,
-          value: { buildId: dto.buildId, error },
-        }
+        failureEvent
       );
     }
   }
@@ -55,12 +64,14 @@ export class BuildRunnerController {
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
     try {
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId, error: dto.error },
+      };
+
       await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        {
-          key: null,
-          value: { buildId: dto.buildId, error: dto.error },
-        }
+        failureEvent
       );
     } catch (error) {
       this.logger.error(error);
@@ -89,12 +100,15 @@ export class BuildRunnerController {
       });
     } catch (error) {
       this.logger.error(error);
+
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: args.buildId, error },
+      };
+
       await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        {
-          key: null,
-          value: { buildId: args?.buildId, error },
-        }
+        failureEvent
       );
     }
   }
