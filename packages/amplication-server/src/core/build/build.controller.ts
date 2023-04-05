@@ -9,8 +9,8 @@ import { EnumActionStepStatus } from "../action/dto";
 import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
 import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import {
+  CanUserAccessBuild,
   CodeGenerationFailure,
   CodeGenerationLog,
   CodeGenerationSuccess,
@@ -29,9 +29,9 @@ export class BuildController {
     EnvironmentVariables.instance.get(CHECK_USER_ACCESS_TOPIC, true)
   )
   async checkUserAccess(
-    @Payload() message: CanUserAccessArgs
+    @Payload() message: CanUserAccessBuild.Value
   ): Promise<{ value: ResultMessage<boolean> }> {
-    const validArgs = plainToInstance(CanUserAccessArgs, message);
+    const validArgs = plainToInstance(CanUserAccessBuild.Value, message);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
       value: {

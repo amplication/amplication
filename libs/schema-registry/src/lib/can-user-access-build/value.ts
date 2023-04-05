@@ -1,8 +1,6 @@
-import { ArgsType } from "@nestjs/graphql";
 import { IsString } from "class-validator";
 
-@ArgsType()
-export class CanUserAccessArgs {
+export class Value {
   @IsString()
   userId!: string;
   @IsString()

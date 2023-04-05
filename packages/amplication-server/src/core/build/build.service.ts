@@ -25,7 +25,6 @@ import { CommitService } from "../commit/commit.service";
 import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
@@ -36,6 +35,7 @@ import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
 import {
+  CanUserAccessBuild,
   CodeGenerationRequest,
   CreatePrFailure,
   CreatePrRequest,
@@ -558,7 +558,7 @@ export class BuildService {
   async canUserAccess({
     userId,
     buildId,
-  }: CanUserAccessArgs): Promise<boolean> {
+  }: CanUserAccessBuild.Value): Promise<boolean> {
     const build = this.prisma.build.findFirst({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       where: { id: buildId, AND: { userId } },
