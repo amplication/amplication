@@ -294,6 +294,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
+        defineUser={defineUser}
       >
         <CreateServiceName
           moduleClass={moduleClass}
