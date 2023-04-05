@@ -1,5 +1,6 @@
 import { IsString } from "class-validator";
-export class CodeGenerationFailure {
+
+export class Value {
   @IsString()
   buildId!: string;
 }

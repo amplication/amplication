@@ -10,10 +10,13 @@ import { ResultMessage } from "../queue/dto/ResultMessage";
 import { StatusEnum } from "../queue/dto/StatusEnum";
 import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
 import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { LogEntryDto } from "./dto/LogEntryDto";
+import {
+  CodeGenerationFailure,
+  CodeGenerationSuccess,
+} from "@amplication/schema-registry";
 
 @Controller("generated-apps")
 export class BuildController {
@@ -43,9 +46,9 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_SUCCESS_TOPIC, true)
   )
   async onCodeGenerationSuccess(
-    @Payload() message: CodeGenerationSuccess
+    @Payload() message: CodeGenerationSuccess.Value
   ): Promise<void> {
-    const args = plainToInstance(CodeGenerationSuccess, message);
+    const args = plainToInstance(CodeGenerationSuccess.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
       EnumActionStepStatus.Success
@@ -57,9 +60,9 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_FAILURE_TOPIC, true)
   )
   async onCodeGenerationFailure(
-    @Payload() message: CodeGenerationSuccess
+    @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
-    const args = plainToInstance(CodeGenerationSuccess, message);
+    const args = plainToInstance(CodeGenerationFailure.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
       EnumActionStepStatus.Failed
