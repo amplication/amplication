@@ -6,8 +6,8 @@ import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
 import { Env } from "../../env";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
-import { ResultMessage } from "../queue/dto/ResultMessage";
-import { StatusEnum } from "../queue/dto/StatusEnum";
+import { ReplyResultMessage } from "./dto/ReplyResultMessage";
+import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
 import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
 import {
   CanUserAccessBuild,
@@ -30,13 +30,13 @@ export class BuildController {
   )
   async checkUserAccess(
     @Payload() message: CanUserAccessBuild.Value
-  ): Promise<{ value: ResultMessage<boolean> }> {
+  ): Promise<{ value: ReplyResultMessage<boolean> }> {
     const validArgs = plainToInstance(CanUserAccessBuild.Value, message);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
       value: {
         error: null,
-        status: StatusEnum.Success,
+        status: ReplyStatusEnum.Success,
         value: isUserCanAccess,
       },
     };

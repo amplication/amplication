@@ -1,10 +1,10 @@
 import { IsNumber, ValidateNested } from "class-validator";
-import { StatusEnum } from "./StatusEnum";
+import { ReplyStatusEnum } from "./ReplyStatusEnum";
 
-export class ResultMessage<Dto> {
+export class ReplyResultMessage<Dto> {
   @ValidateNested()
   value!: Dto | null;
   @IsNumber()
-  status!: StatusEnum;
+  status!: ReplyStatusEnum;
   error: string | null = null;
 }

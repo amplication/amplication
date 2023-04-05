@@ -22,7 +22,6 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { TopicService } from "../topic/topic.service";
@@ -41,6 +40,7 @@ import {
   CreatePrRequest,
   CreatePrSuccess,
 } from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -152,7 +152,7 @@ export class BuildService {
     private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly queueService: QueueService,
+    private readonly kafkaProducerService: KafkaProducerService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
@@ -317,16 +317,20 @@ export class BuildService {
 
         logger.info("Writing build generation message to queue");
 
-        const codeGenerationEvent: CodeGenerationRequest.Value = {
-          resourceId,
-          buildId,
-          dsgResourceData,
+        const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
+          key: null,
+          value: {
+            resourceId,
+            buildId,
+            dsgResourceData,
+          },
         };
 
-        await this.queueService.emitMessage(
+        await this.kafkaProducerService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
-          JSON.stringify(codeGenerationEvent)
+          codeGenerationEvent
         );
+
         logger.info("Build generation message sent");
 
         return null;
@@ -479,7 +483,7 @@ export class BuildService {
               )
             : false;
 
-          const createPullRequestEvent: CreatePrRequest.Value = {
+          const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -505,10 +509,16 @@ export class BuildService {
                 : EnumPullRequestMode.Basic,
           };
 
-          await this.queueService.emitMessageWithKey(
+          const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
+            key: {
+              resourceRepositoryId: resourceRepository.id,
+              resourceId: resource.id,
+            },
+            value: createPullRequestMessage,
+          };
+          await this.kafkaProducerService.emitMessage(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
-            resourceRepository.id,
-            JSON.stringify(createPullRequestEvent)
+            createPullRequestEvent
           );
         } catch (error) {
           this.logger.error(
