@@ -10,11 +10,14 @@ import {
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { Env } from "../env";
-// import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
 import { QueueService } from "./queue.service";
-import { CreatePrRequest } from "@amplication/schema-registry";
+import {
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
 
 @Controller()
 export class PullRequestController {
@@ -59,7 +62,10 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response = { url: pullRequest, buildId: validArgs.newBuildId };
+      const response: CreatePrSuccess.Value = {
+        url: pullRequest,
+        buildId: validArgs.newBuildId,
+      };
 
       this.queueService.emitMessage(
         KafkaTopics.CreatePrSuccess,
@@ -72,7 +78,7 @@ export class PullRequestController {
         buildId: validArgs.newBuildId,
       });
 
-      const response = {
+      const response: CreatePrFailure.Value = {
         buildId: validArgs.newBuildId,
         errorMessage: error.message,
       };
