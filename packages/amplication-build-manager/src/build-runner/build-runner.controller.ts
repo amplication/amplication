@@ -8,9 +8,9 @@ import axios from "axios";
 import { plainToInstance } from "class-transformer";
 import { Env } from "../env";
 import { BuildRunnerService } from "./build-runner.service";
-import { CodeGenerationFailure } from "./dto/CodeGenerationFailure";
-import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
-import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
+import { CodeGenerationFailure as CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { CodeGenerationRequest as CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
+import { CodeGenerationSuccess as CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -23,13 +23,14 @@ export class BuildRunnerController {
 
   @Post("code-generation-success")
   async onCodeGenerationSuccess(
-    @Payload() dto: CodeGenerationSuccess
+    @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
     try {
       await this.buildRunnerService.copyFromJobToArtifact(
         dto.resourceId,
         dto.buildId
       );
+
       await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
         {
@@ -51,7 +52,7 @@ export class BuildRunnerController {
 
   @Post("code-generation-failure")
   async onCodeGenerationFailure(
-    @Payload() dto: CodeGenerationFailure
+    @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
     try {
       await this.producerService.emitMessage(
@@ -70,12 +71,12 @@ export class BuildRunnerController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
   async onCodeGenerationRequest(
-    @Payload() message: CodeGenerationRequest
+    @Payload() message: CodeGenerationRequestDto
   ): Promise<void> {
     this.logger.info("Code generation request received");
-    let args: CodeGenerationRequest;
+    let args: CodeGenerationRequestDto;
     try {
-      args = plainToInstance(CodeGenerationRequest, message);
+      args = plainToInstance(CodeGenerationRequestDto, message);
       this.logger.debug("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,

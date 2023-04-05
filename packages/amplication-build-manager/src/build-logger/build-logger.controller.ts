@@ -2,7 +2,7 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Body, Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
-import { OnCodeGenerationLogRequest } from "./dto/OnCodeGenerationLogRequest";
+import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 
 @Controller("build-logger")
 export class BuildLoggerController {
@@ -13,7 +13,7 @@ export class BuildLoggerController {
 
   @Post("create-log")
   async onCodeGenerationLog(
-    @Body() logEntry: OnCodeGenerationLogRequest
+    @Body() logEntry: CodeGenerationLogRequestDto
   ): Promise<void> {
     await this.producerService.emitMessage(
       this.configService.get(Env.DSG_LOG_TOPIC),
