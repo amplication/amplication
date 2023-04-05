@@ -36,6 +36,7 @@ import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
 import {
+  CodeGenerationRequest,
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
@@ -316,9 +317,15 @@ export class BuildService {
 
         logger.info("Writing build generation message to queue");
 
+        const codeGenerationEvent: CodeGenerationRequest.Value = {
+          resourceId,
+          buildId,
+          dsgResourceData,
+        };
+
         await this.queueService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
-          JSON.stringify({ resourceId, buildId, dsgResourceData })
+          JSON.stringify(codeGenerationEvent)
         );
         logger.info("Build generation message sent");
 
