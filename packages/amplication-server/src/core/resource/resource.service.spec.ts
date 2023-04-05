@@ -109,6 +109,7 @@ const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   createdAt: new Date(),
   updatedAt: new Date(),
   gitOrganization: EXAMPLE_GIT_ORGANISATION,
+  groupName: "",
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {

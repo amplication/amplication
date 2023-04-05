@@ -290,6 +290,7 @@ export type CreateGitRepositoryBaseInput = {
   gitProvider: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
   repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
@@ -299,6 +300,7 @@ export type CreateGitRepositoryInput = {
   gitProvider: EnumGitProvider;
   name: Scalars['String'];
   public: Scalars['Boolean'];
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
   repositoryGroupName?: InputMaybe<Scalars['String']>;
   resourceId: Scalars['String'];
 };

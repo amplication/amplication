@@ -1487,21 +1487,29 @@ input CompleteInvitationInput {
 
 input CreateGitRepositoryInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  repositoryGroupName: String
   public: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-  repositoryGroupName: String
   resourceId: String!
 }
 
 input CreateGitRepositoryBaseInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  repositoryGroupName: String
   public: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-  repositoryGroupName: String
 }
 
 input GitOrganizationCreateInput {
