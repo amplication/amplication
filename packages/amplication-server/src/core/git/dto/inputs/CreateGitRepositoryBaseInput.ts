@@ -20,11 +20,6 @@ export class CreateGitRepositoryBaseInput {
   })
   gitOrganizationId!: string;
 
-  @Field(() => String, {
-    nullable: true,
-  })
-  gitGroupName?: string;
-
   @Field(() => EnumGitProvider, {
     nullable: false,
   })
@@ -34,4 +29,7 @@ export class CreateGitRepositoryBaseInput {
     nullable: false,
   })
   gitOrganizationType!: EnumGitOrganizationType;
+
+  @Field(() => String, { nullable: true })
+  gitGroupName?: string;
 }
