@@ -65,8 +65,8 @@ export class PullRequestController {
         JSON.stringify(response)
       );
     } catch (error) {
-      this.logger.error(error, {
-        class: this.constructor.name,
+      this.logger.error(error.message, error, {
+        class: PullRequestController.name,
         offset,
         buildId: validArgs.newBuildId,
       });

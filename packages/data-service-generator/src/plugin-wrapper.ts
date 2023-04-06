@@ -84,9 +84,12 @@ const pluginWrapper: PluginWrapper = async (
   } catch (error) {
     const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;
 
-    await context.logger.error(friendlyErrorMessage, {
-      error: { message: error.message, stack: error.stack },
-    });
+    await context.logger.error(
+      friendlyErrorMessage,
+      { event },
+      friendlyErrorMessage,
+      error
+    );
 
     if (context.utils.abort) {
       await context.logger.error(context.utils.abortMessage);

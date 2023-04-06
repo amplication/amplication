@@ -6,6 +6,7 @@ import {
   NotFoundException,
   ConflictException,
   BadRequestException,
+  Inject,
 } from "@nestjs/common";
 import { DataConflictError } from "../../errors/DataConflictError";
 import { Prisma, PrismaService } from "../../prisma";
@@ -74,6 +75,7 @@ import {
   DeleteEntityPermissionFieldArgs,
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -169,7 +171,8 @@ export class EntityService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
-    private readonly diffService: DiffService
+    private readonly diffService: DiffService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
@@ -2274,7 +2277,7 @@ export class EntityService {
           } catch (error) {
             //continue to delete the field even if the deletion of the related field failed.
             //This is done in order to allow the user to workaround issues in any case when a related field is missing
-            console.log(
+            this.logger.error(
               "Continue with FieldDelete even though the related field could not be deleted or was not found ",
               error
             );
