@@ -22,7 +22,6 @@ import env from "../env";
 import entities from "../data/base/entities";
 import { resourceInfo } from "../data/base/resourceInfo";
 import roles from "../data/base/roles";
-import e from "express";
 
 // Use when running the E2E multiple times to shorten build time
 const { NO_DELETE_IMAGE } = process.env;
@@ -157,7 +156,7 @@ describe("Data Service Generator", () => {
       compose
         .logs([], { ...dockerComposeOptions, follow: true })
         .catch((err) => {
-          logger.error(err);
+          logger.error(err.message, err);
         });
 
       logger.info("Waiting for server to be ready...");
@@ -394,7 +393,7 @@ describe("Data Service Generator", () => {
               })
             );
           } catch (error) {
-            logger.error(error.message, { error });
+            logger.error(error.message, error);
             throw error;
           }
         });
