@@ -41,6 +41,7 @@ import {
   CreatePrSuccess,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { GitProviderService } from "../git/git.provider.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -483,13 +484,19 @@ export class BuildService {
               )
             : false;
 
+          const gitProvider = EnumGitProvider[gitOrganization.provider];
+          const auth =
+            GitProviderService.getGitOrganisationProviderProperties(
+              gitOrganization
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             gitRepositoryGroupName: resourceRepository.groupName,
             resourceId: resource.id,
-            gitProvider: EnumGitProvider[gitOrganization.provider],
-            installationId: gitOrganization.installationId,
+            gitProvider: gitProvider,
+            auth,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {

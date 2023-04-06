@@ -1,6 +1,6 @@
 import { parse } from "path";
 import { BitBucketService } from "./bitbucket.service";
-import { EnumGitProvider } from "../../types";
+import { BitBucketProviderOrganizationProperties } from "../../types";
 import { ILogger } from "@amplication/util/logging";
 import * as requests from "./requests";
 import {
@@ -28,11 +28,8 @@ describe("bitbucket.service", () => {
   beforeEach(() => {
     service = new BitBucketService(
       {
-        provider: EnumGitProvider.Bitbucket,
-        providerOrganizationProperties: {
-          accessToken: "my-token",
-        },
-      },
+        accessToken: "my-token",
+      } as unknown as BitBucketProviderOrganizationProperties,
       {
         clientId: "id",
         clientSecret: "secret",

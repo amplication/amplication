@@ -22,10 +22,10 @@ import {
   EnumGitProvider,
   GetBranchArgs,
   PullRequest,
-  GitProviderArgs,
   PaginatedGitGroup,
   BitBucketConfiguration,
   Bot,
+  OAuthProviderOrganizationProperties,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -57,14 +57,14 @@ export class BitBucketService implements GitProvider {
   public readonly domain = "bitbucket.com";
 
   constructor(
-    private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
     private readonly providerConfiguration: BitBucketConfiguration,
     private readonly logger: ILogger
   ) {}
 
   async init(): Promise<void> {
     this.logger.info("BitbucketService init");
-    const { accessToken } = this.gitProviderArgs.providerOrganizationProperties;
+    const { accessToken } = this.providerOrganizationProperties;
     const { clientId, clientSecret } = this.providerConfiguration;
 
     if (!clientId || !clientSecret) {
