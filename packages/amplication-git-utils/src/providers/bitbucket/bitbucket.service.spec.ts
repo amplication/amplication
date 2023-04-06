@@ -137,7 +137,7 @@ describe("bitbucket.service", () => {
         path: "tests/__init__.py",
         owner: "mr-bucket",
         repositoryName: "my-repo",
-        baseBranchName: "main",
+        ref: "main",
       });
 
       const expectedResult = {

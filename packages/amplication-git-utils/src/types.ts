@@ -119,7 +119,11 @@ export interface GetFileArgs {
   owner: string;
   repositoryName: string;
   path: string;
-  baseBranchName?: string;
+  /**
+   * Revision reference of the file to request.
+   * It can be a branch name, commit SHA, git tag
+   */
+  ref: string;
 }
 
 export interface CreatePullRequestArgs {

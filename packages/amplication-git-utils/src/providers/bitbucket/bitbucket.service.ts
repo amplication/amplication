@@ -277,7 +277,7 @@ export class BitBucketService implements GitProvider {
   // pull request flow
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    const { owner, repositoryName, baseBranchName, path } = file;
+    const { owner, repositoryName, ref, path } = file;
 
     if (!baseBranchName) {
       this.logger.error("Missing baseBranchName");
@@ -287,7 +287,7 @@ export class BitBucketService implements GitProvider {
     const fileResponse = await getFileMetaRequest(
       owner,
       repositoryName,
-      baseBranchName,
+      ref,
       path,
       this.accessToken
     );
@@ -295,7 +295,7 @@ export class BitBucketService implements GitProvider {
     const fileBufferResponse = await getFileRequest(
       owner,
       repositoryName,
-      baseBranchName,
+      ref,
       path,
       this.accessToken
     );
