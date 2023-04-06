@@ -114,10 +114,13 @@ export class GitClientService {
       gitResourceMeta,
       files,
     } = createPullRequestArgs;
+
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
-      repositoryName
+      repositoryName,
+      repositoryGroupName
     );
+
     const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
       files,
@@ -395,14 +398,21 @@ export class GitClientService {
     await gitCli.push();
   }
 
-  private async manageAmplicationIgnoreFile(owner, repositoryName) {
+  private async manageAmplicationIgnoreFile(
+    owner: string,
+    repositoryName: string,
+    repositoryGroupName?: string,
+    gitRef?: string
+  ) {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
         const file = await this.provider.getFile({
           owner,
           repositoryName,
+          repositoryGroupName,
           path: fileName,
+          ref: gitRef,
         });
         if (!file) {
           return "";
@@ -411,7 +421,10 @@ export class GitClientService {
         this.logger.info(`Got ${name} file ${htmlUrl}`);
         return content;
       } catch (error) {
-        this.logger.info("Repository does not have a .amplicationignore file");
+        this.logger.warn(
+          "Repository does not have a .amplicationignore file",
+          error
+        );
         return "";
       }
     });

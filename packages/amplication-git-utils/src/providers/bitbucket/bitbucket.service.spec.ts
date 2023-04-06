@@ -54,7 +54,9 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing baseBranchName");
+        expect(e.message).toBe(
+          "Missing repositoryGroupName. repositoryGroupName is mandatory for BitBucket provider"
+        );
       }
     });
 
@@ -86,7 +88,8 @@ describe("bitbucket.service", () => {
           path: "tests/",
           owner: "mr-bucket",
           repositoryName: "my-repo",
-          baseBranchName: "main",
+          repositoryGroupName: "my-group",
+          ref: "main",
         });
       } catch (e) {
         expect(e.message).toBe(
@@ -137,6 +140,7 @@ describe("bitbucket.service", () => {
         path: "tests/__init__.py",
         owner: "mr-bucket",
         repositoryName: "my-repo",
+        repositoryGroupName: "my-group",
         ref: "main",
       });
 

@@ -274,28 +274,40 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  // pull request flow
-
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    const { owner, repositoryName, ref, path } = file;
+    let gitReference: string;
+    const { owner, repositoryName, repositoryGroupName, ref, path } = file;
 
-    if (!baseBranchName) {
-      this.logger.error("Missing baseBranchName");
-      throw new CustomError("Missing baseBranchName");
+    if (!repositoryGroupName) {
+      throw new CustomError(
+        "Missing repositoryGroupName. repositoryGroupName is mandatory for BitBucket provider"
+      );
+    }
+
+    if (!ref) {
+      // Default to
+      const repo = await this.getRepository({
+        owner,
+        repositoryName,
+        repositoryGroupName,
+      });
+      gitReference = repo.defaultBranch;
+    } else {
+      gitReference = ref;
     }
 
     const fileResponse = await getFileMetaRequest(
-      owner,
+      repositoryGroupName,
       repositoryName,
-      ref,
+      gitReference,
       path,
       this.accessToken
     );
 
     const fileBufferResponse = await getFileRequest(
-      owner,
+      repositoryGroupName,
       repositoryName,
-      ref,
+      gitReference,
       path,
       this.accessToken
     );
