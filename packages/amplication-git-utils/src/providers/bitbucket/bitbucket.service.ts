@@ -33,14 +33,12 @@ import {
   authorizeRequest,
   createBranchRequest,
   createCommentOnPrRequest,
-  createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
   getBranchRequest,
   getFileMetaRequest,
   getFileRequest,
   getFirstCommitRequest,
-  getLastCommitRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -55,7 +53,6 @@ export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
   private accessToken: string;
-  private refreshToken: string;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
@@ -67,8 +64,7 @@ export class BitBucketService implements GitProvider {
 
   async init(): Promise<void> {
     this.logger.info("BitbucketService init");
-    const { accessToken, refreshToken } =
-      this.gitProviderArgs.providerOrganizationProperties;
+    const { accessToken } = this.gitProviderArgs.providerOrganizationProperties;
     const { clientId, clientSecret } = this.providerConfiguration;
 
     if (!clientId || !clientSecret) {
@@ -79,7 +75,6 @@ export class BitBucketService implements GitProvider {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
