@@ -7,12 +7,6 @@ import { IsOptional, IsString, ValidateNested } from "class-validator";
 
 class Commit {
   @IsString()
-  @IsOptional()
-  base?: string | undefined;
-  @IsOptional()
-  @IsString()
-  head?: string | undefined;
-  @IsString()
   title!: string;
   @IsString()
   body!: string;

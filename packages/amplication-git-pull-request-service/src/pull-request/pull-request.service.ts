@@ -71,7 +71,7 @@ export class PullRequestService {
   }: CreatePrRequest.Value): Promise<string> {
     const { body, title } = commit;
     const head =
-      commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
+      pullRequestMode === EnumPullRequestMode.Accumulative
         ? "amplication"
         : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -100,7 +100,7 @@ export class PullRequestService {
       repositoryName: repo,
       repositoryGroupName: gitRepositoryGroupName,
       branchName: head,
-      commitMessage: commit.body,
+      commitMessage: body,
       pullRequestTitle: title,
       pullRequestBody: body,
       pullRequestMode,
