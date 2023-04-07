@@ -5,6 +5,7 @@ export interface ResourceSettings {
   serviceName: string;
   gitOrganizationId: string;
   gitRepositoryName: string;
+  isOverrideGitRepository: boolean;
   generateAdminUI: boolean;
   generateGraphQL: boolean;
   generateRestApi: boolean;

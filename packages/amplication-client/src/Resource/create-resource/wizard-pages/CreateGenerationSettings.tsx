@@ -46,17 +46,23 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
             name="generateGraphQL"
             image={graphql}
             label="GraphQL API"
+            value={formik.values.generateGraphQL}
+            onChange={formik.setFieldValue}
           />
           <ImageLabelToggle
             name="generateRestApi"
             image={swagger}
             label="REST API & Swagger UI"
+            value={formik.values.generateRestApi}
+            onChange={formik.setFieldValue}
           />
           <ImageLabelToggle
             name="generateAdminUI"
             image={adminUI}
             disabled={!formik.values.generateGraphQL}
             label="Admin UI"
+            value={formik.values.generateAdminUI}
+            onChange={formik.setFieldValue}
           />
         </Layout.SelectorWrapper>
       </Layout.RightSide>

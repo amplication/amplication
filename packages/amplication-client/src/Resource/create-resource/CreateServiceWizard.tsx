@@ -29,6 +29,10 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import { expireCookie, getCookie } from "../../util/cookie";
 import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
+import { kebabCase } from "lodash";
+import { Plugin } from "../../Plugins/hooks/usePlugins";
+import { useQuery } from "@apollo/client";
+import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -62,6 +66,23 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
+  const [pluginsVersion, setPluginsVersion] = useState<Plugin[]>(null);
+
+  const { data: pluginsVersionData } = useQuery<{
+    plugins: Plugin[];
+  }>(GET_PLUGIN_VERSIONS_CATALOG, {
+    context: {
+      clientName: "pluginApiHttpLink",
+    },
+    variables: {
+      where: {
+        deprecated: {
+          equals: null,
+        },
+      },
+    },
+  });
+
   const defineUser: DefineUser =
     signupCookie === "1" ? "Onboarding" : "Create Service";
   const wizardPattern =
@@ -93,6 +114,11 @@ const CreateServiceWizard: React.FC<Props> = ({
     if (createResult?.build) setCurrentBuild(createResult?.build);
   }, [createResult?.build]);
 
+  useEffect(() => {
+    if (!pluginsVersionData) return;
+    setPluginsVersion(pluginsVersionData?.plugins);
+  }, [pluginsVersionData?.plugins]);
+
   const handleRebuildClick = useCallback(
     (build: models.Build) => {
       setCurrentBuild(build);
@@ -112,6 +138,11 @@ const CreateServiceWizard: React.FC<Props> = ({
       databaseType: "postgres" | "mysql" | "mongo",
       authType: string
     ): models.PluginInstallationsCreateInput => {
+      const dbPlugin = pluginsVersionData?.plugins.find(
+        (x) => x.pluginId === `db-${databaseType}`
+      );
+      const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
+
       const authCorePlugins = authType === "core" && [
         {
           displayName: "Auth-core",
@@ -140,6 +171,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
+            settings: JSON.parse(dbLastVersion?.settings),
           },
         ],
       };
@@ -147,7 +179,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    []
+    [pluginsVersionData?.plugins, pluginsVersion]
   );
 
   const handleCloseWizard = useCallback(
@@ -191,6 +223,7 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
+      if (activeIndex < 6) return;
       const {
         serviceName,
         generateAdminUI,
@@ -198,6 +231,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         generateRestApi,
         gitOrganizationId,
         gitRepositoryName,
+        isOverrideGitRepository,
         authType,
         databaseType,
         templateType,
@@ -205,10 +239,14 @@ const CreateServiceWizard: React.FC<Props> = ({
         baseDir,
       } = values;
 
+      const kebabCaseServiceName = kebabCase(serviceName);
+
       const serverDir =
-        structureType === "Mono" ? `${baseDir}/${serviceName}` : "";
+        structureType === "Mono" ? `${baseDir}/${kebabCaseServiceName}` : "";
       const adminDir =
-        structureType === "Mono" ? `${baseDir}/${serviceName}-admin` : "";
+        structureType === "Mono"
+          ? `${baseDir}/${kebabCaseServiceName}-admin`
+          : "";
       const templateSettings = templateMapping[templateType];
 
       if (currentProject) {
@@ -224,6 +262,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             name: gitRepositoryName,
             gitOrganizationId: gitOrganizationId,
             resourceId: "",
+            isOverrideGitRepository: isOverrideGitRepository,
           },
           serverDir,
           adminDir,
@@ -255,6 +294,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
+        defineUser={defineUser}
       >
         <CreateServiceName
           moduleClass={moduleClass}
@@ -263,6 +303,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateGithubSync
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          defineUser={defineUser}
         />
         <CreateGenerationSettings
           moduleClass={moduleClass}

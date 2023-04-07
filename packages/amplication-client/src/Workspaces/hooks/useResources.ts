@@ -5,6 +5,7 @@ import * as models from "../../models";
 import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie } from "../../util/cookie";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -129,6 +130,7 @@ const useResources = (
         result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
+      expireCookie("signup");
       refetch();
     });
   };
@@ -154,58 +156,6 @@ const useResources = (
         });
     });
   };
-
-  const createResourcePlugins = useCallback(
-    (
-      resourceId: string,
-      databaseType: "postgres" | "mysql" | "mongo",
-      authType: string
-    ) => {
-      const authCorePlugins = authType === "core" && [
-        {
-          displayName: "Auth-core",
-          pluginId: "auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-        {
-          displayName: "Auth-jwt",
-          pluginId: "auth-jwt",
-          enabled: true,
-          npm: "@amplication/plugin-auth-jwt",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-      ];
-
-      const data: models.PluginInstallationsCreateInput = {
-        plugins: [
-          {
-            displayName: databaseType,
-            pluginId: `db-${databaseType}`,
-            enabled: true,
-            npm: `@amplication/plugin-db-${databaseType}`,
-            version: "latest",
-            resource: { connect: { id: resourceId } },
-          },
-        ],
-      };
-
-      if (authCorePlugins) data.plugins.push(...authCorePlugins);
-
-      createPluginInstallations({
-        variables: {
-          data: data,
-          where: {
-            id: resourceId,
-          },
-        },
-      }).catch(console.error);
-    },
-    []
-  );
 
   useEffect(() => {
     if (resourceMatch || createResourceMatch) return;

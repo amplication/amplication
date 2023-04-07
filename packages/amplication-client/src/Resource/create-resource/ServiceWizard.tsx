@@ -6,9 +6,11 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
+import { DefineUser } from "./CreateServiceWizard";
 
 interface ServiceWizardProps {
   children: ReactNode;
+  defineUser: DefineUser;
   wizardPattern: number[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
@@ -59,6 +61,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
+  defineUser,
 }) => {
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
@@ -128,17 +131,19 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        className={`${moduleCss}__close`}
-        onClick={() =>
-          handleCloseWizard(
-            (currentPage.type as React.JSXElementConstructor<any>).name
-          )
-        }
-      >
-        x close
-      </Button>
+      {defineUser === "Create Service" && (
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          className={`${moduleCss}__close`}
+          onClick={() =>
+            handleCloseWizard(
+              (currentPage.type as React.JSXElementConstructor<any>).name
+            )
+          }
+        >
+          x close
+        </Button>
+      )}
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
@@ -148,6 +153,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           validateOnMount
           validate={(values: ResourceSettings) => {
             if (activePageIndex === 3 && values.structureType !== "Mono") {
+              setIsValidStep(false);
+              return;
+            }
+            if (activePageIndex === 1 && !values.isOverrideGitRepository) {
               setIsValidStep(false);
               return;
             }

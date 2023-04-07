@@ -9,6 +9,6 @@ export class ResourceCreateWithEntitiesResult {
   @Field(() => Resource)
   resource: Resource;
 
-  @Field(() => Build)
-  build: Build;
+  @Field(() => Build, { nullable: true })
+  build?: Build;
 }

@@ -15,6 +15,10 @@
   min-width: 250px;
   max-width: 250px;
 
+  &:hover {
+    cursor: pointer;
+  }
+
   .toggle-field {
     .MuiSwitch-root {
       .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
@@ -25,5 +29,9 @@
 
   label {
     @include title-18;
+
+    &:hover {
+      cursor: pointer;
+    }
   }
 }

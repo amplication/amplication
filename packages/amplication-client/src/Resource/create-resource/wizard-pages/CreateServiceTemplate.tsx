@@ -52,8 +52,8 @@ const CreateServiceTemplate: React.FC<WizardStepProps> = ({
             currentValue={formik.values.templateType}
           >
             <div className="label-description-selector__template_description">
-              Pre-defined set of entities and fields such as <br />
-              (Address, Orders, User)
+              Pre-defined set of entities and fields <br />
+              Address, Orders, User
             </div>
           </LabelDescriptionSelector>
         </Layout.SelectorWrapper>
