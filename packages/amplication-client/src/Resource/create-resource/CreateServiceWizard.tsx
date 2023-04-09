@@ -87,11 +87,13 @@ const ONBOARDING_STEPS: WizardStep[] = [
   },
   {
     index: 8,
+    hideBackButton: true,
     analyticsEventName:
       AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration,
   },
   {
     index: 9,
+    hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
   },
 ];
@@ -131,6 +133,7 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
   },
   {
     index: 9,
+    hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
   },
 ];
