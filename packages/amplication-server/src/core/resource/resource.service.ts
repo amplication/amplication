@@ -396,21 +396,24 @@ export class ResourceService {
     const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
     if (isOnboarding) {
       try {
-        await this.projectService.commit({
-          data: {
-            message: INITIAL_COMMIT_MESSAGE,
-            project: {
-              connect: {
-                id: resource.projectId,
+        await this.projectService.commit(
+          {
+            data: {
+              message: INITIAL_COMMIT_MESSAGE,
+              project: {
+                connect: {
+                  id: resource.projectId,
+                },
               },
-            },
-            user: {
-              connect: {
-                id: user.id,
+              user: {
+                connect: {
+                  id: user.id,
+                },
               },
             },
           },
-        });
+          user
+        );
       } catch (error) {
         console.log({ error });
       }
