@@ -12,7 +12,7 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
   trackWizardPageEvent,
 }) => {
   useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Welcome);
+    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Name);
     formik.validateForm();
   }, []);
 
