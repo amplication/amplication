@@ -205,18 +205,11 @@ export class ResourceService {
       });
     }
 
-    if (gitRepository) {
-      return await this.prisma.resource.create({
-        data: {
-          ...args.data,
-          gitRepository,
-          gitRepositoryOverride: gitRepositoryToCreate.isOverrideGitRepository,
-        },
-      });
-    }
     return await this.prisma.resource.create({
       data: {
         ...args.data,
+        gitRepository: gitRepository,
+        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
       },
     });
   }
