@@ -52,12 +52,6 @@ const CreateServiceCodeGeneration: React.FC<
   });
 
   useEffect(() => {
-    trackWizardPageEvent(
-      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration
-    );
-  }, []);
-
-  useEffect(() => {
     if (
       !buildCompleted &&
       data?.build?.status === models.EnumBuildStatus.Completed

@@ -67,10 +67,26 @@ const StructureType = {
     },
     baseDir: {
       type: "string",
-      minLength: 4,
     },
   },
-  required: ["baseDir", "structureType"],
+  anyOf: [
+    {
+      properties: {
+        structureType: { const: "Mono" },
+        baseDir: {
+          minLength: 4,
+        },
+      },
+    },
+    {
+      properties: {
+        structureType: { const: "Poly" },
+        baseDir: {
+          minLength: 0,
+        },
+      },
+    },
+  ],
 };
 
 const DatabaseType = {
@@ -101,6 +117,7 @@ const Auth = {
 };
 
 export const schemaArray = [
+  {},
   ResourceName,
   GitRepository,
   GenerationSettings,
