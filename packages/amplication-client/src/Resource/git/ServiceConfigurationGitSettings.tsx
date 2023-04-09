@@ -99,7 +99,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
     [resource.id, trackEvent, updateResourceOverrideStatus]
   );
 
-  const isToggleDisable = currentWorkspace?.gitOrganizations?.length === 0;
+  const isToggleDisable = currentWorkspace?.gitOrganizations?.length > 0;
 
   return (
     <div className={CLASS_NAME}>
