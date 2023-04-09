@@ -1,20 +1,26 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import "../CreateServiceWizard.scss";
-import "./CreateServiceCodeGeneration.scss";
-import ActionLog from "../../../VersionControl/ActionLog";
-import CodeGenerationCompleted from "../../../assets/images/code-generation-completed.svg";
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
-import { WizardStepProps } from "./interfaces";
-import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
+import { useMutation } from "@apollo/client";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { useHistory } from "react-router-dom";
+import ActionLog from "../../../VersionControl/ActionLog";
 import { LogData } from "../../../VersionControl/BuildPage";
+import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
+import useBuildWatchStatus from "../../../VersionControl/useBuildWatchStatus";
+import { AppContext } from "../../../context/appContext";
 import * as models from "../../../models";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
-import { AppContext } from "../../../context/appContext";
-import { useHistory } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
+import "../CreateServiceWizard.scss";
+import BuildCompletedScreen from "./BuildCompletedScreen";
+import "./CreateServiceCodeGeneration.scss";
+import { WizardStepProps } from "./interfaces";
 
-const className = "create-service-code-generation";
+export const className = "create-service-code-generation";
 
 type TData = {
   commit: models.Commit;
@@ -35,7 +41,7 @@ const CreateServiceCodeGeneration: React.FC<
   rebuildClick,
 }) => {
   const { data } = useBuildWatchStatus(build);
-
+  const [pullRequestLink, setPullRequestLink] = useState("");
   const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
@@ -77,6 +83,10 @@ const CreateServiceCodeGeneration: React.FC<
     if (!data?.build) return null;
 
     if (!data.build.action) return null;
+    const pullRequestLinkData = extractPullRequestLink(data.build.action.steps);
+    if (pullRequestLinkData) {
+      setPullRequestLink(pullRequestLinkData);
+    }
 
     return {
       action: data.build.action,
@@ -84,10 +94,6 @@ const CreateServiceCodeGeneration: React.FC<
       versionNumber: data.build.version,
     };
   }, [data]);
-
-  const handleViewCodeClick = useCallback(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_ViewCodeClicked);
-  }, [trackWizardPageEvent]);
 
   const handleContinueClick = useCallback(() => {
     history.push(
@@ -161,45 +167,11 @@ const CreateServiceCodeGeneration: React.FC<
         </div>
       ) : (
         buildCompleted && (
-          <div className={`${className}__status`}>
-            <div className={`${className}__status__completed`}>
-              <img
-                className={`${className}__status__completed__image`}
-                src={CodeGenerationCompleted}
-                alt=""
-              />
-
-              <div className={`${className}__status__completed__description`}>
-                <div
-                  className={`${className}__status__completed__description__header`}
-                >
-                  The code for your service is ready on
-                </div>
-                <div
-                  className={`${className}__status__completed__description__link`}
-                >
-                  https://github.com/
-                  {currentResource?.gitRepository?.gitOrganization?.name}/
-                  {currentResource?.gitRepository?.name}
-                </div>
-                <div />
-              </div>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                onClick={handleViewCodeClick}
-              >
-                {
-                  <a
-                    style={{ color: "white" }}
-                    href={`https://github.com/${currentResource?.gitRepository?.gitOrganization?.name}/${currentResource?.gitRepository?.name}`}
-                    target="docs"
-                  >
-                    View my code
-                  </a>
-                }
-              </Button>
-            </div>
-          </div>
+          <BuildCompletedScreen
+            moduleClass={moduleClass}
+            trackWizardPageEvent={trackWizardPageEvent}
+            pullRequestLink={pullRequestLink}
+          />
         )
       )}
     </div>
@@ -207,3 +179,16 @@ const CreateServiceCodeGeneration: React.FC<
 };
 
 export default CreateServiceCodeGeneration;
+
+function extractPullRequestLink(steps: models.ActionStep[]): string | null {
+  for (const step of steps) {
+    for (const log of step.logs) {
+      const { meta } = log;
+      if (meta.githubUrl) {
+        return meta.githubUrl;
+      }
+    }
+  }
+
+  return null;
+}
