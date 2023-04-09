@@ -1,22 +1,12 @@
 import { Button } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect } from "react";
-import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import React, { useCallback } from "react";
+import {} from "../../../util/analytics-events.types";
 import { WizardStepProps } from "../wizard-pages/interfaces";
 import "./CreateServiceWelcome.scss";
 
 const className = "create-service-welcome";
 
-const CreateServiceWelcome: React.FC<WizardStepProps> = ({
-  moduleClass,
-  formik,
-  goNextPage,
-  trackWizardPageEvent,
-}) => {
-  useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Welcome);
-    formik.validateForm();
-  }, []);
-
+const CreateServiceWelcome: React.FC<WizardStepProps> = ({ goNextPage }) => {
   const handleStart = useCallback(() => {
     goNextPage && goNextPage();
   }, []);

@@ -1,19 +1,11 @@
-import React, { useCallback, useEffect } from "react";
+import React, { useCallback } from "react";
 import "../CreateServiceWizard.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
-import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 
-const CreateServiceDatabase: React.FC<WizardStepProps> = ({
-  formik,
-  trackWizardPageEvent,
-}) => {
-  useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_DBSettings);
-  }, []);
-
+const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
   const PLUGIN_LOGO_BASE_URL =
     "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 

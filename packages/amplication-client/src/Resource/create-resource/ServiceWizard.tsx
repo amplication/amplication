@@ -13,11 +13,13 @@ import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
 import { DefineUser } from "./CreateServiceWizard";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 export type WizardStep = {
   index: number;
   hideFooter?: boolean;
   hideBackButton?: boolean;
+  analyticsEventName: AnalyticsEventNames;
 };
 
 interface ServiceWizardProps {
@@ -32,7 +34,11 @@ interface ServiceWizardProps {
   submitFormPage: number;
   submitLoader: boolean;
   handleCloseWizard: (currentPage: string) => void;
-  handleWizardProgress: (dir: "next" | "prev", page: string) => void;
+  handleWizardProgress: (
+    dir: "next" | "prev",
+    page: string,
+    pageEventName: AnalyticsEventNames
+  ) => void;
 }
 
 const BackButton: React.FC<{
@@ -45,7 +51,7 @@ const BackButton: React.FC<{
   activePageIndex !== wizardPattern[0] &&
   activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
     <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
-      back
+      Back
     </Button>
   ) : null;
 
@@ -103,12 +109,15 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         ? currWizardPatternIndex
         : currWizardPatternIndex + 1;
 
+    const newStep = wizardSteps.find((step) => step.index === wizardIndex);
+
     handleWizardProgress(
       "next",
       (
         pages[wizardPattern[wizardIndex]]
           .type as React.JSXElementConstructor<any>
-      ).name
+      ).name,
+      newStep.analyticsEventName
     );
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
@@ -116,12 +125,16 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   const goPrevPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
+
+    const newStep = wizardSteps.find((step) => step.index === wizardIndex);
+
     handleWizardProgress(
       "prev",
       (
         pages[wizardPattern[wizardIndex]]
           .type as React.JSXElementConstructor<any>
-      ).name
+      ).name,
+      newStep.analyticsEventName
     );
     setActivePageIndex(wizardPattern[wizardIndex]);
   }, [activePageIndex]);
@@ -238,8 +251,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                           disabled={isValidStep}
                           buttonName={
                             activePageIndex === submitFormPage
-                              ? "create service"
-                              : "continue"
+                              ? "Create Service"
+                              : "Continue"
                           }
                         />
                       )}
