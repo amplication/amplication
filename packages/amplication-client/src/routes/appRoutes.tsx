@@ -62,13 +62,13 @@ export const Routes: RouteDef[] = [
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
             Component: lazy(
-              () => import("../Resource/create-resource/CreateServiceWelcome")
+              () => import("../Resource/create-resource/CreateServiceWizard")
             ),
-            moduleName: "CreateServiceWelcome",
-            moduleClass: "create-service-welcome",
+            moduleName: "CreateServiceWizard",
+            moduleClass: "create-service-wizard",
             routeTrackType: "",
             exactPath: true,
-            isAnalytics: false,
+            isAnalytics: true,
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
