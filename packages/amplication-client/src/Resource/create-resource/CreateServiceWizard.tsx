@@ -204,7 +204,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
-            settings: JSON.parse(dbLastVersion?.settings || "{ }"),
+            settings: JSON.parse(dbLastVersion?.settings || "{}"),
           },
         ],
       };
