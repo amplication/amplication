@@ -49,29 +49,90 @@ const FLOW_CREATE_SERVICE = "Create Service";
 export type DefineUser = "Onboarding" | "Create Service";
 
 const ONBOARDING_STEPS: WizardStep[] = [
-  { index: 0, hideFooter: true, hideBackButton: true },
-  { index: 1, hideBackButton: true },
-  { index: 2 },
-  { index: 3 },
-  { index: 4 },
-  { index: 5 },
-  { index: 6 },
-  { index: 7 },
-  { index: 8 },
-  { index: 9 },
+  {
+    index: 0,
+    hideFooter: true,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Welcome,
+  },
+  {
+    index: 1,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+  },
+  {
+    index: 2,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+  },
+  {
+    index: 3,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+  },
+  {
+    index: 4,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+  },
+  {
+    index: 5,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+  },
+  {
+    index: 6,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+  },
+  {
+    index: 7,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+  },
+  {
+    index: 8,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration,
+  },
+  {
+    index: 9,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+  },
 ];
 
 const ONBOARDING_PATTERN = ONBOARDING_STEPS.map((step) => step.index);
 
 const CREATE_SERVICE_STEPS: WizardStep[] = [
-  { index: 1, hideBackButton: true },
-  { index: 2 },
-  { index: 3 },
-  { index: 4 },
-  { index: 5 },
-  { index: 6 },
-  { index: 7 },
-  { index: 9 },
+  {
+    index: 1,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+  },
+  {
+    index: 2,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+  },
+  {
+    index: 3,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+  },
+  {
+    index: 4,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+  },
+  {
+    index: 5,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+  },
+  {
+    index: 6,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+  },
+  {
+    index: 7,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+  },
+  {
+    index: 9,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+  },
 ];
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
@@ -223,17 +284,27 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const handleWizardProgress = useCallback(
-    (dir: "next" | "prev", page: string) => {
+    (
+      dir: "next" | "prev",
+      page: string,
+      pageEventName: AnalyticsEventNames
+    ) => {
       trackEvent({
         eventName:
           AnalyticsEventNames[
             dir === "next"
-              ? "ServiceWizardStep_ContinueClick"
-              : "ServiceWizardStep_BackClick"
+              ? "ServiceWizardStep_ContinueClicked"
+              : "ServiceWizardStep_BackClicked"
           ],
         category: "Service Wizard",
         WizardType: defineUser,
         step: page,
+      });
+
+      trackEvent({
+        eventName: pageEventName,
+        category: "Service Wizard",
+        WizardType: defineUser,
       });
     },
     []

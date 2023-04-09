@@ -1,5 +1,5 @@
 import { CircleBadge, Icon } from "@amplication/ui/design-system";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import "./CreateServiceNextSteps.scss";
 import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
@@ -16,13 +16,9 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Finish);
-  }, []);
-
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Entities" }
     );
     history.push(
@@ -32,7 +28,7 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
 
   const handleClickCreateNewService = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Another Service" }
     );
     window.location.reload();
@@ -40,7 +36,7 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
     history.push(
