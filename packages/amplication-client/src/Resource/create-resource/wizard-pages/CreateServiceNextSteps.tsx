@@ -48,7 +48,7 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     <div className={className}>
       <div className={`${className}__description`}>
         <div className={`${className}__description__top`}>
-          Service create successfully.{" "}
+          Service created successfully.{" "}
           <span role="img" aria-label="party emoji">
             🎉
           </span>

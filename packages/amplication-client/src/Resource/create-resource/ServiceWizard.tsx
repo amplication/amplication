@@ -87,10 +87,19 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     return wizardSteps.map((step) => step.index);
   }, [wizardSteps]);
 
-  const [isValidStep, setIsValidStep] = useState<boolean>(false);
+  const [isInvalidStep, setIsInvalidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
+  );
+
+  const handleSubmit = useCallback(
+    (activeIndex: number, values: ResourceSettings) => {
+      setFormSubmitted(true);
+      wizardSubmit(activeIndex, values);
+    },
+    [setFormSubmitted, wizardSubmit]
   );
 
   const currentStep = useMemo(() => {
@@ -143,6 +152,11 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     useState<boolean>(false);
 
   useEffect(() => {
+    if (formSubmitted && !submitLoader) {
+      setFormSubmitted(false);
+      goNextPage();
+    }
+
     if (!submitLoader) return;
 
     setKeepLoadingAnimation(true);
@@ -183,22 +197,18 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         <Formik
           initialValues={wizardInitialValues}
           onSubmit={(values: ResourceSettings) => {
-            wizardSubmit(activePageIndex, values);
+            handleSubmit(activePageIndex, values);
           }}
           validateOnMount
           validate={(values: ResourceSettings) => {
-            if (activePageIndex === 3 && values.structureType !== "Mono") {
-              setIsValidStep(false);
-              return;
-            }
-            if (activePageIndex === 1 && !values.isOverrideGitRepository) {
-              setIsValidStep(false);
+            if (activePageIndex === 2 && !values.isOverrideGitRepository) {
+              setIsInvalidStep(false);
               return;
             }
 
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
-            setIsValidStep(!!Object.keys(errors).length);
+            setIsInvalidStep(!!Object.keys(errors).length);
 
             return errors;
           }}
@@ -208,7 +218,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             return (
               <>
                 <Form onKeyDown={onKeyDown}>
-                  {keepLoadingAnimation ? (
+                  {keepLoadingAnimation || submitLoader ? (
                     <CreateServiceLoader />
                   ) : (
                     React.cloneElement(
@@ -244,11 +254,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                             activePageIndex === submitFormPage
                               ? () => {
                                   formik.submitForm();
-                                  goNextPage();
                                 }
                               : goNextPage
                           }
-                          disabled={isValidStep}
+                          disabled={isInvalidStep}
                           buttonName={
                             activePageIndex === submitFormPage
                               ? "Create Service"
