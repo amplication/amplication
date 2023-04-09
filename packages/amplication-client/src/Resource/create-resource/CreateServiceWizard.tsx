@@ -358,6 +358,15 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       if (currentProject) {
         const plugins = createResourcePlugins(databaseType, authType);
+        let currentGitRepository: models.ConnectGitRepositoryInput = null;
+        if (gitRepositoryName) {
+          currentGitRepository = {
+            name: gitRepositoryName,
+            gitOrganizationId: gitOrganizationId,
+            resourceId: "",
+            isOverrideGitRepository: isOverrideGitRepository,
+          };
+        }
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -365,12 +374,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           generateAdminUI,
           generateGraphQL,
           generateRestApi,
-          {
-            name: gitRepositoryName,
-            gitOrganizationId: gitOrganizationId,
-            resourceId: "",
-            isOverrideGitRepository: isOverrideGitRepository,
-          },
+          currentGitRepository,
           serverDir,
           adminDir,
           plugins,

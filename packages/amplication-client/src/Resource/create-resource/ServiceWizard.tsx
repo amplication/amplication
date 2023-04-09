@@ -201,7 +201,15 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           }}
           validateOnMount
           validate={(values: ResourceSettings) => {
-            if (activePageIndex === 2 && !values.isOverrideGitRepository) {
+            if (values.serviceName?.trim() === "") {
+              setIsInvalidStep(true);
+              return;
+            }
+            if (
+              activePageIndex === 2 &&
+              !values.isOverrideGitRepository &&
+              defineUser === "Create Service"
+            ) {
               setIsInvalidStep(false);
               return;
             }

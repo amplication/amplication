@@ -166,7 +166,8 @@ export class ResourceService {
     if (
       projectConfiguration.gitRepositoryId ||
       (args.data.resourceType === EnumResourceType.Service &&
-        !gitRepositoryToCreate.isOverrideGitRepository)
+        gitRepositoryToCreate &&
+        !gitRepositoryToCreate?.isOverrideGitRepository)
     ) {
       gitRepository = {
         connect: { id: projectConfiguration.gitRepositoryId },
@@ -175,12 +176,9 @@ export class ResourceService {
 
     if (
       args.data.resourceType === EnumResourceType.Service &&
-      (gitRepositoryToCreate.isOverrideGitRepository || isOnBoarding)
+      gitRepositoryToCreate &&
+      (gitRepositoryToCreate?.isOverrideGitRepository || isOnBoarding)
     ) {
-      if (!gitRepositoryToCreate) {
-        throw new AmplicationError("Git Repository settings are missing");
-      }
-
       const wizardGitRepository = await this.prisma.gitRepository.create({
         data: {
           name: gitRepositoryToCreate.name,
@@ -210,8 +208,8 @@ export class ResourceService {
     return await this.prisma.resource.create({
       data: {
         ...args.data,
-        gitRepository,
-        gitRepositoryOverride: gitRepositoryToCreate.isOverrideGitRepository,
+        gitRepository: gitRepository,
+        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
       },
     });
   }
@@ -242,7 +240,7 @@ export class ResourceService {
     user: User,
     wizardType: string = null
   ): Promise<Resource> {
-    const { serviceSettings, ...rest } = args.data;
+    const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
@@ -250,7 +248,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
-      args.data.gitRepository,
+      gitRepository,
       wizardType
     );
 
@@ -436,8 +434,8 @@ export class ResourceService {
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
-        gitOrganizationName: gitRepository.name,
-        repoName: gitRepository.name,
+        gitOrganizationName: gitRepository?.name,
+        repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
         restApi: String(serviceSettings.serverSettings.generateRestApi),
         adminUI: String(serviceSettings.adminUISettings.generateAdminUI),
