@@ -156,7 +156,15 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
               setIsValidStep(false);
               return;
             }
-            if (activePageIndex === 1 && !values.isOverrideGitRepository) {
+            if (values.serviceName?.trim() === "") {
+              setIsValidStep(true);
+              return;
+            }
+            if (
+              activePageIndex === 1 &&
+              !values.isOverrideGitRepository &&
+              defineUser === "Create Service"
+            ) {
               setIsValidStep(false);
               return;
             }
