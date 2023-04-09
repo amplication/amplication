@@ -6,7 +6,8 @@ import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
-import ServiceWizard from "./ServiceWizard";
+import ServiceWizard, { WizardStep } from "./ServiceWizard";
+import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
 import CreateServiceName from "./wizard-pages/CreateServiceName";
 import CreateGithubSync from "./wizard-pages/CreateGithubSync";
 import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
@@ -42,7 +43,56 @@ type Props = AppRouteProps & {
   location: H.Location;
 };
 
+const FLOW_ONBOARDING = "Onboarding";
+const FLOW_CREATE_SERVICE = "Create Service";
+
 export type DefineUser = "Onboarding" | "Create Service";
+
+const ONBOARDING_STEPS: WizardStep[] = [
+  { index: 0, hideFooter: true, hideBackButton: true },
+  { index: 1, hideBackButton: true },
+  { index: 2 },
+  { index: 3 },
+  { index: 4 },
+  { index: 5 },
+  { index: 6 },
+  { index: 7 },
+  { index: 8 },
+  { index: 9 },
+];
+
+const ONBOARDING_PATTERN = ONBOARDING_STEPS.map((step) => step.index);
+
+const CREATE_SERVICE_STEPS: WizardStep[] = [
+  { index: 1, hideBackButton: true },
+  { index: 2 },
+  { index: 3 },
+  { index: 4 },
+  { index: 5 },
+  { index: 6 },
+  { index: 7 },
+  { index: 9 },
+];
+const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
+
+const AUTH_PLUGINS = [
+  {
+    displayName: "Auth-core",
+    pluginId: "auth-core",
+    enabled: true,
+    npm: "@amplication/plugin-auth-core",
+    version: "latest",
+    resource: { connect: { id: "" } },
+  },
+  {
+    displayName: "Auth-jwt",
+    pluginId: "auth-jwt",
+    enabled: true,
+    npm: "@amplication/plugin-auth-jwt",
+    version: "latest",
+    resource: { connect: { id: "" } },
+  },
+];
 
 const signupCookie = getCookie("signup");
 
@@ -66,8 +116,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
-  const [pluginsVersion, setPluginsVersion] = useState<Plugin[]>(null);
-
   const { data: pluginsVersionData } = useQuery<{
     plugins: Plugin[];
   }>(GET_PLUGIN_VERSIONS_CATALOG, {
@@ -84,11 +132,18 @@ const CreateServiceWizard: React.FC<Props> = ({
   });
 
   const defineUser: DefineUser =
-    signupCookie === "1" ? "Onboarding" : "Create Service";
+    signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
+
+  const wizardSteps =
+    defineUser === FLOW_CREATE_SERVICE
+      ? CREATE_SERVICE_STEPS
+      : ONBOARDING_STEPS;
+
   const wizardPattern =
-    defineUser === "Create Service"
-      ? [0, 1, 2, 3, 4, 5, 6, 8]
-      : [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    defineUser === FLOW_CREATE_SERVICE
+      ? CREATE_SERVICE_PATTERN
+      : ONBOARDING_PATTERN;
+
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
@@ -114,11 +169,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     if (createResult?.build) setCurrentBuild(createResult?.build);
   }, [createResult?.build]);
 
-  useEffect(() => {
-    if (!pluginsVersionData) return;
-    setPluginsVersion(pluginsVersionData?.plugins);
-  }, [pluginsVersionData?.plugins]);
-
   const handleRebuildClick = useCallback(
     (build: models.Build) => {
       setCurrentBuild(build);
@@ -143,24 +193,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       );
       const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
 
-      const authCorePlugins = authType === "core" && [
-        {
-          displayName: "Auth-core",
-          pluginId: "auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          version: "latest",
-          resource: { connect: { id: "" } },
-        },
-        {
-          displayName: "Auth-jwt",
-          pluginId: "auth-jwt",
-          enabled: true,
-          npm: "@amplication/plugin-auth-jwt",
-          version: "latest",
-          resource: { connect: { id: "" } },
-        },
-      ];
+      const authCorePlugins = authType === "core" && AUTH_PLUGINS;
 
       const data: models.PluginInstallationsCreateInput = {
         plugins: [
@@ -171,7 +204,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
-            settings: JSON.parse(dbLastVersion?.settings),
+            settings: JSON.parse(dbLastVersion?.settings || "{}"),
           },
         ],
       };
@@ -179,7 +212,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    [pluginsVersionData?.plugins, pluginsVersion]
+    [pluginsVersionData?.plugins]
   );
 
   const handleCloseWizard = useCallback(
@@ -284,18 +317,22 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardPattern={wizardPattern}
+        wizardSteps={wizardSteps}
         wizardProgressBar={setWizardProgressItems()}
         wizardSchema={schemaArray}
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={6}
+        submitFormPage={7}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
         defineUser={defineUser}
       >
+        <CreateServiceWelcome
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
         <CreateServiceName
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}

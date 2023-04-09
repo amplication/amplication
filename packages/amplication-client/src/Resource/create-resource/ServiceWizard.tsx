@@ -1,4 +1,10 @@
-import React, { useState, ReactNode, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
@@ -8,10 +14,16 @@ import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
 import { DefineUser } from "./CreateServiceWizard";
 
+export type WizardStep = {
+  index: number;
+  hideFooter?: boolean;
+  hideBackButton?: boolean;
+};
+
 interface ServiceWizardProps {
   children: ReactNode;
   defineUser: DefineUser;
-  wizardPattern: number[];
+  wizardSteps: WizardStep[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
   wizardInitialValues: { [key: string]: any };
@@ -26,8 +38,10 @@ interface ServiceWizardProps {
 const BackButton: React.FC<{
   wizardPattern: number[];
   activePageIndex: number;
+  hideBackButton?: boolean;
   goPrevPage: () => void;
-}> = ({ wizardPattern, activePageIndex, goPrevPage }) =>
+}> = ({ hideBackButton, wizardPattern, activePageIndex, goPrevPage }) =>
+  !hideBackButton &&
   activePageIndex !== wizardPattern[0] &&
   activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
     <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
@@ -50,7 +64,7 @@ const ContinueButton: React.FC<{
 const MIN_TIME_OUT_LOADER = 2000;
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
-  wizardPattern,
+  wizardSteps,
   wizardSchema,
   wizardProgressBar,
   wizardInitialValues,
@@ -63,11 +77,19 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   handleWizardProgress,
   defineUser,
 }) => {
+  const wizardPattern = useMemo(() => {
+    return wizardSteps.map((step) => step.index);
+  }, [wizardSteps]);
+
   const [isValidStep, setIsValidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
+
+  const currentStep = useMemo(() => {
+    return wizardSteps.find((step) => step.index === activePageIndex);
+  }, [wizardSteps, activePageIndex]);
 
   const pages = React.Children.toArray(children) as (
     | React.ReactElement<any, React.JSXElementConstructor<any>>
@@ -186,41 +208,44 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                     )
                   )}
                 </Form>
-                <div className={`${moduleCss}__footer`}>
-                  <div className={`${moduleCss}__backButton`}>
-                    <BackButton
-                      wizardPattern={wizardPattern}
-                      activePageIndex={activePageIndex}
-                      goPrevPage={goPrevPage}
-                    />
-                  </div>
-                  <WizardProgressBar
-                    lastPage={wizardPattern[wizardPattern.length - 1]}
-                    activePageIndex={activePageIndex}
-                    wizardProgressBar={wizardProgressBar}
-                  />
-                  <div className={`${moduleCss}__continueBtn`}>
-                    {activePageIndex !==
-                      wizardPattern[wizardPattern.length - 1] && (
-                      <ContinueButton
-                        goNextPage={
-                          activePageIndex === submitFormPage
-                            ? () => {
-                                formik.submitForm();
-                                goNextPage();
-                              }
-                            : goNextPage
-                        }
-                        disabled={isValidStep}
-                        buttonName={
-                          activePageIndex === submitFormPage
-                            ? "create service"
-                            : "continue"
-                        }
+                {!currentStep.hideFooter && (
+                  <div className={`${moduleCss}__footer`}>
+                    <div className={`${moduleCss}__backButton`}>
+                      <BackButton
+                        hideBackButton={currentStep.hideBackButton}
+                        wizardPattern={wizardPattern}
+                        activePageIndex={activePageIndex}
+                        goPrevPage={goPrevPage}
                       />
-                    )}
+                    </div>
+                    <WizardProgressBar
+                      lastPage={wizardPattern[wizardPattern.length - 1]}
+                      activePageIndex={activePageIndex}
+                      wizardProgressBar={wizardProgressBar}
+                    />
+                    <div className={`${moduleCss}__continueBtn`}>
+                      {activePageIndex !==
+                        wizardPattern[wizardPattern.length - 1] && (
+                        <ContinueButton
+                          goNextPage={
+                            activePageIndex === submitFormPage
+                              ? () => {
+                                  formik.submitForm();
+                                  goNextPage();
+                                }
+                              : goNextPage
+                          }
+                          disabled={isValidStep}
+                          buttonName={
+                            activePageIndex === submitFormPage
+                              ? "create service"
+                              : "continue"
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             );
           }}

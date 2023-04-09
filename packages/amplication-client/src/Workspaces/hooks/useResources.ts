@@ -2,7 +2,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
-import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { expireCookie } from "../../util/cookie";
@@ -76,8 +75,6 @@ const useResources = (
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(currentResource?.gitRepository)
   );
-
-  const { createPluginInstallations } = usePlugins(currentResource?.id);
 
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
