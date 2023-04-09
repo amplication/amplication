@@ -51,7 +51,7 @@ const BackButton: React.FC<{
   activePageIndex !== wizardPattern[0] &&
   activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
     <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
-      back
+      Back
     </Button>
   ) : null;
 
@@ -251,8 +251,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                           disabled={isValidStep}
                           buttonName={
                             activePageIndex === submitFormPage
-                              ? "create service"
-                              : "continue"
+                              ? "Create Service"
+                              : "Continue"
                           }
                         />
                       )}
