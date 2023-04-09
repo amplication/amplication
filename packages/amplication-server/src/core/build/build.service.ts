@@ -169,7 +169,7 @@ export class BuildService {
    * create function creates a new build for given resource in the DB
    * @returns the build object that return after prisma.build.create
    */
-  async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
+  async create(args: CreateBuildArgs): Promise<Build> {
     const resourceId = args.data.resource.connect.id;
     const user = await this.userService.findUser({
       where: {

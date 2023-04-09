@@ -33,4 +33,5 @@ export interface WizardStepProps {
     additionalData?: { [key: string]: string }
   ) => void;
   formik?: FormikProps<{ [key: string]: any }>;
+  goNextPage?: () => void;
 }

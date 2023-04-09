@@ -36,6 +36,11 @@ import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { User } from "../../models";
 
 @Injectable()
 export class GitProviderService {
@@ -46,7 +51,8 @@ export class GitProviderService {
     private readonly resourceService: ResourceService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -371,7 +377,8 @@ export class GitProviderService {
 
   // installation id flow (GitHub ONLY!)
   async createGitOrganization(
-    args: CreateGitOrganizationArgs
+    args: CreateGitOrganizationArgs,
+    currentUser: User
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
     // get the provider properties of the installationId flow (GitHub)
@@ -407,6 +414,15 @@ export class GitProviderService {
         },
       });
     }
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: args.data.workspaceId,
+        provider: gitProvider,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
 
     return await this.prisma.gitOrganization.create({
       data: {
@@ -518,7 +534,8 @@ export class GitProviderService {
   }
 
   async completeOAuth2Flow(
-    args: CompleteGitOAuth2FlowArgs
+    args: CompleteGitOAuth2FlowArgs,
+    currentUser: User
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
     // provider properties to instantiate the git client service
@@ -541,6 +558,15 @@ export class GitProviderService {
       ...oAuthData,
       ...currentUserData,
     };
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: workspaceId,
+        provider: gitProvider,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
 
     this.logger.info("server: completeOAuth2Flow");
     return this.prisma.gitOrganization.upsert({

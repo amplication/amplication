@@ -7,7 +7,6 @@ import {
   UPDATE_PLUGIN_ORDER,
   GET_PLUGIN_INSTALLATION,
   GET_PLUGIN_VERSIONS_CATALOG,
-  CREATE_PLUGINS_INSTALLATION,
 } from "../queries/pluginsQueries";
 import * as models from "../../models";
 import { keyBy } from "lodash";
@@ -227,16 +226,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     },
   });
 
-  const [createPluginInstallations] = useMutation<{
-    createPluginInstallations: models.PluginInstallation[];
-  }>(CREATE_PLUGINS_INSTALLATION, {
-    onCompleted: (data) => {
-      data.createPluginInstallations.forEach((plugin) => {
-        addBlock(plugin.id);
-      });
-    },
-  });
-
   const [createPluginInstallation, { error: createError }] = useMutation<{
     createPluginInstallation: models.PluginInstallation;
   }>(CREATE_PLUGIN_INSTALLATION, {
@@ -279,7 +268,6 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     updatePluginInstallation,
     updateError,
     createPluginInstallation,
-    createPluginInstallations,
     createError,
     pluginCatalog: pluginsVersion,
     onPluginDropped,
