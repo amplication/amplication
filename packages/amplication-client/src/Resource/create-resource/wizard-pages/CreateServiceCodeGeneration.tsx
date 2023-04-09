@@ -40,6 +40,8 @@ const CreateServiceCodeGeneration: React.FC<
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
+  const [buildCompleted, setBuildCompleted] = React.useState(false);
+
   const [commit] = useMutation<TData>(COMMIT_CHANGES, {
     onCompleted: (response) => {
       const newBuild = response.commit.builds?.find(
@@ -56,11 +58,14 @@ const CreateServiceCodeGeneration: React.FC<
   }, []);
 
   useEffect(() => {
-    if (!data && data?.build?.status !== models.EnumBuildStatus.Completed)
-      return;
-
-    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
-  }, [data]);
+    if (
+      !buildCompleted &&
+      data?.build?.status === models.EnumBuildStatus.Completed
+    ) {
+      setBuildCompleted(true);
+      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
+    }
+  }, [data?.build?.status]);
 
   useEffect(() => {
     formik.validateForm();
@@ -107,9 +112,6 @@ const CreateServiceCodeGeneration: React.FC<
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
 
   const buildFailed = data?.build?.status === models.EnumBuildStatus.Failed;
-
-  const buildCompleted =
-    data?.build?.status === models.EnumBuildStatus.Completed;
 
   return (
     <div className={className}>
