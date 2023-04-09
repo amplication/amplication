@@ -396,6 +396,15 @@ export class BuildService {
       build.createdAt
     );
 
+    const resource = await this.resourceService.resource({
+      where: { id: build.resourceId },
+    });
+
+    if (!resource) {
+      this.logger.warn("Resource was not found during pushing code to git");
+      return;
+    }
+
     const user = await this.userService.findUser({
       where: { id: build.userId },
     });
@@ -407,10 +416,6 @@ export class BuildService {
       user
     );
     const { resourceInfo } = dSGResourceData;
-
-    const resource = await this.resourceService.findOne({
-      where: { id: build.resourceId },
-    });
 
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
@@ -605,6 +610,7 @@ export class BuildService {
       serviceTopics: await this.serviceTopicsService.findMany({
         where: { resource: { id: resourceId } },
       }),
+      buildId: buildId,
       resourceInfo: {
         name: resource.name,
         description: resource.description,

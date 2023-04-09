@@ -11,6 +11,13 @@
     display: flex;
     background: var(--black10);
   }
+
+  &__wizard_auth {
+    margin: var(--default-spacing-small) 0 var(--double-spacing) 0;
+    min-height: var(--min-height-of-banner);
+    display: flex;
+    background: transparent;
+  }
   &__action {
     margin-left: var(--default-spacing-small);
     margin-right: var(--default-spacing-small);
@@ -28,11 +35,15 @@
         margin-right: var(--default-spacing-small);
         color: var(--negative);
       }
+      color: var(--negative);
     }
 
     &__name {
       @include title1;
       padding-bottom: var(--default-spacing-small);
     }
+  }
+  .amp-button--outline {
+    border-radius: 4px !important;
   }
 }

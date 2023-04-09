@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.4.4",
+  "version": "1.4.6",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -45,7 +45,7 @@
     "@nestjs/apollo": "^10.2.0",
     "@nestjs/common": "^9.3.9",
     "@nestjs/config": "^2.3.1",
-    "@nestjs/core": "^9.3.9",
+    "@nestjs/core": "^9.3.12",
     "@nestjs/graphql": "^10.0.0",
     "@nestjs/jwt": "^10.0.2",
     "@nestjs/microservices": "^9.3.9",
@@ -63,7 +63,6 @@
     "@octokit/rest": "^19.0.5",
     "@octokit/webhooks": "^10.6.2",
     "@octokit/webhooks-types": "^6.9.0",
-    "@primer/octicons-react": "^16.3.1",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.6.1",
     "@sendgrid/mail": "^7.7.0",
@@ -246,7 +245,7 @@
     "docker-compose": "^0.23.19",
     "dockerode": "^3.3.4",
     "eslint": "^8.24.0",
-    "eslint-config-prettier": "^8.5.0",
+    "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-lerna": "^2.0.0",
     "eslint-plugin-cypress": "^2.10.3",
     "eslint-plugin-import": "2.26.0",

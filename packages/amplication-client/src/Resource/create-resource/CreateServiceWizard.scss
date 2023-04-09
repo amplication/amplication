@@ -4,16 +4,103 @@
 $max-width: 700px;
 
 .create-service-wizard {
-  height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  width: 100%;
-  position: absolute;
+
+  form {
+    display: flex;
+    flex: 1;
+    height: 100%;
+    width: 100%;
+  }
+
+  &__wizard_container {
+    background-color: var(--black2);
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  &__close {
+    position: absolute;
+    top: 10px;
+    right: 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+  }
+
+  &__backButton {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 8px;
+    margin-left: 16px;
+    flex-grow: 1;
+
+    & .amp-button.amp-button--outline {
+      border-radius: 5px !important;
+      padding: 0px;
+      min-width: 60px;
+    }
+  }
+
+  &__continueBtn {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    margin-right: 16px;
+    align-items: flex-end;
+  }
+
+  &__footer {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 48px;
+    width: 100%;
+    height: 58px;
+    top: 966px;
+    background: #373d57;
+  }
 
   &__splitWrapper {
     display: flex;
     height: 100%;
+    width: 100%;
+  }
+
+  &__service_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 64px;
+  }
+
+  &__code_gen_title {
+    gap: 8px;
+  }
+  &__service_input {
+    width: 50%;
+  }
+
+  &__service_name_header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__github_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    color: var(--black100);
   }
 
   &__left {
@@ -27,17 +114,18 @@ $max-width: 700px;
 
   &__right {
     flex: 1;
+    display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     background: var(--white);
   }
+
   &__description {
     display: flex;
     flex-direction: column;
-    justify-content: center;
     align-items: center;
-    width: 66%;
+    gap: 4px;
 
     .circle-badge i {
       color: var(--black5);
@@ -45,15 +133,12 @@ $max-width: 700px;
     }
   }
 
-  &__description_top {
-    margin-top: 24px;
-    width: 450px;
-    height: 72px;
-  }
-
   &__description_bottom {
     width: 450px;
     margin-top: 8px;
+    padding-top: 16px;
+    padding-bottom: 40px;
+    align-items: flex-start;
   }
 
   h2 {
@@ -67,20 +152,6 @@ $max-width: 700px;
     margin: 0px;
   }
 
-  &__footer {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    align-items: center;
-    padding: 16px;
-    height: 26px;
-    background: var(--black10);
-  }
-
-  .amp-icon--size-small {
-    font-size: 12px;
-  }
-
   &__processing {
     display: flex;
     flex-direction: column;
@@ -88,6 +159,7 @@ $max-width: 700px;
     justify-content: center;
     position: relative;
     height: 100%;
+    width: 100%;
     background: var(--white);
 
     &__message_title_container {

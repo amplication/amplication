@@ -11,12 +11,15 @@ module.exports = {
     "!**/*.template.{ts,tsx}",
     "!**/*.spec.{ts,tsx}",
     "!**/*.e2e-spec.{ts,tsx}",
+    "!**/tests/e2e/**",
     "!**/node_modules/**",
+    "!**/amplication_modules/**",
     "!**/prisma/generated-prisma-client/**",
     "!**/scripts/**",
     "!**/jest.config.ts",
     "!**/index.ts",
     "!**/*.mock.ts",
+    "!**/*.module.ts",
   ],
   coverageThreshold: {
     global: {
