@@ -54,6 +54,10 @@ $step-status-width: 20px;
     flex: 1;
     overflow: auto;
     @include scrollbars($default-scroll-width, var(--black60), transparent);
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--black60);
+    }
+
     box-sizing: border-box;
   }
   &__step {
