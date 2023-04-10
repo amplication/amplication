@@ -2,6 +2,8 @@ import React from "react";
 import * as models from "../models";
 import "./ConfirmationDialogFieldList.scss";
 
+console.log("test");
+
 type Props = {
   relatedEntities: models.Entity[];
 };
