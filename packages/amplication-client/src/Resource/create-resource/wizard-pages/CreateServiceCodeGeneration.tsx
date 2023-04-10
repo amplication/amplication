@@ -13,6 +13,8 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
+import { PUSH_TO_GITHUB_STEP_NAME } from "../../../VersionControl/BuildSteps";
+import { isEmpty } from "lodash";
 
 const className = "create-service-code-generation";
 
@@ -103,6 +105,21 @@ const CreateServiceCodeGeneration: React.FC<
     }).catch(console.error);
   }, [commit, currentProject.id]);
 
+  const githubUrl = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = data.build.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [data.build.action]);
+
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
 
   const buildFailed = data?.build?.status === models.EnumBuildStatus.Failed;
@@ -174,9 +191,7 @@ const CreateServiceCodeGeneration: React.FC<
                 <div
                   className={`${className}__status__completed__description__link`}
                 >
-                  https://github.com/
-                  {currentResource?.gitRepository?.gitOrganization?.name}/
-                  {currentResource?.gitRepository?.name}
+                  {githubUrl}
                 </div>
                 <div />
               </div>
@@ -185,11 +200,7 @@ const CreateServiceCodeGeneration: React.FC<
                 onClick={handleViewCodeClick}
               >
                 {
-                  <a
-                    style={{ color: "white" }}
-                    href={`https://github.com/${currentResource?.gitRepository?.gitOrganization?.name}/${currentResource?.gitRepository?.name}`}
-                    target="docs"
-                  >
+                  <a style={{ color: "white" }} href={githubUrl} target="docs">
                     View my code
                   </a>
                 }
