@@ -118,34 +118,30 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         ? currWizardPatternIndex
         : currWizardPatternIndex + 1;
 
-    const newStep = wizardSteps.find((step) => step.index === wizardIndex);
+    const nextIndex = wizardPattern[wizardIndex];
+    const newStep = wizardSteps.find((step) => step.index === nextIndex);
 
     handleWizardProgress(
       "next",
-      (
-        pages[wizardPattern[wizardIndex]]
-          .type as React.JSXElementConstructor<any>
-      ).name,
+      (pages[nextIndex].type as React.JSXElementConstructor<any>).name,
       newStep.analyticsEventName
     );
-    setActivePageIndex(wizardPattern[wizardIndex]);
+    setActivePageIndex(nextIndex);
   }, [activePageIndex]);
 
   const goPrevPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
 
-    const newStep = wizardSteps.find((step) => step.index === wizardIndex);
+    const prevIndex = wizardPattern[wizardIndex];
+    const newStep = wizardSteps.find((step) => step.index === prevIndex);
 
     handleWizardProgress(
       "prev",
-      (
-        pages[wizardPattern[wizardIndex]]
-          .type as React.JSXElementConstructor<any>
-      ).name,
+      (pages[prevIndex].type as React.JSXElementConstructor<any>).name,
       newStep.analyticsEventName
     );
-    setActivePageIndex(wizardPattern[wizardIndex]);
+    setActivePageIndex(prevIndex);
   }, [activePageIndex]);
 
   const [keepLoadingAnimation, setKeepLoadingAnimation] =

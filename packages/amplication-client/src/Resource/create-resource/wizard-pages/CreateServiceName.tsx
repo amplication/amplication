@@ -27,7 +27,7 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
         <TextField
           name="serviceName"
           label="Service name"
-          placeholder="Service 1"
+          placeholder="Order Service"
         />
       </div>
     </div>
