@@ -14,7 +14,13 @@ import {
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { BlockVersion, Commit, EntityVersion, Project } from "../../models";
+import {
+  Account,
+  BlockVersion,
+  Commit,
+  EntityVersion,
+  Project,
+} from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
@@ -160,6 +166,22 @@ const EXAMPLE_PROJECT: Project = {
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
@@ -170,6 +192,7 @@ const EXAMPLE_USER: User = {
     updatedAt: new Date(),
     name: "example_workspace_name",
   },
+  account: EXAMPLE_ACCOUNT,
   isOwner: true,
 };
 
