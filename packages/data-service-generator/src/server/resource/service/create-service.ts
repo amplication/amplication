@@ -1,6 +1,14 @@
 import { builders, namedTypes } from "ast-types";
 import { pascalCase } from "pascal-case";
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
 import {
   Entity,
   EntityLookupField,
@@ -18,11 +26,6 @@ import {
   getMethods,
   importNames,
   interpolate,
-  removeESLintComments,
-  removeTSClassDeclares,
-  removeTSIgnoreComments,
-  removeTSInterfaceDeclares,
-  removeTSVariableDeclares,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,

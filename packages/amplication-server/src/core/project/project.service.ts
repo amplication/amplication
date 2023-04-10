@@ -327,12 +327,12 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources
+    const promises = resources
       .filter(
         (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
       )
-      .forEach((resource: Resource) =>
-        this.buildService.create({
+      .map((resource: Resource) => {
+        return this.buildService.create({
           data: {
             resource: {
               connect: { id: resource.id },
@@ -349,8 +349,19 @@ export class ProjectService {
             },
             message: args.data.message,
           },
-        })
-      );
+        });
+      });
+
+    await Promise.all(promises);
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
 
     await this.analytics.track({
       userId: currentUser.account.id,

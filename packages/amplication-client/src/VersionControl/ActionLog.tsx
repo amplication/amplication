@@ -63,6 +63,8 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
     });
   }, [action]);
 
+  //need to return even if actionStatus === Failed/Success
+
   const actionStatus = useMemo(() => {
     if (
       logData.find(

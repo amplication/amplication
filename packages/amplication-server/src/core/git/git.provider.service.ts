@@ -28,6 +28,7 @@ import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { CreateGitRepositoryBaseInput } from "./dto/inputs/CreateGitRepositoryBaseInput";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
@@ -181,6 +182,47 @@ export class GitProviderService {
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
+  }
+
+  async createRemoteGitRepositoryWithoutConnect(
+    args: CreateGitRepositoryBaseInput
+  ): Promise<boolean> {
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId,
+      },
+    });
+    const repository = {
+      repositoryName: args.name,
+      gitOrganization: {
+        name: organization.name,
+        type: EnumGitOrganizationType[organization.type],
+        useGroupingForRepositories: organization.useGroupingForRepositories,
+      },
+      gitGroupName: args.gitGroupName,
+      owner: organization.name,
+      isPrivateRepository: args.public,
+    };
+
+    const gitProviderArgs = {
+      provider: args.gitProvider,
+      providerOrganizationProperties: organization.providerProperties,
+    };
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs,
+      this.gitProvidersConfiguration,
+      this.logger
+    );
+    const remoteRepository = await gitClientService.createRepository(
+      repository
+    );
+
+    if (!remoteRepository) {
+      throw new AmplicationError(
+        `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
+      );
+    }
+    return true;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
