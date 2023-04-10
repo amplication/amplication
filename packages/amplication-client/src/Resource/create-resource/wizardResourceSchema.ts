@@ -195,7 +195,7 @@ export const wizardProgressBarSchema = [
     activePages: [8],
   },
   {
-    title: "Confirmation & Next Steps",
+    title: "Finish",
     activePages: [9],
   },
 ];
