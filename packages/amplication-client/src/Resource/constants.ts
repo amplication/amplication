@@ -157,7 +157,6 @@ export function prepareServiceObject(
 export function prepareMessageBrokerObject(
   projectId: string
 ): models.ResourceCreateInput {
-  console.log("test");
   return {
     name: "My message broker",
     description: "",
