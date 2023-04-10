@@ -1,38 +1,57 @@
 @import "../../style/index.scss";
 
-.wizard-progress-bar__container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  flex-grow: 1;
-}
-.wizard-progress-bar__disabled {
-  color: #686f8c !important;
-}
-.wizard-progress-bar__item_container {
-  display: flex;
-  flex-direction: column;
-  margin: 0 20px;
-}
-.wizard-progress-bar__item_icon {
-  text-align: center;
+.wizard-progress-bar {
+  &__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+  }
+  &__disabled {
+    color: #686f8c !important;
+  }
 
-  i {
-    font-size: 15px;
+  &__item {
+    position: relative;
+    margin-right: 8px;
+    &:after {
+      content: "";
+      width: 8px;
+      height: 0px;
+      border: 1px solid #515873;
+      right: -8px;
+      position: absolute;
+      top: 50%;
+    }
+
+    &:last-child {
+      margin-right: 0;
+      &:after {
+        display: none;
+      }
+    }
   }
-  .wizard_check {
-    color: #31c587;
+
+  &__item_container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
   }
-  .wizard_loading {
-    color: #a787ff;
+  &__item_icon {
+    text-align: center;
+
+    i {
+      font-size: 15px;
+    }
+    .wizard_check {
+      color: #31c587;
+    }
+    .wizard_loading {
+      color: #a787ff;
+    }
   }
-}
-.wizard-progress-bar__item_title {
-  @include regular-10;
-  text-transform: capitalize;
-}
-.wizard-progress-bar__item_space {
-  width: 8px;
-  height: 0px;
-  border: 1px solid #515873;
+  &__item_title {
+    @include regular-10;
+    text-transform: capitalize;
+  }
 }
