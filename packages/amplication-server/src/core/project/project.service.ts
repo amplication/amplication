@@ -363,6 +363,15 @@ export class ProjectService {
       event: EnumEventType.CommitCreate,
     });
 
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
+
     return commit;
   }
 
