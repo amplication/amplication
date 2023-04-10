@@ -1,5 +1,7 @@
 @import "../../style/index.scss";
 
+$small-size: 15px;
+
 .wizard-progress-bar {
   &__container {
     display: flex;
@@ -8,7 +10,7 @@
     flex-grow: 1;
   }
   &__disabled {
-    color: #686f8c !important;
+    color: var(--black40) !important;
   }
 
   &__item {
@@ -18,7 +20,7 @@
       content: "";
       width: 8px;
       height: 0px;
-      border: 1px solid #515873;
+      border: 1px solid var(--black30);
       right: -8px;
       position: absolute;
       top: 50%;
@@ -41,13 +43,13 @@
     text-align: center;
 
     i {
-      font-size: 15px;
+      font-size: $small-size;
     }
     .wizard_check {
-      color: #31c587;
+      color: var(--positive-default);
     }
     .wizard_loading {
-      color: #a787ff;
+      color: var(--secondary);
     }
   }
   &__item_title {
