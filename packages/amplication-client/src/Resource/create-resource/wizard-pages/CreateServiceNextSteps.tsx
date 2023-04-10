@@ -13,8 +13,11 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   trackWizardPageEvent,
 }) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProject,
+    createServiceWithEntitiesResult: serviceResults,
+  } = useContext(AppContext);
 
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
@@ -22,9 +25,9 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
       { action: "Create Entities" }
     );
     history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`
+      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/entities`
     );
-  }, [currentWorkspace, currentProject, currentResource]);
+  }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
   const handleClickCreateNewService = useCallback(() => {
     trackWizardPageEvent(
@@ -40,9 +43,9 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
       { action: "View Service" }
     );
     history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
+      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}`
     );
-  }, [currentWorkspace, currentProject, currentResource]);
+  }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
   return (
     <div className={className}>

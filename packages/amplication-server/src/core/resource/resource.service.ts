@@ -427,7 +427,7 @@ export class ResourceService {
     const { gitRepository, serviceSettings } = data.resource;
 
     await this.analytics.track({
-      userId: user.id,
+      userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
