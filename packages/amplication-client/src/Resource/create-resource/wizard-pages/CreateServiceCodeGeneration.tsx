@@ -39,8 +39,7 @@ const CreateServiceCodeGeneration: React.FC<
   const { data } = useBuildWatchStatus(build);
 
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const [buildCompleted, setBuildCompleted] = React.useState(false);
 
@@ -91,10 +90,8 @@ const CreateServiceCodeGeneration: React.FC<
   }, [trackWizardPageEvent]);
 
   const handleContinueClick = useCallback(() => {
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
-    );
-  }, [currentWorkspace, currentProject, currentResource]);
+    history.push(`/${currentWorkspace.id}/${currentProject.id}/${resource.id}`);
+  }, [currentWorkspace, currentProject]);
 
   const handleTryAgainClick = useCallback(() => {
     commit({
