@@ -10,6 +10,7 @@ export enum EnumEventType {
   CommitCreate = "commit",
   WorkspaceSelected = "selectWorkspace",
   GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
+  ServiceWizardServiceGenerated = "ServiceWizard_ServiceGenerated",
 }
 
 export type IdentifyData = {

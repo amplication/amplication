@@ -1,5 +1,14 @@
 import { EnumEntityAction } from "../../../models";
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSClassDeclares,
+  removeTSInterfaceDeclares,
+  removeTSIgnoreComments,
+  removeImportsTSIgnoreComments,
+} from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
 import pluginWrapper from "../../../plugin-wrapper";
@@ -23,17 +32,11 @@ import {
   importNames,
   addAutoGenerationComment,
   addImports,
-  removeTSVariableDeclares,
-  removeTSInterfaceDeclares,
-  removeTSClassDeclares,
   getClassDeclarationById,
-  removeESLintComments,
   importContainedIdentifiers,
-  removeImportsTSIgnoreComments,
   getMethods,
   deleteClassMemberByKey,
   memberExpression,
-  removeTSIgnoreComments,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,

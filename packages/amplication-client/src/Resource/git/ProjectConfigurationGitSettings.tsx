@@ -45,7 +45,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__settingsLink`}>
         <p className={isOverride ? `${CLASS_NAME}__disabled_color` : ""}>
-          These settings are inherited from the project
+          These settings are inherited from the project.
         </p>
         <p>{projectSettingsLink()}</p>
       </div>

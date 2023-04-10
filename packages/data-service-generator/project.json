@@ -15,6 +15,7 @@
         "tsConfig": "packages/data-service-generator/tsconfig.app.json",
         "assets": [
           "**/*.template.env",
+          "packages/data-service-generator/src/**/package.json",
           {
             "glob": "**/*.template.(ts|env|json|yml)",
             "input": "packages/data-service-generator/src/server",
