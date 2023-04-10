@@ -195,16 +195,15 @@ const CreateServiceCodeGeneration: React.FC<
                 </div>
                 <div />
               </div>
-              <Button
-                buttonStyle={EnumButtonStyle.Clear}
-                onClick={handleViewCodeClick}
-              >
-                {
-                  <a style={{ color: "white" }} href={githubUrl} target="docs">
-                    View my code
-                  </a>
-                }
-              </Button>
+              <a href={githubUrl} target="docs">
+                <Button
+                  type="button"
+                  buttonStyle={EnumButtonStyle.Clear}
+                  onClick={handleViewCodeClick}
+                >
+                  View my code
+                </Button>
+              </a>
             </div>
           </div>
         )
