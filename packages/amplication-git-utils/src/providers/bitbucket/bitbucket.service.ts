@@ -52,20 +52,24 @@ import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private accessToken: string;
+  private auth: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+  };
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
   constructor(
-    private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
-    private readonly providerConfiguration: BitBucketConfiguration,
+    providerOrganizationProperties: OAuthProviderOrganizationProperties,
+    providerConfiguration: BitBucketConfiguration,
     private readonly logger: ILogger
-  ) {}
+  ) {
+    const { accessToken, refreshToken, expiresAt } =
+      providerOrganizationProperties;
 
-  async init(): Promise<void> {
-    this.logger.info("BitbucketService init");
-    const { accessToken } = this.providerOrganizationProperties;
-    const { clientId, clientSecret } = this.providerConfiguration;
+    this.auth = { accessToken, refreshToken, expiresAt };
+    const { clientId, clientSecret } = providerConfiguration;
 
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
@@ -74,7 +78,10 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.accessToken = accessToken;
+  }
+
+  async init(): Promise<void> {
+    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -135,7 +142,7 @@ export class BitBucketService implements GitProvider {
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
-      this.accessToken
+      this.auth.accessToken
     );
 
     const {
@@ -184,7 +191,7 @@ export class BitBucketService implements GitProvider {
     const repository = await repositoryRequest(
       repositoryGroupName,
       repositoryName,
-      this.accessToken
+      this.auth.accessToken
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -211,7 +218,7 @@ export class BitBucketService implements GitProvider {
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       repositoryGroupName,
-      this.accessToken
+      this.auth.accessToken
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -259,7 +266,7 @@ export class BitBucketService implements GitProvider {
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -305,7 +312,7 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       gitReference,
       path,
-      this.accessToken
+      this.auth.accessToken
     );
 
     const fileBufferResponse = await getFileRequest(
@@ -313,7 +320,7 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       gitReference,
       path,
-      this.accessToken
+      this.auth.accessToken
     );
 
     if ((fileResponse as PaginatedTreeEntry).values) {
@@ -355,7 +362,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      this.accessToken
+      this.auth.accessToken
     );
     const { links, id: pullRequestId } = pullRequest.values[0];
 
@@ -402,7 +409,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       pullRequestData,
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -421,7 +428,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      this.accessToken
+      this.auth.accessToken
     );
     return {
       name: branch.name,
@@ -441,7 +448,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       { name: branchName, target: { hash: pointingSha } },
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -460,7 +467,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -498,12 +505,12 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       pullRequestId,
       body,
-      this.accessToken
+      this.auth.accessToken
     );
   }
 
   async getToken(): Promise<string> {
-    const authData = await this.refreshAccessToken(this.accessToken);
+    const authData = await this.refreshAccessToken(this.auth.refreshToken);
     return authData.accessToken;
   }
 
