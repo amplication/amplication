@@ -123,7 +123,9 @@ export class BitBucketService implements GitProvider {
     const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
     return {
-      links,
+      links: {
+        avatar: links.avatar,
+      },
       displayName: display_name,
       username,
       uuid,
