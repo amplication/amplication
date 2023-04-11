@@ -1,11 +1,6 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
-import {
-  PrismaService,
-  Prisma,
-  EnumResourceType,
-  PrismaClient,
-} from "../../prisma";
+import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Resource } from "../../models/Resource";
@@ -21,12 +16,10 @@ import { RemoteGitRepositoriesWhereUniqueInput } from "./dto/inputs/RemoteGitRep
 import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
 import {
   OAuthProviderOrganizationProperties,
-  CurrentUser,
   GitClientService,
   GitHubProviderOrganizationProperties,
   GitProviderArgs,
   GitProvidersConfiguration,
-  OAuthData,
   isGitHubProviderOrganizationProperties,
   isOAuthProviderOrganizationProperties,
 } from "@amplication/git-utils";
@@ -102,13 +95,50 @@ export class GitProviderService {
   }
 
   async createGitClient(
-    gitProviderArgs: GitProviderArgs,
-    logger = this.logger
+    gitProviderArgs: GitProviderArgs
   ): Promise<GitClientService> {
     return new GitClientService().create(
       gitProviderArgs,
       this.gitProvidersConfiguration,
-      logger
+      this.logger
+    );
+  }
+
+  /**
+   * Initialise a git client service for actions that don't need provider properties.
+   * i.e. Actions pre-auth.
+   * @param provider
+   * @returns git client service
+   */
+  async createGitClientWithoutProperties(
+    provider: EnumGitProvider
+  ): Promise<GitClientService> {
+    let providerOrganizationProperties:
+      | GitHubProviderOrganizationProperties
+      | OAuthProviderOrganizationProperties;
+
+    if (provider === EnumGitProvider.Github) {
+      providerOrganizationProperties = {
+        installationId: null,
+      };
+    } else if (provider === EnumGitProvider.Bitbucket) {
+      providerOrganizationProperties = {
+        links: null,
+        username: null,
+        useGroupingForRepositories: null,
+        uuid: null,
+        displayName: null,
+        accessToken: null,
+        refreshToken: null,
+        tokenType: null,
+        expiresAt: null,
+        scopes: null,
+      };
+    }
+    return new GitClientService().create(
+      { provider, providerOrganizationProperties },
+      this.gitProvidersConfiguration,
+      this.logger
     );
   }
 
@@ -379,10 +409,10 @@ export class GitProviderService {
 
     const { gitProvider, installationId } = args.data;
     // get the provider properties of the installationId flow (GitHub)
-    const providerOrganizationProperties =
-      this.createProviderOrganisationProperties(gitProvider, {
+    const providerOrganizationProperties: GitHubProviderOrganizationProperties =
+      {
         installationId,
-      });
+      };
     const gitProviderArgs = {
       provider: gitProvider,
       providerOrganizationProperties,
@@ -462,14 +492,9 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
-    const providerOrganizationProperties = {
-      installationId: null,
-    };
-    const gitProviderArgs = {
-      provider: gitProvider,
-      providerOrganizationProperties,
-    };
-    const gitClientService = await this.createGitClient(gitProviderArgs);
+    const gitClientService = await this.createGitClientWithoutProperties(
+      gitProvider
+    );
     return await gitClientService.getGitInstallationUrl(workspaceId);
   }
 
@@ -568,13 +593,9 @@ export class GitProviderService {
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
 
-    // provider properties to instantiate the git client service
-    const gitProviderArgs: GitProviderArgs = {
-      provider: gitProvider,
-      providerOrganizationProperties: null,
-    };
-
-    const gitClientService = await this.createGitClient(gitProviderArgs);
+    const gitClientService = await this.createGitClientWithoutProperties(
+      gitProvider
+    );
 
     const oAuthData = await gitClientService.getAccessToken(code);
 
@@ -582,11 +603,8 @@ export class GitProviderService {
       oAuthData.accessToken
     );
 
-    const providerOrganizationProperties =
-      this.createProviderOrganisationProperties(gitProvider, {
-        auth: oAuthData,
-        user: currentUserData,
-      });
+    const providerOrganizationProperties: OAuthProviderOrganizationProperties =
+      { ...oAuthData, ...currentUserData };
 
     await this.analytics.track({
       userId: currentUser.account.id,
@@ -700,27 +718,5 @@ export class GitProviderService {
       ];
     }
     return resourcesToConnect;
-  }
-
-  private createProviderOrganisationProperties(
-    gitProvider: EnumGitProvider,
-    options: {
-      auth?: OAuthData;
-      user?: CurrentUser;
-      installationId?: string;
-    }
-  ) {
-    if (gitProvider === EnumGitProvider.Github) {
-      const properties: GitHubProviderOrganizationProperties = {
-        installationId: options.installationId,
-      };
-      return properties;
-    } else if (gitProvider === EnumGitProvider.Bitbucket) {
-      const properties: OAuthProviderOrganizationProperties = {
-        ...options.auth,
-        ...options.user,
-      };
-      return properties;
-    }
   }
 }
