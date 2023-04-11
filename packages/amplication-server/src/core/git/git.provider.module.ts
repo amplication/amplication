@@ -7,5 +7,6 @@ import { GitProviderService } from "./git.provider.service";
 @Module({
   imports: [PermissionsModule, forwardRef(() => ResourceModule), PrismaModule],
   providers: [GitProviderService, GitResolver, PrismaService],
+  exports: [GitProviderService],
 })
 export class GitProviderModule {}

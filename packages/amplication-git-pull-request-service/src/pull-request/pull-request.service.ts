@@ -60,8 +60,8 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
-    installationId,
     gitProvider,
+    gitProviderProperties,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
     commit,
@@ -84,10 +84,11 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
+
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        providerOrganizationProperties: { installationId },
+        providerOrganizationProperties: gitProviderProperties,
       },
       this.gitProvidersConfiguration,
       this.logger.child({ resourceId, buildId: newBuildId })

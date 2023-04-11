@@ -1,6 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
-import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
+import {
+  PrismaService,
+  Prisma,
+  EnumResourceType,
+  PrismaClient,
+} from "../../prisma";
 import { FindOneArgs } from "../../dto";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { Resource } from "../../models/Resource";
@@ -122,9 +127,7 @@ export class GitProviderService {
       repositoryGroupName: args.repositoryGroupName,
     };
 
-    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
-      organization
-    );
+    const gitProviderArgs = await this.getGitProviderProperties(organization);
 
     const gitClientService = await this.createGitClient(gitProviderArgs);
     return gitClientService.getRepositories(repositoriesArgs);
@@ -157,9 +160,7 @@ export class GitProviderService {
       isPrivateRepository: args.public,
     };
 
-    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
-      organization
-    );
+    const gitProviderArgs = await this.getGitProviderProperties(organization);
 
     const gitClientService = await this.createGitClient(gitProviderArgs);
     const remoteRepository = await gitClientService.createRepository(
@@ -200,9 +201,7 @@ export class GitProviderService {
       isPrivateRepository: args.public,
     };
 
-    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
-      organization
-    );
+    const gitProviderArgs = await this.getGitProviderProperties(organization);
 
     const gitClientService = await new GitClientService().create(
       gitProviderArgs,
@@ -480,7 +479,7 @@ export class GitProviderService {
     });
   }
 
-  async getGitProviderOrganizationProperties(
+  async getGitProviderProperties(
     gitOrganization: GitOrganization
   ): Promise<GitProviderArgs> {
     const { id, installationId, provider, providerProperties } =
@@ -551,7 +550,7 @@ export class GitProviderService {
     }
 
     this.logger.error(
-      "getGitProviderOrganizationProperties failed to detect provider organisation properties",
+      "getGitProviderProperties failed to detect provider organisation properties",
       {
         className: GitProviderService.name,
         provider,
@@ -635,9 +634,7 @@ export class GitProviderService {
       },
     });
 
-    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
-      organization
-    );
+    const gitProviderArgs = await this.getGitProviderProperties(organization);
     const gitClientService = await this.createGitClient(gitProviderArgs);
 
     return await gitClientService.getGitGroups();
@@ -653,9 +650,7 @@ export class GitProviderService {
         id: gitOrganizationId,
       },
     });
-    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
-      organisation
-    );
+    const gitProviderArgs = await this.getGitProviderProperties(organisation);
     const gitClientService = await this.createGitClient(gitProviderArgs);
     const isDelete = await gitClientService.deleteGitOrganization();
     if (isDelete) {
