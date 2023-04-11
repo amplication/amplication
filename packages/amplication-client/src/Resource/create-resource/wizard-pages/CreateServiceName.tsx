@@ -1,5 +1,4 @@
 import { TextField } from "@amplication/ui/design-system";
-import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import React, { useEffect } from "react";
 import "./CreateServiceName.scss";
 import { WizardStepProps } from "./interfaces";
@@ -9,10 +8,8 @@ const className = "create-service-name";
 const CreateServiceName: React.FC<WizardStepProps> = ({
   moduleClass,
   formik,
-  trackWizardPageEvent,
 }) => {
   useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Welcome);
     formik.validateForm();
   }, []);
 
@@ -30,7 +27,7 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
         <TextField
           name="serviceName"
           label="Service name"
-          placeholder="Service 1"
+          placeholder="Order Service"
         />
       </div>
     </div>

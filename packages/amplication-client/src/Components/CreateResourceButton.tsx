@@ -23,13 +23,13 @@ const ITEMS: CreateResourceButtonItemType[] = [
     type: models.EnumResourceType.Service,
     label: "Service",
     route: "create-resource",
-    info: "Create a service with GraphQL API, REST API, and a database",
+    info: "Create a service with your choice of API type (GraphQL/REST), database, and authentication options",
   },
   {
     type: models.EnumResourceType.MessageBroker,
     label: "Message Broker",
     route: "create-broker",
-    info: "Use Kafka to build real-time streaming data pipelines",
+    info: "Create a message broker to facilitate communication between services",
   },
 ];
 

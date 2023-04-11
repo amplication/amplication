@@ -1,26 +1,16 @@
 import { Icon, TextField } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect, useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 
 import "./CreateServiceRepository.scss";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
-import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { kebabCase } from "lodash";
 
 const className = "create-service-repository";
 
-const CreateServiceRepository: React.FC<WizardStepProps> = ({
-  formik,
-  trackWizardPageEvent,
-}) => {
-  useEffect(() => {
-    trackWizardPageEvent(
-      AnalyticsEventNames.ViewServiceWizardStep_RepoSettings
-    );
-  }, []);
-
+const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(

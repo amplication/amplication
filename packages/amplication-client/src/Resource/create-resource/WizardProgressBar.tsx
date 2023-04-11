@@ -17,30 +17,32 @@ const ProgressBarItem: React.FC<{
   isValid: boolean;
   disabled: boolean;
 }> = ({ title, isValid, disabled }) => (
-  <div className={`${CLASS_NAME}__item_container`}>
-    <div className={`${CLASS_NAME}__item_icon`}>
-      {isValid ? (
-        <Icon
-          icon="check"
-          className={`${
-            disabled ? `${CLASS_NAME}__disabled` : ""
-          } wizard_check`}
-        />
-      ) : (
-        <Icon
-          icon="circle"
-          className={`${
-            disabled ? `${CLASS_NAME}__disabled` : ""
-          } wizard_loading`}
-        />
-      )}
-    </div>
-    <div
-      className={`${
-        disabled ? `${CLASS_NAME}__disabled` : ""
-      } ${CLASS_NAME}__item_title`}
-    >
-      {title}
+  <div className={`${CLASS_NAME}__item`}>
+    <div className={`${CLASS_NAME}__item_container`}>
+      <div className={`${CLASS_NAME}__item_icon`}>
+        {isValid ? (
+          <Icon
+            icon="check"
+            className={`${
+              disabled ? `${CLASS_NAME}__disabled` : ""
+            } wizard_check`}
+          />
+        ) : (
+          <Icon
+            icon="circle"
+            className={`${
+              disabled ? `${CLASS_NAME}__disabled` : ""
+            } wizard_loading`}
+          />
+        )}
+      </div>
+      <div
+        className={`${
+          disabled ? `${CLASS_NAME}__disabled` : ""
+        } ${CLASS_NAME}__item_title`}
+      >
+        {title}
+      </div>
     </div>
   </div>
 );
@@ -62,20 +64,12 @@ const WizardProgressBar: React.FC<Props> = ({
         );
 
         return (
-          <>
-            <ProgressBarItem
-              key={`${item.title}_item`}
-              title={item.title}
-              isValid={validPage || activePageIndex === lastPage}
-              disabled={!enabledPage}
-            />
-            {index < wizardProgressBar.length - 1 && (
-              <div
-                key={`${item.title}_space`}
-                className={`${CLASS_NAME}__item_space`}
-              ></div>
-            )}
-          </>
+          <ProgressBarItem
+            key={`${item.title}_item`}
+            title={item.title}
+            isValid={validPage || activePageIndex === lastPage}
+            disabled={!enabledPage}
+          />
         );
       })}
     </div>

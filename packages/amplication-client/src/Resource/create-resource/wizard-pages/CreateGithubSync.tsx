@@ -8,7 +8,6 @@ import {
   GitRepositorySelected,
 } from "../../git/dialogs/GitRepos/GithubRepos";
 import { WizardStepProps } from "./interfaces";
-import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 
@@ -22,7 +21,6 @@ const CreateGithubSync: React.FC<props> = ({
   moduleClass,
   formik,
   defineUser,
-  trackWizardPageEvent,
 }) => {
   const { refreshCurrentWorkspace, currentProjectConfiguration } =
     useContext(AppContext);
@@ -36,7 +34,6 @@ const CreateGithubSync: React.FC<props> = ({
   };
 
   useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Git);
     formik.validateForm();
   }, []);
 

@@ -126,7 +126,7 @@ function PluginsCatalogItem({
       <div className={`${CLASS_NAME}__row `}>
         <span className="spacer" />
         <span className={`${CLASS_NAME}__repo`}>
-          <a href={plugin?.repo} target="github_plugin">
+          <a href={plugin.github} target="github_plugin">
             View on GitHub
           </a>
         </span>

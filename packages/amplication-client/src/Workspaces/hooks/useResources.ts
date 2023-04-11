@@ -2,9 +2,9 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
-import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie } from "../../util/cookie";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -76,8 +76,6 @@ const useResources = (
     createGitRepositoryFullName(currentResource?.gitRepository)
   );
 
-  const { createPluginInstallations } = usePlugins(currentResource?.id);
-
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
   const {
@@ -129,6 +127,7 @@ const useResources = (
         result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
       setCurrentResource(result.data?.createServiceWithEntities.resource);
+      expireCookie("signup");
       refetch();
     });
   };

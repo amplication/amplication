@@ -1,4 +1,10 @@
-import React, { useState, ReactNode, useCallback, useEffect } from "react";
+import React, {
+  useState,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+} from "react";
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
@@ -6,10 +12,20 @@ import { validate } from "../../util/formikValidateJsonSchema";
 import { WizardProgressBarInterface } from "./wizardResourceSchema";
 import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
+import { DefineUser } from "./CreateServiceWizard";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+
+export type WizardStep = {
+  index: number;
+  hideFooter?: boolean;
+  hideBackButton?: boolean;
+  analyticsEventName: AnalyticsEventNames;
+};
 
 interface ServiceWizardProps {
   children: ReactNode;
-  wizardPattern: number[];
+  defineUser: DefineUser;
+  wizardSteps: WizardStep[];
   wizardSchema: { [key: string]: any };
   wizardProgressBar: WizardProgressBarInterface[];
   wizardInitialValues: { [key: string]: any };
@@ -18,18 +34,24 @@ interface ServiceWizardProps {
   submitFormPage: number;
   submitLoader: boolean;
   handleCloseWizard: (currentPage: string) => void;
-  handleWizardProgress: (dir: "next" | "prev", page: string) => void;
+  handleWizardProgress: (
+    dir: "next" | "prev",
+    page: string,
+    pageEventName: AnalyticsEventNames
+  ) => void;
 }
 
 const BackButton: React.FC<{
   wizardPattern: number[];
   activePageIndex: number;
+  hideBackButton?: boolean;
   goPrevPage: () => void;
-}> = ({ wizardPattern, activePageIndex, goPrevPage }) =>
+}> = ({ hideBackButton, wizardPattern, activePageIndex, goPrevPage }) =>
+  !hideBackButton &&
   activePageIndex !== wizardPattern[0] &&
   activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
     <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
-      back
+      Back
     </Button>
   ) : null;
 
@@ -48,7 +70,7 @@ const ContinueButton: React.FC<{
 const MIN_TIME_OUT_LOADER = 2000;
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
-  wizardPattern,
+  wizardSteps,
   wizardSchema,
   wizardProgressBar,
   wizardInitialValues,
@@ -59,12 +81,30 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   submitLoader,
   handleCloseWizard,
   handleWizardProgress,
+  defineUser,
 }) => {
-  const [isValidStep, setIsValidStep] = useState<boolean>(false);
+  const wizardPattern = useMemo(() => {
+    return wizardSteps.map((step) => step.index);
+  }, [wizardSteps]);
+
+  const [isInvalidStep, setIsInvalidStep] = useState<boolean>(false);
   const [activePageIndex, setActivePageIndex] = useState(wizardPattern[0] || 0);
+  const [formSubmitted, setFormSubmitted] = useState<boolean>(false);
   const currWizardPatternIndex = wizardPattern.findIndex(
     (i) => i === activePageIndex
   );
+
+  const handleSubmit = useCallback(
+    (activeIndex: number, values: ResourceSettings) => {
+      setFormSubmitted(true);
+      wizardSubmit(activeIndex, values);
+    },
+    [setFormSubmitted, wizardSubmit]
+  );
+
+  const currentStep = useMemo(() => {
+    return wizardSteps.find((step) => step.index === activePageIndex);
+  }, [wizardSteps, activePageIndex]);
 
   const pages = React.Children.toArray(children) as (
     | React.ReactElement<any, React.JSXElementConstructor<any>>
@@ -78,33 +118,41 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
         ? currWizardPatternIndex
         : currWizardPatternIndex + 1;
 
+    const nextIndex = wizardPattern[wizardIndex];
+    const newStep = wizardSteps.find((step) => step.index === nextIndex);
+
     handleWizardProgress(
       "next",
-      (
-        pages[wizardPattern[wizardIndex]]
-          .type as React.JSXElementConstructor<any>
-      ).name
+      (pages[nextIndex].type as React.JSXElementConstructor<any>).name,
+      newStep.analyticsEventName
     );
-    setActivePageIndex(wizardPattern[wizardIndex]);
+    setActivePageIndex(nextIndex);
   }, [activePageIndex]);
 
   const goPrevPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === 0 ? 0 : currWizardPatternIndex - 1;
+
+    const prevIndex = wizardPattern[wizardIndex];
+    const newStep = wizardSteps.find((step) => step.index === prevIndex);
+
     handleWizardProgress(
       "prev",
-      (
-        pages[wizardPattern[wizardIndex]]
-          .type as React.JSXElementConstructor<any>
-      ).name
+      (pages[prevIndex].type as React.JSXElementConstructor<any>).name,
+      newStep.analyticsEventName
     );
-    setActivePageIndex(wizardPattern[wizardIndex]);
+    setActivePageIndex(prevIndex);
   }, [activePageIndex]);
 
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(false);
 
   useEffect(() => {
+    if (formSubmitted && !submitLoader) {
+      setFormSubmitted(false);
+      goNextPage();
+    }
+
     if (!submitLoader) return;
 
     setKeepLoadingAnimation(true);
@@ -128,37 +176,43 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
-      <Button
-        buttonStyle={EnumButtonStyle.Clear}
-        className={`${moduleCss}__close`}
-        onClick={() =>
-          handleCloseWizard(
-            (currentPage.type as React.JSXElementConstructor<any>).name
-          )
-        }
-      >
-        x close
-      </Button>
+      {defineUser === "Create Service" && (
+        <Button
+          buttonStyle={EnumButtonStyle.Clear}
+          className={`${moduleCss}__close`}
+          onClick={() =>
+            handleCloseWizard(
+              (currentPage.type as React.JSXElementConstructor<any>).name
+            )
+          }
+        >
+          x close
+        </Button>
+      )}
       <div className={`${moduleCss}__content`}>
         <Formik
           initialValues={wizardInitialValues}
           onSubmit={(values: ResourceSettings) => {
-            wizardSubmit(activePageIndex, values);
+            handleSubmit(activePageIndex, values);
           }}
           validateOnMount
           validate={(values: ResourceSettings) => {
-            if (activePageIndex === 3 && values.structureType !== "Mono") {
-              setIsValidStep(false);
+            if (values.serviceName?.trim() === "") {
+              setIsInvalidStep(true);
               return;
             }
-            if (!values.isOverrideGitRepository) {
-              setIsValidStep(false);
+            if (
+              activePageIndex === 2 &&
+              !values.isOverrideGitRepository &&
+              defineUser === "Create Service"
+            ) {
+              setIsInvalidStep(false);
               return;
             }
 
             const errors: FormikErrors<ResourceSettings> =
               validate<ResourceSettings>(values, wizardSchema[activePageIndex]);
-            setIsValidStep(!!Object.keys(errors).length);
+            setIsInvalidStep(!!Object.keys(errors).length);
 
             return errors;
           }}
@@ -168,7 +222,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             return (
               <>
                 <Form onKeyDown={onKeyDown}>
-                  {keepLoadingAnimation ? (
+                  {keepLoadingAnimation || submitLoader ? (
                     <CreateServiceLoader />
                   ) : (
                     React.cloneElement(
@@ -181,41 +235,43 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                     )
                   )}
                 </Form>
-                <div className={`${moduleCss}__footer`}>
-                  <div className={`${moduleCss}__backButton`}>
-                    <BackButton
-                      wizardPattern={wizardPattern}
-                      activePageIndex={activePageIndex}
-                      goPrevPage={goPrevPage}
-                    />
-                  </div>
-                  <WizardProgressBar
-                    lastPage={wizardPattern[wizardPattern.length - 1]}
-                    activePageIndex={activePageIndex}
-                    wizardProgressBar={wizardProgressBar}
-                  />
-                  <div className={`${moduleCss}__continueBtn`}>
-                    {activePageIndex !==
-                      wizardPattern[wizardPattern.length - 1] && (
-                      <ContinueButton
-                        goNextPage={
-                          activePageIndex === submitFormPage
-                            ? () => {
-                                formik.submitForm();
-                                goNextPage();
-                              }
-                            : goNextPage
-                        }
-                        disabled={isValidStep}
-                        buttonName={
-                          activePageIndex === submitFormPage
-                            ? "create service"
-                            : "continue"
-                        }
+                {!currentStep.hideFooter && (
+                  <div className={`${moduleCss}__footer`}>
+                    <div className={`${moduleCss}__backButton`}>
+                      <BackButton
+                        hideBackButton={currentStep.hideBackButton}
+                        wizardPattern={wizardPattern}
+                        activePageIndex={activePageIndex}
+                        goPrevPage={goPrevPage}
                       />
-                    )}
+                    </div>
+                    <WizardProgressBar
+                      lastPage={wizardPattern[wizardPattern.length - 1]}
+                      activePageIndex={activePageIndex}
+                      wizardProgressBar={wizardProgressBar}
+                    />
+                    <div className={`${moduleCss}__continueBtn`}>
+                      {activePageIndex !==
+                        wizardPattern[wizardPattern.length - 1] && (
+                        <ContinueButton
+                          goNextPage={
+                            activePageIndex === submitFormPage
+                              ? () => {
+                                  formik.submitForm();
+                                }
+                              : goNextPage
+                          }
+                          disabled={isInvalidStep}
+                          buttonName={
+                            activePageIndex === submitFormPage
+                              ? "Create Service"
+                              : "Continue"
+                          }
+                        />
+                      )}
+                    </div>
                   </div>
-                </div>
+                )}
               </>
             );
           }}

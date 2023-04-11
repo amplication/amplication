@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import "../CreateServiceWizard.scss";
 import "./CreateServiceCodeGeneration.scss";
 import ActionLog from "../../../VersionControl/ActionLog";
@@ -19,6 +13,8 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
+import { PUSH_TO_GITHUB_STEP_NAME } from "../../../VersionControl/BuildSteps";
+import { isEmpty } from "lodash";
 
 const className = "create-service-code-generation";
 
@@ -41,13 +37,11 @@ const CreateServiceCodeGeneration: React.FC<
   rebuildClick,
 }) => {
   const { data } = useBuildWatchStatus(build);
-  const [resourceRepo, setResourceRepo] = useState<models.GitRepository>(
-    resource?.gitRepository || null
-  );
 
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
+  const { currentWorkspace, currentProject } = useContext(AppContext);
+
+  const [buildCompleted, setBuildCompleted] = React.useState(false);
 
   const [commit] = useMutation<TData>(COMMIT_CHANGES, {
     onCompleted: (response) => {
@@ -59,22 +53,14 @@ const CreateServiceCodeGeneration: React.FC<
   });
 
   useEffect(() => {
-    if (!resource) return;
-    setResourceRepo(resource.gitRepository);
-  }, [resource]);
-
-  useEffect(() => {
-    trackWizardPageEvent(
-      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration
-    );
-  }, []);
-
-  useEffect(() => {
-    if (!data && data?.build?.status !== models.EnumBuildStatus.Completed)
-      return;
-
-    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
-  }, [data]);
+    if (
+      !buildCompleted &&
+      data?.build?.status === models.EnumBuildStatus.Completed
+    ) {
+      setBuildCompleted(true);
+      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CodeReady);
+    }
+  }, [data?.build?.status]);
 
   useEffect(() => {
     formik.validateForm();
@@ -104,10 +90,8 @@ const CreateServiceCodeGeneration: React.FC<
   }, [trackWizardPageEvent]);
 
   const handleContinueClick = useCallback(() => {
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
-    );
-  }, [currentWorkspace, currentProject, currentResource]);
+    history.push(`/${currentWorkspace.id}/${currentProject.id}/${resource.id}`);
+  }, [currentWorkspace, currentProject]);
 
   const handleTryAgainClick = useCallback(() => {
     commit({
@@ -117,6 +101,21 @@ const CreateServiceCodeGeneration: React.FC<
       },
     }).catch(console.error);
   }, [commit, currentProject.id]);
+
+  const githubUrl = useMemo(() => {
+    if (!data.build.action?.steps?.length) {
+      return null;
+    }
+    const stepGithub = data.build.action.steps.find(
+      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+    );
+
+    const log = stepGithub?.logs?.find(
+      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+    );
+
+    return log?.meta?.githubUrl || null;
+  }, [data.build.action]);
 
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
 
@@ -171,44 +170,40 @@ const CreateServiceCodeGeneration: React.FC<
           </div>
         </div>
       ) : (
-        <div className={`${className}__status`}>
-          <div className={`${className}__status__completed`}>
-            <img
-              className={`${className}__status__completed__image`}
-              src={CodeGenerationCompleted}
-              alt=""
-            />
+        buildCompleted && (
+          <div className={`${className}__status`}>
+            <div className={`${className}__status__completed`}>
+              <img
+                className={`${className}__status__completed__image`}
+                src={CodeGenerationCompleted}
+                alt=""
+              />
 
-            <div className={`${className}__status__completed__description`}>
-              <div
-                className={`${className}__status__completed__description__header`}
-              >
-                The code for your service is ready on
+              <div className={`${className}__status__completed__description`}>
+                <div
+                  className={`${className}__status__completed__description__header`}
+                >
+                  The code for your service is ready on
+                </div>
+                <div
+                  className={`${className}__status__completed__description__link`}
+                >
+                  {githubUrl}
+                </div>
+                <div />
               </div>
-              <div
-                className={`${className}__status__completed__description__link`}
-              >
-                https://github.com/{resourceRepo?.gitOrganization?.name}/
-                {resourceRepo?.name}
-              </div>
-              <div />
-            </div>
-            <Button
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={handleViewCodeClick}
-            >
-              {
-                <a
-                  style={{ color: "white" }}
-                  href={`https://github.com/${resourceRepo?.gitOrganization?.name}/${resourceRepo?.name}`}
-                  target="docs"
+              <a href={githubUrl} target="docs">
+                <Button
+                  type="button"
+                  buttonStyle={EnumButtonStyle.Clear}
+                  onClick={handleViewCodeClick}
                 >
                   View my code
-                </a>
-              }
-            </Button>
+                </Button>
+              </a>
+            </div>
           </div>
-        </div>
+        )
       )}
     </div>
   );

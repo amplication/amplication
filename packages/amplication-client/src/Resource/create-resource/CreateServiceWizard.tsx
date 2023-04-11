@@ -6,7 +6,8 @@ import { formatError } from "../../util/error";
 import "./CreateServiceWizard.scss";
 import { AppRouteProps } from "../../routes/routesUtil";
 import { AppContext } from "../../context/appContext";
-import ServiceWizard from "./ServiceWizard";
+import ServiceWizard, { WizardStep } from "./ServiceWizard";
+import CreateServiceWelcome from "./wizard-pages/CreateServiceWelcome";
 import CreateServiceName from "./wizard-pages/CreateServiceName";
 import CreateGithubSync from "./wizard-pages/CreateGithubSync";
 import CreateGenerationSettings from "./wizard-pages/CreateGenerationSettings";
@@ -30,6 +31,9 @@ import { useTracking } from "../../util/analytics";
 import { expireCookie, getCookie } from "../../util/cookie";
 import CreateServiceTemplate from "./wizard-pages/CreateServiceTemplate";
 import { kebabCase } from "lodash";
+import { Plugin } from "../../Plugins/hooks/usePlugins";
+import { useQuery } from "@apollo/client";
+import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -39,7 +43,120 @@ type Props = AppRouteProps & {
   location: H.Location;
 };
 
+const FLOW_ONBOARDING = "Onboarding";
+const FLOW_CREATE_SERVICE = "Create Service";
+
 export type DefineUser = "Onboarding" | "Create Service";
+
+const ONBOARDING_STEPS: WizardStep[] = [
+  {
+    index: 0,
+    hideFooter: true,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Welcome,
+  },
+  {
+    index: 1,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+  },
+  {
+    index: 2,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+  },
+  {
+    index: 3,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+  },
+  {
+    index: 4,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+  },
+  {
+    index: 5,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+  },
+  {
+    index: 6,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+  },
+  {
+    index: 7,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+  },
+  {
+    index: 8,
+    hideBackButton: true,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration,
+  },
+  {
+    index: 9,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+  },
+];
+
+const ONBOARDING_PATTERN = ONBOARDING_STEPS.map((step) => step.index);
+
+const CREATE_SERVICE_STEPS: WizardStep[] = [
+  {
+    index: 1,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+  },
+  {
+    index: 2,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+  },
+  {
+    index: 3,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+  },
+  {
+    index: 4,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+  },
+  {
+    index: 5,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+  },
+  {
+    index: 6,
+    analyticsEventName:
+      AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+  },
+  {
+    index: 7,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+  },
+  {
+    index: 9,
+    hideBackButton: true,
+    analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+  },
+];
+const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
+
+const AUTH_PLUGINS = [
+  {
+    displayName: "Auth-core",
+    pluginId: "auth-core",
+    enabled: true,
+    npm: "@amplication/plugin-auth-core",
+    version: "latest",
+    resource: { connect: { id: "" } },
+  },
+  {
+    displayName: "Auth-jwt",
+    pluginId: "auth-jwt",
+    enabled: true,
+    npm: "@amplication/plugin-auth-jwt",
+    version: "latest",
+    resource: { connect: { id: "" } },
+  },
+];
 
 const signupCookie = getCookie("signup");
 
@@ -63,12 +180,34 @@ const CreateServiceWizard: React.FC<Props> = ({
     createResult?.build || null
   );
 
+  const { data: pluginsVersionData } = useQuery<{
+    plugins: Plugin[];
+  }>(GET_PLUGIN_VERSIONS_CATALOG, {
+    context: {
+      clientName: "pluginApiHttpLink",
+    },
+    variables: {
+      where: {
+        deprecated: {
+          equals: null,
+        },
+      },
+    },
+  });
+
   const defineUser: DefineUser =
-    signupCookie === "1" ? "Onboarding" : "Create Service";
+    signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
+
+  const wizardSteps =
+    defineUser === FLOW_CREATE_SERVICE
+      ? CREATE_SERVICE_STEPS
+      : ONBOARDING_STEPS;
+
   const wizardPattern =
-    defineUser === "Create Service"
-      ? [0, 1, 2, 3, 4, 5, 6, 8]
-      : [0, 1, 2, 3, 4, 5, 6, 7, 8];
+    defineUser === FLOW_CREATE_SERVICE
+      ? CREATE_SERVICE_PATTERN
+      : ONBOARDING_PATTERN;
+
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
@@ -113,24 +252,12 @@ const CreateServiceWizard: React.FC<Props> = ({
       databaseType: "postgres" | "mysql" | "mongo",
       authType: string
     ): models.PluginInstallationsCreateInput => {
-      const authCorePlugins = authType === "core" && [
-        {
-          displayName: "Auth-core",
-          pluginId: "auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          version: "latest",
-          resource: { connect: { id: "" } },
-        },
-        {
-          displayName: "Auth-jwt",
-          pluginId: "auth-jwt",
-          enabled: true,
-          npm: "@amplication/plugin-auth-jwt",
-          version: "latest",
-          resource: { connect: { id: "" } },
-        },
-      ];
+      const dbPlugin = pluginsVersionData?.plugins.find(
+        (x) => x.pluginId === `db-${databaseType}`
+      );
+      const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
+
+      const authCorePlugins = authType === "core" && AUTH_PLUGINS;
 
       const data: models.PluginInstallationsCreateInput = {
         plugins: [
@@ -141,6 +268,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
+            settings: JSON.parse(dbLastVersion?.settings || "{}"),
           },
         ],
       };
@@ -148,7 +276,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    []
+    [pluginsVersionData?.plugins]
   );
 
   const handleCloseWizard = useCallback(
@@ -159,17 +287,27 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const handleWizardProgress = useCallback(
-    (dir: "next" | "prev", page: string) => {
+    (
+      dir: "next" | "prev",
+      page: string,
+      pageEventName: AnalyticsEventNames
+    ) => {
       trackEvent({
         eventName:
           AnalyticsEventNames[
             dir === "next"
-              ? "ServiceWizardStep_ContinueClick"
-              : "ServiceWizardStep_BackClick"
+              ? "ServiceWizardStep_ContinueClicked"
+              : "ServiceWizardStep_BackClicked"
           ],
         category: "Service Wizard",
         WizardType: defineUser,
         step: page,
+      });
+
+      trackEvent({
+        eventName: pageEventName,
+        category: "Service Wizard",
+        WizardType: defineUser,
       });
     },
     []
@@ -192,6 +330,7 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const createResource = useCallback(
     (activeIndex: number, values: ResourceSettings) => {
+      if (activeIndex < 6) return;
       const {
         serviceName,
         generateAdminUI,
@@ -219,6 +358,15 @@ const CreateServiceWizard: React.FC<Props> = ({
 
       if (currentProject) {
         const plugins = createResourcePlugins(databaseType, authType);
+        let currentGitRepository: models.ConnectGitRepositoryInput = null;
+        if (gitRepositoryName) {
+          currentGitRepository = {
+            name: gitRepositoryName,
+            gitOrganizationId: gitOrganizationId,
+            resourceId: "",
+            isOverrideGitRepository: isOverrideGitRepository,
+          };
+        }
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -226,12 +374,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           generateAdminUI,
           generateGraphQL,
           generateRestApi,
-          {
-            name: gitRepositoryName,
-            gitOrganizationId: gitOrganizationId,
-            resourceId: "",
-            isOverrideGitRepository: isOverrideGitRepository,
-          },
+          currentGitRepository,
           serverDir,
           adminDir,
           plugins,
@@ -252,17 +395,22 @@ const CreateServiceWizard: React.FC<Props> = ({
   return (
     <Modal open fullScreen css={moduleClass}>
       <ServiceWizard
-        wizardPattern={wizardPattern}
+        wizardSteps={wizardSteps}
         wizardProgressBar={setWizardProgressItems()}
         wizardSchema={schemaArray}
         wizardInitialValues={ResourceInitialValues}
         wizardSubmit={createResource}
         moduleCss={moduleClass}
-        submitFormPage={6}
+        submitFormPage={7}
         submitLoader={loadingCreateService}
         handleCloseWizard={handleCloseWizard}
         handleWizardProgress={handleWizardProgress}
+        defineUser={defineUser}
       >
+        <CreateServiceWelcome
+          moduleClass={moduleClass}
+          trackWizardPageEvent={trackWizardPageEvent}
+        />
         <CreateServiceName
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}

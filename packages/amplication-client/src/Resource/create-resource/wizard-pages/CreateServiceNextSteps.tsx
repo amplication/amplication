@@ -1,5 +1,5 @@
 import { CircleBadge, Icon } from "@amplication/ui/design-system";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext } from "react";
 import "./CreateServiceNextSteps.scss";
 import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
@@ -13,26 +13,25 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   trackWizardPageEvent,
 }) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
-    useContext(AppContext);
-
-  useEffect(() => {
-    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardStep_Finish);
-  }, []);
+  const {
+    currentWorkspace,
+    currentProject,
+    createServiceWithEntitiesResult: serviceResults,
+  } = useContext(AppContext);
 
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Entities" }
     );
     history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}/entities`
+      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/entities`
     );
-  }, [currentWorkspace, currentProject, currentResource]);
+  }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
   const handleClickCreateNewService = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "Create Another Service" }
     );
     window.location.reload();
@@ -40,19 +39,19 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClick,
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
       { action: "View Service" }
     );
     history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${currentResource.id}`
+      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}`
     );
-  }, [currentWorkspace, currentProject, currentResource]);
+  }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
   return (
     <div className={className}>
       <div className={`${className}__description`}>
         <div className={`${className}__description__top`}>
-          Service create successfully.{" "}
+          Service created successfully.{" "}
           <span role="img" aria-label="party emoji">
             🎉
           </span>

@@ -142,7 +142,7 @@ export enum AnalyticsEventNames {
   ViewServiceWizardStep_Finish = "ViewServiceWizardStep_Finish",
   ServiceWizard_ServiceGenerated = "ServiceWizard_ServiceGenerated",
   ServiceWizardStep_ContinueClicked = "ServiceWizardStep_ContinueClicked",
-  ServiceWizardStep_BackClick = "ServiceWizardStep_BackClick",
-  ServiceWizardStep_CloseClick = "ServiceWizardStep_CloseClick",
-  ServiceWizardStep_Finish_CTAClick = "ServiceWizardStep_Finish_CTAClick",
+  ServiceWizardStep_BackClicked = "ServiceWizardStep_BackClicked",
+  ServiceWizardStep_CloseClicked = "ServiceWizardStep_CloseClicked",
+  ServiceWizardStep_Finish_CTAClicked = "ServiceWizardStep_Finish_CTAClicked",
 }

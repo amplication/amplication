@@ -67,10 +67,26 @@ const StructureType = {
     },
     baseDir: {
       type: "string",
-      minLength: 4,
     },
   },
-  required: ["baseDir", "structureType"],
+  anyOf: [
+    {
+      properties: {
+        structureType: { const: "Mono" },
+        baseDir: {
+          minLength: 4,
+        },
+      },
+    },
+    {
+      properties: {
+        structureType: { const: "Poly" },
+        baseDir: {
+          minLength: 0,
+        },
+      },
+    },
+  ],
 };
 
 const DatabaseType = {
@@ -101,6 +117,7 @@ const Auth = {
 };
 
 export const schemaArray = [
+  {},
   ResourceName,
   GitRepository,
   GenerationSettings,
@@ -123,7 +140,7 @@ export const ResourceInitialValues = {
   generateRestApi: true,
   isGenerateCompleted: null,
   structureType: "Mono",
-  baseDir: "./apps",
+  baseDir: "apps",
   databaseType: "postgres",
   templateType: "empty",
   authType: "core",
@@ -159,26 +176,26 @@ export const templateMapping: { [key: string]: TemplateSettings } = {
 export const wizardProgressBarSchema = [
   {
     title: "create service",
-    activePages: [0],
+    activePages: [1],
   },
   {
     title: "General Settings",
-    activePages: [1, 2, 3],
+    activePages: [2, 3, 4],
   },
   {
     title: "DB Settings",
-    activePages: [4, 5],
+    activePages: [5, 6],
   },
   {
     title: "Auth Settings",
-    activePages: [6],
-  },
-  {
-    title: "Generate Code",
     activePages: [7],
   },
   {
-    title: "Confirmation & Next Steps",
+    title: "Generate Code",
     activePages: [8],
+  },
+  {
+    title: "Finish",
+    activePages: [9],
   },
 ];

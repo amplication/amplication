@@ -161,10 +161,13 @@ export class ResourceService {
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
 
+    const isOnBoarding = wizardType?.toLowerCase() === "onboarding";
+
     if (
       projectConfiguration.gitRepositoryId ||
       (args.data.resourceType === EnumResourceType.Service &&
-        !gitRepositoryToCreate.isOverrideGitRepository)
+        gitRepositoryToCreate &&
+        !gitRepositoryToCreate?.isOverrideGitRepository)
     ) {
       gitRepository = {
         connect: { id: projectConfiguration.gitRepositoryId },
@@ -173,12 +176,9 @@ export class ResourceService {
 
     if (
       args.data.resourceType === EnumResourceType.Service &&
-      gitRepositoryToCreate.isOverrideGitRepository
+      gitRepositoryToCreate &&
+      (gitRepositoryToCreate?.isOverrideGitRepository || isOnBoarding)
     ) {
-      if (!gitRepositoryToCreate) {
-        throw new AmplicationError("Git Repository settings are missing");
-      }
-
       const wizardGitRepository = await this.prisma.gitRepository.create({
         data: {
           name: gitRepositoryToCreate.name,
@@ -194,7 +194,7 @@ export class ResourceService {
       };
     }
 
-    if (wizardType?.toLowerCase() === "onboarding") {
+    if (isOnBoarding) {
       await this.prisma.resource.update({
         data: {
           gitRepository: gitRepository,
@@ -208,8 +208,8 @@ export class ResourceService {
     return await this.prisma.resource.create({
       data: {
         ...args.data,
-        gitRepository,
-        gitRepositoryOverride: gitRepositoryToCreate.isOverrideGitRepository,
+        gitRepository: gitRepository,
+        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
       },
     });
   }
@@ -240,7 +240,7 @@ export class ResourceService {
     user: User,
     wizardType: string = null
   ): Promise<Resource> {
-    const { serviceSettings, ...rest } = args.data;
+    const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
@@ -248,7 +248,7 @@ export class ResourceService {
           resourceType: EnumResourceType.Service,
         },
       },
-      args.data.gitRepository,
+      gitRepository,
       wizardType
     );
 
@@ -394,21 +394,24 @@ export class ResourceService {
     const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
     if (isOnboarding) {
       try {
-        await this.projectService.commit({
-          data: {
-            message: INITIAL_COMMIT_MESSAGE,
-            project: {
-              connect: {
-                id: resource.projectId,
+        await this.projectService.commit(
+          {
+            data: {
+              message: INITIAL_COMMIT_MESSAGE,
+              project: {
+                connect: {
+                  id: resource.projectId,
+                },
               },
-            },
-            user: {
-              connect: {
-                id: user.id,
+              user: {
+                connect: {
+                  id: user.id,
+                },
               },
             },
           },
-        });
+          user
+        );
       } catch (error) {
         console.log({ error });
       }
@@ -424,15 +427,15 @@ export class ResourceService {
     const { gitRepository, serviceSettings } = data.resource;
 
     await this.analytics.track({
-      userId: user.id,
+      userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
       properties: {
         category: "Service Wizard",
         wizardType: data.wizardType,
         resourceName: resource.name,
         gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
-        gitOrganizationName: gitRepository.name,
-        repoName: gitRepository.name,
+        gitOrganizationName: gitRepository?.name,
+        repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
         restApi: String(serviceSettings.serverSettings.generateRestApi),
         adminUI: String(serviceSettings.adminUISettings.generateAdminUI),
