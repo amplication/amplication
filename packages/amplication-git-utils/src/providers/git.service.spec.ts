@@ -1,7 +1,5 @@
 import { GitClientService } from "./git.service";
-// test the GitClientService class
 import { ILogger } from "@amplication/util/logging";
-import { SimpleGit } from "simple-git";
 import { GitCli } from "./git-cli";
 import { GitFactory } from "./git-factory";
 import { GitProvider } from "../git-provider.interface";
@@ -15,7 +13,9 @@ const logger: ILogger = {
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
-  child: jest.fn(),
+  child: jest.fn(() => {
+    return logger;
+  }),
 };
 
 const amplicationBotOrIntegrationApp = { id: "2", login: "amplication[bot]" };
