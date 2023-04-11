@@ -358,7 +358,7 @@ export class BitBucketService implements GitProvider {
 
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
-  ): Promise<{ url: string; number: number }> {
+  ): Promise<PullRequest | null> {
     const { repositoryGroupName, repositoryName, branchName } =
       getPullRequestArgs;
     if (!repositoryGroupName) {
@@ -371,12 +371,15 @@ export class BitBucketService implements GitProvider {
       branchName,
       this.auth.accessToken
     );
-    const { links, id: pullRequestId } = pullRequest.values[0];
+    if (pullRequest.values[0]) {
+      const { links, id: pullRequestId } = pullRequest.values[0];
 
-    return {
-      url: links.html.href,
-      number: pullRequestId,
-    };
+      return {
+        url: links.html.href,
+        number: pullRequestId,
+      };
+    }
+    return null;
   }
 
   async createPullRequest(
