@@ -168,7 +168,7 @@ export interface PullRequest {
 
 export interface CreatePullRequestData {
   title: string;
-  description: { raw: string };
+  description: string;
   source: { branch: { name: string } };
   destination: { branch: { name: string } };
 }
