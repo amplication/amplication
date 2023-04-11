@@ -168,6 +168,7 @@ export class GitClientService {
       await this.restoreAmplicationBranchIfNotExists({
         owner,
         repositoryName,
+        repositoryGroupName,
         branchName,
         gitCli,
       });
@@ -202,6 +203,7 @@ export class GitClientService {
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
+        repositoryGroupName,
       });
 
       const existingPullRequest = await this.provider.getPullRequest({
@@ -217,6 +219,7 @@ export class GitClientService {
         pullRequest = await this.provider.createPullRequest({
           owner,
           repositoryName,
+          repositoryGroupName,
           pullRequestTitle: accumulativePullRequestTitle,
           pullRequestBody: accumulativePullRequestBody,
           branchName,
@@ -348,7 +351,12 @@ export class GitClientService {
   ): Promise<Branch> {
     const { branchName, owner, repositoryName, gitCli, repositoryGroupName } =
       args;
-    const branch = await this.provider.getBranch(args);
+    const branch = await this.provider.getBranch({
+      branchName,
+      owner,
+      repositoryName,
+      repositoryGroupName,
+    });
     if (branch) {
       return branch;
     }
@@ -364,6 +372,7 @@ export class GitClientService {
       owner,
       branchName,
       repositoryName,
+      repositoryGroupName,
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
