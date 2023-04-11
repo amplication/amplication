@@ -116,6 +116,7 @@ const getAuthHeaders = (clientId: string, clientSecret: string) => ({
 
 const getRequestHeaders = (accessToken: string) => ({
   Authorization: `Bearer ${accessToken}`,
+  "Content-Type": "application/json",
   Accept: "application/json",
 });
 
