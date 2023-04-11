@@ -15,6 +15,7 @@ import {
   PullRequest,
   CreatePullRequestData,
 } from "./bitbucket.types";
+import { BitbucketGenericError, BitbucketNotFoundError } from "./errors";
 
 enum GrantType {
   RefreshToken = "refresh_token",
@@ -119,12 +120,24 @@ const getRequestHeaders = (accessToken: string) => ({
 });
 
 async function requestWrapper(url: string, payload: RequestPayload) {
-  try {
-    const response = await fetch(url, payload);
+  const response = await fetch(url, payload);
+  if (response?.ok) {
     return response.json();
-  } catch (error) {
-    const errorBody = await error.response.text();
-    throw new CustomError(errorBody);
+  } else {
+    if (response.status === 404) {
+      throw new BitbucketNotFoundError();
+    }
+    throw new BitbucketGenericError("Bitbucket request failed.", {
+      request: {
+        url,
+        method: payload.method,
+        body: payload.body,
+      },
+      response: {
+        status: response.status,
+        body: await response?.json(),
+      },
+    });
   }
 }
 

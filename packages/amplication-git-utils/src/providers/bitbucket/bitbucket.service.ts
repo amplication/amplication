@@ -48,6 +48,7 @@ import {
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
+import { BitbucketNotFoundError } from "./errors";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
@@ -59,12 +60,18 @@ export class BitBucketService implements GitProvider {
   };
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
+  private logger: ILogger;
 
   constructor(
     providerOrganizationProperties: OAuthProviderOrganizationProperties,
     providerConfiguration: BitBucketConfiguration,
-    private readonly logger: ILogger
+    logger: ILogger
   ) {
+    this.logger = logger.child({
+      metadata: {
+        className: BitBucketService.name,
+      },
+    });
     const { accessToken, refreshToken, expiresAt } =
       providerOrganizationProperties;
 
@@ -424,16 +431,24 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    const branch = await getBranchRequest(
-      repositoryGroupName,
-      repositoryName,
-      branchName,
-      this.auth.accessToken
-    );
-    return {
-      name: branch.name,
-      sha: branch.target.hash,
-    };
+
+    try {
+      const branch = await getBranchRequest(
+        repositoryGroupName,
+        repositoryName,
+        branchName,
+        this.auth.accessToken
+      );
+      return {
+        name: branch.name,
+        sha: branch.target.hash,
+      };
+    } catch (error) {
+      if (error instanceof BitbucketNotFoundError) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
