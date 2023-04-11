@@ -121,6 +121,7 @@ export class BitBucketService implements GitProvider {
     );
 
     this.logger.info("BitBucketService: refreshAccessToken");
+    this.auth.accessToken = newOAuthData.access_token;
 
     return {
       accessToken: newOAuthData.access_token,
