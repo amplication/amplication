@@ -342,7 +342,7 @@ export async function getPullRequestByBranchNameRequest(
     GET_PULL_REQUESTS_URL(
       workspaceSlug,
       repositorySlug,
-      `?q=source.branch.name="${branchName}"`
+      `?q=source.branch.name="${branchName}" AND state="OPEN"`
     ),
     {
       method: "GET",
