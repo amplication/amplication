@@ -646,43 +646,31 @@ export class GitProviderService {
   async deleteGitOrganization(
     args: DeleteGitOrganizationArgs
   ): Promise<boolean> {
-    const { gitProvider, gitOrganizationId } = args;
+    const { gitOrganizationId } = args;
 
-    const installationId = await this.getInstallationIdByGitOrganizationId(
-      gitOrganizationId
+    const organisation = await this.getGitOrganization({
+      where: {
+        id: gitOrganizationId,
+      },
+    });
+    const gitProviderArgs = await this.getGitProviderOrganizationProperties(
+      organisation
     );
-    const gitProviderArgs = {
-      provider: gitProvider,
-      providerOrganizationProperties: { installationId },
-    };
     const gitClientService = await this.createGitClient(gitProviderArgs);
-    if (installationId) {
-      const isDelete = await gitClientService.deleteGitOrganization();
-      if (isDelete) {
-        await this.prisma.gitOrganization.delete({
-          where: {
-            id: gitOrganizationId,
-          },
-        });
-      } else {
-        throw new AmplicationError(
-          `delete installationId: ${installationId} failed`
-        );
-      }
-    }
-    return true;
-  }
-
-  private async getInstallationIdByGitOrganizationId(
-    gitOrganizationId: string
-  ): Promise<string | null> {
-    return (
-      await this.prisma.gitOrganization.findUnique({
+    const isDelete = await gitClientService.deleteGitOrganization();
+    if (isDelete) {
+      await this.prisma.gitOrganization.delete({
         where: {
           id: gitOrganizationId,
         },
-      })
-    ).installationId;
+      });
+    } else {
+      this.logger.error("Failed to delete git provider integration", {
+        organisation,
+      });
+      throw new AmplicationError("Failed to delete git provider integration");
+    }
+    return true;
   }
 
   private async getInheritProjectResources(

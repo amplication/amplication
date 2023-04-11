@@ -271,7 +271,9 @@ export class BitBucketService implements GitProvider {
   }
 
   deleteGitOrganization(): Promise<boolean> {
-    throw NotImplementedError;
+    // Nothing bitbucket integration works on authentication on behalf of user.
+    // There is nothing to uninstall/delete when an organisation is deleted.
+    return new Promise(() => true);
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
