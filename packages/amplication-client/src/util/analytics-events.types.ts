@@ -83,7 +83,7 @@ export enum AnalyticsEventNames {
   TopicsSearch = "topicsSearch",
 
   // commit & build & pending changes
-  CommitCreate = "commit",
+  CommitClicked = "commitClicked",
   CommitListBuildIdClick = "commitListBuildIdClick",
   LastCommitIdClick = "lastCommitIdClick",
   PendingChangesDiscard = "discardPendingChanges",
