@@ -3,7 +3,6 @@ import { Format } from "logform";
 import { inspect } from "util";
 
 const clc = {
-  bold: (text: string) => `\x1B[1m${text}\x1B[0m`,
   green: (text: string) => `\x1B[32m${text}\x1B[39m`,
   yellow: (text: string) => `\x1B[33m${text}\x1B[39m`,
   red: (text: string) => `\x1B[31m${text}\x1B[39m`,
@@ -38,7 +37,7 @@ export const customFormat = (): Format =>
         depth: null,
       });
     } catch {
-      formattedMeta = {};
+      formattedMeta = "{}";
     }
 
     return (

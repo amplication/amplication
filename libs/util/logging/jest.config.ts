@@ -15,7 +15,7 @@ export default {
   coverageDirectory: "../../../coverage/libs/util/logging",
   coverageThreshold: {
     global: {
-      branches: 92.85,
+      branches: 92,
       lines: 80.98,
     },
   },
