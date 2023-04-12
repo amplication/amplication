@@ -28,13 +28,18 @@ export const customFormat = (): Format =>
     const componentName = meta["component"];
 
     // Deduplicate meta component
-    meta["component"] = undefined;
 
-    const stringifiedMeta = JSON.stringify(meta);
-    const formattedMeta = inspect(JSON.parse(stringifiedMeta), {
-      colors: true,
-      depth: null,
-    });
+    meta["component"] = undefined;
+    let formattedMeta: unknown;
+    try {
+      const stringifiedMeta = JSON.stringify(meta);
+      formattedMeta = inspect(JSON.parse(stringifiedMeta), {
+        colors: true,
+        depth: null,
+      });
+    } catch {
+      formattedMeta = {};
+    }
 
     return (
       `${cyanBright(`[${componentName}]`)} ` +
