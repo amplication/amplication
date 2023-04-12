@@ -3,7 +3,6 @@ import {
   GitRepository,
   Prisma,
   EnumResourceType,
-  EnumGitProvider,
 } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
