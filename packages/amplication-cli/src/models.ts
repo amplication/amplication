@@ -854,6 +854,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createMessageBroker: Resource;
   createOneEntity: Entity;
+  /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createPluginInstallations?: Maybe<Array<PluginInstallation>>;
