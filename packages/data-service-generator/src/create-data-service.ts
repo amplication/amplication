@@ -47,6 +47,8 @@ export async function createDataService(
       durationInMs: endTime - startTime,
     });
 
+    await context.logger.info("App generation process finished successfully");
+
     /** @todo make module paths to always use Unix path separator */
     return modules.map((module) => ({
       ...module,
