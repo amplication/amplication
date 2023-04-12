@@ -1,11 +1,7 @@
 import { namedTypes, builders } from "ast-types";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
-import {
-  getClassDeclarationById,
-  interpolate,
-  removeTSClassDeclares,
-} from "../../../../../utils/ast";
+import { readFile, removeTSClassDeclares } from "@amplication/code-gen-utils";
+import { getClassDeclarationById, interpolate } from "../../../../../utils/ast";
 
 const templatePath = require.resolve(
   "./entity-list-relation-filter.template.ts"

@@ -22,6 +22,10 @@ import { FeatureUsageReport } from "./FeatureUsageReport";
 import { BillingFeature } from "../billing/billing.types";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Injectable()
 export class ProjectService {
@@ -31,7 +35,8 @@ export class ProjectService {
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
     private readonly entityService: EntityService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly analytics: SegmentAnalyticsService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -216,7 +221,7 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    skipPublish?: boolean
+    currentUser: User
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -322,33 +327,50 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources
+    const promises = resources
       .filter(
         (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
       )
-      .forEach((resource: Resource) =>
-        this.buildService.create(
-          {
-            data: {
-              resource: {
-                connect: { id: resource.id },
-              },
-              commit: {
-                connect: {
-                  id: commit.id,
-                },
-              },
-              createdBy: {
-                connect: {
-                  id: userId,
-                },
-              },
-              message: args.data.message,
+      .map((resource: Resource) => {
+        return this.buildService.create({
+          data: {
+            resource: {
+              connect: { id: resource.id },
             },
+            commit: {
+              connect: {
+                id: commit.id,
+              },
+            },
+            createdBy: {
+              connect: {
+                id: userId,
+              },
+            },
+            message: args.data.message,
           },
-          skipPublish
-        )
-      );
+        });
+      });
+
+    await Promise.all(promises);
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
 
     return commit;
   }

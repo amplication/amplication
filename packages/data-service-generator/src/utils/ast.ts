@@ -6,7 +6,6 @@ import { NodePath } from "ast-types/lib/node-path";
 import { groupBy, mapValues, uniqBy } from "lodash";
 import { visit } from "recast";
 
-const TS_IGNORE_TEXT = "@ts-ignore";
 const CONSTRUCTOR_NAME = "constructor";
 const ARRAY_ID = builders.identifier("Array");
 const STATIC_COMMENT = `
@@ -255,96 +254,6 @@ export function transformTemplateLiteralToStringLiteral(
     })
     .join("");
   return builders.stringLiteral(value);
-}
-
-/**
- * Removes all TypeScript ignore comments
- * @param ast the AST to remove the comments from
- */
-export function removeTSIgnoreComments(ast: ASTNode): void {
-  visit(ast, {
-    visitComment(path) {
-      if (path.value.value.includes(TS_IGNORE_TEXT)) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
- * Like removeTSIgnoreComments but removes TypeScript ignore comments from
- * imports only
- * @param file file to remove comments from
- */
-export function removeImportsTSIgnoreComments(file: namedTypes.File): void {
-  for (const statement of file.program.body) {
-    if (!namedTypes.ImportDeclaration.check(statement)) {
-      break;
-    }
-    removeTSIgnoreComments(statement);
-  }
-}
-
-/**
- * Removes all TypeScript variable declares
- * @param ast the AST to remove the declares from
- */
-export function removeTSVariableDeclares(ast: ASTNode): void {
-  visit(ast, {
-    visitVariableDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
- * Removes all TypeScript class declares
- * @param ast the AST to remove the declares from
- */
-export function removeTSClassDeclares(ast: ASTNode): void {
-  visit(ast, {
-    visitClassDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
- * Removes all TypeScript interface declares
- * @param ast the AST to remove the declares from
- */
-export function removeTSInterfaceDeclares(ast: ASTNode): void {
-  visit(ast, {
-    visitTSInterfaceDeclaration(path) {
-      if (path.get("declare").value) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
-}
-
-/**
- * Removes all ESLint comments
- * @param ast the AST to remove the comments from
- */
-export function removeESLintComments(ast: ASTNode): void {
-  visit(ast, {
-    visitComment(path) {
-      const comment = path.value as namedTypes.Comment;
-      if (comment.value.match(/^\s+eslint-disable/)) {
-        path.prune();
-      }
-      this.traverse(path);
-    },
-  });
 }
 
 /**

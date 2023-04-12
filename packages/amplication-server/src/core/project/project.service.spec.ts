@@ -1,7 +1,9 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
+  Account,
   Block,
   BlockVersion,
   Commit,
@@ -9,6 +11,7 @@ import {
   EntityVersion,
   Project,
   Resource,
+  User,
   Workspace,
 } from "../../models";
 import { Environment } from "../environment/dto";
@@ -61,6 +64,30 @@ const EXAMPLE_COMMIT: Commit = {
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   message: EXAMPLE_MESSAGE,
+};
+
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -296,6 +323,14 @@ describe("ProjectService", () => {
             archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
         },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
       ],
     }).compile();
 
@@ -384,7 +419,7 @@ describe("ProjectService", () => {
         message: args.data.message,
       },
     };
-    expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
+    expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
@@ -413,7 +448,7 @@ describe("ProjectService", () => {
       changesArgs.userId
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
+    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
   });
 
   it("should delete a project", async () => {

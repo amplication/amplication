@@ -1,4 +1,10 @@
-import { print, readFile } from "@amplication/code-gen-utils";
+import {
+  print,
+  readFile,
+  removeESLintComments,
+  removeTSVariableDeclares,
+  removeTSIgnoreComments,
+} from "@amplication/code-gen-utils";
 import { builders } from "ast-types";
 import {
   EventNames,
@@ -12,9 +18,6 @@ import {
   interpolate,
   importNames,
   addImports,
-  removeTSVariableDeclares,
-  removeESLintComments,
-  removeTSIgnoreComments,
   importDeclaration,
   callExpression,
 } from "../../utils/ast";

@@ -17,6 +17,7 @@ import {
   EnumGitProvider,
   RemoteGitRepository,
   RemoteGitRepos,
+  EnumGitOrganizationType,
 } from "../../../../models";
 import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
@@ -28,18 +29,30 @@ const MAX_ITEMS_PER_PAGE = 50;
 
 type Props = {
   gitOrganizationId: string;
-  resourceId: string;
-  onGitRepositoryConnected: () => void;
+  onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
 };
 
+export type GitRepositorySelected = {
+  gitOrganizationId: string;
+  repositoryName: string;
+  gitRepositoryUrl?: string;
+};
+
+export type GitRepositoryCreatedData = {
+  name: string;
+  gitOrganizationId: string;
+  gitOrganizationType: EnumGitOrganizationType;
+  gitProvider: EnumGitProvider;
+  public: boolean;
+  gitRepositoryUrl?: string;
+};
+
 function GitRepos({
-  resourceId,
   gitOrganizationId,
   onGitRepositoryConnected,
   gitProvider,
 }: Props) {
-  const { trackEvent } = useTracking();
   const [page, setPage] = useState(1);
   const {
     data,
@@ -57,36 +70,21 @@ function GitRepos({
     notifyOnNetworkStatusChange: true,
   });
 
-  const [connectGitRepository, { error: errorUpdate }] = useMutation(
-    CONNECT_GIT_REPOSITORY
-  );
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
-      connectGitRepository({
-        variables: {
-          gitOrganizationId,
-          resourceId,
-          name: data.name,
-        },
-      }).catch(console.error);
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubRepositorySync,
+      onGitRepositoryConnected({
+        gitOrganizationId: gitOrganizationId,
+        repositoryName: data.name,
+        gitRepositoryUrl: `https://github.com/${data.name}`,
       });
-      onGitRepositoryConnected();
     },
-    [
-      resourceId,
-      connectGitRepository,
-      gitOrganizationId,
-      onGitRepositoryConnected,
-      trackEvent,
-    ]
+    [gitOrganizationId, onGitRepositoryConnected]
   );
   const handleRefresh = useCallback(() => {
     refetch();
   }, [refetch]);
 
-  const errorMessage = formatError(error || errorUpdate);
+  const errorMessage = formatError(error);
 
   return (
     <div className={CLASS_NAME}>
@@ -158,14 +156,14 @@ function GitRepos({
             onSelectRepo={handleRepoSelected}
           />
         ))}
-      <Snackbar open={Boolean(error || errorUpdate)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 }
 
 export default GitRepos;
 
-const CONNECT_GIT_REPOSITORY = gql`
+export const CONNECT_GIT_REPOSITORY = gql`
   mutation connectResourceGitRepository(
     $name: String!
     $gitOrganizationId: String!

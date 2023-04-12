@@ -1087,7 +1087,7 @@ type Mutation {
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createService(data: ResourceCreateInput!): Resource!
-  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
@@ -1129,6 +1129,7 @@ type Mutation {
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
   createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
@@ -1196,13 +1197,50 @@ input ResourceCreateInput {
   description: String!
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
+  serviceSettings: ServiceSettingsUpdateInput
+  gitRepository: ConnectGitRepositoryInput
+}
+
+input ServiceSettingsUpdateInput {
+  displayName: String
+  description: String
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+  resourceId: String!
+  gitOrganizationId: String!
+  isOverrideGitRepository: Boolean
+}
+
+type ResourceCreateWithEntitiesResult {
+  resource: Resource!
+  build: Build
 }
 
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
-  generationSettings: ResourceGenSettingsCreateInput!
   commitMessage: String!
+  plugins: PluginInstallationsCreateInput
+  wizardType: String!
+  authType: String!
+  dbType: String!
+  repoType: String!
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1216,10 +1254,37 @@ input ResourceCreateWithEntitiesFieldInput {
   dataType: EnumDataType
 }
 
-input ResourceGenSettingsCreateInput {
-  generateAdminUI: Boolean!
-  generateGraphQL: Boolean!
-  generateRestApi: Boolean!
+input PluginInstallationsCreateInput {
+  plugins: [PluginInstallationCreateInput!]
+}
+
+input PluginInstallationCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  pluginId: String!
+  enabled: Boolean!
+  npm: String!
+  settings: JSONObject
+  version: String!
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
 }
 
 input ResourceUpdateInput {
@@ -1304,25 +1369,6 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
-input ServiceSettingsUpdateInput {
-  displayName: String
-  description: String
-  authProvider: EnumAuthProviderType!
-  adminUISettings: AdminUISettingsUpdateInput!
-  serverSettings: ServerSettingsUpdateInput!
-}
-
-input AdminUISettingsUpdateInput {
-  generateAdminUI: Boolean
-  adminUIPath: String
-}
-
-input ServerSettingsUpdateInput {
-  generateGraphQL: Boolean
-  generateRestApi: Boolean
-  serverPath: String
-}
-
 input ServiceTopicsCreateInput {
   displayName: String!
   description: String
@@ -1333,21 +1379,6 @@ input ServiceTopicsCreateInput {
   messageBrokerId: String!
   enabled: Boolean!
   patterns: [MessagePatternCreateInput!]
-}
-
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
 }
 
 input MessagePatternCreateInput {
@@ -1398,30 +1429,12 @@ input ResourceRoleUpdateInput {
   displayName: String!
 }
 
-input PluginInstallationCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  pluginId: String!
-  enabled: Boolean!
-  npm: String!
-  settings: JSONObject
-  version: String!
-}
-
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
   enabled: Boolean!
   settings: JSONObject
   version: String!
-}
-
-input PluginInstallationsCreateInput {
-  plugins: [PluginInstallationCreateInput!]
 }
 
 input PluginSetOrderInput {
@@ -1470,10 +1483,13 @@ input CreateGitRepositoryInput {
   gitGroupName: String
 }
 
-input ConnectGitRepositoryInput {
+input CreateGitRepositoryBaseInput {
   name: String!
-  resourceId: String!
+  public: Boolean!
   gitOrganizationId: String!
+  gitGroupName: String
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
 }
 
 input GitOrganizationCreateInput {

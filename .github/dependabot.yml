@@ -9,6 +9,12 @@ updates:
       - dependency-name: "@nrwl/**" # we need to use nx migrate instead
       - dependency-name: "react**"
     open-pull-requests-limit: 3
+  - package-ecosystem: "npm"
+    directory: "/packages/data-service-generator/src/"
+    target-branch: "next"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 5
     
 
   - package-ecosystem: "docker"
