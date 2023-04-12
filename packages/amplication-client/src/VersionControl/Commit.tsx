@@ -153,7 +153,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: AnalyticsEventNames.CommitCreate,
+                  eventName: AnalyticsEventNames.CommitClicked,
                 }}
                 disabled={loading}
               >
