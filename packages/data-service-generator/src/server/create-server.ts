@@ -44,7 +44,7 @@ async function createServerInternal(
   const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
 
   await context.logger.info(
-    `Running DSG Version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
+    `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
   );
 
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
