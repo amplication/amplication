@@ -631,7 +631,7 @@ export class GithubService implements GitProvider {
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
-  async getOAuth2FlowData(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthData> {
     throw NotImplementedError;
   }
 

@@ -57,8 +57,8 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getOAuth2FlowData(authorizationCode: string): Promise<OAuthData> {
-    return this.provider.getOAuth2FlowData(authorizationCode);
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthData> {
+    return this.provider.getOAuthTokens(authorizationCode);
   }
 
   async refreshAccessToken(refreshToken: string): Promise<OAuthData> {

@@ -95,7 +95,7 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  async getOAuth2FlowData(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthData> {
     const authData = await authDataRequest(
       this.clientId,
       this.clientSecret,

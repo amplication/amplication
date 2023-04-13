@@ -30,7 +30,7 @@ export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
-  getOAuth2FlowData(authorizationCode: string): Promise<OAuthData>;
+  getOAuthTokens(authorizationCode: string): Promise<OAuthData>;
   refreshAccessToken(refreshToken: string): Promise<OAuthData>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
