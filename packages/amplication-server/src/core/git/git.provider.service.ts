@@ -543,13 +543,13 @@ export class GitProviderService {
 
       const gitClientService = await this.createGitClient(newGitProviderArgs);
       this.logger.info("Token is going to be expired, refreshing...");
-      const newOAuthData = await gitClientService.refreshAccessToken(
+      const newOAuthTokens = await gitClientService.refreshAccessToken(
         providerProperties["refreshToken"]
       );
 
       const newProviderProperties = {
         ...(providerProperties as object),
-        ...newOAuthData,
+        ...newOAuthTokens,
       };
 
       const updatedGitOrganization = await this.prisma.gitOrganization.update({
@@ -597,14 +597,14 @@ export class GitProviderService {
       gitProvider
     );
 
-    const oAuthData = await gitClientService.getOAuthTokens(code);
+    const oAuthTokens = await gitClientService.getOAuthTokens(code);
 
     const currentUserData = await gitClientService.getCurrentOAuthUser(
-      oAuthData.accessToken
+      oAuthTokens.accessToken
     );
 
     const providerOrganizationProperties: OAuthProviderOrganizationProperties =
-      { ...oAuthData, ...currentUserData };
+      { ...oAuthTokens, ...currentUserData };
 
     await this.analytics.track({
       userId: currentUser.account.id,
