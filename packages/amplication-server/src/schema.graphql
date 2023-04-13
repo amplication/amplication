@@ -132,6 +132,7 @@ type GitRepository {
   gitOrganizationId: String!
   gitOrganization: GitOrganization!
   name: String!
+  groupName: String
   createdAt: DateTime
   updatedAt: DateTime
 }

@@ -777,6 +777,7 @@ export type GitRepository = {
   createdAt?: Maybe<Scalars['DateTime']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String'];
+  groupName?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt?: Maybe<Scalars['DateTime']>;
