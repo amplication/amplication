@@ -36,18 +36,7 @@ export interface GitProvidersConfiguration {
 
 export interface OAuthProviderOrganizationProperties
   extends OAuthData,
-    CurrentUser {
-  links: { avatar: LinksMetadata };
-  username: string;
-  useGroupingForRepositories: boolean;
-  uuid: string;
-  displayName: string;
-  accessToken: string;
-  refreshToken: string;
-  tokenType: string;
-  expiresAt: number;
-  scopes: string[];
-}
+    CurrentUser {}
 
 export const isOAuthProviderOrganizationProperties = (
   properties: unknown
