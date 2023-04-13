@@ -30,7 +30,7 @@ export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
-  getAccessToken(authorizationCode: string): Promise<OAuthData>;
+  getOAuth2FlowData(authorizationCode: string): Promise<OAuthData>;
   refreshAccessToken(refreshToken: string): Promise<OAuthData>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
@@ -61,6 +61,5 @@ export interface GitProvider {
   createPullRequestComment: (
     args: CreatePullRequestCommentArgs
   ) => Promise<void>;
-  getToken(): Promise<string>;
   getAmplicationBotIdentity(): Promise<Bot | null>;
 }

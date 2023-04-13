@@ -95,7 +95,7 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+  async getOAuth2FlowData(authorizationCode: string): Promise<OAuthData> {
     const authData = await authDataRequest(
       this.clientId,
       this.clientSecret,
@@ -493,7 +493,8 @@ export class BitBucketService implements GitProvider {
   }
 
   getCloneUrl(args: CloneUrlArgs): string {
-    const { repositoryGroupName, repositoryName, token } = args;
+    const { repositoryGroupName, repositoryName } = args;
+    const token = this.getToken();
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
@@ -526,7 +527,7 @@ export class BitBucketService implements GitProvider {
     );
   }
 
-  async getToken(): Promise<string> {
+  private async getToken(): Promise<string> {
     const authData = await this.refreshAccessToken(this.auth.refreshToken);
     return authData.accessToken;
   }

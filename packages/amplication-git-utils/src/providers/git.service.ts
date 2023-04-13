@@ -57,8 +57,8 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    return this.provider.getAccessToken(authorizationCode);
+  async getOAuth2FlowData(authorizationCode: string): Promise<OAuthData> {
+    return this.provider.getOAuth2FlowData(authorizationCode);
   }
 
   async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
@@ -154,12 +154,9 @@ export class GitClientService {
 
       const gitCli = new GitCli(gitRepoDir);
 
-      const cloneToken = await this.provider.getToken();
-
       const cloneUrl = this.provider.getCloneUrl({
         owner,
         repositoryName,
-        token: cloneToken,
         repositoryGroupName,
       });
 

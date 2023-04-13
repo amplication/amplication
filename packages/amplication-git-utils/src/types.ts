@@ -296,7 +296,6 @@ export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
   repositoryGroupName?: string;
-  token: string;
 }
 
 export interface PreCommitProcessArgs {
