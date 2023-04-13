@@ -26,7 +26,7 @@ import {
   PaginatedGitGroup,
   GitProvidersConfiguration,
   CurrentUser,
-  OAuthData,
+  OAuthTokens,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -57,11 +57,11 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    return this.provider.getAccessToken(authorizationCode);
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
+    return this.provider.getOAuthTokens(authorizationCode);
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
     return this.provider.refreshAccessToken(refreshToken);
   }
 
@@ -154,12 +154,9 @@ export class GitClientService {
 
       const gitCli = new GitCli(gitRepoDir);
 
-      const cloneToken = await this.provider.getToken();
-
       const cloneUrl = this.provider.getCloneUrl({
         owner,
         repositoryName,
-        token: cloneToken,
         repositoryGroupName,
       });
 

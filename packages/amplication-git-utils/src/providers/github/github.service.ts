@@ -35,7 +35,7 @@ import {
   UpdateFile,
   PaginatedGitGroup,
   GitHubConfiguration,
-  OAuthData,
+  OAuthTokens,
   CurrentUser,
   GitHubProviderOrganizationProperties,
 } from "../../types";
@@ -90,7 +90,8 @@ export class GithubService implements GitProvider {
     }
   }
 
-  getCloneUrl({ owner, repositoryName, token }: CloneUrlArgs) {
+  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
+    const token = this.getToken();
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
@@ -619,7 +620,7 @@ export class GithubService implements GitProvider {
     return;
   }
 
-  async getToken(): Promise<string> {
+  private async getToken(): Promise<string> {
     const { data: installationTokenData } =
       await this.octokit.rest.apps.createInstallationAccessToken({
         installation_id: Number(this.installationId),
@@ -630,11 +631,11 @@ export class GithubService implements GitProvider {
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 

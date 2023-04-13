@@ -1,7 +1,7 @@
 import { parse } from "path";
 import { GitProvider } from "../../git-provider.interface";
 import {
-  OAuthData,
+  OAuthTokens,
   Branch,
   GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
@@ -95,7 +95,7 @@ export class BitBucketService implements GitProvider {
     return authorizeRequest(this.clientId, amplicationWorkspaceId);
   }
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     const authData = await authDataRequest(
       this.clientId,
       this.clientSecret,
@@ -113,22 +113,22 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
-    const newOAuthData = await refreshTokenRequest(
+  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
+    const newOAuthTokens = await refreshTokenRequest(
       this.clientId,
       this.clientSecret,
       refreshToken
     );
 
     this.logger.info("BitBucketService: refreshAccessToken");
-    this.auth.accessToken = newOAuthData.access_token;
+    this.auth.accessToken = newOAuthTokens.access_token;
 
     return {
-      accessToken: newOAuthData.access_token,
-      refreshToken: newOAuthData.refresh_token,
-      scopes: newOAuthData.scopes.split(" "),
-      tokenType: newOAuthData.token_type,
-      expiresAt: Date.now() + newOAuthData.expires_in * 1000, // 7200 seconds = 2 hours
+      accessToken: newOAuthTokens.access_token,
+      refreshToken: newOAuthTokens.refresh_token,
+      scopes: newOAuthTokens.scopes.split(" "),
+      tokenType: newOAuthTokens.token_type,
+      expiresAt: Date.now() + newOAuthTokens.expires_in * 1000, // 7200 seconds = 2 hours
     };
   }
 
@@ -493,12 +493,12 @@ export class BitBucketService implements GitProvider {
   }
 
   getCloneUrl(args: CloneUrlArgs): string {
-    const { repositoryGroupName, repositoryName, token } = args;
+    const { repositoryGroupName, repositoryName } = args;
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    return `https://x-token-auth:${token}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
+    return `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
   }
 
   async createPullRequestComment(
@@ -524,11 +524,6 @@ export class BitBucketService implements GitProvider {
       body,
       this.auth.accessToken
     );
-  }
-
-  async getToken(): Promise<string> {
-    const authData = await this.refreshAccessToken(this.auth.refreshToken);
-    return authData.accessToken;
   }
 
   async getAmplicationBotIdentity(): Promise<Bot | null> {

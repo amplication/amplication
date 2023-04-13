@@ -16,7 +16,7 @@ import {
   GetRepositoryArgs,
   GitFile,
   Bot,
-  OAuthData,
+  OAuthTokens,
   PaginatedGitGroup,
   PullRequest,
   RemoteGitOrganization,
@@ -30,8 +30,8 @@ export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
-  getAccessToken(authorizationCode: string): Promise<OAuthData>;
-  refreshAccessToken(refreshToken: string): Promise<OAuthData>;
+  getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
+  refreshAccessToken(refreshToken: string): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
@@ -61,6 +61,5 @@ export interface GitProvider {
   createPullRequestComment: (
     args: CreatePullRequestCommentArgs
   ) => Promise<void>;
-  getToken(): Promise<string>;
   getAmplicationBotIdentity(): Promise<Bot | null>;
 }
