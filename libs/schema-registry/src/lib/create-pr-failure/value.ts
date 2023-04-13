@@ -5,5 +5,6 @@ export class Value {
   buildId!: string;
 
   @IsString()
+  @IsOptional()
   errorMessage?: string;
 }
