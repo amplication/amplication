@@ -597,7 +597,7 @@ export class GitProviderService {
       gitProvider
     );
 
-    const oAuthData = await gitClientService.getOAuth2FlowData(code);
+    const oAuthData = await gitClientService.getOAuthTokens(code);
 
     const currentUserData = await gitClientService.getCurrentOAuthUser(
       oAuthData.accessToken
