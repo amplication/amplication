@@ -494,12 +494,11 @@ export class BitBucketService implements GitProvider {
 
   getCloneUrl(args: CloneUrlArgs): string {
     const { repositoryGroupName, repositoryName } = args;
-    const token = this.getToken();
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    return `https://x-token-auth:${token}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
+    return `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
   }
 
   async createPullRequestComment(
@@ -525,11 +524,6 @@ export class BitBucketService implements GitProvider {
       body,
       this.auth.accessToken
     );
-  }
-
-  private async getToken(): Promise<string> {
-    const authData = await this.refreshAccessToken(this.auth.refreshToken);
-    return authData.accessToken;
   }
 
   async getAmplicationBotIdentity(): Promise<Bot | null> {
