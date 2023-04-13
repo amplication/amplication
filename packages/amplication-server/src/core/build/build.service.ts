@@ -22,22 +22,25 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
 import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
-import { CreatePrRequest } from "@amplication/schema-registry";
+import {
+  CanUserAccessBuild,
+  CodeGenerationRequest,
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -149,7 +152,7 @@ export class BuildService {
     private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly queueService: QueueService,
+    private readonly kafkaProducerService: KafkaProducerService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
@@ -314,10 +317,20 @@ export class BuildService {
 
         logger.info("Writing build generation message to queue");
 
-        await this.queueService.emitMessage(
+        const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
+          key: null,
+          value: {
+            resourceId,
+            buildId,
+            dsgResourceData,
+          },
+        };
+
+        await this.kafkaProducerService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
-          JSON.stringify({ resourceId, buildId, dsgResourceData })
+          codeGenerationEvent
         );
+
         logger.info("Build generation message sent");
 
         return null;
@@ -336,7 +349,9 @@ export class BuildService {
     });
   }
 
-  public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
+  public async onCreatePRSuccess(
+    response: CreatePrSuccess.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -371,7 +386,9 @@ export class BuildService {
     }
   }
 
-  public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
+  public async onCreatePRFailure(
+    response: CreatePrFailure.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -466,7 +483,7 @@ export class BuildService {
               )
             : false;
 
-          const createPullRequestEvent: CreatePrRequest.Value = {
+          const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             resourceId: resource.id,
@@ -492,10 +509,16 @@ export class BuildService {
                 : EnumPullRequestMode.Basic,
           };
 
-          await this.queueService.emitMessageWithKey(
+          const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
+            key: {
+              resourceRepositoryId: resourceRepository.id,
+              resourceId: resource.id,
+            },
+            value: createPullRequestMessage,
+          };
+          await this.kafkaProducerService.emitMessage(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
-            resourceRepository.id,
-            JSON.stringify(createPullRequestEvent)
+            createPullRequestEvent
           );
         } catch (error) {
           this.logger.error(
@@ -545,7 +568,7 @@ export class BuildService {
   async canUserAccess({
     userId,
     buildId,
-  }: CanUserAccessArgs): Promise<boolean> {
+  }: CanUserAccessBuild.Value): Promise<boolean> {
     const build = this.prisma.build.findFirst({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       where: { id: buildId, AND: { userId } },

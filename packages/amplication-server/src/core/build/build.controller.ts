@@ -6,14 +6,17 @@ import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
 import { Env } from "../../env";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
-import { ResultMessage } from "../queue/dto/ResultMessage";
-import { StatusEnum } from "../queue/dto/StatusEnum";
+import { ReplyResultMessage } from "./dto/ReplyResultMessage";
+import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
 import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
-import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
-import { LogEntryDto } from "./dto/LogEntryDto";
+import {
+  CanUserAccessBuild,
+  CodeGenerationFailure,
+  CodeGenerationLog,
+  CodeGenerationSuccess,
+  CreatePrFailure,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
 
 @Controller("generated-apps")
 export class BuildController {
@@ -26,14 +29,14 @@ export class BuildController {
     EnvironmentVariables.instance.get(CHECK_USER_ACCESS_TOPIC, true)
   )
   async checkUserAccess(
-    @Payload() message: CanUserAccessArgs
-  ): Promise<{ value: ResultMessage<boolean> }> {
-    const validArgs = plainToInstance(CanUserAccessArgs, message);
+    @Payload() message: CanUserAccessBuild.Value
+  ): Promise<{ value: ReplyResultMessage<boolean> }> {
+    const validArgs = plainToInstance(CanUserAccessBuild.Value, message);
     const isUserCanAccess = await this.buildService.canUserAccess(validArgs);
     return {
       value: {
         error: null,
-        status: StatusEnum.Success,
+        status: ReplyStatusEnum.Success,
         value: isUserCanAccess,
       },
     };
@@ -43,9 +46,9 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_SUCCESS_TOPIC, true)
   )
   async onCodeGenerationSuccess(
-    @Payload() message: CodeGenerationSuccess
+    @Payload() message: CodeGenerationSuccess.Value
   ): Promise<void> {
-    const args = plainToInstance(CodeGenerationSuccess, message);
+    const args = plainToInstance(CodeGenerationSuccess.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
       EnumActionStepStatus.Success
@@ -57,9 +60,9 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_FAILURE_TOPIC, true)
   )
   async onCodeGenerationFailure(
-    @Payload() message: CodeGenerationSuccess
+    @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
-    const args = plainToInstance(CodeGenerationSuccess, message);
+    const args = plainToInstance(CodeGenerationFailure.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
       EnumActionStepStatus.Failed
@@ -70,10 +73,10 @@ export class BuildController {
     EnvironmentVariables.instance.get(Env.CREATE_PR_SUCCESS_TOPIC, true)
   )
   async onPullRequestCreated(
-    @Payload() message: CreatePRSuccess
+    @Payload() message: CreatePrSuccess.Value
   ): Promise<void> {
     try {
-      const args = plainToInstance(CreatePRSuccess, message);
+      const args = plainToInstance(CreatePrSuccess.Value, message);
       await this.buildService.onCreatePRSuccess(args);
     } catch (error) {
       console.error(error);
@@ -83,9 +86,11 @@ export class BuildController {
   @EventPattern(
     EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
   )
-  async onCreatePRFailure(@Payload() message: CreatePRFailure): Promise<void> {
+  async onCreatePRFailure(
+    @Payload() message: CreatePrFailure.Value
+  ): Promise<void> {
     try {
-      const args = plainToInstance(CreatePRFailure, message);
+      const args = plainToInstance(CreatePrFailure.Value, message);
       await this.buildService.onCreatePRFailure(args);
     } catch (error) {
       console.error(error);
@@ -93,8 +98,8 @@ export class BuildController {
   }
 
   @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
-  async onDsgLog(@Payload() message: LogEntryDto): Promise<void> {
-    const logEntry = plainToInstance(LogEntryDto, message);
+  async onDsgLog(@Payload() message: CodeGenerationLog.Value): Promise<void> {
+    const logEntry = plainToInstance(CodeGenerationLog.Value, message);
     const step = await this.buildService.getGenerateCodeStep(logEntry.buildId);
     await this.actionService.logByStepId(
       step.id,
