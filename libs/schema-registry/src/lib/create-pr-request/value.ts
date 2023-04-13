@@ -34,13 +34,13 @@ export class Value {
   gitOrganizationName!: string;
   @IsString()
   gitRepositoryName!: string;
+  @IsString()
+  @IsOptional()
+  gitRepositoryGroupName?: string;
   @ValidateNested()
   commit!: Commit;
   @ValidateNested()
   gitResourceMeta!: GitResourceMeta;
   @IsString()
   pullRequestMode!: EnumPullRequestMode;
-  @IsString()
-  @IsOptional()
-  gitGroupName?: string;
 }

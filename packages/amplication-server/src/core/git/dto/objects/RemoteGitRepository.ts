@@ -31,7 +31,7 @@ export class RemoteGitRepos {
   repos: RemoteGitRepository[];
 
   @Field(() => Number)
-  totalRepos: number | null;
+  total: number | null;
 
   @Field(() => Number)
   currentPage: number | null;

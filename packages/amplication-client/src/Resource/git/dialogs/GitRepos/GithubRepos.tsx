@@ -124,7 +124,7 @@ function GitRepos({
                 {Array.from(
                   {
                     length: Math.ceil(
-                      data?.remoteGitRepositories.totalRepos /
+                      data?.remoteGitRepositories.total /
                         data?.remoteGitRepositories.pageSize
                     ),
                   },
@@ -206,7 +206,7 @@ const FIND_GIT_REPOS = gql`
         fullName
         admin
       }
-      totalRepos
+      total
       currentPage
       pageSize
     }

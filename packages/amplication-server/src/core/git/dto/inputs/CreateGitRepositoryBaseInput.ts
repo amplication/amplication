@@ -10,6 +10,13 @@ export class CreateGitRepositoryBaseInput {
     nullable: false,
   })
   name!: string;
+  @Field(() => String, {
+    nullable: true,
+    description:
+      "Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true",
+  })
+  repositoryGroupName?: string;
+
   @Field(() => Boolean, {
     nullable: false,
   })
@@ -19,11 +26,6 @@ export class CreateGitRepositoryBaseInput {
     nullable: false,
   })
   gitOrganizationId!: string;
-
-  @Field(() => String, {
-    nullable: true,
-  })
-  gitGroupName?: string;
 
   @Field(() => EnumGitProvider, {
     nullable: false,

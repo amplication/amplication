@@ -67,7 +67,7 @@ export class PullRequestService {
     commit,
     gitResourceMeta,
     pullRequestMode,
-    gitGroupName,
+    gitRepositoryGroupName,
   }: CreatePrRequest.Value): Promise<string> {
     const { body, title } = commit;
     const head =
@@ -98,6 +98,7 @@ export class PullRequestService {
       owner,
       cloneDirPath,
       repositoryName: repo,
+      repositoryGroupName: gitRepositoryGroupName,
       branchName: head,
       commitMessage: commit.body,
       pullRequestTitle: title,
@@ -105,7 +106,6 @@ export class PullRequestService {
       pullRequestMode,
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
-      gitGroupName,
     });
     this.logger.info("Opened a new pull request", { prUrl });
     return prUrl;

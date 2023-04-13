@@ -144,6 +144,8 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
+
+  """Defines if a git organisation needs defined repository groups"""
   useGroupingForRepositories: Boolean!
 }
 
@@ -1023,15 +1025,20 @@ type ApiToken {
   lastAccessAt: DateTime!
 }
 
+"""Returns a paginated list of repository groups available to select."""
 type PaginatedGitGroup {
-  size: Float!
+  """Total number of groups"""
+  total: Float!
+
+  """Page number"""
   page: Float!
-  pagelen: Float!
-  next: String
-  previous: String
+
+  """Number of groups per page"""
+  pageSize: Float!
   groups: [GitGroup!]
 }
 
+"""Group of Repositories"""
 type GitGroup {
   id: String!
   name: String!
@@ -1044,7 +1051,7 @@ input GitGroupInput {
 
 type RemoteGitRepos {
   repos: [RemoteGitRepository!]!
-  totalRepos: Float!
+  total: Float!
   currentPage: Float!
   pageSize: Float!
 }
@@ -1063,7 +1070,7 @@ input RemoteGitRepositoriesWhereUniqueInput {
   gitProvider: EnumGitProvider!
   limit: Float!
   page: Float!
-  gitGroupName: String
+  repositoryGroupName: String
 }
 
 input GitOrganizationWhereInput {
@@ -1222,6 +1229,11 @@ input ServerSettingsUpdateInput {
 
 input ConnectGitRepositoryInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
   resourceId: String!
   gitOrganizationId: String!
   isOverrideGitRepository: Boolean
@@ -1475,19 +1487,27 @@ input CompleteInvitationInput {
 
 input CreateGitRepositoryInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  repositoryGroupName: String
   public: Boolean!
-  resourceId: String!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-  gitGroupName: String
+  resourceId: String!
 }
 
 input CreateGitRepositoryBaseInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  repositoryGroupName: String
   public: Boolean!
   gitOrganizationId: String!
-  gitGroupName: String
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
 }

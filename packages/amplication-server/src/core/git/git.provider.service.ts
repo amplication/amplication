@@ -32,6 +32,7 @@ import { CreateGitRepositoryBaseInput } from "./dto/inputs/CreateGitRepositoryBa
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
+import { ValidationError } from "../../errors/ValidationError";
 
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
@@ -116,7 +117,7 @@ export class GitProviderService {
     const repositoriesArgs = {
       limit: args.limit,
       page: args.page,
-      gitGroupName: args.gitGroupName,
+      repositoryGroupName: args.repositoryGroupName,
     };
 
     const gitProviderArgs = await this.updateProviderOrganizationProperties(
@@ -143,6 +144,12 @@ export class GitProviderService {
       },
     });
 
+    if (organization.useGroupingForRepositories && !args.repositoryGroupName) {
+      throw new ValidationError(
+        `${organization.provider} requires a group to create a new repository. repositoryGroupName is missing`
+      );
+    }
+
     const repository = {
       repositoryName: args.name,
       gitOrganization: {
@@ -150,7 +157,7 @@ export class GitProviderService {
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      gitGroupName: args.gitGroupName,
+      repositoryGroupName: args.repositoryGroupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -179,6 +186,7 @@ export class GitProviderService {
 
     return await this.connectResourceGitRepository({
       name: remoteRepository.name,
+      groupName: args.repositoryGroupName,
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
@@ -199,7 +207,7 @@ export class GitProviderService {
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      gitGroupName: args.gitGroupName,
+      repositoryGroupName: args.repositoryGroupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -339,6 +347,7 @@ export class GitProviderService {
     resourceId,
     name,
     gitOrganizationId,
+    groupName,
   }: ConnectGitRepositoryInput): Promise<Resource> {
     const gitRepository = await this.prisma.gitRepository.findFirst({
       where: { resources: { some: { id: resourceId } } },
@@ -363,16 +372,13 @@ export class GitProviderService {
     await this.prisma.gitRepository.create({
       data: {
         name: name,
+        groupName: groupName,
         resources: { connect: resourcesToConnect },
         gitOrganization: { connect: { id: gitOrganizationId } },
       },
     });
 
-    return await this.prisma.resource.findUnique({
-      where: {
-        id: resourceId,
-      },
-    });
+    return resource;
   }
 
   // installation id flow (GitHub ONLY!)

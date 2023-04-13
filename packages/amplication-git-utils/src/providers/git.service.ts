@@ -105,6 +105,7 @@ export class GitClientService {
     const {
       owner,
       repositoryName,
+      repositoryGroupName,
       branchName,
       commitMessage,
       pullRequestTitle,
@@ -112,7 +113,6 @@ export class GitClientService {
       pullRequestMode,
       gitResourceMeta,
       files,
-      gitGroupName,
     } = createPullRequestArgs;
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
@@ -157,7 +157,7 @@ export class GitClientService {
         owner,
         repositoryName,
         token: cloneToken,
-        gitGroupName,
+        repositoryGroupName,
       });
 
       await gitCli.clone(cloneUrl);
@@ -204,8 +204,8 @@ export class GitClientService {
       const existingPullRequest = await this.provider.getPullRequest({
         owner,
         repositoryName,
+        repositoryGroupName,
         branchName,
-        gitGroupName,
       });
 
       let pullRequest = existingPullRequest;
@@ -226,7 +226,7 @@ export class GitClientService {
           issueNumber: pullRequest.number,
           owner,
           repositoryName,
-          gitGroupName,
+          repositoryGroupName,
         },
         data: { body: pullRequestBody },
       });
@@ -343,7 +343,8 @@ export class GitClientService {
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, gitCli, gitGroupName } = args;
+    const { branchName, owner, repositoryName, gitCli, repositoryGroupName } =
+      args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
@@ -354,7 +355,7 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName: defaultBranch,
-        gitGroupName,
+        repositoryGroupName,
       });
     const newBranch = await this.provider.createBranch({
       owner,
