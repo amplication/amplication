@@ -81,7 +81,9 @@ export class GitResolver {
     );
   }
 
-  @Mutation(() => GitOrganization)
+  @Mutation(() => GitOrganization, {
+    description: "Only for GitHub integrations",
+  })
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
     @UserEntity() currentUser: User,

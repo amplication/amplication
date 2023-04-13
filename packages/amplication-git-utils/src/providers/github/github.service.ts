@@ -34,10 +34,10 @@ import {
   RemoteGitRepository,
   UpdateFile,
   PaginatedGitGroup,
-  GitProviderArgs,
   GitHubConfiguration,
   OAuthData,
   CurrentUser,
+  GitHubProviderOrganizationProperties,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
@@ -57,7 +57,7 @@ export class GithubService implements GitProvider {
   public readonly name = EnumGitProvider.Github;
   public readonly domain = "github.com";
   constructor(
-    private readonly gitProviderArgs: GitProviderArgs,
+    private readonly providerOrganizationProperties: GitHubProviderOrganizationProperties,
     private readonly providerConfiguration: GitHubConfiguration,
     private readonly logger: ILogger
   ) {}
@@ -72,8 +72,7 @@ export class GithubService implements GitProvider {
     this.gitInstallationUrl = installationUrl;
     this.appId = appId;
     this.privateKey = envPrivateKey;
-    this.installationId =
-      this.gitProviderArgs.providerOrganizationProperties.installationId;
+    this.installationId = this.providerOrganizationProperties.installationId;
 
     if (!appId || !envPrivateKey || !installationUrl) {
       this.logger.error("Missing Github configuration");

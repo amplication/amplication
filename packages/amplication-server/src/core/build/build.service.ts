@@ -23,7 +23,6 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
 import { previousBuild } from "./utils";
-import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
@@ -41,6 +40,7 @@ import {
   CreatePrSuccess,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { GitProviderService } from "../git/git.provider.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -157,7 +157,7 @@ export class BuildService {
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly billingService: BillingService,
-
+    private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
@@ -483,13 +483,19 @@ export class BuildService {
               )
             : false;
 
+          const gitProviderArgs =
+            await this.gitProviderService.getGitProviderProperties(
+              gitOrganization
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
             gitRepositoryGroupName: resourceRepository.groupName,
             resourceId: resource.id,
-            gitProvider: EnumGitProvider[gitOrganization.provider],
-            installationId: gitOrganization.installationId,
+            gitProvider: gitProviderArgs.provider,
+            gitProviderProperties:
+              gitProviderArgs.providerOrganizationProperties,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
@@ -523,7 +529,8 @@ export class BuildService {
           );
         } catch (error) {
           this.logger.error(
-            `Failed to emit Create Pull Request Message. Error: ${error}`
+            "Failed to emit Create Pull Request Message.",
+            error
           );
         }
       },

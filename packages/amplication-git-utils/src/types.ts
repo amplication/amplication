@@ -1,3 +1,4 @@
+import { property } from "lodash";
 import { GitCli } from "./providers/git-cli";
 
 export enum EnumPullRequestMode {
@@ -33,9 +34,55 @@ export interface GitProvidersConfiguration {
   bitBucketConfiguration: BitBucketConfiguration;
 }
 
+export interface OAuthProviderOrganizationProperties
+  extends OAuthData,
+    CurrentUser {}
+
+export const isOAuthProviderOrganizationProperties = (
+  properties: unknown
+): properties is OAuthProviderOrganizationProperties => {
+  const castedProperties = properties as OAuthProviderOrganizationProperties;
+  if (
+    !(
+      castedProperties.accessToken !== undefined &&
+      castedProperties.refreshToken !== undefined &&
+      castedProperties.expiresAt !== undefined &&
+      castedProperties.useGroupingForRepositories !== undefined &&
+      castedProperties.username !== undefined
+    )
+  ) {
+    throw new Error(
+      "Missing mandatory param. Bitbucket provider requires OAuth configuration"
+    );
+  }
+  return true;
+};
+
+export interface GitHubProviderOrganizationProperties {
+  installationId: string;
+}
+
+export const isGitHubProviderOrganizationProperties = (
+  properties: unknown
+): properties is GitHubProviderOrganizationProperties => {
+  if (
+    !(
+      (properties as GitHubProviderOrganizationProperties).installationId !==
+      undefined
+    )
+  ) {
+    throw new Error(
+      "Missing mandatory param. Github provider requires installationId"
+    );
+  }
+  return true;
+};
+
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerOrganizationProperties: any;
+  providerOrganizationProperties:
+    | GitHubProviderOrganizationProperties
+    | OAuthProviderOrganizationProperties;
 }
 
 export interface GitProviderConstructorArgs {

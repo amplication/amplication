@@ -1,9 +1,16 @@
 import {
   EnumGitProvider,
   EnumPullRequestMode,
+  GitHubProviderOrganizationProperties,
   GitResourceMeta,
+  OAuthProviderOrganizationProperties,
 } from "@amplication/git-utils";
-import { IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 class Commit {
   @IsString()
@@ -21,9 +28,11 @@ export class Value {
   @IsString()
   newBuildId!: string;
   @IsString()
-  installationId!: string;
-  @IsString()
   gitProvider!: EnumGitProvider;
+  @ValidateNested()
+  gitProviderProperties!:
+    | GitHubProviderOrganizationProperties
+    | OAuthProviderOrganizationProperties;
   @IsString()
   gitOrganizationName!: string;
   @IsString()

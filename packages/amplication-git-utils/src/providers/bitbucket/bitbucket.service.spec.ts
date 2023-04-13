@@ -1,6 +1,5 @@
 import { parse } from "path";
 import { BitBucketService } from "./bitbucket.service";
-import { EnumGitProvider } from "../../types";
 import { ILogger } from "@amplication/util/logging";
 import * as requests from "./requests";
 import {
@@ -12,6 +11,7 @@ import {
   PullRequest,
   PaginatedPullRequest,
 } from "./bitbucket.types";
+import { OAuthProviderOrganizationProperties } from "../../types";
 
 jest.mock("fs");
 
@@ -20,7 +20,9 @@ const logger: ILogger = {
   info: jest.fn(),
   warn: jest.fn(),
   error: jest.fn(),
-  child: jest.fn(),
+  child: jest.fn(() => {
+    return logger;
+  }),
 };
 
 describe("bitbucket.service", () => {
@@ -28,11 +30,8 @@ describe("bitbucket.service", () => {
   beforeEach(() => {
     service = new BitBucketService(
       {
-        provider: EnumGitProvider.Bitbucket,
-        providerOrganizationProperties: {
-          accessToken: "my-token",
-        },
-      },
+        accessToken: "my-token",
+      } as unknown as OAuthProviderOrganizationProperties,
       {
         clientId: "id",
         clientSecret: "secret",

@@ -22,10 +22,10 @@ import {
   EnumGitProvider,
   GetBranchArgs,
   PullRequest,
-  GitProviderArgs,
   PaginatedGitGroup,
   BitBucketConfiguration,
   Bot,
+  OAuthProviderOrganizationProperties,
 } from "../../types";
 import { CustomError, NotImplementedError } from "../../utils/custom-error";
 import {
@@ -48,24 +48,35 @@ import {
 } from "./requests";
 import { ILogger } from "@amplication/util/logging";
 import { PaginatedTreeEntry, TreeEntry } from "./bitbucket.types";
+import { BitbucketNotFoundError } from "./errors";
 
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private accessToken: string;
+  private auth: {
+    accessToken: string;
+    refreshToken: string;
+    expiresAt: number;
+  };
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
+  private logger: ILogger;
 
   constructor(
-    private readonly gitProviderArgs: GitProviderArgs,
-    private readonly providerConfiguration: BitBucketConfiguration,
-    private readonly logger: ILogger
-  ) {}
+    providerOrganizationProperties: OAuthProviderOrganizationProperties,
+    providerConfiguration: BitBucketConfiguration,
+    logger: ILogger
+  ) {
+    this.logger = logger.child({
+      metadata: {
+        className: BitBucketService.name,
+      },
+    });
+    const { accessToken, refreshToken, expiresAt } =
+      providerOrganizationProperties;
 
-  async init(): Promise<void> {
-    this.logger.info("BitbucketService init");
-    const { accessToken } = this.gitProviderArgs.providerOrganizationProperties;
-    const { clientId, clientSecret } = this.providerConfiguration;
+    this.auth = { accessToken, refreshToken, expiresAt };
+    const { clientId, clientSecret } = providerConfiguration;
 
     if (!clientId || !clientSecret) {
       this.logger.error("Missing Bitbucket configuration");
@@ -74,7 +85,10 @@ export class BitBucketService implements GitProvider {
 
     this.clientId = clientId;
     this.clientSecret = clientSecret;
-    this.accessToken = accessToken;
+  }
+
+  async init(): Promise<void> {
+    this.logger.info("BitbucketService init");
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -107,6 +121,7 @@ export class BitBucketService implements GitProvider {
     );
 
     this.logger.info("BitBucketService: refreshAccessToken");
+    this.auth.accessToken = newOAuthData.access_token;
 
     return {
       accessToken: newOAuthData.access_token,
@@ -123,7 +138,9 @@ export class BitBucketService implements GitProvider {
     const { links, display_name, username, uuid } = currentUser;
     this.logger.info("BitBucketService getCurrentUser");
     return {
-      links,
+      links: {
+        avatar: links.avatar,
+      },
       displayName: display_name,
       username,
       uuid,
@@ -133,7 +150,7 @@ export class BitBucketService implements GitProvider {
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
-      this.accessToken
+      this.auth.accessToken
     );
 
     const {
@@ -182,7 +199,7 @@ export class BitBucketService implements GitProvider {
     const repository = await repositoryRequest(
       repositoryGroupName,
       repositoryName,
-      this.accessToken
+      this.auth.accessToken
     );
     const { links, name, is_private, full_name, mainbranch, accessLevel } =
       repository;
@@ -209,7 +226,7 @@ export class BitBucketService implements GitProvider {
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       repositoryGroupName,
-      this.accessToken
+      this.auth.accessToken
     );
 
     const { size, page, pagelen, values } = repositoriesInWorkspace;
@@ -257,7 +274,7 @@ export class BitBucketService implements GitProvider {
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -271,7 +288,9 @@ export class BitBucketService implements GitProvider {
   }
 
   deleteGitOrganization(): Promise<boolean> {
-    throw NotImplementedError;
+    // Nothing bitbucket integration works on authentication on behalf of user.
+    // There is nothing to uninstall/delete when an organisation is deleted.
+    return new Promise(() => true);
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
@@ -301,7 +320,7 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       gitReference,
       path,
-      this.accessToken
+      this.auth.accessToken
     );
 
     const fileBufferResponse = await getFileRequest(
@@ -309,7 +328,7 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       gitReference,
       path,
-      this.accessToken
+      this.auth.accessToken
     );
 
     if ((fileResponse as PaginatedTreeEntry).values) {
@@ -340,7 +359,7 @@ export class BitBucketService implements GitProvider {
 
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
-  ): Promise<{ url: string; number: number }> {
+  ): Promise<PullRequest | null> {
     const { repositoryGroupName, repositoryName, branchName } =
       getPullRequestArgs;
     if (!repositoryGroupName) {
@@ -351,14 +370,17 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      this.accessToken
+      this.auth.accessToken
     );
-    const { links, id: pullRequestId } = pullRequest.values[0];
+    if (pullRequest.values[0]) {
+      const { links, id: pullRequestId } = pullRequest.values[0];
 
-    return {
-      url: links.html.href,
-      number: pullRequestId,
-    };
+      return {
+        url: links.html.href,
+        number: pullRequestId,
+      };
+    }
+    return null;
   }
 
   async createPullRequest(
@@ -379,9 +401,7 @@ export class BitBucketService implements GitProvider {
 
     const pullRequestData = {
       title: pullRequestTitle,
-      description: {
-        raw: pullRequestBody,
-      },
+      description: pullRequestBody,
       source: {
         branch: {
           name: branchName,
@@ -398,7 +418,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       pullRequestData,
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -413,16 +433,24 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    const branch = await getBranchRequest(
-      repositoryGroupName,
-      repositoryName,
-      branchName,
-      this.accessToken
-    );
-    return {
-      name: branch.name,
-      sha: branch.target.hash,
-    };
+
+    try {
+      const branch = await getBranchRequest(
+        repositoryGroupName,
+        repositoryName,
+        branchName,
+        this.auth.accessToken
+      );
+      return {
+        name: branch.name,
+        sha: branch.target.hash,
+      };
+    } catch (error) {
+      if (error instanceof BitbucketNotFoundError) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
@@ -437,7 +465,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       { name: branchName, target: { hash: pointingSha } },
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -456,7 +484,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      this.accessToken
+      this.auth.accessToken
     );
 
     return {
@@ -494,12 +522,12 @@ export class BitBucketService implements GitProvider {
       repositoryName,
       pullRequestId,
       body,
-      this.accessToken
+      this.auth.accessToken
     );
   }
 
   async getToken(): Promise<string> {
-    const authData = await this.refreshAccessToken(this.accessToken);
+    const authData = await this.refreshAccessToken(this.auth.refreshToken);
     return authData.accessToken;
   }
 
