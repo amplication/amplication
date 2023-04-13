@@ -15,6 +15,7 @@
     "amplication-storage-gateway": "packages/amplication-storage-gateway",
     "data-service-generator": "packages/data-service-generator",
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
+    "schema-registry": "libs/schema-registry",
     "ui-design-system": "libs/ui/design-system",
     "ui-design-system-e2e": "packages/ui-design-system-e2e",
     "util-code-gen-utils": "libs/util/code-gen-utils",
