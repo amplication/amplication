@@ -313,13 +313,13 @@ export class GithubService implements GitProvider {
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    const { owner, repositoryName, path, baseBranchName } = file;
+    const { owner, repositoryName, path, ref } = file;
 
     const content = await this.octokit.rest.repos.getContent({
       owner,
       repo: repositoryName,
       path,
-      ref: baseBranchName ? baseBranchName : undefined,
+      ref,
     });
 
     if (!Array.isArray(content)) {

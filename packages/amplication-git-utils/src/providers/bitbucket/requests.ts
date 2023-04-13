@@ -253,38 +253,6 @@ export async function getFileRequest(
   return response.buffer();
 }
 
-export function createCommitRequest(
-  workspaceSlug: string,
-  repositorySlug: string,
-  commitData: unknown,
-  accessToken: string
-) {
-  return requestWrapper(CREATE_COMMIT_URL(workspaceSlug, repositorySlug), {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${accessToken}`,
-      "Content-Type": "application/x-www-form-urlencoded",
-    },
-    body: JSON.stringify(commitData),
-  });
-}
-
-export async function getLastCommitRequest(
-  workspaceSlug: string,
-  repositorySlug: string,
-  branchName: string,
-  accessToken: string
-): Promise<Commit> {
-  const [branchCommits] = await requestWrapper(
-    GET_BRANCH_COMMITS_URL(workspaceSlug, repositorySlug, branchName),
-    {
-      method: "GET",
-      headers: getRequestHeaders(accessToken),
-    }
-  );
-  return branchCommits.values;
-}
-
 export async function getFirstCommitRequest(
   workspaceSlug: string,
   repositorySlug: string,

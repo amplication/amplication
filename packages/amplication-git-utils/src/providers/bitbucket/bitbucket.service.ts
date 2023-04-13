@@ -33,14 +33,12 @@ import {
   authorizeRequest,
   createBranchRequest,
   createCommentOnPrRequest,
-  createCommitRequest,
   currentUserRequest,
   currentUserWorkspacesRequest,
   getBranchRequest,
   getFileMetaRequest,
   getFileRequest,
   getFirstCommitRequest,
-  getLastCommitRequest,
   refreshTokenRequest,
   repositoriesInWorkspaceRequest,
   repositoryCreateRequest,
@@ -55,7 +53,6 @@ export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
   private accessToken: string;
-  private refreshToken: string;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
 
@@ -67,8 +64,7 @@ export class BitBucketService implements GitProvider {
 
   async init(): Promise<void> {
     this.logger.info("BitbucketService init");
-    const { accessToken, refreshToken } =
-      this.gitProviderArgs.providerOrganizationProperties;
+    const { accessToken } = this.gitProviderArgs.providerOrganizationProperties;
     const { clientId, clientSecret } = this.providerConfiguration;
 
     if (!clientId || !clientSecret) {
@@ -79,7 +75,6 @@ export class BitBucketService implements GitProvider {
     this.clientId = clientId;
     this.clientSecret = clientSecret;
     this.accessToken = accessToken;
-    this.refreshToken = refreshToken;
   }
 
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
@@ -279,28 +274,40 @@ export class BitBucketService implements GitProvider {
     throw NotImplementedError;
   }
 
-  // pull request flow
-
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    const { owner, repositoryName, baseBranchName, path } = file;
+    let gitReference: string;
+    const { owner, repositoryName, repositoryGroupName, ref, path } = file;
 
-    if (!baseBranchName) {
-      this.logger.error("Missing baseBranchName");
-      throw new CustomError("Missing baseBranchName");
+    if (!repositoryGroupName) {
+      throw new CustomError(
+        "Missing repositoryGroupName. repositoryGroupName is mandatory for BitBucket provider"
+      );
+    }
+
+    if (!ref) {
+      // Default to
+      const repo = await this.getRepository({
+        owner,
+        repositoryName,
+        repositoryGroupName,
+      });
+      gitReference = repo.defaultBranch;
+    } else {
+      gitReference = ref;
     }
 
     const fileResponse = await getFileMetaRequest(
-      owner,
+      repositoryGroupName,
       repositoryName,
-      baseBranchName,
+      gitReference,
       path,
       this.accessToken
     );
 
     const fileBufferResponse = await getFileRequest(
-      owner,
+      repositoryGroupName,
       repositoryName,
-      baseBranchName,
+      gitReference,
       path,
       this.accessToken
     );

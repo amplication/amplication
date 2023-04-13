@@ -86,7 +86,7 @@ export class BuildController {
   @EventPattern(
     EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
   )
-  async onCreatePRFailure(
+  async onPullRequestFailure(
     @Payload() message: CreatePrFailure.Value
   ): Promise<void> {
     try {
