@@ -1,4 +1,3 @@
-import { property } from "lodash";
 import { GitCli } from "./providers/git-cli";
 
 export enum EnumPullRequestMode {
@@ -35,7 +34,7 @@ export interface GitProvidersConfiguration {
 }
 
 export interface OAuthProviderOrganizationProperties
-  extends OAuthData,
+  extends OAuthTokens,
     CurrentUser {}
 
 export const isOAuthProviderOrganizationProperties = (
@@ -231,7 +230,7 @@ export interface CurrentUser {
   useGroupingForRepositories: boolean;
 }
 
-export interface OAuthData {
+export interface OAuthTokens {
   accessToken: string;
   refreshToken: string;
   tokenType: string;

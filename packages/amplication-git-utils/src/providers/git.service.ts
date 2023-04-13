@@ -26,7 +26,7 @@ import {
   PaginatedGitGroup,
   GitProvidersConfiguration,
   CurrentUser,
-  OAuthData,
+  OAuthTokens,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
@@ -57,11 +57,11 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getOAuthTokens(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     return this.provider.getOAuthTokens(authorizationCode);
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
     return this.provider.refreshAccessToken(refreshToken);
   }
 

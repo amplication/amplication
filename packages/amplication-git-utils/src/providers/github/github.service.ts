@@ -35,7 +35,7 @@ import {
   UpdateFile,
   PaginatedGitGroup,
   GitHubConfiguration,
-  OAuthData,
+  OAuthTokens,
   CurrentUser,
   GitHubProviderOrganizationProperties,
 } from "../../types";
@@ -631,11 +631,11 @@ export class GithubService implements GitProvider {
 
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
-  async getOAuthTokens(authorizationCode: string): Promise<OAuthData> {
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 
