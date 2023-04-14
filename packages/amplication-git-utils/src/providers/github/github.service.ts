@@ -635,7 +635,7 @@ export class GithubService implements GitProvider {
     throw NotImplementedError;
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
+  async refreshAccessToken(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 

@@ -113,11 +113,11 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthTokens> {
+  async refreshAccessToken(): Promise<OAuthTokens> {
     const newOAuthTokens = await refreshTokenRequest(
       this.clientId,
       this.clientSecret,
-      refreshToken
+      this.auth.refreshToken
     );
 
     this.logger.info("BitBucketService: refreshAccessToken");
