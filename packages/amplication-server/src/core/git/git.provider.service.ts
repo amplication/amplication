@@ -543,9 +543,7 @@ export class GitProviderService {
 
       const gitClientService = await this.createGitClient(newGitProviderArgs);
       this.logger.info("Token is going to be expired, refreshing...");
-      const newOAuthTokens = await gitClientService.refreshAccessToken(
-        providerProperties["refreshToken"]
-      );
+      const newOAuthTokens = await gitClientService.refreshAccessToken();
 
       const newProviderProperties = {
         ...(providerProperties as object),
