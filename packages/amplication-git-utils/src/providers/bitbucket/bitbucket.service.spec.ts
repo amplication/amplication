@@ -293,7 +293,6 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         repositoryName: "myrepo",
         repositoryGroupName: "mygroup",
-        token: "my-token",
       });
 
       expect(result).toEqual(
