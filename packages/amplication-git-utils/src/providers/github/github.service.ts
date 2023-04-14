@@ -169,11 +169,11 @@ export class GithubService implements GitProvider {
   }
 
   private async getRepositoriesWithPagination(
-    limit = 10,
+    perPage = 10,
     page = 1
   ): Promise<RemoteGitRepos> {
     const results = await this.octokit.request(
-      `GET /installation/repositories?per_page=${limit}&page=${page}`
+      `GET /installation/repositories?per_page=${perPage}&page=${page}`
     );
     const repos = results.data.repositories.map((repo) => ({
       name: repo.name,
@@ -186,8 +186,8 @@ export class GithubService implements GitProvider {
     return {
       total: results.data.total_count,
       repos: repos,
-      pageSize: limit,
-      currentPage: page,
+      perPage,
+      page,
     };
   }
 
@@ -235,8 +235,8 @@ export class GithubService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const { limit, page } = getRepositoriesArgs;
-    return await this.getRepositoriesWithPagination(limit, page);
+    const { perPage, page } = getRepositoriesArgs;
+    return await this.getRepositoriesWithPagination(perPage, page);
   }
 
   async createRepository(

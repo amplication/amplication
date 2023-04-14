@@ -111,8 +111,8 @@ export interface RemoteGitRepository {
 export interface RemoteGitRepos {
   repos: RemoteGitRepository[];
   total: number | null;
-  currentPage: number | null;
-  pageSize: number | null;
+  page: number | null;
+  perPage: number | null;
 }
 
 export type File = {
@@ -156,7 +156,7 @@ export interface CreateRepositoryArgs {
 }
 
 export interface GetRepositoriesArgs {
-  limit: number;
+  perPage: number;
   page: number;
   repositoryGroupName?: string;
 }
