@@ -282,7 +282,6 @@ describe("bitbucket.service", () => {
         await service.getCloneUrl({
           owner: "maccheroni",
           repositoryName: "myrepo",
-          token: "my-token",
         });
       } catch (e) {
         expect(e.message).toBe("Missing repositoryGroupName");
