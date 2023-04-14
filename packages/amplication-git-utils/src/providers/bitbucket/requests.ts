@@ -40,10 +40,10 @@ const CURRENT_USER_WORKSPACES_URL = `${BITBUCKET_API_URL}/user/permissions/works
 
 const REPOSITORIES_IN_WORKSPACE_URL = (
   workspaceSlug: string,
-  pageln = 10,
+  pagelen = 10,
   page = 1
 ) =>
-  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}?pageln=${pageln}&page=${page}`;
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}?pageln=${pagelen}&page=${page}`;
 
 const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
@@ -195,12 +195,12 @@ export async function currentUserWorkspacesRequest(
 
 export async function repositoriesInWorkspaceRequest(
   workspaceSlug: string,
-  pageln: number,
+  pagelen: number,
   page: number,
   accessToken: string
 ): Promise<PaginatedRepositories> {
   return requestWrapper(
-    REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug, pageln, page),
+    REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug, pagelen, page),
     {
       method: "GET",
       headers: getRequestHeaders(accessToken),
