@@ -1698,8 +1698,8 @@ export enum QueryMode {
 }
 
 export type RemoteGitRepos = {
-  currentPage: Scalars['Float'];
-  pageSize: Scalars['Float'];
+  page: Scalars['Float'];
+  perPage: Scalars['Float'];
   repos: Array<RemoteGitRepository>;
   total: Scalars['Float'];
 };
@@ -1707,8 +1707,8 @@ export type RemoteGitRepos = {
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
-  limit: Scalars['Float'];
   page: Scalars['Float'];
+  perPage: Scalars['Float'];
   repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
