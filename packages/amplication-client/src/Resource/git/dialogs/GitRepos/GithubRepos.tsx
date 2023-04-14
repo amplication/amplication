@@ -25,7 +25,7 @@ import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 
 const CLASS_NAME = "git-repos";
-const MAX_ITEMS_PER_PAGE = 50;
+const MAX_ITEMS_PER_PAGE = 10; // aligned with server for both github and bitbucket
 
 type Props = {
   gitOrganizationId: string;
