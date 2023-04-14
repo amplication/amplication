@@ -38,8 +38,12 @@ const ACCESS_TOKEN_URL = `${BITBUCKET_SITE_URL}/oauth2/access_token`;
 const CURRENT_USER_URL = `${BITBUCKET_API_URL}/user`;
 const CURRENT_USER_WORKSPACES_URL = `${BITBUCKET_API_URL}/user/permissions/workspaces`;
 
-const REPOSITORIES_IN_WORKSPACE_URL = (workspaceSlug: string) =>
-  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}`;
+const REPOSITORIES_IN_WORKSPACE_URL = (
+  workspaceSlug: string,
+  pageln = 10,
+  page = 1
+) =>
+  `${BITBUCKET_API_URL}/repositories/${workspaceSlug}?pageln=${pageln}&page=${page}`;
 
 const REPOSITORY_URL = (workspaceSlug: string, repositorySlug: string) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}`;
@@ -54,9 +58,6 @@ const GET_FILE_URL = (
   pathToFile: string
 ) =>
   `${BITBUCKET_API_URL}/repositories/${workspaceSlug}/${repositorySlug}/src/${branchName}/${pathToFile}`;
-
-const CREATE_COMMIT_URL = (workspaceSlug: string, repositorySlug: string) =>
-  `${BITBUCKET_API_URL}/repositories//${workspaceSlug}/${repositorySlug}/src`;
 
 const GET_BRANCH_COMMITS_URL = (
   workspaceSlug: string,
@@ -194,12 +195,17 @@ export async function currentUserWorkspacesRequest(
 
 export async function repositoriesInWorkspaceRequest(
   workspaceSlug: string,
+  pageln: number,
+  page: number,
   accessToken: string
 ): Promise<PaginatedRepositories> {
-  return requestWrapper(REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug), {
-    method: "GET",
-    headers: getRequestHeaders(accessToken),
-  });
+  return requestWrapper(
+    REPOSITORIES_IN_WORKSPACE_URL(workspaceSlug, pageln, page),
+    {
+      method: "GET",
+      headers: getRequestHeaders(accessToken),
+    }
+  );
 }
 
 export async function repositoryRequest(
