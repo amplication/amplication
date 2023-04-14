@@ -1025,8 +1025,8 @@ input GitGroupInput {
 type RemoteGitRepos {
   repos: [RemoteGitRepository!]!
   total: Float!
-  currentPage: Float!
-  pageSize: Float!
+  page: Float!
+  perPage: Float!
 }
 
 type RemoteGitRepository {
@@ -1041,7 +1041,7 @@ type RemoteGitRepository {
 input RemoteGitRepositoriesWhereUniqueInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
-  limit: Float!
+  perPage: Float!
   page: Float!
   repositoryGroupName: String
 }

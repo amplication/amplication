@@ -34,8 +34,8 @@ export class RemoteGitRepos {
   total: number | null;
 
   @Field(() => Number)
-  currentPage: number | null;
+  page: number | null;
 
   @Field(() => Number)
-  pageSize: number | null;
+  perPage: number | null;
 }

@@ -152,7 +152,7 @@ export class GitProviderService {
     });
 
     const repositoriesArgs = {
-      limit: args.limit,
+      perPage: args.perPage,
       page: args.page,
       repositoryGroupName: args.repositoryGroupName,
     };

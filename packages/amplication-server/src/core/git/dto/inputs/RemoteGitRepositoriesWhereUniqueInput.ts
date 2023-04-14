@@ -10,7 +10,7 @@ export class RemoteGitRepositoriesWhereUniqueInput {
   gitProvider!: EnumGitProvider;
 
   @Field(() => Number, { nullable: false })
-  limit!: number;
+  perPage!: number;
 
   @Field(() => Number, { nullable: false })
   page!: number;
