@@ -56,7 +56,7 @@ export default function WizardGitCreateRepo({
     onCreateGitRepository({
       gitOrganizationId: gitOrganizationId,
       gitOrganizationType: EnumGitOrganizationType.Organization,
-      gitProvider: EnumGitProvider.Github,
+      gitProvider,
       name: createRepositoryInput.name,
       public: createRepositoryInput.public,
       gitRepositoryUrl: `https://github.com/${createRepositoryInput.name}`,

@@ -19,7 +19,7 @@ export default function ProviderItem({
     <div className="auth-with-git__providerItem">
       <div className="auth-with-git__providerIcon">
         <Icon icon={"github"} size={"medium"}></Icon>
-        {provider === EnumGitProvider.Github ? "GitHub" : ""}
+        {EnumGitProvider[provider]}
       </div>
       <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
         {`Connect`}
