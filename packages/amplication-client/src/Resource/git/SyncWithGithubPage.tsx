@@ -38,7 +38,7 @@ const SyncWithGithubPage: React.FC = () => {
     refetch();
   }, [refreshCurrentWorkspace, refetch]);
 
-  const pageTitle = "GitHub";
+  const pageTitle = "Sync with Git Provider";
   const errorMessage = formatError(error);
   const isProjectConfiguration =
     data?.resource.resourceType === EnumResourceType.ProjectConfiguration;
