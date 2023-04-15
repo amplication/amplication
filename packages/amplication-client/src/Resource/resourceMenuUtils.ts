@@ -38,7 +38,7 @@ export const linksMap = {
   },
   plugins: {
     title: "Plugins",
-    icon: "plugin",
+    icon: "plugins",
     to: "/plugins",
   },
   topics: {
