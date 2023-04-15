@@ -1,5 +1,6 @@
 import {
   EnumButtonStyle,
+  Label,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
@@ -38,53 +39,60 @@ export default function ExistingConnectionsMenu({
   onSelectGitOrganization,
 }: Props) {
   return (
-    <SelectMenu
-      title={
-        selectedGitOrganization?.name ? (
-          <GitOrganizationMenuItemContent
-            gitOrganization={selectedGitOrganization}
-            isMenuTitle
-          />
-        ) : (
-          "Select Git Provider"
-        )
-      }
-      buttonStyle={EnumButtonStyle.Text}
-      className={`${CLASS_NAME}__menu`}
-      icon="chevron_down"
-    >
-      <SelectMenuModal>
-        <div className={`${CLASS_NAME}__select-menu`}>
-          <SelectMenuList>
-            <>
-              {gitOrganizations.map((gitOrganization) => (
-                <SelectMenuItem
-                  closeAfterSelectionChange
-                  selected={selectedGitOrganization?.id === gitOrganization.id}
-                  key={gitOrganization.id}
-                  onSelectionChange={() => {
-                    onSelectGitOrganization(gitOrganization);
-                  }}
-                >
-                  <GitOrganizationMenuItemContent
-                    gitOrganization={gitOrganization}
+    <>
+      <div className={`${CLASS_NAME}__label-title`}>
+        <Label text="Select organization" />
+      </div>
+      <SelectMenu
+        title={
+          selectedGitOrganization?.name ? (
+            <GitOrganizationMenuItemContent
+              gitOrganization={selectedGitOrganization}
+              isMenuTitle
+            />
+          ) : (
+            "select organization" // temporary
+          )
+        }
+        buttonStyle={EnumButtonStyle.Text}
+        className={`${CLASS_NAME}__menu`}
+        icon="chevron_down"
+      >
+        <SelectMenuModal>
+          <div className={`${CLASS_NAME}__select-menu`}>
+            <SelectMenuList>
+              <>
+                {gitOrganizations.map((gitOrganization) => (
+                  <SelectMenuItem
+                    closeAfterSelectionChange
+                    selected={
+                      selectedGitOrganization?.id === gitOrganization.id
+                    }
+                    key={gitOrganization.id}
+                    onSelectionChange={() => {
+                      onSelectGitOrganization(gitOrganization);
+                    }}
+                  >
+                    <GitOrganizationMenuItemContent
+                      gitOrganization={gitOrganization}
+                    />
+                  </SelectMenuItem>
+                ))}
+                <hr className={`${CLASS_NAME}__hr`} />
+                {GIT_PROVIDERS.map((provider) => (
+                  <GitOrganizationMenuAddProvider
+                    key={provider.provider}
+                    label={provider.label}
+                    provider={provider.provider}
+                    onAddGitOrganization={onAddGitOrganization}
+                    className={CLASS_NAME}
                   />
-                </SelectMenuItem>
-              ))}
-              <hr className={`${CLASS_NAME}__hr`} />
-              {GIT_PROVIDERS.map((provider) => (
-                <GitOrganizationMenuAddProvider
-                  key={provider.provider}
-                  label={provider.label}
-                  provider={provider.provider}
-                  onAddGitOrganization={onAddGitOrganization}
-                  className={CLASS_NAME}
-                />
-              ))}
-            </>
-          </SelectMenuList>
-        </div>
-      </SelectMenuModal>
-    </SelectMenu>
+                ))}
+              </>
+            </SelectMenuList>
+          </div>
+        </SelectMenuModal>
+      </SelectMenu>
+    </>
   );
 }

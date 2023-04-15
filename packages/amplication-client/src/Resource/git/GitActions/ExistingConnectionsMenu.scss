@@ -1,6 +1,12 @@
 @import "../../../style/index.scss";
 
 .git-organization-select-menu {
+  &__label-title {
+    @include regular-10;
+    padding-bottom: var(--icon-spacing);
+    color: var(--black80);
+  }
+
   &__select-menu {
     background: var(--black2);
   }

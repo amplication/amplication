@@ -1,4 +1,4 @@
-import { Icon, Snackbar } from "@amplication/ui/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
@@ -47,14 +47,14 @@ const SyncWithGithubPage: React.FC = () => {
     <PageContent pageTitle={pageTitle}>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__header`}>
-          <Icon icon="github" size="xlarge" />
-          <h1>Sync with GitHub</h1>
+          <p className={`${CLASS_NAME}__header__title`}>
+            Sync with Git Provider
+          </p>
         </div>
-        <div className={`${CLASS_NAME}__separator`} />
         <div className={`${CLASS_NAME}__message`}>
-          If you connect to GitHub, every time you commit your changes, it
-          automatically pushes your generated code and creates a Pull Request in
-          your GitHub repository.
+          Enable sync with Git provider to automatically push the generated code
+          of your application and create a Pull Request in your Git provider
+          repository every time you commit your changes.
         </div>
         {data?.resource && isProjectConfiguration && (
           <AuthResourceWithGit resource={data.resource} onDone={handleOnDone} />
