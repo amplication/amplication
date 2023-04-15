@@ -199,9 +199,6 @@ function AuthWithGit({
           />
         ) : (
           <div>
-            <div className={`${CLASS_NAME}__selectOrganization`}>
-              Select Organization
-            </div>
             <ExistingConnectionsMenu
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleGitOrganizationChange}
