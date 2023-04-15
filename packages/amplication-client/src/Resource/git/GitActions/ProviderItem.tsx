@@ -18,7 +18,10 @@ export default function ProviderItem({
   return (
     <div className="auth-with-git__providerItem">
       <div className="auth-with-git__providerIcon">
-        <Icon icon={"github"} size={"medium"}></Icon>
+        <Icon
+          icon={EnumGitProvider[provider].toLowerCase()}
+          size={"medium"}
+        ></Icon>
         {EnumGitProvider[provider]}
       </div>
       <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>

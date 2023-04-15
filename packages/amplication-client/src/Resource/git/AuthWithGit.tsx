@@ -18,6 +18,7 @@ import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardReposi
 import WizardNewConnection from "./GitActions/WizardNewConnection";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import * as models from "../../models";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -139,16 +140,20 @@ function AuthWithGit({
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: "Github",
-      },
-    }).catch(console.error);
-  }, [authWithGit, trackEvent]);
+  const handleAuthWithGitClick = useCallback(
+    (provider: models.EnumGitProvider) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.AddGitProviderClick,
+        provider,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    },
+    [authWithGit, trackEvent]
+  );
 
   triggerOnDone = () => {
     onDone();
