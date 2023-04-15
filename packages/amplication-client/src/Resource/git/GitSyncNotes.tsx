@@ -14,7 +14,7 @@ export default function GitSyncNotes() {
         </li>
         <li>
           <Icon icon="check_square" size="xsmall" />
-          The selected repository must not be empty.
+          The selected repository must not be empty
         </li>
       </ul>
     </div>
