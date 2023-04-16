@@ -6,9 +6,17 @@ import { readdir } from "fs/promises";
  * @returns true if the folder is empty, false otherwise
  */
 
-export async function isFolderEmpty(path: string): Promise<boolean> {
-  const folderContact = await readdir(path);
-  if (folderContact.length > 0) {
+export async function isFolderEmpty(
+  path: string,
+  ignore?: string[]
+): Promise<boolean> {
+  const folderContact = new Set(await readdir(path));
+  if (ignore) {
+    for (const input of ignore) {
+      folderContact.has(input) && folderContact.delete(input);
+    }
+  }
+  if (folderContact.size > 0) {
     return false;
   }
   return true;

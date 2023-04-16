@@ -155,7 +155,6 @@ export class GitClientService {
       }
       await this.createInitialCommit({
         cloneDir,
-        defaultBranch,
         gitClient,
         repositoryName,
       });
@@ -439,13 +438,12 @@ export class GitClientService {
   private async createInitialCommit(args: {
     repositoryName: string;
     gitClient: GitClient;
-    defaultBranch: string;
     cloneDir: string;
   }) {
-    const { gitClient, repositoryName, defaultBranch, cloneDir } = args;
+    const { gitClient, repositoryName, cloneDir } = args;
     const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
-    await gitClient.checkout(defaultBranch);
-    if ((await isFolderEmpty(cloneDir)) === false) {
+    const foldersToIgnore = [".git"];
+    if ((await isFolderEmpty(cloneDir, foldersToIgnore)) === false) {
       throw new Error(
         "The repository is not empty, crash the pull request logic to prevent data loss"
       );
@@ -460,11 +458,13 @@ export class GitClientService {
     defaultBranch: string;
   }): Promise<boolean> {
     const { owner, repositoryName, defaultBranch } = args;
-    const defaultBranchFirstCommit = this.provider.getFirstCommitOnBranch({
-      branchName: defaultBranch,
-      owner,
-      repositoryName,
-    });
+    const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
+      {
+        branchName: defaultBranch,
+        owner,
+        repositoryName,
+      }
+    );
 
     return Boolean(defaultBranchFirstCommit);
   }
