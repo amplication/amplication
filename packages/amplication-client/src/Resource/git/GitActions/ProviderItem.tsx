@@ -17,13 +17,15 @@ export default function ProviderItem({
 
   return (
     <div className="auth-with-git__providerItem">
-      <div className="auth-with-git__providerIcon">
-        <Icon
-          icon={EnumGitProvider[provider].toLowerCase()}
-          size={"medium"}
-        ></Icon>
-        {EnumGitProvider[provider]}
-      </div>
+      {provider && (
+        <div className="auth-with-git__providerIcon">
+          <Icon
+            icon={EnumGitProvider[provider].toLowerCase()}
+            size={"medium"}
+          ></Icon>
+          {EnumGitProvider[provider]}
+        </div>
+      )}
       <Button buttonStyle={EnumButtonStyle.Primary} onClick={handleClick}>
         {`Connect`}
       </Button>
