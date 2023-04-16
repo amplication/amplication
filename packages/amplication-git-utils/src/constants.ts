@@ -12,3 +12,7 @@ Please keep in mind that this branch should not be deleted. Amplication will con
 For more information on how to work with Amplication and manage pull requests, please refer to our documentation - [https://docs.amplication.com/sync-with-github](https://docs.amplication.com/sync-with-github)
 
 The Amplication Team`;
+
+export const getDefaultREADMEFile = (repositoryName: string) => {
+  return `# ${repositoryName}`;
+};
