@@ -126,7 +126,13 @@ export class GitClientService {
       repositoryName,
       token: cloneToken,
     });
-    const cloneDir = getCloneDir({ owner, repositoryName });
+
+    const cloneDir = getCloneDir({
+      owner,
+      repositoryName,
+      provider: this.provider.name,
+      suffix: v4(),
+    });
 
     const { defaultBranch } = await this.provider.getRepository({
       owner,
