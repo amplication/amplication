@@ -8,6 +8,7 @@ import {
   getDefaultREADMEFile,
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
+import { NoCommitOnBranch } from "../errors/NoCommitOnBranch";
 import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
@@ -367,6 +368,11 @@ export class GitClientService {
         repositoryName,
         branchName: defaultBranch,
       });
+
+    if (firstCommitOnDefaultBranch === null) {
+      throw new NoCommitOnBranch(defaultBranch);
+    }
+
     const newBranch = await this.provider.createBranch({
       owner,
       branchName,
