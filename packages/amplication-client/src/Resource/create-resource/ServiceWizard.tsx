@@ -262,11 +262,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                               : goNextPage
                           }
                           disabled={isInvalidStep}
-                          buttonName={
-                            activePageIndex === submitFormPage
-                              ? "Create Service"
-                              : "Continue"
-                          }
+                          buttonName={"Continue"}
                         />
                       )}
                     </div>
