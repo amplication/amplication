@@ -33,6 +33,7 @@ import {
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
 import { getCloneDir } from "../utils/clone-dir";
+import { isFolderEmpty } from "../utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitClient } from "./git-client";
 import { GitFactory } from "./git-factory";
@@ -438,6 +439,11 @@ export class GitClientService {
     const { gitClient, repositoryName, defaultBranch, cloneDir } = args;
     const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
     await gitClient.checkout(defaultBranch);
+    if ((await isFolderEmpty(cloneDir)) === false) {
+      throw new Error(
+        "The repository is not empty, crash the pull request logic to prevent data loss"
+      );
+    }
     await writeFile(normalize(join(cloneDir, "README.md")), defaultREADMEFile);
     await gitClient.git.add(["."]).commit("Initial commit").push();
   }
