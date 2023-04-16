@@ -1,7 +1,7 @@
 import { join, normalize } from "path";
 import { v4 } from "uuid";
-import { MissingEnvParam } from "../errors/MissingEnvParam";
-import { EnumGitProvider } from "../types";
+import { MissingEnvParam } from "../../errors/MissingEnvParam";
+import { EnumGitProvider } from "../../types";
 
 interface CloneDirParams {
   owner: string;

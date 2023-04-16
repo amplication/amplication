@@ -1,6 +1,6 @@
 import { CLONES_FOLDER_ENV, getCloneDir } from "./clone-dir";
-import { MissingEnvParam } from "../errors/MissingEnvParam";
-import { EnumGitProvider } from "../types";
+import { MissingEnvParam } from "../../errors/MissingEnvParam";
+import { EnumGitProvider } from "../../types";
 
 describe("Testing the cloneDir getter function", () => {
   it("should throw an error if the CLONES_FOLDER environment variable is not set", () => {
