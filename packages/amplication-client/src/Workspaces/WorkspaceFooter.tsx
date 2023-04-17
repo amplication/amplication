@@ -93,7 +93,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
         ) : (
           <div className={`${CLASS_NAME}__gh-disconnected`}>
             <Icon
-              icon="github"
+              icon="git-sync"
               size="small"
               className={`${CLASS_NAME}__github-icon`}
             />
