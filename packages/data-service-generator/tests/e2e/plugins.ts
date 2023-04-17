@@ -3,7 +3,7 @@ import { PluginInstallation } from "@amplication/code-gen-types";
 export const postgres: PluginInstallation[] = [
   {
     id: "postgres-id",
-    pluginId: "plugin-db-postgres",
+    pluginId: "db-postgres",
     npm: "@amplication/plugin-db-postgres",
     enabled: true,
     version: "latest",
@@ -13,7 +13,7 @@ export const postgres: PluginInstallation[] = [
 export const mongo: PluginInstallation[] = [
   {
     id: "mongo-id",
-    pluginId: "plugin-db-mongo",
+    pluginId: "db-mongo",
     npm: "@amplication/plugin-db-mongo",
     enabled: true,
     version: "latest",
@@ -23,7 +23,7 @@ export const mongo: PluginInstallation[] = [
 export const mysql: PluginInstallation[] = [
   {
     id: "mysql-id",
-    pluginId: "plugin-db-mysql",
+    pluginId: "db-mysql",
     npm: "@amplication/plugin-db-mysql",
     enabled: true,
     version: "latest",
