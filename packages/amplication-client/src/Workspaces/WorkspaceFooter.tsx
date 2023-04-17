@@ -77,7 +77,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
         {gitRepositoryFullName.includes("/") ? (
           <div className={`${CLASS_NAME}__gh-connection`}>
             <Icon
-              icon="github"
+              icon="git-sync"
               size="small"
               className={`${CLASS_NAME}__github-icon`}
             />
