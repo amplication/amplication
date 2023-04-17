@@ -126,7 +126,7 @@ const CreateServiceCodeGeneration: React.FC<
       {buildRunning ? (
         <div className={`${className}__buildLog`}>
           <div className={`${className}__title`}>
-            <h1>We’re generating your service...</h1>
+            We’re generating your service...
           </div>
           <div className={`${className}__status`}>
             <ActionLog
@@ -139,7 +139,7 @@ const CreateServiceCodeGeneration: React.FC<
       ) : buildFailed ? (
         <div className={`${className}__buildLog`}>
           <div className={`${className}__title`}>
-            <h1>We’re generating your service...</h1>
+            We’re generating your service...
           </div>
           <div className={`${className}__negative_status`}>
             <ActionLog

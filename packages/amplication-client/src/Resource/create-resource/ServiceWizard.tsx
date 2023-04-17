@@ -5,7 +5,7 @@ import React, {
   useEffect,
   useMemo,
 } from "react";
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
 import { Form, Formik, FormikErrors } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
@@ -186,7 +186,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
             )
           }
         >
-          x close
+          <Icon icon="close" size="xsmall"></Icon>
+          Close
         </Button>
       )}
       <div className={`${moduleCss}__content`}>
@@ -262,11 +263,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                               : goNextPage
                           }
                           disabled={isInvalidStep}
-                          buttonName={
-                            activePageIndex === submitFormPage
-                              ? "Create Service"
-                              : "Continue"
-                          }
+                          buttonName={"Continue"}
                         />
                       )}
                     </div>
