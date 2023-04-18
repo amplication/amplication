@@ -15,7 +15,11 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    font-weight: 600;
+    font-size: 38px;
+    line-height: 57px;
     gap: 8px;
+    color: var(--black100);
   }
 
   &__negative_status {
