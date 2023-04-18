@@ -69,7 +69,6 @@ export default function GitProviderConnection({
           <WarningTooltip
             arrow
             placement="top-start"
-            // open={true}
             title={
               <div className={`${CLASS_NAME}__tooltip__window`}>
                 <Icon icon="info_circle" />

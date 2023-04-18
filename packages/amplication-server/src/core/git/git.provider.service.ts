@@ -619,7 +619,7 @@ export class GitProviderService {
         provider: gitProvider,
         installationId: currentUserData.uuid,
         name: currentUserData.username,
-        type: EnumGitOrganizationType.User,
+        type: EnumGitOrganizationType.Organization,
         useGroupingForRepositories: currentUserData.useGroupingForRepositories,
         workspace: {
           connect: {

@@ -9,9 +9,8 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
 } from "@amplication/ui/design-system";
-import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
-import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import React, { useCallback, useState } from "react";
+import { gql, NetworkStatus, useQuery } from "@apollo/client";
+import { useCallback, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
   EnumGitProvider,
@@ -19,10 +18,10 @@ import {
   RemoteGitRepos,
   EnumGitOrganizationType,
 } from "../../../../models";
-import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
+import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10; // aligned with server for both github and bitbucket
@@ -54,6 +53,15 @@ function GitRepos({
   gitProvider,
 }: Props) {
   const [page, setPage] = useState(1);
+
+  const { data: gitGroups } = useQuery(GET_GROUPS, {
+    variables: {
+      organizationId: gitOrganizationId,
+    },
+  });
+
+  const [repositoryGroup, setRepositoryGroup] = useState(gitGroups?.[0]);
+
   const {
     data,
     error,
@@ -62,6 +70,7 @@ function GitRepos({
     networkStatus,
   } = useQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
     variables: {
+      repositoryGroupName: repositoryGroup?.name,
       gitOrganizationId,
       gitProvider,
       limit: MAX_ITEMS_PER_PAGE,
@@ -148,6 +157,11 @@ function GitRepos({
           </SelectMenu>
         </div>
       </div>
+      <GitSelectMenu
+        selectedItem={repositoryGroup}
+        items={gitGroups}
+        onSelect={setRepositoryGroup}
+      />
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (
           <GitRepoItem
@@ -186,6 +200,7 @@ export const CONNECT_GIT_REPOSITORY = gql`
 
 const FIND_GIT_REPOS = gql`
   query remoteGitRepositories(
+    $repositoryGroupName: String
     $gitOrganizationId: String!
     $gitProvider: EnumGitProvider!
     $limit: Float!
@@ -193,6 +208,7 @@ const FIND_GIT_REPOS = gql`
   ) {
     remoteGitRepositories(
       where: {
+        repositoryGroupName: $repositoryGroupName
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         limit: $limit
@@ -209,6 +225,21 @@ const FIND_GIT_REPOS = gql`
       total
       currentPage
       pageSize
+    }
+  }
+`;
+
+const GET_GROUPS = gql`
+  query gitGroups($organizationId: String!) {
+    gitGroups(where: { organizationId: $organizationId }) {
+      total
+      page
+      pageSize
+      groups {
+        id
+        name
+        slug
+      }
     }
   }
 `;
