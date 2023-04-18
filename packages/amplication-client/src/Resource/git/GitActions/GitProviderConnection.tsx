@@ -5,15 +5,14 @@ import {
   UpgradeLink,
 } from "@amplication/ui/design-system";
 import { EnumGitProvider } from "../../../models";
-import { useCallback } from "react";
+import { useCallback, useContext } from "react";
 
 import "./GitProviderConnection.scss";
 import classNames from "classnames";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import { useQuery } from "@apollo/client";
-import { useParams } from "react-router-dom";
+import { AppContext } from "../../../../src/context/appContext";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -53,8 +52,8 @@ export default function GitProviderConnection({
     onSyncNewGitOrganizationClick(provider);
   }, [provider]);
 
-  const { workspace } = useParams<{ workspace: string }>();
-  const upgradeLink = `/${workspace}/purchase`;
+  const { currentWorkspace } = useContext(AppContext);
+  const upgradeLink = `/${currentWorkspace?.id}/purchase`;
 
   return (
     <div
