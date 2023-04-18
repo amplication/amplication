@@ -12,7 +12,7 @@ type Props = {
   isOverride: boolean;
 };
 
-const CLASS_NAME = "project-configuration-github-settings";
+const CLASS_NAME = "project-configuration-git-settings";
 
 const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
   const { currentWorkspace, currentProject, projectConfigurationResource } =

@@ -15,7 +15,7 @@ import {
 } from "../../Workspaces/queries/resourcesQueries";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
-const CLASS_NAME = "service-configuration-github-settings";
+const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
   resource: models.Resource;

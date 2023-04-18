@@ -44,13 +44,13 @@
     }
   }
 
-  &__gh-connection {
+  &__git-connection {
     color: var(--black80);
     display: flex;
     align-items: center;
   }
 
-  &__gh-disconnected {
+  &__git-disconnected {
     display: flex;
     align-items: center;
     color: var(--negative-light);
@@ -63,7 +63,7 @@
     }
   }
 
-  &__gh-link {
+  &__git-link {
     @include regular-12;
     margin-left: var(--default-spacing-small);
     color: var(--black100);
@@ -72,7 +72,7 @@
     }
   }
 
-  &__github-icon {
+  &__git-icon {
     margin-right: var(--default-spacing-small);
   }
 }
