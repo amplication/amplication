@@ -18,14 +18,6 @@ const CreateServiceLoader: React.FC = () => {
       <div className={`${CLASS_NAME}__processing__loader`}>
         <Loader animationType={AnimationType.Full} />
       </div>
-
-      <div className={`${CLASS_NAME}__processing__tagline`}>
-        <div>For a full experience, connect with a GitHub repository</div>
-        <div>
-          and get a new Pull Request every time you make changes in your data
-          model.
-        </div>
-      </div>
     </div>
   );
 };
