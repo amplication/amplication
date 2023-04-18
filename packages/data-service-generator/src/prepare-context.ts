@@ -9,11 +9,11 @@ import {
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
+import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
 import { get } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
-import winston from "winston";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
@@ -24,7 +24,7 @@ import { resolveTopicNames } from "./utils/message-broker";
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger,
+  logger: ILogger,
   pluginInstallationPath?: string
 ): Promise<Module[]> {
   logger.info("Preparing context...");
@@ -53,7 +53,6 @@ export async function prepareContext(
   const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
 
   const context = DsgContext.getInstance;
-  context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;

@@ -21,7 +21,6 @@ import { createDotEnvModule } from "./create-dotenv";
 import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
-import { createLog } from "../create-log";
 import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
@@ -38,35 +37,28 @@ export function createAdminModules(): Promise<Module[]> {
 }
 
 async function createAdminModulesInternal(): Promise<Module[]> {
+  const context = DsgContext.getInstance;
   const {
     appInfo,
-    logger,
     entities,
     roles,
     // eslint-disable-next-line @typescript-eslint/naming-convention
     DTOs,
     clientDirectories,
-  } = DsgContext.getInstance;
+  } = context;
 
-  logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
-  await createLog({
-    level: "info",
-    message: `Admin path: ${clientDirectories.baseDirectory}`,
-  });
+  await context.logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
 
-  logger.info("Creating admin...");
-  await createLog({ level: "info", message: "Creating admin..." });
+  await context.logger.info("Creating admin...");
 
-  logger.info("Copying static modules...");
-  await createLog({ level: "info", message: "Copying static modules..." });
+  await context.logger.info("Copying static modules...");
 
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
   );
 
-  await createLog({ level: "info", message: "Creating gitignore..." });
-  logger.info("Creating gitignore...");
+  await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
 
   const packageJson = await createAdminUIPackageJson();
@@ -126,7 +118,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     clientDirectories.baseDirectory
   );
 
-  logger.info("Formatting code...");
+  await context.logger.info("Formatting code...");
   const formattedModules = createdModules.map((module) => ({
     ...module,
     code: formatCode(module.code),

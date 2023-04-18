@@ -1404,7 +1404,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -1499,7 +1499,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -2468,7 +2468,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
@@ -2549,7 +2549,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput

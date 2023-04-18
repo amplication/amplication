@@ -28,6 +28,7 @@ import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
+import { CreateGitRepositoryBaseInput } from "./dto/inputs/CreateGitRepositoryBaseInput";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
@@ -35,6 +36,11 @@ import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
 const GIT_REPOSITORY_EXIST =
   "Git Repository already connected to an other Resource";
 const INVALID_GIT_REPOSITORY_ID = "Git Repository does not exist";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { User } from "../../models";
 
 @Injectable()
 export class GitProviderService {
@@ -45,7 +51,8 @@ export class GitProviderService {
     private readonly resourceService: ResourceService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -175,6 +182,47 @@ export class GitProviderService {
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
+  }
+
+  async createRemoteGitRepositoryWithoutConnect(
+    args: CreateGitRepositoryBaseInput
+  ): Promise<boolean> {
+    const organization = await this.getGitOrganization({
+      where: {
+        id: args.gitOrganizationId,
+      },
+    });
+    const repository = {
+      repositoryName: args.name,
+      gitOrganization: {
+        name: organization.name,
+        type: EnumGitOrganizationType[organization.type],
+        useGroupingForRepositories: organization.useGroupingForRepositories,
+      },
+      gitGroupName: args.gitGroupName,
+      owner: organization.name,
+      isPrivateRepository: args.public,
+    };
+
+    const gitProviderArgs = {
+      provider: args.gitProvider,
+      providerOrganizationProperties: organization.providerProperties,
+    };
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs,
+      this.gitProvidersConfiguration,
+      this.logger
+    );
+    const remoteRepository = await gitClientService.createRepository(
+      repository
+    );
+
+    if (!remoteRepository) {
+      throw new AmplicationError(
+        `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
+      );
+    }
+    return true;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
@@ -329,7 +377,8 @@ export class GitProviderService {
 
   // installation id flow (GitHub ONLY!)
   async createGitOrganization(
-    args: CreateGitOrganizationArgs
+    args: CreateGitOrganizationArgs,
+    currentUser: User
   ): Promise<GitOrganization> {
     const { gitProvider, installationId } = args.data;
     // get the provider properties of the installationId flow (GitHub)
@@ -365,6 +414,15 @@ export class GitProviderService {
         },
       });
     }
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: args.data.workspaceId,
+        provider: gitProvider,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
 
     return await this.prisma.gitOrganization.create({
       data: {
@@ -476,7 +534,8 @@ export class GitProviderService {
   }
 
   async completeOAuth2Flow(
-    args: CompleteGitOAuth2FlowArgs
+    args: CompleteGitOAuth2FlowArgs,
+    currentUser: User
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
     // provider properties to instantiate the git client service
@@ -499,6 +558,15 @@ export class GitProviderService {
       ...oAuthData,
       ...currentUserData,
     };
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: workspaceId,
+        provider: gitProvider,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
 
     this.logger.info("server: completeOAuth2Flow");
     return this.prisma.gitOrganization.upsert({

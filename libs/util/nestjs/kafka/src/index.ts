@@ -1,2 +1,3 @@
 export * from "./createNestjsKafkaConfig";
-export * from "./producer/KafkaProducer.service";
+export * from "./Kafka.module";
+export * from "./producer/";

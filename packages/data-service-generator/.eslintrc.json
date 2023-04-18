@@ -9,7 +9,9 @@
     "src/**/*.template.*",
     "src/**/static/**/*",
     // React Admin UI public files
-    "src/admin/public-files"
+    "src/admin/public-files",
+    "**/.npmrc",
+    "**/package.json"
   ],
   "parserOptions": {
     "project": "packages/data-service-generator/tsconfig.*?.json",

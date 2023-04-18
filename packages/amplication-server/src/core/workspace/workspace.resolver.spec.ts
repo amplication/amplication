@@ -21,6 +21,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ApolloServerBase } from "apollo-server-core";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -196,6 +197,14 @@ describe("WorkspaceResolver", () => {
           provide: ConfigService,
           useClass: jest.fn(() => ({
             get: jest.fn(),
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
           })),
         },
       ],

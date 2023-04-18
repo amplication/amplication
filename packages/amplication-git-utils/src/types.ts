@@ -219,6 +219,7 @@ export interface CreateBranchIfNotExistsArgs {
   repositoryName: string;
   branchName: string;
   gitClient: GitClient;
+  defaultBranch: string;
 }
 
 export interface CreateBranchArgs {

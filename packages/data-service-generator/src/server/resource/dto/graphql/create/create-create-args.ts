@@ -1,11 +1,7 @@
 import { builders, namedTypes } from "ast-types";
 import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
-import { readFile } from "@amplication/code-gen-utils";
-import {
-  interpolate,
-  removeTSClassDeclares,
-  getClassDeclarationById,
-} from "../../../../../utils/ast";
+import { readFile, removeTSClassDeclares } from "@amplication/code-gen-utils";
+import { interpolate, getClassDeclarationById } from "../../../../../utils/ast";
 import { isInputType } from "../../nestjs-graphql.util";
 
 const templatePath = require.resolve("./create-args.template.ts");

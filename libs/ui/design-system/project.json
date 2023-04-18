@@ -42,14 +42,6 @@
           "quiet": true
         }
       }
-    },
-    "test": {
-      "executor": "nx:run-commands",
-      "inputs": ["{projectRoot}/src/**"],
-      "outputs": ["dist/cypress/packages/ui-design-system-e2e/"],
-      "options": {
-        "command": "nx e2e ui-design-system-e2e -ci"
-      }
     }
   }
 }

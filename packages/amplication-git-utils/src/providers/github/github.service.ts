@@ -87,6 +87,7 @@ export class GithubService implements GitProvider {
       appId: this.appId,
       privateKey,
     });
+
     if (this.installationId) {
       this.octokit = await this.getInstallationOctokit(this.installationId);
     }
@@ -211,10 +212,12 @@ export class GithubService implements GitProvider {
   async getCurrentUser(): Promise<GitUser> {
     const data: { viewer: { id: string; login: string } } = await this.octokit
       .graphql(`{
-      viewer{
-        id
-        login
-      }
+  viewer {
+    id
+    login
+    name
+    email
+  }
     }`);
     const {
       viewer: { id, login },
@@ -667,7 +670,7 @@ export class GithubService implements GitProvider {
     branchName,
     owner,
     repositoryName,
-  }: GetBranchArgs): Promise<{ sha: string }> {
+  }: GetBranchArgs): Promise<Commit | null> {
     const firstCommit: TData = await this.octokit.graphql(
       `query ($owner: String!, $repo: String!, $branchName: String!) {
       repository(name: $repo, owner: $owner) {
@@ -695,15 +698,19 @@ export class GithubService implements GitProvider {
         branchName,
       }
     );
+    const { repository } = firstCommit;
+    if (repository === null) {
+      return null;
+    }
+    const { ref } = repository;
+    if (ref === null) {
+      return null;
+    }
     const {
-      repository: {
-        ref: {
-          target: {
-            history: { nodes: firstCommitNodes, pageInfo, totalCount },
-          },
-        },
+      target: {
+        history: { nodes: firstCommitNodes, pageInfo, totalCount },
       },
-    } = firstCommit;
+    } = ref;
 
     if (totalCount <= 1) {
       return { sha: firstCommitNodes[0].oid };
@@ -735,15 +742,20 @@ export class GithubService implements GitProvider {
       }`,
       { owner, repo: repositoryName, branchName, nextCursor }
     );
+    const { repository: lastCommitDataRepository } = lastCommitData;
+    if (lastCommitDataRepository === null) {
+      return null;
+    }
+
+    const { ref: lastCommitDataRef } = lastCommitDataRepository;
+    if (lastCommitDataRef === null) {
+      return null;
+    }
     const {
-      repository: {
-        ref: {
-          target: {
-            history: { nodes: lastCommitNodes },
-          },
-        },
+      target: {
+        history: { nodes: lastCommitNodes },
       },
-    } = lastCommitData;
+    } = lastCommitDataRef;
     return { sha: lastCommitNodes[0].oid };
   }
 
@@ -977,6 +989,6 @@ type TData = {
           totalCount: number;
         };
       };
-    };
-  };
+    } | null;
+  } | null;
 };
