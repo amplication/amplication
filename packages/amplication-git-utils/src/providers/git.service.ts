@@ -134,17 +134,20 @@ export class GitClientService {
     const cloneUrl = this.provider.getCloneUrl({
       owner,
       repositoryName,
+      repositoryGroupName,
     });
 
     const { defaultBranch } = await this.provider.getRepository({
       owner,
       repositoryName,
+      repositoryGroupName,
     });
 
     const haveFirstCommitInDefaultBranch =
       await this.isHaveFirstCommitInDefaultBranch({
         owner,
         repositoryName,
+        repositoryGroupName,
         defaultBranch,
       });
 
@@ -543,14 +546,16 @@ export class GitClientService {
   private async isHaveFirstCommitInDefaultBranch(args: {
     owner: string;
     repositoryName: string;
+    repositoryGroupName?: string;
     defaultBranch: string;
   }): Promise<boolean> {
-    const { owner, repositoryName, defaultBranch } = args;
+    const { owner, repositoryName, repositoryGroupName, defaultBranch } = args;
     const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
       {
         branchName: defaultBranch,
         owner,
         repositoryName,
+        repositoryGroupName,
       }
     );
 
