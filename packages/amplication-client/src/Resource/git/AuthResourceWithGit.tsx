@@ -115,7 +115,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         variables: {
           name: data.name,
           gitOrganizationId: gitOrganization.id,
-          gitProvider: EnumGitProvider.Github,
+          gitProvider: gitOrganization.provider,
           public: data.public,
           resourceId: resource.id,
         },
@@ -154,7 +154,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={EnumGitProvider.Github}
+          gitProvider={gitOrganization.provider}
           gitOrganizationName={gitOrganization.name}
           src={"githubPage"}
           onSelectGitRepository={(data: GitRepositorySelected) => {
@@ -183,24 +183,26 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             handleAddProviderClick={handleAddProviderClick}
           />
         ) : (
-          <ExistingConnectionsMenu
-            gitOrganizations={gitOrganizations}
-            onSelectGitOrganization={(organization) => {
-              setGitOrganization(organization);
-            }}
-            selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAddProviderClick}
-          />
-        )}
+          <>
+            <ExistingConnectionsMenu
+              gitOrganizations={gitOrganizations}
+              onSelectGitOrganization={(organization) => {
+                setGitOrganization(organization);
+              }}
+              selectedGitOrganization={gitOrganization}
+              onAddGitOrganization={handleAddProviderClick}
+            />
 
-        <RepositoryActions
-          onCreateRepository={() => {
-            setCreateNewRepoOpen(true);
-          }}
-          onSelectRepository={handleSelectRepoDialogOpen}
-          currentResourceWithGitRepository={resource}
-          selectedGitOrganization={gitOrganization}
-        />
+            <RepositoryActions
+              onCreateRepository={() => {
+                setCreateNewRepoOpen(true);
+              }}
+              onSelectRepository={handleSelectRepoDialogOpen}
+              currentResourceWithGitRepository={resource}
+              selectedGitOrganization={gitOrganization}
+            />
+          </>
+        )}
 
         <GitSyncNotes />
       </Panel>
