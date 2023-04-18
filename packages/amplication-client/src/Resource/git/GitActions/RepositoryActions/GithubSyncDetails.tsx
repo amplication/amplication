@@ -11,7 +11,7 @@ import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resour
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 
-const CLASS_NAME = "github-repo-details";
+const CLASS_NAME = "git-repo-details";
 
 type Props = {
   resourceWithRepository: Resource;
