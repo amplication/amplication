@@ -77,6 +77,17 @@ const useResources = (
   );
 
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
+  const [
+    gitRepositoryOrganizationProvider,
+    setGitRepositoryOrganizationProvider,
+  ] = useState<models.EnumGitProvider>(undefined);
+
+  const gitRepositoryUrlMap = {
+    [models.EnumGitProvider
+      .Github]: `https://github.com/${gitRepositoryFullName}`,
+    [models.EnumGitProvider
+      .Bitbucket]: `https://bitbucket.org/${gitRepositoryFullName}`,
+  };
 
   const {
     data: resourcesData,
@@ -162,7 +173,14 @@ const useResources = (
       setGitRepositoryFullName(
         createGitRepositoryFullName(projectConfigurationResource.gitRepository)
       );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      gitRepositoryUrlMap[
+        projectConfigurationResource?.gitRepository?.gitOrganization?.provider
+      ]
+    );
+    setGitRepositoryOrganizationProvider(
+      projectConfigurationResource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     currentResource,
@@ -183,7 +201,12 @@ const useResources = (
     setGitRepositoryFullName(
       createGitRepositoryFullName(resource?.gitRepository)
     );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      gitRepositoryUrlMap[resource?.gitRepository.gitOrganization?.provider]
+    );
+    setGitRepositoryOrganizationProvider(
+      resource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     resources,
@@ -241,6 +264,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
     createServiceWithEntitiesResult,
   };
 };
