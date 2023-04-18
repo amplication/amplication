@@ -12,6 +12,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
+import { EnumGitProvider } from "../../models";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
@@ -30,20 +31,21 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   // onGitRepositoryDisconnected,
   formik,
 }) => {
-  const {
-    currentWorkspace,
-    currentProjectConfiguration,
-    gitRepositoryUrl,
-    gitRepositoryOrganizationProvider,
-  } = useContext(AppContext);
+  const { currentProjectConfiguration } = useContext(AppContext);
   const [isOverride, setIsOverride] = useState<boolean>(
     formik.values.isOverrideGitRepository || false
   );
   const { trackEvent } = useTracking();
   const { gitRepository } = currentProjectConfiguration;
+  const gitProvider = gitRepository?.gitOrganization?.provider;
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
+
+  const gitRepositoryUrlMap = {
+    [EnumGitProvider.Github]: `https://github.com/${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`,
+    [EnumGitProvider.Bitbucket]: `https://bitbucket.org/${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`,
+  };
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
@@ -55,8 +57,8 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             ...formik.values,
             gitRepositoryName: gitRepository?.name,
             gitOrganizationId: gitRepository?.gitOrganizationId,
-            gitRepositoryUrl: gitRepositoryUrl,
-            gitProvider: gitRepositoryOrganizationProvider,
+            gitRepositoryUrl: gitRepositoryUrlMap[gitProvider],
+            gitProvider: gitProvider,
             isOverrideGitRepository: false,
           },
           true
@@ -99,6 +101,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             <div className={`${CLASS_NAME}__AuthWithGit`}>
               <hr />
               <AuthWithGit
+                gitProvider={gitProvider}
                 onDone={onDone}
                 onGitRepositorySelected={onGitRepositorySelected}
                 onGitRepositoryCreated={onGitRepositoryCreated}

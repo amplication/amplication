@@ -4,7 +4,7 @@ import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { Resource } from "../../../../models";
+import { EnumGitProvider, Resource } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
@@ -34,8 +34,14 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
+  const gitProvider =
+    resourceWithRepository.gitRepository?.gitOrganization?.provider;
+  const gitRepositoryUrlMap = {
+    [EnumGitProvider.Github]: `https://github.com/${resourceWithRepository.gitRepository?.gitOrganization?.name}/${resourceWithRepository.gitRepository?.name}`,
+    [EnumGitProvider.Bitbucket]: `https://bitbucket.org/${resourceWithRepository.gitRepository?.gitOrganization?.name}/${resourceWithRepository.gitRepository?.name}`,
+  };
   const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization.name}/${resourceWithRepository.gitRepository?.name}`;
-  const gitRepositoryUrl = `https://github.com/${gitRepositoryFullName}`;
+  const gitRepositoryUrl = gitRepositoryUrlMap[gitProvider];
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
