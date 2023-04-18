@@ -2,9 +2,8 @@ import { Snackbar } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
 import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
-import { AppContext } from "../../../../context/appContext";
 import { Resource } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
@@ -24,8 +23,6 @@ function GithubSyncDetails({
   className,
   showGitRepositoryBtn = true,
 }: Props) {
-  const { gitRepositoryUrl, gitRepositoryFullName } = useContext(AppContext);
-
   const [disconnectGitRepository, { error: disconnectErrorUpdate }] =
     useMutation(DISCONNECT_GIT_REPOSITORY, {
       variables: { resourceId: resourceWithRepository.id },
@@ -36,9 +33,9 @@ function GithubSyncDetails({
       variables: { resourceId: resourceWithRepository.id },
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
-
   const errorMessage = formatError(disconnectErrorUpdate);
-
+  const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization.name}/${resourceWithRepository.gitRepository?.name}`;
+  const gitRepositoryUrl = `https://github.com/${gitRepositoryFullName}`;
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>

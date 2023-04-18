@@ -99,8 +99,6 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
     [resource.id, trackEvent, updateResourceOverrideStatus]
   );
 
-  const isToggleDisable = currentWorkspace?.gitOrganizations?.length > 0;
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__panelWarper`}>
@@ -113,11 +111,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
             <div>Override default settings</div>
 
             <div>
-              <Toggle
-                disabled={isToggleDisable}
-                onValueChange={handleToggleChange}
-                checked={isOverride}
-              />
+              <Toggle onValueChange={handleToggleChange} checked={isOverride} />
             </div>
           </div>
           {isOverride && (

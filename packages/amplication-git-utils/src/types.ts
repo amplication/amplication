@@ -270,6 +270,7 @@ export interface CreateBranchIfNotExistsArgs {
   repositoryName: string;
   branchName: string;
   gitCli: GitCli;
+  defaultBranch: string;
   repositoryGroupName?: string;
 }
 
