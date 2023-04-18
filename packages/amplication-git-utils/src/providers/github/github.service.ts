@@ -38,6 +38,7 @@ import {
   OAuthTokens,
   CurrentUser,
   GitHubProviderOrganizationProperties,
+  Commit,
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";

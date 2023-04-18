@@ -33,7 +33,6 @@ import {
   UpdateFile,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
-import { getCloneDir } from "../utils/clone-dir";
 import { isFolderEmpty } from "../utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitCli } from "./git-cli";
@@ -137,13 +136,6 @@ export class GitClientService {
       repositoryName,
     });
 
-    const cloneDir = getCloneDir({
-      owner,
-      repositoryName,
-      provider: this.provider.name,
-      suffix: v4(),
-    });
-
     const { defaultBranch } = await this.provider.getRepository({
       owner,
       repositoryName,
@@ -162,7 +154,7 @@ export class GitClientService {
         isCloned = true;
       }
       await this.createInitialCommit({
-        cloneDir,
+        gitRepoDir,
         gitCli,
         repositoryName,
         defaultBranch,
@@ -217,7 +209,7 @@ export class GitClientService {
     }
 
     if (isCloned === true) {
-      await rm(cloneDir, { recursive: true, force: true });
+      await rm(gitRepoDir, { recursive: true, force: true });
     }
 
     return pullRequestUrl;
@@ -527,13 +519,13 @@ export class GitClientService {
   private async createInitialCommit(args: {
     repositoryName: string;
     gitCli: GitCli;
-    cloneDir: string;
+    gitRepoDir: string;
     defaultBranch: string;
   }) {
-    const { gitCli, repositoryName, cloneDir, defaultBranch } = args;
+    const { gitCli, repositoryName, gitRepoDir, defaultBranch } = args;
     const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
     const foldersToIgnore = [".git"];
-    if ((await isFolderEmpty(cloneDir, foldersToIgnore)) === false) {
+    if ((await isFolderEmpty(gitRepoDir, foldersToIgnore)) === false) {
       throw new Error(
         "The repository is not empty, crash the pull request logic to prevent data loss"
       );
