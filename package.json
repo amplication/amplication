@@ -105,7 +105,7 @@
     "kafkajs": "^1.16.0",
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
-    "minimatch": "^8.0.3",
+    "minimatch": "^9.0.0",
     "nest-access-control": "^2.2.0",
     "nest-morgan": "^1.0.1",
     "nest-winston": "^1.7.0",
