@@ -6,11 +6,12 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
+import { AppContext } from "../../../../context/appContext";
 
 type createRepositoryInput = {
   name: string;
@@ -36,6 +37,7 @@ export default function WizardGitCreateRepo({
   gitOrganizationId,
   onCreateGitRepository,
 }: Props) {
+  const { gitRepositoryUrl } = useContext(AppContext);
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
@@ -59,7 +61,7 @@ export default function WizardGitCreateRepo({
       gitProvider,
       name: createRepositoryInput.name,
       public: createRepositoryInput.public,
-      gitRepositoryUrl: `https://github.com/${createRepositoryInput.name}`,
+      gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,

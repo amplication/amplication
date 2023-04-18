@@ -5,6 +5,7 @@ import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import {
   EnumGitOrganizationType,
+  EnumGitProvider,
   EnumResourceType,
   Resource,
 } from "../../models";
@@ -13,12 +14,13 @@ import AuthResourceWithGit from "./AuthResourceWithGit";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
 import "./SyncWithGithubPage.scss";
 
-const CLASS_NAME = "sync-with-github-page";
+const CLASS_NAME = "sync-with-git-page";
 
 export type GitOrganizationFromGitRepository = {
   id: string;
   name: string;
   type: EnumGitOrganizationType;
+  provider: EnumGitProvider;
 };
 
 const SyncWithGithubPage: React.FC = () => {
@@ -89,6 +91,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
           id
           name
           type
+          provider
         }
       }
     }

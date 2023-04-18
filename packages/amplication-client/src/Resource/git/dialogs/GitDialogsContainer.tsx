@@ -8,14 +8,14 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
+import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 
 type Props = {
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   isSelectRepositoryOpen: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
-  gitOrganizationName: string;
   src: string;
   repoCreated?: {
     isRepoCreateLoading: boolean;
@@ -30,12 +30,11 @@ type Props = {
 };
 
 export default function GitDialogsContainer({
-  gitOrganizationId,
+  gitOrganization,
   isSelectRepositoryOpen,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
-  gitOrganizationName,
   repoCreated,
   src,
   onGitCreateRepository,
@@ -53,9 +52,8 @@ export default function GitDialogsContainer({
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
-          gitOrganizationId={gitOrganizationId}
+          gitOrganization={gitOrganization}
           onGitRepositoryConnected={onSelectGitRepository}
-          gitProvider={gitProvider}
         />
       </Dialog>
       <Dialog
@@ -76,15 +74,15 @@ export default function GitDialogsContainer({
           <WizardGitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
-            gitOrganizationName={gitOrganizationName}
+            gitOrganizationName={gitOrganization.name}
             onCreateGitRepository={onGitCreateRepository}
-            gitOrganizationId={gitOrganizationId}
+            gitOrganizationId={gitOrganization.id}
           ></WizardGitCreateRepo>
         ) : (
           <GitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
-            gitOrganizationName={gitOrganizationName}
+            gitOrganizationName={gitOrganization.name}
             onCreateGitRepository={onGitCreateRepository}
           />
         )}

@@ -6,7 +6,6 @@ import { AppContext } from "../../context/appContext";
 import {
   AuthorizeResourceWithGitResult,
   CreateGitRepositoryInput,
-  EnumGitProvider,
   Resource,
 } from "../../models";
 import { useTracking } from "../../util/analytics";
@@ -38,12 +37,13 @@ type Props = {
   onDone: () => void;
 };
 
-export const CLASS_NAME = "auth-app-with-github";
+export const CLASS_NAME = "auth-app-with-git";
 
 function AuthResourceWithGit({ resource, onDone }: Props) {
   const { gitRepository } = resource;
 
-  const { currentWorkspace } = useContext(AppContext);
+  const { currentWorkspace, gitRepositoryOrganizationProvider } =
+    useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
   const [gitOrganization, setGitOrganization] =
@@ -115,7 +115,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         variables: {
           name: data.name,
           gitOrganizationId: gitOrganization.id,
-          gitProvider: EnumGitProvider.Github,
+          gitProvider: gitRepositoryOrganizationProvider,
           public: data.public,
           resourceId: resource.id,
         },
@@ -150,12 +150,11 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          gitOrganizationId={gitOrganization.id}
+          gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={EnumGitProvider.Github}
-          gitOrganizationName={gitOrganization.name}
+          gitProvider={gitRepositoryOrganizationProvider}
           src={"githubPage"}
           onSelectGitRepository={(data: GitRepositorySelected) => {
             setSelectRepoOpen(false);
@@ -180,7 +179,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <NewConnection
-            provider={EnumGitProvider.Github}
+            provider={gitRepositoryOrganizationProvider}
             onSyncNewGitOrganizationClick={handleAddProviderClick}
           />
         ) : (

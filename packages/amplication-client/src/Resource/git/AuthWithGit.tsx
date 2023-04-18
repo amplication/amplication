@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
+import { AuthorizeResourceWithGitResult } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
@@ -45,7 +45,11 @@ function AuthWithGit({
   onGitRepositoryDisconnected,
   gitRepositorySelected,
 }: Props) {
-  const { currentWorkspace } = useContext(AppContext);
+  const {
+    currentWorkspace,
+    gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
+  } = useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
   const [gitOrganization, setGitOrganization] =
     useState<GitOrganizationFromGitRepository | null>(null);
@@ -107,7 +111,7 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: EnumGitProvider.Github,
+          gitProvider: gitRepositoryOrganizationProvider,
           public: data.public,
         },
         onCompleted() {
@@ -116,7 +120,8 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
-            gitRepositoryUrl: `https://github.com/${data.name}`,
+            gitRepositoryUrl: gitRepositoryUrl,
+            gitProvider: gitRepositoryOrganizationProvider,
           });
         },
       }).catch((error) => {});
@@ -172,12 +177,11 @@ function AuthWithGit({
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          gitOrganizationId={gitOrganization.id}
+          gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={EnumGitProvider.Github}
-          gitOrganizationName={gitOrganization.name}
+          gitProvider={gitRepositoryOrganizationProvider}
           src={"serviceWizard"}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
@@ -200,7 +204,7 @@ function AuthWithGit({
         {isEmpty(gitOrganizations) ? (
           <WizardNewConnection
             onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            provider={EnumGitProvider.Github}
+            provider={gitRepositoryOrganizationProvider}
           />
         ) : (
           <div>

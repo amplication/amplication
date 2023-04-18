@@ -13,7 +13,7 @@ import {
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 
-const CLASS_NAME = "service-configuration-github-settings";
+const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
   onDone: () => void;
@@ -30,8 +30,12 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   // onGitRepositoryDisconnected,
   formik,
 }) => {
-  const { currentWorkspace, currentProjectConfiguration } =
-    useContext(AppContext);
+  const {
+    currentWorkspace,
+    currentProjectConfiguration,
+    gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
+  } = useContext(AppContext);
   const [isOverride, setIsOverride] = useState<boolean>(
     formik.values.isOverrideGitRepository || false
   );
@@ -51,7 +55,8 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             ...formik.values,
             gitRepositoryName: gitRepository?.name,
             gitOrganizationId: gitRepository?.gitOrganizationId,
-            gitRepositoryUrl: `https://github.com/${gitRepository?.name}`,
+            gitRepositoryUrl: gitRepositoryUrl,
+            gitProvider: gitRepositoryOrganizationProvider,
             isOverrideGitRepository: false,
           },
           true
@@ -118,6 +123,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
                   gitOrganizationId: formik.values.gitOrganizationId,
                   repositoryName: formik.values.gitRepositoryName,
                   gitRepositoryUrl: formik.values.gitRepositoryUrl,
+                  gitProvider: formik.values.gitProvider,
                 }}
               />
             </div>
