@@ -117,7 +117,6 @@ describe("Data Service Generator", () => {
         await generateCodeByResourceData(testResourceData, directory);
 
         port = await getPort();
-        const dbPort = await getPort();
 
         host = `http://0.0.0.0:${port}`;
         ``;
@@ -150,24 +149,21 @@ describe("Data Service Generator", () => {
         });
 
         const dockerComposeDir = path.join(directory, "server");
+        const dotEnvPath = path.join(dockerComposeDir, ".env");
 
         dockerComposeOptions = {
           cwd: dockerComposeDir,
           log: verbose,
-          composeOptions: [`--project-name=e2e-${testId}`],
+          composeOptions: [
+            `--project-name=e2e-${testId}`,
+            `--env-file=${dotEnvPath}`,
+          ],
           env: {
             ...process.env,
-            DB_USER: DB_USER,
-            DB_NAME: DB_NAME,
-            DB_PASSWORD: DB_PASSWORD,
-            DB_PORT: String(dbPort),
-            PORT: String(port),
-            BCRYPT_SALT: "10",
             // // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
+            PORT: String(port),
             COMPOSE_DOCKER_CLI_BUILD: "1",
             DOCKER_BUILDKIT: "1",
-            JWT_SECRET_KEY: "Change_ME!!!",
-            JWT_EXPIRATION: "2d",
           },
         };
         logger.debug("dockerComposeOptions", { dockerComposeDir });
