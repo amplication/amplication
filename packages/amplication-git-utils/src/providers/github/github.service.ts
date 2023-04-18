@@ -5,10 +5,7 @@ import { App, Octokit } from "octokit";
 import { createPullRequest } from "octokit-plugin-create-pull-request";
 import {
   Changes,
-  File as OctokitFile,
-  TreeParameter,
   UpdateFunction,
-  UpdateFunctionFile,
 } from "octokit-plugin-create-pull-request/dist-types/types";
 import { GitProvider } from "../../git-provider.interface";
 import {
