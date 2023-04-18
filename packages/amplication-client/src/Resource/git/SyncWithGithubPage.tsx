@@ -6,6 +6,7 @@ import PageContent from "../../Layout/PageContent";
 import {
   EnumGitOrganizationType,
   EnumResourceType,
+  EnumGitProvider,
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
@@ -19,6 +20,7 @@ export type GitOrganizationFromGitRepository = {
   id: string;
   name: string;
   type: EnumGitOrganizationType;
+  provider: EnumGitProvider;
 };
 
 const SyncWithGithubPage: React.FC = () => {
@@ -89,6 +91,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
           id
           name
           type
+          provider
         }
       }
     }
