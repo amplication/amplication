@@ -18,12 +18,12 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 import { isEmpty } from "lodash";
-import NewConnection from "./GitActions/NewConnection";
 import {
   CONNECT_GIT_REPOSITORY,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -38,7 +38,7 @@ type Props = {
   onDone: () => void;
 };
 
-export const CLASS_NAME = "auth-app-with-github";
+export const CLASS_NAME = "auth-app-with-git-provider";
 
 function AuthResourceWithGit({ resource, onDone }: Props) {
   const { gitRepository } = resource;
@@ -89,7 +89,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         },
       }).catch(console.error);
     },
-    []
+    [authWithGit, trackEvent]
   );
 
   triggerOnDone = () => {
@@ -179,9 +179,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <NewConnection
-            provider={EnumGitProvider.Github}
-            onSyncNewGitOrganizationClick={handleAddProviderClick}
+          <GitProviderConnectionList
+            handleAddProviderClick={handleAddProviderClick}
           />
         ) : (
           <ExistingConnectionsMenu
