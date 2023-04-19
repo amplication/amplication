@@ -83,13 +83,6 @@ const useResources = (
     setGitRepositoryOrganizationProvider,
   ] = useState<models.EnumGitProvider>(undefined);
 
-  const gitRepositoryUrlMap = {
-    [models.EnumGitProvider
-      .Github]: `https://github.com/${gitRepositoryFullName}`,
-    [models.EnumGitProvider
-      .Bitbucket]: `https://bitbucket.org/${gitRepositoryFullName}`,
-  };
-
   const {
     data: resourcesData,
     loading: loadingResources,
