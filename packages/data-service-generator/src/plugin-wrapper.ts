@@ -29,11 +29,18 @@ const afterEventsPipe =
       Promise.resolve(modules)
     );
 
+/**
+ * DSG default behavior
+ * @param context
+ * @param func
+ * @param beforeFuncResults
+ * @returns
+ */
 const defaultBehavior = async (
   context: DsgContext,
   func: (...args: any) => any,
   beforeFuncResults: any
-) => {
+): Promise<Module[]> => {
   if (context.utils.skipDefaultBehavior) return [];
 
   return Object.prototype.toString.call(func) === "[object AsyncFunction]"
