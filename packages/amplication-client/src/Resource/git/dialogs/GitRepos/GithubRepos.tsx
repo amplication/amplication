@@ -31,6 +31,7 @@ type Props = {
   gitOrganizationId: string;
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
+  useGroupingForRepositories?: boolean;
 };
 
 export type GitRepositorySelected = {
@@ -52,6 +53,7 @@ function GitRepos({
   gitOrganizationId,
   onGitRepositoryConnected,
   gitProvider,
+  useGroupingForRepositories,
 }: Props) {
   const [page, setPage] = useState(1);
 
@@ -105,13 +107,17 @@ function GitRepos({
 
   return (
     <div className={CLASS_NAME}>
-      <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-      <Label text="Change workspace" />
-      <GitSelectMenu
-        selectedItem={repositoryGroup}
-        items={gitGroups}
-        onSelect={setRepositoryGroup}
-      />
+      {useGroupingForRepositories && (
+        <>
+          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+          <Label text="Change workspace" />
+          <GitSelectMenu
+            selectedItem={repositoryGroup}
+            items={gitGroups}
+            onSelect={setRepositoryGroup}
+          />
+        </>
+      )}
       <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
       <div className={`${CLASS_NAME}__header`}>
         <div className={`${CLASS_NAME}__header-left`}>

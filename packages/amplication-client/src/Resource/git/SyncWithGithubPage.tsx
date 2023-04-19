@@ -21,6 +21,7 @@ export type GitOrganizationFromGitRepository = {
   name: string;
   type: EnumGitOrganizationType;
   provider: EnumGitProvider;
+  useGroupingForRepositories: boolean;
 };
 
 const SyncWithGithubPage: React.FC = () => {

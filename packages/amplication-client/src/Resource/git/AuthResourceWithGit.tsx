@@ -158,6 +158,9 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
         <GitDialogsContainer
           gitOrganizationId={gitOrganization.id}
           isSelectRepositoryOpen={selectRepoOpen}
+          useGroupingForRepositories={
+            gitOrganization.useGroupingForRepositories
+          }
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           gitProvider={gitOrganization.provider}

@@ -12,6 +12,7 @@ import GitRepos, {
 type Props = {
   gitOrganizationId: string;
   isSelectRepositoryOpen: boolean;
+  useGroupingForRepositories?: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
@@ -32,6 +33,7 @@ type Props = {
 export default function GitDialogsContainer({
   gitOrganizationId,
   isSelectRepositoryOpen,
+  useGroupingForRepositories,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
@@ -56,6 +58,7 @@ export default function GitDialogsContainer({
           gitOrganizationId={gitOrganizationId}
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
+          useGroupingForRepositories={useGroupingForRepositories}
         />
       </Dialog>
       <Dialog
