@@ -1,10 +1,9 @@
 import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useState } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
 import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
-import { AppContext } from "../../context/appContext";
 import { useMutation } from "@apollo/client";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
@@ -30,7 +29,6 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   resource,
   onDone,
 }) => {
-  const { currentWorkspace } = useContext(AppContext);
   const [isOverride, setIsOverride] = useState<boolean>(
     resource.gitRepositoryOverride
   );
