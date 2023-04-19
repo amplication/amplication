@@ -1,4 +1,5 @@
 import { ObjectType, Field } from "@nestjs/graphql";
+import { Pagination } from "./Pagination";
 
 @ObjectType({
   isAbstract: true,
@@ -33,9 +34,6 @@ export class RemoteGitRepos {
   @Field(() => Number)
   total: number | null;
 
-  @Field(() => Number)
-  page: number | null;
-
-  @Field(() => Number)
-  perPage: number | null;
+  @Field(() => Pagination)
+  pagination: Pagination;
 }

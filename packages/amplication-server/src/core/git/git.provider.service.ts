@@ -22,6 +22,7 @@ import {
   GitProvidersConfiguration,
   isGitHubProviderOrganizationProperties,
   isOAuthProviderOrganizationProperties,
+  GetRepositoriesArgs,
 } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
@@ -151,9 +152,11 @@ export class GitProviderService {
       },
     });
 
-    const repositoriesArgs = {
-      perPage: args.perPage,
-      page: args.page,
+    const repositoriesArgs: GetRepositoriesArgs = {
+      pagination: {
+        page: args.page,
+        perPage: args.perPage,
+      },
       repositoryGroupName: args.repositoryGroupName,
     };
 
