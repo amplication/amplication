@@ -22,7 +22,6 @@ import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { AppContext } from "../../../../context/appContext";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10;
@@ -49,7 +48,6 @@ export type GitRepositoryCreatedData = {
 };
 
 function GitRepos({ gitOrganization, onGitRepositoryConnected }: Props) {
-  const { gitRepositoryUrl } = useContext(AppContext);
   const [page, setPage] = useState(1);
   const {
     data,
@@ -72,7 +70,7 @@ function GitRepos({ gitOrganization, onGitRepositoryConnected }: Props) {
       onGitRepositoryConnected({
         gitOrganizationId: gitOrganization.id,
         repositoryName: data.name,
-        gitRepositoryUrl: gitRepositoryUrl,
+        gitRepositoryUrl: data.url,
         gitProvider: gitOrganization.provider,
       });
     },
