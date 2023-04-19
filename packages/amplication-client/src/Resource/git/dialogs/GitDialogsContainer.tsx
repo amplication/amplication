@@ -87,7 +87,9 @@ export default function GitDialogsContainer({
           <GitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
+            gitOrganizationId={gitOrganizationId}
             gitOrganizationName={gitOrganizationName}
+            useGroupingForRepositories={useGroupingForRepositories}
             onCreateGitRepository={onGitCreateRepository}
           />
         )}

@@ -5,6 +5,8 @@
 }
 
 .repository-actions {
+  max-width: 800px;
+
   &__auth {
     margin: var(--medium-spacing) 0;
     min-height: var(--min-height-of-banner);
