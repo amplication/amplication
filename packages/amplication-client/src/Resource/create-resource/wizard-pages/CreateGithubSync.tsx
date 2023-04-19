@@ -94,7 +94,7 @@ const CreateGithubSync: React.FC<props> = ({
           text={
             <div className={`create-service-wizard-layout__description__text`}>
               Amplication automatically pushes the generated code of your
-              services to a git repository.
+              services to a Git repository.
               <br />
               You are the owner of the code and can freely customize it.
             </div>
