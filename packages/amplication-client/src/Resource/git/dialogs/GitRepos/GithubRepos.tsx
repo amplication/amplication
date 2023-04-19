@@ -125,7 +125,7 @@ function GitRepos({
                   {
                     length: Math.ceil(
                       data?.remoteGitRepositories.total /
-                        data?.remoteGitRepositories.perPage
+                        data?.remoteGitRepositories.pagination.perPage
                     ),
                   },
                   (_, index) => index + 1
