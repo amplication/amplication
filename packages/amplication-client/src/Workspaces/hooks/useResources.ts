@@ -165,12 +165,12 @@ const useResources = (
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
       setGitRepositoryFullName(
-        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+        createGitRepositoryFullName(projectConfigurationResource?.gitRepository)
       );
     setGitRepositoryUrl(
       getGitRepositoryUrlForServiceWizard(
         projectConfigurationResource?.gitRepository?.gitOrganization?.provider,
-        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+        createGitRepositoryFullName(projectConfigurationResource?.gitRepository)
       )
     );
     setGitRepositoryOrganizationProvider(
