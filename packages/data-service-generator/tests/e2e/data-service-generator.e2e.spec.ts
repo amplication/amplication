@@ -34,9 +34,6 @@ const STATUS_CREATED = 201;
 const NOT_FOUND = 404;
 
 const {
-  DB_USER,
-  DB_NAME,
-  DB_PASSWORD,
   APP_USERNAME,
   APP_PASSWORD,
   APP_DEFAULT_USER_ROLES,
@@ -64,6 +61,7 @@ const logger = new Logger({
 describe("Data Service Generator", () => {
   let dockerComposeOptions: compose.IDockerComposeOptions;
   let port: number;
+  let dbPort: number;
   let host: string;
   let customer: { id: number };
   let apolloClient: ApolloClient<any>;
@@ -117,6 +115,7 @@ describe("Data Service Generator", () => {
         await generateCodeByResourceData(testResourceData, directory);
 
         port = await getPort();
+        dbPort = await getPort();
 
         host = `http://0.0.0.0:${port}`;
         ``;
@@ -162,6 +161,7 @@ describe("Data Service Generator", () => {
             ...process.env,
             // // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
             PORT: String(port),
+            DB_PORT: String(dbPort),
             COMPOSE_DOCKER_CLI_BUILD: "1",
             DOCKER_BUILDKIT: "1",
           },
