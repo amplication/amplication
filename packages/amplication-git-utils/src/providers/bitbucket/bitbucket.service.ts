@@ -217,7 +217,10 @@ export class BitBucketService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const { repositoryGroupName, limit, page } = getRepositoriesArgs;
+    const {
+      repositoryGroupName,
+      pagination: { page, perPage },
+    } = getRepositoriesArgs;
 
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
@@ -226,7 +229,7 @@ export class BitBucketService implements GitProvider {
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       repositoryGroupName,
-      limit,
+      perPage,
       page,
       this.auth.accessToken
     );
@@ -248,8 +251,10 @@ export class BitBucketService implements GitProvider {
     return {
       repos: gitRepos,
       total: size,
-      currentPage: page,
-      pageSize: limit,
+      pagination: {
+        page,
+        perPage,
+      },
     };
   }
 

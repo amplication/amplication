@@ -1025,8 +1025,7 @@ input GitGroupInput {
 type RemoteGitRepos {
   repos: [RemoteGitRepository!]!
   total: Float!
-  currentPage: Float!
-  pageSize: Float!
+  pagination: Pagination!
 }
 
 type RemoteGitRepository {
@@ -1038,11 +1037,20 @@ type RemoteGitRepository {
   defaultBranch: String!
 }
 
+type Pagination {
+  page: Float!
+  perPage: Float!
+}
+
 input RemoteGitRepositoriesWhereUniqueInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
-  limit: Float!
-  page: Float!
+
+  """The number of items to return per page"""
+  perPage: Float! = 10
+
+  """The page number. One-based indexing"""
+  page: Float! = 1
   repositoryGroupName: String
 }
 

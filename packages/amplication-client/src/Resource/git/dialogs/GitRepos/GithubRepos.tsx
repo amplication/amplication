@@ -125,7 +125,7 @@ function GitRepos({
                   {
                     length: Math.ceil(
                       data?.remoteGitRepositories.total /
-                        data?.remoteGitRepositories.pageSize
+                        data?.remoteGitRepositories.pagination.perPage
                     ),
                   },
                   (_, index) => index + 1
@@ -207,8 +207,8 @@ const FIND_GIT_REPOS = gql`
         admin
       }
       total
-      currentPage
-      pageSize
+      page
+      perPage
     }
   }
 `;
