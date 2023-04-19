@@ -1,13 +1,20 @@
 import { Button } from "@amplication/ui/design-system";
 import React, { useCallback } from "react";
-import {} from "../../../util/analytics-events.types";
+
+import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { WizardStepProps } from "../wizard-pages/interfaces";
 import "./CreateServiceWelcome.scss";
 
 const className = "create-service-welcome";
 
-const CreateServiceWelcome: React.FC<WizardStepProps> = ({ goNextPage }) => {
+const CreateServiceWelcome: React.FC<WizardStepProps> = ({
+  goNextPage,
+  trackWizardPageEvent,
+}) => {
   const handleStart = useCallback(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ServiceWizardStep_Welcome_CTAClick
+    );
     goNextPage && goNextPage();
   }, []);
 
