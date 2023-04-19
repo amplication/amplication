@@ -148,7 +148,6 @@ export class ResourceService {
 
     let index = 1;
     while (
-      index < 10 &&
       existingResources.find((resource) => {
         return resource.name.toLowerCase() === args.data.name.toLowerCase();
       })
