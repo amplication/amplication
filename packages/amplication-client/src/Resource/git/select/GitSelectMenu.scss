@@ -1,0 +1,9 @@
+@import "../../../style/index.scss";
+
+.git-select-menu {
+  .select-menu__summary {
+    padding: 5px 4px 5px 8px;
+    border: 1px solid var(--black10);
+    background-color: var(--white);
+  }
+}

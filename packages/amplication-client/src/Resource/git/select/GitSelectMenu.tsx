@@ -7,6 +7,8 @@ import {
 } from "@amplication/ui/design-system";
 import { GitSelectMenuItemContent } from "./GitSelectMenuItemContent";
 
+import "./GitSelectMenu.scss";
+
 const CLASS_NAME = "git-select-menu";
 
 export type Props = {

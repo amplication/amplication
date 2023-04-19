@@ -1,5 +1,6 @@
 import {
   EnumButtonStyle,
+  Icon,
   Label,
   SelectMenu,
   SelectMenuItem,
@@ -15,22 +16,13 @@ import { GitOrganizationMenuAddProvider } from "./GitOrganizationMenuAddProvider
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  onAddGitOrganization: (provider: models.EnumGitProvider) => void;
+  onAddGitOrganization: () => void;
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
 };
 
 const CLASS_NAME = "git-organization-select-menu";
-
-const GIT_PROVIDERS: { provider: models.EnumGitProvider; label: string }[] = [
-  { provider: models.EnumGitProvider.Github, label: "Add GitHub Organization" },
-  // comment until we fully support Bitbucket
-  // {
-  //   provider: models.EnumGitProvider.Bitbucket,
-  //   label: "Add BitBucket Account",
-  // },
-];
 
 export default function ExistingConnectionsMenu({
   gitOrganizations,
@@ -79,15 +71,17 @@ export default function ExistingConnectionsMenu({
                   </SelectMenuItem>
                 ))}
                 <hr className={`${CLASS_NAME}__hr`} />
-                {GIT_PROVIDERS.map((provider) => (
-                  <GitOrganizationMenuAddProvider
-                    key={provider.provider}
-                    label={provider.label}
-                    provider={provider.provider}
-                    onAddGitOrganization={onAddGitOrganization}
-                    className={CLASS_NAME}
-                  />
-                ))}
+                <SelectMenuItem onSelectionChange={onAddGitOrganization}>
+                  <span>Add Organization</span>
+                  <Icon icon="plus" size="xsmall" />
+                </SelectMenuItem>
+                {/* // <GitOrganizationMenuAddProvider
+                  //   key={provider.provider}
+                  //   label={provider.label}
+                  //   provider={provider.provider}
+                  //   onAddGitOrganization={onAddGitOrganization}
+                  //   className={CLASS_NAME}
+                  // /> */}
               </>
             </SelectMenuList>
           </div>

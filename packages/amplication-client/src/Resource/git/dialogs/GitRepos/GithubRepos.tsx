@@ -8,9 +8,10 @@ import {
   SelectMenuModal,
   HorizontalRule,
   EnumHorizontalRuleStyle,
+  Label,
 } from "@amplication/ui/design-system";
 import { gql, NetworkStatus, useQuery } from "@apollo/client";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
   EnumGitProvider,
@@ -54,13 +55,20 @@ function GitRepos({
 }: Props) {
   const [page, setPage] = useState(1);
 
-  const { data: gitGroups } = useQuery(GET_GROUPS, {
+  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
     variables: {
       organizationId: gitOrganizationId,
     },
   });
 
-  const [repositoryGroup, setRepositoryGroup] = useState(gitGroups?.[0]);
+  const gitGroups = gitGroupsData?.gitGroups?.groups;
+  const [repositoryGroup, setRepositoryGroup] = useState(null);
+
+  useEffect(() => {
+    if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
+      setRepositoryGroup(gitGroups[0]);
+    }
+  }, [gitGroups]);
 
   const {
     data,
@@ -98,70 +106,71 @@ function GitRepos({
   return (
     <div className={CLASS_NAME}>
       <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-      <div className={`${CLASS_NAME}__header`}>
-        <div className={`${CLASS_NAME}__header-left`}>
-          <h4>Select {gitProvider} repository</h4>
-          {loadingRepos || networkStatus === NetworkStatus.refetch ? (
-            <CircularProgress />
-          ) : (
-            <Tooltip
-              aria-label="Refresh repositories"
-              direction="w"
-              noDelay
-              wrap
-            >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                onClick={(e) => {
-                  handleRefresh();
-                }}
-                type="button"
-                icon="refresh_cw"
-              />
-            </Tooltip>
-          )}
-        </div>
-        <div className={`${CLASS_NAME}__header-right`}>
-          <h4>Page</h4>
-          <SelectMenu
-            title={page.toString()}
-            buttonStyle={EnumButtonStyle.Secondary}
-            icon="chevron_down"
-          >
-            <SelectMenuModal>
-              <SelectMenuList>
-                {Array.from(
-                  {
-                    length: Math.ceil(
-                      data?.remoteGitRepositories.total /
-                        data?.remoteGitRepositories.pageSize
-                    ),
-                  },
-                  (_, index) => index + 1
-                ).map((item, i) => {
-                  return (
-                    <SelectMenuItem
-                      closeAfterSelectionChange
-                      selected={item === page}
-                      onSelectionChange={() => {
-                        setPage(item);
-                      }}
-                      key={i}
-                    >
-                      {item}
-                    </SelectMenuItem>
-                  );
-                })}
-              </SelectMenuList>
-            </SelectMenuModal>
-          </SelectMenu>
-        </div>
-      </div>
+      <Label text="Change workspace" />
       <GitSelectMenu
         selectedItem={repositoryGroup}
         items={gitGroups}
         onSelect={setRepositoryGroup}
       />
+      <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
+      <div className={`${CLASS_NAME}__header`}>
+        <div className={`${CLASS_NAME}__header-left`}>
+          {loadingRepos || networkStatus === NetworkStatus.refetch ? (
+            <CircularProgress />
+          ) : (
+            <>
+              <SelectMenu
+                title={page.toString()}
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="chevron_down"
+              >
+                <SelectMenuModal>
+                  <SelectMenuList>
+                    {Array.from(
+                      {
+                        length: Math.ceil(
+                          data?.remoteGitRepositories.total /
+                            data?.remoteGitRepositories.pageSize
+                        ),
+                      },
+                      (_, index) => index + 1
+                    ).map((item, i) => {
+                      return (
+                        <SelectMenuItem
+                          closeAfterSelectionChange
+                          selected={item === page}
+                          onSelectionChange={() => {
+                            setPage(item);
+                          }}
+                          key={i}
+                        >
+                          {item}
+                        </SelectMenuItem>
+                      );
+                    })}
+                  </SelectMenuList>
+                </SelectMenuModal>
+              </SelectMenu>
+              <Tooltip
+                aria-label="Refresh repositories"
+                direction="w"
+                noDelay
+                wrap
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  onClick={(e) => {
+                    handleRefresh();
+                  }}
+                  type="button"
+                  icon="refresh_cw"
+                />
+              </Tooltip>
+            </>
+          )}
+        </div>
+        <div className={`${CLASS_NAME}__header-right`}></div>
+      </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (
           <GitRepoItem

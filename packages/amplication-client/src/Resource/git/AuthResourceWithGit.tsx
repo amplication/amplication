@@ -1,4 +1,9 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as models from "../../models";
@@ -58,7 +63,18 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   }, [gitOrganizations, gitRepository?.gitOrganization]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
-  const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
+  const openSelectRepoDialog = useCallback(() => {
+    setSelectRepoOpen(true);
+  }, []);
+
+  const [createNewRepoOpen, setCreateNewRepoOpen] = useState<boolean>(false);
+  const openCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(true);
+  }, []);
+  const closeCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(false);
+  }, []);
+
   const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
   const [authWithGit, { error }] = useMutation<DType>(
@@ -73,24 +89,14 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     }
   );
 
-  const handleSelectRepoDialogOpen = useCallback(() => {
-    setSelectRepoOpen(true);
+  const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
+    useState(false);
+  const openSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(true);
   }, []);
-
-  const handleAddProviderClick = useCallback(
-    (provider: models.EnumGitProvider) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
-        provider: provider,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    },
-    [authWithGit, trackEvent]
-  );
+  const closeSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(false);
+  }, []);
 
   triggerOnDone = () => {
     onDone();
@@ -120,7 +126,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           resourceId: resource.id,
         },
         onCompleted() {
-          setCreateNewRepoOpen(false);
+          closeCreateNewRepo();
         },
       }).catch(console.error);
       trackEvent({
@@ -168,36 +174,39 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             setPopupFailed(false);
           }}
           onGitCreateRepository={handleRepoCreated}
-          onGitCreateRepositoryClose={() => {
-            setCreateNewRepoOpen(false);
-          }}
+          onGitCreateRepositoryClose={closeCreateNewRepo}
           repoCreated={{
             isRepoCreateLoading: createRepoLoading,
             RepoCreatedError: createRepoError,
           }}
         />
       )}
+      {isSelectOrganizationDialogOpen && (
+        <Dialog
+          className="git-organization-dialog"
+          isOpen={isSelectOrganizationDialogOpen}
+          onDismiss={closeSelectOrganizationDialog}
+        >
+          <GitProviderConnectionList
+            onProviderSelect={closeSelectOrganizationDialog}
+          />
+        </Dialog>
+      )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <GitProviderConnectionList
-            handleAddProviderClick={handleAddProviderClick}
-          />
+          <GitProviderConnectionList />
         ) : (
           <>
             <ExistingConnectionsMenu
               gitOrganizations={gitOrganizations}
-              onSelectGitOrganization={(organization) => {
-                setGitOrganization(organization);
-              }}
+              onSelectGitOrganization={setGitOrganization}
               selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAddProviderClick}
+              onAddGitOrganization={openSelectOrganizationDialog}
             />
 
             <RepositoryActions
-              onCreateRepository={() => {
-                setCreateNewRepoOpen(true);
-              }}
-              onSelectRepository={handleSelectRepoDialogOpen}
+              onCreateRepository={openCreateNewRepo}
+              onSelectRepository={openSelectRepoDialog}
               currentResourceWithGitRepository={resource}
               selectedGitOrganization={gitOrganization}
             />
