@@ -186,8 +186,10 @@ export class GithubService implements GitProvider {
     return {
       total: results.data.total_count,
       repos: repos,
-      perPage,
-      page,
+      pagination: {
+        perPage,
+        page,
+      },
     };
   }
 
@@ -235,7 +237,9 @@ export class GithubService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    const { perPage, page } = getRepositoriesArgs;
+    const {
+      pagination: { perPage, page },
+    } = getRepositoriesArgs;
     return await this.getRepositoriesWithPagination(perPage, page);
   }
 

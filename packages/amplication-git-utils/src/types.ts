@@ -88,6 +88,11 @@ export interface GitProviderConstructorArgs {
   installationId: string;
 }
 
+export interface Pagination {
+  page: number;
+  perPage: number;
+}
+
 export interface RemoteGitOrganization {
   name: string;
   type: EnumGitOrganizationType;
@@ -111,8 +116,7 @@ export interface RemoteGitRepository {
 export interface RemoteGitRepos {
   repos: RemoteGitRepository[];
   total: number | null;
-  page: number | null;
-  perPage: number | null;
+  pagination: Pagination;
 }
 
 export type File = {
@@ -156,8 +160,7 @@ export interface CreateRepositoryArgs {
 }
 
 export interface GetRepositoriesArgs {
-  perPage: number;
-  page: number;
+  pagination: Pagination;
   repositoryGroupName?: string;
 }
 
