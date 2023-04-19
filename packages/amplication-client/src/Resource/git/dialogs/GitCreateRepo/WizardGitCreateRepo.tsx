@@ -6,13 +6,13 @@ import {
   Toggle,
 } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useState } from "react";
 import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
-import { AppContext } from "../../../../context/appContext";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { getGitRepositoryUrlForServiceWizard } from "../../../../util/get-git-repository-url-for-service-wizard";
 
 type createRepositoryInput = {
   name: string;
@@ -50,11 +50,12 @@ export default function WizardGitCreateRepo({
         ...createRepositoryInput,
         name: event.target.value,
       });
-      const gitRepositoryUrlMap = {
-        [EnumGitProvider.Github]: `https://github.com/${gitOrganization?.name}/${event.target.value}`,
-        [EnumGitProvider.Bitbucket]: `https://bitbucket.org/${gitOrganization?.name}/${event.target.value}`,
-      };
-      setGitRepositoryUrl(gitRepositoryUrlMap[gitProvider]);
+      const gitRepositoryFullName = `${gitOrganization?.name}/${event.target.value}`;
+      const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+        gitProvider,
+        gitRepositoryFullName
+      );
+      setGitRepositoryUrl(gitRepositoryUrl);
     },
     [setCreateRepositoryInput, createRepositoryInput]
   );

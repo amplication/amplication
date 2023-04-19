@@ -10,6 +10,7 @@ import {
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
+import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -174,9 +175,10 @@ const useResources = (
         createGitRepositoryFullName(projectConfigurationResource.gitRepository)
       );
     setGitRepositoryUrl(
-      gitRepositoryUrlMap[
-        projectConfigurationResource?.gitRepository?.gitOrganization?.provider
-      ]
+      getGitRepositoryUrlForServiceWizard(
+        projectConfigurationResource?.gitRepository?.gitOrganization?.provider,
+        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+      )
     );
     setGitRepositoryOrganizationProvider(
       projectConfigurationResource?.gitRepository?.gitOrganization?.provider
@@ -202,7 +204,10 @@ const useResources = (
       createGitRepositoryFullName(resource?.gitRepository)
     );
     setGitRepositoryUrl(
-      gitRepositoryUrlMap[resource?.gitRepository?.gitOrganization?.provider]
+      getGitRepositoryUrlForServiceWizard(
+        resource?.gitRepository?.gitOrganization?.provider,
+        createGitRepositoryFullName(resource?.gitRepository)
+      )
     );
     setGitRepositoryOrganizationProvider(
       resource?.gitRepository?.gitOrganization?.provider

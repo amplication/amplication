@@ -12,7 +12,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import { EnumGitProvider } from "../../models";
+import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
@@ -42,10 +42,11 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
-  const gitRepositoryUrlMap = {
-    [EnumGitProvider.Github]: `https://github.com/${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`,
-    [EnumGitProvider.Bitbucket]: `https://bitbucket.org/${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`,
-  };
+  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
+  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+    gitProvider,
+    gitRepositoryFullName
+  );
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
@@ -57,7 +58,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             ...formik.values,
             gitRepositoryName: gitRepository?.name,
             gitOrganizationId: gitRepository?.gitOrganizationId,
-            gitRepositoryUrl: gitRepositoryUrlMap[gitProvider],
+            gitRepositoryUrl: gitRepositoryUrl,
             gitProvider: gitProvider,
             isOverrideGitRepository: false,
           },
