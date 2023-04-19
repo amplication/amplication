@@ -1,6 +1,5 @@
 import { Dialog } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
-import React from "react";
 import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
@@ -8,6 +7,8 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
+
+import "./GitDialogsContainer.scss";
 
 type Props = {
   gitOrganizationId: string;
