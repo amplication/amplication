@@ -202,7 +202,7 @@ const useResources = (
       createGitRepositoryFullName(resource?.gitRepository)
     );
     setGitRepositoryUrl(
-      gitRepositoryUrlMap[resource?.gitRepository.gitOrganization?.provider]
+      gitRepositoryUrlMap[resource?.gitRepository?.gitOrganization?.provider]
     );
     setGitRepositoryOrganizationProvider(
       resource?.gitRepository?.gitOrganization?.provider
