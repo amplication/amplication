@@ -10,7 +10,7 @@ import {
   EnumHorizontalRuleStyle,
   Label,
 } from "@amplication/ui/design-system";
-import { gql, NetworkStatus, useQuery } from "@apollo/client";
+import { gql, NetworkStatus, useLazyQuery, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
@@ -72,13 +72,10 @@ function GitRepos({
     }
   }, [gitGroups]);
 
-  const {
-    data,
-    error,
-    loading: loadingRepos,
-    refetch,
-    networkStatus,
-  } = useQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
+  const [
+    getRepos,
+    { data, error, loading: loadingRepos, refetch, networkStatus },
+  ] = useLazyQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
     variables: {
       repositoryGroupName: repositoryGroup?.name,
       gitOrganizationId,
@@ -88,6 +85,31 @@ function GitRepos({
     },
     notifyOnNetworkStatusChange: true,
   });
+
+  useEffect(() => {
+    if (useGroupingForRepositories) {
+      if (repositoryGroup) {
+        getRepos({
+          variables: {
+            repositoryGroupName: repositoryGroup.name,
+            gitOrganizationId,
+            gitProvider,
+            limit: MAX_ITEMS_PER_PAGE,
+            page: page,
+          },
+        });
+      }
+    } else {
+      getRepos({
+        variables: {
+          gitOrganizationId,
+          gitProvider,
+          limit: MAX_ITEMS_PER_PAGE,
+          page: page,
+        },
+      });
+    }
+  }, [useGroupingForRepositories, repositoryGroup]);
 
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
