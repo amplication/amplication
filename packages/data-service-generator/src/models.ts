@@ -1276,6 +1276,11 @@ export type PaginatedGitGroup = {
   total: Scalars['Float'];
 };
 
+export type Pagination = {
+  page: Scalars['Float'];
+  perPage: Scalars['Float'];
+};
+
 export type PendingChange = {
   action: EnumPendingChangeAction;
   origin: PendingChangeOrigin;
@@ -1698,8 +1703,7 @@ export enum QueryMode {
 }
 
 export type RemoteGitRepos = {
-  page: Scalars['Float'];
-  perPage: Scalars['Float'];
+  pagination: Pagination;
   repos: Array<RemoteGitRepository>;
   total: Scalars['Float'];
 };
@@ -1707,8 +1711,10 @@ export type RemoteGitRepos = {
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
-  page: Scalars['Float'];
-  perPage: Scalars['Float'];
+  /** The page number. One-based indexing */
+  page?: Scalars['Float'];
+  /** The number of items to return per page */
+  perPage?: Scalars['Float'];
   repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
