@@ -1,11 +1,12 @@
 import React, { useCallback } from "react";
 import "../CreateServiceWizard.scss";
-
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
-
 import authModuleImage from "../../../assets/images/auth-module.svg";
+import ImgSvg from "./ImgSvg";
+
+const AuthCoreSvg = ImgSvg(authModuleImage);
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback(
@@ -33,7 +34,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
         <Layout.SelectorWrapper>
           <LabelDescriptionSelector
             name="core"
-            image={authModuleImage}
+            image={AuthCoreSvg}
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
