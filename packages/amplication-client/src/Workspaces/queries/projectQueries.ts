@@ -26,6 +26,9 @@ export const GET_PROJECTS = gql`
           id
           name
           gitOrganizationId
+          gitOrganization {
+            provider
+          }
         }
       }
       createdAt

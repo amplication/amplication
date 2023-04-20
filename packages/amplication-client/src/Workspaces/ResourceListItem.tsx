@@ -58,7 +58,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const lastBuild = resource.builds[0];
 
-  const gitHubRepo = gitRepository
+  const gitRepo = gitRepository
     ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
     : undefined;
 
@@ -105,20 +105,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__github`}>
+            <div className={`${CLASS_NAME}__git-sync`}>
               <span
-                className={classNames(`${CLASS_NAME}__github-repo`, {
-                  [`${CLASS_NAME}__github-repo--not-connected`]: !gitHubRepo,
+                className={classNames(`${CLASS_NAME}__git-sync-repo`, {
+                  [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
                 })}
               >
                 <Icon
-                  icon="github"
+                  icon="git-sync"
                   size="small"
-                  className={`${CLASS_NAME}__github-repo__icon${
-                    !gitHubRepo ? "-not-connected" : ""
+                  className={`${CLASS_NAME}__git-sync-repo__icon${
+                    !gitRepo ? "-not-connected" : ""
                   }`}
                 />
-                <span>{gitHubRepo ? gitHubRepo : "Not connected"}</span>
+                <span>{gitRepo ? gitRepo : "Not connected"}</span>
               </span>
             </div>
             <span className="spacer" />

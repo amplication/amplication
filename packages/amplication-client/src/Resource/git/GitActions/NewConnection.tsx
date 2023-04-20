@@ -19,7 +19,7 @@ export default function NewConnection({
     <Button
       buttonStyle={EnumButtonStyle.Primary}
       onClick={handleClick}
-      icon="github"
+      icon="git-sync"
     >
       {`Connect to ${provider}`}
     </Button>

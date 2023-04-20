@@ -3,7 +3,7 @@ import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
+import { AuthorizeResourceWithGitResult } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
@@ -18,6 +18,7 @@ import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardReposi
 import WizardNewConnection from "./GitActions/WizardNewConnection";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import * as models from "../../models";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -28,6 +29,7 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
+  gitProvider: models.EnumGitProvider;
   onDone: () => void;
   onGitRepositorySelected: (data: GitRepositorySelected) => void;
   onGitRepositoryCreated: (data: GitRepositoryCreatedData) => void;
@@ -38,6 +40,7 @@ type Props = {
 export const CLASS_NAME = "auth-with-git";
 
 function AuthWithGit({
+  gitProvider,
   onDone,
   onGitRepositorySelected,
   onGitRepositoryCreated,
@@ -106,7 +109,7 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: EnumGitProvider.Github,
+          gitProvider: gitProvider,
           public: data.public,
         },
         onCompleted() {
@@ -115,7 +118,8 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
-            gitRepositoryUrl: `https://github.com/${data.name}`,
+            gitRepositoryUrl: data.gitRepositoryUrl,
+            gitProvider: gitProvider,
           });
         },
       }).catch((error) => {});
@@ -139,16 +143,20 @@ function AuthWithGit({
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: "Github",
-      },
-    }).catch(console.error);
-  }, [authWithGit, trackEvent]);
+  const handleAuthWithGitClick = useCallback(
+    (provider: models.EnumGitProvider) => {
+      trackEvent({
+        eventName: AnalyticsEventNames.AddGitProviderClick,
+        provider,
+      });
+      authWithGit({
+        variables: {
+          gitProvider: provider,
+        },
+      }).catch(console.error);
+    },
+    [authWithGit, trackEvent]
+  );
 
   triggerOnDone = () => {
     onDone();
@@ -167,12 +175,11 @@ function AuthWithGit({
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          gitOrganizationId={gitOrganization.id}
+          gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={EnumGitProvider.Github}
-          gitOrganizationName={gitOrganization.name}
+          gitProvider={gitProvider}
           src={"serviceWizard"}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
@@ -195,7 +202,7 @@ function AuthWithGit({
         {isEmpty(gitOrganizations) ? (
           <WizardNewConnection
             onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            provider={EnumGitProvider.Github}
+            provider={gitProvider}
           />
         ) : (
           <div>

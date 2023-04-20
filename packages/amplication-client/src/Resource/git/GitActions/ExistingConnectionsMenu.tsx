@@ -23,13 +23,13 @@ type Props = {
 
 const CLASS_NAME = "git-organization-select-menu";
 
+// should be removed after creating a modal for adding a new git organization for a selected provider
 const GIT_PROVIDERS: { provider: models.EnumGitProvider; label: string }[] = [
   { provider: models.EnumGitProvider.Github, label: "Add GitHub Organization" },
-  // comment until we fully support Bitbucket
-  // {
-  //   provider: models.EnumGitProvider.Bitbucket,
-  //   label: "Add BitBucket Account",
-  // },
+  {
+    provider: models.EnumGitProvider.Bitbucket,
+    label: "Add BitBucket Account",
+  },
 ];
 
 export default function ExistingConnectionsMenu({

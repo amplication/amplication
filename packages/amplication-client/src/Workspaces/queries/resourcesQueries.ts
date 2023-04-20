@@ -21,6 +21,7 @@ export const GET_RESOURCES = gql`
           id
           name
           type
+          provider
         }
       }
       builds(orderBy: { createdAt: Desc }, take: 1) {

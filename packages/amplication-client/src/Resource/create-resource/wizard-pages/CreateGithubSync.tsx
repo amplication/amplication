@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "../../../context/appContext";
 import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
@@ -10,8 +10,9 @@ import {
 import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
+import { getGitRepositoryUrlForServiceWizard } from "../../../util/get-git-repository-url-for-service-wizard";
 
-const className = "create-github-sync";
+const className = "create-git-sync";
 
 type props = {
   defineUser: DefineUser;
@@ -26,11 +27,17 @@ const CreateGithubSync: React.FC<props> = ({
     useContext(AppContext);
 
   const { gitRepository } = currentProjectConfiguration;
-
+  const gitProvider = gitRepository?.gitOrganization?.provider;
+  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
+  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+    gitProvider,
+    gitRepositoryFullName
+  );
   const projectConfigGitRepository = {
     gitOrganizationId: gitRepository?.gitOrganizationId,
     repositoryName: gitRepository?.name,
-    gitRepositoryUrl: `https://github.com/${gitRepository?.name}`,
+    gitRepositoryUrl: gitRepositoryUrl,
+    gitProvider: gitProvider,
   };
 
   useEffect(() => {
@@ -45,6 +52,7 @@ const CreateGithubSync: React.FC<props> = ({
         gitRepositoryName: projectConfigGitRepository?.repositoryName,
         gitOrganizationId: projectConfigGitRepository?.gitOrganizationId,
         gitRepositoryUrl: projectConfigGitRepository?.gitRepositoryUrl,
+        gitProvider: projectConfigGitRepository?.gitProvider,
       },
       true
     );
@@ -62,6 +70,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitRepositoryName: data.repositoryName,
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
+          gitProvider: data.gitProvider,
         },
         true
       );
@@ -78,6 +87,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitRepositoryName: data.name,
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
+          gitProvider: data.gitProvider,
         },
         true
       );
@@ -105,6 +115,7 @@ const CreateGithubSync: React.FC<props> = ({
         <div className={`${className}__github_box`}>
           {defineUser === "Onboarding" ? (
             <AuthWithGit
+              gitProvider={gitProvider}
               onDone={handleOnDone}
               onGitRepositorySelected={handleOnGitRepositorySelected}
               onGitRepositoryCreated={handleOnGitRepositoryCreated}
@@ -123,6 +134,7 @@ const CreateGithubSync: React.FC<props> = ({
                 gitOrganizationId: formik.values.gitOrganizationId,
                 repositoryName: formik.values.gitRepositoryName,
                 gitRepositoryUrl: formik.values.gitRepositoryUrl,
+                gitProvider: formik.values.gitProvider,
               }}
             ></AuthWithGit>
           ) : (

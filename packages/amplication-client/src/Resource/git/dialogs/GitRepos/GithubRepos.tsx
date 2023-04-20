@@ -9,9 +9,8 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
 } from "@amplication/ui/design-system";
-import { gql, NetworkStatus, useMutation, useQuery } from "@apollo/client";
-import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import React, { useCallback, useState } from "react";
+import { gql, NetworkStatus, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
   EnumGitProvider,
@@ -19,24 +18,24 @@ import {
   RemoteGitRepos,
   EnumGitOrganizationType,
 } from "../../../../models";
-import { useTracking } from "../../../../util/analytics";
 import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 
 const CLASS_NAME = "git-repos";
-const MAX_ITEMS_PER_PAGE = 10; // aligned with server for both github and bitbucket
+const MAX_ITEMS_PER_PAGE = 10;
 
 type Props = {
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
-  gitProvider: EnumGitProvider;
 };
 
 export type GitRepositorySelected = {
   gitOrganizationId: string;
   repositoryName: string;
   gitRepositoryUrl?: string;
+  gitProvider: EnumGitProvider;
 };
 
 export type GitRepositoryCreatedData = {
@@ -48,11 +47,7 @@ export type GitRepositoryCreatedData = {
   gitRepositoryUrl?: string;
 };
 
-function GitRepos({
-  gitOrganizationId,
-  onGitRepositoryConnected,
-  gitProvider,
-}: Props) {
+function GitRepos({ gitOrganization, onGitRepositoryConnected }: Props) {
   const [page, setPage] = useState(1);
   const {
     data,
@@ -62,8 +57,8 @@ function GitRepos({
     networkStatus,
   } = useQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
     variables: {
-      gitOrganizationId,
-      gitProvider,
+      gitOrganizationId: gitOrganization.id,
+      gitProvider: gitOrganization.provider,
       limit: MAX_ITEMS_PER_PAGE,
       page: page,
     },
@@ -73,12 +68,13 @@ function GitRepos({
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
       onGitRepositoryConnected({
-        gitOrganizationId: gitOrganizationId,
+        gitOrganizationId: gitOrganization.id,
         repositoryName: data.name,
-        gitRepositoryUrl: `https://github.com/${data.name}`,
+        gitRepositoryUrl: data.url,
+        gitProvider: gitOrganization.provider,
       });
     },
-    [gitOrganizationId, onGitRepositoryConnected]
+    [gitOrganization.id, onGitRepositoryConnected]
   );
   const handleRefresh = useCallback(() => {
     refetch();
@@ -91,7 +87,7 @@ function GitRepos({
       <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
       <div className={`${CLASS_NAME}__header`}>
         <div className={`${CLASS_NAME}__header-left`}>
-          <h4>Select {gitProvider} repository</h4>
+          <h4>Select {gitOrganization.provider} repository</h4>
           {loadingRepos || networkStatus === NetworkStatus.refetch ? (
             <CircularProgress />
           ) : (
