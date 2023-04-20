@@ -103,7 +103,8 @@ export class WebhookService {
       });
     } catch (error) {
       this.logger.error(
-        `failed to createWebhooksMessage: verifyAndReceive, error: ${error}`,
+        `failed to createWebhooksMessage: verifyAndReceive`,
+        error,
         { class: WebhookService.name, id },
       );
       return false;
@@ -151,7 +152,9 @@ export class WebhookService {
     try {
       res = parseInt(value);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error, {
+        className: WebhookService.name,
+      });
     }
     return res;
   }

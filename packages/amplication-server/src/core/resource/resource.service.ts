@@ -413,7 +413,7 @@ export class ResourceService {
           user
         );
       } catch (error) {
-        console.log({ error });
+        this.logger.error(error.message, error);
       }
     }
 
