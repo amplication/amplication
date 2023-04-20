@@ -10,13 +10,6 @@ export {
   EnumMessagePatternConnectionOptions,
 } from "./models";
 
-export type WorkerResult = {
-  done: boolean;
-  message?: string;
-  modules?: Module[];
-  error?: any;
-};
-
 export type ServiceSettings = Omit<
   BlockOmittedFields<models.ServiceSettings>,
   "id"
