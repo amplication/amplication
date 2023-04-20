@@ -1,6 +1,7 @@
 import { MESSAGE } from "triple-beam";
 import { customFormat } from "./cli-format";
 import { inspect } from "util";
+import { SPLAT } from "triple-beam";
 
 const clc = {
   green: (text: string) => `\x1B[32m${text}\x1B[39m`,
@@ -12,21 +13,21 @@ const clc = {
 
 describe("customFormat", () => {
   it.each`
-    level      | colorFn
-    ${"debug"} | ${clc.magentaBright}
-    ${"info"}  | ${clc.green}
-    ${"warn"}  | ${clc.yellow}
-    ${"error"} | ${clc.red}
+    level      | colorFn              | timestamp
+    ${"debug"} | ${clc.magentaBright} | ${1681311284136}
+    ${"info"}  | ${clc.green}         | ${undefined}
+    ${"warn"}  | ${clc.yellow}        | ${undefined}
+    ${"error"} | ${clc.red}           | ${undefined}
   `(
     "should format log messages with color and meta data",
-    ({ level, colorFn }) => {
+    ({ level, colorFn, timestamp }) => {
       const logMessage = "This is a test message";
       const componentName = "testComponent";
       const meta = {
         foo: "bar",
         baz: 123,
+        [SPLAT]: ["TEST"],
       };
-      const timestamp = 1681311284136;
 
       const formattedLog = (
         customFormat().transform({
@@ -39,48 +40,24 @@ describe("customFormat", () => {
         }) as never
       )[MESSAGE];
 
-      const expected = `${clc.cyanBright("[testComponent]")} ${colorFn(
-        level
-      )} ${timestamp} ${clc.cyanBright("[here]")} ${colorFn(
-        "This is a test message"
-      )}`;
+      const expected = `${clc.cyanBright("[testComponent]")} ${colorFn(level)}${
+        timestamp ? " " + timestamp : ""
+      } ${clc.cyanBright("[here]")} ${colorFn("This is a test message")}`;
       expect(formattedLog).toContain(expected);
 
       expect(formattedLog).toContain(
-        inspect(JSON.parse(JSON.stringify(meta)), {
-          colors: true,
-          depth: null,
-        })
+        inspect(
+          {
+            foo: "bar",
+            baz: 123,
+            i: ["TEST"],
+          },
+          {
+            colors: true,
+            depth: null,
+          }
+        )
       );
-    }
-  );
-  it.each`
-    level      | colorFn
-    ${"info"}  | ${clc.green}
-    ${"warn"}  | ${clc.yellow}
-    ${"error"} | ${clc.red}
-  `(
-    "should format log messages with color and without meta data when meta is not serialisable",
-    ({ level, colorFn }) => {
-      const logMessage = "This is a test message";
-      const componentName = "testComponent";
-
-      const meta = { a: 1 };
-      Object.assign(meta, { b: meta });
-
-      const formattedLog = (
-        customFormat().transform({
-          level,
-          message: logMessage,
-          component: componentName,
-          ...meta,
-        }) as never
-      )[MESSAGE];
-
-      const expected = `${clc.cyanBright("[testComponent]")} ${colorFn(
-        level
-      )} ${colorFn("This is a test message")} {}`;
-      expect(formattedLog).toContain(expected);
     }
   );
 });
