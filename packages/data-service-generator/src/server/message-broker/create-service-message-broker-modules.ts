@@ -8,7 +8,7 @@ import { createMessageBrokerClientOptions } from "./generate-message-broker-clie
 import { createMessageBrokerModule } from "./message-broker-module/create-message-broker-module";
 import { createMessageBrokerServiceModules } from "./message-broker-service/create-message-broker-service";
 import { createTopicsEnum } from "./topics-enum/createTopicsEnum";
-import { logger } from "../../logging";
+import DsgContext from "../../dsg-context";
 
 export async function createMessageBroker(
   eventParams: CreateMessageBrokerParams
@@ -29,12 +29,12 @@ export async function createMessageBrokerInternal(
   const serviceModules = await createMessageBrokerServiceModules();
   const topicsEnum = await createTopicsEnum({});
 
-  const messageBrokerModules = new ModuleMap();
+  const messageBrokerModules = new ModuleMap(DsgContext.getInstance.logger);
 
-  messageBrokerModules.merge(generateMessageBrokerClientOptionsModule, logger);
-  messageBrokerModules.merge(messageBrokerModule, logger);
-  messageBrokerModules.merge(serviceModules, logger);
-  topicsEnum && messageBrokerModules.merge(topicsEnum, logger);
+  await messageBrokerModules.merge(generateMessageBrokerClientOptionsModule);
+  await messageBrokerModules.merge(messageBrokerModule);
+  await messageBrokerModules.merge(serviceModules);
+  topicsEnum && (await messageBrokerModules.merge(topicsEnum));
 
   return messageBrokerModules;
 }

@@ -124,9 +124,9 @@ export async function createControllerModules(
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
-
-  return new ModuleMap([
-    ...(await pluginWrapper(
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.mergeMany([
+    await pluginWrapper(
       createControllerModule,
       EventNames.CreateEntityController,
       {
@@ -137,8 +137,8 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
       }
-    )),
-    ...(await pluginWrapper(
+    ),
+    await pluginWrapper(
       createControllerBaseModule,
       EventNames.CreateEntityControllerBase,
       {
@@ -151,8 +151,10 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
       }
-    )),
+    ),
   ]);
+
+  return moduleMap;
 }
 
 async function createControllerModule({
@@ -191,7 +193,10 @@ async function createControllerModule({
     path: modulePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 async function createControllerBaseModule({
@@ -300,7 +305,10 @@ async function createControllerBaseModule({
     path: moduleBasePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 export function createControllerId(entityType: string): namedTypes.Identifier {
@@ -409,5 +417,5 @@ async function createToManyRelationMethodsInternal(
 
   eventParams.methods = await getMethods(classDeclaration);
 
-  return new ModuleMap();
+  return new ModuleMap(DsgContext.getInstance.logger);
 }

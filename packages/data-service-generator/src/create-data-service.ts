@@ -1,8 +1,4 @@
-import {
-  DSGResourceData,
-  Module,
-  ModuleMap,
-} from "@amplication/code-gen-types";
+import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import normalize from "normalize-path";
 import { createAdminModules } from "./admin/create-admin";
 import DsgContext from "./dsg-context";
@@ -15,7 +11,7 @@ export async function createDataService(
   dSGResourceData: DSGResourceData,
   internalLogger: ILogger,
   pluginInstallationPath?: string
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
@@ -45,15 +41,14 @@ export async function createDataService(
     const { generateAdminUI } = adminUISettings;
 
     const adminUIModules =
-      (generateAdminUI && (await createAdminModules())) || new ModuleMap();
+      (generateAdminUI && (await createAdminModules())) ||
+      new ModuleMap(context.logger);
 
     const modules = serverModules;
-    modules.merge(adminUIModules, logger);
+    await modules.merge(adminUIModules);
 
     // This code normalizes the path of each module to always use Unix path separator.
-    modules.forEach((module) => {
-      module.path = normalize(module.path);
-    });
+    await modules.replaceModulesPath((path) => normalize(path));
 
     const endTime = Date.now();
     internalLogger.info("Application creation time", {
@@ -62,7 +57,7 @@ export async function createDataService(
 
     internalLogger.info("App generation process finished successfully");
 
-    return Array.from(modules.values());
+    return modules;
   } catch (error) {
     await internalLogger.error("Failed to run createDataService", {
       ...error,

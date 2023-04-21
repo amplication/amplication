@@ -7,12 +7,13 @@ import {
 } from "@amplication/code-gen-types";
 import { createDTOFile } from "../server/resource/dto/create-dto-module";
 import { getNamedProperties } from "../utils/ast";
+import DsgContext from "../dsg-context";
 
-export function createDTOModules(
+export async function createDTOModules(
   dtos: DTOs,
   dtoNameToPath: Record<string, string>
-): ModuleMap {
-  const modules = new ModuleMap();
+): Promise<ModuleMap> {
+  const modules = new ModuleMap(DsgContext.getInstance.logger);
 
   const serverDtos = Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs)
@@ -22,7 +23,7 @@ export function createDTOModules(
     const dto = transformServerDTOToClientDTO(serverDTO);
     const modulePath = dtoNameToPath[dto.id.name];
     const file = createDTOFile(dto, modulePath, dtoNameToPath);
-    modules.set(modulePath, {
+    await modules.set(modulePath, {
       path: modulePath,
       code: print(file).code,
     });

@@ -38,12 +38,12 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
-  modulesFiles: Module[]
+  modulesFiles: ModuleMap
 ): Promise<ModuleMap> {
   const template = await readFile(appModuleTemplatePath);
-  const nestModules = modulesFiles.filter((module) =>
-    module.path.match(MODULE_PATTERN)
-  );
+  const nestModules = modulesFiles
+    .modules()
+    .filter((module) => module.path.match(MODULE_PATTERN));
 
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
@@ -99,9 +99,9 @@ export async function createAppModuleInternal({
 }: CreateServerAppModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
-  const nestModules = modulesFiles.filter((module) =>
-    module.path.match(MODULE_PATTERN)
-  );
+  const nestModules = modulesFiles
+    .modules()
+    .filter((module) => module.path.match(MODULE_PATTERN));
 
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
@@ -136,5 +136,7 @@ export async function createAppModuleInternal({
     path: MODULE_PATH,
     code: print(template).code,
   };
-  return new ModuleMap([[appModule.path, appModule]]);
+  const appModuleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await appModuleMap.set(appModule.path, appModule);
+  return appModuleMap;
 }

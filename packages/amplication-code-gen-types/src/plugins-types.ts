@@ -3,7 +3,6 @@ import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
-  Module,
   ModuleMap,
   serverDirectories,
 } from "./code-gen-types";

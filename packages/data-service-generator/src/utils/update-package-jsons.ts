@@ -1,5 +1,6 @@
-import { Module, ModuleMap } from "@amplication/code-gen-types";
-import { preparePackageJsonFile } from "./preparePackageJsonFile";
+import { ModuleMap } from "@amplication/code-gen-types";
+import { merge } from "lodash";
+import * as semver from "semver";
 
 /**
  * Update package.json and package-lock.json modules in given modules with the
@@ -8,27 +9,31 @@ import { preparePackageJsonFile } from "./preparePackageJsonFile";
  * @param baseDirectory the base directory of the modules paths
  * @param update the update to apply to the package files
  */
-export function updatePackageJSONs(
+export async function updatePackageJSONs(
   modules: ModuleMap,
   baseDirectory: string,
   update: { [key: string]: any }[]
-): ModuleMap {
-  const moduleMap = new ModuleMap();
-  modules.forEach((module) => {
-    const updatedModule = updatePackageJSON(module, update);
-    moduleMap.set(updatedModule.path, updatedModule);
-  });
-  return moduleMap;
+): Promise<ModuleMap> {
+  await modules.replaceModulesCode((code) =>
+    preparePackageJsonFile(code, update)
+  );
+
+  return modules;
 }
 
-function updatePackageJSON(
-  module: Module,
-  update: { [key: string]: any }[]
-): Module {
-  const pkg = preparePackageJsonFile(module, update);
+function preparePackageJsonFile(
+  code: string,
+  updateProperties: { [key: string]: any }[]
+): any {
+  const parsedPkg = JSON.parse(code);
+  updateProperties &&
+    updateProperties.forEach((updateProperty) =>
+      merge(parsedPkg, updateProperty)
+    );
 
-  return {
-    ...module,
-    code: pkg,
-  };
+  if (!semver.valid(parsedPkg.version)) {
+    delete parsedPkg.version;
+  }
+
+  return JSON.stringify(parsedPkg, null, 2);
 }

@@ -7,7 +7,7 @@ import DsgContext from "../../dsg-context";
 const indexHTMLPath = path.join(__dirname, "index.template.html");
 
 export async function createPublicFiles(): Promise<ModuleMap> {
-  const publicFilesModules = new ModuleMap();
+  const publicFilesModules = new ModuleMap(DsgContext.getInstance.logger);
   const manifestModule = createManifestModule();
   const indexHTMLModule = await createIndexHTMLModule();
   publicFilesModules.set(manifestModule.path, manifestModule);

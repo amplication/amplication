@@ -8,6 +8,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../plugin-wrapper";
+import DsgContext from "../dsg-context";
 
 const filesToFilter = /(\._.*)|(.DS_Store)$/;
 
@@ -53,9 +54,9 @@ export async function readStaticModulesInner({
         code: await fs.promises.readFile(module, "utf-8"),
       }))
   );
-  const moduleMap: ModuleMap = new ModuleMap();
-  for (const module of modules) {
-    moduleMap.set(module.path, module);
+  const moduleMap: ModuleMap = new ModuleMap(DsgContext.getInstance.logger);
+  for await (const module of modules) {
+    await moduleMap.set(module.path, module);
   }
   return moduleMap;
 }
@@ -70,27 +71,23 @@ export async function readPluginStaticModules(
     dot: true,
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
-  const modules = await Promise.all(
-    staticModules
-      .sort()
-      .filter(
-        (module) =>
-          !filesToFilter.test(
-            module.replace(directory, basePath ? basePath + "/" : "")
-          )
-      )
-      .map(
-        async (module) =>
-          <Module>{
-            path: module.replace(directory, basePath ? basePath + "/" : ""),
-            code: await fs.promises.readFile(module, "utf-8"),
-          }
-      )
-  );
 
-  const moduleMap: ModuleMap = new ModuleMap();
-  for (const module of modules) {
-    moduleMap.set(module.path, module);
+  const moduleMap: ModuleMap = new ModuleMap(DsgContext.getInstance.logger);
+
+  for await (const module of staticModules
+    .sort()
+    .filter(
+      (module) =>
+        !filesToFilter.test(
+          module.replace(directory, basePath ? basePath + "/" : "")
+        )
+    )) {
+    const file: Module = {
+      path: module.replace(directory, basePath ? basePath + "/" : ""),
+      code: await fs.promises.readFile(module, "utf-8"),
+    };
+    await moduleMap.set(file.path, file);
   }
+
   return moduleMap;
 }

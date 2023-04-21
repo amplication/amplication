@@ -20,7 +20,7 @@ class DsgContext implements types.DsgContext {
   public entities: types.Entity[] = [];
   public buildId: string;
   public roles: types.Role[] = [];
-  public modules: types.ModuleMap = new types.ModuleMap();
+  public modules: types.ModuleMap;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};
@@ -55,6 +55,7 @@ class DsgContext implements types.DsgContext {
   private constructor() {
     //prevent external code from creating instances of the context
     this.logger = new BuildLogger();
+    this.modules = new types.ModuleMap(this.logger);
   }
 
   public get resourceInfo(): types.AppInfo {

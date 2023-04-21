@@ -49,9 +49,11 @@ async function createAdminUIPackageJsonInternal({
       PACKAGE_JSON_ENCODING
     ),
   };
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.set(packageJsonModule.path, packageJsonModule);
 
-  const mutatedPackageJson = updatePackageJSONs(
-    new ModuleMap([[packageJsonModule.path, packageJsonModule]]),
+  const mutatedPackageJson = await updatePackageJSONs(
+    moduleMap,
     clientDirectories.baseDirectory,
     updateProperties
   );

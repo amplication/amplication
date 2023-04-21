@@ -53,5 +53,7 @@ export async function createGitIgnoreInternal({
     code: formattedGitignore,
   };
 
-  return new ModuleMap([[module.path, module]]);
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }

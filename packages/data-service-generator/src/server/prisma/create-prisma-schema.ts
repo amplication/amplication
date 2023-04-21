@@ -67,7 +67,10 @@ export async function createPrismaSchemaInternal({
     code: await PrismaSchemaDSL.print(schema),
   };
 
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 export function createPrismaEnum(

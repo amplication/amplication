@@ -7,7 +7,6 @@ import {
 } from "@amplication/code-gen-types";
 import util from "node:util";
 import DsgContext from "./dsg-context";
-import { logger } from "./logging";
 
 export type PluginWrapper = (
   func: (...args: any) => ModuleMap | Promise<ModuleMap>,
@@ -43,7 +42,8 @@ const defaultBehavior = async (
   func: (...args: any) => any,
   beforeFuncResults: any
 ): Promise<ModuleMap> => {
-  if (context.utils.skipDefaultBehavior) return new ModuleMap();
+  if (context.utils.skipDefaultBehavior)
+    return new ModuleMap(DsgContext.getInstance.logger);
 
   return util.types.isAsyncFunction(func)
     ? await func(beforeFuncResults)
@@ -90,7 +90,7 @@ const pluginWrapper: PluginWrapper = async (
         )
       : defaultBehaviorModules;
 
-    context.modules.merge(finalModules, logger);
+    await context.modules.merge(finalModules);
     return finalModules;
   } catch (error) {
     const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;

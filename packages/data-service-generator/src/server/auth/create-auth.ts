@@ -4,6 +4,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../../plugin-wrapper";
+import DsgContext from "../../dsg-context";
 
 /**
  *
@@ -14,7 +15,7 @@ export function createAuthModules(
   eventParams: CreateServerAuthParams = {}
 ): Promise<ModuleMap> {
   return pluginWrapper(
-    () => new ModuleMap(),
+    () => new ModuleMap(DsgContext.getInstance.logger),
     EventNames.CreateServerAuth,
     eventParams
   );

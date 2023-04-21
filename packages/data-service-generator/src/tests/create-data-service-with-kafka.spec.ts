@@ -70,11 +70,13 @@ describe("createDataService", () => {
       ],
     };
     const modules = await createDataService(service, MockedLogger);
-    const modulesToSnapshot = modules.filter((module) =>
-      MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-        module.path.endsWith(extension)
-      )
-    );
+    const modulesToSnapshot = modules
+      .modules()
+      .filter((module) =>
+        MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
+          module.path.endsWith(extension)
+        )
+      );
     const pathToCode = Object.fromEntries(
       modulesToSnapshot.map((module) => [module.path, module.code])
     );

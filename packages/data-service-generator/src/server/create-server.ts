@@ -1,6 +1,5 @@
 import * as path from "path";
 import {
-  Module,
   EventNames,
   CreateServerParams,
   ModuleMap,
@@ -80,29 +79,24 @@ async function createServerInternal(
 
   await context.logger.info("Creating application module...");
 
-  const appModule = await createAppModule([
-    ...Array.from(resourcesModules.values()),
-    ...Array.from(staticModules.values()),
-  ]);
+  const appModuleInputModules = new ModuleMap(context.logger);
+  await appModuleInputModules.mergeMany([resourcesModules, staticModules]);
+  const appModule = await createAppModule(appModuleInputModules);
 
-  const createdModules = new ModuleMap([
-    ...resourcesModules,
-    ...dtoModules,
-    ...swagger,
-    ...appModule,
-    ...seedModule,
-    ...authModules,
-    ...messageBrokerModules,
+  const createdModules = new ModuleMap(context.logger);
+  await createdModules.mergeMany([
+    resourcesModules,
+    dtoModules,
+    swagger,
+    appModule,
+    seedModule,
+    authModules,
+    messageBrokerModules,
   ]);
 
   await context.logger.info("Formatting code...");
-  createdModules.forEach((module) => {
-    module.code = formatCode(module.code);
-  });
-
-  packageJsonModule.forEach((module) => {
-    module.code = formatJson(module.code);
-  });
+  await createdModules.replaceModulesCode((code) => formatCode(code));
+  await packageJsonModule.replaceModulesCode((code) => formatJson(code));
 
   await context.logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
@@ -116,14 +110,16 @@ async function createServerInternal(
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDBFile = await createDockerComposeDBFile();
 
-  return new ModuleMap([
-    ...staticModules,
-    ...gitIgnore,
-    ...packageJsonModule,
-    ...createdModules,
-    ...prismaSchemaModule,
-    ...dotEnvModule,
-    ...dockerComposeFile,
-    ...dockerComposeDBFile,
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.mergeMany([
+    staticModules,
+    gitIgnore,
+    packageJsonModule,
+    createdModules,
+    prismaSchemaModule,
+    dotEnvModule,
+    dockerComposeFile,
+    dockerComposeDBFile,
   ]);
+  return moduleMap;
 }

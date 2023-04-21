@@ -13,20 +13,14 @@ import { createEntityControllerSpec } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
-import { logger } from "../../logging";
 
 export async function createResourcesModules(
   entities: Entity[]
 ): Promise<ModuleMap> {
-  const resourceModules = new ModuleMap();
-
-  const resourceModuleMaps = await Promise.all(
-    entities.map(createResourceModules)
-  );
-
-  resourceModuleMaps.forEach((resourceModuleMap) => {
-    resourceModules.merge(resourceModuleMap, logger);
-  });
+  const resourceModules = new ModuleMap(DsgContext.getInstance.logger);
+  for await (const entity of entities) {
+    await resourceModules.merge(await createResourceModules(entity));
+  }
 
   return resourceModules;
 }
@@ -54,7 +48,7 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
     delegateId
   );
 
-  const [serviceModule] = serviceModules.values();
+  const [serviceModule] = serviceModules.modules();
 
   const controllerModules =
     (appInfo.settings.serverSettings.generateRestApi &&
@@ -65,9 +59,9 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         serviceModule.path,
         entity
       ))) ||
-    new ModuleMap();
+    new ModuleMap(DsgContext.getInstance.logger);
 
-  const [controllerModule, controllerBaseModule] = controllerModules.values();
+  const [controllerModule, controllerBaseModule] = controllerModules.modules();
 
   const resolverModules =
     (appInfo.settings.serverSettings.generateGraphQL &&
@@ -77,8 +71,8 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         serviceModule.path,
         entity
       ))) ||
-    new ModuleMap();
-  const [resolverModule] = resolverModules.values();
+    new ModuleMap(DsgContext.getInstance.logger);
+  const [resolverModule] = resolverModules.modules();
 
   const resourceModules = await createModules(
     entityName,
@@ -98,13 +92,16 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
         controllerModule.path,
         controllerBaseModule.path
       ))) ||
-    new ModuleMap();
+    new ModuleMap(DsgContext.getInstance.logger);
 
-  return new ModuleMap([
-    ...serviceModules,
-    ...controllerModules,
-    ...resolverModules,
-    ...resourceModules,
-    ...testModule,
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.mergeMany([
+    serviceModules,
+    controllerModules,
+    resolverModules,
+    resourceModules,
+    testModule,
   ]);
+
+  return moduleMap;
 }

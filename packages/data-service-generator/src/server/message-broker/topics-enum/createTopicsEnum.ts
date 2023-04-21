@@ -30,7 +30,7 @@ export async function createTopicsEnumInternal(
   const context = DsgContext.getInstance;
   const { serviceTopics, otherResources, serverDirectories } = context;
   if (!serviceTopics.length) {
-    return new ModuleMap();
+    return new ModuleMap(context.logger);
   }
 
   const astFile = builders.file(builders.program([]));
@@ -57,5 +57,7 @@ export async function createTopicsEnumInternal(
     path,
     code: print(astFile).code,
   };
-  return new ModuleMap([[path, module]]);
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(path, module);
+  return moduleMap;
 }

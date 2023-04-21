@@ -67,8 +67,9 @@ export async function createModules(
     EXPORT_ARRAY: importArray,
   };
 
-  return new ModuleMap([
-    ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.mergeMany([
+    await pluginWrapper(createModule, EventNames.CreateEntityModule, {
       entityName,
       entityType,
       entityServiceModule,
@@ -80,17 +81,14 @@ export async function createModules(
       resolverId,
       template: moduleTemplate,
       templateMapping: moduleTemplateMapping,
-    })),
-    ...(await pluginWrapper(
-      createBaseModule,
-      EventNames.CreateEntityModuleBase,
-      {
-        entityName,
-        template: moduleBaseTemplate,
-        templateMapping: moduleBaseTemplateMapping,
-      }
-    )),
+    }),
+    await pluginWrapper(createBaseModule, EventNames.CreateEntityModuleBase, {
+      entityName,
+      template: moduleBaseTemplate,
+      templateMapping: moduleBaseTemplateMapping,
+    }),
   ]);
+  return moduleMap;
 }
 
 async function createModule({
@@ -160,7 +158,10 @@ async function createModule({
     path: modulePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 async function createBaseModule({
@@ -182,7 +183,10 @@ async function createBaseModule({
     path: modulePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 function createModuleId(entityType: string): namedTypes.Identifier {

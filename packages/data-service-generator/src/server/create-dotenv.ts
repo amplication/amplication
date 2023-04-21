@@ -46,7 +46,9 @@ export async function createDotEnvModuleInternal({
       serviceSettingsDic
     ),
   };
-  return new ModuleMap([[module.path, module]]);
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 function convertToKeyValueSting(arr: VariableDictionary): string {

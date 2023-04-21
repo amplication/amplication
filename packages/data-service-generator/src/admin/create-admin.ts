@@ -80,7 +80,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   const publicFilesModules = await createPublicFiles();
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(DTOs);
-  const dtoModules = createDTOModules(DTOs, dtoNameToPath);
+  const dtoModules = await createDTOModules(DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
@@ -105,13 +105,16 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entitiesComponents
   );
   const appModule = await createAppModule(entitiesComponents);
-  const createdModules = new ModuleMap([
-    [appModule.path, appModule],
-    [enumRolesModule.path, enumRolesModule],
-    [rolesModule.path, rolesModule],
-    ...dtoModules,
-    ...entityTitleComponentsModules,
-    ...entityComponentsModules,
+
+  const createdModules = new ModuleMap(context.logger);
+
+  await createdModules.set(appModule.path, appModule);
+  await createdModules.set(enumRolesModule.path, enumRolesModule);
+  await createdModules.set(rolesModule.path, rolesModule);
+  await createdModules.mergeMany([
+    dtoModules,
+    entityTitleComponentsModules,
+    entityComponentsModules,
   ]);
 
   const dotEnvModule = await createDotEnvModule(
@@ -121,18 +124,17 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
 
   await context.logger.info("Formatting code...");
 
-  createdModules.forEach((module) => {
-    module.code = formatCode(module.code);
-  });
+  await createdModules.replaceModulesCode((code) => formatCode(code));
 
-  const allModules = new ModuleMap([
-    ...staticModules,
-    ...gitIgnore,
-    ...packageJson,
-    ...publicFilesModules,
-    ...createdModules,
-    [dotEnvModule.path, dotEnvModule],
+  const allModules = new ModuleMap(context.logger);
+  await allModules.mergeMany([
+    staticModules,
+    gitIgnore,
+    packageJson,
+    publicFilesModules,
+    createdModules,
   ]);
+  await allModules.set(dotEnvModule.path, dotEnvModule);
 
   return allModules;
 }

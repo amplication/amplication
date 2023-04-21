@@ -31,7 +31,7 @@ import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import pluginWrapper from "../../plugin-wrapper";
-import { logger } from "../../logging";
+import DsgContext from "../../dsg-context";
 
 export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
   return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
@@ -43,11 +43,11 @@ export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModulesInternal({
+export async function createDTOModulesInternal({
   dtos,
-}: CreateDTOsParams): ModuleMap {
+}: CreateDTOsParams): Promise<ModuleMap> {
   const dtoNameToPath = getDTONameToPath(dtos);
-  const modules = new ModuleMap();
+  const modules = new ModuleMap(DsgContext.getInstance.logger);
 
   const entityDTOs = Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs)
@@ -62,10 +62,7 @@ export function createDTOModulesInternal({
       module = createDTOModule(dto, dtoNameToPath);
     }
 
-    if (modules.has(module.path)) {
-      logger.warn(`Module ${module.path} already exists. Overriding...`);
-    }
-    modules.set(module.path, module);
+    await modules.set(module.path, module);
   }
   return modules;
 }

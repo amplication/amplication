@@ -62,19 +62,17 @@ export async function createServiceModules(
     delegateId
   );
 
-  return new ModuleMap([
-    ...(await pluginWrapper(
-      createServiceModule,
-      EventNames.CreateEntityService,
-      {
-        entityName,
-        templateMapping,
-        serviceId,
-        serviceBaseId,
-        template,
-      }
-    )),
-    ...(await pluginWrapper(
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+
+  await moduleMap.mergeMany([
+    await pluginWrapper(createServiceModule, EventNames.CreateEntityService, {
+      entityName,
+      templateMapping,
+      serviceId,
+      serviceBaseId,
+      template,
+    }),
+    await pluginWrapper(
       createServiceBaseModule,
       EventNames.CreateEntityServiceBase,
       {
@@ -86,8 +84,10 @@ export async function createServiceModules(
         delegateId,
         template: templateBase,
       }
-    )),
+    ),
   ]);
+
+  return moduleMap;
 }
 
 async function createServiceModule({
@@ -121,7 +121,9 @@ async function createServiceModule({
     path: modulePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 async function createServiceBaseModule({
@@ -210,7 +212,10 @@ async function createServiceBaseModule({
     path: moduleBasePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 export function createServiceId(entityType: string): namedTypes.Identifier {

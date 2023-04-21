@@ -2,7 +2,8 @@ import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
-import { ILogger } from "@amplication/util/logging";
+import { BuildLogger } from "./build-logger";
+import { EventNames } from "./plugins-types";
 
 export {
   EnumDataType,
@@ -121,19 +122,83 @@ export type Entity = Omit<
 export type Module = {
   path: string;
   code: string;
+  /**
+   * The module's owner is the plugin that generated it.
+   */
+  owner?: {
+    pluginName: string;
+    eventName: EventNames;
+  };
 };
 
 /**
  * ModuleMap is a map of module paths to modules
  */
-export class ModuleMap extends Map<string, Module> {
-  merge(anotherMap: ModuleMap, logger: ILogger) {
-    for (const [path, module] of anotherMap.entries()) {
-      if (this.has(path)) {
-        logger.warn(`Module ${path} already exists. Overwriting...`);
-      }
-      this.set(path, module);
+export class ModuleMap {
+  private map: Record<string, Module> = {};
+  constructor(private readonly logger: BuildLogger) {}
+
+  async merge(anotherMap: ModuleMap): Promise<void> {
+    for await (const module of anotherMap.modules()) {
+      await this.set(module.path, module);
     }
+  }
+
+  async mergeMany(maps: ModuleMap[]): Promise<void> {
+    for await (const map of maps) {
+      await this.merge(map);
+    }
+  }
+
+  async set(path: string, module: Module) {
+    if (this.map[path]) {
+      await this.logger.warn(`Module ${path} already exists. Overwriting...`);
+    }
+    this.map[path] = module;
+  }
+
+  get(path: string) {
+    return this.map[path];
+  }
+
+  replace(oldModule: Module, newModule: Module): void {
+    if (newModule.path !== module.path) {
+      delete this.map[oldModule.path];
+    }
+    this.map[newModule.path] = newModule;
+  }
+
+  /**
+   * Replace all modules paths using a function
+   * @param fn A function that receives a module path and returns a new path
+   */
+  async replaceModulesPath(fn: (path: string) => string): Promise<void> {
+    for await (const oldModule of Object.values(this.map)) {
+      const newModule: Module = {
+        ...oldModule,
+        path: fn(oldModule.path),
+      };
+      this.replace(oldModule, newModule);
+    }
+  }
+
+  /**
+   * Replace all modules code using a function
+   * @param fn A function that receives a module code and returns a new code
+   */
+  async replaceModulesCode(fn: (code: string) => string): Promise<void> {
+    for await (const module of Object.values(this.map)) {
+      module.code = fn(module.code);
+      this[module.path] = module;
+    }
+  }
+
+  /**
+   * Returns all modules in the map
+   * @returns An array of modules
+   */
+  modules(): Module[] {
+    return Object.values(this.map);
   }
 }
 

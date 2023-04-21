@@ -26,6 +26,7 @@ import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
 import pluginWrapper from "../../../plugin-wrapper";
+import DsgContext from "../../../dsg-context";
 
 const testTemplatePath = require.resolve("./controller.spec.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
@@ -146,7 +147,9 @@ export async function createEntityControllerSpecInternal({
     path: modulePath,
     code: print(template).code,
   };
-  return new ModuleMap([[module.path, module]]);
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.set(module.path, module);
+  return moduleMap;
 }
 
 function createExpectedResult<T extends kinds.ExpressionKind>(
