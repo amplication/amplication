@@ -11,6 +11,7 @@ import {
   CreateSwaggerParams,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { interpolate } from "../../utils/ast";
 
@@ -21,7 +22,7 @@ const swaggerTemplatePath = require.resolve("./swagger.template.ts");
 
 export const INSTRUCTIONS_BUFFER = "\n\n";
 
-export async function createSwagger(): Promise<Module[]> {
+export async function createSwagger(): Promise<ModuleMap> {
   const { serverDirectories, appInfo } = DsgContext.getInstance;
   const { settings } = appInfo;
   const { authProvider } = settings;
@@ -55,17 +56,16 @@ async function createSwaggerInternal({
   templateMapping,
   fileDir,
   outputFileName,
-}: CreateSwaggerParams): Promise<Module[]> {
+}: CreateSwaggerParams): Promise<ModuleMap> {
   interpolate(template, templateMapping);
 
   removeTSVariableDeclares(template);
   removeTSIgnoreComments(template);
-  return [
-    {
-      code: print(template).code,
-      path: `${fileDir}/${outputFileName}`,
-    },
-  ];
+  const module: Module = {
+    code: print(template).code,
+    path: `${fileDir}/${outputFileName}`,
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 export async function createDescription(appInfo: AppInfo): Promise<string> {

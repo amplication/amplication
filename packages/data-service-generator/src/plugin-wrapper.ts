@@ -1,14 +1,16 @@
 import {
   EventNames,
-  Module,
   EventParams,
   PluginAfterEvent,
   PluginBeforeEvent,
+  ModuleMap,
 } from "@amplication/code-gen-types";
+import util from "node:util";
 import DsgContext from "./dsg-context";
+import { logger } from "./logging";
 
 export type PluginWrapper = (
-  func: (...args: any) => Module[] | Promise<Module[]>,
+  func: (...args: any) => ModuleMap | Promise<ModuleMap>,
   event: EventNames,
   ...args: any
 ) => any;
@@ -23,7 +25,7 @@ const beforeEventsPipe =
 
 const afterEventsPipe =
   (...fns: PluginAfterEvent<EventParams>[]) =>
-  (context: DsgContext, eventParams: EventParams, modules: Module[]) =>
+  (context: DsgContext, eventParams: EventParams, modules: ModuleMap) =>
     fns.reduce(
       async (res, fn) => fn(context, eventParams, await res),
       Promise.resolve(modules)
@@ -40,10 +42,10 @@ const defaultBehavior = async (
   context: DsgContext,
   func: (...args: any) => any,
   beforeFuncResults: any
-): Promise<Module[]> => {
-  if (context.utils.skipDefaultBehavior) return [];
+): Promise<ModuleMap> => {
+  if (context.utils.skipDefaultBehavior) return new ModuleMap();
 
-  return Object.prototype.toString.call(func) === "[object AsyncFunction]"
+  return util.types.isAsyncFunction(func)
     ? await func(beforeFuncResults)
     : func(beforeFuncResults);
 };
@@ -58,7 +60,7 @@ const pluginWrapper: PluginWrapper = async (
   func,
   event,
   args
-): Promise<Module[]> => {
+): Promise<ModuleMap> => {
   const context = DsgContext.getInstance;
 
   try {
@@ -88,7 +90,7 @@ const pluginWrapper: PluginWrapper = async (
         )
       : defaultBehaviorModules;
 
-    context.modules.push(finalModules);
+    context.modules.merge(finalModules, logger);
     return finalModules;
   } catch (error) {
     const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;

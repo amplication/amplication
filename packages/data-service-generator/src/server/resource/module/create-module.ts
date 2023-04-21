@@ -11,6 +11,7 @@ import {
   Module,
   CreateEntityModuleParams,
   CreateEntityModuleBaseParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -36,7 +37,7 @@ export async function createModules(
   entityServiceModule: string,
   entityControllerModule: string | undefined,
   entityResolverModule: string | undefined
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const moduleBaseId = createBaseModuleId(entityType);
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
@@ -66,7 +67,7 @@ export async function createModules(
     EXPORT_ARRAY: importArray,
   };
 
-  return [
+  return new ModuleMap([
     ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
       entityName,
       entityType,
@@ -89,7 +90,7 @@ export async function createModules(
         templateMapping: moduleBaseTemplateMapping,
       }
     )),
-  ];
+  ]);
 }
 
 async function createModule({
@@ -103,7 +104,7 @@ async function createModule({
   resolverId,
   template,
   templateMapping,
-}: CreateEntityModuleParams): Promise<Module[]> {
+}: CreateEntityModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
@@ -155,19 +156,18 @@ async function createModule({
   removeESLintComments(template);
   removeTSClassDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 async function createBaseModule({
   entityName,
   template,
   templateMapping,
-}: CreateEntityModuleBaseParams): Promise<Module[]> {
+}: CreateEntityModuleBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
 
@@ -178,12 +178,11 @@ async function createBaseModule({
   removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 function createModuleId(entityType: string): namedTypes.Identifier {

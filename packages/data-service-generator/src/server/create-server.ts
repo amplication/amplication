@@ -3,6 +3,7 @@ import {
   Module,
   EventNames,
   CreateServerParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode, formatJson } from "@amplication/code-gen-utils";
@@ -25,13 +26,13 @@ import { createGitIgnore } from "./gitignore/create-gitignore";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
-export function createServer(): Promise<Module[]> {
+export function createServer(): Promise<ModuleMap> {
   return pluginWrapper(createServerInternal, EventNames.CreateServer, {});
 }
 
 async function createServerInternal(
   eventParams: CreateServerParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const { serverDirectories, entities } = DsgContext.getInstance;
 
   const context = DsgContext.getInstance;
@@ -78,12 +79,13 @@ async function createServerInternal(
   const messageBrokerModules = await createMessageBroker({});
 
   await context.logger.info("Creating application module...");
+
   const appModule = await createAppModule([
-    ...resourcesModules,
-    ...staticModules,
+    ...Array.from(resourcesModules.values()),
+    ...Array.from(staticModules.values()),
   ]);
 
-  const createdModules = [
+  const createdModules = new ModuleMap([
     ...resourcesModules,
     ...dtoModules,
     ...swagger,
@@ -91,17 +93,16 @@ async function createServerInternal(
     ...seedModule,
     ...authModules,
     ...messageBrokerModules,
-  ];
+  ]);
 
   await context.logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => ({
-    ...module,
-    code: formatCode(module.code),
-  }));
-  const formattedJsonFiles = [...packageJsonModule].map((module) => ({
-    ...module,
-    code: formatJson(module.code),
-  }));
+  createdModules.forEach((module) => {
+    module.code = formatCode(module.code);
+  });
+
+  packageJsonModule.forEach((module) => {
+    module.code = formatJson(module.code);
+  });
 
   await context.logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
@@ -115,14 +116,14 @@ async function createServerInternal(
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDBFile = await createDockerComposeDBFile();
 
-  return [
+  return new ModuleMap([
     ...staticModules,
     ...gitIgnore,
-    ...formattedJsonFiles,
-    ...formattedModules,
+    ...packageJsonModule,
+    ...createdModules,
     ...prismaSchemaModule,
     ...dotEnvModule,
     ...dockerComposeFile,
     ...dockerComposeDBFile,
-  ];
+  ]);
 }

@@ -2,6 +2,7 @@ import {
   CreateMessageBrokerParams,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { pascalCase } from "pascal-case";
 import { join } from "path";
@@ -15,7 +16,7 @@ const TOPIC_NAME = "topics.ts";
 
 export function createTopicsEnum(
   eventParams: CreateMessageBrokerParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   return pluginWrapper(
     createTopicsEnumInternal,
     EventNames.CreateMessageBrokerTopicsEnum,
@@ -25,11 +26,11 @@ export function createTopicsEnum(
 
 export async function createTopicsEnumInternal(
   eventParams: CreateMessageBrokerParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const { serviceTopics, otherResources, serverDirectories } = context;
   if (!serviceTopics.length) {
-    return [];
+    return new ModuleMap();
   }
 
   const astFile = builders.file(builders.program([]));
@@ -52,5 +53,9 @@ export async function createTopicsEnumInternal(
   });
   astFile.program.body.push(...topics);
   const path = join(serverDirectories.messageBrokerDirectory, TOPIC_NAME);
-  return [{ code: print(astFile).code, path }];
+  const module: Module = {
+    path,
+    code: print(astFile).code,
+  };
+  return new ModuleMap([[path, module]]);
 }

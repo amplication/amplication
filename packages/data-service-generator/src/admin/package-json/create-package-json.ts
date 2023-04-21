@@ -2,6 +2,7 @@ import {
   CreateAdminUIPackageJsonParams,
   Module,
   EventNames,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
 import { join, resolve } from "path";
@@ -16,7 +17,7 @@ const PACKAGE_JSON_FILE_NAME = "package.json";
 
 const filePath = resolve(__dirname, PACKAGE_JSON_FILE_NAME);
 
-export async function createAdminUIPackageJson(): Promise<Module[]> {
+export async function createAdminUIPackageJson(): Promise<ModuleMap> {
   const fileContent = await fs.readFile(filePath, PACKAGE_JSON_ENCODING);
   const { appInfo } = DsgContext.getInstance;
   const updateProperties = [
@@ -38,19 +39,19 @@ export async function createAdminUIPackageJson(): Promise<Module[]> {
 
 async function createAdminUIPackageJsonInternal({
   updateProperties,
-}: CreateAdminUIPackageJsonParams): Promise<Module[]> {
+}: CreateAdminUIPackageJsonParams): Promise<ModuleMap> {
   const { clientDirectories } = DsgContext.getInstance;
-  const packageJsonModule = await readFile(
-    resolve(__dirname, PACKAGE_JSON_FILE_NAME),
-    PACKAGE_JSON_ENCODING
-  );
+
+  const packageJsonModule: Module = {
+    path: join(clientDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
+    code: await readFile(
+      resolve(__dirname, PACKAGE_JSON_FILE_NAME),
+      PACKAGE_JSON_ENCODING
+    ),
+  };
+
   const mutatedPackageJson = updatePackageJSONs(
-    [
-      {
-        path: join(clientDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
-        code: packageJsonModule,
-      },
-    ],
+    new ModuleMap([[packageJsonModule.path, packageJsonModule]]),
     clientDirectories.baseDirectory,
     updateProperties
   );

@@ -2,6 +2,7 @@ import {
   CreateServerDockerComposeParams,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { promises as fs } from "fs";
 import path from "path";
@@ -11,7 +12,7 @@ import pluginWrapper from "../../plugin-wrapper";
 import { DOCKER_COMPOSE_FILE_NAME } from "../constants";
 import DsgContext from "../../dsg-context";
 
-export async function createDockerComposeFile(): Promise<Module[]> {
+export async function createDockerComposeFile(): Promise<ModuleMap> {
   const filePath = path.resolve(__dirname, DOCKER_COMPOSE_FILE_NAME);
 
   const eventParams: CreateServerDockerComposeParams = {
@@ -29,20 +30,19 @@ export async function createDockerComposeFile(): Promise<Module[]> {
 
 async function createDockerComposeFileInternal(
   eventParams: CreateServerDockerComposeParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const preparedFile = prepareYamlFile(
     eventParams.fileContent,
     eventParams.updateProperties
   );
 
-  return [
-    {
-      path: path.join(
-        serverDirectories.baseDirectory,
-        eventParams.outputFileName
-      ),
-      code: preparedFile,
-    },
-  ];
+  const module: Module = {
+    path: path.join(
+      serverDirectories.baseDirectory,
+      eventParams.outputFileName
+    ),
+    code: preparedFile,
+  };
+  return new ModuleMap([[module.path, module]]);
 }

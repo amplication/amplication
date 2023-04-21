@@ -20,7 +20,7 @@ class DsgContext implements types.DsgContext {
   public entities: types.Entity[] = [];
   public buildId: string;
   public roles: types.Role[] = [];
-  public modules: types.Module[] = [];
+  public modules: types.ModuleMap = new types.ModuleMap();
   // eslint-disable-next-line @typescript-eslint/naming-convention
   public DTOs: types.DTOs = {};
   public plugins: types.PluginMap = {};

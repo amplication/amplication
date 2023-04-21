@@ -5,6 +5,7 @@ import {
   EventNames,
   Module,
   LoadStaticFilesParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../plugin-wrapper";
 
@@ -13,7 +14,7 @@ const filesToFilter = /(\._.*)|(.DS_Store)$/;
 export async function readStaticModules(
   source: string,
   basePath: string
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   return pluginWrapper(readStaticModulesInner, EventNames.LoadStaticFiles, {
     source,
     basePath,
@@ -30,7 +31,7 @@ export async function readStaticModules(
 export async function readStaticModulesInner({
   source,
   basePath,
-}: LoadStaticFilesParams): Promise<Module[]> {
+}: LoadStaticFilesParams): Promise<ModuleMap> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
@@ -38,7 +39,7 @@ export async function readStaticModulesInner({
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
 
-  return Promise.all(
+  const modules = await Promise.all(
     staticModules
       .sort()
       .filter(
@@ -52,20 +53,24 @@ export async function readStaticModulesInner({
         code: await fs.promises.readFile(module, "utf-8"),
       }))
   );
+  const moduleMap: ModuleMap = new ModuleMap();
+  for (const module of modules) {
+    moduleMap.set(module.path, module);
+  }
+  return moduleMap;
 }
 
 export async function readPluginStaticModules(
   source: string,
   basePath: string
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
     dot: true,
     ignore: ["**.js", "**.js.map", "**.d.ts"],
   });
-
-  return Promise.all(
+  const modules = await Promise.all(
     staticModules
       .sort()
       .filter(
@@ -74,9 +79,18 @@ export async function readPluginStaticModules(
             module.replace(directory, basePath ? basePath + "/" : "")
           )
       )
-      .map(async (module) => ({
-        path: module.replace(directory, basePath ? basePath + "/" : ""),
-        code: await fs.promises.readFile(module, "utf-8"),
-      }))
+      .map(
+        async (module) =>
+          <Module>{
+            path: module.replace(directory, basePath ? basePath + "/" : ""),
+            code: await fs.promises.readFile(module, "utf-8"),
+          }
+      )
   );
+
+  const moduleMap: ModuleMap = new ModuleMap();
+  for (const module of modules) {
+    moduleMap.set(module.path, module);
+  }
+  return moduleMap;
 }

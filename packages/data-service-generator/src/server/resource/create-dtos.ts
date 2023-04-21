@@ -9,6 +9,7 @@ import {
   EntityDTOs,
   EventNames,
   CreateDTOsParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../utils/entity";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
@@ -30,8 +31,9 @@ import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import pluginWrapper from "../../plugin-wrapper";
+import { logger } from "../../logging";
 
-export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
+export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
   return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
     dtos,
   });
@@ -41,17 +43,31 @@ export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModulesInternal({ dtos }: CreateDTOsParams): Module[] {
+export function createDTOModulesInternal({
+  dtos,
+}: CreateDTOsParams): ModuleMap {
   const dtoNameToPath = getDTONameToPath(dtos);
-  return Object.values(dtos).flatMap((entityDTOs) =>
-    Object.values(entityDTOs).map((dto) => {
-      const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
-      if (isEnumDTO) {
-        return createEnumDTOModule(dto, dtoNameToPath);
-      }
-      return createDTOModule(dto, dtoNameToPath);
-    })
+  const modules = new ModuleMap();
+
+  const entityDTOs = Object.values(dtos).flatMap((entityDTOs) =>
+    Object.values(entityDTOs)
   );
+
+  for (const dto of entityDTOs) {
+    const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
+    let module: Module;
+    if (isEnumDTO) {
+      module = createEnumDTOModule(dto, dtoNameToPath);
+    } else {
+      module = createDTOModule(dto, dtoNameToPath);
+    }
+
+    if (modules.has(module.path)) {
+      logger.warn(`Module ${module.path} already exists. Overriding...`);
+    }
+    modules.set(module.path, module);
+  }
+  return modules;
 }
 
 export function getDTONameToPath(dtos: DTOs): Record<string, string> {

@@ -1,7 +1,7 @@
 import * as path from "path";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Module, EventNames } from "@amplication/code-gen-types";
+import { EventNames, ModuleMap } from "@amplication/code-gen-types";
 import { formatCode } from "@amplication/code-gen-utils";
 import { readStaticModules } from "../utils/read-static-modules";
 import { createAppModule } from "./app/create-app";
@@ -28,7 +28,7 @@ const API_PATHNAME = "/api";
 /**
  * responsible of the Admin ui modules generation
  */
-export function createAdminModules(): Promise<Module[]> {
+export function createAdminModules(): Promise<ModuleMap> {
   return pluginWrapper(
     createAdminModulesInternal,
     EventNames.CreateAdminUI,
@@ -36,7 +36,7 @@ export function createAdminModules(): Promise<Module[]> {
   );
 }
 
-async function createAdminModulesInternal(): Promise<Module[]> {
+async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const {
     appInfo,
@@ -105,30 +105,34 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     entitiesComponents
   );
   const appModule = await createAppModule(entitiesComponents);
-  const createdModules = [
-    appModule,
-    enumRolesModule,
-    rolesModule,
+  const createdModules = new ModuleMap([
+    [appModule.path, appModule],
+    [enumRolesModule.path, enumRolesModule],
+    [rolesModule.path, rolesModule],
     ...dtoModules,
     ...entityTitleComponentsModules,
     ...entityComponentsModules,
-  ];
+  ]);
+
   const dotEnvModule = await createDotEnvModule(
     appInfo,
     clientDirectories.baseDirectory
   );
 
   await context.logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => ({
-    ...module,
-    code: formatCode(module.code),
-  }));
-  return [
+
+  createdModules.forEach((module) => {
+    module.code = formatCode(module.code);
+  });
+
+  const allModules = new ModuleMap([
     ...staticModules,
     ...gitIgnore,
     ...packageJson,
     ...publicFilesModules,
-    ...formattedModules,
-    dotEnvModule,
-  ];
+    ...createdModules,
+    [dotEnvModule.path, dotEnvModule],
+  ]);
+
+  return allModules;
 }

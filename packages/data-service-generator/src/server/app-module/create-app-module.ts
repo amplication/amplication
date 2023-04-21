@@ -10,6 +10,7 @@ import {
   EventNames,
   Module,
   CreateServerAppModuleParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../utils/module";
 
@@ -38,7 +39,7 @@ const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
   modulesFiles: Module[]
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const template = await readFile(appModuleTemplatePath);
   const nestModules = modulesFiles.filter((module) =>
     module.path.match(MODULE_PATTERN)
@@ -95,7 +96,7 @@ export async function createAppModuleInternal({
   modulesFiles,
   template,
   templateMapping,
-}: CreateServerAppModuleParams): Promise<Module[]> {
+}: CreateServerAppModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
   const nestModules = modulesFiles.filter((module) =>
@@ -131,10 +132,9 @@ export async function createAppModuleInternal({
   removeESLintComments(template);
   removeTSVariableDeclares(template);
 
-  return [
-    {
-      path: MODULE_PATH,
-      code: print(template).code,
-    },
-  ];
+  const appModule: Module = {
+    path: MODULE_PATH,
+    code: print(template).code,
+  };
+  return new ModuleMap([[appModule.path, appModule]]);
 }

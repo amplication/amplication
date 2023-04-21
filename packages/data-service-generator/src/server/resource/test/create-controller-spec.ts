@@ -20,6 +20,7 @@ import {
   EntityField,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
 import { createServiceId } from "../service/create-service";
@@ -39,7 +40,7 @@ export async function createEntityControllerSpec(
   entityServiceModulePath: string,
   entityControllerModulePath: string,
   entityControllerBaseModulePath: string
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   /** @todo make dynamic */
   const param = "id";
   const paramType = builders.tsStringKeyword();
@@ -119,7 +120,7 @@ export async function createEntityControllerSpecInternal({
   entityControllerBaseModulePath,
   controllerId,
   serviceId,
-}: CreateEntityControllerSpecParams): Promise<Module[]> {
+}: CreateEntityControllerSpecParams): Promise<ModuleMap> {
   const modulePath = replaceExt(entityControllerBaseModulePath, ".spec.ts");
 
   const importResourceModule = importNames(
@@ -141,12 +142,11 @@ export async function createEntityControllerSpecInternal({
   removeTSClassDeclares(template);
   removeTSInterfaceDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 function createExpectedResult<T extends kinds.ExpressionKind>(

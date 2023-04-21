@@ -1,15 +1,15 @@
 import {
   CreateMessageBrokerNestJSModuleParams,
   EventNames,
-  Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../../../plugin-wrapper";
 
 export function createMessageBrokerModule(
   eventParams: CreateMessageBrokerNestJSModuleParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   return pluginWrapper(
-    () => [],
+    () => new ModuleMap(),
     EventNames.CreateMessageBrokerNestJSModule,
     eventParams
   );

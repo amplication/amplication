@@ -1,4 +1,4 @@
-import { Module } from "@amplication/code-gen-types";
+import { Module, ModuleMap } from "@amplication/code-gen-types";
 import { preparePackageJsonFile } from "./preparePackageJsonFile";
 
 /**
@@ -9,14 +9,22 @@ import { preparePackageJsonFile } from "./preparePackageJsonFile";
  * @param update the update to apply to the package files
  */
 export function updatePackageJSONs(
-  modules: Module[],
+  modules: ModuleMap,
   baseDirectory: string,
   update: { [key: string]: any }[]
-): Module[] {
-  return modules.map((module) => updatePackageJSON(module, update));
+): ModuleMap {
+  const moduleMap = new ModuleMap();
+  modules.forEach((module) => {
+    const updatedModule = updatePackageJSON(module, update);
+    moduleMap.set(updatedModule.path, updatedModule);
+  });
+  return moduleMap;
 }
 
-function updatePackageJSON(module: Module, update: { [key: string]: any }[]) {
+function updatePackageJSON(
+  module: Module,
+  update: { [key: string]: any }[]
+): Module {
   const pkg = preparePackageJsonFile(module, update);
 
   return {

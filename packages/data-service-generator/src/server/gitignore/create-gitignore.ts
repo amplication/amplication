@@ -2,6 +2,7 @@ import {
   CreateServerGitIgnoreParams,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
@@ -15,24 +16,25 @@ const IGNORED_PATHS = [
   ".DS_Store",
 ];
 
-export function createGitIgnore(): Module[] {
+export function createGitIgnore(): ModuleMap {
   return pluginWrapper(
-    createGitIgnoreModuleInternal,
+    createGitIgnoreInternal,
     EventNames.CreateServerGitIgnore,
     { gitignorePaths: IGNORED_PATHS }
   );
 }
 
-export async function createGitIgnoreModuleInternal({
+export async function createGitIgnoreInternal({
   gitignorePaths,
-}: CreateServerGitIgnoreParams): Promise<Module[]> {
+}: CreateServerGitIgnoreParams): Promise<ModuleMap> {
   const formattedGitignore = formatGitignorePaths(gitignorePaths);
   const context = DsgContext.getInstance;
   const { serverDirectories } = context;
-  return [
-    {
-      path: `${serverDirectories.baseDirectory}/.gitignore`,
-      code: formattedGitignore,
-    },
-  ];
+
+  const module: Module = {
+    path: `${serverDirectories.baseDirectory}/.gitignore`,
+    code: formattedGitignore,
+  };
+
+  return new ModuleMap([[module.path, module]]);
 }

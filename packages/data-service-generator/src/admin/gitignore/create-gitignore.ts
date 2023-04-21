@@ -2,6 +2,7 @@ import {
   CreateAdminGitIgnoreParams,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
@@ -33,7 +34,7 @@ const IGNORED_PATHS = [
   "yarn-error.log*",
 ];
 
-export function createGitIgnore(): Module[] {
+export function createGitIgnore(): ModuleMap {
   return pluginWrapper(
     createGitIgnoreInternal,
     EventNames.CreateAdminGitIgnore,
@@ -43,14 +44,14 @@ export function createGitIgnore(): Module[] {
 
 export async function createGitIgnoreInternal({
   gitignorePaths,
-}: CreateAdminGitIgnoreParams): Promise<Module[]> {
+}: CreateAdminGitIgnoreParams): Promise<ModuleMap> {
   const formattedGitignore = formatGitignorePaths(gitignorePaths);
   const context = DsgContext.getInstance;
   const { clientDirectories } = context;
-  return [
-    {
-      path: `${clientDirectories.baseDirectory}/.gitignore`,
-      code: formattedGitignore,
-    },
-  ];
+  const module: Module = {
+    path: `${clientDirectories.baseDirectory}/.gitignore`,
+    code: formattedGitignore,
+  };
+
+  return new ModuleMap([[module.path, module]]);
 }

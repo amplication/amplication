@@ -4,6 +4,7 @@ import {
   clientDirectories,
   DTOs,
   Module,
+  ModuleMap,
   serverDirectories,
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
@@ -19,8 +20,8 @@ export type PluginBeforeEvent<T extends EventParams> = (
 export type PluginAfterEvent<T extends EventParams> = (
   dsgContext: DsgContext,
   eventParams: T,
-  modules: Module[]
-) => Promisable<Module[]>;
+  modules: ModuleMap
+) => Promisable<ModuleMap>;
 
 export interface PluginEventType<T extends EventParams> {
   before?: PluginBeforeEvent<T>;
@@ -38,14 +39,14 @@ export interface ContextUtil {
   abortGeneration: (msg: string) => void;
   abortMessage?: string;
   abort: boolean;
-  importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
+  importStaticModules: (source: string, basePath: string) => Promise<ModuleMap>;
 }
 
 export interface DsgContext extends DSGResourceData {
   /**
    * List of generated files.
    */
-  modules: Module[];
+  modules: ModuleMap;
   DTOs: DTOs;
   plugins: PluginMap;
   /**

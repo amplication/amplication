@@ -2,6 +2,7 @@ import { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
+import { ILogger } from "@amplication/util/logging";
 
 export {
   EnumDataType,
@@ -121,6 +122,20 @@ export type Module = {
   path: string;
   code: string;
 };
+
+/**
+ * ModuleMap is a map of module paths to modules
+ */
+export class ModuleMap extends Map<string, Module> {
+  merge(anotherMap: ModuleMap, logger: ILogger) {
+    for (const [path, module] of anotherMap.entries()) {
+      if (this.has(path)) {
+        logger.warn(`Module ${path} already exists. Overwriting...`);
+      }
+      this.set(path, module);
+    }
+  }
+}
 
 export type ClassDeclaration = namedTypes.ClassDeclaration & {
   decorators: namedTypes.Decorator[];

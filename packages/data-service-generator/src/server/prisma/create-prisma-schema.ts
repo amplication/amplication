@@ -6,6 +6,7 @@ import {
   Module,
   types,
   CreateSchemaFieldsHandlers,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { countBy } from "lodash";
 import * as PrismaSchemaDSL from "prisma-schema-dsl";
@@ -18,7 +19,7 @@ import { createEnumName } from "./create-prisma-schema-fields";
 
 export async function createPrismaSchema(
   eventParams: CreatePrismaSchemaParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   return await pluginWrapper(
     createPrismaSchemaInternal,
     EventNames.CreatePrismaSchema,
@@ -31,7 +32,7 @@ export async function createPrismaSchemaInternal({
   dataSource,
   clientGenerator,
   createFieldsHandlers,
-}: CreatePrismaSchemaParams): Promise<Module[]> {
+}: CreatePrismaSchemaParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.baseDirectory}/prisma/schema.prisma`;
   const fieldNamesCount = countBy(
@@ -61,13 +62,12 @@ export async function createPrismaSchemaInternal({
   const schema = PrismaSchemaDSL.createSchema(models, enums, prismaDataSource, [
     prismaClientGenerator,
   ]);
+  const module: Module = {
+    path: MODULE_PATH,
+    code: await PrismaSchemaDSL.print(schema),
+  };
 
-  return [
-    {
-      path: MODULE_PATH,
-      code: await PrismaSchemaDSL.print(schema),
-    },
-  ];
+  return new ModuleMap([[module.path, module]]);
 }
 
 export function createPrismaEnum(

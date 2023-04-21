@@ -2,6 +2,7 @@ import {
   CreateServerDotEnvParams,
   EventNames,
   Module,
+  ModuleMap,
   VariableDictionary,
 } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
@@ -10,7 +11,7 @@ import { replacePlaceholdersInCode } from "../utils/text-file-parser";
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams
-): Module[] {
+): ModuleMap {
   return pluginWrapper(
     createDotEnvModuleInternal,
     EventNames.CreateServerDotEnv,
@@ -25,7 +26,7 @@ export function createDotEnvModule(
  */
 export async function createDotEnvModuleInternal({
   envVariables,
-}: CreateServerDotEnvParams): Promise<Module[]> {
+}: CreateServerDotEnvParams): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
@@ -38,15 +39,14 @@ export async function createDotEnvModuleInternal({
   );
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
-  return [
-    {
-      path: `${serverDirectories.baseDirectory}/.env`,
-      code: replacePlaceholdersInCode(
-        codeWithAdditionalVariables,
-        serviceSettingsDic
-      ),
-    },
-  ];
+  const module: Module = {
+    path: `${serverDirectories.baseDirectory}/.env`,
+    code: replacePlaceholdersInCode(
+      codeWithAdditionalVariables,
+      serviceSettingsDic
+    ),
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 function convertToKeyValueSting(arr: VariableDictionary): string {

@@ -11,6 +11,7 @@ import {
   EnumDataType,
   EventNames,
   Module,
+  ModuleMap,
   types,
 } from "@amplication/code-gen-types";
 import {
@@ -78,7 +79,7 @@ export const createDefaultAuthProperties = ({
   ),
 ];
 
-export async function createSeed(): Promise<Module[]> {
+export async function createSeed(): Promise<ModuleMap> {
   const {
     serverDirectories,
     entities,
@@ -122,7 +123,7 @@ async function createSeedInternal({
   templateMapping,
   fileDir,
   outputFileName,
-}: CreateSeedParams): Promise<Module[]> {
+}: CreateSeedParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs } = DsgContext.getInstance;
 
@@ -138,12 +139,11 @@ async function createSeedInternal({
 
   addImports(template, dtoImports);
 
-  return [
-    {
-      path: `${fileDir}/${outputFileName}`,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: `${fileDir}/${outputFileName}`,
+    code: print(template).code,
+  };
+  return new ModuleMap([[module.path, module]]);
 }
 
 export function createUserObjectCustomProperties(

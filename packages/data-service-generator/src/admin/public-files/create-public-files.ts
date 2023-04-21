@@ -1,16 +1,21 @@
 import path from "path";
-import { Module } from "@amplication/code-gen-types";
+import { Module, ModuleMap } from "@amplication/code-gen-types";
 import { readCode } from "@amplication/code-gen-utils";
 import manifest from "./manifest.json";
 import DsgContext from "../../dsg-context";
 
 const indexHTMLPath = path.join(__dirname, "index.template.html");
 
-export async function createPublicFiles(): Promise<Module[]> {
-  return [createManifestModule(), await createIndexHTMLModule()];
+export async function createPublicFiles(): Promise<ModuleMap> {
+  const publicFilesModules = new ModuleMap();
+  const manifestModule = createManifestModule();
+  const indexHTMLModule = await createIndexHTMLModule();
+  publicFilesModules.set(manifestModule.path, manifestModule);
+  publicFilesModules.set(indexHTMLModule.path, indexHTMLModule);
+  return publicFilesModules;
 }
 
-export async function createIndexHTMLModule(): Promise<Module> {
+const createIndexHTMLModule = async (): Promise<Module> => {
   const html = await readCode(indexHTMLPath);
   const { appInfo, clientDirectories } = DsgContext.getInstance;
   return {
@@ -19,9 +24,9 @@ export async function createIndexHTMLModule(): Promise<Module> {
       .replace("{{description}}", appInfo.description)
       .replace("{{title}}", appInfo.name),
   };
-}
+};
 
-export function createManifestModule(): Module {
+const createManifestModule = (): Module => {
   const { appInfo, clientDirectories } = DsgContext.getInstance;
   return {
     path: `${clientDirectories.publicDirectory}/manifest.json`,
@@ -36,4 +41,4 @@ export function createManifestModule(): Module {
       2
     ),
   };
-}
+};

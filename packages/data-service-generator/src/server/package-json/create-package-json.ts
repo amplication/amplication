@@ -1,6 +1,7 @@
 import {
   CreateServerPackageJsonParams,
   EventNames,
+  ModuleMap,
   Module,
 } from "@amplication/code-gen-types";
 import { readFile } from "fs/promises";
@@ -16,7 +17,7 @@ const PACKAGE_JSON_FILE_NAME = "package.json";
 
 const filePath = resolve(__dirname, PACKAGE_JSON_FILE_NAME);
 
-export async function createServerPackageJson(): Promise<Module[]> {
+export async function createServerPackageJson(): Promise<ModuleMap> {
   const fileContent = await fs.readFile(filePath, PACKAGE_JSON_ENCODING);
   const { appInfo } = DsgContext.getInstance;
   const updateProperties = [
@@ -35,19 +36,18 @@ export async function createServerPackageJson(): Promise<Module[]> {
 
 async function createServerPackageJsonInternal({
   updateProperties,
-}: CreateServerPackageJsonParams): Promise<Module[]> {
+}: CreateServerPackageJsonParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
-  const packageJsonModule = await readFile(
-    resolve(__dirname, PACKAGE_JSON_FILE_NAME),
-    PACKAGE_JSON_ENCODING
-  );
+  const packageJsonModule: Module = {
+    path: join(serverDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
+    code: await readFile(
+      resolve(__dirname, PACKAGE_JSON_FILE_NAME),
+      PACKAGE_JSON_ENCODING
+    ),
+  };
+
   const mutatedPackageJson = updatePackageJSONs(
-    [
-      {
-        path: join(serverDirectories.baseDirectory, PACKAGE_JSON_FILE_NAME),
-        code: packageJsonModule,
-      },
-    ],
+    new ModuleMap([[packageJsonModule.path, packageJsonModule]]),
     serverDirectories.baseDirectory,
     updateProperties
   );
