@@ -2,6 +2,10 @@
 
 @import "../style/index.scss";
 
+:root {
+  --white-overlay-background: #ffffff99;
+}
+
 $info-panel-height: 180px;
 $application-badge-size-large: 100px;
 $app-icon-large-font-size: 70px;
@@ -36,7 +40,7 @@ $circle-badge-border: 2px;
     left: 0;
     right: 0;
     bottom: 0;
-    background-color: #ffffff99;
+    background-color: var(--white-overlay-background);
   }
   .circle-badge-container {
     z-index: 10;
