@@ -859,7 +859,7 @@ export type DeleteProfileArgs = {
 export type Profile = {
   id: number;
   createdIn: Date;
-  updatedAt: Date;
+  updatedIn: Date;
   email: string;
   user?: User | null;
 };
@@ -900,7 +900,7 @@ export type ProfileListRelationFilter = {
 export type ProfileOrderByInput = {
   id?: SortOrder;
   createdIn?: SortOrder;
-  updatedAt?: SortOrder;
+  updatedIn?: SortOrder;
   email?: SortOrder;
   userId?: SortOrder;
 };
@@ -920,7 +920,7 @@ import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 export type ProfileWhereInput = {
   id?: IntFilter;
   createdIn?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
+  updatedIn?: DateTimeFilter;
   email?: StringFilter;
   user?: UserWhereUniqueInput;
 };
@@ -2302,7 +2302,7 @@ export const ProfileList = (props: ListProps): React.ReactElement => {
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
         <DateField source=\\"createdIn\\" label=\\"Created In\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -2329,7 +2329,7 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
       <SimpleShowLayout>
         <TextField label=\\"Id\\" source=\\"id\\" />
         <DateField source=\\"createdIn\\" label=\\"Created In\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -3012,7 +3012,7 @@ model User {
 model Profile {
   id        Int      @id @default(autoincrement())
   createdIn DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  updatedIn DateTime @updatedAt
   email     String
   user      User?
 }
@@ -9846,7 +9846,7 @@ class Profile {
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
-  updatedAt!: Date;
+  updatedIn!: Date;
 
   @ApiProperty({
     required: true,
@@ -10088,7 +10088,7 @@ class ProfileOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
-  updatedAt?: SortOrder;
+  updatedIn?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -10209,7 +10209,7 @@ class ProfileWhereInput {
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
-  updatedAt?: DateTimeFilter;
+  updatedIn?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -10313,27 +10313,27 @@ const existingId = \\"existingId\\";
 const CREATE_INPUT = {
   id: 42,
   createdIn: new Date(),
-  updatedAt: new Date(),
+  updatedIn: new Date(),
   email: \\"exampleEmail\\",
 };
 const CREATE_RESULT = {
   id: 42,
   createdIn: new Date(),
-  updatedAt: new Date(),
+  updatedIn: new Date(),
   email: \\"exampleEmail\\",
 };
 const FIND_MANY_RESULT = [
   {
     id: 42,
     createdIn: new Date(),
-    updatedAt: new Date(),
+    updatedIn: new Date(),
     email: \\"exampleEmail\\",
   },
 ];
 const FIND_ONE_RESULT = {
   id: 42,
   createdIn: new Date(),
-  updatedAt: new Date(),
+  updatedIn: new Date(),
   email: \\"exampleEmail\\",
 };
 
@@ -10420,7 +10420,7 @@ describe(\\"Profile\\", () => {
       .expect({
         ...CREATE_RESULT,
         createdIn: CREATE_RESULT.createdIn.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
       });
   });
 
@@ -10432,7 +10432,7 @@ describe(\\"Profile\\", () => {
         {
           ...FIND_MANY_RESULT[0],
           createdIn: FIND_MANY_RESULT[0].createdIn.toISOString(),
-          updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
+          updatedIn: FIND_MANY_RESULT[0].updatedIn.toISOString(),
         },
       ]);
   });
@@ -10455,7 +10455,7 @@ describe(\\"Profile\\", () => {
       .expect({
         ...FIND_ONE_RESULT,
         createdIn: FIND_ONE_RESULT.createdIn.toISOString(),
-        updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
+        updatedIn: FIND_ONE_RESULT.updatedIn.toISOString(),
       });
   });
 
@@ -10468,7 +10468,7 @@ describe(\\"Profile\\", () => {
       .expect({
         ...CREATE_RESULT,
         createdIn: CREATE_RESULT.createdIn.toISOString(),
-        updatedAt: CREATE_RESULT.updatedAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
       })
       .then(function () {
         agent
@@ -10530,7 +10530,7 @@ export class ProfileControllerBase {
       select: {
         id: true,
         createdIn: true,
-        updatedAt: true,
+        updatedIn: true,
         email: true,
 
         user: {
@@ -10552,7 +10552,7 @@ export class ProfileControllerBase {
       select: {
         id: true,
         createdIn: true,
-        updatedAt: true,
+        updatedIn: true,
         email: true,
 
         user: {
@@ -10575,7 +10575,7 @@ export class ProfileControllerBase {
       select: {
         id: true,
         createdIn: true,
-        updatedAt: true,
+        updatedIn: true,
         email: true,
 
         user: {
@@ -10615,7 +10615,7 @@ export class ProfileControllerBase {
         select: {
           id: true,
           createdIn: true,
-          updatedAt: true,
+          updatedIn: true,
           email: true,
 
           user: {
@@ -10647,7 +10647,7 @@ export class ProfileControllerBase {
         select: {
           id: true,
           createdIn: true,
-          updatedAt: true,
+          updatedIn: true,
           email: true,
 
           user: {

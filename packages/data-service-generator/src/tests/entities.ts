@@ -303,8 +303,8 @@ const PROFILE: Entity = {
     {
       id: "6c373d03-3e01-4b49-9a24-abae9a019acb",
       permanentId: "540c2056-7b17-4d9f-b880-d151f3d09e36",
-      name: "updatedAt",
-      displayName: "Updated At",
+      name: "updatedIn",
+      displayName: "Updated In",
       dataType: EnumDataType.UpdatedAt,
       properties: {},
       required: true,
