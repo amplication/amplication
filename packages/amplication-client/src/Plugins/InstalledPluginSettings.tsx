@@ -65,6 +65,12 @@ const InstalledPluginSettings: React.FC<Props> = ({
     );
   }, [pluginInstallation?.PluginInstallation.settings]);
 
+  useEffect(() => {
+    if (pluginInstallation && !selectedVersion) {
+      setSelectedVersion(pluginInstallation.PluginInstallation.version);
+    }
+  }, [pluginInstallation?.PluginInstallation.version]);
+
   const plugin = useMemo(() => {
     return (
       pluginInstallation &&
@@ -97,8 +103,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-
     const { enabled, id } = pluginInstallation.PluginInstallation;
+    console.log("selectedVersion handlePluginInstalledSave: ", selectedVersion);
+
     updatePluginInstallation({
       variables: {
         data: {
