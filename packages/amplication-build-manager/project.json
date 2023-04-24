@@ -43,7 +43,7 @@
       "options": {
         "buildTarget": "amplication-build-manager:build",
         "inspect": true,
-        "port": 9229
+        "port": 7010
       },
       "configurations": {
         "production": {
