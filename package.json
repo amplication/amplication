@@ -43,7 +43,7 @@
     "@mui/material": "^5.10.13",
     "@mui/system": "^5.10.7",
     "@nestjs/apollo": "^10.2.0",
-    "@nestjs/common": "^9.3.9",
+    "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
     "@nestjs/core": "^9.3.12",
     "@nestjs/graphql": "^10.0.0",
