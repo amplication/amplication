@@ -196,6 +196,32 @@ export function createFieldClassProperty(
             ]
           : [];
         decorators.push(builders.decorator(builders.callExpression(id, args)));
+        if (
+          inputType === EntityDtoTypeEnum.WhereUniqueInput &&
+          prismaField.type === ScalarType.Int
+        ) {
+          decorators.push(
+            builders.decorator(
+              builders.callExpression(builders.identifier("Transform"), [
+                builders.arrowFunctionExpression(
+                  [builders.identifier("prop")],
+                  builders.callExpression(builders.identifier("parseInt"), [
+                    builders.memberExpression(
+                      builders.identifier("prop"),
+                      builders.identifier("value")
+                    ),
+                  ])
+                ),
+                builders.objectExpression([
+                  builders.objectProperty(
+                    builders.identifier("toClassOnly"),
+                    builders.booleanLiteral(true)
+                  ),
+                ]),
+              ])
+            )
+          );
+        }
       }
     }
     const swaggerType = !isQuery
