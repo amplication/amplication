@@ -283,7 +283,7 @@ const PROFILE: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "AUTO_INCREMENT",
+        idType: "CUID",
       },
       required: true,
       unique: false,
@@ -674,7 +674,7 @@ const CUSTOMER: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "AUTO_INCREMENT",
+        idType: "CUID",
       },
       required: true,
       unique: false,
