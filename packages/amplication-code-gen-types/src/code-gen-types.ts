@@ -122,13 +122,6 @@ export type Entity = Omit<
 export type Module = {
   path: string;
   code: string;
-  /**
-   * The module's owner is the plugin that generated it.
-   */
-  owner?: {
-    pluginName: string;
-    eventName: EventNames;
-  };
 };
 
 /**
