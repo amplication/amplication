@@ -16,7 +16,7 @@ export class GithubAuthExceptionFilter implements ExceptionFilter {
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
 
-    this.logger.error(exception.message, { request });
+    this.logger.error(exception.message, exception, { request });
 
     response.redirect(`/login/?error=${encodeURIComponent(exception.message)}`);
   }

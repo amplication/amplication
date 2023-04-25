@@ -858,7 +858,9 @@ export type DeleteProfileArgs = {
 
 export type Profile = {
   id: number;
+  createdIn: Date;
   createdAt: Date;
+  updatedIn: Date;
   updatedAt: Date;
   email: string;
   user?: User | null;
@@ -867,6 +869,8 @@ export type Profile = {
   "admin-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileCreateInput = {
+  createdAt: Date;
+  updatedAt: Date;
   email: string;
   user?: UserWhereUniqueInput | null;
 };
@@ -899,7 +903,9 @@ export type ProfileListRelationFilter = {
 
 export type ProfileOrderByInput = {
   id?: SortOrder;
+  createdIn?: SortOrder;
   createdAt?: SortOrder;
+  updatedIn?: SortOrder;
   updatedAt?: SortOrder;
   email?: SortOrder;
   userId?: SortOrder;
@@ -908,6 +914,8 @@ export type ProfileOrderByInput = {
   "admin-ui/src/api/profile/ProfileUpdateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileUpdateInput = {
+  createdAt?: Date;
+  updatedAt?: Date;
   email?: string;
   user?: UserWhereUniqueInput | null;
 };
@@ -919,7 +927,9 @@ import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileWhereInput = {
   id?: IntFilter;
+  createdIn?: DateTimeFilter;
   createdAt?: DateTimeFilter;
+  updatedIn?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
   user?: UserWhereUniqueInput;
@@ -2231,20 +2241,25 @@ const Dashboard = () => (
 export default Dashboard;
 ",
   "admin-ui/src/profile/ProfileCreate.tsx": "import * as React from \\"react\\";
+
 import {
   Create,
   SimpleForm,
   CreateProps,
+  DateTimeInput,
   TextInput,
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+
 import { UserTitle } from \\"../user/UserTitle\\";
 
 export const ProfileCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <DateTimeInput label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateTimeInput label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
           <SelectInput optionText={UserTitle} />
@@ -2255,20 +2270,25 @@ export const ProfileCreate = (props: CreateProps): React.ReactElement => {
 };
 ",
   "admin-ui/src/profile/ProfileEdit.tsx": "import * as React from \\"react\\";
+
 import {
   Edit,
   SimpleForm,
   EditProps,
+  DateTimeInput,
   TextInput,
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+
 import { UserTitle } from \\"../user/UserTitle\\";
 
 export const ProfileEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <DateTimeInput label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateTimeInput label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
           <SelectInput optionText={UserTitle} />
@@ -2301,8 +2321,10 @@ export const ProfileList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
-        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"createdIn\\" label=\\"Created In\\" />
+        <TextField label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
+        <TextField label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -2328,8 +2350,10 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label=\\"Id\\" source=\\"id\\" />
-        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"createdIn\\" label=\\"Created In\\" />
+        <TextField label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
+        <TextField label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -3011,8 +3035,10 @@ model User {
 
 model Profile {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdIn DateTime @default(now())
+  createdAt DateTime
+  updatedIn DateTime @updatedAt
+  updatedAt DateTime
   email     String
   user      User?
 }
@@ -4399,6 +4425,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+import { Transform } from \\"class-transformer\\";
 
 @InputType()
 class CustomerWhereUniqueInput {
@@ -4407,6 +4434,9 @@ class CustomerWhereUniqueInput {
     type: Number,
   })
   @IsInt()
+  @Transform((prop) => parseInt(prop.value), {
+    toClassOnly: true,
+  })
   @Field(() => Number)
   id!: number;
 }
@@ -9842,7 +9872,23 @@ class Profile {
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
+  createdIn!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedIn!: Date;
 
   @ApiProperty({
     required: true,
@@ -9885,12 +9931,28 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { IsDate, IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 
 @InputType()
 class ProfileCreateInput {
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -10083,7 +10145,25 @@ class ProfileOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  createdIn?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedIn?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -10128,12 +10208,34 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { IsDate, IsOptional, IsString, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 
 @InputType()
 class ProfileUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  updatedAt?: Date;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10202,7 +10304,29 @@ class ProfileWhereInput {
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
+  createdIn?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedIn?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -10255,6 +10379,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+import { Transform } from \\"class-transformer\\";
 
 @InputType()
 class ProfileWhereUniqueInput {
@@ -10263,6 +10388,9 @@ class ProfileWhereUniqueInput {
     type: Number,
   })
   @IsInt()
+  @Transform((prop) => parseInt(prop.value), {
+    toClassOnly: true,
+  })
   @Field(() => Number)
   id!: number;
 }
@@ -10316,27 +10444,35 @@ const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const CREATE_RESULT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const FIND_MANY_RESULT = [
   {
     id: 42,
+    createdIn: new Date(),
     createdAt: new Date(),
+    updatedIn: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
   },
 ];
 const FIND_ONE_RESULT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
@@ -10423,7 +10559,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -10435,7 +10573,9 @@ describe(\\"Profile\\", () => {
       .expect([
         {
           ...FIND_MANY_RESULT[0],
+          createdIn: FIND_MANY_RESULT[0].createdIn.toISOString(),
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedIn: FIND_MANY_RESULT[0].updatedIn.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
@@ -10458,7 +10598,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
+        createdIn: FIND_ONE_RESULT.createdIn.toISOString(),
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedIn: FIND_ONE_RESULT.updatedIn.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -10471,7 +10613,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
@@ -10533,7 +10677,9 @@ export class ProfileControllerBase {
       },
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10555,7 +10701,9 @@ export class ProfileControllerBase {
       ...args,
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10578,7 +10726,9 @@ export class ProfileControllerBase {
       where: params,
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10618,7 +10768,9 @@ export class ProfileControllerBase {
         },
         select: {
           id: true,
+          createdIn: true,
           createdAt: true,
+          updatedIn: true,
           updatedAt: true,
           email: true,
 
@@ -10650,7 +10802,9 @@ export class ProfileControllerBase {
         where: params,
         select: {
           id: true,
+          createdIn: true,
           createdAt: true,
+          updatedIn: true,
           updatedAt: true,
           email: true,
 
