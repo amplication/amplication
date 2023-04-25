@@ -112,7 +112,11 @@ describe("Data Service Generator", () => {
           directory,
         });
 
-        await generateCodeByResourceData(testResourceData, directory);
+        try {
+          await generateCodeByResourceData(testResourceData, directory);
+        } catch (error) {
+          logger.error("Failed to generate code", error);
+        }
 
         port = await getPort();
         dbPort = await getPort();
@@ -130,11 +134,14 @@ describe("Data Service Generator", () => {
           if (graphQLErrors)
             graphQLErrors.map(({ message, locations, path }) =>
               logger.error(
-                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+                `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`,
+                null,
+                { graphQLErrors }
               )
             );
 
-          if (networkError) logger.error(`[Network error]: ${networkError}`);
+          if (networkError)
+            logger.error(`[Network error]: ${networkError}`, networkError);
         });
 
         const httpLink = createHttpLink({
@@ -183,7 +190,7 @@ describe("Data Service Generator", () => {
             follow: true,
           })
           .catch((err) => {
-            logger.error(err);
+            logger.error(err.message, err);
           });
 
         logger.info("Waiting for server to be ready...");
@@ -420,7 +427,7 @@ describe("Data Service Generator", () => {
                 })
               );
             } catch (error) {
-              logger.error(error.message, { error });
+              logger.error(error.message, error);
               throw error;
             }
           });
