@@ -93,7 +93,10 @@
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
       "options": {
-        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/*.spec.ts ",
+          "jest --collectCoverage=false -u src/tests/server"
+        ],
         "parallel": false,
         "cwd": "packages/data-service-generator"
       }
