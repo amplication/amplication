@@ -2977,7 +2977,8 @@ services:
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"10.9.1\\",
+    \\"validator\\": \\"^13.9.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -2988,6 +2989,7 @@ services:
     \\"@types/jest\\": \\"26.0.19\\",
     \\"@types/normalize-path\\": \\"3.0.0\\",
     \\"@types/supertest\\": \\"2.0.11\\",
+    \\"@types/validator\\": \\"^13.7.15\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
     \\"prisma\\": \\"4.6.1\\",
@@ -11476,13 +11478,13 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
@@ -11615,7 +11617,7 @@ class User {
   @ApiProperty({
     required: true,
   })
-  @IsJSON()
+  @IsJSONValue()
   @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
@@ -11654,7 +11656,6 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -11663,6 +11664,7 @@ import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyW
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
@@ -11794,7 +11796,7 @@ class UserCreateInput {
   @ApiProperty({
     required: true,
   })
-  @IsJSON()
+  @IsJSONValue()
   @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
@@ -12147,7 +12149,6 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -12156,6 +12157,7 @@ import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersI
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
@@ -12314,7 +12316,7 @@ class UserUpdateInput {
   @ApiProperty({
     required: false,
   })
-  @IsJSON()
+  @IsJSONValue()
   @IsOptional()
   @Field(() => GraphQLJSON, {
     nullable: true,
@@ -14602,6 +14604,83 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "server/src/validators/index.ts": "export * from \\"./is-json-value-validator\\";
+",
+  "server/src/validators/is-json-value-validator.spec.ts": "import { validate, ValidationError } from \\"class-validator\\";
+import { IsJSONValue } from \\"./is-json-value-validator\\";
+
+class TestClass {
+  @IsJSONValue()
+  jsonProperty: unknown;
+}
+
+describe(\\"IsJSONValue\\", () => {
+  it(\\"should validate a valid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = '{\\"name\\": \\"John\\", \\"age\\": 30}';
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+
+  it(\\"should not validate an invalid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = '{name: \\"John\\", age: 30}';
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(1);
+  });
+
+  it(\\"should not validate an invalid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = \\"John\\";
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(1);
+  });
+
+  it(\\"should validate a valid JSON object\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = { name: \\"John\\", age: 30 };
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+
+  it(\\"should validate a valid JSON array\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = [\\"John\\", \\"30\\"];
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+});
+",
+  "server/src/validators/is-json-value-validator.ts": "import {
+  ValidationArguments,
+  registerDecorator,
+  ValidationOptions,
+} from \\"class-validator\\";
+import isJSONValidator from \\"validator/lib/isJSON\\";
+
+export function IsJSONValue(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: \\"IsJSONValue\\",
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          if (typeof value === \\"string\\") {
+            return isJSONValidator(value);
+          }
+
+          return isJSONValidator(JSON.stringify(value));
+        },
+        defaultMessage(args: ValidationArguments): string {
+          return \`\${args.property} must be a valid json\`;
+        },
+      },
+    });
+  };
+}
+",
   "server/tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\", \\"admin\\"]
@@ -14623,7 +14702,10 @@ export class StringNullableFilter {
     \\"allowSyntheticDefaultImports\\": true,
     \\"resolveJsonModule\\": true,
     \\"skipLibCheck\\": true,
-    \\"strict\\": true
+    \\"strict\\": true,
+    \\"paths\\": {
+      \\"@app/custom-validators\\": [\\"./src/validators\\"]
+    }
   },
   \\"include\\": [\\"src\\"]
 }

@@ -22,12 +22,8 @@
         "generate-local-code",
         "data-service-generator --verbose"
       ],
-      "runtimeExecutable": "node",
-      "runtimeArgs": ["--nolazy", "-r", "ts-node/register/transpile-only"],
-      "args": ["src/script.ts", "--example", "hello"],
       "cwd": "${workspaceRoot}",
       "runtimeExecutable": "npx",
-      "skipFiles": ["<node_internals>/**"],
       "env": {}
     },
     {
