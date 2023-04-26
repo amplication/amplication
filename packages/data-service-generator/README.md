@@ -37,7 +37,7 @@ Generate an application according to the test data definitions. Once generated y
 
 ```sh
 # Generate an example input used by data-service-generator during the generation process
-npx nx generate-example-input-json
+npx nx generate-example-input-json data-service-generator
 
 # Trigger the code generation process based on the example input
 npx nx generate-local-code data-service-generator
