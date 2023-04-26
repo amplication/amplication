@@ -1,8 +1,9 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { InjectSendGrid, SendGridService } from "@ntegral/nestjs-sendgrid";
 import { ConfigService } from "@nestjs/config";
 import { SendInvitationArgs } from "./dto/SendInvitationArgs";
 import { SendDeploymentArgs } from "./dto/SendDeploymentArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const SENDGRID_FROM_ADDRESS_VAR = "SENDGRID_FROM_ADDRESS";
 const SENDGRID_INVITATION_TEMPLATE_ID_VAR = "SENDGRID_INVITATION_TEMPLATE_ID";
@@ -20,7 +21,8 @@ const IS_EMAIL_DEPLOYMENT_NOTIFICATION = false;
 export class MailService {
   constructor(
     private readonly configService: ConfigService,
-    @InjectSendGrid() private readonly client: SendGridService
+    @InjectSendGrid() private readonly client: SendGridService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   async sendInvitation(args: SendInvitationArgs): Promise<boolean> {
@@ -33,7 +35,7 @@ export class MailService {
 
     const inviteUrl = `${host}/login?invitation=${args.invitationToken}`;
 
-    console.log({ args });
+    this.logger.debug("sendInvitation", args);
 
     const msg = {
       to: args.to,
@@ -65,7 +67,7 @@ export class MailService {
         );
       }
 
-      console.log({ args });
+      this.logger.debug("sendDeploymentNotification", args);
 
       const msg = {
         to: args.to,

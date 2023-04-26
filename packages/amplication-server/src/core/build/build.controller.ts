@@ -1,5 +1,5 @@
 import { EnvironmentVariables } from "@amplication/util/kafka";
-import { Controller } from "@nestjs/common";
+import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
@@ -14,12 +14,15 @@ import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
 import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { CreatePRSuccess } from "./dto/CreatePRSuccess";
 import { LogEntryDto } from "./dto/LogEntryDto";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Controller("generated-apps")
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
-    private readonly actionService: ActionService
+    private readonly actionService: ActionService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
   ) {}
 
   @MessagePattern(
@@ -76,7 +79,7 @@ export class BuildController {
       const args = plainToInstance(CreatePRSuccess, message);
       await this.buildService.onCreatePRSuccess(args);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -88,7 +91,7 @@ export class BuildController {
       const args = plainToInstance(CreatePRFailure, message);
       await this.buildService.onCreatePRFailure(args);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
 

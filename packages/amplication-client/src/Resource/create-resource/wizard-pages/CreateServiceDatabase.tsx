@@ -4,11 +4,16 @@ import "../CreateServiceWizard.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
+import ImgSvg from "./ImgSvg";
+
+const PLUGIN_LOGO_BASE_URL =
+  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
+
+const PostgresPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-postgres.png`, "large");
+const MongoPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mongo.png`, "large");
+const MysqlPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mysql.png`, "large");
 
 const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
-  const PLUGIN_LOGO_BASE_URL =
-    "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
-
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(
@@ -36,7 +41,7 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
         <Layout.SelectorWrapper>
           <LabelDescriptionSelector
             name="postgres"
-            image={`${PLUGIN_LOGO_BASE_URL}db-postgres.png`}
+            image={PostgresPng}
             imageSize="large"
             label="PostgreSQL"
             description="Use PostgreSQL database in Amplication service."
@@ -45,7 +50,7 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
           />
           <LabelDescriptionSelector
             name="mongo"
-            image={`${PLUGIN_LOGO_BASE_URL}db-mongo.png`}
+            image={MongoPng}
             imageSize="large"
             label="MongoDB"
             description="Use MongoDB database in Amplication service."
@@ -54,7 +59,7 @@ const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
           />
           <LabelDescriptionSelector
             name="mysql"
-            image={`${PLUGIN_LOGO_BASE_URL}db-mysql.png`}
+            image={MysqlPng}
             imageSize="large"
             label="MySQL"
             description="Use MySQL database in Amplication service.."

@@ -29,7 +29,7 @@ describe("Test that the entity dto is creating properly", () => {
           @ApiProperty({
             required: true,
           })
-          @IsJSON()
+          @IsJSONValue()
           @Field(() => GraphQLJSON)
           JsonFieldName!: JsonValue;
         }
@@ -51,7 +51,7 @@ describe("Test that the entity dto is creating properly", () => {
           @ApiProperty({
             required: false,
           })
-          @IsJSON()
+          @IsJSONValue()
           @IsOptional()
           @Field(() => GraphQLJSON, {
             nullable: true,

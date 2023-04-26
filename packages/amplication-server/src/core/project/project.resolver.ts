@@ -107,7 +107,7 @@ export class ProjectResolver {
     try {
       return await this.projectService.commit(args, currentUser);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
       throw error;
     }
   }
