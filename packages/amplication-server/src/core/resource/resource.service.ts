@@ -163,14 +163,29 @@ export class ResourceService {
     const isOnBoarding = wizardType?.toLowerCase() === "onboarding";
 
     if (
-      projectConfiguration.gitRepositoryId ||
-      (args.data.resourceType === EnumResourceType.Service &&
-        gitRepositoryToCreate &&
-        !gitRepositoryToCreate?.isOverrideGitRepository)
+      args.data.resourceType === EnumResourceType.Service &&
+      gitRepositoryToCreate &&
+      !gitRepositoryToCreate?.isOverrideGitRepository
     ) {
-      gitRepository = {
-        connect: { id: projectConfiguration.gitRepositoryId },
-      };
+      if (!projectConfiguration.gitRepositoryId) {
+        const wizardGitRepository = await this.prisma.gitRepository.create({
+          data: {
+            name: gitRepositoryToCreate.name,
+            resources: {},
+            gitOrganization: {
+              connect: { id: gitRepositoryToCreate.gitOrganizationId },
+            },
+          },
+        });
+
+        gitRepository = {
+          connect: { id: wizardGitRepository.id },
+        };
+      } else {
+        gitRepository = {
+          connect: { id: projectConfiguration.gitRepositoryId },
+        };
+      }
     }
 
     if (
@@ -193,7 +208,11 @@ export class ResourceService {
       };
     }
 
-    if (isOnBoarding) {
+    if (
+      isOnBoarding ||
+      (!gitRepositoryToCreate.isOverrideGitRepository &&
+        !projectConfiguration.gitRepositoryId)
+    ) {
       await this.prisma.resource.update({
         data: {
           gitRepository: gitRepository,
