@@ -29,6 +29,7 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
+import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -110,11 +111,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
     useState<boolean>(false);
 
   const handleSignOut = useCallback(() => {
-    /**@todo: sign out on server */
     unsetToken();
     apolloClient.clearStore();
 
-    history.replace("/login");
+    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const handleUpgradeClick = useCallback(() => {

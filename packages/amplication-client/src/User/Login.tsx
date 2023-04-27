@@ -99,14 +99,17 @@ const Login = () => {
           {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to {content.name}. Please use your GitHub account to
+                Welcome to {content.name}. Please use any supported account to
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
               <div className={`${CLASS_NAME}__signup`}>
-                Do not have a GitHub account?{" "}
-                <a href="https://github.com/join" target="Github">
-                  Join GitHub
+                Do not have a supported account or you need SSO?{" "}
+                <a
+                  href="https://amplication.com/contact-us"
+                  target="contact-us"
+                >
+                  Contact us
                 </a>
               </div>
             </>
