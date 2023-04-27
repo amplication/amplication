@@ -7,11 +7,20 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
+import BitbucketLogo from "../../../assets/images/bitbucket.svg";
+import GithubLogo from "../../../assets/images/github.svg";
+import GitlabLogo from "../../../assets/images/gitlab.svg";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
 import * as models from "../../../models";
-import { GitOrganizationMenuAddProvider } from "./GitOrganizationMenuAddProvider";
+import { useRef } from "react";
+
+export const gitLogoMap = {
+  [models.EnumGitProvider.Bitbucket]: BitbucketLogo,
+  [models.EnumGitProvider.Github]: GithubLogo,
+  [models.EnumGitProvider.GitLab]: GitlabLogo,
+};
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
@@ -30,15 +39,19 @@ export default function ExistingConnectionsMenu({
   onAddGitOrganization,
   onSelectGitOrganization,
 }: Props) {
+  const selectRef = useRef(null);
+
   return (
     <>
       <div className={`${CLASS_NAME}__label-title`}>
         <Label text="Select organization" />
       </div>
       <SelectMenu
+        selectRef={selectRef}
         title={
           selectedGitOrganization?.name ? (
             <GitOrganizationMenuItemContent
+              gitAvatar={gitLogoMap[selectedGitOrganization.provider]}
               gitOrganization={selectedGitOrganization}
               isMenuTitle
             />
@@ -50,40 +63,43 @@ export default function ExistingConnectionsMenu({
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
       >
-        <SelectMenuModal>
-          <div className={`${CLASS_NAME}__select-menu`}>
-            <SelectMenuList>
-              <>
-                {gitOrganizations.map((gitOrganization) => (
-                  <SelectMenuItem
-                    closeAfterSelectionChange
-                    selected={
-                      selectedGitOrganization?.id === gitOrganization.id
-                    }
-                    key={gitOrganization.id}
-                    onSelectionChange={() => {
-                      onSelectGitOrganization(gitOrganization);
-                    }}
-                  >
-                    <GitOrganizationMenuItemContent
-                      gitOrganization={gitOrganization}
-                    />
-                  </SelectMenuItem>
-                ))}
-                <hr className={`${CLASS_NAME}__hr`} />
-                <SelectMenuItem onSelectionChange={onAddGitOrganization}>
-                  <span>Add Organization</span>
-                  <Icon icon="plus" size="xsmall" />
+        <SelectMenuModal className={`${CLASS_NAME}__list`}>
+          <SelectMenuList className={`${CLASS_NAME}__select-menu`}>
+            <>
+              {gitOrganizations.map((gitOrganization) => (
+                <SelectMenuItem
+                  className={`${CLASS_NAME}__item`}
+                  closeAfterSelectionChange
+                  selected={selectedGitOrganization?.id === gitOrganization.id}
+                  key={gitOrganization.id}
+                  onSelectionChange={() => {
+                    onSelectGitOrganization(gitOrganization);
+                  }}
+                >
+                  <GitOrganizationMenuItemContent
+                    gitAvatar={gitLogoMap[gitOrganization.provider]}
+                    gitOrganization={gitOrganization}
+                  />
                 </SelectMenuItem>
-                {/* // <GitOrganizationMenuAddProvider
+              ))}
+              {/* // <GitOrganizationMenuAddProvider
                   //   key={provider.provider}
                   //   label={provider.label}
                   //   provider={provider.provider}
                   //   onAddGitOrganization={onAddGitOrganization}
                   //   className={CLASS_NAME}
                   // /> */}
-              </>
-            </SelectMenuList>
+            </>
+          </SelectMenuList>
+          <div
+            className={`${CLASS_NAME}__add-item`}
+            onClick={() => {
+              selectRef.current.firstChild.click();
+              onAddGitOrganization();
+            }}
+          >
+            <Icon icon="plus" size="xsmall" />
+            <span>Add Organization</span>
           </div>
         </SelectMenuModal>
       </SelectMenu>

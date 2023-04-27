@@ -85,6 +85,7 @@ export default function GitCreateRepo({
             <>
               <div className={`${CLASS_NAME}__label`}>Change workspace</div>
               <GitSelectMenu
+                gitProvider={gitProvider}
                 selectedItem={repositoryGroup}
                 items={gitGroups}
                 onSelect={setRepositoryGroup}

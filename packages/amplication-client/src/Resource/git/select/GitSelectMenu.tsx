@@ -8,6 +8,8 @@ import {
 import { GitSelectMenuItemContent } from "./GitSelectMenuItemContent";
 
 import "./GitSelectMenu.scss";
+import { EnumGitProvider } from "../../../models";
+import { gitLogoMap } from "../GitActions/ExistingConnectionsMenu";
 
 const CLASS_NAME = "git-select-menu";
 
@@ -15,15 +17,21 @@ export type Props = {
   selectedItem: any;
   items: any[];
   onSelect: (item: any) => void;
+  gitProvider: EnumGitProvider;
 };
 
-export const GitSelectMenu = ({ selectedItem, items, onSelect }: Props) => {
+export const GitSelectMenu = ({
+  selectedItem,
+  items,
+  onSelect,
+  gitProvider,
+}: Props) => {
   return (
     <SelectMenu
       title={
         selectedItem && (
           <GitSelectMenuItemContent
-            logo={selectedItem.logo}
+            logo={gitLogoMap[gitProvider]}
             name={selectedItem.name}
           />
         )
@@ -32,25 +40,27 @@ export const GitSelectMenu = ({ selectedItem, items, onSelect }: Props) => {
       className={CLASS_NAME}
       icon="chevron_down"
     >
-      <SelectMenuModal>
-        <div className={`${CLASS_NAME}__select-menu`}>
-          <SelectMenuList>
-            <>
-              {items?.map((item) => (
-                <SelectMenuItem
-                  closeAfterSelectionChange
-                  selected={selectedItem?.id === item.id}
-                  key={item.id}
-                  onSelectionChange={() => {
-                    onSelect(item);
-                  }}
-                >
-                  <GitSelectMenuItemContent logo={item.logo} name={item.name} />
-                </SelectMenuItem>
-              ))}
-            </>
-          </SelectMenuList>
-        </div>
+      <SelectMenuModal className={`${CLASS_NAME}__menu`}>
+        <SelectMenuList className={`${CLASS_NAME}__list`}>
+          <>
+            {items?.map((item) => (
+              <SelectMenuItem
+                className={`${CLASS_NAME}__item`}
+                closeAfterSelectionChange
+                selected={selectedItem?.id === item.id}
+                key={item.id}
+                onSelectionChange={() => {
+                  onSelect(item);
+                }}
+              >
+                <GitSelectMenuItemContent
+                  logo={gitLogoMap[gitProvider]}
+                  name={item.name}
+                />
+              </SelectMenuItem>
+            ))}
+          </>
+        </SelectMenuList>
       </SelectMenuModal>
     </SelectMenu>
   );

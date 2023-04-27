@@ -9,6 +9,7 @@ import GitRepos, {
 } from "./GitRepos/GithubRepos";
 
 import "./GitDialogsContainer.scss";
+import { useCallback } from "react";
 
 type Props = {
   gitOrganizationId: string;
@@ -23,12 +24,13 @@ type Props = {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
   };
-
   onGitCreateRepository: (data: GitRepositoryCreatedData) => void;
   onPopupFailedClose: () => void;
   onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: GitRepositorySelected) => void;
+  openCreateNewRepo?: () => void;
+  setSelectRepoOpen?: (state: boolean) => void;
 };
 
 export default function GitDialogsContainer({
@@ -46,7 +48,14 @@ export default function GitDialogsContainer({
   onSelectGitRepositoryDialogClose,
   onSelectGitRepository,
   onGitCreateRepositoryClose,
+  openCreateNewRepo,
+  setSelectRepoOpen,
 }: Props) {
+  const handleCreateNewRepoClick = useCallback(() => {
+    setSelectRepoOpen(false);
+    openCreateNewRepo();
+  }, [setSelectRepoOpen, openCreateNewRepo]);
+
   return (
     <div>
       <Dialog
@@ -60,6 +69,7 @@ export default function GitDialogsContainer({
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
           useGroupingForRepositories={useGroupingForRepositories}
+          openCreateNewRepo={handleCreateNewRepoClick}
         />
       </Dialog>
       <Dialog

@@ -32,6 +32,7 @@ type Props = {
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
   useGroupingForRepositories?: boolean;
+  openCreateNewRepo: () => void;
 };
 
 export type GitRepositorySelected = {
@@ -54,6 +55,7 @@ function GitRepos({
   onGitRepositoryConnected,
   gitProvider,
   useGroupingForRepositories,
+  openCreateNewRepo,
 }: Props) {
   const [page, setPage] = useState(1);
 
@@ -65,6 +67,7 @@ function GitRepos({
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;
   const [repositoryGroup, setRepositoryGroup] = useState(null);
+  const [numberOfPages, setNumberOfPages] = useState(null);
 
   useEffect(() => {
     if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
@@ -125,6 +128,15 @@ function GitRepos({
     refetch();
   }, [refetch]);
 
+  useEffect(() => {
+    if (!data) return;
+
+    const pages = Math.ceil(
+      data?.remoteGitRepositories.total / data?.remoteGitRepositories.pageSize
+    );
+    if (pages && pages > 1) setNumberOfPages(pages);
+  }, [data]);
+
   const errorMessage = formatError(error);
 
   return (
@@ -132,8 +144,12 @@ function GitRepos({
       {useGroupingForRepositories && (
         <>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-          <Label text="Change workspace" />
+          <Label
+            className={`${CLASS_NAME}__change-label`}
+            text="Change workspace"
+          />
           <GitSelectMenu
+            gitProvider={gitProvider}
             selectedItem={repositoryGroup}
             items={gitGroups}
             onSelect={setRepositoryGroup}
@@ -147,38 +163,36 @@ function GitRepos({
             <CircularProgress />
           ) : (
             <>
-              <SelectMenu
-                title={page.toString()}
-                buttonStyle={EnumButtonStyle.Secondary}
-                icon="chevron_down"
-              >
-                <SelectMenuModal>
-                  <SelectMenuList>
-                    {Array.from(
-                      {
-                        length: Math.ceil(
-                          data?.remoteGitRepositories.total /
-                            data?.remoteGitRepositories.pageSize
-                        ),
-                      },
-                      (_, index) => index + 1
-                    ).map((item, i) => {
-                      return (
-                        <SelectMenuItem
-                          closeAfterSelectionChange
-                          selected={item === page}
-                          onSelectionChange={() => {
-                            setPage(item);
-                          }}
-                          key={i}
-                        >
-                          {item}
-                        </SelectMenuItem>
-                      );
-                    })}
-                  </SelectMenuList>
-                </SelectMenuModal>
-              </SelectMenu>
+              {numberOfPages && (
+                <SelectMenu
+                  title={page.toString()}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="chevron_down"
+                >
+                  <SelectMenuModal className={`${CLASS_NAME}__menu`}>
+                    <SelectMenuList className={`${CLASS_NAME}__list`}>
+                      {Array.from(
+                        { length: numberOfPages },
+                        (_, index) => index + 1
+                      ).map((item, i) => {
+                        return (
+                          <SelectMenuItem
+                            className={`${CLASS_NAME}__item`}
+                            closeAfterSelectionChange
+                            selected={item === page}
+                            onSelectionChange={() => {
+                              setPage(item);
+                            }}
+                            key={i}
+                          >
+                            {item}
+                          </SelectMenuItem>
+                        );
+                      })}
+                    </SelectMenuList>
+                  </SelectMenuModal>
+                </SelectMenu>
+              )}
               <Tooltip
                 aria-label="Refresh repositories"
                 direction="w"
@@ -197,7 +211,18 @@ function GitRepos({
             </>
           )}
         </div>
-        <div className={`${CLASS_NAME}__header-right`}></div>
+        <div className={`${CLASS_NAME}__header-right`}>
+          <Button
+            className={`${CLASS_NAME}__header-create`}
+            buttonStyle={EnumButtonStyle.Outline}
+            onClick={(e) => {
+              openCreateNewRepo();
+            }}
+            type="button"
+          >
+            Create repository
+          </Button>
+        </div>
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
         data?.remoteGitRepositories?.repos?.map((repo) => (

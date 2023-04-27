@@ -183,10 +183,13 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             isRepoCreateLoading: createRepoLoading,
             RepoCreatedError: createRepoError,
           }}
+          openCreateNewRepo={openCreateNewRepo}
+          setSelectRepoOpen={setSelectRepoOpen}
         />
       )}
       {isSelectOrganizationDialogOpen && (
         <Dialog
+          title="Select Git Provider"
           className="git-organization-dialog"
           isOpen={isSelectOrganizationDialogOpen}
           onDismiss={closeSelectOrganizationDialog}

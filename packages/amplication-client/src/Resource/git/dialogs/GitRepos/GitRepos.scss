@@ -6,6 +6,54 @@ $menu_modal_width: 60px;
 .git-repos {
   overflow: auto;
   overflow-x: hidden;
+  &__change-label {
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .select-menu {
+    width: 50px;
+  }
+
+  &__menu {
+    background: var(--white);
+    width: 50px;
+    margin: 0px;
+    top: 28px;
+    border: 1px solid #373d57;
+    & div {
+      border-radius: 0px;
+      border: none;
+      margin: 0px;
+    }
+  }
+
+  &__list {
+    border: none;
+    width: 50px;
+  }
+
+  &__item {
+    background-color: transparent;
+    border: none;
+    width: 50px;
+    padding: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 5px 0px 5px 8px;
+    border-radius: 0px;
+    & .SelectMenu-icon {
+      margin-right: 0px !important;
+      margin-left: 15px !important;
+    }
+  }
+
+  &__item:hover {
+    background-color: var(--black5);
+  }
+
   &__header {
     @include flexFullRowWithSpacing;
     align-items: center;
@@ -15,7 +63,15 @@ $menu_modal_width: 60px;
       display: flex;
       align-self: flex-start;
       align-items: center;
-
+      position: relative;
+      .select-menu__summary {
+        width: 50px;
+        min-width: 50px;
+        background-color: var(--white);
+      }
+      .select-menu__summary:focus {
+        background-color: var(--white);
+      }
       .amp-circular-progress {
         margin-left: var(--default-spacing);
       }
@@ -77,6 +133,10 @@ $menu_modal_width: 60px;
     margin-top: var(--large-spacing);
     margin-bottom: var(--large-spacing);
   }
+}
+
+.amp-button.amp-button--outline {
+  border-radius: 4px !important;
 }
 
 .amp-dialog.select-repo-dialog {
