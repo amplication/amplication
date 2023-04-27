@@ -93,14 +93,18 @@ export class BillingService {
     value = 1
   ): Promise<ReportUsageAck> {
     try {
-      if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        return await stiggClient.reportUsage({
-          customerId: workspaceId,
-          featureId: feature,
-          value: value,
-        });
+      if (!this.isBillingEnabled) {
+        return;
       }
+
+      const stiggClient = await this.getStiggClient();
+      const reportUsageParams = {
+        customerId: workspaceId,
+        featureId: feature,
+        value: value,
+      };
+
+      return await stiggClient.reportUsage(reportUsageParams);
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -112,22 +116,23 @@ export class BillingService {
     value: number
   ): Promise<ReportUsageAck> {
     try {
-      if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-
-        const entitlement = await stiggClient.getMeteredEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
-
-        const result = value - entitlement.currentUsage;
-
-        return await stiggClient.reportUsage({
-          customerId: workspaceId,
-          featureId: feature,
-          value: result,
-        });
+      if (!this.isBillingEnabled) {
+        return;
       }
+      const stiggClient = await this.getStiggClient();
+
+      const { currentUsage } = await stiggClient.getMeteredEntitlement({
+        customerId: workspaceId,
+        featureId: feature,
+      });
+
+      const usageDelta = value - currentUsage;
+
+      return await stiggClient.reportUsage({
+        customerId: workspaceId,
+        featureId: feature,
+        value: usageDelta,
+      });
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -138,13 +143,16 @@ export class BillingService {
     feature: BillingFeature
   ): Promise<MeteredEntitlement> {
     try {
-      if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        return await stiggClient.getMeteredEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
+      if (!this.isBillingEnabled) {
+        return;
       }
+
+      const stiggClient = await this.getStiggClient();
+
+      return await stiggClient.getMeteredEntitlement({
+        customerId: workspaceId,
+        featureId: feature,
+      });
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -155,13 +163,15 @@ export class BillingService {
     feature: BillingFeature
   ): Promise<NumericEntitlement> {
     try {
-      if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        return await stiggClient.getNumericEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
+      if (!this.isBillingEnabled) {
+        return;
       }
+      const stiggClient = await this.getStiggClient();
+
+      return await stiggClient.getNumericEntitlement({
+        customerId: workspaceId,
+        featureId: feature,
+      });
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -172,13 +182,16 @@ export class BillingService {
     feature: BillingFeature
   ): Promise<BooleanEntitlement> {
     try {
-      if (this.isBillingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        return await stiggClient.getBooleanEntitlement({
-          customerId: workspaceId,
-          featureId: feature,
-        });
+      if (!this.isBillingEnabled) {
+        return;
       }
+
+      const stiggClient = await this.getStiggClient();
+
+      return await stiggClient.getBooleanEntitlement({
+        customerId: workspaceId,
+        featureId: feature,
+      });
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -198,8 +211,8 @@ export class BillingService {
     const stiggClient = await this.getStiggClient();
     const stiggResponse = await stiggClient.provisionSubscription({
       customerId: workspaceId,
-      planId: planId,
-      billingPeriod: billingPeriod,
+      planId,
+      billingPeriod,
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
@@ -207,18 +220,23 @@ export class BillingService {
         successUrl: new URL(cancelUrl, this.clientHost).href,
       },
       metadata: {
-        userId: userId,
+        userId,
       },
     });
+
+    const event =
+      intentionType === "DOWNGRADE_PLAN"
+        ? EnumEventType.WorkspacePlanDowngradeRequest
+        : EnumEventType.WorkspacePlanUpgradeRequest;
+
+    const analyticsProperties = {
+      workspaceId,
+    };
+
     await this.analytics.track({
       userId,
-      properties: {
-        workspaceId,
-      },
-      event:
-        intentionType === "DOWNGRADE_PLAN"
-          ? EnumEventType.WorkspacePlanDowngradeRequest
-          : EnumEventType.WorkspacePlanUpgradeRequest,
+      properties: analyticsProperties,
+      event,
     });
 
     return {
@@ -229,113 +247,118 @@ export class BillingService {
 
   async getSubscription(workspaceId: string): Promise<Subscription | null> {
     try {
-      if (this.billingEnabled) {
-        const stiggClient = await this.getStiggClient();
-        const workspace = await stiggClient.getCustomer(workspaceId);
-
-        const activeSub = await workspace.subscriptions.find((subscription) => {
-          return subscription.status === SubscriptionStatus.Active;
-        });
-
-        const amplicationSub = {
-          id: activeSub.id,
-          status: this.mapSubscriptionStatus(activeSub.status),
-          workspaceId: workspaceId,
-          subscriptionPlan: this.mapSubscriptionPlan(
-            activeSub.plan.id as BillingPlan
-          ),
-          createdAt: new Date(),
-          updatedAt: new Date(),
-          subscriptionData: new SubscriptionData(),
-        };
-
-        return amplicationSub;
-      } else {
+      if (!this.billingEnabled) {
         return null;
       }
+
+      const stiggClient = await this.getStiggClient();
+      const workspace = await stiggClient.getCustomer(workspaceId);
+
+      const activeSub = workspace.subscriptions.find(
+        (sub) => sub.status === SubscriptionStatus.Active
+      );
+
+      const amplicationSub = {
+        id: activeSub.id,
+        status: this.mapSubscriptionStatus(activeSub.status),
+        workspaceId,
+        subscriptionPlan: this.mapSubscriptionPlan(
+          activeSub.plan.id as BillingPlan
+        ),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        subscriptionData: new SubscriptionData(),
+      };
+
+      return amplicationSub;
     } catch (error) {
       this.logger.error(error.message, error);
-      return null; //on any exception, use free plan
+      return null; // On any exception, use free plan.
     }
   }
 
   async provisionCustomer(
     workspaceId: string,
-    plan: BillingPlan
+    billingPlan: BillingPlan
   ): Promise<null> {
-    if (this.isBillingEnabled) {
-      const stiggClient = await this.getStiggClient();
-      await stiggClient.provisionCustomer({
-        customerId: workspaceId,
-        shouldSyncFree: false,
-        subscriptionParams: {
-          planId: plan,
-        },
-      });
+    if (!this.isBillingEnabled) {
+      return;
     }
-    return;
+
+    const stiggClient = await this.getStiggClient();
+    await stiggClient.provisionCustomer({
+      customerId: workspaceId,
+      shouldSyncFree: false,
+      subscriptionParams: {
+        planId: billingPlan,
+      },
+    });
+
+    return null;
   }
 
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace(
     workspaceId: string
   ): Promise<void> {
-    if (this.isBillingEnabled) {
-      const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
+    if (!this.isBillingEnabled) {
+      return;
+    }
+
+    const ignoreValidationCodeGeneration = await this.getBooleanEntitlement(
+      workspaceId,
+      BillingFeature.IgnoreValidationCodeGeneration
+    );
+
+    //check whether the workspace has entitlement to bypass code generation limitation
+    if (!ignoreValidationCodeGeneration.hasAccess) {
+      const servicesEntitlement = await this.getMeteredEntitlement(
         workspaceId,
-        BillingFeature.IgnoreValidationCodeGeneration
+        BillingFeature.Services
       );
 
-      //check whether the workspace has entitlement to bypass code generation limitation
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        const servicesEntitlement = await this.getMeteredEntitlement(
+      if (!servicesEntitlement.hasAccess) {
+        const usageLimit = servicesEntitlement.usageLimit;
+        throw new ValidationError(
+          `LimitationError: Allowed services per workspace: ${usageLimit}`
+        );
+      }
+
+      const servicesAboveEntitiesPerServiceLimitEntitlement =
+        await this.getMeteredEntitlement(
           workspaceId,
-          BillingFeature.Services
+          BillingFeature.ServicesAboveEntitiesPerServiceLimit
         );
 
-        if (!servicesEntitlement.hasAccess) {
-          throw new ValidationError(
-            `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-          );
-        }
+      if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
+        const entitiesPerServiceEntitlement = await this.getNumericEntitlement(
+          workspaceId,
+          BillingFeature.EntitiesPerService
+        );
 
-        const servicesAboveEntitiesPerServiceLimitEntitlement =
-          await this.getMeteredEntitlement(
-            workspaceId,
-            BillingFeature.ServicesAboveEntitiesPerServiceLimit
-          );
-
-        if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-          const entitiesPerServiceEntitlement =
-            await this.getNumericEntitlement(
-              workspaceId,
-              BillingFeature.EntitiesPerService
-            );
-
-          const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
-
-          throw new ValidationError(
-            `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-          );
-        }
+        const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
+        throw new ValidationError(
+          `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
+        );
       }
     }
   }
 
-  async resetUsage(workspaceId: string, currentUsage: FeatureUsageReport) {
+  async resetUsage(workspaceId: string, usageReport: FeatureUsageReport) {
     if (this.isBillingEnabled) {
-      await this.setUsage(
-        workspaceId,
-        BillingFeature.Services,
-        currentUsage.services
-      );
-
-      await this.setUsage(
-        workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit,
-        currentUsage.servicesAboveEntityPerServiceLimit
-      );
+      return;
     }
+
+    await this.setUsage(
+      workspaceId,
+      BillingFeature.Services,
+      usageReport.services
+    );
+    await this.setUsage(
+      workspaceId,
+      BillingFeature.ServicesAboveEntitiesPerServiceLimit,
+      usageReport.servicesAboveEntityPerServiceLimit
+    );
   }
 
   mapSubscriptionStatus(status: SubscriptionStatus): EnumSubscriptionStatus {
@@ -357,8 +380,8 @@ export class BillingService {
     }
   }
 
-  mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
-    switch (planId) {
+  mapSubscriptionPlan(billingPlan: BillingPlan): EnumSubscriptionPlan {
+    switch (billingPlan) {
       case BillingPlan.Free:
         return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
@@ -366,7 +389,7 @@ export class BillingService {
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;
       default:
-        throw new Error(`Unknown plan id: ${planId}`);
+        throw new Error(`Unknown billing plan: ${billingPlan}`);
     }
   }
 }
