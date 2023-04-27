@@ -499,7 +499,8 @@ export class BuildService {
           );
         } catch (error) {
           this.logger.error(
-            `Failed to emit Create Pull Request Message. Error: ${error}`
+            "Failed to emit Create Pull Request Message.",
+            error
           );
         }
       },

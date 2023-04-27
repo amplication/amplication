@@ -54,47 +54,57 @@ const ONBOARDING_STEPS: WizardStep[] = [
     hideFooter: true,
     hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Welcome,
+    stepName: "CreateServiceWelcome",
   },
   {
     index: 1,
     hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+    stepName: "CreateServiceName",
   },
   {
     index: 2,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+    stepName: "CreateGithubSync",
   },
   {
     index: 3,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+    stepName: "CreateGenerationSettings",
   },
   {
     index: 4,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+    stepName: "CreateServiceRepository",
   },
   {
     index: 5,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+    stepName: "CreateServiceDatabase",
   },
   {
     index: 6,
     analyticsEventName:
       AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+    stepName: "CreateServiceTemplate",
   },
   {
     index: 7,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+    stepName: "CreateServiceAuth",
   },
   {
     index: 8,
     hideBackButton: true,
     analyticsEventName:
       AnalyticsEventNames.ViewServiceWizardStep_CodeGeneration,
+    stepName: "CreateServiceCodeGeneration",
   },
   {
     index: 9,
     hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+    stepName: "CreateServiceNextSteps",
   },
 ];
 
@@ -105,36 +115,44 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
     index: 1,
     hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Name,
+    stepName: "CreateServiceName",
   },
   {
     index: 2,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Git,
+    stepName: "CreateGithubSync",
   },
   {
     index: 3,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_APISettings,
+    stepName: "CreateGenerationSettings",
   },
   {
     index: 4,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_RepoSettings,
+    stepName: "CreateServiceRepository",
   },
   {
     index: 5,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_DBSettings,
+    stepName: "CreateServiceDatabase",
   },
   {
     index: 6,
     analyticsEventName:
       AnalyticsEventNames.ViewServiceWizardStep_EntitiesSettings,
+    stepName: "CreateServiceTemplate",
   },
   {
     index: 7,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_AuthSettings,
+    stepName: "CreateServiceAuth",
   },
   {
     index: 9,
     hideBackButton: true,
     analyticsEventName: AnalyticsEventNames.ViewServiceWizardStep_Finish,
+    stepName: "CreateServiceNextSteps",
   },
 ];
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
@@ -281,6 +299,7 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const handleCloseWizard = useCallback(
     (currentPage: string) => {
+      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick);
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
     },
     [currentWorkspace, currentProject]
@@ -288,17 +307,14 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const handleWizardProgress = useCallback(
     (
-      dir: "next" | "prev",
+      eventName:
+        | AnalyticsEventNames.ServiceWizardStep_ContinueClicked
+        | AnalyticsEventNames.ServiceWizardStep_BackClicked,
       page: string,
       pageEventName: AnalyticsEventNames
     ) => {
       trackEvent({
-        eventName:
-          AnalyticsEventNames[
-            dir === "next"
-              ? "ServiceWizardStep_ContinueClicked"
-              : "ServiceWizardStep_BackClicked"
-          ],
+        eventName,
         category: "Service Wizard",
         WizardType: defineUser,
         step: page,

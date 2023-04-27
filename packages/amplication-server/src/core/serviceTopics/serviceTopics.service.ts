@@ -199,7 +199,7 @@ export class ServiceTopicsService extends BlockTypeService<
       .map((result) => (result as PromiseRejectedResult).reason);
 
     if (failedDeletions.length > 0)
-      this.logger.error("Failed to delete some ServiceTopics", {
+      this.logger.error("Failed to delete some ServiceTopics", null, {
         failedDeletions,
       });
 

@@ -25,7 +25,7 @@ export type LabelDescriptionSelectorProps = {
   description: string;
   subDescription?: string;
   icon?: string;
-  image?: string;
+  image?: string | JSX.Element;
   imageSize?: string;
   customClassName?: string;
   onClick: (name) => void;
@@ -65,15 +65,7 @@ export const LabelDescriptionSelector: React.FC<
         </CreateServiceCircleBadge>
       )}
 
-      {image && (
-        <CreateServiceCircleBadge>
-          <img
-            className={classNames(`${className}__logo`, imageSize)}
-            src={image}
-            alt={""}
-          />
-        </CreateServiceCircleBadge>
-      )}
+      {image && <CreateServiceCircleBadge>{image}</CreateServiceCircleBadge>}
 
       <label>{label}</label>
       {subDescription && (

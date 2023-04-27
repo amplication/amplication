@@ -14,12 +14,14 @@ import WizardProgressBar from "./WizardProgressBar";
 import CreateServiceLoader from "./CreateServiceLoader";
 import { DefineUser } from "./CreateServiceWizard";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { useTracking } from "../../util/analytics";
 
 export type WizardStep = {
   index: number;
   hideFooter?: boolean;
   hideBackButton?: boolean;
   analyticsEventName: AnalyticsEventNames;
+  stepName?: string;
 };
 
 interface ServiceWizardProps {
@@ -35,7 +37,9 @@ interface ServiceWizardProps {
   submitLoader: boolean;
   handleCloseWizard: (currentPage: string) => void;
   handleWizardProgress: (
-    dir: "next" | "prev",
+    eventName:
+      | AnalyticsEventNames.ServiceWizardStep_ContinueClicked
+      | AnalyticsEventNames.ServiceWizardStep_BackClicked,
     page: string,
     pageEventName: AnalyticsEventNames
   ) => void;
@@ -83,6 +87,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   handleWizardProgress,
   defineUser,
 }) => {
+  const { trackEvent } = useTracking();
   const wizardPattern = useMemo(() => {
     return wizardSteps.map((step) => step.index);
   }, [wizardSteps]);
@@ -112,6 +117,15 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
   )[];
 
   const currentPage = pages[activePageIndex];
+
+  useEffect(() => {
+    trackEvent({
+      eventName: wizardSteps[currWizardPatternIndex].analyticsEventName,
+      category: "Service Wizard",
+      WizardType: defineUser,
+    });
+  }, []);
+
   const goNextPage = useCallback(() => {
     const wizardIndex =
       currWizardPatternIndex === wizardPattern.length - 1
@@ -122,8 +136,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     const newStep = wizardSteps.find((step) => step.index === nextIndex);
 
     handleWizardProgress(
-      "next",
-      (pages[nextIndex].type as React.JSXElementConstructor<any>).name,
+      AnalyticsEventNames.ServiceWizardStep_ContinueClicked,
+      wizardSteps[currWizardPatternIndex].stepName,
       newStep.analyticsEventName
     );
     setActivePageIndex(nextIndex);
@@ -137,8 +151,8 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     const newStep = wizardSteps.find((step) => step.index === prevIndex);
 
     handleWizardProgress(
-      "prev",
-      (pages[prevIndex].type as React.JSXElementConstructor<any>).name,
+      AnalyticsEventNames.ServiceWizardStep_BackClicked,
+      wizardSteps[currWizardPatternIndex].stepName,
       newStep.analyticsEventName
     );
     setActivePageIndex(prevIndex);

@@ -24,7 +24,7 @@ import {
   IS_DATE_ID,
   IS_ENUM_ID,
   IS_INT_ID,
-  IS_JSON_ID,
+  IS_JSON_VALUE_ID,
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
@@ -103,7 +103,7 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Float]: IS_NUMBER_ID,
   [ScalarType.Int]: IS_INT_ID,
   [ScalarType.String]: IS_STRING_ID,
-  [ScalarType.Json]: IS_JSON_ID,
+  [ScalarType.Json]: IS_JSON_VALUE_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
@@ -196,6 +196,32 @@ export function createFieldClassProperty(
             ]
           : [];
         decorators.push(builders.decorator(builders.callExpression(id, args)));
+        if (
+          inputType === EntityDtoTypeEnum.WhereUniqueInput &&
+          prismaField.type === ScalarType.Int
+        ) {
+          decorators.push(
+            builders.decorator(
+              builders.callExpression(builders.identifier("Transform"), [
+                builders.arrowFunctionExpression(
+                  [builders.identifier("prop")],
+                  builders.callExpression(builders.identifier("parseInt"), [
+                    builders.memberExpression(
+                      builders.identifier("prop"),
+                      builders.identifier("value")
+                    ),
+                  ])
+                ),
+                builders.objectExpression([
+                  builders.objectProperty(
+                    builders.identifier("toClassOnly"),
+                    builders.booleanLiteral(true)
+                  ),
+                ]),
+              ])
+            )
+          );
+        }
       }
     }
     const swaggerType = !isQuery

@@ -22,13 +22,22 @@ const writeModules = async (
   logger.info("Creating base directory");
   await mkdir(destination, { recursive: true });
   logger.info(`Writing modules to ${destination} ...`);
-  await Promise.all(
-    modules.map(async (module) => {
-      const filePath = join(destination, module.path);
-      await mkdir(dirname(filePath), { recursive: true });
-      await writeFile(filePath, module.code);
-    })
-  );
+
+  for await (const module of modules) {
+    const filePath = join(destination, module.path);
+    await mkdir(dirname(filePath), { recursive: true });
+    try {
+      await writeFile(filePath, module.code, { flag: "wx" });
+    } catch (error) {
+      if (error.code === "EEXIST") {
+        logger.warn(`File ${filePath} already exists`);
+      } else {
+        logger.error(`Failed to write file ${filePath}`, { ...error });
+        throw error;
+      }
+    }
+  }
+
   logger.info(`Successfully wrote modules to ${destination}`);
 };
 
