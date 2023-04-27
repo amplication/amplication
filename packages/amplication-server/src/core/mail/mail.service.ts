@@ -26,8 +26,8 @@ export class MailService {
   ) {}
 
   async sendInvitation(args: SendInvitationArgs): Promise<boolean> {
-    const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
-    const templateId = this.configService.get(
+    const fromAddress = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
+    const invitationTemplateId = this.configService.get(
       SENDGRID_INVITATION_TEMPLATE_ID_VAR
     );
 
@@ -35,49 +35,51 @@ export class MailService {
 
     const inviteUrl = `${host}/login?invitation=${args.invitationToken}`;
 
+    const dynamicTemplateData = {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      inviter_name: args.invitedByUserFullName,
+      // eslint-disable-next-line @typescript-eslint/naming-convention
+      invitation_url: inviteUrl,
+    };
+
     this.logger.debug("sendInvitation", args);
 
     const msg = {
       to: args.to,
-      from,
-      templateId,
-      dynamicTemplateData: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        inviter_name: args.invitedByUserFullName,
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        invitation_url: inviteUrl,
-      },
+      from: fromAddress,
+      templateId: invitationTemplateId,
+      dynamicTemplateData,
     };
     await this.client.send(msg);
     return true;
   }
 
   async sendDeploymentNotification(args: SendDeploymentArgs): Promise<void> {
-    if (IS_EMAIL_DEPLOYMENT_NOTIFICATION) {
-      const from = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
+    const shouldSendNotification = this.shouldSendDeploymentNotification();
 
-      let templateId;
-      if (args.success) {
-        templateId = this.configService.get(
-          SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR
-        );
-      } else {
-        templateId = this.configService.get(
-          SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR
-        );
-      }
+    if (shouldSendNotification) {
+      const fromAddress = this.configService.get(SENDGRID_FROM_ADDRESS_VAR);
+
+      const templateId = args.success
+        ? this.configService.get(SENDGRID_DEPLOY_SUCCESS_TEMPLATE_ID_VAR)
+        : this.configService.get(SENDGRID_DEPLOY_FAIL_TEMPLATE_ID_VAR);
 
       this.logger.debug("sendDeploymentNotification", args);
 
-      const msg = {
+      const message = {
         to: args.to,
-        from,
-        templateId,
+        from: fromAddress,
+        templateId: templateId,
         dynamicTemplateData: {
           url: args.url,
         },
       };
-      await this.client.send(msg);
+
+      await this.client.send(message);
     }
+  }
+
+  private shouldSendDeploymentNotification(): boolean {
+    return IS_EMAIL_DEPLOYMENT_NOTIFICATION;
   }
 }
