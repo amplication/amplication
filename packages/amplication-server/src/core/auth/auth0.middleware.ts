@@ -24,6 +24,11 @@ export class Auth0Middleware implements NestMiddleware {
     const clientSecret = configService.get(Env.AUTH_ISSUER_CLIENT_SECRET);
     this.middleware = auth({
       authRequired: false,
+      authorizationParams: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        response_type: "code",
+        scope: "openid profile email",
+      },
       idpLogout: true,
       clientID,
       clientSecret,
