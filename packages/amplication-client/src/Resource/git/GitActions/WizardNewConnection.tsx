@@ -1,5 +1,5 @@
 import { EnumGitProvider } from "../../../models";
-import ProviderItem from "./ProviderItem";
+import { GitProviderConnectionList } from "./GitProviderConnectionList";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -12,10 +12,9 @@ export default function WizardNewConnection({
 }: Props) {
   return (
     <div className="auth-with-git__newConnectionBox">
-      <ProviderItem
-        onSyncNewGitOrganizationClick={onSyncNewGitOrganizationClick}
-        provider={provider}
-      ></ProviderItem>
+      <GitProviderConnectionList
+        onProviderSelect={onSyncNewGitOrganizationClick}
+      />
     </div>
   );
 }
