@@ -12,9 +12,7 @@ export default function WizardNewConnection({
 }: Props) {
   return (
     <div className="auth-with-git__newConnectionBox">
-      <GitProviderConnectionList
-        onProviderSelect={onSyncNewGitOrganizationClick}
-      />
+      <GitProviderConnectionList />
     </div>
   );
 }
