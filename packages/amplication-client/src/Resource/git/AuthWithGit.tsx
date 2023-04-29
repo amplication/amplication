@@ -15,9 +15,9 @@ import {
 } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
-import WizardNewConnection from "./GitActions/WizardNewConnection";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -193,10 +193,7 @@ function AuthWithGit({
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <WizardNewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            provider={EnumGitProvider.Github}
-          />
+          <GitProviderConnectionList />
         ) : (
           <div>
             <ExistingConnectionsMenu
