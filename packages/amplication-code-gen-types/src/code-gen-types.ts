@@ -187,7 +187,6 @@ export class ModuleMap {
   }
 
   /**
-   * Returns all modules in the map
    * @returns An array of modules
    */
   modules(): Module[] {
