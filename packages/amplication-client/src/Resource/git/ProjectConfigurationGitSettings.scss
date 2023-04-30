@@ -18,15 +18,15 @@
   &__settingsLink {
     display: flex;
     justify-content: space-between;
-    width: 400px;
     color: white;
+    width: 450px;
   }
 
   &__gitStatusPanel {
     width: 100%;
     height: 72px;
     border: $border-black20;
-    background: var(--black5);
+    background: var(--black2);
     margin: 0;
     min-height: var(--min-height-of-banner);
     display: flex;
@@ -49,6 +49,8 @@
     display: flex;
     flex-direction: row;
     align-items: center;
+    color: var(--black100);
+
     .amp-icon {
       margin-right: var(--default-spacing-small);
       color: var(--negative);

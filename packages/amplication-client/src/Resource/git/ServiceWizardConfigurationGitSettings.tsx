@@ -1,5 +1,11 @@
 import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
@@ -12,6 +18,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
+import GitSyncNotes from "./GitSyncNotes";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -30,16 +37,20 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   // onGitRepositoryDisconnected,
   formik,
 }) => {
-  const { currentWorkspace, currentProjectConfiguration } =
-    useContext(AppContext);
-  const [isOverride, setIsOverride] = useState<boolean>(
-    formik.values.isOverrideGitRepository || false
-  );
+  const { currentProjectConfiguration, resources } = useContext(AppContext);
   const { trackEvent } = useTracking();
   const { gitRepository } = currentProjectConfiguration;
+  const [isOverride, setIsOverride] = useState<boolean>(
+    formik.values.isOverrideGitRepository ||
+      (!gitRepository && resources.length > 0)
+  );
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
+
+  useEffect(() => {
+    formik.setFieldValue("isOverrideGitRepository", isOverride);
+  }, [formik.values]);
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
@@ -78,7 +89,10 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__panelWarper`}>
-        <ProjectConfigurationGitSettings isOverride={isOverride} />
+        <ProjectConfigurationGitSettings
+          isOverride={isOverride}
+          isProjectSettingsLinkShow={false}
+        />
         <Panel
           className={`${CLASS_NAME}__${settingsClassName}`}
           panelStyle={EnumPanelStyle.Transparent}
@@ -117,6 +131,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             </div>
           )}
         </Panel>
+        <GitSyncNotes />
       </div>
     </div>
   );
