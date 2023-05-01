@@ -143,21 +143,6 @@ function AuthWithGit({
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = useCallback(
-    (provider: models.EnumGitProvider) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
-        provider,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    },
-    [authWithGit, trackEvent]
-  );
-
   triggerOnDone = () => {
     onDone();
   };
@@ -207,7 +192,6 @@ function AuthWithGit({
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleGitOrganizationChange}
               selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAuthWithGitClick}
             />
             <WizardRepositoryActions
               onCreateRepository={() => {

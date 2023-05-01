@@ -9,7 +9,6 @@ import {
 } from "@amplication/ui/design-system";
 import BitbucketLogo from "../../../assets/images/bitbucket.svg";
 import GithubLogo from "../../../assets/images/github.svg";
-import GitlabLogo from "../../../assets/images/gitlab.svg";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
@@ -24,7 +23,7 @@ export const gitLogoMap = {
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];
   selectedGitOrganization: GitOrganizationFromGitRepository | null;
-  onAddGitOrganization: () => void;
+  onAddGitOrganization?: () => void;
   onSelectGitOrganization: (
     organization: GitOrganizationFromGitRepository
   ) => void;
@@ -81,20 +80,13 @@ export default function ExistingConnectionsMenu({
                   />
                 </SelectMenuItem>
               ))}
-              {/* // <GitOrganizationMenuAddProvider
-                  //   key={provider.provider}
-                  //   label={provider.label}
-                  //   provider={provider.provider}
-                  //   onAddGitOrganization={onAddGitOrganization}
-                  //   className={CLASS_NAME}
-                  // /> */}
             </>
           </SelectMenuList>
           <div
             className={`${CLASS_NAME}__add-item`}
             onClick={() => {
               selectRef.current.firstChild.click();
-              onAddGitOrganization();
+              onAddGitOrganization && onAddGitOrganization();
             }}
           >
             <Icon icon="plus" size="xsmall" />
