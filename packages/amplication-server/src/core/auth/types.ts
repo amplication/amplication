@@ -10,8 +10,8 @@ export interface AuthProfile {
   sub: string;
   email: string;
   nickname: string;
-  name: string;
-  given_name: string;
-  family_name: string;
-  picture: string;
+  name?: string;
+  given_name?: string;
+  family_name?: string;
+  picture?: string;
 }

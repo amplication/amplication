@@ -8,6 +8,7 @@ import {
   UseFilters,
   Inject,
   Post,
+  Query,
 } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { MorganInterceptor } from "nest-morgan";
@@ -95,7 +96,14 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @UseFilters(AuthExceptionFilter)
   @Get(AUTH_CALLBACK_PATH)
-  async auth0Callback(@Req() request: Request, @Res() response: Response) {
+  async auth0Callback(
+    @Query("error") error: string | undefined,
+    @Query("error_description") errorDescription: string | undefined,
+    @Res() response: Response
+  ) {
+    if (error) {
+      throw new Error(errorDescription);
+    }
     await response.oidc.callback({
       redirectUri: `${this.host}/${AUTH_CALLBACK_PATH}`,
     });
@@ -104,7 +112,14 @@ export class AuthController {
   @UseInterceptors(MorganInterceptor("combined"))
   @UseFilters(AuthExceptionFilter)
   @Post(AUTH_CALLBACK_PATH)
-  async auth0CallbackPost(@Req() request: Request, @Res() response: Response) {
+  async auth0CallbackPost(
+    @Query("error") error: string | undefined,
+    @Query("error_description") errorDescription: string | undefined,
+    @Res() response: Response
+  ) {
+    if (error) {
+      throw new Error(errorDescription);
+    }
     await response.oidc.callback({
       redirectUri: `${this.host}/${AUTH_CALLBACK_PATH}`,
     });

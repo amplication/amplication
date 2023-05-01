@@ -19,11 +19,12 @@ export class AuthExceptionFilter implements ExceptionFilter {
 
     this.logger.error(exception.message, exception, { request });
 
-    // @todo create a login error page with details
-    // response.redirect(`/login/?error=${encodeURIComponent(exception.message)}`);
     const clientHost = this.configService.get(Env.CLIENT_HOST);
     response.redirect(
-      `${clientHost}/login/?error=${encodeURIComponent(exception.message)}`
+      `${clientHost}/login/?error=${encodeURIComponent(
+        exception.message ??
+          "Something went wrong. Please try again or contact support"
+      )}`
     );
   }
 }
