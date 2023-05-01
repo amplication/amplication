@@ -144,6 +144,7 @@ export const ResourceInitialValues = {
   databaseType: "postgres",
   templateType: "empty",
   authType: "core",
+  gitProvider: null,
 };
 
 export interface WizardProgressBarInterface {

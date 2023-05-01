@@ -11,7 +11,6 @@ import { AppContext } from "../../context/appContext";
 import {
   AuthorizeResourceWithGitResult,
   CreateGitRepositoryInput,
-  EnumGitProvider,
   Resource,
 } from "../../models";
 import { useTracking } from "../../util/analytics";
@@ -43,11 +42,10 @@ type Props = {
   onDone: () => void;
 };
 
-export const CLASS_NAME = "auth-app-with-git-provider";
+export const CLASS_NAME = "auth-app-with-git";
 
 function AuthResourceWithGit({ resource, onDone }: Props) {
   const { gitRepository } = resource;
-
   const { currentWorkspace } = useContext(AppContext);
   const gitOrganizations = currentWorkspace?.gitOrganizations;
 
@@ -157,7 +155,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          gitOrganizationId={gitOrganization.id}
+          gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           useGroupingForRepositories={
             gitOrganization.useGroupingForRepositories
@@ -165,7 +163,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
           gitProvider={gitOrganization.provider}
-          gitOrganizationName={gitOrganization.name}
           src={"githubPage"}
           onSelectGitRepository={(data: GitRepositorySelected) => {
             setSelectRepoOpen(false);

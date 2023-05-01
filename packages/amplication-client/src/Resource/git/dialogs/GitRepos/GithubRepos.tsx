@@ -10,8 +10,9 @@ import {
   EnumHorizontalRuleStyle,
   Label,
 } from "@amplication/ui/design-system";
-import { gql, NetworkStatus, useLazyQuery, useQuery } from "@apollo/client";
-import { useCallback, useEffect, useState } from "react";
+
+import { gql, NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
+import React, { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
   EnumGitProvider,
@@ -23,12 +24,13 @@ import { formatError } from "../../../../util/error";
 import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 
 const CLASS_NAME = "git-repos";
-const MAX_ITEMS_PER_PAGE = 10; // aligned with server for both github and bitbucket
+const MAX_ITEMS_PER_PAGE = 10;
 
 type Props = {
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
   useGroupingForRepositories?: boolean;
@@ -39,6 +41,7 @@ export type GitRepositorySelected = {
   gitOrganizationId: string;
   repositoryName: string;
   gitRepositoryUrl?: string;
+  gitProvider: EnumGitProvider;
 };
 
 export type GitRepositoryCreatedData = {
@@ -51,7 +54,7 @@ export type GitRepositoryCreatedData = {
 };
 
 function GitRepos({
-  gitOrganizationId,
+  gitOrganization,
   onGitRepositoryConnected,
   gitProvider,
   useGroupingForRepositories,
@@ -61,7 +64,7 @@ function GitRepos({
 
   const { data: gitGroupsData } = useQuery(GET_GROUPS, {
     variables: {
-      organizationId: gitOrganizationId,
+      organizationId: gitOrganization.id,
     },
   });
 
@@ -81,8 +84,8 @@ function GitRepos({
   ] = useLazyQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
     variables: {
       repositoryGroupName: repositoryGroup?.name,
-      gitOrganizationId,
-      gitProvider,
+      gitOrganizationId: gitOrganization.id,
+      gitProvider: gitOrganization.provider,
       limit: MAX_ITEMS_PER_PAGE,
       page: page,
     },
@@ -95,8 +98,8 @@ function GitRepos({
         getRepos({
           variables: {
             repositoryGroupName: repositoryGroup.name,
-            gitOrganizationId,
-            gitProvider,
+            gitOrganizationId: gitOrganization.id,
+            gitProvider: gitOrganization.provider,
             limit: MAX_ITEMS_PER_PAGE,
             page: page,
           },
@@ -105,8 +108,8 @@ function GitRepos({
     } else {
       getRepos({
         variables: {
-          gitOrganizationId,
-          gitProvider,
+          gitOrganizationId: gitOrganization.id,
+          gitProvider: gitOrganization.provider,
           limit: MAX_ITEMS_PER_PAGE,
           page: page,
         },
@@ -117,12 +120,13 @@ function GitRepos({
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
       onGitRepositoryConnected({
-        gitOrganizationId: gitOrganizationId,
+        gitOrganizationId: gitOrganization.id,
         repositoryName: data.name,
-        gitRepositoryUrl: `https://github.com/${data.name}`,
+        gitRepositoryUrl: data.url,
+        gitProvider: gitOrganization.provider,
       });
     },
-    [gitOrganizationId, onGitRepositoryConnected]
+    [gitOrganization.id, onGitRepositoryConnected]
   );
   const handleRefresh = useCallback(() => {
     refetch();
@@ -285,8 +289,8 @@ const FIND_GIT_REPOS = gql`
         admin
       }
       total
-      currentPage
-      pageSize
+      page
+      perPage
     }
   }
 `;

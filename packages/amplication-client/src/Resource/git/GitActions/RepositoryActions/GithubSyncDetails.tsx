@@ -9,8 +9,9 @@ import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
+import { getGitRepositoryUrlForServiceWizard } from "../../../../util/get-git-repository-url-for-service-wizard";
 
-const CLASS_NAME = "github-repo-details";
+const CLASS_NAME = "git-repo-details";
 
 type Props = {
   resourceWithRepository: Resource;
@@ -34,8 +35,13 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
-  const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization.name}/${resourceWithRepository.gitRepository?.name}`;
-  const gitRepositoryUrl = `https://github.com/${gitRepositoryFullName}`;
+  const gitProvider =
+    resourceWithRepository.gitRepository?.gitOrganization?.provider;
+  const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization?.name}/${resourceWithRepository.gitRepository?.name}`;
+  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+    gitProvider,
+    gitRepositoryFullName
+  );
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>

@@ -7,18 +7,18 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
+import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 
 import "./GitDialogsContainer.scss";
 import { useCallback } from "react";
 
 type Props = {
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   isSelectRepositoryOpen: boolean;
   useGroupingForRepositories?: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
-  gitOrganizationName: string;
   src: string;
   repoCreated?: {
     isRepoCreateLoading: boolean;
@@ -34,13 +34,12 @@ type Props = {
 };
 
 export default function GitDialogsContainer({
-  gitOrganizationId,
+  gitOrganization,
   isSelectRepositoryOpen,
   useGroupingForRepositories,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
-  gitOrganizationName,
   repoCreated,
   src,
   onGitCreateRepository,
@@ -65,7 +64,7 @@ export default function GitDialogsContainer({
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
-          gitOrganizationId={gitOrganizationId}
+          gitOrganization={gitOrganization}
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
           useGroupingForRepositories={useGroupingForRepositories}
@@ -90,17 +89,16 @@ export default function GitDialogsContainer({
           <WizardGitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
-            gitOrganizationName={gitOrganizationName}
             onCreateGitRepository={onGitCreateRepository}
-            gitOrganizationId={gitOrganizationId}
+            gitOrganization={gitOrganization}
           ></WizardGitCreateRepo>
         ) : (
           <GitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
-            gitOrganizationId={gitOrganizationId}
-            gitOrganizationName={gitOrganizationName}
+            gitOrganizationId={gitOrganization.id}
             useGroupingForRepositories={useGroupingForRepositories}
+            gitOrganizationName={gitOrganization.name}
             onCreateGitRepository={onGitCreateRepository}
           />
         )}

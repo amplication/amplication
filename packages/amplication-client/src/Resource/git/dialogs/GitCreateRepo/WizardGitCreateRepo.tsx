@@ -11,6 +11,8 @@ import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { getGitRepositoryUrlForServiceWizard } from "../../../../util/get-git-repository-url-for-service-wizard";
 
 type createRepositoryInput = {
   name: string;
@@ -18,8 +20,7 @@ type createRepositoryInput = {
 };
 type Props = {
   gitProvider: EnumGitProvider;
-  gitOrganizationName: string;
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   repoCreated: {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
@@ -31,16 +32,17 @@ const CLASS_NAME = "git-create-repo";
 
 export default function WizardGitCreateRepo({
   gitProvider,
-  gitOrganizationName,
+  gitOrganization,
   repoCreated,
-  gitOrganizationId,
   onCreateGitRepository,
 }: Props) {
+  // const { gitRepositoryUrl } = useContext(AppContext);
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
       public: true,
     });
+  const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
   const handleChange = useCallback(
     (event) => {
@@ -48,18 +50,24 @@ export default function WizardGitCreateRepo({
         ...createRepositoryInput,
         name: event.target.value,
       });
+      const gitRepositoryFullName = `${gitOrganization?.name}/${event.target.value}`;
+      const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+        gitProvider,
+        gitRepositoryFullName
+      );
+      setGitRepositoryUrl(gitRepositoryUrl);
     },
     [setCreateRepositoryInput, createRepositoryInput]
   );
 
   const handleCreation = useCallback(() => {
     onCreateGitRepository({
-      gitOrganizationId: gitOrganizationId,
+      gitOrganizationId: gitOrganization.id,
       gitOrganizationType: EnumGitOrganizationType.Organization,
-      gitProvider: EnumGitProvider.Github,
+      gitProvider,
       name: createRepositoryInput.name,
       public: createRepositoryInput.public,
-      gitRepositoryUrl: `https://github.com/${createRepositoryInput.name}`,
+      gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,
@@ -94,7 +102,7 @@ export default function WizardGitCreateRepo({
           <th>Repository name</th>
         </tr>
         <tr>
-          <td style={{ color: "#FFFFFF" }}>{gitOrganizationName}/</td>
+          <td style={{ color: "#FFFFFF" }}>{gitOrganization.name}/</td>
           <td>
             <TextField
               autoFocus

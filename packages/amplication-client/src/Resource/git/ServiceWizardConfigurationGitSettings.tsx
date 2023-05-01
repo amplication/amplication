@@ -12,8 +12,9 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
+import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
 
-const CLASS_NAME = "service-configuration-github-settings";
+const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
   onDone: () => void;
@@ -30,16 +31,22 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   // onGitRepositoryDisconnected,
   formik,
 }) => {
-  const { currentWorkspace, currentProjectConfiguration } =
-    useContext(AppContext);
+  const { currentProjectConfiguration } = useContext(AppContext);
   const [isOverride, setIsOverride] = useState<boolean>(
     formik.values.isOverrideGitRepository || false
   );
   const { trackEvent } = useTracking();
   const { gitRepository } = currentProjectConfiguration;
+  const gitProvider = gitRepository?.gitOrganization?.provider;
   const settingsClassName = isOverride
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
+
+  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
+  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+    gitProvider,
+    gitRepositoryFullName
+  );
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {
@@ -51,7 +58,8 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             ...formik.values,
             gitRepositoryName: gitRepository?.name,
             gitOrganizationId: gitRepository?.gitOrganizationId,
-            gitRepositoryUrl: `https://github.com/${gitRepository?.name}`,
+            gitRepositoryUrl: gitRepositoryUrl,
+            gitProvider: gitProvider,
             isOverrideGitRepository: false,
           },
           true
@@ -94,6 +102,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
             <div className={`${CLASS_NAME}__AuthWithGit`}>
               <hr />
               <AuthWithGit
+                gitProvider={gitProvider}
                 onDone={onDone}
                 onGitRepositorySelected={onGitRepositorySelected}
                 onGitRepositoryCreated={onGitRepositoryCreated}
@@ -112,6 +121,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
                   gitOrganizationId: formik.values.gitOrganizationId,
                   repositoryName: formik.values.gitRepositoryName,
                   gitRepositoryUrl: formik.values.gitRepositoryUrl,
+                  gitProvider: formik.values.gitProvider,
                 }}
               />
             </div>

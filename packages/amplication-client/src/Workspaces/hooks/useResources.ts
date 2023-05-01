@@ -10,6 +10,7 @@ import {
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
+import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -77,6 +78,10 @@ const useResources = (
   );
 
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
+  const [
+    gitRepositoryOrganizationProvider,
+    setGitRepositoryOrganizationProvider,
+  ] = useState<models.EnumGitProvider>(undefined);
 
   const {
     data: resourcesData,
@@ -160,9 +165,17 @@ const useResources = (
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
       setGitRepositoryFullName(
-        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+        createGitRepositoryFullName(projectConfigurationResource?.gitRepository)
       );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryUrlForServiceWizard(
+        projectConfigurationResource?.gitRepository?.gitOrganization?.provider,
+        createGitRepositoryFullName(projectConfigurationResource?.gitRepository)
+      )
+    );
+    setGitRepositoryOrganizationProvider(
+      projectConfigurationResource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     currentResource,
@@ -183,7 +196,15 @@ const useResources = (
     setGitRepositoryFullName(
       createGitRepositoryFullName(resource?.gitRepository)
     );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryUrlForServiceWizard(
+        resource?.gitRepository?.gitOrganization?.provider,
+        createGitRepositoryFullName(resource?.gitRepository)
+      )
+    );
+    setGitRepositoryOrganizationProvider(
+      resource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     resources,
@@ -241,6 +262,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
     createServiceWithEntitiesResult,
   };
 };

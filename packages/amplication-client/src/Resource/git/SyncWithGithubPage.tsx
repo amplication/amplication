@@ -5,6 +5,7 @@ import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import {
   EnumGitOrganizationType,
+  EnumGitProvider,
   EnumResourceType,
   EnumGitProvider,
   Resource,
@@ -14,7 +15,7 @@ import AuthResourceWithGit from "./AuthResourceWithGit";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
 import "./SyncWithGithubPage.scss";
 
-const CLASS_NAME = "sync-with-github-page";
+const CLASS_NAME = "sync-with-git-page";
 
 export type GitOrganizationFromGitRepository = {
   id: string;
