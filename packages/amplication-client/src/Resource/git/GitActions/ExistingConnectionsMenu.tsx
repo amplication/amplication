@@ -19,7 +19,6 @@ import { useRef } from "react";
 export const gitLogoMap = {
   [models.EnumGitProvider.Bitbucket]: BitbucketLogo,
   [models.EnumGitProvider.Github]: GithubLogo,
-  [models.EnumGitProvider.GitLab]: GitlabLogo,
 };
 
 type Props = {

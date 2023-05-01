@@ -64,11 +64,6 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         onSyncNewGitOrganizationClick={handleAddProvider}
         // disabled={true}
       />
-      <GitProviderConnection
-        provider={EnumGitProvider.GitLab}
-        onSyncNewGitOrganizationClick={handleAddProvider}
-        comingSoon={true}
-      />
     </div>
   );
 };

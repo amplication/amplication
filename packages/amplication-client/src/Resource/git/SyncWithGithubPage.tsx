@@ -7,7 +7,6 @@ import {
   EnumGitOrganizationType,
   EnumGitProvider,
   EnumResourceType,
-  EnumGitProvider,
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";

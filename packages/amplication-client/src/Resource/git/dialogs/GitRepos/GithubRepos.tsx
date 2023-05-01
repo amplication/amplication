@@ -136,7 +136,8 @@ function GitRepos({
     if (!data) return;
 
     const pages = Math.ceil(
-      data?.remoteGitRepositories.total / data?.remoteGitRepositories.pageSize
+      data?.remoteGitRepositories.total /
+        data?.remoteGitRepositories.pagination.perPage
     );
     if (pages && pages > 1) setNumberOfPages(pages);
   }, [data]);
