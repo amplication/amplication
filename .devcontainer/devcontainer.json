@@ -10,6 +10,12 @@
     "8080": {
       "label": "kafka ui"
     },
+    "9092": {
+      "label": "Kafka"
+    },
+    "5432": {
+      "label": "Postgres"
+    },
     "4400": {
       "label": "storybook"
     },
