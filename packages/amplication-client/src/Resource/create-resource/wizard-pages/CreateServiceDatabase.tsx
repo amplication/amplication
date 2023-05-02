@@ -9,9 +9,18 @@ import ImgSvg from "./ImgSvg";
 const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 
-const PostgresPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-postgres.png`, "large");
-const MongoPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mongo.png`, "large");
-const MysqlPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mysql.png`, "large");
+const PostgresPng = ImgSvg({
+  image: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
+  imgSize: "large",
+});
+const MongoPng = ImgSvg({
+  image: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
+  imgSize: "large",
+});
+const MysqlPng = ImgSvg({
+  image: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
+  imgSize: "large",
+});
 
 const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback(

@@ -6,7 +6,7 @@ import { WizardStepProps } from "./interfaces";
 import authModuleImage from "../../../assets/images/auth-module.svg";
 import ImgSvg from "./ImgSvg";
 
-const AuthCoreSvg = ImgSvg(authModuleImage);
+const AuthCoreSvg = ImgSvg({ image: authModuleImage });
 
 const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
   const handleDatabaseSelect = useCallback(
