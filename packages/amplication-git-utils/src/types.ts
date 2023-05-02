@@ -257,8 +257,8 @@ export interface PaginatedGitGroup {
 
 export interface GitGroup {
   id: string;
+  displayName: string;
   name: string;
-  slug: string;
 }
 
 export interface GetBranchArgs {

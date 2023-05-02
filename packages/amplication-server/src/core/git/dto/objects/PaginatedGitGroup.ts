@@ -9,10 +9,10 @@ class GitGroup {
   id: string;
 
   @Field(() => String, { nullable: false })
-  name: string;
+  displayName: string;
 
   @Field(() => String, { nullable: false })
-  slug: string;
+  name: string;
 }
 
 @ObjectType({

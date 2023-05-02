@@ -165,8 +165,8 @@ export class BitBucketService implements GitProvider {
       const { uuid: workspaceUuid, name, slug } = workspace;
       return {
         id: workspaceUuid,
-        name,
-        slug,
+        displayName: name,
+        name: slug,
       };
     });
 
