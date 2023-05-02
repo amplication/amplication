@@ -11,10 +11,10 @@
       "label": "kafka ui"
     },
     "9092": {
-      "label": "Kafka"
+      "label": "kafka"
     },
     "5432": {
-      "label": "Postgres"
+      "label": "postgres"
     },
     "4400": {
       "label": "storybook"
@@ -39,7 +39,7 @@
     }
   },
 
-  "postCreateCommand": ["npm install", "npm run setup:dev"],
+  "postCreateCommand": "npm install && npm run setup:dev",
 
   "customizations": {
     "vscode": {
