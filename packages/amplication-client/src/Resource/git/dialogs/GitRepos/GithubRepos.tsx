@@ -86,7 +86,7 @@ function GitRepos({
       repositoryGroupName: repositoryGroup?.name,
       gitOrganizationId: gitOrganization.id,
       gitProvider: gitOrganization.provider,
-      limit: MAX_ITEMS_PER_PAGE,
+      perPage: MAX_ITEMS_PER_PAGE,
       page: page,
     },
     notifyOnNetworkStatusChange: true,
@@ -270,7 +270,7 @@ const FIND_GIT_REPOS = gql`
     $repositoryGroupName: String
     $gitOrganizationId: String!
     $gitProvider: EnumGitProvider!
-    $limit: Float!
+    $perPage: Float!
     $page: Float!
   ) {
     remoteGitRepositories(
@@ -278,7 +278,7 @@ const FIND_GIT_REPOS = gql`
         repositoryGroupName: $repositoryGroupName
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
-        limit: $limit
+        perPage: $perPage
         page: $page
       }
     ) {
@@ -290,8 +290,10 @@ const FIND_GIT_REPOS = gql`
         admin
       }
       total
-      page
-      perPage
+      pagination {
+        page
+        perPage
+      }
     }
   }
 `;
@@ -305,7 +307,7 @@ const GET_GROUPS = gql`
       groups {
         id
         name
-        slug
+        displayName
       }
     }
   }
