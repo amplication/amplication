@@ -1014,8 +1014,8 @@ type PaginatedGitGroup {
 """Group of Repositories"""
 type GitGroup {
   id: String!
+  displayName: String!
   name: String!
-  slug: String!
 }
 
 input GitGroupInput {

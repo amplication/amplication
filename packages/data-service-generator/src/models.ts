@@ -738,9 +738,9 @@ export type GitGetInstallationUrlInput = {
 
 /** Group of Repositories */
 export type GitGroup = {
+  displayName: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
-  slug: Scalars['String'];
 };
 
 export type GitGroupInput = {
