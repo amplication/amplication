@@ -592,6 +592,12 @@ export enum EnumAuthProviderType {
   Jwt = 'Jwt'
 }
 
+export enum EnumDbType {
+  mongo = 'mongo',
+  postgres = 'postgres',
+  mysql = 'mysql'
+}
+
 export enum EnumBlockType {
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
@@ -1891,6 +1897,7 @@ export type ServiceSettings = IBlock & {
   serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
+  dbType?: Scalars['String'];
 };
 
 export type ServiceSettingsUpdateInput = {

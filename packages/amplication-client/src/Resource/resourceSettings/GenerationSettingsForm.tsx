@@ -131,6 +131,7 @@ export const GET_RESOURCE_SETTINGS = gql`
   query serviceSettings($id: String!) {
     serviceSettings(where: { id: $id }) {
       authProvider
+      dbType
       serverSettings {
         generateGraphQL
         generateRestApi

@@ -210,7 +210,7 @@ export class ResourceService {
 
     if (
       isOnBoarding ||
-      (!gitRepositoryToCreate.isOverrideGitRepository &&
+      (!gitRepositoryToCreate?.isOverrideGitRepository &&
         !projectConfiguration.gitRepositoryId)
     ) {
       await this.prisma.resource.update({
@@ -258,7 +258,7 @@ export class ResourceService {
     user: User,
     wizardType: string = null
   ): Promise<Resource> {
-    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const { serviceSettings, gitRepository, dbType, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
@@ -281,7 +281,8 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      serviceSettings
+      serviceSettings,
+      dbType
     );
 
     const project = await this.projectService.findUnique({
@@ -314,7 +315,7 @@ export class ResourceService {
 
     const resource = await this.createService(
       {
-        data: data.resource,
+        data: { ...data.resource, dbType: data.dbType },
       },
       user,
       data.wizardType

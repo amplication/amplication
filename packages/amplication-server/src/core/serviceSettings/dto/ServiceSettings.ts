@@ -24,4 +24,7 @@ export class ServiceSettings extends IBlock {
     nullable: false,
   })
   serverSettings: ServerSettings & JsonValue;
+
+  @Field(() => String, { nullable: true })
+  dbType?: string;
 }

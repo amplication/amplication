@@ -24,7 +24,7 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const { authProvider, serverSettings, adminUISettings } =
+    const { authProvider, serverSettings, adminUISettings, dbType } =
       await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -32,6 +32,7 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
+      dbType,
     };
   }
 
@@ -147,7 +148,8 @@ export class ServiceSettingsService {
   async createDefaultServiceSettings(
     resourceId: string,
     user: User,
-    serviceSettings: ServiceSettingsUpdateInput = null
+    serviceSettings: ServiceSettingsUpdateInput = null,
+    dbType: string = null
   ): Promise<ServiceSettings> {
     const settings = DEFAULT_SERVICE_SETTINGS;
 
@@ -163,6 +165,9 @@ export class ServiceSettingsService {
             },
           },
           ...settings,
+          dbType,
+          authProvider:
+            serviceSettings.authProvider || EnumAuthProviderType.Jwt,
           blockType: EnumBlockType.ServiceSettings,
         },
       },

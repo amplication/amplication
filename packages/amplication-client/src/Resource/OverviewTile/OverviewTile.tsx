@@ -2,7 +2,11 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import { ServiceSettings, EnumAuthProviderType } from "../../models";
+import {
+  ServiceSettings,
+  EnumAuthProviderType,
+  EnumDbType,
+} from "../../models";
 import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
 
 type Props = {
@@ -12,6 +16,12 @@ type Props = {
 const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
   [EnumAuthProviderType.Http]: "HTTP",
   [EnumAuthProviderType.Jwt]: "Passport JWT",
+};
+
+const DbTypeLabels: { [k in EnumDbType]: string } = {
+  [EnumDbType.mongo]: "MongoDB",
+  [EnumDbType.mysql]: "MySQL",
+  [EnumDbType.postgres]: "PostgresSQL",
 };
 
 const CLASS_NAME = "overview-tile";
@@ -24,6 +34,11 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
       id: resourceId,
     },
   });
+
+  const dbType = DbTypeLabels[data?.serviceSettings.dbType];
+  const generateGraphQL = data?.serviceSettings.serverSettings.generateGraphQL;
+  const generateAdminUI = data?.serviceSettings.adminUISettings.generateAdminUI;
+  const generateRestApi = data?.serviceSettings.serverSettings.generateRestApi;
 
   return (
     <Panel
@@ -60,9 +75,21 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
             </div>
           </div>
           <div className={`${CLASS_NAME}__content__item`}>
-            <div className={`${CLASS_NAME}__content__item__text`}>GraphQL</div>
-            <div className={`${CLASS_NAME}__content__item__text`}>REST API</div>
-            <div className={`${CLASS_NAME}__content__item__text`}>Admin UI</div>
+            {generateGraphQL ? (
+              <div className={`${CLASS_NAME}__content__item__text`}>
+                GraphQL
+              </div>
+            ) : null}
+            {generateRestApi ? (
+              <div className={`${CLASS_NAME}__content__item__text`}>
+                REST API
+              </div>
+            ) : null}
+            {generateAdminUI ? (
+              <div className={`${CLASS_NAME}__content__item__text`}>
+                Admin UI
+              </div>
+            ) : null}
           </div>
           <div className={`${CLASS_NAME}__content__item`}>
             <div className={`${CLASS_NAME}__content__item__text`}>
@@ -72,7 +99,7 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>
-              PostgresSQL
+              {dbType || "PostgresSQL"}
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Docker</div>
           </div>
