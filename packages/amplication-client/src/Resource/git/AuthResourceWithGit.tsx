@@ -29,14 +29,6 @@ import {
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 
-type DType = {
-  getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
-};
-
-// eslint-disable-next-line
-let triggerOnDone = () => {};
-let triggerAuthFailed = () => {};
-
 type Props = {
   resource: Resource;
   onDone: () => void;
@@ -75,17 +67,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
 
   const [popupFailed, setPopupFailed] = useState(false);
   const { trackEvent } = useTracking();
-  const [authWithGit, { error }] = useMutation<DType>(
-    START_AUTH_APP_WITH_GITHUB,
-    {
-      onCompleted: (data) => {
-        openSignInWindow(
-          data.getGitResourceInstallationUrl.url,
-          "auth with git"
-        );
-      },
-    }
-  );
 
   const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
     useState(false);
@@ -95,14 +76,6 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   const closeSelectOrganizationDialog = useCallback(() => {
     setSelectOrganizationDialogOpen(false);
   }, []);
-
-  triggerOnDone = () => {
-    onDone();
-  };
-  triggerAuthFailed = () => {
-    setPopupFailed(true);
-  };
-  const errorMessage = formatError(error);
 
   const [connectGitRepository, { error: errorUpdate }] = useMutation(
     CONNECT_GIT_REPOSITORY
@@ -192,13 +165,18 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           onDismiss={closeSelectOrganizationDialog}
         >
           <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
             onProviderSelect={closeSelectOrganizationDialog}
           />
         </Dialog>
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <GitProviderConnectionList />
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+          />
         ) : (
           <>
             <ExistingConnectionsMenu
@@ -216,11 +194,8 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             />
           </>
         )}
-
         <GitSyncNotes />
       </Panel>
-
-      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 }
@@ -254,44 +229,3 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
     }
   }
 `;
-
-const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
-    getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
-      url
-    }
-  }
-`;
-
-const receiveMessage = (event: any) => {
-  const { data } = event;
-  if (data.completed) {
-    triggerOnDone();
-  }
-};
-
-let windowObjectReference: any = null;
-
-const openSignInWindow = (url: string, name: string) => {
-  // remove any existing event listeners
-  window.removeEventListener("message", receiveMessage);
-
-  const width = 600;
-  const height = 700;
-
-  const left = (window.screen.width - width) / 2;
-  const top = 100;
-
-  // window features
-  const strWindowFeatures = `toolbar=no, menubar=no, width=${width}, height=${height}, top=${top}, left=${left}`;
-
-  windowObjectReference = window.open(url, name, strWindowFeatures);
-  if (windowObjectReference) {
-    windowObjectReference.focus();
-  } else {
-    triggerAuthFailed();
-  }
-
-  // add the listener for receiving a message from the popup
-  window.addEventListener("message", (event) => receiveMessage(event), false);
-};

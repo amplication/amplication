@@ -185,7 +185,10 @@ function AuthWithGit({
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <GitProviderConnectionList />
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+          />
         ) : (
           <div>
             <ExistingConnectionsMenu

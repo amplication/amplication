@@ -92,9 +92,9 @@ function GitRepos({
     notifyOnNetworkStatusChange: true,
   });
 
-  useEffect(() => {
+  const getReposFunc = useCallback(() => {
     if (useGroupingForRepositories) {
-      if (repositoryGroup) {
+      repositoryGroup &&
         getRepos({
           variables: {
             repositoryGroupName: repositoryGroup.name,
@@ -104,7 +104,6 @@ function GitRepos({
             page: page,
           },
         });
-      }
     } else {
       getRepos({
         variables: {
@@ -115,7 +114,11 @@ function GitRepos({
         },
       });
     }
-  }, [useGroupingForRepositories, repositoryGroup]);
+  }, [getRepos, repositoryGroup, page]);
+
+  useEffect(() => {
+    getReposFunc();
+  }, [getReposFunc]);
 
   const handleRepoSelected = useCallback(
     (data: RemoteGitRepository) => {
@@ -186,6 +189,7 @@ function GitRepos({
                             closeAfterSelectionChange
                             selected={item === page}
                             onSelectionChange={() => {
+                              getReposFunc();
                               setPage(item);
                             }}
                             key={i}

@@ -14,13 +14,22 @@ type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
 };
 
+// eslint-disable-next-line
+let triggerOnDone = () => {};
+// eslint-disable-next-line
+let triggerAuthFailed = () => {};
+
 export type Props = {
+  onDone: () => void;
+  setPopupFailed: (status: boolean) => void;
   onProviderSelect?: (data: any) => any;
 };
 
 const CLASS_NAME = "git-provider-connection-list";
 
 export const GitProviderConnectionList: React.FC<Props> = ({
+  onDone,
+  setPopupFailed,
   onProviderSelect,
 }) => {
   const { trackEvent } = useTracking();
@@ -36,6 +45,13 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       },
     }
   );
+
+  triggerOnDone = () => {
+    onDone();
+  };
+  triggerAuthFailed = () => {
+    setPopupFailed(true);
+  };
 
   const handleAddProvider = useCallback(
     (provider: EnumGitProvider) => {
@@ -75,11 +91,6 @@ const START_AUTH_APP_WITH_GITHUB = gql`
     }
   }
 `;
-
-// eslint-disable-next-line
-let triggerOnDone = () => {};
-// eslint-disable-next-line
-let triggerAuthFailed = () => {};
 
 const receiveMessage = (event: any) => {
   const { data } = event;
