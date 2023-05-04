@@ -4,6 +4,8 @@ import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
+import { useCallback } from "react";
+import { ENTER } from "../../../../util/hotkeys";
 
 const CLASS_NAME = "github-repo-details";
 
@@ -22,6 +24,24 @@ function WizardGithubSyncDetails({
 }: Props) {
   const { repositoryName, gitRepositoryUrl } = repositorySelected;
 
+  const handleKeyDownOnDisconnectGitRepository = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (keyEvent.key === ENTER) {
+        onDisconnectGitRepository && onDisconnectGitRepository();
+      }
+    },
+    [onDisconnectGitRepository]
+  );
+
+  const handleKeyDownUrl = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        window.open(gitRepositoryUrl);
+      }
+    },
+    [gitRepositoryUrl]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
@@ -30,8 +50,9 @@ function WizardGithubSyncDetails({
             gitRepositoryFullName={repositoryName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
-          <div>
+          <div tabIndex={0} onKeyDown={handleKeyDownUrl}>
             <a
+              tabIndex={-1}
               href={gitRepositoryUrl}
               target="github_repo"
               className={className}
@@ -49,6 +70,7 @@ function WizardGithubSyncDetails({
                 eventName: AnalyticsEventNames.GithubRepositoryChange,
               }}
               onClick={onDisconnectGitRepository}
+              onKeyDown={handleKeyDownOnDisconnectGitRepository}
             >
               Change Repository
             </Button>

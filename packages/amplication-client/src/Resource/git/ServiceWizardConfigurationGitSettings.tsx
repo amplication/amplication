@@ -19,6 +19,7 @@ import {
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import GitSyncNotes from "./GitSyncNotes";
+import { ENTER } from "../../util/hotkeys";
 
 const CLASS_NAME = "service-configuration-github-settings";
 
@@ -86,6 +87,15 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     [trackEvent, formik.values]
   );
 
+  const handleKeyDownToggleChange = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        handleToggleChange(!isOverride);
+      }
+    },
+    [formik.values]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__panelWarper`}>
@@ -100,8 +110,12 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
           <div className={`${CLASS_NAME}__defaultSettings`}>
             <div>Override default settings</div>
 
-            <div>
-              <Toggle onValueChange={handleToggleChange} checked={isOverride} />
+            <div onKeyDown={handleKeyDownToggleChange} tabIndex={0}>
+              <Toggle
+                tabIndex={-1}
+                onValueChange={handleToggleChange}
+                checked={isOverride}
+              />
             </div>
           </div>
           {isOverride && (

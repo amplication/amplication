@@ -5,6 +5,7 @@ import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { ENTER } from "../../../util/hotkeys";
 
 const className = "create-service-next-steps";
 
@@ -47,6 +48,33 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     );
   }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
+  const handleKeyDownEntities = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        handleClickEntities();
+      }
+    },
+    []
+  );
+
+  const handleKeyDownCreateNewService = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        handleClickCreateNewService();
+      }
+    },
+    []
+  );
+
+  const handleKeyDownDone = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        handleDone();
+      }
+    },
+    []
+  );
+
   return (
     <div className={className}>
       <div className={`${className}__description`}>
@@ -61,7 +89,12 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
         </div>
       </div>
       <div className={`${className}__link_box_container`}>
-        <div className={`${className}__link_box`} onClick={handleClickEntities}>
+        <div
+          tabIndex={0}
+          className={`${className}__link_box`}
+          onClick={handleClickEntities}
+          onKeyDown={handleKeyDownEntities}
+        >
           <CircleBadge color="#53DBEE" size="medium">
             <Icon icon="entity_outline" size="small" />
           </CircleBadge>
@@ -71,8 +104,10 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
           </div>
         </div>
         <div
+          tabIndex={0}
           className={`${className}__link_box`}
           onClick={handleClickCreateNewService}
+          onKeyDown={handleKeyDownCreateNewService}
         >
           <CircleBadge color="#A787FF" size="medium">
             <Icon icon="services" size="small" />
@@ -82,7 +117,12 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
             <div>another service</div>
           </div>
         </div>
-        <div className={`${className}__link_box`} onClick={handleDone}>
+        <div
+          tabIndex={0}
+          className={`${className}__link_box`}
+          onClick={handleDone}
+          onKeyDown={handleKeyDownDone}
+        >
           <div className={`${className}__link_box__description`}>
             <div>I'm done!</div>
             <div>View my service</div>

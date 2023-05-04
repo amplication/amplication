@@ -2,6 +2,7 @@ import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { useCallback } from "react";
 import "./LabelDescriptionSelector.scss";
+import { ENTER } from "../../../util/hotkeys";
 
 export type CreateServiceCircleBadgeProps = {
   children: React.ReactNode;
@@ -52,9 +53,20 @@ export const LabelDescriptionSelector: React.FC<
     onClick(name);
   }, [onClick, name]);
 
+  const handleKeyDown = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        onClick(name);
+      }
+    },
+    [onClick, name]
+  );
+
   return (
     <div
+      tabIndex={0}
       onClick={onSelectorClick}
+      onKeyDown={handleKeyDown}
       className={classNames(className, customClassName, {
         selected: name === currentValue,
       })}

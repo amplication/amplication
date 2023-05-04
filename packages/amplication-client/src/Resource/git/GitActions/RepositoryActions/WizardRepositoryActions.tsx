@@ -5,13 +5,14 @@ import {
   Icon,
   Panel,
 } from "@amplication/ui/design-system";
-import React from "react";
+import React, { useCallback } from "react";
 import { EnumGitOrganizationType } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import "./RepositoryActions.scss";
 import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
+import { ENTER } from "../../../../util/hotkeys";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
@@ -28,6 +29,24 @@ export default function WizardRepositoryActions({
   selectedGitRepository,
   onDisconnectGitRepository,
 }: Props) {
+  const handleKeyDownOnSelectRepository = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (keyEvent.key === ENTER) {
+        onSelectRepository && onSelectRepository();
+      }
+    },
+    [onSelectRepository]
+  );
+
+  const handleKeyDownOnCreateRepository = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (keyEvent.key === ENTER) {
+        onCreateRepository && onCreateRepository();
+      }
+    },
+    [onCreateRepository]
+  );
+
   return (
     <div className={`${CLASS_NAME}`}>
       <Panel
@@ -53,6 +72,7 @@ export default function WizardRepositoryActions({
                       type="button"
                       buttonStyle={EnumButtonStyle.Outline}
                       onClick={onSelectRepository}
+                      onKeyDown={handleKeyDownOnSelectRepository}
                     >
                       Select repository
                     </Button>
@@ -64,6 +84,7 @@ export default function WizardRepositoryActions({
                         type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
+                        onKeyDown={handleKeyDownOnCreateRepository}
                       >
                         Create repository
                       </Button>

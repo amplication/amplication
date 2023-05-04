@@ -4,6 +4,7 @@ import React, { useCallback } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { WizardStepProps } from "../wizard-pages/interfaces";
 import "./CreateServiceWelcome.scss";
+import { ENTER } from "../../../util/hotkeys";
 
 const className = "create-service-welcome";
 
@@ -18,6 +19,15 @@ const CreateServiceWelcome: React.FC<WizardStepProps> = ({
     goNextPage && goNextPage();
   }, []);
 
+  const handleKeyDownStart = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLButtonElement>) => {
+      if (keyEvent.key === ENTER) {
+        handleStart();
+      }
+    },
+    [goNextPage]
+  );
+
   return (
     <div className={className}>
       <div className={`${className}__welcome`}>
@@ -30,7 +40,9 @@ const CreateServiceWelcome: React.FC<WizardStepProps> = ({
         <h3>Let's create together your first service</h3>
       </div>
       <div className={`${className}__start_btn`}>
-        <Button onClick={handleStart}>Let's start</Button>
+        <Button onKeyDown={handleKeyDownStart} onClick={handleStart}>
+          Let's start
+        </Button>
       </div>
     </div>
   );

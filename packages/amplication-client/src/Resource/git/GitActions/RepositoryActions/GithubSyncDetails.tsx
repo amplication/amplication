@@ -9,6 +9,7 @@ import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
+import { ENTER } from "../../../../util/hotkeys";
 
 const CLASS_NAME = "github-repo-details";
 
@@ -36,6 +37,16 @@ function GithubSyncDetails({
   const errorMessage = formatError(disconnectErrorUpdate);
   const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization.name}/${resourceWithRepository.gitRepository?.name}`;
   const gitRepositoryUrl = `https://github.com/${gitRepositoryFullName}`;
+
+  const handleKeyDownUrl = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
+      if (keyEvent.key === ENTER) {
+        window.open(gitRepositoryUrl);
+      }
+    },
+    [gitRepositoryUrl]
+  );
+
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
@@ -44,8 +55,9 @@ function GithubSyncDetails({
             gitRepositoryFullName={gitRepositoryFullName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
-          <div>
+          <div tabIndex={0} onKeyDown={handleKeyDownUrl}>
             <a
+              tabIndex={-1}
               href={gitRepositoryUrl}
               target="github_repo"
               className={className}

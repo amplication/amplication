@@ -1,17 +1,34 @@
 import { TextField } from "@amplication/ui/design-system";
-import React, { useEffect } from "react";
+import React, { useEffect, useCallback } from "react";
 import "./CreateServiceName.scss";
 import { WizardStepProps } from "./interfaces";
+import { ENTER } from "../../../util/hotkeys";
 
 const className = "create-service-name";
 
 const CreateServiceName: React.FC<WizardStepProps> = ({
   moduleClass,
   formik,
+  goNextPage,
 }) => {
   useEffect(() => {
     formik.validateForm();
   }, []);
+
+  const handleKeyDown = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (keyEvent.key === ENTER) {
+        keyEvent.preventDefault();
+        if (
+          formik.values.serviceName?.trim() !== "" &&
+          !Object.keys(formik.errors).length
+        ) {
+          goNextPage && goNextPage();
+        }
+      }
+    },
+    [formik, goNextPage]
+  );
 
   return (
     <div className={className}>
@@ -28,6 +45,7 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
           name="serviceName"
           label="Service name"
           placeholder="Order Service"
+          onKeyDown={handleKeyDown}
         />
       </div>
     </div>

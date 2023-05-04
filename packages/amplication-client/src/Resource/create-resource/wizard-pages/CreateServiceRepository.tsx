@@ -7,10 +7,14 @@ import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayou
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { kebabCase } from "lodash";
+import { ENTER } from "../../../util/hotkeys";
 
 const className = "create-service-repository";
 
-const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateServiceRepository: React.FC<WizardStepProps> = ({
+  formik,
+  goNextPage,
+}) => {
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(
@@ -33,6 +37,18 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
       if (value === ".") event.target.value = "./";
     },
     [formik.values.baseDir, formik]
+  );
+
+  const handleKeyDown = useCallback(
+    (keyEvent: React.KeyboardEvent<HTMLTextAreaElement>) => {
+      if (keyEvent.key === ENTER) {
+        keyEvent.preventDefault();
+        if (!Object.keys(formik.errors).length) {
+          goNextPage && goNextPage();
+        }
+      }
+    },
+    [formik, goNextPage]
   );
 
   const baseDirSplit = useMemo(() => {
@@ -83,6 +99,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
                   name="baseDir"
                   label="Base directory"
                   onChange={handleChange}
+                  onKeyDown={handleKeyDown}
                 />
               )}
             </div>
