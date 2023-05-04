@@ -1,8 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 
-export const useImageLoader = (initialSrc: string, currentSrc: string) => {
-  const [imageSrc, _setImageSrc] = useState(initialSrc);
+export const useImageLoader = (currentSrc: string) => {
+  const [imageSrc, _setImageSrc] = useState(null);
 
   useEffect(() => {
     const img = new Image();
@@ -24,9 +24,10 @@ const ImgSvg: React.FC<{
   imgSize = "medium",
   classCss = "label-description-selector__logo",
 }) => {
-  const [imgSrc] = useImageLoader("icon", image);
+  const [imageSrc] = useImageLoader(image);
+
   return (
-    <img className={classNames(classCss, imgSize)} src={imgSrc} alt={""} />
+    <img className={classNames(classCss, imgSize)} src={imageSrc} alt={""} />
   );
 };
 
