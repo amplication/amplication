@@ -171,3 +171,6 @@ export type { Props as LimitationNotificationProps } from "./components/Limitati
 
 export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+
+export { ShowMoreText } from "./components/ShowMoreText/ShowMoreText";
+export type { Props as ShowMoreTextProps } from "./components/ShowMoreText/ShowMoreText";
