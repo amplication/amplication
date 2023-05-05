@@ -147,7 +147,7 @@ const GET_GROUPS = gql`
       groups {
         id
         name
-        slug
+        displayName
       }
     }
   }

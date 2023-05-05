@@ -264,6 +264,7 @@ export const CONNECT_GIT_REPOSITORY = gql`
       id
       gitRepository {
         id
+        groupName
       }
     }
   }

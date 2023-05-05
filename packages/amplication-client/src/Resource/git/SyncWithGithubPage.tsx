@@ -88,6 +88,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
       gitRepository {
         id
         name
+        groupName
         gitOrganization {
           id
           name

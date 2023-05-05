@@ -225,6 +225,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
       id
       gitRepository {
         id
+        groupName
       }
     }
   }
