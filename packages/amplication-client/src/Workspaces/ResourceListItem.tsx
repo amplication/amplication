@@ -13,6 +13,7 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
   Icon,
+  ShowMoreText,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
@@ -101,7 +102,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
             )}
           </div>
           <div className={`${CLASS_NAME}__row`}>
-            <span className={`${CLASS_NAME}__description`}>{description}</span>
+            <ShowMoreText>{description}</ShowMoreText>
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
