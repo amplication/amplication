@@ -146,7 +146,7 @@ export class GitResolver {
     AuthorizableOriginParameter.GitOrganizationId,
     "where.organizationId"
   )
-  gitGroups(@Args() args: GitGroupArgs) {
+  gitGroups(@Args() args: GitGroupArgs): Promise<PaginatedGitGroup> {
     return this.gitService.getGitGroups(args);
   }
 
