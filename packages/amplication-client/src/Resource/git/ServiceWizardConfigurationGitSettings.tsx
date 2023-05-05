@@ -12,7 +12,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
+import { getGitRepositoryDetails } from "../../util/git-git-repository-details";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
@@ -42,11 +42,12 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
-  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
-  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+  const gitRepositoryUrl = getGitRepositoryDetails(
     gitProvider,
-    gitRepositoryFullName
-  );
+    gitRepository?.gitOrganization?.name,
+    gitRepository?.groupName,
+    gitRepository?.name
+  ).repositoryUrl;
 
   const handleToggleChange = useCallback(
     (gitRepositoryOverride) => {

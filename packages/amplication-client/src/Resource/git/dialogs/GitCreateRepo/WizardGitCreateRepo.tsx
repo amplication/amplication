@@ -12,7 +12,7 @@ import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { getGitRepositoryUrlForServiceWizard } from "../../../../util/get-git-repository-url-for-service-wizard";
+import { getGitRepositoryDetails } from "../../../../util/git-git-repository-details";
 
 type createRepositoryInput = {
   name: string;
@@ -36,7 +36,6 @@ export default function WizardGitCreateRepo({
   repoCreated,
   onCreateGitRepository,
 }: Props) {
-  // const { gitRepositoryUrl } = useContext(AppContext);
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
@@ -50,11 +49,12 @@ export default function WizardGitCreateRepo({
         ...createRepositoryInput,
         name: event.target.value,
       });
-      const gitRepositoryFullName = `${gitOrganization?.name}/${event.target.value}`;
-      const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
+      const gitRepositoryUrl = getGitRepositoryDetails(
         gitProvider,
-        gitRepositoryFullName
-      );
+        gitOrganization?.name,
+        "ab-2",
+        event.target.value
+      ).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);
     },
     [setCreateRepositoryInput, createRepositoryInput]

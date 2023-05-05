@@ -76,7 +76,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
-        {gitRepositoryFullName.includes("/") ? (
+        {gitRepositoryFullName?.includes("/") ? (
           <div className={`${CLASS_NAME}__git-connection`}>
             <Icon
               icon="git-sync"
