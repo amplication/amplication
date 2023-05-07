@@ -11,6 +11,7 @@ import {
 } from "@amplication/code-gen-utils";
 import { builders, namedTypes } from "ast-types";
 import { camelCase } from "camel-case";
+import { pascalCase } from "pascal-case";
 import pluginWrapper from "../../../plugin-wrapper";
 import {
   Entity,
@@ -361,6 +362,7 @@ async function createToOneRelationMethods(
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
+  const findOneMethodName = `resolveField${pascalCase(field.name)}`;
 
   const toOneMapping = {
     SERVICE: serviceId,
@@ -369,7 +371,8 @@ async function createToOneRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     GET_PROPERTY: createFieldFindOneFunctionId(field.name),
-    FIND_ONE: builders.identifier(camelCase(field.name)),
+    FIND_ONE: builders.identifier(findOneMethodName),
+    FIND_ONE_FIELD_NAME: builders.stringLiteral(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findOneArgs.id,
   };
 
@@ -423,6 +426,7 @@ async function createToManyRelationMethods(
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
+  const findManyMethodName = `resolveField${pascalCase(field.name)}`;
 
   const toManyMapping = {
     SERVICE: serviceId,
@@ -431,7 +435,8 @@ async function createToManyRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
-    FIND_MANY: builders.identifier(camelCase(field.name)),
+    FIND_MANY: builders.identifier(findManyMethodName),
+    FIND_MANY_FIELD_NAME: builders.stringLiteral(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };
 
