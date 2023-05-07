@@ -257,7 +257,7 @@
     "get-port": "^5.1.1",
     "google-libphonenumber": "^3.2.31",
     "graphql": "^16.6.0",
-    "html-webpack-plugin": "^5.5.0",
+    "html-webpack-plugin": "^5.5.1",
     "husky": "^8.0.2",
     "jest": "^28.1.3",
     "jest-diff": "^29.5.0",
