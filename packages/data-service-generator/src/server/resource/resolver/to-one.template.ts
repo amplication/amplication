@@ -9,7 +9,6 @@ declare interface SERVICE {
 }
 
 declare const ENTITY_NAME: string;
-declare const RELATED_ENTITY_NAME: string;
 declare const FIND_ONE_FIELD_NAME: string;
 
 export class Mixin {
