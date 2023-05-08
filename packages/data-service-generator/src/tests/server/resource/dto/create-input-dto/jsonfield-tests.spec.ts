@@ -25,7 +25,7 @@ describe("Testing the <Entity>CreateInput class with json field", () => {
         @ApiProperty({
           required: false,
         })
-        @IsJSON()
+        @IsJSONValue()
         @IsOptional()
         @Field(() => GraphQLJSON, {
           nullable: true,

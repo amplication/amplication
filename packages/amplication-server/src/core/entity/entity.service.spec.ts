@@ -38,6 +38,7 @@ import { ReservedNameError } from "../resource/ReservedNameError";
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -419,6 +420,7 @@ describe("EntityService", () => {
           })),
         },
         EntityService,
+        MockedAmplicationLoggerProvider,
       ],
     })
       .overrideProvider(DiffService)

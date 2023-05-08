@@ -16,7 +16,6 @@ import {
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
 import WizardNewConnection from "./GitActions/WizardNewConnection";
-import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 import * as models from "../../models";
 
@@ -223,7 +222,6 @@ function AuthWithGit({
             />
           </div>
         )}
-        <GitSyncNotes />
       </Panel>
 
       <Snackbar open={Boolean(error)} message={errorMessage} />

@@ -140,7 +140,7 @@ export const ResourceInitialValues = {
   generateRestApi: true,
   isGenerateCompleted: null,
   structureType: "Mono",
-  baseDir: "apps",
+  baseDir: "./apps",
   databaseType: "postgres",
   templateType: "empty",
   authType: "core",

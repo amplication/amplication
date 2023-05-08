@@ -63,7 +63,7 @@
       "options": {
         "buildTarget": "amplication-git-push-webhook-service:build",
         "inspect": true,
-        "port": 9229
+        "port": 7015
       },
       "configurations": {
         "production": {

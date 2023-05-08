@@ -1,4 +1,5 @@
 import { EnumGitProvider } from "../../../models";
+import GitSyncNotes from "../GitSyncNotes";
 import ProviderItem from "./ProviderItem";
 
 type Props = {
@@ -16,6 +17,7 @@ export default function WizardNewConnection({
         onSyncNewGitOrganizationClick={onSyncNewGitOrganizationClick}
         provider={provider}
       ></ProviderItem>
+      <GitSyncNotes />
     </div>
   );
 }
