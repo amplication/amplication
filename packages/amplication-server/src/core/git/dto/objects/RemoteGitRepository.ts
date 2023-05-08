@@ -22,6 +22,11 @@ export class RemoteGitRepository {
 
   @Field(() => String)
   defaultBranch: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  groupName?: string | null;
 }
 
 @ObjectType({
