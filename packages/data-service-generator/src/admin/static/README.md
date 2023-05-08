@@ -24,6 +24,10 @@ Configuration for the client component can be provided through the use of enviro
 | PORT                 | the port on which to run the client              | 3001                            |
 | REACT_APP_SERVER_URL | the url on which the server component is running | http://localhost:[server-port]  |
 
+> **Note**
+> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
+
+
 ## Step 2: Scripts
 
 After configuration of the client the next step would be to run the application. Before running the client side of the component, make sure that the different pre-requisites are met - i.e., npm, docker. Make sure that the server-side of the application is running.

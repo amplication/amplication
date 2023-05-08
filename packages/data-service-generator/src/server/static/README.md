@@ -27,6 +27,9 @@ Configuration for the server component can be provided through the use of enviro
 | JWT_SECRET_KEY       | the secret used to sign the json-web token   | [secret]                                                            |
 | JWT_EXPIRATION       | the expiration time for the json-web token   | 2d                                                                  |
 
+> **Note**
+> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
+
 ## Step 2.1: Scripts - pre-requisites
 
 After configuration of the server the next step would be to run the application. Before running the server side of the component, make sure that the different pre-requisites are met - i.e., node.js [^16.x], npm, docker. After the setup of the pre-requisites the server component can be started.
