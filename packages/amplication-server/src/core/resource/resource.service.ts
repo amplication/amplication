@@ -210,7 +210,7 @@ export class ResourceService {
 
     if (
       isOnBoarding ||
-      (!gitRepositoryToCreate?.isOverrideGitRepository &&
+      (!gitRepositoryToCreate.isOverrideGitRepository &&
         !projectConfiguration.gitRepositoryId)
     ) {
       await this.prisma.resource.update({
