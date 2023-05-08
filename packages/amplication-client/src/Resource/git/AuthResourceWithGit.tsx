@@ -115,6 +115,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           name: data.repositoryName,
           gitOrganizationId: data.gitOrganizationId,
           resourceId: resource.id,
+          groupName: data.groupName,
         },
       }).catch(console.error);
       trackEvent({

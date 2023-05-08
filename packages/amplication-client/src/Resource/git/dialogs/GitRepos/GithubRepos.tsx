@@ -42,6 +42,7 @@ export type GitRepositorySelected = {
   repositoryName: string;
   gitRepositoryUrl?: string;
   gitProvider: EnumGitProvider;
+  groupName?: string;
 };
 
 export type GitRepositoryCreatedData = {
@@ -127,6 +128,7 @@ function GitRepos({
         repositoryName: data.name,
         gitRepositoryUrl: data.url,
         gitProvider: gitOrganization.provider,
+        groupName: data.groupName,
       });
     },
     [gitOrganization.id, onGitRepositoryConnected]
@@ -253,12 +255,14 @@ export const CONNECT_GIT_REPOSITORY = gql`
     $name: String!
     $gitOrganizationId: String!
     $resourceId: String!
+    $groupName: String
   ) {
     connectResourceGitRepository(
       data: {
         name: $name
         resourceId: $resourceId
         gitOrganizationId: $gitOrganizationId
+        groupName: $groupName
       }
     ) {
       id
@@ -293,6 +297,7 @@ const FIND_GIT_REPOS = gql`
         private
         fullName
         admin
+        groupName
       }
       total
       pagination {
