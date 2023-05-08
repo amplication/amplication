@@ -44,7 +44,7 @@ async function createServerInternal(
   const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
 
   await context.logger.info(
-    `Running DSG Version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
+    `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
   );
 
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
@@ -65,7 +65,7 @@ async function createServerInternal(
   const dtoModules = await createDTOModules(dtos);
   const resourcesModules = await createResourcesModules(entities);
 
-  await context.logger.info("Creating Auth module...");
+  await context.logger.info("Creating auth module...");
   const authModules = await createAuthModules();
 
   await context.logger.info("Creating swagger...");
@@ -74,7 +74,7 @@ async function createServerInternal(
   await context.logger.info("Creating seed script...");
   const seedModule = await createSeed();
 
-  await context.logger.info("Creating Message broker modules...");
+  await context.logger.info("Creating message broker modules...");
   const messageBrokerModules = await createMessageBroker({});
 
   await context.logger.info("Creating application module...");
