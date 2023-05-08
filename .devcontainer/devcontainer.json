@@ -1,0 +1,67 @@
+{
+  "name": "Amplication workspace",
+
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:0-16",
+  "features": {
+    "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+  },
+
+  "portsAttributes": {
+    "8080": {
+      "label": "kafka ui"
+    },
+    "9092": {
+      "label": "kafka"
+    },
+    "5432": {
+      "label": "postgres"
+    },
+    "4400": {
+      "label": "storybook"
+    },
+    "7010": {
+      "label": "amplication-build-manager"
+    },
+    "7005": {
+      "label": "amplication-plugin-api"
+    },
+    "3001": {
+      "label": "amplication-client"
+    },
+    "7000": {
+      "label": "amplication-server"
+    },
+    "7020": {
+      "label": "amplication-git-pull-service"
+    },
+    "7015": {
+      "label": "amplication-git-push-webhook-service"
+    }
+  },
+
+  "postCreateCommand": "npm install && npm run setup:dev",
+
+  "customizations": {
+    "vscode": {
+      // vscode extensions recommended in extensions.json file
+      "extensions": [
+        "codezombiech.gitignore",
+        "dbaeumer.vscode-eslint",
+        "esbenp.prettier-vscode",
+        "mikestead.dotenv",
+        "ms-azuretools.vscode-docker",
+        "prisma.prisma",
+        "graphql.vscode-graphql",
+        "redhat.vscode-yaml",
+        "streetsidesoftware.code-spell-checker",
+        "hashicorp.terraform",
+        "sleistner.vscode-fileutils",
+        "eamodio.gitlens",
+        "nrwl.angular-console",
+        "firsttris.vscode-jest-runner",
+        "znck.grammarly",
+        "PKief.material-icon-theme"
+      ]
+    }
+  }
+}

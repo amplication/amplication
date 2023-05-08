@@ -24,6 +24,21 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
     [formik.values]
   );
 
+  const handleChange = useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>) => {
+      const { value } = event.target;
+      if (!value.startsWith("./")) {
+        event.target.value = `./${value}`;
+      }
+      if (value === ".") event.target.value = "./";
+    },
+    [formik.values.baseDir, formik]
+  );
+
+  const baseDirSplit = useMemo(() => {
+    return formik.values.baseDir.split("./");
+  }, [formik.values.baseDir]);
+
   const kebabCaseServiceName = useMemo(
     () => kebabCase(formik.values.serviceName),
     [formik.values.serviceName]
@@ -67,7 +82,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
                   className={`${className}__repository_base_dir`}
                   name="baseDir"
                   label="Base directory"
-                  placeholder="./"
+                  onChange={handleChange}
                 />
               )}
             </div>
@@ -80,7 +95,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
                 <div className={`${className}__monorepo_example`}>
                   <div className={`${className}__monorepo_example_app`}>
                     <Icon icon={"folder"}></Icon>
-                    {formik.values.baseDir}
+                    {baseDirSplit}
                   </div>
                   <div className={`${className}__monorepo_example_tree`}>
                     <hr className={`${className}__monorepo_hr`} />

@@ -13,6 +13,7 @@ import {
 import { Button } from "../Components/Button";
 import { SIGN_IN_PAGE_CONTENT, DEFAULT_PAGE_SOURCE } from "../User/constants";
 import "./Signup.scss";
+import { LOCAL_STORAGE_KEY_INVITATION_TOKEN } from "../App";
 
 type Values = {
   email: string;
@@ -57,10 +58,13 @@ const Signup = () => {
 
   useEffect(() => {
     if (data) {
+      const isFromInvitation = localStorage.getItem(
+        LOCAL_STORAGE_KEY_INVITATION_TOKEN
+      );
       setToken(data.signup.token);
       history.push({
         pathname: "/",
-        search: "?complete-signup=1",
+        search: isFromInvitation ? "" : "complete-signup=1",
       });
     }
   }, [data, history, location]);

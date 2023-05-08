@@ -73,6 +73,12 @@ const CreateServiceCodeGeneration: React.FC<
     codeGenStatus && formik.setFieldValue("isGenerateCompleted", "completed");
   }, [formik.values, data?.build?.status]);
 
+  if (data?.build?.status === models.EnumBuildStatus.Failed) {
+    trackWizardPageEvent(AnalyticsEventNames.ViewServiceWizardError, {
+      errorInfo: data?.build?.message || "no info",
+    });
+  }
+
   const actionLog = useMemo<LogData | null>(() => {
     if (!data?.build) return null;
 
@@ -90,10 +96,12 @@ const CreateServiceCodeGeneration: React.FC<
   }, [trackWizardPageEvent]);
 
   const handleContinueClick = useCallback(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardError_Continue);
     history.push(`/${currentWorkspace.id}/${currentProject.id}/${resource.id}`);
   }, [currentWorkspace, currentProject]);
 
   const handleTryAgainClick = useCallback(() => {
+    trackWizardPageEvent(AnalyticsEventNames.ServiceWizardError_TryAgain);
     commit({
       variables: {
         message: "Initial commit",

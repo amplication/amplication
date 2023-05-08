@@ -5,19 +5,20 @@ import {
   types,
 } from "@amplication/code-gen-types";
 
-const UNEDITABLE_FIELD_NAMES = new Set<string>([
-  "id",
-  "createdAt",
-  "updatedAt",
+const UNEDITABLE_FIELD_TYPES = new Set<EnumDataType>([
+  EnumDataType.Id,
+  EnumDataType.CreatedAt,
+  EnumDataType.UpdatedAt,
 ]);
+
 export const ENUM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.MultiSelectOptionSet,
   EnumDataType.OptionSet,
 ]);
 
 export function isEditableField(field: EntityField): boolean {
-  const editableFieldName = !UNEDITABLE_FIELD_NAMES.has(field.name);
-  return editableFieldName;
+  const editableFieldType = !UNEDITABLE_FIELD_TYPES.has(field.dataType);
+  return editableFieldType;
 }
 
 export function isOneToOneRelationField(
