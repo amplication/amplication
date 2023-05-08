@@ -15,15 +15,16 @@
   &__title {
     @include body1;
     color: var(--black100);
+    line-height: 32px;
   }
   &__description {
     @include body2;
-    color: #53dbee;
+    color: var(--dark-secondary-turquoise);
   }
 
   &__property {
     @include regular-12;
-    color: #ffbd70;
+    color: var(--dark-carrot-color);
 
     .amp-icon {
       margin-right: var(--default-spacing);
