@@ -78,8 +78,8 @@ describe("BuildLogger", () => {
 
       expect(applicationLogger.error).toHaveBeenCalledWith(
         message,
-        params,
-        error
+        error,
+        params
       );
       expect(httpClient.post).toHaveBeenCalledWith(
         expect.any(String),

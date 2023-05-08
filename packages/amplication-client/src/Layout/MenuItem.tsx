@@ -44,6 +44,16 @@ const MenuItem = ({
 }: Props) => {
   const match = useRouteMatch(to || NON_URL);
 
+  const [showTooltip, setShowTooltip] = React.useState(false);
+
+  const handleMouseEnter = React.useCallback(() => {
+    setShowTooltip(true);
+  }, []);
+
+  const handleMouseLeave = React.useCallback(() => {
+    setShowTooltip(false);
+  }, []);
+
   const content = (
     <Button
       buttonStyle={EnumButtonStyle.Text}
@@ -61,8 +71,10 @@ const MenuItem = ({
         "amp-menu-item--active": match !== null,
         "amp-menu-item--no-hover": disableHover,
       })}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {hideTooltip ? (
+      {hideTooltip || !showTooltip ? (
         content
       ) : (
         <Tooltip

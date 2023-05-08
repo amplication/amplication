@@ -45,7 +45,7 @@ export class BuildRunnerController {
         successEvent
       );
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
@@ -74,7 +74,7 @@ export class BuildRunnerController {
         failureEvent
       );
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -99,7 +99,7 @@ export class BuildRunnerController {
         buildId: args.buildId,
       });
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,

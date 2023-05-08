@@ -1,9 +1,8 @@
 import { format } from "winston";
 import { Format } from "logform";
 import { inspect } from "util";
-
+import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
 const clc = {
-  bold: (text: string) => `\x1B[1m${text}\x1B[0m`,
   green: (text: string) => `\x1B[32m${text}\x1B[39m`,
   yellow: (text: string) => `\x1B[33m${text}\x1B[39m`,
   red: (text: string) => `\x1B[31m${text}\x1B[39m`,
@@ -25,15 +24,26 @@ export const customFormat = (): Format =>
     const color = colorScheme[level];
     const cyanBright = clc.cyanBright;
 
-    const componentName = meta["component"];
-
     // Deduplicate meta component
-    meta["component"] = undefined;
+    /* istanbul ignore next */
+    const {
+      component: componentName,
+      [LEVEL]: metaLevel,
+      [MESSAGE]: metaMessage,
+      [SPLAT]: splat,
+      ...metadata
+    } = meta;
 
-    const stringifiedMeta = JSON.stringify(meta);
-    const formattedMeta = inspect(JSON.parse(stringifiedMeta), {
+    if (splat) {
+      const splatObj = splat.filter((s: unknown) => s);
+      if (splatObj.length > 0) {
+        metadata["i"] = [...splatObj];
+      }
+    }
+    const formattedMeta = inspect(metadata, {
       colors: true,
       depth: null,
+      compact: true,
     });
 
     return (

@@ -57,7 +57,7 @@ export class BuildLogger implements IBuildLogger {
     error?: Error
   ): Promise<void> {
     userFriendlyMessage = userFriendlyMessage || message;
-    applicationLogger.error(message, params, error);
+    applicationLogger.error(message, error, params);
     await this.logToBuildLog(LogLevel.Error, userFriendlyMessage);
   }
 }
