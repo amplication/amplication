@@ -577,6 +577,7 @@ export class GitProviderService {
 
     this.logger.error(
       "getGitProviderProperties failed to detect provider organization properties",
+      null,
       {
         className: GitProviderService.name,
         provider,
@@ -677,7 +678,7 @@ export class GitProviderService {
         },
       });
     } else {
-      this.logger.error("Failed to delete git provider integration", {
+      this.logger.error("Failed to delete git provider integration", null, {
         organization,
       });
       throw new AmplicationError("Failed to delete git provider integration");
