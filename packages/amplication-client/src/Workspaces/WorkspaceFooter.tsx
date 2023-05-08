@@ -58,20 +58,21 @@ const WorkspaceFooter: React.FC<unknown> = () => {
     />
   );
 
-  const gitUrl = useMemo(() => {
-    if (!lastResourceBuild?.action?.steps?.length) {
-      return gitRepositoryUrl;
-    }
-    const gitStep = lastResourceBuild?.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
-    );
+  const gitUrl =
+    useMemo(() => {
+      if (!lastResourceBuild?.action?.steps?.length) {
+        return gitRepositoryUrl;
+      }
+      const gitStep = lastResourceBuild?.action.steps.find(
+        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      );
 
-    const log = gitStep?.logs?.find(
-      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
-    );
-    // if there is "lastResourceBuild" link to the last PR
-    return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
-  }, [gitRepositoryUrl, lastResourceBuild]);
+      const log = gitStep?.logs?.find(
+        (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+      );
+      // if there is "lastResourceBuild" link to the last PR
+      return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
+    }, [gitRepositoryUrl, lastResourceBuild]) || gitRepositoryUrl;
 
   return (
     <div className={CLASS_NAME}>
