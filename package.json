@@ -20,7 +20,8 @@
     "serve:dsg": "nx run-many --parallel --target=serve --projects=amplication-build-manager,local-data-service-generator-controller",
     "serve:git": "nx run-many --parallel --target=serve --projects=amplication-git-pull-request-service",
     "serve:storage": "npx nx serve amplication-storage-gateway",
-    "serve:plugins": "npx nx serve amplication-plugin-api"
+    "serve:plugins": "npx nx serve amplication-plugin-api",
+    "debug:dsg": "npx nx generate-local-code data-service-generator"
   },
   "lint-staged": {
     "*": [
