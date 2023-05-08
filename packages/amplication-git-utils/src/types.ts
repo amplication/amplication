@@ -111,6 +111,7 @@ export interface RemoteGitRepository {
   fullName: string | null;
   admin: boolean | null;
   defaultBranch: string;
+  groupName?: string | null;
 }
 
 export interface RemoteGitRepos {
