@@ -40,6 +40,7 @@ model PluginVersion {
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?
+  privateSettings Json?
   updatedAt       DateTime @updatedAt
   version         String?
 }
