@@ -22,7 +22,7 @@ const CreateGithubSync: React.FC<props> = ({
   formik,
   defineUser,
 }) => {
-  const { refreshCurrentWorkspace, currentProjectConfiguration } =
+  const { refreshCurrentWorkspace, currentProjectConfiguration, resources } =
     useContext(AppContext);
 
   const { gitRepository } = currentProjectConfiguration;
@@ -32,6 +32,8 @@ const CreateGithubSync: React.FC<props> = ({
     repositoryName: gitRepository?.name,
     gitRepositoryUrl: `https://github.com/${gitRepository?.name}`,
   };
+
+  const isNeedToConnectGitProvider = resources.length === 0 && !gitRepository;
 
   useEffect(() => {
     formik.validateForm();
@@ -94,7 +96,7 @@ const CreateGithubSync: React.FC<props> = ({
           text={
             <div className={`create-service-wizard-layout__description__text`}>
               Amplication automatically pushes the generated code of your
-              services to a git repository.
+              services to a Git repository.
               <br />
               You are the owner of the code and can freely customize it.
             </div>
@@ -103,7 +105,7 @@ const CreateGithubSync: React.FC<props> = ({
       </Layout.LeftSide>
       <Layout.RightSide>
         <div className={`${className}__github_box`}>
-          {defineUser === "Onboarding" ? (
+          {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
             <AuthWithGit
               onDone={handleOnDone}
               onGitRepositorySelected={handleOnGitRepositorySelected}

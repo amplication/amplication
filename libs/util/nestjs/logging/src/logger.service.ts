@@ -1,12 +1,12 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { LoggerOptions, Logger } from "@amplication/util/logging";
+import { LoggerOptions, Logger, ILogger } from "@amplication/util/logging";
 import {
   AmplicationLoggerModulesOptions,
   AMPLICATION_LOGGER_MODULE_OPTIONS,
 } from "./types";
 
 @Injectable()
-export class AmplicationLogger implements LoggerService {
+export class AmplicationLogger implements LoggerService, ILogger {
   private logger: Logger;
   private loggerOptions: LoggerOptions;
 
@@ -40,8 +40,8 @@ export class AmplicationLogger implements LoggerService {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  public error(message: string, ...args: any[]): void {
-    this.logger.error(message, ...args);
+  public error(message: string, error?: Error, ...args: any[]): void {
+    this.logger.error(message, error, ...args);
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -55,7 +55,7 @@
       "options": {
         "buildTarget": "amplication-plugin-api:build",
         "inspect": true,
-        "port": 9229
+        "port": 7005
       },
       "configurations": {
         "production": {

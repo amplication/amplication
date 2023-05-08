@@ -209,7 +209,7 @@ describe("ActionService", () => {
     expect(prismaActionLogCreateMock).toBeCalledWith({
       data: {
         level: EnumActionLogLevel.Error,
-        message: EXAMPLE_ERROR.toString(),
+        message: EXAMPLE_ERROR.message,
         meta: {},
         step: {
           connect: { id: EXAMPLE_ACTION_STEP_ID },

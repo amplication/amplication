@@ -56,7 +56,7 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_START_LOG =
-  "Starting to push changes to GitHub.";
+  "Starting to push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
   "Successfully pushed changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
@@ -499,7 +499,8 @@ export class BuildService {
           );
         } catch (error) {
           this.logger.error(
-            `Failed to emit Create Pull Request Message. Error: ${error}`
+            "Failed to emit Create Pull Request Message.",
+            error
           );
         }
       },
