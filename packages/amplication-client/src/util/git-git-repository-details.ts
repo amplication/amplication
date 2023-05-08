@@ -26,7 +26,7 @@ export function getGitRepositoryDetails(
 
   const gitRepositoryUrlMap = {
     [EnumGitProvider.Github]: `${GITHUB_URL}/${repositoryFullName}`,
-    [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}/src/master/`,
+    [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
   };
 
   return {
