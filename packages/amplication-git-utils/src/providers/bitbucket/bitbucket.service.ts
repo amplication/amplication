@@ -210,6 +210,7 @@ export class BitBucketService implements GitProvider {
       private: is_private,
       fullName: full_name,
       admin: !!(accessLevel === "admin"),
+      groupName: repositoryGroupName,
       defaultBranch: mainbranch.name,
     };
   }
@@ -242,6 +243,7 @@ export class BitBucketService implements GitProvider {
           url: links.html.href,
           private: is_private,
           fullName: full_name,
+          groupName: repositoryGroupName,
           admin: !!(accessLevel === "admin"),
           defaultBranch: mainbranch.name,
         };
@@ -290,6 +292,7 @@ export class BitBucketService implements GitProvider {
       private: newRepository.is_private,
       fullName: newRepository.full_name,
       admin: !!(newRepository.accessLevel === "admin"),
+      groupName: repositoryGroupName,
       defaultBranch: newRepository.mainbranch.name,
     };
   }
