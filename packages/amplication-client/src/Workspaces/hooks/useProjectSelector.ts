@@ -1,10 +1,12 @@
 import { useMutation, useQuery } from "@apollo/client";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { PURCHASE_URL } from "../../routes/routesUtil";
 import { expireCookie, getCookie, setCookie } from "../../util/cookie";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
+
+const CURRENT_PROJECT_ID = "currentProjectID";
 
 const useProjectSelector = (
   authenticated: boolean,
@@ -129,17 +131,25 @@ const useProjectSelector = (
     workspace,
   ]);
 
+  const savedProjectId = localStorage.getItem(CURRENT_PROJECT_ID);
+
+  const savedCurrentProject = useMemo(
+    () => projectsList.find((project_) => project_.id === savedProjectId),
+    [projectsList, savedProjectId]
+  );
+
   useEffect(() => {
     if (
-      !project ||
       !projectsList.length ||
       projectListData.projects.length !== projectsList.length
     )
       return;
 
-    const selectedProject = projectsList.find(
-      (projectDB: models.Project) => projectDB.id === project
-    );
+    const selectedProject =
+      projectsList.find(
+        (projectDB: models.Project) => projectDB.id === project
+      ) ||
+      (!!workspaceUtil && savedCurrentProject);
 
     if (!selectedProject) projectRedirect(projectsList[0].id);
 
@@ -151,7 +161,9 @@ const useProjectSelector = (
           resource.resourceType === models.EnumResourceType.ProjectConfiguration
       )
     );
-  }, [project, projectRedirect, projectsList]);
+    // Persisting current project Id. Needed when Navigating to settings while continuing to display commit history and linking back to home page since the id will no longer be on the route.
+    localStorage.setItem(CURRENT_PROJECT_ID, selectedProject.id);
+  }, [project, projectRedirect, projectsList, savedCurrentProject]);
 
   return {
     currentProject,
