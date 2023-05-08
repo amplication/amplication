@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
 import * as models from "../models";
-import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
+import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import { Link, useHistory } from "react-router-dom";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "./constants";
 import { DeleteEntityField } from "./DeleteEntityField";

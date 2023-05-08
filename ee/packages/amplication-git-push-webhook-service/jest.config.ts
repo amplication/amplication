@@ -13,5 +13,11 @@ export default {
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory:
-    '../../coverage/packages/amplication-git-push-webhook-service',
+    '../../../coverage/ee/packages/amplication-git-push-webhook-service',
+  coverageThreshold: {
+    global: {
+      branches: 0,
+      lines: 0,
+    },
+  },
 };

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { PURCHASE_URL } from "../../routes/routesUtil";
+import { expireCookie, getCookie, setCookie } from "../../util/cookie";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -74,6 +75,20 @@ const useProjectSelector = (
   );
 
   useEffect(() => {
+    const signupCookie = getCookie("signup");
+
+    if (signupCookie) {
+      let refreshTimes = Number(signupCookie);
+      refreshTimes += 1;
+      if (refreshTimes < 4) {
+        setCookie("signup", refreshTimes.toString());
+      } else {
+        expireCookie("signup");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (loadingList || !projectListData) return;
 
     const sortedProjects = [...projectListData.projects].sort((a, b) => {
@@ -87,6 +102,8 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
+    const isSignupCookieExist = getCookie("signup");
+    !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
     const isFromPurchase = localStorage.getItem(PURCHASE_URL);
 
     if (isFromPurchase) {
@@ -97,11 +114,10 @@ const useProjectSelector = (
       });
     }
 
-    !workspaceUtil &&
-      currentWorkspace?.id &&
+    !!(!workspaceUtil && currentWorkspace?.id) &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup ? "/create-resource" : ""
+          isFromSignup || isSignupCookieExist ? "/welcome" : ""
         }`
       );
   }, [

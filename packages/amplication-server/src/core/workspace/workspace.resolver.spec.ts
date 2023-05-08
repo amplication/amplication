@@ -1,5 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloServer, gql } from "apollo-server-express";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -15,7 +20,8 @@ import { ProjectService } from "../project/project.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -134,7 +140,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("WorkspaceResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -193,8 +199,21 @@ describe("WorkspaceResolver", () => {
             get: jest.fn(),
           })),
         },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -202,7 +221,7 @@ describe("WorkspaceResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should get an workspace", async () => {

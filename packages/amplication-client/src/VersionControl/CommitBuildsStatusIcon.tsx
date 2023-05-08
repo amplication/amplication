@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import * as models from "../models";
-import { CircularProgress, Icon } from "@amplication/design-system";
+import { CircularProgress, Icon } from "@amplication/ui/design-system";
 import { BUILD_STATUS_TO_ICON } from "./constants";
 import "./CommitBuildsStatusIcon.scss";
 

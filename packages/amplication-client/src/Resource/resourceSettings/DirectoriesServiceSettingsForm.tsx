@@ -3,7 +3,7 @@ import {
   Panel,
   EnumPanelStyle,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";

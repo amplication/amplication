@@ -13,4 +13,7 @@ export class ConnectGitRepositoryInput {
 
   @Field(() => String, { nullable: false })
   gitOrganizationId!: string;
+
+  @Field(() => Boolean, { nullable: true })
+  isOverrideGitRepository?: boolean;
 }

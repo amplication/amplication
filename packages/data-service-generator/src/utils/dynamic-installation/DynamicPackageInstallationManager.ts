@@ -1,15 +1,19 @@
+import { BuildLogger } from "@amplication/code-gen-types";
 import { valid } from "semver";
 import type { Promisable } from "type-fest";
 import { Tarball } from "./Tarball";
 export class DynamicPackageInstallationManager {
-  constructor(private pluginInstallationPath: string) {}
+  constructor(
+    private pluginInstallationPath: string,
+    private readonly logger: BuildLogger
+  ) {}
 
   public async install(
     plugin: PackageInstallation,
     hooks: {
       onBeforeInstall?: HookFunction;
       onAfterInstall?: HookFunction;
-      onError?: HookFunction;
+      onError?: HookErrorFunction;
     }
   ): Promise<void> {
     const { onAfterInstall, onBeforeInstall, onError } = hooks;
@@ -21,7 +25,8 @@ export class DynamicPackageInstallationManager {
 
       const tarball = new Tarball(
         { name, version: validVersion, settings, pluginId },
-        this.pluginInstallationPath
+        this.pluginInstallationPath,
+        this.logger
       );
 
       if (settings?.local) {
@@ -47,3 +52,7 @@ export interface PackageInstallation {
 }
 
 export type HookFunction = (plugin: PackageInstallation) => Promisable<void>;
+export type HookErrorFunction = (
+  plugin: PackageInstallation,
+  error?: Error
+) => Promisable<void>;

@@ -1,4 +1,4 @@
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useContext, useEffect } from "react";

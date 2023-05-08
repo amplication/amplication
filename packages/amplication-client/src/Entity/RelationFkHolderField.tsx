@@ -1,4 +1,4 @@
-import { SelectField, SelectFieldProps } from "@amplication/design-system";
+import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
 import { useEffect, useRef } from "react";

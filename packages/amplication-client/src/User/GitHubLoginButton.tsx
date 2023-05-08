@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { REACT_APP_GITHUB_CONTROLLER_LOGIN_URL } from "../env";

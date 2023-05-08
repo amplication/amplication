@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { Link } from "react-router-dom";
 import { Formik } from "formik";

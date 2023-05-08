@@ -5,7 +5,11 @@
 import { NestFactory } from "@nestjs/core";
 import { PrismaClient } from "../src/prisma";
 import { AppModule } from "../src/app.module";
-
+import { Logger } from "@amplication/util/logging";
+const logger = new Logger({
+  isProduction: false,
+  serviceName: "generate-graphql-schema",
+});
 export default async function generateGraphQLSchema(): Promise<void> {
   // Override PrismaClient $connect to prevent connections to the database
   PrismaClient.prototype.$connect = async function () {
@@ -21,7 +25,7 @@ if (require.main === module) {
   generateGraphQLSchema()
     .then(() => process.exit(0))
     .catch((error) => {
-      console.error(error);
+      logger.error(error.message, error);
       process.exit(1);
     });
 }

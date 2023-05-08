@@ -11,7 +11,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { getToken, setTokenFromCookie } from "./authentication/authentication";
-import "@amplication/design-system/icons";
+import "@amplication/ui/design-system/icons";
 import "./index.scss";
 import App from "./App";
 import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";

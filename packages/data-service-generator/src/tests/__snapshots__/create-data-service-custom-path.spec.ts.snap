@@ -858,7 +858,9 @@ export type DeleteProfileArgs = {
 
 export type Profile = {
   id: number;
+  createdIn: Date;
   createdAt: Date;
+  updatedIn: Date;
   updatedAt: Date;
   email: string;
   user?: User | null;
@@ -867,6 +869,8 @@ export type Profile = {
   "test-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileCreateInput = {
+  createdAt: Date;
+  updatedAt: Date;
   email: string;
   user?: UserWhereUniqueInput | null;
 };
@@ -899,7 +903,9 @@ export type ProfileListRelationFilter = {
 
 export type ProfileOrderByInput = {
   id?: SortOrder;
+  createdIn?: SortOrder;
   createdAt?: SortOrder;
+  updatedIn?: SortOrder;
   updatedAt?: SortOrder;
   email?: SortOrder;
   userId?: SortOrder;
@@ -908,6 +914,8 @@ export type ProfileOrderByInput = {
   "test-ui/src/api/profile/ProfileUpdateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileUpdateInput = {
+  createdAt?: Date;
+  updatedAt?: Date;
   email?: string;
   user?: UserWhereUniqueInput | null;
 };
@@ -919,7 +927,9 @@ import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
 
 export type ProfileWhereInput = {
   id?: IntFilter;
+  createdIn?: DateTimeFilter;
   createdAt?: DateTimeFilter;
+  updatedIn?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
   user?: UserWhereUniqueInput;
@@ -1404,7 +1414,7 @@ export const CustomerCreate = (props: CreateProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -1499,7 +1509,7 @@ export const CustomerEdit = (props: EditProps): React.ReactElement => {
           <SelectInput optionText={OrganizationTitle} />
         </ReferenceInput>
         <ReferenceInput
-          source=\\"organization.id\\"
+          source=\\"vipOrganization.id\\"
           reference=\\"Organization\\"
           label=\\"VIP Organization\\"
         >
@@ -2231,20 +2241,25 @@ const Dashboard = () => (
 export default Dashboard;
 ",
   "test-ui/src/profile/ProfileCreate.tsx": "import * as React from \\"react\\";
+
 import {
   Create,
   SimpleForm,
   CreateProps,
+  DateTimeInput,
   TextInput,
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+
 import { UserTitle } from \\"../user/UserTitle\\";
 
 export const ProfileCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <DateTimeInput label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateTimeInput label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
           <SelectInput optionText={UserTitle} />
@@ -2255,20 +2270,25 @@ export const ProfileCreate = (props: CreateProps): React.ReactElement => {
 };
 ",
   "test-ui/src/profile/ProfileEdit.tsx": "import * as React from \\"react\\";
+
 import {
   Edit,
   SimpleForm,
   EditProps,
+  DateTimeInput,
   TextInput,
   ReferenceInput,
   SelectInput,
 } from \\"react-admin\\";
+
 import { UserTitle } from \\"../user/UserTitle\\";
 
 export const ProfileEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <DateTimeInput label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateTimeInput label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextInput label=\\"Email\\" source=\\"email\\" type=\\"email\\" />
         <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"User\\">
           <SelectInput optionText={UserTitle} />
@@ -2301,8 +2321,10 @@ export const ProfileList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick=\\"show\\">
         <TextField label=\\"Id\\" source=\\"id\\" />
-        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"createdIn\\" label=\\"Created In\\" />
+        <TextField label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
+        <TextField label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -2328,8 +2350,10 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label=\\"Id\\" source=\\"id\\" />
-        <DateField source=\\"createdAt\\" label=\\"Created At\\" />
-        <DateField source=\\"updatedAt\\" label=\\"Updated At\\" />
+        <DateField source=\\"createdIn\\" label=\\"Created In\\" />
+        <TextField label=\\"Created At\\" source=\\"createdAt\\" />
+        <DateField source=\\"updatedIn\\" label=\\"Updated In\\" />
+        <TextField label=\\"Updated At\\" source=\\"updatedAt\\" />
         <TextField label=\\"Email\\" source=\\"email\\" />
         <ReferenceField label=\\"User\\" source=\\"user.id\\" reference=\\"User\\">
           <TextField source={USER_TITLE_FIELD} />
@@ -2468,7 +2492,7 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
@@ -2549,7 +2573,7 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <NumberInput step={1} label=\\"Age\\" source=\\"age\\" />
         <DateTimeInput label=\\"Birth Date\\" source=\\"birthDate\\" />
         <NumberInput label=\\"Score\\" source=\\"score\\" />
-        <ReferenceInput source=\\"user.id\\" reference=\\"User\\" label=\\"Manager\\">
+        <ReferenceInput source=\\"manager.id\\" reference=\\"User\\" label=\\"Manager\\">
           <SelectInput optionText={UserTitle} />
         </ReferenceInput>
         <ReferenceArrayInput
@@ -2953,7 +2977,8 @@ services:
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
-    \\"ts-node\\": \\"9.1.1\\"
+    \\"ts-node\\": \\"10.9.1\\",
+    \\"validator\\": \\"^13.9.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -2964,6 +2989,7 @@ services:
     \\"@types/jest\\": \\"26.0.19\\",
     \\"@types/normalize-path\\": \\"3.0.0\\",
     \\"@types/supertest\\": \\"2.0.11\\",
+    \\"@types/validator\\": \\"^13.7.15\\",
     \\"jest\\": \\"27.0.6\\",
     \\"jest-mock-extended\\": \\"^2.0.4\\",
     \\"prisma\\": \\"4.6.1\\",
@@ -3011,8 +3037,10 @@ model User {
 
 model Profile {
   id        Int      @id @default(autoincrement())
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdIn DateTime @default(now())
+  createdAt DateTime
+  updatedIn DateTime @updatedAt
+  updatedAt DateTime
   email     String
   user      User?
 }
@@ -4399,6 +4427,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+import { Transform } from \\"class-transformer\\";
 
 @InputType()
 class CustomerWhereUniqueInput {
@@ -4407,6 +4436,9 @@ class CustomerWhereUniqueInput {
     type: Number,
   })
   @IsInt()
+  @Transform((prop) => parseInt(prop.value), {
+    toClassOnly: true,
+  })
   @Field(() => Number)
   id!: number;
 }
@@ -5333,8 +5365,8 @@ export class CustomerResolverBase {
   }
 
   @Public()
-  @graphql.ResolveField(() => [Order])
-  async orders(
+  @graphql.ResolveField(() => [Order], { name: \\"orders\\" })
+  async resolveFieldOrders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
@@ -5347,8 +5379,11 @@ export class CustomerResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => Organization, { nullable: true })
-  async organization(
+  @graphql.ResolveField(() => Organization, {
+    nullable: true,
+    name: \\"organization\\",
+  })
+  async resolveFieldOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getOrganization(parent.id);
@@ -5359,8 +5394,11 @@ export class CustomerResolverBase {
     return result;
   }
 
-  @graphql.ResolveField(() => Organization, { nullable: true })
-  async vipOrganization(
+  @graphql.ResolveField(() => Organization, {
+    nullable: true,
+    name: \\"vipOrganization\\",
+  })
+  async resolveFieldVipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getVipOrganization(parent.id);
@@ -7858,8 +7896,13 @@ export class OrderResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => Customer, { nullable: true })
-  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+  @graphql.ResolveField(() => Customer, {
+    nullable: true,
+    name: \\"customer\\",
+  })
+  async resolveFieldCustomer(
+    @graphql.Parent() parent: Order
+  ): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -9498,8 +9541,8 @@ export class OrganizationResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => [User])
-  async users(
+  @graphql.ResolveField(() => [User], { name: \\"users\\" })
+  async resolveFieldUsers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -9512,8 +9555,8 @@ export class OrganizationResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Customer])
-  async customers(
+  @graphql.ResolveField(() => [Customer], { name: \\"customers\\" })
+  async resolveFieldCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9526,8 +9569,8 @@ export class OrganizationResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Customer])
-  async vipCustomers(
+  @graphql.ResolveField(() => [Customer], { name: \\"vipCustomers\\" })
+  async resolveFieldVipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9838,7 +9881,23 @@ class Profile {
   @IsDate()
   @Type(() => Date)
   @Field(() => Date)
+  createdIn!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
   createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedIn!: Date;
 
   @ApiProperty({
     required: true,
@@ -9881,12 +9940,28 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, ValidateNested, IsOptional } from \\"class-validator\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { IsDate, IsString, ValidateNested, IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 
 @InputType()
 class ProfileCreateInput {
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  createdAt!: Date;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @Field(() => Date)
+  updatedAt!: Date;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -10079,7 +10154,25 @@ class ProfileOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  createdIn?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   createdAt?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: [\\"asc\\", \\"desc\\"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  updatedIn?: SortOrder;
 
   @ApiProperty({
     required: false,
@@ -10124,12 +10217,34 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IsString, IsOptional, ValidateNested } from \\"class-validator\\";
-import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
+import { IsDate, IsOptional, IsString, ValidateNested } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+import { UserWhereUniqueInput } from \\"../../user/base/UserWhereUniqueInput\\";
 
 @InputType()
 class ProfileUpdateInput {
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  createdAt?: Date;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  @Field(() => Date, {
+    nullable: true,
+  })
+  updatedAt?: Date;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10198,7 +10313,29 @@ class ProfileWhereInput {
   @Field(() => DateTimeFilter, {
     nullable: true,
   })
+  createdIn?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
   createdAt?: DateTimeFilter;
+
+  @ApiProperty({
+    required: false,
+    type: DateTimeFilter,
+  })
+  @Type(() => DateTimeFilter)
+  @IsOptional()
+  @Field(() => DateTimeFilter, {
+    nullable: true,
+  })
+  updatedIn?: DateTimeFilter;
 
   @ApiProperty({
     required: false,
@@ -10251,6 +10388,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
+import { Transform } from \\"class-transformer\\";
 
 @InputType()
 class ProfileWhereUniqueInput {
@@ -10259,6 +10397,9 @@ class ProfileWhereUniqueInput {
     type: Number,
   })
   @IsInt()
+  @Transform((prop) => parseInt(prop.value), {
+    toClassOnly: true,
+  })
   @Field(() => Number)
   id!: number;
 }
@@ -10312,27 +10453,35 @@ const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const CREATE_RESULT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
 const FIND_MANY_RESULT = [
   {
     id: 42,
+    createdIn: new Date(),
     createdAt: new Date(),
+    updatedIn: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
   },
 ];
 const FIND_ONE_RESULT = {
   id: 42,
+  createdIn: new Date(),
   createdAt: new Date(),
+  updatedIn: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
 };
@@ -10419,7 +10568,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -10431,7 +10582,9 @@ describe(\\"Profile\\", () => {
       .expect([
         {
           ...FIND_MANY_RESULT[0],
+          createdIn: FIND_MANY_RESULT[0].createdIn.toISOString(),
           createdAt: FIND_MANY_RESULT[0].createdAt.toISOString(),
+          updatedIn: FIND_MANY_RESULT[0].updatedIn.toISOString(),
           updatedAt: FIND_MANY_RESULT[0].updatedAt.toISOString(),
         },
       ]);
@@ -10454,7 +10607,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.OK)
       .expect({
         ...FIND_ONE_RESULT,
+        createdIn: FIND_ONE_RESULT.createdIn.toISOString(),
         createdAt: FIND_ONE_RESULT.createdAt.toISOString(),
+        updatedIn: FIND_ONE_RESULT.updatedIn.toISOString(),
         updatedAt: FIND_ONE_RESULT.updatedAt.toISOString(),
       });
   });
@@ -10467,7 +10622,9 @@ describe(\\"Profile\\", () => {
       .expect(HttpStatus.CREATED)
       .expect({
         ...CREATE_RESULT,
+        createdIn: CREATE_RESULT.createdIn.toISOString(),
         createdAt: CREATE_RESULT.createdAt.toISOString(),
+        updatedIn: CREATE_RESULT.updatedIn.toISOString(),
         updatedAt: CREATE_RESULT.updatedAt.toISOString(),
       })
       .then(function () {
@@ -10529,7 +10686,9 @@ export class ProfileControllerBase {
       },
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10551,7 +10710,9 @@ export class ProfileControllerBase {
       ...args,
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10574,7 +10735,9 @@ export class ProfileControllerBase {
       where: params,
       select: {
         id: true,
+        createdIn: true,
         createdAt: true,
+        updatedIn: true,
         updatedAt: true,
         email: true,
 
@@ -10614,7 +10777,9 @@ export class ProfileControllerBase {
         },
         select: {
           id: true,
+          createdIn: true,
           createdAt: true,
+          updatedIn: true,
           updatedAt: true,
           email: true,
 
@@ -10646,7 +10811,9 @@ export class ProfileControllerBase {
         where: params,
         select: {
           id: true,
+          createdIn: true,
           createdAt: true,
+          updatedIn: true,
           updatedAt: true,
           email: true,
 
@@ -10807,8 +10974,13 @@ export class ProfileResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => User, { nullable: true })
-  async user(@graphql.Parent() parent: Profile): Promise<User | null> {
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: \\"user\\",
+  })
+  async resolveFieldUser(
+    @graphql.Parent() parent: Profile
+  ): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
     if (!result) {
@@ -11322,13 +11494,13 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
 import { Organization } from \\"../../organization/base/Organization\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { JsonValue } from \\"type-fest\\";
 import { Profile } from \\"../../profile/base/Profile\\";
@@ -11461,7 +11633,7 @@ class User {
   @ApiProperty({
     required: true,
   })
-  @IsJSON()
+  @IsJSONValue()
   @Field(() => GraphQLJSON)
   extendedProperties!: JsonValue;
 
@@ -11500,7 +11672,6 @@ import {
   IsOptional,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -11509,6 +11680,7 @@ import { UserCreateNestedManyWithoutUsersInput } from \\"./UserCreateNestedManyW
 import { OrganizationCreateNestedManyWithoutUsersInput } from \\"./OrganizationCreateNestedManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
@@ -11640,7 +11812,7 @@ class UserCreateInput {
   @ApiProperty({
     required: true,
   })
-  @IsJSON()
+  @IsJSONValue()
   @Field(() => GraphQLJSON)
   extendedProperties!: InputJsonValue;
 
@@ -11993,7 +12165,6 @@ import {
   ValidateNested,
   IsEnum,
   IsBoolean,
-  IsJSON,
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
@@ -12002,6 +12173,7 @@ import { UserUpdateManyWithoutUsersInput } from \\"./UserUpdateManyWithoutUsersI
 import { OrganizationUpdateManyWithoutUsersInput } from \\"./OrganizationUpdateManyWithoutUsersInput\\";
 import { EnumUserInterests } from \\"./EnumUserInterests\\";
 import { EnumUserPriority } from \\"./EnumUserPriority\\";
+import { IsJSONValue } from \\"@app/custom-validators\\";
 import { GraphQLJSON } from \\"graphql-type-json\\";
 import { InputJsonValue } from \\"../../types\\";
 import { ProfileWhereUniqueInput } from \\"../../profile/base/ProfileWhereUniqueInput\\";
@@ -12160,7 +12332,7 @@ class UserUpdateInput {
   @ApiProperty({
     required: false,
   })
-  @IsJSON()
+  @IsJSONValue()
   @IsOptional()
   @Field(() => GraphQLJSON, {
     nullable: true,
@@ -13220,8 +13392,8 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => [User])
-  async employees(
+  @graphql.ResolveField(() => [User], { name: \\"employees\\" })
+  async resolveFieldEmployees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -13234,8 +13406,8 @@ export class UserResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Organization])
-  async organizations(
+  @graphql.ResolveField(() => [Organization], { name: \\"organizations\\" })
+  async resolveFieldOrganizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -13248,8 +13420,13 @@ export class UserResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => User, { nullable: true })
-  async manager(@graphql.Parent() parent: User): Promise<User | null> {
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: \\"manager\\",
+  })
+  async resolveFieldManager(
+    @graphql.Parent() parent: User
+  ): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
@@ -13258,8 +13435,13 @@ export class UserResolverBase {
     return result;
   }
 
-  @graphql.ResolveField(() => Profile, { nullable: true })
-  async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
+  @graphql.ResolveField(() => Profile, {
+    nullable: true,
+    name: \\"profile\\",
+  })
+  async resolveFieldProfile(
+    @graphql.Parent() parent: User
+  ): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 
     if (!result) {
@@ -14448,6 +14630,83 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
+  "test/src/validators/index.ts": "export * from \\"./is-json-value-validator\\";
+",
+  "test/src/validators/is-json-value-validator.spec.ts": "import { validate, ValidationError } from \\"class-validator\\";
+import { IsJSONValue } from \\"./is-json-value-validator\\";
+
+class TestClass {
+  @IsJSONValue()
+  jsonProperty: unknown;
+}
+
+describe(\\"IsJSONValue\\", () => {
+  it(\\"should validate a valid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = '{\\"name\\": \\"John\\", \\"age\\": 30}';
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+
+  it(\\"should not validate an invalid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = '{name: \\"John\\", age: 30}';
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(1);
+  });
+
+  it(\\"should not validate an invalid JSON string\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = \\"John\\";
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(1);
+  });
+
+  it(\\"should validate a valid JSON object\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = { name: \\"John\\", age: 30 };
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+
+  it(\\"should validate a valid JSON array\\", async () => {
+    const testObj = new TestClass();
+    testObj.jsonProperty = [\\"John\\", \\"30\\"];
+    const errors: ValidationError[] = await validate(testObj);
+    expect(errors.length).toBe(0);
+  });
+});
+",
+  "test/src/validators/is-json-value-validator.ts": "import {
+  ValidationArguments,
+  registerDecorator,
+  ValidationOptions,
+} from \\"class-validator\\";
+import isJSONValidator from \\"validator/lib/isJSON\\";
+
+export function IsJSONValue(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: \\"IsJSONValue\\",
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        validate(value: any, args: ValidationArguments) {
+          if (typeof value === \\"string\\") {
+            return isJSONValidator(value);
+          }
+
+          return isJSONValidator(JSON.stringify(value));
+        },
+        defaultMessage(args: ValidationArguments): string {
+          return \`\${args.property} must be a valid json\`;
+        },
+      },
+    });
+  };
+}
+",
   "test/tsconfig.build.json": "{
   \\"extends\\": \\"./tsconfig.json\\",
   \\"exclude\\": [\\"node_modules\\", \\"prisma\\", \\"test\\", \\"dist\\", \\"**/*spec.ts\\", \\"admin\\"]
@@ -14455,6 +14714,7 @@ export class StringNullableFilter {
 ",
   "test/tsconfig.json": "{
   \\"compilerOptions\\": {
+    \\"baseUrl\\": \\"./\\",
     \\"module\\": \\"commonjs\\",
     \\"declaration\\": false,
     \\"removeComments\\": true,
@@ -14469,7 +14729,10 @@ export class StringNullableFilter {
     \\"allowSyntheticDefaultImports\\": true,
     \\"resolveJsonModule\\": true,
     \\"skipLibCheck\\": true,
-    \\"strict\\": true
+    \\"strict\\": true,
+    \\"paths\\": {
+      \\"@app/custom-validators\\": [\\"src/validators\\"]
+    }
   },
   \\"include\\": [\\"src\\"]
 }

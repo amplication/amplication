@@ -27,6 +27,9 @@ on:
       affected-lib: 
         description: Nx libraries affected by the changes
         value: ${{ jobs.nx.outputs.affected-lib }}
+      affected-e2e:
+        description: Nx e2e projects affected by the changes
+        value: ${{ jobs.nx.outputs.affected-e2e }}
       affected-dockerable: 
         description: Nx projects configured with docker:build affected by the changes
         value: ${{ jobs.nx.outputs.affected-dockerable }}
@@ -40,7 +43,8 @@ env:
   BRANCH: ${{ github.event.workflow_run.head_branch }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
-
+  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
+  
 jobs:
   nx:
     name: Nx Affected
@@ -48,12 +52,12 @@ jobs:
     outputs:
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
       affected-dockerable: ${{ steps.configure-nx.outputs.affected-dockerable }}
       affected-deployable: ${{ steps.configure-nx.outputs.affected-deployable }}
     steps:
       - uses: actions/checkout@v3
         with:
-          ref: ${{ inputs.nx-head }}
           fetch-depth: 0
 
       - uses: nrwl/nx-set-shas@v3
@@ -97,6 +101,7 @@ jobs:
         run: |
           echo affected-apps=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-lib=$(npx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(npx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-dockerable=$(npx nx print-affected --target=docker:build --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-deployable=$(npx nx print-affected --target=deploy --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected

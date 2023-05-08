@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import React from "react";
 import { CLASS_NAME } from "./AuthResourceWithGit";
 
@@ -9,12 +9,8 @@ export default function GitSyncNotes() {
       <ul>
         <li>
           <Icon icon="check_circle" />
-          The changes will be pushed to the root of the selected repository,
-          using Pull Requests.
-        </li>
-        <li>
-          <Icon icon="check_circle" />
-          The selected repository must not be empty.
+          You can connect multiple services to the same repository, next you
+          will see the option to select the destination folder
         </li>
       </ul>
     </div>

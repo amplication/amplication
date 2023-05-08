@@ -6,7 +6,7 @@ import ReactDiffViewer, {
 } from "@amplication/react-diff-viewer-continued";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires

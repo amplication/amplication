@@ -17,6 +17,7 @@ export { EnumPendingChangeAction } from "./EnumPendingChangeAction";
 export { FindManyCommitsArgs } from "./FindManyCommitsArgs";
 export { ResourceCreateWithEntitiesInput } from "./ResourceCreateWithEntitiesInput";
 export { CreateServiceWithEntitiesArgs } from "./CreateServiceWithEntitiesArgs";
+export { ResourceCreateWithEntitiesResult } from "./ResourceCreateWithEntitiesResult";
 export {
   ResourceValidationResult,
   ResourceValidationErrorTypes,

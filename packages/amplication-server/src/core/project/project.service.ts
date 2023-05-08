@@ -2,6 +2,7 @@ import { PrismaService, EnumResourceType } from "../../prisma";
 import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
+import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
@@ -20,6 +21,12 @@ import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
 import { BillingFeature } from "../billing/billing.types";
 
+export const INVALID_PROJECT_ID = "Invalid projectId";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+
 @Injectable()
 export class ProjectService {
   constructor(
@@ -28,7 +35,8 @@ export class ProjectService {
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
     private readonly entityService: EntityService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly analytics: SegmentAnalyticsService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -72,6 +80,37 @@ export class ProjectService {
     return project;
   }
 
+  async deleteProject(args: FindOneArgs): Promise<Project> {
+    const project = await this.findFirst({
+      where: { id: args.where.id, deletedAt: null },
+      include: { workspace: true },
+    } as ProjectFindFirstArgs);
+
+    if (isEmpty(project)) {
+      throw new Error(INVALID_PROJECT_ID);
+    }
+
+    const archivedResources =
+      await this.resourceService.archiveProjectResources(project.id);
+    const archivedServiceCount = archivedResources.filter(
+      (r) => r.resourceType === EnumResourceType.Service
+    ).length;
+
+    await this.billingService.reportUsage(
+      project.workspace.id,
+      BillingFeature.Services,
+      -archivedServiceCount
+    );
+
+    return this.prisma.project.update({
+      where: args.where,
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date(),
+      },
+    });
+  }
+
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
     return this.prisma.project.update({
       where: { ...args.where },
@@ -94,6 +133,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -148,8 +188,12 @@ export class ProjectService {
               where: {
                 resourceType: EnumResourceType.Service,
                 deletedAt: null,
+                archived: { not: true },
               },
             },
+          },
+          where: {
+            deletedAt: null,
           },
         },
       },
@@ -177,7 +221,7 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    skipPublish?: boolean
+    currentUser: User
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -186,6 +230,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -282,33 +327,41 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources
+    const promises = resources
       .filter(
         (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
       )
-      .forEach((resource: Resource) =>
-        this.buildService.create(
-          {
-            data: {
-              resource: {
-                connect: { id: resource.id },
-              },
-              commit: {
-                connect: {
-                  id: commit.id,
-                },
-              },
-              createdBy: {
-                connect: {
-                  id: userId,
-                },
-              },
-              message: args.data.message,
+      .map((resource: Resource) => {
+        return this.buildService.create({
+          data: {
+            resource: {
+              connect: { id: resource.id },
             },
+            commit: {
+              connect: {
+                id: commit.id,
+              },
+            },
+            createdBy: {
+              connect: {
+                id: userId,
+              },
+            },
+            message: args.data.message,
           },
-          skipPublish
-        )
-      );
+        });
+      });
+
+    await Promise.all(promises);
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
 
     return commit;
   }
@@ -323,6 +376,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {

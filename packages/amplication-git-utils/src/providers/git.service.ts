@@ -1,12 +1,14 @@
+import { ILogger } from "@amplication/util/logging";
 import { mkdir, rm, writeFile } from "fs/promises";
 import { join, normalize, resolve } from "path";
 import { v4 } from "uuid";
 import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
+  getDefaultREADMEFile,
 } from "../constants";
 import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
-import { MissingEnvParam } from "../errors/MissingEnvParam";
+import { NoCommitOnBranch } from "../errors/NoCommitOnBranch";
 import { GitProvider } from "../git-provider.interface";
 import {
   Branch,
@@ -14,23 +16,28 @@ import {
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
+  CurrentUser,
   EnumPullRequestMode,
   GetRepositoriesArgs,
+  GetRepositoryArgs,
   GitProviderArgs,
+  GitProvidersConfiguration,
+  OAuthData,
+  PaginatedGitGroup,
   PostCommitProcessArgs,
   PreCommitProcessArgs,
   PreCommitProcessResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
-  GetRepositoryArgs,
-  OAuth2FlowResponse,
+  UpdateFile,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
+import { getCloneDir } from "../utils/clone-dir";
+import { isFolderEmpty } from "../utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
 import { GitClient } from "./git-client";
 import { GitFactory } from "./git-factory";
-import { ILogger } from "@amplication/util/logging";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -38,9 +45,14 @@ export class GitClientService {
 
   async create(
     gitProviderArgs: GitProviderArgs,
+    providersConfiguration: GitProvidersConfiguration,
     logger: ILogger
   ): Promise<GitClientService> {
-    this.provider = await GitFactory.getProvider(gitProviderArgs, logger);
+    this.provider = await GitFactory.getProvider(
+      gitProviderArgs,
+      providersConfiguration,
+      logger
+    );
     this.logger = logger;
     return this;
   }
@@ -49,10 +61,20 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async completeOAuth2Flow(
-    authorizationCode: string
-  ): Promise<OAuth2FlowResponse> {
-    return this.provider.completeOAuth2Flow(authorizationCode);
+  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
+    return this.provider.getAccessToken(authorizationCode);
+  }
+
+  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
+    return this.provider.refreshAccessToken(refreshToken);
+  }
+
+  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
+    return this.provider.getCurrentOAuthUser(accessToken);
+  }
+
+  async getGitGroups(): Promise<PaginatedGitGroup> {
+    return this.provider.getGitGroups();
   }
 
   async getRepository(
@@ -95,6 +117,49 @@ export class GitClientService {
       gitResourceMeta,
       files,
     } = createPullRequestArgs;
+
+    const gitClient = new GitClient();
+    let isCloned = false;
+
+    const cloneToken = await this.provider.getToken();
+
+    const cloneUrl = this.provider.getCloneUrl({
+      owner,
+      repositoryName,
+      token: cloneToken,
+    });
+
+    const cloneDir = getCloneDir({
+      owner,
+      repositoryName,
+      provider: this.provider.name,
+      suffix: v4(),
+    });
+
+    const { defaultBranch } = await this.provider.getRepository({
+      owner,
+      repositoryName,
+    });
+
+    const haveFirstCommitInDefaultBranch =
+      await this.isHaveFirstCommitInDefaultBranch({
+        owner,
+        repositoryName,
+        defaultBranch,
+      });
+
+    if (haveFirstCommitInDefaultBranch === false) {
+      if (isCloned === false) {
+        await gitClient.clone(cloneUrl, cloneDir);
+        isCloned = true;
+      }
+      await this.createInitialCommit({
+        cloneDir,
+        gitClient,
+        repositoryName,
+      });
+    }
+
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
       repositoryName
@@ -106,121 +171,136 @@ export class GitClientService {
     );
 
     this.logger.info(`Got a ${pullRequestMode} pull request mode`);
-    if (pullRequestMode === EnumPullRequestMode.Basic) {
-      return this.provider.createPullRequestFromFiles({
-        owner,
-        repositoryName,
-        branchName,
-        commitMessage,
-        pullRequestTitle,
-        pullRequestBody,
-        files: preparedFiles,
-      });
-    }
 
-    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
-      const gitClient = new GitClient();
-      const cloneFolder = process.env.CLONES_FOLDER;
-      if (!cloneFolder) {
-        throw new MissingEnvParam("CLONES_FOLDER");
-      }
+    let pullRequestUrl: string | null = null;
 
-      const randomUUID = v4();
-      const cloneToken = await this.provider.getToken();
-
-      const cloneUrl = this.provider.getCloneUrl({
-        owner,
-        repositoryName,
-        token: cloneToken,
-      });
-
-      const cloneDir = normalize(
-        join(cloneFolder, this.provider.name, owner, repositoryName, randomUUID)
-      );
-
-      await gitClient.clone(cloneUrl, cloneDir);
-
-      await this.restoreAmplicationBranchIfNotExists({
-        owner,
-        repositoryName,
-        branchName,
-        gitClient,
-      });
-
-      const diffFolder = normalize(
-        join(
-          `.amplication/diffs`,
-          this.provider.name,
-          owner,
-
-          repositoryName,
-          randomUUID
-        )
-      );
-
-      const { diff } = await this.preCommitProcess({
-        branchName,
-        gitClient,
-        owner,
-        repositoryName,
-      });
-
-      await this.provider.createCommit({
-        owner,
-        repositoryName,
-        commitMessage,
-        branchName,
-        files: preparedFiles,
-      });
-
-      if (diff) {
-        await mkdir(diffFolder, { recursive: true });
-        const diffPath = join(diffFolder, "diff.patch");
-        await writeFile(diffPath, diff);
-        const fullDiffPath = resolve(diffPath);
-        this.logger.info(`Saving diff to: ${fullDiffPath}`);
-        await this.postCommitProcess({
-          diffPath: fullDiffPath,
-          gitClient,
-        });
-        await rm(fullDiffPath);
-      }
-
-      await rm(cloneDir, { recursive: true, force: true });
-
-      const { defaultBranch } = await this.provider.getRepository({
-        owner,
-        repositoryName,
-      });
-
-      const existingPullRequest = await this.provider.getPullRequestForBranch({
-        owner,
-        repositoryName,
-        branchName,
-      });
-
-      let pullRequest = existingPullRequest;
-
-      if (!pullRequest) {
-        pullRequest = await this.provider.createPullRequestForBranch({
+    switch (pullRequestMode) {
+      case EnumPullRequestMode.Basic:
+        pullRequestUrl = await this.provider.createPullRequestFromFiles({
           owner,
           repositoryName,
-          pullRequestTitle: accumulativePullRequestTitle,
-          pullRequestBody: accumulativePullRequestBody,
           branchName,
-          defaultBranchName: defaultBranch,
+          commitMessage,
+          pullRequestTitle,
+          pullRequestBody,
+          files: preparedFiles,
         });
-      }
-
-      await this.provider.commentOnPullRequest({
-        where: { issueNumber: pullRequest.number, owner, repositoryName },
-        data: { body: pullRequestBody },
-      });
-
-      return pullRequest.url;
+        break;
+      case EnumPullRequestMode.Accumulative:
+        pullRequestUrl = await this.accumulativePullRequest(
+          cloneUrl,
+          cloneDir,
+          gitClient,
+          owner,
+          repositoryName,
+          branchName,
+          commitMessage,
+          pullRequestBody,
+          preparedFiles,
+          defaultBranch,
+          isCloned
+        );
+        break;
+      default:
+        throw new InvalidPullRequestMode();
     }
 
-    throw new InvalidPullRequestMode();
+    if (isCloned === true) {
+      await rm(cloneDir, { recursive: true, force: true });
+    }
+
+    return pullRequestUrl;
+  }
+
+  async accumulativePullRequest(
+    cloneUrl: string,
+    cloneDir: string,
+    gitClient: GitClient,
+    owner: string,
+    repositoryName: string,
+    branchName: string,
+    commitMessage: string,
+    pullRequestBody: string,
+    preparedFiles: UpdateFile[],
+    defaultBranch: string,
+    isCloned: boolean
+  ) {
+    if (isCloned === false) {
+      await gitClient.clone(cloneUrl, cloneDir);
+    }
+
+    await this.restoreAmplicationBranchIfNotExists({
+      owner,
+      repositoryName,
+      branchName,
+      gitClient,
+      defaultBranch,
+    });
+
+    const diffFolder = normalize(
+      join(
+        `.amplication/diffs`,
+        this.provider.name,
+        owner,
+
+        repositoryName,
+        v4()
+      )
+    );
+
+    const { diff } = await this.preCommitProcess({
+      branchName,
+      gitClient,
+      owner,
+      repositoryName,
+    });
+
+    await this.provider.createCommit({
+      owner,
+      repositoryName,
+      commitMessage,
+      branchName,
+      files: preparedFiles,
+    });
+
+    if (diff) {
+      await mkdir(diffFolder, { recursive: true });
+      const diffPath = join(diffFolder, "diff.patch");
+      await writeFile(diffPath, diff);
+      const fullDiffPath = resolve(diffPath);
+      this.logger.info(`Saving diff to: ${fullDiffPath}`);
+      await this.postCommitProcess({
+        diffPath: fullDiffPath,
+        gitClient,
+      });
+      await rm(fullDiffPath);
+    }
+
+    const existingPullRequest = await this.provider.getPullRequestForBranch({
+      owner,
+      repositoryName,
+      branchName,
+    });
+
+    let pullRequest = existingPullRequest;
+
+    if (!pullRequest) {
+      pullRequest = await this.provider.createPullRequestForBranch({
+        owner,
+        repositoryName,
+        pullRequestTitle: accumulativePullRequestTitle,
+        pullRequestBody: accumulativePullRequestBody,
+        branchName,
+        defaultBranchName: defaultBranch,
+      });
+    }
+
+    await this.provider.commentOnPullRequest({
+      where: { issueNumber: pullRequest.number, owner, repositoryName },
+      data: { body: pullRequestBody },
+    });
+
+    return pullRequest.url;
   }
 
   private async preCommitProcess({
@@ -275,18 +355,23 @@ export class GitClientService {
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, gitClient } = args;
+    const { branchName, owner, repositoryName, gitClient, defaultBranch } =
+      args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
     }
-    const { defaultBranch } = await this.provider.getRepository(args);
     const firstCommitOnDefaultBranch =
       await this.provider.getFirstCommitOnBranch({
         owner,
         repositoryName,
         branchName: defaultBranch,
       });
+
+    if (firstCommitOnDefaultBranch === null) {
+      throw new NoCommitOnBranch(defaultBranch);
+    }
+
     const newBranch = await this.provider.createBranch({
       owner,
       branchName,
@@ -348,5 +433,39 @@ export class GitClientService {
       }
     });
     return amplicationIgnoreManger;
+  }
+
+  private async createInitialCommit(args: {
+    repositoryName: string;
+    gitClient: GitClient;
+    cloneDir: string;
+  }) {
+    const { gitClient, repositoryName, cloneDir } = args;
+    const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
+    const foldersToIgnore = [".git"];
+    if ((await isFolderEmpty(cloneDir, foldersToIgnore)) === false) {
+      throw new Error(
+        "The repository is not empty, crash the pull request logic to prevent data loss"
+      );
+    }
+    await writeFile(normalize(join(cloneDir, "README.md")), defaultREADMEFile);
+    await gitClient.git.add(["."]).commit("Initial commit").push();
+  }
+
+  private async isHaveFirstCommitInDefaultBranch(args: {
+    owner: string;
+    repositoryName: string;
+    defaultBranch: string;
+  }): Promise<boolean> {
+    const { owner, repositoryName, defaultBranch } = args;
+    const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
+      {
+        branchName: defaultBranch,
+        owner,
+        repositoryName,
+      }
+    );
+
+    return Boolean(defaultBranchFirstCommit);
   }
 }

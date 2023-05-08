@@ -8,7 +8,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
 import ResourceListItem from "./ResourceListItem";
@@ -22,8 +22,12 @@ import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
 
-type TDeleteData = {
+type TDeleteResourceData = {
   deleteResource: models.Resource;
+};
+
+type TDeleteProjectData = {
+  deleteProject: models.Project;
 };
 
 type GetWorkspaceResponse = {
@@ -42,6 +46,7 @@ function ResourceList() {
     handleSearchChange,
     loadingResources,
     errorResources,
+    currentProject,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
@@ -54,7 +59,7 @@ function ResourceList() {
     });
   };
 
-  const [deleteResource] = useMutation<TDeleteData>(DELETE_RESOURCE, {
+  const [deleteResource] = useMutation<TDeleteResourceData>(DELETE_RESOURCE, {
     update(cache, { data }) {
       if (!data) return;
       const deletedResourceId = data.deleteResource.id;
@@ -72,7 +77,25 @@ function ResourceList() {
     },
   });
 
-  const handleDelete = useCallback(
+  const [deleteProject] = useMutation<TDeleteProjectData>(DELETE_PROJECT, {
+    update(cache, { data }) {
+      if (!data) return;
+      const deletedProjectId = data.deleteProject.id;
+
+      cache.modify({
+        fields: {
+          projects(existingProjectRefs, { readField }) {
+            return existingProjectRefs.filter(
+              (projectRef: Reference) =>
+                deletedProjectId !== readField("id", projectRef)
+            );
+          },
+        },
+      });
+    },
+  });
+
+  const handleResourceDelete = useCallback(
     (resource) => {
       trackEvent({
         eventName: AnalyticsEventNames.ResourceDelete,
@@ -88,6 +111,20 @@ function ResourceList() {
     },
     [deleteResource, setError, trackEvent]
   );
+
+  const handleProjectDelete = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ProjectDelete,
+    });
+    deleteProject({
+      onCompleted: () => {
+        addEntity();
+      },
+      variables: {
+        projectId: currentProject.id,
+      },
+    }).catch(setError);
+  }, [currentProject, deleteProject, setError, trackEvent]);
 
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
@@ -122,7 +159,10 @@ function ResourceList() {
 
       <div className={`${CLASS_NAME}__settings`}>
         {!loadingResources && projectConfigurationResource && (
-          <ResourceListItem resource={projectConfigurationResource} />
+          <ResourceListItem
+            resource={projectConfigurationResource}
+            onDelete={handleProjectDelete}
+          />
         )}
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
@@ -152,7 +192,7 @@ function ResourceList() {
             <ResourceListItem
               key={resource.id}
               resource={resource}
-              onDelete={handleDelete}
+              onDelete={handleResourceDelete}
             />
           ))
         )}
@@ -172,6 +212,14 @@ export default ResourceList;
 const DELETE_RESOURCE = gql`
   mutation deleteResource($resourceId: String!) {
     deleteResource(where: { id: $resourceId }) {
+      id
+    }
+  }
+`;
+
+const DELETE_PROJECT = gql`
+  mutation deleteProject($projectId: String!) {
+    deleteProject(where: { id: $projectId }) {
       id
     }
   }

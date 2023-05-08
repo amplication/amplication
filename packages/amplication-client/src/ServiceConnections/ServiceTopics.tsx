@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 import { AppContext } from "../context/appContext";

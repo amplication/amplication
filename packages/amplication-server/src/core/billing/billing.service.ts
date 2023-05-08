@@ -56,8 +56,10 @@ export class BillingService {
             this.logger.info("Successfully initialized Stigg provider");
           })
           .catch((reason) => {
-            this.logger.error("failed to initialize Stigg", { reason });
-            this.logger.error("Disabling billing module");
+            this.logger.error(
+              "Failed to initialize Stigg. Disabling billing module",
+              reason
+            );
             this.stiggClient.close();
             this.billingEnabled = false;
           });
@@ -67,8 +69,10 @@ export class BillingService {
         );
       }
     } catch (error) {
-      this.logger.error("failed to initialize Stigg", { error });
-      this.logger.error("Disabling billing module");
+      this.logger.error(
+        "Failed to initialize Stigg. Disabling billing module",
+        error
+      );
       this.billingEnabled = false;
     }
   }
@@ -78,9 +82,8 @@ export class BillingService {
       if (this.isBillingEnabled) {
         return this.stiggClient;
       }
-      return null;
-    } catch (err) {
-      this.logger.error(err);
+    } catch (error) {
+      this.logger.error(error.message, error);
     }
   }
 
@@ -99,7 +102,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -126,7 +129,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -143,7 +146,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -160,7 +163,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -177,7 +180,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -251,7 +254,7 @@ export class BillingService {
         return null;
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
       return null; //on any exception, use free plan
     }
   }
@@ -264,6 +267,7 @@ export class BillingService {
       const stiggClient = await this.getStiggClient();
       await stiggClient.provisionCustomer({
         customerId: workspaceId,
+        shouldSyncFree: false,
         subscriptionParams: {
           planId: plan,
         },

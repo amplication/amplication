@@ -5,6 +5,8 @@ import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { MicroserviceOptions } from "@nestjs/microservices";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { SERVICE_NAME } from "./constants";
+import { Logger } from "@amplication/util/logging";
 
 async function bootstrap() {
   /**
@@ -28,6 +30,7 @@ async function bootstrap() {
   if (process.env.ENABLE_CLOUD_TRACING) {
     const traceAgent = await import("@google-cloud/trace-agent");
     traceAgent.start();
+    // eslint-disable-next-line no-console
     console.info("Cloud tracing is enabled");
   }
 
@@ -61,6 +64,9 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  console.error(error);
+  new Logger({ serviceName: SERVICE_NAME, isProduction: true }).error(
+    error.message,
+    error
+  );
   process.exit(1);
 });

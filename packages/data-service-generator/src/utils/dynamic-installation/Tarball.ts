@@ -1,14 +1,15 @@
 import downloadHelper from "download";
 import { join } from "path";
 import { packument } from "pacote";
-import { createLog } from "../../create-log";
+import { BuildLogger } from "@amplication/code-gen-types";
 import { PackageInstallation } from "./DynamicPackageInstallationManager";
 import fse from "fs-extra";
 
 export class Tarball {
   constructor(
     protected readonly plugin: PackageInstallation,
-    private readonly modulesPath: string
+    private readonly modulesPath: string,
+    private readonly logger: BuildLogger
   ) {}
   async download(): Promise<void> {
     const tarball = await this.packageTarball(this.plugin);
@@ -56,16 +57,23 @@ export class Tarball {
     }
 
     if (!requestedVersion.version) {
+      const suggestionMessage = `Please try to install another version, or the latest version: ${latestVersion}.`;
+      await this.logger.error(
+        [`${name}@${version} is not available`, suggestionMessage].join(". ")
+      );
+
       throw new Error(
-        `Could not find version ${version} for ${name}, please try to install another version, or the latest version: ${latestVersion}`
+        [
+          `Could not find version ${version} for ${name}`,
+          suggestionMessage,
+        ].join(". ")
       );
     }
 
     if (requestedVersion.deprecated) {
-      await createLog({
-        level: "warn",
-        message: `${name}@${version} is deprecated, update it to avoid issues in the code generation.`,
-      });
+      await this.logger.warn(
+        `${name}@${version} is deprecated, update it to avoid issues in the code generation.`
+      );
     }
 
     return requestedVersion.dist.tarball;

@@ -1,4 +1,4 @@
-import { Tooltip } from "@amplication/design-system";
+import { Tooltip } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useMemo } from "react";
 import * as models from "../models";

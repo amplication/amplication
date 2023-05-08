@@ -8,7 +8,7 @@ import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { DeleteTopic } from "./DeleteTopic";
-import { Snackbar, HorizontalRule } from "@amplication/design-system";
+import { Snackbar, HorizontalRule } from "@amplication/ui/design-system";
 import "./Topic.scss";
 
 type TData = {

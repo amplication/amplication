@@ -1,4 +1,4 @@
-import { HorizontalRule, Panel } from "@amplication/design-system";
+import { HorizontalRule, Panel } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useMemo } from "react";
 import {

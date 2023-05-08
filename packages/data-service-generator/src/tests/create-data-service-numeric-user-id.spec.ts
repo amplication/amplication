@@ -6,12 +6,11 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 
 jest.setTimeout(100000);
 
-jest.mock("./create-log", () => ({
-  createLog: jest.fn(),
-}));
+jest.mock("./build-logger");
 
 beforeAll(() => {
   const userEntity = entities.find((e) => e.name === USER_ENTITY_NAME);
@@ -28,14 +27,21 @@ beforeAll(() => {
 });
 
 describe("createDataService", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("creates resource as expected", async () => {
-    const modules = await createDataService({
-      entities,
-      roles,
-      resourceInfo: appInfo,
-      resourceType: EnumResourceType.Service,
-      pluginInstallations: installedPlugins,
-    });
+    const modules = await createDataService(
+      {
+        entities,
+        buildId: "example_build_id",
+        roles,
+        resourceInfo: appInfo,
+        resourceType: EnumResourceType.Service,
+        pluginInstallations: installedPlugins,
+      },
+      MockedLogger
+    );
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

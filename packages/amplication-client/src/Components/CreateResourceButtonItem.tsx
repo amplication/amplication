@@ -1,4 +1,4 @@
-import { SelectMenuItem } from "@amplication/design-system";
+import { SelectMenuItem } from "@amplication/ui/design-system";
 import React, { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
@@ -6,10 +6,13 @@ import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CreateResourceButtonItemType } from "./CreateResourceButton";
 import ResourceCircleBadge from "./ResourceCircleBadge";
+import "./CreateResourceButtonItem.scss";
 
 type props = {
   item: CreateResourceButtonItemType;
 };
+
+const CLASS_NAME = "create-resource-button-item";
 
 const CreateResourceButtonItem = ({ item }: props) => {
   const { trackEvent } = useTracking();
@@ -44,9 +47,11 @@ const CreateResourceButtonItem = ({ item }: props) => {
       <Link
         onClick={handleClick}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${item.route}`}
+        className={CLASS_NAME}
       >
-        <ResourceCircleBadge type={item.type} size="xsmall" />
-        {item.label}
+        <ResourceCircleBadge type={item.type} size="medium" />
+        <span>{item.label}</span>
+        <span>{item.info}</span>
       </Link>
     </SelectMenuItem>
   );

@@ -178,8 +178,8 @@ export class ActionService {
       }
       return result;
     } catch (error) {
-      this.logger.error(error);
-      await this.log(step, EnumActionLogLevel.Error, error);
+      this.logger.error(error.message, error);
+      await this.log(step, EnumActionLogLevel.Error, error.message);
       await this.complete(step, EnumActionStepStatus.Failed);
       throw error;
     }

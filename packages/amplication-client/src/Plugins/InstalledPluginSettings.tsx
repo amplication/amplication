@@ -7,8 +7,8 @@ import {
   SelectMenuModal,
   SelectMenuList,
   SelectMenuItem,
-} from "@amplication/design-system";
-import { isValidJSON } from "@amplication/design-system/components/CodeEditor/CodeEditor";
+} from "@amplication/ui/design-system";
+import { isValidJSON } from "@amplication/util/json";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import React, {
   useCallback,
@@ -65,6 +65,12 @@ const InstalledPluginSettings: React.FC<Props> = ({
     );
   }, [pluginInstallation?.PluginInstallation.settings]);
 
+  useEffect(() => {
+    if (pluginInstallation && !selectedVersion) {
+      setSelectedVersion(pluginInstallation.PluginInstallation.version);
+    }
+  }, [pluginInstallation?.PluginInstallation.version]);
+
   const plugin = useMemo(() => {
     return (
       pluginInstallation &&
@@ -97,7 +103,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-
     const { enabled, id } = pluginInstallation.PluginInstallation;
     updatePluginInstallation({
       variables: {

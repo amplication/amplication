@@ -4,22 +4,19 @@
   &__select-menu {
     background: var(--black2);
   }
+
   &__menu {
-    margin-left: 0 !important;
+    width: 268px;
+    border: 1px solid #373d57;
     box-sizing: border-box;
-    padding: 0px 6px;
-    gap: 8px;
-    width: 248px;
-    height: 28px;
-    background: var(--black5);
-    border: $border-black20;
-    border-radius: var(--small-border-radius);
+    border-radius: 4px;
 
     .amp-button {
       height: 28px;
       width: 100%;
       justify-content: space-between;
-      padding-left: 2px;
+      padding: 5px 8px;
+      background: var(--white);
 
       .menu-item-content__text {
         max-width: 180px;

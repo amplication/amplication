@@ -10,7 +10,7 @@ import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
 import { FixedMenuPanel } from "../util/teleporter";
-import { Popover, Icon } from "@amplication/design-system";
+import { Popover, Icon } from "@amplication/ui/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
 import DarkModeToggle from "./DarkModeToggle";

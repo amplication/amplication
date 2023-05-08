@@ -1,5 +1,5 @@
 import React from "react";
-import { Icon, CircularProgress } from "@amplication/design-system";
+import { Icon, CircularProgress } from "@amplication/ui/design-system";
 
 import * as models from "../models";
 

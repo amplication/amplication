@@ -1,4 +1,4 @@
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";
 import { GlobalHotKeys } from "react-hotkeys";

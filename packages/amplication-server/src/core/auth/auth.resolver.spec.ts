@@ -1,15 +1,20 @@
 import { INestApplication } from "@nestjs/common";
+import {
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 import { ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
 import { Test, TestingModule } from "@nestjs/testing";
-import { ApolloServer, gql } from "apollo-server-express";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { Account, Auth, User } from "../../models";
 import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { createApolloServerTestClient } from "../../tests/nestjs-apollo-testing";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_TOKEN = "exampleToken";
@@ -123,7 +128,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("AuthResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServer;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -152,7 +157,12 @@ describe("AuthResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -160,7 +170,7 @@ describe("AuthResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    apolloClient = createApolloServerTestClient(moduleFixture);
+    apolloClient = getApolloServer(app);
   });
 
   it("should return current user", async () => {

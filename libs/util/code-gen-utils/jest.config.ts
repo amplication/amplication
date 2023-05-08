@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../coverage/libs/util/code-gen-utils",
+  coverageThreshold: {
+    global: {
+      branches: 83.33,
+      lines: 59.76,
+    },
+  },
 };

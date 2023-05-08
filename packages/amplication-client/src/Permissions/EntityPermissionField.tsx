@@ -4,7 +4,11 @@ import { cloneDeep } from "lodash";
 
 import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { Panel, EnumPanelStyle, PanelHeader } from "@amplication/design-system";
+import {
+  Panel,
+  EnumPanelStyle,
+  PanelHeader,
+} from "@amplication/ui/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import { AppContext } from "../context/appContext";

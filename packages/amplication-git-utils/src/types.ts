@@ -15,11 +15,27 @@ export enum EnumGitProvider {
   Bitbucket = "Bitbucket",
 }
 
+export interface BitBucketConfiguration {
+  clientId: string;
+  clientSecret: string;
+}
+
+export interface GitHubConfiguration {
+  clientId: string;
+  clientSecret: string;
+  appId: string;
+  privateKey: string;
+  installationUrl: string;
+}
+
+export interface GitProvidersConfiguration {
+  gitHubConfiguration: GitHubConfiguration;
+  bitBucketConfiguration: BitBucketConfiguration;
+}
+
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  installationId: string;
-  clientId?: string;
-  clientSecret?: string;
+  providerOrganizationProperties: any;
 }
 
 export interface GitProviderConstructorArgs {
@@ -29,6 +45,7 @@ export interface GitProviderConstructorArgs {
 export interface RemoteGitOrganization {
   name: string;
   type: EnumGitOrganizationType;
+  useGroupingForRepositories: boolean;
 }
 
 export interface Branch {
@@ -79,6 +96,7 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
+  gitGroupName?: string;
 }
 
 export interface CreateRepositoryArgs {
@@ -86,11 +104,13 @@ export interface CreateRepositoryArgs {
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
+  gitGroupName?: string;
 }
 
 export interface GetRepositoriesArgs {
   limit: number;
   page: number;
+  gitGroupName?: string;
 }
 
 export interface GetFileArgs {
@@ -145,7 +165,7 @@ export interface CreateCommitArgs {
   files: UpdateFile[];
 }
 
-interface LinksMetadata {
+export interface LinksMetadata {
   href: string;
   name: string;
 }
@@ -154,22 +174,38 @@ export interface CurrentUser {
   links: {
     avatar: LinksMetadata;
   };
-  name: string;
+  username: string;
   uuid: string;
   displayName: string;
-  createdOn?: string;
+  useGroupingForRepositories: boolean;
 }
 
 export interface OAuthData {
   accessToken: string;
   refreshToken: string;
   tokenType: string;
-  expiresIn: number;
+  expiresAt: number; // Unix timestamp
   scopes: string[];
 }
 
-export interface OAuth2FlowResponse extends OAuthData {
-  userData: CurrentUser;
+export interface OAuth2FlowArgs {
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface PaginatedGitGroup {
+  size: number;
+  page: number;
+  pagelen: number;
+  next: string;
+  previous: string;
+  groups: GitGroup[];
+}
+
+export interface GitGroup {
+  id: string;
+  name: string;
+  slug: string;
 }
 
 export interface GetBranchArgs {
@@ -183,6 +219,7 @@ export interface CreateBranchIfNotExistsArgs {
   repositoryName: string;
   branchName: string;
   gitClient: GitClient;
+  defaultBranch: string;
 }
 
 export interface CreateBranchArgs {

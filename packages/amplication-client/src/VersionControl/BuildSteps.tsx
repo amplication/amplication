@@ -5,7 +5,7 @@ import * as models from "../models";
 import { EnumButtonStyle, Button } from "../Components/Button";
 
 import useBuildWatchStatus from "./useBuildWatchStatus";
-import { Panel, EnumPanelStyle, Icon } from "@amplication/design-system";
+import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 
 import { BuildStepsStatus } from "./BuildStepsStatus";
 

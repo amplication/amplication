@@ -5,6 +5,7 @@ import {
   PluginMap,
 } from "@amplication/code-gen-types";
 import { join } from "path";
+import { logger } from "./logging";
 
 class EmptyClass {}
 
@@ -34,7 +35,7 @@ async function* getPluginFuncGenerator(
       yield func.default;
     } while (pluginListLength > index);
   } catch (error) {
-    console.log(error); /// log error
+    logger.error(error);
     return EmptyClass;
   }
 }

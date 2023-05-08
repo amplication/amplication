@@ -4,7 +4,7 @@ import {
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
@@ -74,6 +74,7 @@ export default function ExistingConnectionsMenu({
               <hr className={`${CLASS_NAME}__hr`} />
               {GIT_PROVIDERS.map((provider) => (
                 <GitOrganizationMenuAddProvider
+                  key={provider.provider}
                   label={provider.label}
                   provider={provider.provider}
                   onAddGitOrganization={onAddGitOrganization}

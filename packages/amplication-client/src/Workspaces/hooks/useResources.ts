@@ -2,9 +2,9 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
-import usePlugins from "../../Plugins/hooks/usePlugins";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie } from "../../util/cookie";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
@@ -16,7 +16,7 @@ type TGetResources = {
 };
 
 type TCreateService = {
-  createServiceWithEntities: models.Resource;
+  createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
 };
 
 type TCreateMessageBroker = {
@@ -28,7 +28,8 @@ const createGitRepositoryFullName = (
 ) => {
   return (
     (gitRepository &&
-      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
+      gitRepository?.gitOrganization &&
+      `${gitRepository.gitOrganization?.name}/${gitRepository?.name}`) ||
     "connect to GitHub"
   );
 };
@@ -52,8 +53,20 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
+  const createResourceMatch:
+    | (match & {
+        params: { workspace: string; project: string };
+      })
+    | null = useRouteMatch<{
+    workspace: string;
+    project: string;
+  }>(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
+  );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
+  const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
+    useState<models.ResourceCreateWithEntitiesResult>();
 
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
@@ -62,8 +75,6 @@ const useResources = (
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
     createGitRepositoryFullName(currentResource?.gitRepository)
   );
-
-  const { createPluginInstallations } = usePlugins(currentResource?.id);
 
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
@@ -86,7 +97,7 @@ const useResources = (
   const resourceRedirect = useCallback(
     (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
+        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
       });
     },
     [currentWorkspace, history, currentProject]
@@ -104,14 +115,20 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
+
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      if (!result.data?.createServiceWithEntities.id) return;
+      if (!result.data?.createServiceWithEntities.resource.id) return;
 
-      const currentResourceId = result.data?.createServiceWithEntities.id;
+      setCreateServiceWithEntitiesResult(
+        result.data?.createServiceWithEntities
+      );
+
+      const currentResourceId =
+        result.data?.createServiceWithEntities.resource.id;
       addEntity(currentResourceId);
-      createResourcePlugins(currentResourceId);
-
-      refetch().then(() => resourceRedirect(currentResourceId as string));
+      setCurrentResource(result.data?.createServiceWithEntities.resource);
+      expireCookie("signup");
+      refetch();
     });
   };
 
@@ -137,41 +154,8 @@ const useResources = (
     });
   };
 
-  const createResourcePlugins = useCallback((resourceId: string) => {
-    //create auth-core and auth-jwt as default plugins
-    const data: models.PluginInstallationsCreateInput = {
-      plugins: [
-        {
-          displayName: "Auth-core",
-          pluginId: "auth-core",
-          enabled: true,
-          npm: "@amplication/plugin-auth-core",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-        {
-          displayName: "Auth-jwt",
-          pluginId: "auth-jwt",
-          enabled: true,
-          npm: "@amplication/plugin-auth-jwt",
-          version: "latest",
-          resource: { connect: { id: resourceId } },
-        },
-      ],
-    };
-
-    createPluginInstallations({
-      variables: {
-        data: data,
-        where: {
-          id: resourceId,
-        },
-      },
-    }).catch(console.error);
-  }, []);
-
   useEffect(() => {
-    if (resourceMatch) return;
+    if (resourceMatch || createResourceMatch) return;
 
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
@@ -257,6 +241,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    createServiceWithEntitiesResult,
   };
 };
 

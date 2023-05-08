@@ -7,6 +7,10 @@ export enum EnumEventType {
   WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
   WorkspacePlanUpgradeCompleted = "WorkspacePlanUpgradeCompleted",
   WorkspacePlanDowngradeRequest = "WorkspacePlanDowngradeRequest",
+  CommitCreate = "commit",
+  WorkspaceSelected = "selectWorkspace",
+  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
+  ServiceWizardServiceGenerated = "ServiceWizard_ServiceGenerated",
 }
 
 export type IdentifyData = {
@@ -25,6 +29,9 @@ export type TrackData = {
         [key: string]: unknown;
       }
     | undefined;
+  context?: {
+    traits?: IdentifyData;
+  };
 };
 
 @Injectable()
@@ -53,6 +60,12 @@ export class SegmentAnalyticsService {
 
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
-    this.analytics.track(data);
+    this.analytics.track({
+      ...data,
+      properties: {
+        ...data.properties,
+        source: "amplication-server",
+      },
+    });
   }
 }

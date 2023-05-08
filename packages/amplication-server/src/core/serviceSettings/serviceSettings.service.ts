@@ -10,7 +10,7 @@ import {
 } from "./constants";
 import { User } from "../../models";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
-import { ResourceGenSettingsCreateInput } from "../resource/dto/ResourceGenSettingsCreateInput";
+import { ServiceSettingsUpdateInput } from "./dto/ServiceSettingsUpdateInput";
 
 export const isStringBool = (val: string | boolean): boolean =>
   typeof val === "boolean" || typeof val === "string";
@@ -24,23 +24,10 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const {
-      dbHost,
-      dbName,
-      dbPassword,
-      dbPort,
-      dbUser,
-      authProvider,
-      serverSettings,
-      adminUISettings,
-    } = await this.getServiceSettingsBlock(args, user);
+    const { authProvider, serverSettings, adminUISettings } =
+      await this.getServiceSettingsBlock(args, user);
 
     return {
-      dbHost,
-      dbName,
-      dbPassword,
-      dbPort,
-      dbUser,
       resourceId: args.where.id,
       authProvider,
       serverSettings,
@@ -160,12 +147,12 @@ export class ServiceSettingsService {
   async createDefaultServiceSettings(
     resourceId: string,
     user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
+    serviceSettings: ServiceSettingsUpdateInput = null
   ): Promise<ServiceSettings> {
     const settings = DEFAULT_SERVICE_SETTINGS;
 
-    if (generationSettings)
-      this.updateServiceGenerationSettings(settings, generationSettings);
+    if (serviceSettings)
+      this.updateServiceGenerationSettings(settings, serviceSettings);
 
     return this.blockService.create<ServiceSettings>(
       {
@@ -184,16 +171,19 @@ export class ServiceSettingsService {
   }
   private updateServiceGenerationSettings(
     settings: ServiceSettingsValuesExtended,
-    generationSettings: ResourceGenSettingsCreateInput
+    serviceSettings: ServiceSettingsUpdateInput
   ): void {
+    const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
+    const { generateGraphQL, generateRestApi, serverPath } =
+      serviceSettings.serverSettings;
     (settings.adminUISettings = {
-      generateAdminUI: generationSettings.generateAdminUI,
-      adminUIPath: "",
+      generateAdminUI: generateAdminUI,
+      adminUIPath: adminUIPath,
     }),
       (settings.serverSettings = {
-        generateGraphQL: generationSettings.generateGraphQL,
-        generateRestApi: generationSettings.generateRestApi,
-        serverPath: "",
+        generateGraphQL: generateGraphQL,
+        generateRestApi: generateRestApi,
+        serverPath: serverPath,
       });
   }
 }

@@ -8,13 +8,13 @@ const POLL_INTERVAL = 5000;
  * Pulls updates of the build from the server as long as the build process is still active
  */
 const useBuildWatchStatus = (
-  build: models.Build
-): { data: { build: models.Build } } => {
-  const { data, startPolling, stopPolling } = useQuery<{
+  build?: models.Build
+): { data: { build?: models.Build } } => {
+  const { data, startPolling, stopPolling, refetch } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
-      buildId: build.id,
+      buildId: build?.id,
     },
     skip: !shouldReload(build),
   });
@@ -27,6 +27,10 @@ const useBuildWatchStatus = (
       startPolling(POLL_INTERVAL);
     }
   }, [data, stopPolling, startPolling]);
+
+  useEffect(() => {
+    if (build) refetch();
+  }, [build]);
 
   //cleanup polling
   useEffect(() => {
@@ -41,7 +45,7 @@ const useBuildWatchStatus = (
 export default useBuildWatchStatus;
 
 function shouldReload(build: models.Build | undefined): boolean {
-  return (build && build.status === models.EnumBuildStatus.Running) || false;
+  return (build && build?.status === models.EnumBuildStatus.Running) || false;
 }
 
 export const GET_BUILD = gql`

@@ -56,7 +56,7 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
 export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_START_LOG =
-  "Starting to push changes to GitHub.";
+  "Starting to push changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
   "Successfully pushed changes to GitHub";
 export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
@@ -169,7 +169,7 @@ export class BuildService {
    * create function creates a new build for given resource in the DB
    * @returns the build object that return after prisma.build.create
    */
-  async create(args: CreateBuildArgs, skipPublish?: boolean): Promise<Build> {
+  async create(args: CreateBuildArgs): Promise<Build> {
     const resourceId = args.data.resource.connect.id;
     const user = await this.userService.findUser({
       where: {
@@ -396,6 +396,15 @@ export class BuildService {
       build.createdAt
     );
 
+    const resource = await this.resourceService.resource({
+      where: { id: build.resourceId },
+    });
+
+    if (!resource) {
+      this.logger.warn("Resource was not found during pushing code to git");
+      return;
+    }
+
     const user = await this.userService.findUser({
       where: { id: build.userId },
     });
@@ -407,10 +416,6 @@ export class BuildService {
       user
     );
     const { resourceInfo } = dSGResourceData;
-
-    const resource = await this.resourceService.findOne({
-      where: { id: build.resourceId },
-    });
 
     const resourceRepository = await this.resourceService.gitRepository(
       build.resourceId
@@ -454,15 +459,12 @@ export class BuildService {
         try {
           await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
 
-          const smartGitSyncEntitlement =
-            await this.billingService.getBooleanEntitlement(
-              project.workspaceId,
-              BillingFeature.SmartGitSync
-            );
-
-          const pullRequestMode = smartGitSyncEntitlement.hasAccess
-            ? EnumPullRequestMode.Accumulative
-            : EnumPullRequestMode.Basic;
+          const smartGitSyncEntitlement = this.billingService.isBillingEnabled
+            ? await this.billingService.getBooleanEntitlement(
+                project.workspaceId,
+                BillingFeature.SmartGitSync
+              )
+            : false;
 
           const createPullRequestArgs: SendPullRequestArgs = {
             gitOrganizationName: gitOrganization.name,
@@ -484,7 +486,10 @@ export class BuildService {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
             },
-            pullRequestMode,
+            pullRequestMode:
+              smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
+                ? EnumPullRequestMode.Accumulative
+                : EnumPullRequestMode.Basic,
           };
 
           await this.queueService.emitMessageWithKey(
@@ -494,7 +499,8 @@ export class BuildService {
           );
         } catch (error) {
           this.logger.error(
-            `Failed to emit Create Pull Request Message. Error: ${error}`
+            "Failed to emit Create Pull Request Message.",
+            error
           );
         }
       },
@@ -605,6 +611,7 @@ export class BuildService {
       serviceTopics: await this.serviceTopicsService.findMany({
         where: { resource: { id: resourceId } },
       }),
+      buildId: buildId,
       resourceInfo: {
         name: resource.name,
         description: resource.description,

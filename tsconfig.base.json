@@ -23,12 +23,6 @@
         "packages/amplication-code-gen-types/src/*"
       ],
       "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
-      "@amplication/design-system": [
-        "packages/amplication-design-system/src/index.ts"
-      ],
-      "@amplication/design-system/*": [
-        "packages/amplication-design-system/src/*"
-      ],
       "@amplication/git-utils": ["packages/amplication-git-utils/src/index.ts"],
       "@amplication/git-utils/*": ["packages/amplication-git-utils/src/*"],
       "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
@@ -40,8 +34,18 @@
       ],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
+      "@amplication/ui/design-system": [
+        "libs/ui/design-system/src/lib/index.ts"
+      ],
+      "@amplication/ui/design-system/icons": [
+        "libs/ui/design-system/src/lib/icons"
+      ],
+      "@amplication/util/json": ["libs/util/json/src/index.ts"],
       "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
       "@amplication/util/logging": ["libs/util/logging/src/index.ts"],
+      "@amplication/util/logging/test-utils": [
+        "libs/util/logging/tests/utils/index.ts"
+      ],
       "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
       "@amplication/util/nestjs/logging": [
         "libs/util/nestjs/logging/src/index.ts"

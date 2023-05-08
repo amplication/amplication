@@ -1,4 +1,4 @@
-import { UserAndTime } from "@amplication/design-system";
+import { UserAndTime } from "@amplication/ui/design-system";
 import React from "react";
 import { TruncatedId } from "../Components/TruncatedId";
 import { Account, Maybe } from "../models";

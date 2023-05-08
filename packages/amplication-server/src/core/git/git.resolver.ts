@@ -23,6 +23,11 @@ import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
 import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
+import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
+import { User } from "../../models";
+import { UserEntity } from "../../decorators/user.decorator";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -37,6 +42,17 @@ export class GitResolver {
     @Args() args: CreateGitRepositoryArgs
   ): Promise<Resource> {
     return this.gitService.createRemoteGitRepository(args.data);
+  }
+
+  @Mutation(() => Boolean)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "data.gitOrganizationId"
+  )
+  async createRemoteGitRepository(
+    @Args() args: CreateGitRepositoryBaseArgs
+  ): Promise<boolean> {
+    return this.gitService.createRemoteGitRepositoryWithoutConnect(args.data);
   }
 
   @Query(() => GitOrganization)
@@ -68,9 +84,10 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
+    @UserEntity() currentUser: User,
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    return await this.gitService.createGitOrganization(args);
+    return await this.gitService.createGitOrganization(args, currentUser);
   }
 
   @Mutation(() => Resource)
@@ -116,9 +133,19 @@ export class GitResolver {
   @Mutation(() => GitOrganization)
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async completeGitOAuth2Flow(
+    @UserEntity() currentUser: User,
     @Args() args: CompleteGitOAuth2FlowArgs
   ): Promise<GitOrganization> {
-    return await this.gitService.completeOAuth2Flow(args);
+    return await this.gitService.completeOAuth2Flow(args, currentUser);
+  }
+
+  @Query(() => PaginatedGitGroup)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "where.organizationId"
+  )
+  gitGroups(@Args() args: GitGroupArgs) {
+    return this.gitService.getGitGroups(args);
   }
 
   @Query(() => RemoteGitRepos)

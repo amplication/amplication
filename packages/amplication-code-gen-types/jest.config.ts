@@ -13,4 +13,17 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-code-gen-types",
+  coverageThreshold: {
+    global: {
+      branches: 47.7,
+      lines: 70.4,
+    },
+  },
+  collectCoverageFrom: [
+    "**/*.{ts,tsx}",
+    "!**/*.types.{ts,tsx}",
+    "!**/*.spec.{ts,tsx}",
+    "!**/*.e2e-spec.{ts,tsx}",
+    "!**/types/**",
+  ],
 };

@@ -71,9 +71,9 @@ jobs:
           cache-name: cache-other-node-modules
         with:
           path: |
-            libs/data-service-generator/node_modules
             libs/util/code-gen-utils/node_modules
             packages/amplication-cli/node_modules
+             /home/runner/.cache/Cypress
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
 
       - name: Install Dependencies
@@ -89,14 +89,14 @@ jobs:
       - name: Lint
         run: npx nx affected --target=lint --parallel=3 $NX_FORCE_ALL
 
-      - name: Test
-        run: npx nx affected --target=test --parallel=3 $NX_FORCE_ALL
-
       - name: Build
         run: |
           npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
+      - name: Test
+        run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=text-summary $NX_FORCE_ALL
+      
   nx:
     name: Nx
     needs: ci

@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React from "react";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";

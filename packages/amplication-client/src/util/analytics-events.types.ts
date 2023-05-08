@@ -41,6 +41,7 @@ export enum AnalyticsEventNames {
   // project & project configuration
   ProjectConfigurationsSettingsUpdate = "updateProjectConfigurationsSettings",
   ProjectCreate = "createProject",
+  ProjectDelete = "deleteProject",
 
   // service
   ServiceSettingsUpdate = "updateServiceSettings",
@@ -82,7 +83,7 @@ export enum AnalyticsEventNames {
   TopicsSearch = "topicsSearch",
 
   // commit & build & pending changes
-  CommitCreate = "commit",
+  CommitClicked = "commitClicked",
   CommitListBuildIdClick = "commitListBuildIdClick",
   LastCommitIdClick = "lastCommitIdClick",
   PendingChangesDiscard = "discardPendingChanges",
@@ -124,4 +125,28 @@ export enum AnalyticsEventNames {
   HelpMenuItemClick = "HelpMenuItemClick",
   ChatWidgetView = "ChatWidgetView",
   ChatWidgetClose = "ChatWidgetClose",
+
+  // wizard
+  ViewServiceWizardStep_Welcome = "viewServiceWizardStep_Welcome",
+  ServiceWizardStep_Welcome_CTAClick = "ServiceWizardStep_Welcome_CTAClick",
+  ViewServiceWizardStep_Name = "ViewServiceWizardStep_Name",
+  ViewServiceWizardStep_Git = "ViewServiceWizardStep_Git",
+  ViewServiceWizardStep_APISettings = "ViewServiceWizardStep_APISettings",
+  ViewServiceWizardStep_RepoSettings = "ViewServiceWizardStep_RepoSettings",
+  ViewServiceWizardStep_DBSettings = "ViewServiceWizardStep_DBSettings",
+  ViewServiceWizardStep_EntitiesSettings = "ViewServiceWizardStep_EntitiesSettings",
+  ViewServiceWizardStep_AuthSettings = "ViewServiceWizardStep_AuthSettings",
+  ViewServiceWizardStep_CodeGeneration = "ViewServiceWizardStep_CodeGeneration",
+  ServiceWizardStep_CodeReady = "ServiceWizardStep_CodeReady",
+  ServiceWizardStep_ViewCodeClicked = "ServiceWizardStep_ViewCodeClicked",
+  ViewServiceWizardStep_Finish = "ViewServiceWizardStep_Finish",
+  ServiceWizard_ServiceGenerated = "ServiceWizard_ServiceGenerated",
+  ServiceWizardStep_ContinueClicked = "ServiceWizardStep_ContinueClicked",
+  ServiceWizardStep_BackClicked = "ServiceWizardStep_BackClicked",
+  ServiceWizardStep_CloseClicked = "ServiceWizardStep_CloseClicked",
+  ServiceWizardStep_Finish_CTAClicked = "ServiceWizardStep_Finish_CTAClicked",
+  ServiceWizardStep_CloseClick = "ServiceWizardStep_CloseClick",
+  ViewServiceWizardError = "ViewServiceWizardError",
+  ServiceWizardError_TryAgain = "ServiceWizardError_TryAgain",
+  ServiceWizardError_Continue = "ServiceWizardError_Continue",
 }

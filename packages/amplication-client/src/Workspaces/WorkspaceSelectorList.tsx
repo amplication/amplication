@@ -1,5 +1,8 @@
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress, EnumIconPosition } from "@amplication/design-system";
+import {
+  CircularProgress,
+  EnumIconPosition,
+} from "@amplication/ui/design-system";
 import React from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";

@@ -8,6 +8,7 @@ import {
   CreatePullRequestForBranchArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  CurrentUser,
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
@@ -15,7 +16,8 @@ import {
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  OAuth2FlowResponse,
+  OAuthData,
+  PaginatedGitGroup,
   PullRequest,
   RemoteGitOrganization,
   RemoteGitRepos,
@@ -27,7 +29,10 @@ export interface GitProvider {
   readonly domain: string;
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
-  completeOAuth2Flow(authorizationCode: string): Promise<OAuth2FlowResponse>;
+  getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
+  getAccessToken(authorizationCode: string): Promise<OAuthData>;
+  refreshAccessToken(refreshToken: string): Promise<OAuthData>;
+  getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository>;
@@ -52,7 +57,7 @@ export interface GitProvider {
   ) => Promise<PullRequest>;
   getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
-  getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit>;
+  getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit | null>;
   getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
   getCloneUrl: (args: CloneUrlArgs) => string;
   commentOnPullRequest: (args: CreatePullRequestCommentArgs) => Promise<void>;

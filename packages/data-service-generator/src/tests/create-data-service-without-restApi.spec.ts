@@ -1,4 +1,5 @@
 import { AppInfo } from "@amplication/code-gen-types";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
@@ -20,19 +21,24 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
-jest.mock("./create-log", () => ({
-  createLog: jest.fn(),
-}));
+jest.mock("./build-logger");
 
 describe("createDataService", () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
   test("creates app as expected", async () => {
-    const modules = await createDataService({
-      entities,
-      roles,
-      resourceInfo: newAppInfo,
-      resourceType: EnumResourceType.Service,
-      pluginInstallations: installedPlugins,
-    });
+    const modules = await createDataService(
+      {
+        entities,
+        buildId: "example_build_id",
+        roles,
+        resourceInfo: newAppInfo,
+        resourceType: EnumResourceType.Service,
+        pluginInstallations: installedPlugins,
+      },
+      MockedLogger
+    );
     const modulesToSnapshot = modules.filter((module) =>
       MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
         module.path.endsWith(extension)

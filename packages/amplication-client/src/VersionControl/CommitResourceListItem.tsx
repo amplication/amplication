@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
+import { EnumPanelStyle, Icon, Panel } from "@amplication/ui/design-system";
 import { useCallback, useContext, useMemo } from "react";
 import { Link, NavLink } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";

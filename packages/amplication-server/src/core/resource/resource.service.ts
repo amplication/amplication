@@ -3,6 +3,7 @@ import {
   GitRepository,
   Prisma,
   EnumResourceType,
+  EnumGitProvider,
 } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
@@ -22,6 +23,7 @@ import {
   FindManyResourceArgs,
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
@@ -39,13 +41,18 @@ export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
   "The resource of type `ProjectConfiguration` cannot be deleted";
-import { ResourceGenSettingsCreateInput } from "./dto/ResourceGenSettingsCreateInput";
 import { ProjectService } from "../project/project.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { TopicService } from "../topic/topic.service";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -63,7 +70,9 @@ export class ResourceService {
     private readonly projectService: ProjectService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly topicService: TopicService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly pluginInstallationService: PluginInstallationService,
+    private readonly analytics: SegmentAnalyticsService
   ) {}
 
   async findOne(args: FindOneArgs): Promise<Resource | null> {
@@ -102,7 +111,11 @@ export class ResourceService {
    * Create a resource
    * This function should be called from one of the other "Create[ResourceType] functions like CreateService, CreateMessageBroker etc."
    */
-  private async createResource(args: CreateOneResourceArgs): Promise<Resource> {
+  private async createResource(
+    args: CreateOneResourceArgs,
+    gitRepositoryToCreate: ConnectGitRepositoryInput = null,
+    wizardType: string = null
+  ): Promise<Resource> {
     if (args.data.resourceType === EnumResourceType.ProjectConfiguration) {
       throw new AmplicationError(
         "Resource of type Project Configuration cannot be created manually"
@@ -126,6 +139,7 @@ export class ResourceService {
         },
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
       },
       select: {
         name: true,
@@ -134,7 +148,6 @@ export class ResourceService {
 
     let index = 1;
     while (
-      index < 10 &&
       existingResources.find((resource) => {
         return resource.name.toLowerCase() === args.data.name.toLowerCase();
       })
@@ -146,16 +159,75 @@ export class ResourceService {
     let gitRepository:
       | Prisma.GitRepositoryCreateNestedOneWithoutResourcesInput
       | undefined = undefined;
-    if (projectConfiguration.gitRepositoryId) {
+
+    const isOnBoarding = wizardType?.toLowerCase() === "onboarding";
+
+    if (
+      args.data.resourceType === EnumResourceType.Service &&
+      gitRepositoryToCreate &&
+      !gitRepositoryToCreate?.isOverrideGitRepository
+    ) {
+      if (!projectConfiguration.gitRepositoryId) {
+        const wizardGitRepository = await this.prisma.gitRepository.create({
+          data: {
+            name: gitRepositoryToCreate.name,
+            resources: {},
+            gitOrganization: {
+              connect: { id: gitRepositoryToCreate.gitOrganizationId },
+            },
+          },
+        });
+
+        gitRepository = {
+          connect: { id: wizardGitRepository.id },
+        };
+      } else {
+        gitRepository = {
+          connect: { id: projectConfiguration.gitRepositoryId },
+        };
+      }
+    }
+
+    if (
+      args.data.resourceType === EnumResourceType.Service &&
+      gitRepositoryToCreate &&
+      (gitRepositoryToCreate?.isOverrideGitRepository || isOnBoarding)
+    ) {
+      const wizardGitRepository = await this.prisma.gitRepository.create({
+        data: {
+          name: gitRepositoryToCreate.name,
+          resources: {},
+          gitOrganization: {
+            connect: { id: gitRepositoryToCreate.gitOrganizationId },
+          },
+        },
+      });
+
       gitRepository = {
-        connect: { id: projectConfiguration.gitRepositoryId || "" },
+        connect: { id: wizardGitRepository.id },
       };
     }
 
-    return this.prisma.resource.create({
+    if (
+      isOnBoarding ||
+      (!gitRepositoryToCreate.isOverrideGitRepository &&
+        !projectConfiguration.gitRepositoryId)
+    ) {
+      await this.prisma.resource.update({
+        data: {
+          gitRepository: gitRepository,
+        },
+        where: {
+          id: projectConfiguration.id,
+        },
+      });
+    }
+
+    return await this.prisma.resource.create({
       data: {
         ...args.data,
-        gitRepository,
+        gitRepository: gitRepository,
+        gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
       },
     });
   }
@@ -184,14 +256,19 @@ export class ResourceService {
   async createService(
     args: CreateOneResourceArgs,
     user: User,
-    generationSettings: ResourceGenSettingsCreateInput = null
+    wizardType: string = null
   ): Promise<Resource> {
-    const resource = await this.createResource({
-      data: {
-        ...args.data,
-        resourceType: EnumResourceType.Service,
+    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const resource = await this.createResource(
+      {
+        data: {
+          ...rest,
+          resourceType: EnumResourceType.Service,
+        },
       },
-    });
+      gitRepository,
+      wizardType
+    );
 
     await this.prisma.resourceRole.create({
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
@@ -204,7 +281,7 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      generationSettings
+      serviceSettings
     );
 
     const project = await this.projectService.findUnique({
@@ -226,7 +303,7 @@ export class ResourceService {
   async createServiceWithEntities(
     data: ResourceCreateWithEntitiesInput,
     user: User
-  ): Promise<Resource> {
+  ): Promise<ResourceCreateWithEntitiesResult> {
     if (
       data.entities.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
@@ -240,7 +317,7 @@ export class ResourceService {
         data: data.resource,
       },
       user,
-      data.generationSettings
+      data.wizardType
     );
 
     const newEntities: {
@@ -321,7 +398,75 @@ export class ResourceService {
       }
     }
 
-    return resource;
+    if (data.plugins?.plugins) {
+      for (let index = 0; index < data.plugins.plugins.length; index++) {
+        const currentPlugin = data.plugins.plugins[index];
+        currentPlugin.resource = { connect: { id: resource.id } };
+        await this.pluginInstallationService.create(
+          { data: currentPlugin },
+          user
+        );
+      }
+    }
+
+    const isOnboarding = data.wizardType.trim().toLowerCase() === "onboarding";
+    if (isOnboarding) {
+      try {
+        await this.projectService.commit(
+          {
+            data: {
+              message: INITIAL_COMMIT_MESSAGE,
+              project: {
+                connect: {
+                  id: resource.projectId,
+                },
+              },
+              user: {
+                connect: {
+                  id: user.id,
+                },
+              },
+            },
+          },
+          user
+        );
+      } catch (error) {
+        this.logger.error(error.message, error);
+      }
+    }
+
+    const resourceBuilds = await this.prisma.resource.findUnique({
+      where: { id: resource.id },
+      select: {
+        builds: true,
+      },
+    });
+
+    const { gitRepository, serviceSettings } = data.resource;
+
+    await this.analytics.track({
+      userId: user.account.id,
+      event: EnumEventType.ServiceWizardServiceGenerated,
+      properties: {
+        category: "Service Wizard",
+        wizardType: data.wizardType,
+        resourceName: resource.name,
+        gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
+        gitOrganizationName: gitRepository?.name,
+        repoName: gitRepository?.name,
+        graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),
+        restApi: String(serviceSettings.serverSettings.generateRestApi),
+        adminUI: String(serviceSettings.adminUISettings.generateAdminUI),
+        repoType: data.repoType,
+        dbType: data.dbType,
+        auth: data.authType,
+      },
+    });
+
+    return {
+      resource: resource,
+      build: isOnboarding ? resourceBuilds.builds[0] : null,
+    };
   }
 
   async resource(args: FindOneArgs): Promise<Resource | null> {
@@ -329,6 +474,7 @@ export class ResourceService {
       where: {
         id: args.where.id,
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -339,6 +485,7 @@ export class ResourceService {
       where: {
         ...args.where,
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -353,6 +500,7 @@ export class ResourceService {
         ...args.where,
         id: { in: ids },
         deletedAt: null,
+        archived: { not: true },
       },
     });
   }
@@ -458,7 +606,7 @@ export class ResourceService {
       return resource;
     }
 
-    await this.deleteResourceGitRepository(resource);
+    return this.deleteResourceGitRepository(resource);
   }
 
   async deleteResourceGitRepository(resource: Resource): Promise<Resource> {
@@ -558,6 +706,9 @@ export class ResourceService {
         resourceType: EnumResourceType.ProjectConfiguration,
         project: { id: projectId },
       },
+      include: {
+        gitRepository: true,
+      },
     });
   }
 
@@ -575,5 +726,40 @@ export class ResourceService {
       },
     });
     return resource.project.workspace;
+  }
+
+  /**
+   *  Archives all resources of a project when a project is archived or deleted.
+   *
+   * @param id Project's unique identifier
+   * @returns List of archived resources
+   */
+  async archiveProjectResources(id: string): Promise<Resource[]> {
+    const { resources } = await this.projectService.findUnique({
+      where: { id },
+      include: {
+        resources: {
+          where: { deletedAt: null, archived: { not: true } },
+        },
+      },
+    } as FindOneArgs);
+
+    for (const resource of resources) {
+      if (isEmpty(resource)) {
+        throw new Error(INVALID_RESOURCE_ID);
+      }
+    }
+
+    const archiveResources = resources.map((resource) =>
+      this.prisma.resource.update({
+        where: { id: resource.id },
+        data: {
+          name: prepareDeletedItemName(resource.name, resource.id),
+          archived: true,
+        },
+      })
+    );
+
+    return this.prisma.$transaction(archiveResources);
   }
 }

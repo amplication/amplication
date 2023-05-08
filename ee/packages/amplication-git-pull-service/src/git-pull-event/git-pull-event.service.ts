@@ -83,12 +83,12 @@ export class GitPullEventService {
     } catch (err) {
       if (err instanceof Error) {
         this.logger.error(
-          GitPullEventService.name,
-          { err: err.message },
-          "pushEventHandler method"
+          "pushEventHandler method",
+          err,
+          GitPullEventService.name
         );
       } else {
-        console.log("Unexpected error", err);
+        this.logger.error("Unexpected error", err, GitPullEventService.name);
       }
     }
   }
