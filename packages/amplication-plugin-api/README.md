@@ -17,7 +17,7 @@ npx nx db:init amplication-plugin-api
 # To serve the service
 npx nx serve amplication-plugin-api
 
-# To populate the plugin api db from the plugin catalag
+# To populate the plugin api db from the plugin catalog
 npx nx refresh:plugins amplication-plugin-api
 ```
 
