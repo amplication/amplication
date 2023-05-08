@@ -1,4 +1,9 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -155,6 +160,15 @@ function AuthWithGit({
     onGitRepositoryDisconnected();
   }, [setGitRepositorySelectedData]);
 
+  const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
+    useState(false);
+  const openSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(true);
+  }, []);
+  const closeSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(false);
+  }, []);
+
   const errorMessage = formatError(error);
   return (
     <>
@@ -183,6 +197,20 @@ function AuthWithGit({
           }}
         />
       )}
+      {isSelectOrganizationDialogOpen && (
+        <Dialog
+          title="Select Git Provider"
+          className="git-organization-dialog"
+          isOpen={isSelectOrganizationDialogOpen}
+          onDismiss={closeSelectOrganizationDialog}
+        >
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+            onProviderSelect={closeSelectOrganizationDialog}
+          />
+        </Dialog>
+      )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <GitProviderConnectionList
@@ -195,6 +223,7 @@ function AuthWithGit({
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleGitOrganizationChange}
               selectedGitOrganization={gitOrganization}
+              onAddGitOrganization={openSelectOrganizationDialog}
             />
             <WizardRepositoryActions
               onCreateRepository={() => {
