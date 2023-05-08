@@ -15,7 +15,6 @@ import { useCallback } from "react";
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
   isSelectRepositoryOpen: boolean;
-  useGroupingForRepositories?: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
@@ -36,7 +35,6 @@ type Props = {
 export default function GitDialogsContainer({
   gitOrganization,
   isSelectRepositoryOpen,
-  useGroupingForRepositories,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
@@ -67,7 +65,6 @@ export default function GitDialogsContainer({
           gitOrganization={gitOrganization}
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
-          useGroupingForRepositories={useGroupingForRepositories}
           openCreateNewRepo={handleCreateNewRepoClick}
         />
       </Dialog>
@@ -97,7 +94,9 @@ export default function GitDialogsContainer({
             gitProvider={gitProvider}
             repoCreated={repoCreated}
             gitOrganizationId={gitOrganization.id}
-            useGroupingForRepositories={useGroupingForRepositories}
+            useGroupingForRepositories={
+              gitOrganization.useGroupingForRepositories
+            }
             gitOrganizationName={gitOrganization.name}
             onCreateGitRepository={onGitCreateRepository}
           />

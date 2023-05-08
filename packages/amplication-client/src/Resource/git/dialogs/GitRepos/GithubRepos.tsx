@@ -33,7 +33,6 @@ type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
   onGitRepositoryConnected: (data: GitRepositorySelected) => void;
   gitProvider: EnumGitProvider;
-  useGroupingForRepositories?: boolean;
   openCreateNewRepo: () => void;
 };
 
@@ -51,6 +50,7 @@ export type GitRepositoryCreatedData = {
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
   public: boolean;
+  repositoryGroupName?: string;
   gitRepositoryUrl?: string;
 };
 
@@ -58,7 +58,6 @@ function GitRepos({
   gitOrganization,
   onGitRepositoryConnected,
   gitProvider,
-  useGroupingForRepositories,
   openCreateNewRepo,
 }: Props) {
   const [page, setPage] = useState(1);
@@ -94,7 +93,7 @@ function GitRepos({
   });
 
   const getReposFunc = useCallback(() => {
-    if (useGroupingForRepositories) {
+    if (gitOrganization.useGroupingForRepositories) {
       repositoryGroup &&
         getRepos({
           variables: {
@@ -151,7 +150,7 @@ function GitRepos({
 
   return (
     <div className={CLASS_NAME}>
-      {useGroupingForRepositories && (
+      {gitOrganization.useGroupingForRepositories && (
         <>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <Label

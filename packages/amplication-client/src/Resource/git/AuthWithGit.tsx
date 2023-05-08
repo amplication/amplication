@@ -114,6 +114,7 @@ function AuthWithGit({
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
           gitProvider: gitProvider,
+          repositoryGroupName: data.repositoryGroupName,
           public: data.public,
         },
         onCompleted() {
@@ -122,6 +123,7 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
+            groupName: data.repositoryGroupName,
             gitRepositoryUrl: data.gitRepositoryUrl,
             gitProvider: gitProvider,
           });

@@ -16,6 +16,7 @@ import { getGitRepositoryDetails } from "../../../../util/git-git-repository-det
 
 type createRepositoryInput = {
   name: string;
+  groupName?: string;
   public: boolean;
 };
 type Props = {
@@ -39,6 +40,7 @@ export default function WizardGitCreateRepo({
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
+      groupName: "",
       public: true,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
@@ -47,12 +49,13 @@ export default function WizardGitCreateRepo({
     (event) => {
       setCreateRepositoryInput({
         ...createRepositoryInput,
+        groupName: "", // TODO: handle group name selector
         name: event.target.value,
       });
       const gitRepositoryUrl = getGitRepositoryDetails(
         gitProvider,
         gitOrganization?.name,
-        "ab-2",
+        createRepositoryInput.groupName,
         event.target.value
       ).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);
@@ -66,12 +69,14 @@ export default function WizardGitCreateRepo({
       gitOrganizationType: EnumGitOrganizationType.Organization,
       gitProvider,
       name: createRepositoryInput.name,
+      repositoryGroupName: createRepositoryInput.groupName,
       public: createRepositoryInput.public,
       gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,
     createRepositoryInput.name,
+    createRepositoryInput.groupName,
     createRepositoryInput.public,
   ]);
 
