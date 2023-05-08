@@ -1722,6 +1722,7 @@ export type RemoteGitRepository = {
   admin: Scalars['Boolean'];
   defaultBranch: Scalars['String'];
   fullName: Scalars['String'];
+  groupName?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   private: Scalars['Boolean'];
   url: Scalars['String'];

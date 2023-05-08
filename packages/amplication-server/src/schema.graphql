@@ -1035,6 +1035,7 @@ type RemoteGitRepository {
   fullName: String!
   admin: Boolean!
   defaultBranch: String!
+  groupName: String
 }
 
 type Pagination {
