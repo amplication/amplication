@@ -61,6 +61,7 @@ export const generateCodeByResourceData = async (
     await writeModules(modules, destination);
   } catch (error) {
     internalLogger.error(error.message, error);
+    throw error;
   }
 };
 
