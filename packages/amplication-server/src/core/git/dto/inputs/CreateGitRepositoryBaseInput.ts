@@ -15,7 +15,7 @@ export class CreateGitRepositoryBaseInput {
     description:
       "Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true",
   })
-  repositoryGroupName?: string;
+  groupName?: string;
 
   @Field(() => Boolean, {
     nullable: false,

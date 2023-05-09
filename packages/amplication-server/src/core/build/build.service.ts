@@ -491,7 +491,7 @@ export class BuildService {
           const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
-            gitRepositoryGroupName: resourceRepository.groupName,
+            groupName: resourceRepository.groupName,
             resourceId: resource.id,
             gitProvider: gitProviderArgs.provider,
             gitProviderProperties:

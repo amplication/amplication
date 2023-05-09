@@ -160,7 +160,7 @@ export class GitProviderService {
         page: args.page,
         perPage: args.perPage,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
     };
 
     const gitClientService = await this.createGitClient(organization);
@@ -176,9 +176,9 @@ export class GitProviderService {
       },
     });
 
-    if (organization.useGroupingForRepositories && !args.repositoryGroupName) {
+    if (organization.useGroupingForRepositories && !args.groupName) {
       throw new ValidationError(
-        `${organization.provider} requires a group to create a new repository. repositoryGroupName is missing`
+        `${organization.provider} requires a group to create a new repository. groupName is missing`
       );
     }
 
@@ -189,7 +189,7 @@ export class GitProviderService {
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -207,7 +207,7 @@ export class GitProviderService {
 
     return await this.connectResourceGitRepository({
       name: remoteRepository.name,
-      groupName: args.repositoryGroupName,
+      groupName: args.groupName,
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
@@ -228,7 +228,7 @@ export class GitProviderService {
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
