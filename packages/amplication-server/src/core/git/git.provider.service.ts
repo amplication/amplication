@@ -47,6 +47,8 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { User } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/billing.types";
 
 @Injectable()
 export class GitProviderService {
@@ -58,7 +60,8 @@ export class GitProviderService {
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly billingService: BillingService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -594,6 +597,17 @@ export class GitProviderService {
     currentUser: User
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
+
+    const bitbucketEntitlement = this.billingService.isBillingEnabled
+      ? await this.billingService.getBooleanEntitlement(
+          workspaceId,
+          BillingFeature.BitbucketProvider
+        )
+      : false;
+    if (!bitbucketEntitlement)
+      throw new AmplicationError(
+        "In order to connect Bitbucket service should upgrade its plan"
+      );
 
     const gitClientService = await this.createGitClientWithoutProperties(
       gitProvider
