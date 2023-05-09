@@ -39,7 +39,7 @@
 
 ## Introduction
 
-`Amplication` is an open-source development platform that helps developers build scalable and secure applications faster without spending tim on repetitive coding tasks. It provides an intuitive interface for defining data models, generating code based on the data models and publishing this code to the desired source code management platform. Amplication auto-generates backend applications built with TypeScript and Node.js, in addition it provides a client for administrative purposes built with React.
+`Amplication` is an open-source development platform that helps developers build scalable and secure applications faster without spending time on repetitive coding tasks. It provides an intuitive interface for defining data models, generating code based on the data models and publishing this code to the desired source code management platform. Amplication auto-generates backend applications built with TypeScript and Node.js, in addition it provides a client for administrative purposes built with React.
 
 Amplication uses a modular and extensible plugin based architecture that allows for easy customization of source code and integration with other tools and services. It support various databases, and authentication providers. 
 
