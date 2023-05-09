@@ -67,7 +67,7 @@ export class PullRequestService {
     commit,
     gitResourceMeta,
     pullRequestMode,
-    gitRepositoryGroupName,
+    groupName,
   }: CreatePrRequest.Value): Promise<string> {
     const { body, title } = commit;
     const head =
@@ -99,7 +99,7 @@ export class PullRequestService {
       owner,
       cloneDirPath,
       repositoryName: repo,
-      repositoryGroupName: gitRepositoryGroupName,
+      groupName,
       branchName: head,
       commitMessage: body,
       pullRequestTitle: title,
