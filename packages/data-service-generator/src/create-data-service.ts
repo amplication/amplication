@@ -61,7 +61,6 @@ export async function createDataService(
   } catch (error) {
     await internalLogger.error("Failed to run createDataService", {
       ...error,
-      data: dSGResourceData,
     });
     throw error;
   }
