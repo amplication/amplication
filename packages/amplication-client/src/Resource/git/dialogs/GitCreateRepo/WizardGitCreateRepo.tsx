@@ -64,7 +64,7 @@ export default function WizardGitCreateRepo({
     (event) => {
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        groupName: "", // TODO: handle group name selector
+        groupName: repositoryGroup,
         name: event.target.value,
       });
       const gitRepositoryUrl = getGitRepositoryDetails(
