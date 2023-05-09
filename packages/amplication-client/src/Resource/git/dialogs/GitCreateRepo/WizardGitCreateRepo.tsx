@@ -7,7 +7,11 @@ import {
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
+import {
+  EnumGitProvider,
+  EnumGitOrganizationType,
+  GitGroup,
+} from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
@@ -17,8 +21,8 @@ import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type createRepositoryInput = {
   name: string;
-  groupName?: string;
   public: boolean;
+  groupName?: string;
 };
 type Props = {
   gitProvider: EnumGitProvider;
@@ -41,7 +45,7 @@ export default function WizardGitCreateRepo({
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
-      groupName: "",
+      groupName: null,
       public: true,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
@@ -53,7 +57,7 @@ export default function WizardGitCreateRepo({
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;
-  const [repositoryGroup, setRepositoryGroup] = useState(null);
+  const [repositoryGroup, setRepositoryGroup] = useState<GitGroup>(null);
   useEffect(() => {
     if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
       setRepositoryGroup(gitGroups[0]);
@@ -64,7 +68,7 @@ export default function WizardGitCreateRepo({
     (event) => {
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        groupName: "", // TODO: handle group name selector
+        groupName: repositoryGroup?.name,
         name: event.target.value,
       });
       const gitRepositoryUrl = getGitRepositoryDetails(

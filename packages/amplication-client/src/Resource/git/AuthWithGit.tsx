@@ -115,7 +115,7 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: gitProvider,
+          gitProvider: gitOrganization?.provider,
           repositoryGroupName: data.repositoryGroupName,
           public: data.public,
         },
@@ -127,7 +127,7 @@ function AuthWithGit({
             repositoryName: data.name,
             groupName: data.repositoryGroupName,
             gitRepositoryUrl: data.gitRepositoryUrl,
-            gitProvider: gitProvider,
+            gitProvider: gitOrganization.provider,
           });
         },
       }).catch((error) => {});
