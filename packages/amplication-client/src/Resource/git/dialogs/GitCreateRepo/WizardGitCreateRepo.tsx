@@ -5,14 +5,15 @@ import {
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
-import { ApolloError } from "@apollo/client";
-import { useCallback, useState } from "react";
+import { ApolloError, gql, useQuery } from "@apollo/client";
+import { useCallback, useEffect, useState } from "react";
 import { EnumGitProvider, EnumGitOrganizationType } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import { getGitRepositoryDetails } from "../../../../util/git-git-repository-details";
+import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type createRepositoryInput = {
   name: string;
@@ -44,6 +45,20 @@ export default function WizardGitCreateRepo({
       public: true,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
+
+  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+    variables: {
+      organizationId: gitOrganization.id,
+    },
+  });
+
+  const gitGroups = gitGroupsData?.gitGroups?.groups;
+  const [repositoryGroup, setRepositoryGroup] = useState(null);
+  useEffect(() => {
+    if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
+      setRepositoryGroup(gitGroups[0]);
+    }
+  }, [gitGroups]);
 
   const handleChange = useCallback(
     (event) => {
@@ -88,6 +103,18 @@ export default function WizardGitCreateRepo({
         </h4>
         <br />
       </div>
+      {gitOrganization.useGroupingForRepositories && (
+        <>
+          <div className={`${CLASS_NAME}__label`}>Change workspace</div>
+          <GitSelectMenu
+            gitProvider={gitProvider}
+            selectedItem={repositoryGroup}
+            items={gitGroups}
+            onSelect={setRepositoryGroup}
+          />
+        </>
+      )}
+
       <div>
         <Toggle
           name="public"
@@ -107,7 +134,6 @@ export default function WizardGitCreateRepo({
           <th>Repository name</th>
         </tr>
         <tr>
-          <td style={{ color: "#FFFFFF" }}>{gitOrganization.name}/</td>
           <td>
             <TextField
               autoFocus
@@ -140,3 +166,18 @@ export default function WizardGitCreateRepo({
     </div>
   );
 }
+
+const GET_GROUPS = gql`
+  query gitGroups($organizationId: String!) {
+    gitGroups(where: { organizationId: $organizationId }) {
+      total
+      page
+      pageSize
+      groups {
+        id
+        name
+        displayName
+      }
+    }
+  }
+`;

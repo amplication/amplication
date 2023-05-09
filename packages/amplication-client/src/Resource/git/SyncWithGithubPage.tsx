@@ -94,6 +94,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
           name
           type
           provider
+          useGroupingForRepositories
         }
       }
     }

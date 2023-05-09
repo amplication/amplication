@@ -58,7 +58,9 @@ function AuthWithGit({
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-
+  const openCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(true);
+  }, []);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
 
@@ -184,6 +186,8 @@ function AuthWithGit({
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
+          setSelectRepoOpen={setSelectRepoOpen}
+          openCreateNewRepo={openCreateNewRepo}
           onSelectGitRepository={handleSelectRepository}
           onGitCreateRepositoryClose={() => {
             setCreateNewRepoOpen(false);
