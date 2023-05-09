@@ -354,6 +354,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         generateRestApi,
         gitOrganizationId,
         gitRepositoryName,
+        groupName,
         isOverrideGitRepository,
         authType,
         databaseType,
@@ -379,6 +380,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           currentGitRepository = {
             name: gitRepositoryName,
             gitOrganizationId: gitOrganizationId,
+            groupName,
             resourceId: "",
             isOverrideGitRepository: isOverrideGitRepository,
           };
@@ -400,7 +402,6 @@ const CreateServiceWizard: React.FC<Props> = ({
           authType
           // gitOrganizationName
         );
-
         createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");

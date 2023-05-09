@@ -60,7 +60,7 @@ export default function GitCreateRepo({
   const handleCreation = useCallback(
     (data: CreateGitRepositoryInput) => {
       const inputData = repositoryGroup
-        ? { ...data, repositoryGroupName: repositoryGroup.name }
+        ? { ...data, groupName: repositoryGroup.name }
         : data;
       onCreateGitRepository(inputData);
     },

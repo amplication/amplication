@@ -6,6 +6,7 @@ export interface ResourceSettings {
   serviceName: string;
   gitOrganizationId: string;
   gitRepositoryName: string;
+  groupName: string;
   gitProvider: EnumGitProvider;
   isOverrideGitRepository: boolean;
   generateAdminUI: boolean;

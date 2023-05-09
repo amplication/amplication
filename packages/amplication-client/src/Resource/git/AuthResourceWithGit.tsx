@@ -95,7 +95,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           gitProvider: gitOrganization.provider,
           public: data.public,
           resourceId: resource.id,
-          repositoryGroupName: data.repositoryGroupName,
+          groupName: data.groupName,
         },
         onCompleted() {
           closeCreateNewRepo();
@@ -207,7 +207,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
     $resourceId: String!
     $name: String!
     $public: Boolean!
-    $repositoryGroupName: String
+    $groupName: String
   ) {
     createGitRepository(
       data: {
@@ -217,7 +217,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         resourceId: $resourceId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
-        repositoryGroupName: $repositoryGroupName
+        groupName: $groupName
       }
     ) {
       id

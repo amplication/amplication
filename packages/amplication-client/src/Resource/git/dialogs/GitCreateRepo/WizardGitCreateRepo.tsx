@@ -25,7 +25,6 @@ type createRepositoryInput = {
   groupName?: string;
 };
 type Props = {
-  gitProvider: EnumGitProvider;
   gitOrganization: GitOrganizationFromGitRepository;
   repoCreated: {
     isRepoCreateLoading: boolean;
@@ -37,7 +36,6 @@ type Props = {
 const CLASS_NAME = "git-create-repo";
 
 export default function WizardGitCreateRepo({
-  gitProvider,
   gitOrganization,
   repoCreated,
   onCreateGitRepository,
@@ -45,7 +43,7 @@ export default function WizardGitCreateRepo({
   const [createRepositoryInput, setCreateRepositoryInput] =
     useState<createRepositoryInput>({
       name: "",
-      groupName: null,
+      groupName: "",
       public: true,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
@@ -61,18 +59,32 @@ export default function WizardGitCreateRepo({
   useEffect(() => {
     if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
       setRepositoryGroup(gitGroups[0]);
+      setCreateRepositoryInput({
+        ...createRepositoryInput,
+        groupName: gitGroups[0].name,
+      });
     }
   }, [gitGroups]);
 
-  const handleChange = useCallback(
+  const handleSelectGroup = useCallback(
+    (gitGroup) => {
+      setRepositoryGroup(gitGroup);
+      setCreateRepositoryInput({
+        ...createRepositoryInput,
+        groupName: gitGroup.name,
+      });
+    },
+    [createRepositoryInput, setCreateRepositoryInput]
+  );
+
+  const handleNameChange = useCallback(
     (event) => {
       setCreateRepositoryInput({
         ...createRepositoryInput,
-        groupName: repositoryGroup?.name,
         name: event.target.value,
       });
       const gitRepositoryUrl = getGitRepositoryDetails(
-        gitProvider,
+        gitOrganization?.provider,
         gitOrganization?.name,
         createRepositoryInput.groupName,
         event.target.value
@@ -86,9 +98,9 @@ export default function WizardGitCreateRepo({
     onCreateGitRepository({
       gitOrganizationId: gitOrganization.id,
       gitOrganizationType: EnumGitOrganizationType.Organization,
-      gitProvider,
+      gitProvider: gitOrganization?.provider,
       name: createRepositoryInput.name,
-      repositoryGroupName: createRepositoryInput.groupName,
+      groupName: createRepositoryInput.groupName,
       public: createRepositoryInput.public,
       gitRepositoryUrl: gitRepositoryUrl,
     });
@@ -103,7 +115,8 @@ export default function WizardGitCreateRepo({
     <div>
       <div className={`${CLASS_NAME}__header`}>
         <h4>
-          Create a new {gitProvider} repository to sync your resource with
+          Create a new {gitOrganization?.provider} repository to sync your
+          resource with
         </h4>
         <br />
       </div>
@@ -111,10 +124,10 @@ export default function WizardGitCreateRepo({
         <>
           <div className={`${CLASS_NAME}__label`}>Change workspace</div>
           <GitSelectMenu
-            gitProvider={gitProvider}
+            gitProvider={gitOrganization?.provider}
             selectedItem={repositoryGroup}
             items={gitGroups}
-            onSelect={setRepositoryGroup}
+            onSelect={handleSelectGroup}
           />
         </>
       )}
@@ -144,7 +157,7 @@ export default function WizardGitCreateRepo({
               name="name"
               autoComplete="off"
               showError={false}
-              onChange={handleChange}
+              onChange={handleNameChange}
             />
           </td>
         </tr>

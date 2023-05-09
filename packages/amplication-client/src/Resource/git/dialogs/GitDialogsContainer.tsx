@@ -84,7 +84,6 @@ export default function GitDialogsContainer({
       >
         {src === "serviceWizard" ? (
           <WizardGitCreateRepo
-            gitProvider={gitProvider}
             repoCreated={repoCreated}
             onCreateGitRepository={onGitCreateRepository}
             gitOrganization={gitOrganization}

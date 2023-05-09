@@ -131,7 +131,6 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
       if (!result.data?.createServiceWithEntities.resource.id) return;
 

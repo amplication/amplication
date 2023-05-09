@@ -115,8 +115,8 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: gitOrganization?.provider,
-          repositoryGroupName: data.repositoryGroupName,
+          gitProvider: data.gitProvider,
+          groupName: data.groupName,
           public: data.public,
         },
         onCompleted() {
@@ -125,7 +125,7 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
-            groupName: data.repositoryGroupName,
+            groupName: data.groupName,
             gitRepositoryUrl: data.gitRepositoryUrl,
             gitProvider: gitOrganization.provider,
           });
@@ -256,6 +256,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
     $gitOrganizationId: String!
     $name: String!
     $public: Boolean!
+    $groupName: String
   ) {
     createRemoteGitRepository(
       data: {
@@ -264,6 +265,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
+        groupName: $groupName
       }
     )
   }

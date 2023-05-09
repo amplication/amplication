@@ -50,7 +50,7 @@ export type GitRepositoryCreatedData = {
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
   public: boolean;
-  repositoryGroupName?: string;
+  groupName?: string;
   gitRepositoryUrl?: string;
 };
 
@@ -83,7 +83,7 @@ function GitRepos({
     { data, error, loading: loadingRepos, refetch, networkStatus },
   ] = useLazyQuery<{ remoteGitRepositories: RemoteGitRepos }>(FIND_GIT_REPOS, {
     variables: {
-      repositoryGroupName: repositoryGroup?.name,
+      groupName: repositoryGroup?.name,
       gitOrganizationId: gitOrganization.id,
       gitProvider: gitOrganization.provider,
       perPage: MAX_ITEMS_PER_PAGE,
@@ -97,7 +97,7 @@ function GitRepos({
       repositoryGroup &&
         getRepos({
           variables: {
-            repositoryGroupName: repositoryGroup.name,
+            groupName: repositoryGroup.name,
             gitOrganizationId: gitOrganization.id,
             gitProvider: gitOrganization.provider,
             limit: MAX_ITEMS_PER_PAGE,
@@ -275,7 +275,7 @@ export const CONNECT_GIT_REPOSITORY = gql`
 
 const FIND_GIT_REPOS = gql`
   query remoteGitRepositories(
-    $repositoryGroupName: String
+    $groupName: String
     $gitOrganizationId: String!
     $gitProvider: EnumGitProvider!
     $perPage: Float!
@@ -283,7 +283,7 @@ const FIND_GIT_REPOS = gql`
   ) {
     remoteGitRepositories(
       where: {
-        repositoryGroupName: $repositoryGroupName
+        groupName: $groupName
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         perPage: $perPage
