@@ -54,7 +54,7 @@ describe("bitbucket.service", () => {
         });
       } catch (e) {
         expect(e.message).toBe(
-          "Missing repositoryGroupName. repositoryGroupName is mandatory for BitBucket provider"
+          "Missing groupName. groupName is mandatory for BitBucket provider"
         );
       }
     });
@@ -87,7 +87,7 @@ describe("bitbucket.service", () => {
           path: "tests/",
           owner: "mr-bucket",
           repositoryName: "my-repo",
-          repositoryGroupName: "my-group",
+          groupName: "my-group",
           ref: "main",
         });
       } catch (e) {
@@ -139,7 +139,7 @@ describe("bitbucket.service", () => {
         path: "tests/__init__.py",
         owner: "mr-bucket",
         repositoryName: "my-repo",
-        repositoryGroupName: "my-group",
+        groupName: "my-group",
         ref: "main",
       });
 
@@ -167,7 +167,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -264,7 +264,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: mockedGetFirstCommitResponse.repository.name,
-        repositoryGroupName:
+        groupName:
           mockedGetFirstCommitResponse.repository.full_name.split("/")[0],
       });
 
@@ -284,14 +284,14 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
     it("returns the clone url", async () => {
       const result = await service.getCloneUrl({
         owner: "maccheroni",
         repositoryName: "myrepo",
-        repositoryGroupName: "mygroup",
+        groupName: "mygroup",
       });
 
       expect(result).toEqual(
@@ -310,7 +310,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -423,7 +423,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: "my-repo",
-        repositoryGroupName: "my-group",
+        groupName: "my-group",
       });
 
       const expectedResult = {
@@ -446,7 +446,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -560,7 +560,7 @@ describe("bitbucket.service", () => {
         repositoryName: "my-repo",
         branchName: "amit-test",
         pointingSha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
-        repositoryGroupName: "my-group",
+        groupName: "my-group",
       });
 
       const expectedResult = {
@@ -586,7 +586,7 @@ describe("bitbucket.service", () => {
           data: { body: "this is my comment for the pull request" },
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -653,7 +653,7 @@ describe("bitbucket.service", () => {
           issueNumber: 1,
           owner: "maccheroni",
           repositoryName: "my-repo",
-          repositoryGroupName: "my-group",
+          groupName: "my-group",
         },
         data: { body: "this is my comment for the pull request" },
       });
@@ -679,7 +679,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -846,8 +846,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: pullRequest.source.branch.name,
         repositoryName: pullRequest.source.repository.name,
-        repositoryGroupName:
-          pullRequest.source.repository.full_name.split("/")[0],
+        groupName: pullRequest.source.repository.full_name.split("/")[0],
       });
 
       const expectedResult = {
@@ -873,7 +872,7 @@ describe("bitbucket.service", () => {
           pullRequestBody: "my pull request body",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing repositoryGroupName");
+        expect(e.message).toBe("Missing groupName");
       }
     });
 
@@ -1052,7 +1051,7 @@ describe("bitbucket.service", () => {
           mockedCreatePullRequestResponse.destination.branch.name,
         pullRequestTitle: mockedCreatePullRequestResponse.title,
         pullRequestBody: "description for my pull request",
-        repositoryGroupName: "ab-2",
+        groupName: "ab-2",
       });
 
       const expectedResult = {

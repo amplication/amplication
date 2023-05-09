@@ -149,7 +149,7 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface CreateRepositoryArgs {
@@ -157,18 +157,18 @@ export interface CreateRepositoryArgs {
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface GetRepositoriesArgs {
   pagination: Pagination;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface GetFileArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
   path: string;
   /**
    * Revision reference of the file to request.
@@ -181,7 +181,7 @@ export interface GetFileArgs {
 export interface CreatePullRequestArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
   branchName: string;
   commitMessage: string;
   pullRequestTitle: string;
@@ -205,7 +205,7 @@ export interface CreatePullRequestFromFilesArgs {
 export interface GitProviderGetPullRequestArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
   branchName: string;
 }
 
@@ -216,7 +216,7 @@ export interface GitProviderCreatePullRequestArgs {
   defaultBranchName: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface LinksMetadata {
@@ -266,7 +266,7 @@ export interface GetBranchArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface CreateBranchIfNotExistsArgs {
@@ -275,7 +275,7 @@ export interface CreateBranchIfNotExistsArgs {
   branchName: string;
   gitCli: GitCli;
   defaultBranch: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface CreateBranchArgs {
@@ -283,7 +283,7 @@ export interface CreateBranchArgs {
   repositoryName: string;
   branchName: string;
   pointingSha: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface Commit {
@@ -299,7 +299,7 @@ export interface Bot {
 export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface PreCommitProcessArgs {
@@ -320,7 +320,7 @@ export interface PostCommitProcessArgs {
 export interface FindOneIssueInput {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
   issueNumber: number;
 }
 
