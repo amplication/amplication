@@ -39,7 +39,7 @@ export class Value {
   gitRepositoryName!: string;
   @IsString()
   @IsOptional()
-  gitRepositoryGroupName?: string;
+  groupName?: string;
   @ValidateNested()
   commit!: Commit;
   @ValidateNested()
