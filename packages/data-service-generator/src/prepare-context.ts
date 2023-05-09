@@ -99,7 +99,7 @@ function dynamicClientPathCreator(clientPath: string): clientDirectories {
   };
 }
 
-function prepareEntityPluralName(entities: Entity[]): Entity[] {
+export function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
     entity.pluralName = pluralize(camelCase(entity.name));
     entity.pluralName =
