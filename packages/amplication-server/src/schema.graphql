@@ -1052,7 +1052,7 @@ input RemoteGitRepositoriesWhereUniqueInput {
 
   """The page number. One-based indexing"""
   page: Float! = 1
-  repositoryGroupName: String
+  groupName: String
 }
 
 input GitOrganizationWhereInput {
@@ -1471,7 +1471,7 @@ input CreateGitRepositoryInput {
   """
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
-  repositoryGroupName: String
+  groupName: String
   public: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
@@ -1485,7 +1485,7 @@ input CreateGitRepositoryBaseInput {
   """
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
-  repositoryGroupName: String
+  groupName: String
   public: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!

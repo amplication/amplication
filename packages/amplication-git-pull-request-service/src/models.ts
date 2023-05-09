@@ -288,20 +288,20 @@ export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   public: Scalars['Boolean'];
-  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
-  repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
 export type CreateGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   public: Scalars['Boolean'];
-  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
-  repositoryGroupName?: InputMaybe<Scalars['String']>;
   resourceId: Scalars['String'];
 };
 
@@ -1711,11 +1711,11 @@ export type RemoteGitRepos = {
 export type RemoteGitRepositoriesWhereUniqueInput = {
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
+  groupName?: InputMaybe<Scalars['String']>;
   /** The page number. One-based indexing */
   page?: Scalars['Float'];
   /** The number of items to return per page */
   perPage?: Scalars['Float'];
-  repositoryGroupName?: InputMaybe<Scalars['String']>;
 };
 
 export type RemoteGitRepository = {
