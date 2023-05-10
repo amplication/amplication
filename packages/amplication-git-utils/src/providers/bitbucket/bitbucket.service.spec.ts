@@ -87,7 +87,7 @@ describe("bitbucket.service", () => {
           path: "tests/",
           owner: "mr-bucket",
           repositoryName: "my-repo",
-          groupName: "my-group",
+          repositoryGroupName: "my-group",
           ref: "main",
         });
       } catch (e) {
@@ -139,7 +139,7 @@ describe("bitbucket.service", () => {
         path: "tests/__init__.py",
         owner: "mr-bucket",
         repositoryName: "my-repo",
-        groupName: "my-group",
+        repositoryGroupName: "my-group",
         ref: "main",
       });
 
@@ -264,7 +264,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: mockedGetFirstCommitResponse.repository.name,
-        groupName:
+        repositoryGroupName:
           mockedGetFirstCommitResponse.repository.full_name.split("/")[0],
       });
 
@@ -291,7 +291,7 @@ describe("bitbucket.service", () => {
       const result = await service.getCloneUrl({
         owner: "maccheroni",
         repositoryName: "myrepo",
-        groupName: "mygroup",
+        repositoryGroupName: "mygroup",
       });
 
       expect(result).toEqual(
@@ -423,7 +423,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: "master",
         repositoryName: "my-repo",
-        groupName: "my-group",
+        repositoryGroupName: "my-group",
       });
 
       const expectedResult = {
@@ -560,7 +560,7 @@ describe("bitbucket.service", () => {
         repositoryName: "my-repo",
         branchName: "amit-test",
         pointingSha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
-        groupName: "my-group",
+        repositoryGroupName: "my-group",
       });
 
       const expectedResult = {
@@ -653,7 +653,7 @@ describe("bitbucket.service", () => {
           issueNumber: 1,
           owner: "maccheroni",
           repositoryName: "my-repo",
-          groupName: "my-group",
+          repositoryGroupName: "my-group",
         },
         data: { body: "this is my comment for the pull request" },
       });
@@ -846,7 +846,8 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         branchName: pullRequest.source.branch.name,
         repositoryName: pullRequest.source.repository.name,
-        groupName: pullRequest.source.repository.full_name.split("/")[0],
+        repositoryGroupName:
+          pullRequest.source.repository.full_name.split("/")[0],
       });
 
       const expectedResult = {
@@ -1051,7 +1052,7 @@ describe("bitbucket.service", () => {
           mockedCreatePullRequestResponse.destination.branch.name,
         pullRequestTitle: mockedCreatePullRequestResponse.title,
         pullRequestBody: "description for my pull request",
-        groupName: "ab-2",
+        repositoryGroupName: "ab-2",
       });
 
       const expectedResult = {
