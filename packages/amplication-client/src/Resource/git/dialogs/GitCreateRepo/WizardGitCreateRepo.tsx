@@ -7,16 +7,12 @@ import {
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
-import {
-  EnumGitProvider,
-  EnumGitOrganizationType,
-  GitGroup,
-} from "../../../../models";
+import { EnumGitOrganizationType, GitGroup } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { getGitRepositoryDetails } from "../../../../util/git-git-repository-details";
+import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type createRepositoryInput = {
@@ -84,9 +80,7 @@ export default function WizardGitCreateRepo({
         name: event.target.value,
       });
       const gitRepositoryUrl = getGitRepositoryDetails(
-        gitOrganization?.provider,
-        gitOrganization?.name,
-        createRepositoryInput.groupName,
+        gitOrganization,
         event.target.value
       ).repositoryUrl;
       setGitRepositoryUrl(gitRepositoryUrl);

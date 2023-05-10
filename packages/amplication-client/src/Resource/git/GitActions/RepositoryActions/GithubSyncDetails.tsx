@@ -9,7 +9,7 @@ import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
-import { getGitRepositoryDetails } from "../../../../util/git-git-repository-details";
+import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 
 const CLASS_NAME = "git-repo-details";
 
@@ -35,13 +35,9 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
-  const gitProvider =
-    resourceWithRepository.gitRepository?.gitOrganization?.provider;
   const gitRepositoryDetails = getGitRepositoryDetails(
-    gitProvider,
-    resourceWithRepository.gitRepository?.gitOrganization?.name,
-    resourceWithRepository?.gitRepository?.groupName,
-    resourceWithRepository.gitRepository?.name
+    resourceWithRepository.gitRepository?.gitOrganization,
+    resourceWithRepository?.gitRepository
   );
   return (
     <div className={CLASS_NAME}>

@@ -18,7 +18,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import { getGitRepositoryDetails } from "../../util/git-git-repository-details";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import GitSyncNotes from "./GitSyncNotes";
 
 const CLASS_NAME = "service-configuration-git-settings";
@@ -52,10 +52,8 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     : "gitSettingsFromProject";
 
   const gitRepositoryUrl = getGitRepositoryDetails(
-    gitProvider,
-    gitRepository?.gitOrganization?.name,
-    gitRepository?.groupName,
-    gitRepository?.name
+    gitRepository?.gitOrganization,
+    gitRepository
   ).repositoryUrl;
 
   useEffect(() => {

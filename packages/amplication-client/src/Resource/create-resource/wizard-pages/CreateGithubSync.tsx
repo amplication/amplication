@@ -10,7 +10,7 @@ import {
 import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
-import { getGitRepositoryDetails } from "../../../util/git-git-repository-details";
+import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 
 const className = "create-git-sync";
 
@@ -29,10 +29,8 @@ const CreateGithubSync: React.FC<props> = ({
   const { gitRepository } = currentProjectConfiguration;
   const gitProvider = gitRepository?.gitOrganization?.provider;
   const gitRepositoryUrl = getGitRepositoryDetails(
-    gitProvider,
-    gitRepository?.gitOrganization?.name,
-    gitRepository?.groupName,
-    gitRepository?.name
+    gitRepository?.gitOrganization,
+    gitRepository
   ).repositoryUrl;
   const projectConfigGitRepository = {
     gitOrganizationId: gitRepository?.gitOrganizationId,

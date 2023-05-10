@@ -10,7 +10,7 @@ import {
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
-import { getGitRepositoryDetails } from "../../util/git-git-repository-details";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -183,10 +183,8 @@ const useResources = (
       );
     setGitRepositoryUrl(
       getGitRepositoryDetails(
-        projectConfigurationResource?.gitRepository?.gitOrganization?.provider,
-        projectConfigurationResource?.gitRepository?.gitOrganization?.name,
-        projectConfigurationResource?.gitRepository?.groupName,
-        projectConfigurationResource?.gitRepository?.name
+        projectConfigurationResource?.gitRepository?.gitOrganization,
+        projectConfigurationResource?.gitRepository
       ).repositoryUrl
     );
     setGitRepositoryOrganizationProvider(
@@ -217,10 +215,8 @@ const useResources = (
     );
     setGitRepositoryUrl(
       getGitRepositoryDetails(
-        resource?.gitRepository?.gitOrganization?.provider,
-        resource?.gitRepository?.gitOrganization?.name,
-        resource?.gitRepository?.groupName,
-        resource?.gitRepository?.name
+        resource?.gitRepository?.gitOrganization,
+        resource?.gitRepository
       ).repositoryUrl
     );
     setGitRepositoryOrganizationProvider(
