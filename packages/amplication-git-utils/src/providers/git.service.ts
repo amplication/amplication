@@ -109,7 +109,7 @@ export class GitClientService {
     const {
       owner,
       repositoryName,
-      groupName,
+      repositoryGroupName,
       branchName,
       commitMessage,
       pullRequestTitle,
@@ -134,20 +134,20 @@ export class GitClientService {
     const cloneUrl = this.provider.getCloneUrl({
       owner,
       repositoryName,
-      groupName,
+      repositoryGroupName,
     });
 
     const { defaultBranch } = await this.provider.getRepository({
       owner,
-      repositoryName,
-      groupName,
+      name: repositoryName,
+      groupName: repositoryGroupName,
     });
 
     const haveFirstCommitInDefaultBranch =
       await this.isHaveFirstCommitInDefaultBranch({
         owner,
         repositoryName,
-        groupName,
+        repositoryGroupName,
         defaultBranch,
       });
 
@@ -167,7 +167,7 @@ export class GitClientService {
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
       repositoryName,
-      groupName
+      repositoryGroupName
     );
 
     const preparedFiles = await prepareFilesForPullRequest(
@@ -204,7 +204,7 @@ export class GitClientService {
           preparedFiles,
           defaultBranch,
           isCloned,
-          groupName,
+          repositoryGroupName,
         });
         break;
       default:
@@ -229,7 +229,7 @@ export class GitClientService {
     preparedFiles: UpdateFile[];
     defaultBranch: string;
     isCloned: boolean;
-    groupName?: string;
+    repositoryGroupName?: string;
   }): Promise<string> {
     const {
       cloneUrl,
@@ -242,7 +242,7 @@ export class GitClientService {
       preparedFiles,
       defaultBranch,
       isCloned,
-      groupName,
+      repositoryGroupName,
     } = options;
 
     if (isCloned === false) {
@@ -251,7 +251,7 @@ export class GitClientService {
     await this.restoreAmplicationBranchIfNotExists({
       owner,
       repositoryName,
-      groupName,
+      repositoryGroupName,
       branchName,
       gitCli,
       defaultBranch,
@@ -285,7 +285,7 @@ export class GitClientService {
     const existingPullRequest = await this.provider.getPullRequest({
       owner,
       repositoryName,
-      groupName,
+      repositoryGroupName,
       branchName,
     });
 
@@ -295,7 +295,7 @@ export class GitClientService {
       pullRequest = await this.provider.createPullRequest({
         owner,
         repositoryName,
-        groupName,
+        repositoryGroupName,
         pullRequestTitle: accumulativePullRequestTitle,
         pullRequestBody: accumulativePullRequestBody,
         branchName,
@@ -308,8 +308,7 @@ export class GitClientService {
         issueNumber: pullRequest.number,
         owner,
         repositoryName,
-
-        groupName,
+        repositoryGroupName,
       },
       data: { body: pullRequestBody },
     });
@@ -428,7 +427,7 @@ export class GitClientService {
       owner,
       repositoryName,
       gitCli,
-      groupName,
+      repositoryGroupName,
       defaultBranch,
     } = args;
     const branch = await this.provider.getBranch(args);
@@ -440,7 +439,7 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName: defaultBranch,
-        groupName,
+        repositoryGroupName,
       });
 
     if (firstCommitOnDefaultBranch === null) {
@@ -451,7 +450,7 @@ export class GitClientService {
       owner,
       branchName,
       repositoryName,
-      groupName,
+      repositoryGroupName,
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
@@ -489,7 +488,7 @@ export class GitClientService {
   private async manageAmplicationIgnoreFile(
     owner: string,
     repositoryName: string,
-    groupName?: string,
+    repositoryGroupName?: string,
     gitRef?: string
   ) {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
@@ -498,7 +497,7 @@ export class GitClientService {
         const file = await this.provider.getFile({
           owner,
           repositoryName,
-          groupName,
+          repositoryGroupName,
           path: fileName,
           ref: gitRef,
         });
@@ -546,16 +545,16 @@ export class GitClientService {
   private async isHaveFirstCommitInDefaultBranch(args: {
     owner: string;
     repositoryName: string;
-    groupName?: string;
+    repositoryGroupName?: string;
     defaultBranch: string;
   }): Promise<boolean> {
-    const { owner, repositoryName, groupName, defaultBranch } = args;
+    const { owner, repositoryName, repositoryGroupName, defaultBranch } = args;
     const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
       {
         branchName: defaultBranch,
         owner,
         repositoryName,
-        groupName,
+        repositoryGroupName,
       }
     );
 

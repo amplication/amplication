@@ -198,23 +198,23 @@ export class GithubService implements GitProvider {
   async getRepository(
     getRepositoriesArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { owner, repositoryName } = getRepositoriesArgs;
+    const { owner, name } = getRepositoriesArgs;
     const { data } = await this.octokit.rest.repos.get({
       owner,
-      repo: repositoryName,
+      repo: name,
     });
     const {
       permissions,
       url,
       private: isPrivate,
-      name,
+      name: repositoryName,
       full_name: fullName,
       default_branch: defaultBranch,
     } = data;
     const baseRepository = {
       defaultBranch,
       fullName,
-      name,
+      name: repositoryName,
       private: isPrivate,
       url,
     };
@@ -244,7 +244,7 @@ export class GithubService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    const { gitOrganization, owner, repositoryName, isPrivateRepository } =
+    const { gitOrganization, owner, name, isPrivateRepository } =
       createRepositoryArgs;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
@@ -252,14 +252,14 @@ export class GithubService implements GitProvider {
     }
 
     const exists: boolean = await this.isRepositoryInOrganizationRepositories(
-      repositoryName
+      name
     );
     if (exists) {
       return null;
     }
 
     const { data: repo } = await this.octokit.rest.repos.createInOrg({
-      name: repositoryName,
+      name,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       auto_init: true,
@@ -484,7 +484,10 @@ export class GithubService implements GitProvider {
   }: CreateBranchArgs): Promise<Branch> {
     let baseSha = pointingSha;
     if (!baseSha) {
-      const repository = await this.getRepository({ owner, repositoryName });
+      const repository = await this.getRepository({
+        owner,
+        name: repositoryName,
+      });
       const { defaultBranch } = repository;
 
       const refs = await this.octokit.rest.git.getRef({
