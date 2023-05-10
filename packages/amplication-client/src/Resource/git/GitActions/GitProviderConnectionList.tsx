@@ -9,6 +9,8 @@ import "./GitProviderConnectionList.scss";
 import { useCallback } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../../../util/BillingFeature";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -33,6 +35,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   onProviderSelect,
 }) => {
   const { trackEvent } = useTracking();
+  const { stigg } = useStiggContext();
+
+  const showBitbucketConnect = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.Bitbucket,
+  });
 
   const [authWithGit, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -78,7 +85,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        // disabled={true}
+        disabled={!showBitbucketConnect.hasAccess}
       />
     </div>
   );
