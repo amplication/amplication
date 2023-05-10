@@ -38,7 +38,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const { stigg } = useStiggContext();
 
   const showBitbucketConnect = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.BitbucketProvider,
+    featureId: BillingFeature.Bitbucket,
   });
 
   const [authWithGit, { error }] = useMutation<DType>(
