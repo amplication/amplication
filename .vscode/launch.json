@@ -17,13 +17,9 @@
       "type": "node",
       "name": "Debug DSG generate-local-code",
       "request": "launch",
-      "runtimeArgs": [
-        "nx",
-        "generate-local-code",
-        "data-service-generator --verbose"
-      ],
-      "cwd": "${workspaceRoot}",
       "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "generate-local-code", "data-service-generator"],
+      "cwd": "${workspaceRoot}",
       "env": {}
     },
     {
