@@ -1,4 +1,9 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -15,8 +20,8 @@ import {
 } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
-import WizardNewConnection from "./GitActions/WizardNewConnection";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 import * as models from "../../models";
 
 type DType = {
@@ -53,7 +58,9 @@ function AuthWithGit({
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-
+  const openCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(true);
+  }, []);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
 
@@ -108,7 +115,8 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: gitProvider,
+          gitProvider: data.gitProvider,
+          groupName: data.groupName,
           public: data.public,
         },
         onCompleted() {
@@ -117,8 +125,9 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
+            groupName: data.groupName,
             gitRepositoryUrl: data.gitRepositoryUrl,
-            gitProvider: gitProvider,
+            gitProvider: gitOrganization.provider,
           });
         },
       }).catch((error) => {});
@@ -142,21 +151,6 @@ function AuthWithGit({
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = useCallback(
-    (provider: models.EnumGitProvider) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
-        provider,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    },
-    [authWithGit, trackEvent]
-  );
-
   triggerOnDone = () => {
     onDone();
   };
@@ -168,6 +162,15 @@ function AuthWithGit({
     setGitRepositorySelectedData(null);
     onGitRepositoryDisconnected();
   }, [setGitRepositorySelectedData]);
+
+  const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
+    useState(false);
+  const openSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(true);
+  }, []);
+  const closeSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(false);
+  }, []);
 
   const errorMessage = formatError(error);
   return (
@@ -183,6 +186,8 @@ function AuthWithGit({
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
+          setSelectRepoOpen={setSelectRepoOpen}
+          openCreateNewRepo={openCreateNewRepo}
           onSelectGitRepository={handleSelectRepository}
           onGitCreateRepositoryClose={() => {
             setCreateNewRepoOpen(false);
@@ -197,11 +202,25 @@ function AuthWithGit({
           }}
         />
       )}
+      {isSelectOrganizationDialogOpen && (
+        <Dialog
+          title="Select Git Provider"
+          className="git-organization-dialog"
+          isOpen={isSelectOrganizationDialogOpen}
+          onDismiss={closeSelectOrganizationDialog}
+        >
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+            onProviderSelect={closeSelectOrganizationDialog}
+          />
+        </Dialog>
+      )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <WizardNewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            provider={gitProvider}
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
           />
         ) : (
           <div>
@@ -209,7 +228,7 @@ function AuthWithGit({
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleGitOrganizationChange}
               selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAuthWithGitClick}
+              onAddGitOrganization={openSelectOrganizationDialog}
             />
             <WizardRepositoryActions
               onCreateRepository={() => {
@@ -237,6 +256,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
     $gitOrganizationId: String!
     $name: String!
     $public: Boolean!
+    $groupName: String
   ) {
     createRemoteGitRepository(
       data: {
@@ -245,6 +265,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
+        groupName: $groupName
       }
     )
   }

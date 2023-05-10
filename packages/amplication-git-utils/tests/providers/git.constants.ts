@@ -43,8 +43,10 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
     },
   ],
   total: 2,
-  perPage: 2,
-  page: 1,
+  pagination: {
+    perPage: 2,
+    page: 1,
+  },
 };
 
 export const TEST_GIT_REPO: RemoteGitRepository = {

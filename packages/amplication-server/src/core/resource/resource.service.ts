@@ -170,6 +170,7 @@ export class ResourceService {
         const wizardGitRepository = await this.prisma.gitRepository.create({
           data: {
             name: gitRepositoryToCreate.name,
+            groupName: gitRepositoryToCreate.groupName,
             resources: {},
             gitOrganization: {
               connect: { id: gitRepositoryToCreate.gitOrganizationId },
@@ -195,6 +196,7 @@ export class ResourceService {
       const wizardGitRepository = await this.prisma.gitRepository.create({
         data: {
           name: gitRepositoryToCreate.name,
+          groupName: gitRepositoryToCreate.groupName,
           resources: {},
           gitOrganization: {
             connect: { id: gitRepositoryToCreate.gitOrganizationId },

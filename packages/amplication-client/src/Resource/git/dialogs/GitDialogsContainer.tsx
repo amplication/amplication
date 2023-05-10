@@ -1,6 +1,5 @@
 import { Dialog } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
-import React from "react";
 import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
@@ -9,6 +8,9 @@ import GitRepos, {
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+
+import "./GitDialogsContainer.scss";
+import { useCallback } from "react";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -21,12 +23,13 @@ type Props = {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
   };
-
   onGitCreateRepository: (data: GitRepositoryCreatedData) => void;
   onPopupFailedClose: () => void;
   onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: GitRepositorySelected) => void;
+  openCreateNewRepo?: () => void;
+  setSelectRepoOpen?: (state: boolean) => void;
 };
 
 export default function GitDialogsContainer({
@@ -42,7 +45,14 @@ export default function GitDialogsContainer({
   onSelectGitRepositoryDialogClose,
   onSelectGitRepository,
   onGitCreateRepositoryClose,
+  openCreateNewRepo,
+  setSelectRepoOpen,
 }: Props) {
+  const handleCreateNewRepoClick = useCallback(() => {
+    setSelectRepoOpen(false);
+    openCreateNewRepo();
+  }, [setSelectRepoOpen, openCreateNewRepo]);
+
   return (
     <div>
       <Dialog
@@ -54,6 +64,8 @@ export default function GitDialogsContainer({
         <GitRepos
           gitOrganization={gitOrganization}
           onGitRepositoryConnected={onSelectGitRepository}
+          gitProvider={gitProvider}
+          openCreateNewRepo={handleCreateNewRepoClick}
         />
       </Dialog>
       <Dialog
@@ -72,7 +84,6 @@ export default function GitDialogsContainer({
       >
         {src === "serviceWizard" ? (
           <WizardGitCreateRepo
-            gitProvider={gitProvider}
             repoCreated={repoCreated}
             onCreateGitRepository={onGitCreateRepository}
             gitOrganization={gitOrganization}
@@ -81,6 +92,10 @@ export default function GitDialogsContainer({
           <GitCreateRepo
             gitProvider={gitProvider}
             repoCreated={repoCreated}
+            gitOrganizationId={gitOrganization.id}
+            useGroupingForRepositories={
+              gitOrganization.useGroupingForRepositories
+            }
             gitOrganizationName={gitOrganization.name}
             onCreateGitRepository={onGitCreateRepository}
           />

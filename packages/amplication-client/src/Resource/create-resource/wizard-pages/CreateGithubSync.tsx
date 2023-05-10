@@ -10,7 +10,7 @@ import {
 import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
-import { getGitRepositoryUrlForServiceWizard } from "../../../util/get-git-repository-url-for-service-wizard";
+import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 
 const className = "create-git-sync";
 
@@ -28,16 +28,17 @@ const CreateGithubSync: React.FC<props> = ({
 
   const { gitRepository } = currentProjectConfiguration;
   const gitProvider = gitRepository?.gitOrganization?.provider;
-  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
-  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
-    gitProvider,
-    gitRepositoryFullName
-  );
+  const gitRepositoryUrl = getGitRepositoryDetails({
+    organization: gitRepository?.gitOrganization,
+    repositoryName: gitRepository?.name,
+    groupName: gitRepository?.groupName,
+  }).repositoryUrl;
   const projectConfigGitRepository = {
     gitOrganizationId: gitRepository?.gitOrganizationId,
     repositoryName: gitRepository?.name,
     gitRepositoryUrl: gitRepositoryUrl,
     gitProvider: gitProvider,
+    groupName: gitRepository?.groupName,
   };
 
   const isNeedToConnectGitProvider = resources.length === 0 && !gitRepository;
@@ -47,7 +48,8 @@ const CreateGithubSync: React.FC<props> = ({
   }, []);
 
   useEffect(() => {
-    if (formik.values.gitOrganizationId) return;
+    if (formik.values.gitOrganizationId && formik.values.groupName) return;
+
     formik.setValues(
       {
         ...formik.values,
@@ -55,6 +57,7 @@ const CreateGithubSync: React.FC<props> = ({
         gitOrganizationId: projectConfigGitRepository?.gitOrganizationId,
         gitRepositoryUrl: projectConfigGitRepository?.gitRepositoryUrl,
         gitProvider: projectConfigGitRepository?.gitProvider,
+        groupName: projectConfigGitRepository?.groupName,
       },
       true
     );
@@ -73,6 +76,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
+          groupName: data.groupName,
         },
         true
       );
@@ -90,6 +94,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
+          groupName: data.groupName,
         },
         true
       );
@@ -128,6 +133,7 @@ const CreateGithubSync: React.FC<props> = ({
                     gitRepositoryName: null,
                     gitOrganizationId: null,
                     gitRepositoryUrl: null,
+                    groupName: null,
                   },
                   true
                 );
@@ -137,6 +143,7 @@ const CreateGithubSync: React.FC<props> = ({
                 repositoryName: formik.values.gitRepositoryName,
                 gitRepositoryUrl: formik.values.gitRepositoryUrl,
                 gitProvider: formik.values.gitProvider,
+                groupName: formik.values.groupName,
               }}
             ></AuthWithGit>
           ) : (

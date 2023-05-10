@@ -1,4 +1,9 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { useCallback, useContext, useEffect, useState } from "react";
 import * as models from "../../models";
@@ -17,20 +22,12 @@ import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import GitSyncNotes from "./GitSyncNotes";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
 import { isEmpty } from "lodash";
-import NewConnection from "./GitActions/NewConnection";
 import {
   CONNECT_GIT_REPOSITORY,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
-
-type DType = {
-  getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
-};
-
-// eslint-disable-next-line
-let triggerOnDone = () => {};
-let triggerAuthFailed = () => {};
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 
 type Props = {
   resource: Resource;
@@ -56,47 +53,29 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
   }, [gitOrganizations, gitRepository?.gitOrganization]);
 
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
-  const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
-  const [popupFailed, setPopupFailed] = useState(false);
-  const { trackEvent } = useTracking();
-  const [authWithGit, { error }] = useMutation<DType>(
-    START_AUTH_APP_WITH_GITHUB,
-    {
-      onCompleted: (data) => {
-        openSignInWindow(
-          data.getGitResourceInstallationUrl.url,
-          "auth with git"
-        );
-      },
-    }
-  );
-
-  const handleSelectRepoDialogOpen = useCallback(() => {
+  const openSelectRepoDialog = useCallback(() => {
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAddProviderClick = useCallback(
-    (provider: models.EnumGitProvider) => {
-      trackEvent({
-        eventName: AnalyticsEventNames.AddGitProviderClick,
-        provider: provider,
-      });
-      authWithGit({
-        variables: {
-          gitProvider: provider,
-        },
-      }).catch(console.error);
-    },
-    []
-  );
+  const [createNewRepoOpen, setCreateNewRepoOpen] = useState<boolean>(false);
+  const openCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(true);
+  }, []);
+  const closeCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(false);
+  }, []);
 
-  triggerOnDone = () => {
-    onDone();
-  };
-  triggerAuthFailed = () => {
-    setPopupFailed(true);
-  };
-  const errorMessage = formatError(error);
+  const [popupFailed, setPopupFailed] = useState(false);
+  const { trackEvent } = useTracking();
+
+  const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
+    useState(false);
+  const openSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(true);
+  }, []);
+  const closeSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(false);
+  }, []);
 
   const [connectGitRepository, { error: errorUpdate }] = useMutation(
     CONNECT_GIT_REPOSITORY
@@ -116,9 +95,10 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           gitProvider: gitOrganization.provider,
           public: data.public,
           resourceId: resource.id,
+          groupName: data.groupName,
         },
         onCompleted() {
-          setCreateNewRepoOpen(false);
+          closeCreateNewRepo();
         },
       }).catch(console.error);
       trackEvent({
@@ -135,6 +115,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           name: data.repositoryName,
           gitOrganizationId: data.gitOrganizationId,
           resourceId: resource.id,
+          groupName: data.groupName,
         },
       }).catch(console.error);
       trackEvent({
@@ -165,45 +146,54 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
             setPopupFailed(false);
           }}
           onGitCreateRepository={handleRepoCreated}
-          onGitCreateRepositoryClose={() => {
-            setCreateNewRepoOpen(false);
-          }}
+          onGitCreateRepositoryClose={closeCreateNewRepo}
           repoCreated={{
             isRepoCreateLoading: createRepoLoading,
             RepoCreatedError: createRepoError,
           }}
+          openCreateNewRepo={openCreateNewRepo}
+          setSelectRepoOpen={setSelectRepoOpen}
         />
+      )}
+      {isSelectOrganizationDialogOpen && (
+        <Dialog
+          title="Select Git Provider"
+          className="git-organization-dialog"
+          isOpen={isSelectOrganizationDialogOpen}
+          onDismiss={closeSelectOrganizationDialog}
+        >
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+            onProviderSelect={closeSelectOrganizationDialog}
+          />
+        </Dialog>
       )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <NewConnection
-            provider={gitOrganization.provider}
-            onSyncNewGitOrganizationClick={handleAddProviderClick}
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
           />
         ) : (
-          <ExistingConnectionsMenu
-            gitOrganizations={gitOrganizations}
-            onSelectGitOrganization={(organization) => {
-              setGitOrganization(organization);
-            }}
-            selectedGitOrganization={gitOrganization}
-            onAddGitOrganization={handleAddProviderClick}
-          />
+          <>
+            <ExistingConnectionsMenu
+              gitOrganizations={gitOrganizations}
+              onSelectGitOrganization={setGitOrganization}
+              selectedGitOrganization={gitOrganization}
+              onAddGitOrganization={openSelectOrganizationDialog}
+            />
+
+            <RepositoryActions
+              onCreateRepository={openCreateNewRepo}
+              onSelectRepository={openSelectRepoDialog}
+              currentResourceWithGitRepository={resource}
+              selectedGitOrganization={gitOrganization}
+            />
+          </>
         )}
-
-        <RepositoryActions
-          onCreateRepository={() => {
-            setCreateNewRepoOpen(true);
-          }}
-          onSelectRepository={handleSelectRepoDialogOpen}
-          currentResourceWithGitRepository={resource}
-          selectedGitOrganization={gitOrganization}
-        />
-
         <GitSyncNotes />
       </Panel>
-
-      <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
 }
@@ -217,6 +207,7 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
     $resourceId: String!
     $name: String!
     $public: Boolean!
+    $groupName: String
   ) {
     createGitRepository(
       data: {
@@ -226,53 +217,14 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         resourceId: $resourceId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
+        groupName: $groupName
       }
     ) {
       id
       gitRepository {
         id
+        groupName
       }
     }
   }
 `;
-
-const START_AUTH_APP_WITH_GITHUB = gql`
-  mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
-    getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
-      url
-    }
-  }
-`;
-
-const receiveMessage = (event: any) => {
-  const { data } = event;
-  if (data.completed) {
-    triggerOnDone();
-  }
-};
-
-let windowObjectReference: any = null;
-
-const openSignInWindow = (url: string, name: string) => {
-  // remove any existing event listeners
-  window.removeEventListener("message", receiveMessage);
-
-  const width = 600;
-  const height = 700;
-
-  const left = (window.screen.width - width) / 2;
-  const top = 100;
-
-  // window features
-  const strWindowFeatures = `toolbar=no, menubar=no, width=${width}, height=${height}, top=${top}, left=${left}`;
-
-  windowObjectReference = window.open(url, name, strWindowFeatures);
-  if (windowObjectReference) {
-    windowObjectReference.focus();
-  } else {
-    triggerAuthFailed();
-  }
-
-  // add the listener for receiving a message from the popup
-  window.addEventListener("message", (event) => receiveMessage(event), false);
-};

@@ -2,6 +2,7 @@ import { CleanOptions, ResetMode, simpleGit, SimpleGit } from "simple-git";
 import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
+import { existsSync } from "node:fs";
 
 export class GitCli {
   private git: SimpleGit;
@@ -16,6 +17,7 @@ export class GitCli {
       config: [
         `user.name=${this.gitAuthorUserName}`,
         `user.email=${this.gitAuthorUserEmail}`,
+        `push.autoSetupRemote=true`,
       ],
     });
   }
@@ -37,8 +39,16 @@ export class GitCli {
     ]);
   }
 
-  async checkout(branchName: string) {
-    await this.git.checkout(branchName);
+  /**
+   * Checkout to branch if exists, otherwise create new branch
+   * @param branchName name of the branch to checkout
+   */
+  async checkout(branchName: string): Promise<void> {
+    if (!(await this.git.branch()).all.includes(branchName)) {
+      await this.git.checkoutLocalBranch(branchName);
+    } else {
+      await this.git.checkout(branchName);
+    }
   }
 
   async resetState() {
@@ -70,7 +80,11 @@ export class GitCli {
           return filePath;
         }
 
-        if (!file.skipIfExists) {
+        if (!existsSync(filePath)) {
+          await mkdir(fileParentDir, { recursive: true });
+          await writeFile(filePath, file.content ?? "");
+          return filePath;
+        } else if (!file.skipIfExists) {
           await mkdir(fileParentDir, { recursive: true });
           await writeFile(filePath, file.content ?? "");
           return filePath;

@@ -18,7 +18,7 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import { getGitRepositoryUrlForServiceWizard } from "../../util/get-git-repository-url-for-service-wizard";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import GitSyncNotes from "./GitSyncNotes";
 
 const CLASS_NAME = "service-configuration-git-settings";
@@ -51,11 +51,12 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
-  const gitRepositoryFullName = `${gitRepository?.gitOrganization?.name}/${gitRepository?.name}`;
-  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
-    gitProvider,
-    gitRepositoryFullName
-  );
+  const gitRepositoryUrl = getGitRepositoryDetails({
+    organization: gitRepository?.gitOrganization,
+    repositoryName: gitRepository?.name,
+    groupName: gitRepository?.groupName,
+  }).repositoryUrl;
+
   useEffect(() => {
     formik.setFieldValue("isOverrideGitRepository", isOverride);
   }, [formik.values]);

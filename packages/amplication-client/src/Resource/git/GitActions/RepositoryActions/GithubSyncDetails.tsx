@@ -9,7 +9,7 @@ import { formatError } from "../../../../util/error";
 import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resourcesQueries";
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
-import { getGitRepositoryUrlForServiceWizard } from "../../../../util/get-git-repository-url-for-service-wizard";
+import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 
 const CLASS_NAME = "git-repo-details";
 
@@ -35,28 +35,26 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
-  const gitProvider =
-    resourceWithRepository.gitRepository?.gitOrganization?.provider;
-  const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization?.name}/${resourceWithRepository.gitRepository?.name}`;
-  const gitRepositoryUrl = getGitRepositoryUrlForServiceWizard(
-    gitProvider,
-    gitRepositoryFullName
-  );
+  const gitRepositoryDetails = getGitRepositoryDetails({
+    organization: resourceWithRepository.gitRepository?.gitOrganization,
+    repositoryName: resourceWithRepository.gitRepository?.name,
+    groupName: resourceWithRepository?.gitRepository?.groupName,
+  });
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
         <div className={`${CLASS_NAME}__details`}>
           <GitRepoDetails
-            gitRepositoryFullName={gitRepositoryFullName}
+            gitRepositoryFullName={gitRepositoryDetails.repositoryFullName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
           <div>
             <a
-              href={gitRepositoryUrl}
+              href={gitRepositoryDetails.repositoryUrl}
               target="github_repo"
               className={className}
             >
-              {gitRepositoryUrl}
+              {gitRepositoryDetails.repositoryUrl}
             </a>
           </div>
         </div>

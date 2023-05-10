@@ -58,9 +58,14 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const lastBuild = resource.builds[0];
 
-  const gitRepo = gitRepository
-    ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
-    : undefined;
+  const provider = gitRepository?.gitOrganization?.provider;
+
+  const gitRepo =
+    gitRepository && provider === models.EnumGitProvider.Github
+      ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
+      : provider === models.EnumGitProvider.Bitbucket
+      ? `${gitRepository.groupName}/${gitRepository.name}`
+      : undefined;
 
   return (
     <>

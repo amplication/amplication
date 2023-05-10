@@ -111,6 +111,7 @@ export interface RemoteGitRepository {
   fullName: string | null;
   admin: boolean | null;
   defaultBranch: string;
+  groupName?: string | null;
 }
 
 export interface RemoteGitRepos {
@@ -148,7 +149,7 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface CreateRepositoryArgs {
@@ -156,12 +157,12 @@ export interface CreateRepositoryArgs {
   owner: string;
   repositoryName: string;
   isPrivateRepository: boolean;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface GetRepositoriesArgs {
   pagination: Pagination;
-  repositoryGroupName?: string;
+  groupName?: string;
 }
 
 export interface GetFileArgs {
@@ -257,8 +258,8 @@ export interface PaginatedGitGroup {
 
 export interface GitGroup {
   id: string;
+  displayName: string;
   name: string;
-  slug: string;
 }
 
 export interface GetBranchArgs {

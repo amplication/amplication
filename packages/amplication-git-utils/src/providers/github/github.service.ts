@@ -214,7 +214,7 @@ export class GithubService implements GitProvider {
     const baseRepository = {
       defaultBranch,
       fullName,
-      name,
+      name: repositoryName,
       private: isPrivate,
       url,
     };
@@ -484,7 +484,10 @@ export class GithubService implements GitProvider {
   }: CreateBranchArgs): Promise<Branch> {
     let baseSha = pointingSha;
     if (!baseSha) {
-      const repository = await this.getRepository({ owner, repositoryName });
+      const repository = await this.getRepository({
+        owner,
+        repositoryName,
+      });
       const { defaultBranch } = repository;
 
       const refs = await this.octokit.rest.git.getRef({

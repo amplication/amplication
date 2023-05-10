@@ -21,6 +21,7 @@ export type GitOrganizationFromGitRepository = {
   name: string;
   type: EnumGitOrganizationType;
   provider: EnumGitProvider;
+  useGroupingForRepositories: boolean;
 };
 
 const SyncWithGithubPage: React.FC = () => {
@@ -87,11 +88,13 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
       gitRepository {
         id
         name
+        groupName
         gitOrganization {
           id
           name
           type
           provider
+          useGroupingForRepositories
         }
       }
     }

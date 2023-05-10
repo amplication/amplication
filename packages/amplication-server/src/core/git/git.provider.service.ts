@@ -23,6 +23,7 @@ import {
   isGitHubProviderOrganizationProperties,
   isOAuthProviderOrganizationProperties,
   GetRepositoriesArgs,
+  CreateRepositoryArgs,
 } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
@@ -47,6 +48,8 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { User } from "../../models";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/billing.types";
 
 @Injectable()
 export class GitProviderService {
@@ -58,7 +61,8 @@ export class GitProviderService {
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly billingService: BillingService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -160,7 +164,7 @@ export class GitProviderService {
         page: args.page,
         perPage: args.perPage,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
     };
 
     const gitClientService = await this.createGitClient(organization);
@@ -176,20 +180,20 @@ export class GitProviderService {
       },
     });
 
-    if (organization.useGroupingForRepositories && !args.repositoryGroupName) {
+    if (organization.useGroupingForRepositories && !args.groupName) {
       throw new ValidationError(
-        `${organization.provider} requires a group to create a new repository. repositoryGroupName is missing`
+        `${organization.provider} requires a group to create a new repository. groupName is missing`
       );
     }
 
-    const repository = {
+    const repository: CreateRepositoryArgs = {
       repositoryName: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -207,7 +211,7 @@ export class GitProviderService {
 
     return await this.connectResourceGitRepository({
       name: remoteRepository.name,
-      groupName: args.repositoryGroupName,
+      groupName: args.groupName,
       gitOrganizationId: args.gitOrganizationId,
       resourceId: args.resourceId,
     });
@@ -221,14 +225,14 @@ export class GitProviderService {
         id: args.gitOrganizationId,
       },
     });
-    const repository = {
+    const repository: CreateRepositoryArgs = {
       repositoryName: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
         useGroupingForRepositories: organization.useGroupingForRepositories,
       },
-      repositoryGroupName: args.repositoryGroupName,
+      groupName: args.groupName,
       owner: organization.name,
       isPrivateRepository: args.public,
     };
@@ -577,6 +581,7 @@ export class GitProviderService {
 
     this.logger.error(
       "getGitProviderProperties failed to detect provider organization properties",
+      null,
       {
         className: GitProviderService.name,
         provider,
@@ -593,6 +598,17 @@ export class GitProviderService {
     currentUser: User
   ): Promise<GitOrganization> {
     const { code, gitProvider, workspaceId } = args.data;
+
+    const bitbucketEntitlement = this.billingService.isBillingEnabled
+      ? await this.billingService.getBooleanEntitlement(
+          workspaceId,
+          BillingFeature.Bitbucket
+        )
+      : false;
+    if (!bitbucketEntitlement)
+      throw new AmplicationError(
+        "In order to connect Bitbucket service should upgrade its plan"
+      );
 
     const gitClientService = await this.createGitClientWithoutProperties(
       gitProvider
@@ -630,7 +646,7 @@ export class GitProviderService {
         provider: gitProvider,
         installationId: currentUserData.uuid,
         name: currentUserData.username,
-        type: EnumGitOrganizationType.User,
+        type: EnumGitOrganizationType.Organization,
         useGroupingForRepositories: currentUserData.useGroupingForRepositories,
         workspace: {
           connect: {
@@ -677,7 +693,7 @@ export class GitProviderService {
         },
       });
     } else {
-      this.logger.error("Failed to delete git provider integration", {
+      this.logger.error("Failed to delete git provider integration", null, {
         organization,
       });
       throw new AmplicationError("Failed to delete git provider integration");

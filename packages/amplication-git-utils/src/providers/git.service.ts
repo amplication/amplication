@@ -140,7 +140,7 @@ export class GitClientService {
     const { defaultBranch } = await this.provider.getRepository({
       owner,
       repositoryName,
-      repositoryGroupName,
+      groupName: repositoryGroupName,
     });
 
     const haveFirstCommitInDefaultBranch =
@@ -308,7 +308,6 @@ export class GitClientService {
         issueNumber: pullRequest.number,
         owner,
         repositoryName,
-
         repositoryGroupName,
       },
       data: { body: pullRequestBody },
