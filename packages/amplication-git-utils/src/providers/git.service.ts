@@ -139,7 +139,7 @@ export class GitClientService {
 
     const { defaultBranch } = await this.provider.getRepository({
       owner,
-      name: repositoryName,
+      repositoryName,
       groupName: repositoryGroupName,
     });
 

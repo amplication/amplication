@@ -198,16 +198,16 @@ export class GithubService implements GitProvider {
   async getRepository(
     getRepositoriesArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { owner, name } = getRepositoriesArgs;
+    const { owner, repositoryName } = getRepositoriesArgs;
     const { data } = await this.octokit.rest.repos.get({
       owner,
-      repo: name,
+      repo: repositoryName,
     });
     const {
       permissions,
       url,
       private: isPrivate,
-      name: repositoryName,
+      name,
       full_name: fullName,
       default_branch: defaultBranch,
     } = data;
@@ -244,7 +244,7 @@ export class GithubService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    const { gitOrganization, owner, name, isPrivateRepository } =
+    const { gitOrganization, owner, repositoryName, isPrivateRepository } =
       createRepositoryArgs;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
@@ -252,14 +252,14 @@ export class GithubService implements GitProvider {
     }
 
     const exists: boolean = await this.isRepositoryInOrganizationRepositories(
-      name
+      repositoryName
     );
     if (exists) {
       return null;
     }
 
     const { data: repo } = await this.octokit.rest.repos.createInOrg({
-      name,
+      name: repositoryName,
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       auto_init: true,
@@ -486,7 +486,7 @@ export class GithubService implements GitProvider {
     if (!baseSha) {
       const repository = await this.getRepository({
         owner,
-        name: repositoryName,
+        repositoryName,
       });
       const { defaultBranch } = repository;
 

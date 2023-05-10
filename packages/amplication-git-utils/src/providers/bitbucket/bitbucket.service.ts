@@ -189,7 +189,7 @@ export class BitBucketService implements GitProvider {
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { groupName, name } = getRepositoryArgs;
+    const { groupName, repositoryName } = getRepositoryArgs;
 
     if (!groupName) {
       this.logger.error("Missing groupName");
@@ -198,20 +198,14 @@ export class BitBucketService implements GitProvider {
 
     const repository = await repositoryRequest(
       groupName,
-      name,
+      repositoryName,
       this.auth.accessToken
     );
-    const {
-      links,
-      name: repositoryName,
-      is_private,
-      full_name,
-      mainbranch,
-      accessLevel,
-    } = repository;
+    const { links, name, is_private, full_name, mainbranch, accessLevel } =
+      repository;
 
     return {
-      name: repositoryName,
+      name,
       url: links.html.href,
       private: is_private,
       fullName: full_name,
@@ -269,7 +263,7 @@ export class BitBucketService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { groupName, name, isPrivateRepository, gitOrganization } =
+    const { groupName, repositoryName, isPrivateRepository, gitOrganization } =
       createRepositoryArgs;
 
     if (!groupName) {
@@ -278,12 +272,12 @@ export class BitBucketService implements GitProvider {
     }
 
     const newRepository = await repositoryCreateRequest(
-      name,
       groupName,
+      repositoryName,
       {
         is_private: isPrivateRepository,
-        name,
-        full_name: `${gitOrganization.name}/${name}`,
+        name: repositoryName,
+        full_name: `${gitOrganization.name}/${repositoryName}`,
       },
       this.auth.accessToken
     );
@@ -319,7 +313,7 @@ export class BitBucketService implements GitProvider {
       // Default to
       const repo = await this.getRepository({
         owner,
-        name: repositoryName,
+        repositoryName,
         groupName: repositoryGroupName,
       });
       gitReference = repo.defaultBranch;

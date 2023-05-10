@@ -148,14 +148,14 @@ export interface GitResourceMeta {
 
 export interface GetRepositoryArgs {
   owner: string;
-  name: string;
+  repositoryName: string;
   groupName?: string;
 }
 
 export interface CreateRepositoryArgs {
   gitOrganization: RemoteGitOrganization;
   owner: string;
-  name: string;
+  repositoryName: string;
   isPrivateRepository: boolean;
   groupName?: string;
 }
