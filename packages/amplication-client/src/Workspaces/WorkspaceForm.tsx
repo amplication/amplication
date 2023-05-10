@@ -75,6 +75,7 @@ function WorkspaceForm() {
     >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
+        <div className={`${CLASS_NAME}__separator`} />
         {currentWorkspace && (
           <Formik
             initialValues={currentWorkspace}
