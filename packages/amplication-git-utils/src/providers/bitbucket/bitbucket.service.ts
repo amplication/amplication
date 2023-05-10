@@ -375,8 +375,8 @@ export class BitBucketService implements GitProvider {
     const { repositoryGroupName, repositoryName, branchName } =
       getPullRequestArgs;
     if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
     const pullRequest = await getPullRequestByBranchNameRequest(
       repositoryGroupName,
@@ -407,8 +407,8 @@ export class BitBucketService implements GitProvider {
       pullRequestBody,
     } = createPullRequestArgs;
     if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     const pullRequestData = {
@@ -442,8 +442,8 @@ export class BitBucketService implements GitProvider {
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
     const { repositoryGroupName, repositoryName, branchName } = args;
     if (!repositoryGroupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
+      this.logger.error("Missing repositoryGroupName");
+      throw new CustomError("Missing repositoryGroupName");
     }
 
     try {

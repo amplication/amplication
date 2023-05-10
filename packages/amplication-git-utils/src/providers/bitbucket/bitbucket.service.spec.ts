@@ -54,7 +54,7 @@ describe("bitbucket.service", () => {
         });
       } catch (e) {
         expect(e.message).toBe(
-          "Missing groupName. groupName is mandatory for BitBucket provider"
+          "Missing repositoryGroupName. repositoryGroupName is mandatory for BitBucket provider"
         );
       }
     });
@@ -167,7 +167,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -284,7 +284,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
     it("returns the clone url", async () => {
@@ -310,7 +310,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -446,7 +446,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -586,7 +586,7 @@ describe("bitbucket.service", () => {
           data: { body: "this is my comment for the pull request" },
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -679,7 +679,7 @@ describe("bitbucket.service", () => {
           repositoryName: "myrepo",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
@@ -873,7 +873,7 @@ describe("bitbucket.service", () => {
           pullRequestBody: "my pull request body",
         });
       } catch (e) {
-        expect(e.message).toBe("Missing groupName");
+        expect(e.message).toBe("Missing repositoryGroupName");
       }
     });
 
