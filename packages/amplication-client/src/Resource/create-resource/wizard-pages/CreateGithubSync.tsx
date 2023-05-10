@@ -28,10 +28,11 @@ const CreateGithubSync: React.FC<props> = ({
 
   const { gitRepository } = currentProjectConfiguration;
   const gitProvider = gitRepository?.gitOrganization?.provider;
-  const gitRepositoryUrl = getGitRepositoryDetails(
-    gitRepository?.gitOrganization,
-    gitRepository
-  ).repositoryUrl;
+  const gitRepositoryUrl = getGitRepositoryDetails({
+    organization: gitRepository?.gitOrganization,
+    repositoryName: gitRepository?.name,
+    groupName: gitRepository?.groupName,
+  }).repositoryUrl;
   const projectConfigGitRepository = {
     gitOrganizationId: gitRepository?.gitOrganizationId,
     repositoryName: gitRepository?.name,

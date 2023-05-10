@@ -51,10 +51,11 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
     ? "gitSettingsPanel"
     : "gitSettingsFromProject";
 
-  const gitRepositoryUrl = getGitRepositoryDetails(
-    gitRepository?.gitOrganization,
-    gitRepository
-  ).repositoryUrl;
+  const gitRepositoryUrl = getGitRepositoryDetails({
+    organization: gitRepository?.gitOrganization,
+    repositoryName: gitRepository?.name,
+    groupName: gitRepository?.groupName,
+  }).repositoryUrl;
 
   useEffect(() => {
     formik.setFieldValue("isOverrideGitRepository", isOverride);

@@ -182,10 +182,12 @@ const useResources = (
         )
       );
     setGitRepositoryUrl(
-      getGitRepositoryDetails(
-        projectConfigurationResource?.gitRepository?.gitOrganization,
-        projectConfigurationResource?.gitRepository
-      ).repositoryUrl
+      getGitRepositoryDetails({
+        organization:
+          projectConfigurationResource?.gitRepository?.gitOrganization,
+        repositoryName: projectConfigurationResource?.gitRepository?.name,
+        groupName: projectConfigurationResource?.gitRepository?.groupName,
+      }).repositoryUrl
     );
     setGitRepositoryOrganizationProvider(
       projectConfigurationResource?.gitRepository?.gitOrganization?.provider
@@ -214,10 +216,11 @@ const useResources = (
       )
     );
     setGitRepositoryUrl(
-      getGitRepositoryDetails(
-        resource?.gitRepository?.gitOrganization,
-        resource?.gitRepository
-      ).repositoryUrl
+      getGitRepositoryDetails({
+        organization: resource?.gitRepository?.gitOrganization,
+        repositoryName: resource?.gitRepository?.name,
+        groupName: resource?.gitRepository?.groupName,
+      }).repositoryUrl
     );
     setGitRepositoryOrganizationProvider(
       resource?.gitRepository?.gitOrganization?.provider

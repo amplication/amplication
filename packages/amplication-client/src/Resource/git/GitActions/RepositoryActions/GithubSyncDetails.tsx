@@ -35,10 +35,11 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
-  const gitRepositoryDetails = getGitRepositoryDetails(
-    resourceWithRepository.gitRepository?.gitOrganization,
-    resourceWithRepository?.gitRepository
-  );
+  const gitRepositoryDetails = getGitRepositoryDetails({
+    organization: resourceWithRepository.gitRepository?.gitOrganization,
+    repositoryName: resourceWithRepository.gitRepository?.name,
+    groupName: resourceWithRepository?.gitRepository?.groupName,
+  });
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
