@@ -7,5 +7,5 @@ export enum BillingFeature {
   CodePushToGit = "feature-code-push-to-git",
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
-  BitbucketProvider = "feature-bitbucket",
+  Bitbucket = "feature-bitbucket",
 }
