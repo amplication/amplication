@@ -23,6 +23,7 @@ import {
   isGitHubProviderOrganizationProperties,
   isOAuthProviderOrganizationProperties,
   GetRepositoriesArgs,
+  CreateRepositoryArgs,
 } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
@@ -185,8 +186,8 @@ export class GitProviderService {
       );
     }
 
-    const repository = {
-      name: args.name,
+    const repository: CreateRepositoryArgs = {
+      repositoryName: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
@@ -224,8 +225,8 @@ export class GitProviderService {
         id: args.gitOrganizationId,
       },
     });
-    const repository = {
-      name: args.name,
+    const repository: CreateRepositoryArgs = {
+      repositoryName: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
