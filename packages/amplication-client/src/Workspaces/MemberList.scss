@@ -10,6 +10,12 @@ $empty-state-image-size: 120px;
       width: var(--form-field-long);
     }
   }
+  &__separator {
+    margin: var(--default-spacing-small) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
   &__title {
     @include body2;
     margin-bottom: var(--large-spacing);

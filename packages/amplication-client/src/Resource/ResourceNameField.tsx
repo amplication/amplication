@@ -36,6 +36,7 @@ const FORM_SCHEMA = {
 const ResourceNameField = ({ currentResource, resourceId }: Props) => {
   const [isEditing, setIsEditing] = useState(false);
   const [showTick, setShowTick] = useState(false);
+  const [hovered, setHovered] = useState(false);
 
   const { trackEvent } = useTracking();
   const [updateResource] = useMutation<TData>(UPDATE_RESOURCE, {
@@ -50,6 +51,7 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
     if (isValid) {
       setIsEditing(false);
       setShowTick(false);
+      setHovered(false);
     }
   };
 
@@ -75,6 +77,13 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
     [updateResource, resourceId, trackEvent]
   );
 
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
   return (
     <div className={`${CLASS_NAME}__input__container`}>
       <Formik
@@ -120,12 +129,21 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
                   )}
                 </Form>
               ) : (
-                <span
-                  className={`${CLASS_NAME}__text`}
-                  onClick={() => setIsEditing(true)}
+                <div
+                  className={`${CLASS_NAME}__edit`}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  {currentResource?.name}
-                </span>
+                  <span className={`${CLASS_NAME}__text`}>
+                    {currentResource?.name}
+                  </span>
+                  <div
+                    onClick={() => setIsEditing(true)}
+                    className={`${CLASS_NAME}__edit_icon`}
+                  >
+                    {hovered && <Icon icon="edit_2" size="medium" />}
+                  </div>
+                </div>
               )}
             </div>
           );
