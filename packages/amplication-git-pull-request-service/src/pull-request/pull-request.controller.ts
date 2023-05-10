@@ -36,13 +36,16 @@ export class PullRequestController {
     const offset = context.getMessage().offset;
     const topic = context.getTopic();
     const partition = context.getPartition();
+    const logger = this.logger.child({
+      resourceId: validArgs.resourceId,
+      buildId: validArgs.newBuildId,
+    });
 
-    this.logger.info(`Got a new generate pull request item from queue.`, {
+    logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
       offset: context.getMessage().offset,
       class: this.constructor.name,
-      args: validArgs,
     });
 
     try {
@@ -50,12 +53,11 @@ export class PullRequestController {
         validArgs
       );
 
-      this.logger.info(`Finish process, committing`, {
+      logger.info(`Finish process, committing`, {
         topic,
         partition,
         offset,
         class: this.constructor.name,
-        buildId: validArgs.newBuildId,
       });
 
       const response = { url: pullRequest, buildId: validArgs.newBuildId };
@@ -65,10 +67,9 @@ export class PullRequestController {
         JSON.stringify(response)
       );
     } catch (error) {
-      this.logger.error(error.message, error, {
+      logger.error(error.message, error, {
         class: PullRequestController.name,
         offset,
-        buildId: validArgs.newBuildId,
       });
 
       const response = {

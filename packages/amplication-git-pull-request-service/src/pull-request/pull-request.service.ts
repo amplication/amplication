@@ -66,7 +66,8 @@ export class PullRequestService {
     commit,
     gitResourceMeta,
     pullRequestMode,
-  }: CreatePullRequestArgs): Promise<string> {
+  }: CreatePrRequest.Value): Promise<string> {
+    const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
     const head =
       commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
@@ -78,9 +79,11 @@ export class PullRequestService {
       newBuildId
     );
 
-    this.logger.info(
+    logger.info(
       "The changed files have returned from the diff service listOfChangedFiles are",
-      { lengthOfFile: changedFiles.length }
+      {
+        lengthOfFile: changedFiles.length,
+      }
     );
     const gitClientService = await new GitClientService().create(
       {
@@ -88,7 +91,7 @@ export class PullRequestService {
         providerOrganizationProperties: { installationId },
       },
       this.gitProvidersConfiguration,
-      this.logger
+      logger
     );
     const prUrl = await gitClientService.createPullRequest({
       owner,
@@ -101,7 +104,7 @@ export class PullRequestService {
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
     });
-    this.logger.info("Opened a new pull request", { prUrl });
+    logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
