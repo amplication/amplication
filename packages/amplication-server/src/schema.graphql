@@ -756,6 +756,7 @@ type ServiceSettings implements IBlock {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
+  dbType: String
 }
 
 interface IBlock {
@@ -1199,6 +1200,7 @@ input ResourceCreateInput {
   project: WhereParentIdInput!
   serviceSettings: ServiceSettingsUpdateInput
   gitRepository: ConnectGitRepositoryInput
+  dbType: String
 }
 
 input ServiceSettingsUpdateInput {

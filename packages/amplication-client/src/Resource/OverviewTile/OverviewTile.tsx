@@ -2,11 +2,7 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
 import { useQuery } from "@apollo/client";
-import {
-  ServiceSettings,
-  EnumAuthProviderType,
-  EnumDbType,
-} from "../../models";
+import { ServiceSettings, EnumAuthProviderType } from "../../models";
 import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
 
 type Props = {
@@ -17,6 +13,12 @@ const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
   [EnumAuthProviderType.Http]: "HTTP",
   [EnumAuthProviderType.Jwt]: "Passport JWT",
 };
+
+export enum EnumDbType {
+  mongo = "mongo",
+  postgres = "postgres",
+  mysql = "mysql",
+}
 
 const DbTypeLabels: { [k in EnumDbType]: string } = {
   [EnumDbType.mongo]: "MongoDB",

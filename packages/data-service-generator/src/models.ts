@@ -1747,6 +1747,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
+  dbType?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String'];
@@ -1879,6 +1880,7 @@ export type ServiceSettings = IBlock & {
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
+  dbType?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];

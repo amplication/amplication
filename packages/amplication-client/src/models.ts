@@ -592,12 +592,6 @@ export enum EnumAuthProviderType {
   Jwt = 'Jwt'
 }
 
-export enum EnumDbType {
-  mongo = 'mongo',
-  postgres = 'postgres',
-  mysql = 'mysql'
-}
-
 export enum EnumBlockType {
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
@@ -1753,6 +1747,7 @@ export type ResourceEntitiesArgs = {
 };
 
 export type ResourceCreateInput = {
+  dbType?: InputMaybe<Scalars['String']>;
   description: Scalars['String'];
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String'];
@@ -1885,6 +1880,7 @@ export type ServiceSettings = IBlock & {
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
+  dbType?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   id: Scalars['String'];
@@ -1897,7 +1893,6 @@ export type ServiceSettings = IBlock & {
   serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime'];
   versionNumber: Scalars['Float'];
-  dbType?: Scalars['String'];
 };
 
 export type ServiceSettingsUpdateInput = {
