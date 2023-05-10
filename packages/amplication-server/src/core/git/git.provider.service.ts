@@ -186,7 +186,7 @@ export class GitProviderService {
     }
 
     const repository = {
-      repositoryName: args.name,
+      name: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
@@ -225,7 +225,7 @@ export class GitProviderService {
       },
     });
     const repository = {
-      repositoryName: args.name,
+      name: args.name,
       gitOrganization: {
         name: organization.name,
         type: EnumGitOrganizationType[organization.type],
