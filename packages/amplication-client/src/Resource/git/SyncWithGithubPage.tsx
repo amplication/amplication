@@ -35,7 +35,7 @@ const SyncWithGithubPage: React.FC = () => {
     },
     skip: !currentResource?.id,
   });
-  console.log("data", data);
+
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
     refetch();
