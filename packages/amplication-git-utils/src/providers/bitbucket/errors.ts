@@ -6,8 +6,9 @@ export class BitbucketGenericError extends Error {
   }
 }
 export class BitbucketNotFoundError extends BitbucketGenericError {
-  constructor() {
+  constructor(options: Record<string, unknown> = {}) {
     super("404 Not found");
+    Object.assign(this, { ...options });
     Object.setPrototypeOf(this, BitbucketNotFoundError.prototype);
   }
 }

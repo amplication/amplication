@@ -478,22 +478,29 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit> {
-    const { groupName, repositoryName, branchName } = args;
-    if (!groupName) {
-      this.logger.error("Missing groupName");
-      throw new CustomError("Missing groupName");
-    }
-    const firstCommit = await getFirstCommitRequest(
-      groupName,
-      repositoryName,
-      branchName,
-      this.auth.accessToken
-    );
+  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
+    try {
+      const { groupName, repositoryName, branchName } = args;
+      if (!groupName) {
+        this.logger.error("Missing groupName");
+        throw new CustomError("Missing groupName");
+      }
+      const firstCommit = await getFirstCommitRequest(
+        groupName,
+        repositoryName,
+        branchName,
+        this.auth.accessToken
+      );
 
-    return {
-      sha: firstCommit.hash,
-    };
+      return {
+        sha: firstCommit.hash,
+      };
+    } catch (error) {
+      if (error instanceof BitbucketNotFoundError) {
+        return null;
+      }
+      throw error;
+    }
   }
 
   getCloneUrl(args: CloneUrlArgs): string {
