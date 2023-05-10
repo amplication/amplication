@@ -601,7 +601,7 @@ export class GitProviderService {
     const bitbucketEntitlement = this.billingService.isBillingEnabled
       ? await this.billingService.getBooleanEntitlement(
           workspaceId,
-          BillingFeature.BitbucketProvider
+          BillingFeature.Bitbucket
         )
       : false;
     if (!bitbucketEntitlement)
