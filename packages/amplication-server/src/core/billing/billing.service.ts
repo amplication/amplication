@@ -294,7 +294,7 @@ export class BillingService {
         );
 
         if (!servicesEntitlement.hasAccess) {
-          throw new ValidationError(
+          this.logger.info(
             `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
           );
         }
@@ -314,7 +314,7 @@ export class BillingService {
 
           const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
 
-          throw new ValidationError(
+          this.logger.info(
             `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
           );
         }
