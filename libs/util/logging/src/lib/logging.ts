@@ -35,8 +35,8 @@ export class Logger implements ILogger {
   public getLoggerFormat(): Format {
     const developmentFormats: Format[] = [
       format.timestamp(),
-      format.splat(),
       format.errors({ stack: true }),
+      format.splat(),
       customFormat(),
     ];
     if (this.options.additionalDevelopmentFormats) {
