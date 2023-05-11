@@ -1,87 +1,66 @@
-# Getting started with your app
+<p align="right">
+  <a href="https://amplication.com" target="_blank">
+    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
+  </a>
+</p>
 
-## Available Scripts
+# Introduction
 
-In the `server` subdirectory, you can run:
+This service was generated with Amplication. The server-side of the generated project. This component provides the different backend services - i.e., REST API, GraphQL API, authentication, authorization, logging, data validation and the connection to the database. Additional information about the server component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site.
 
-### `npm start`
+# Getting started
 
-Runs the app in development mode.
-By default, it is accessible at http://localhost:3000
+## Step 1: Configuration
 
-### `npm test`
+Configuration for the server component can be provided through the use of environment variables. These can be passed to the application via the use of the `.env` file in the base directory of the generated service. Below a table can be found which show the different variables that can be passed - these are the variables which exist by default, through the use of plugins additional integrations could require additional values. These values are provided default values after generation, change them to the desired values.
 
-Runs tests.
+| Variable             | Description                                  | Value                                                               |
+| -------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
+| BCRYPT_SALT          | the string used for hashing                  | [random-string]                                                     |
+| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp_[service-identifier]                                            |
+| PORT                 | the port on which to run the server          | 3000                                                                |
+| DB_URL               | the connection url for the database          | [db-provider]://[username]:[password]@localhost:[db-port]/[db-name] |
+| DB_PORT              | the port used by the database instance       | [db-provider-port]                                                  |
+| DB_USER              | the username used to connect to the database | [username]                                                          |
+| DB_PASSWORD          | the password used to connect to the database | [password]                                                          |
+| DB_NAME              | the name of the database                     | [service-name] / [project-name]                                     |
+| JWT_SECRET_KEY       | the secret used to sign the json-web token   | [secret]                                                            |
+| JWT_EXPIRATION       | the expiration time for the json-web token   | 2d                                                                  |
 
-### `npm run build`
+> **Note**
+> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
 
-Builds the app for production in the `dist` folder.
+## Step 2.1: Scripts - pre-requisites
 
-Your app is ready to be deployed!
+After configuration of the server the next step would be to run the application. Before running the server side of the component, make sure that the different pre-requisites are met - i.e., node.js [^16.x], npm, docker. After the setup of the pre-requisites the server component can be started.
 
-## Environment Variables:
-
-| Environment          | Description                              | Value                                                      |
-| -------------------- | ---------------------------------------- | ---------------------------------------------------------- |
-| DEBUG_MODE           | Debug level                              | 1                                                          |
-| DB_URL               | Local database connection URL            | db-provider://admin:admin@localhost:${DB_PORT}/\${DB_NAME} |
-| DB_PORT              | Local database port                      |                                                            |
-| DB_USER              | Local database username                  | admin                                                      |
-| DB_PASSWORD          | Local database password                  | admin                                                      |
-| COMPOSE_PROJECT_NAME | Docker Compose project name              | amp\_{applicationId}                                       |
-| SERVER_PORT          | The port that the server is listening to | 3000                                                       |
-| JWT_SECRET_KEY       | JWT secret                               | Change_ME!!!                                               |
-| JWT_EXPIRATION       | JWT expiration in days                   | 2d                                                         |
-
-\*db-provider - the prisma DB provider (for example: for postgres is postgresql and for MySQL is mysql)
-
-## Getting Started - Local Development
-
-### Prerequisites
-
-Make sure you have Node.js 16.x, npm, and Docker installed.
-
-### Install dependencies
-
-In the `server` subdirectory, run:
-
-```console
-cd server
-npm install
+```sh
+# installation of the dependencies
+$ npm install
+```
+```sh
+# generate the prisma client
+$ npm run prisma:generate
+```
+```sh
+# start the database where the server component will connect to
+$ npm run docker:db
+```
+```sh
+# initialize the database
+$ npm run db:init
 ```
 
-### Generate Prisma client
+## Step 2.2: Scripts - local development
 
-```console
-npm run prisma:generate
+```shell
+# start the server component
+$ npm run install
 ```
 
-### Start database using Docker
+## Step 2.2: Scripts - container based development
 
-```console
-npm run docker:db
+```shell
+# start the server component as a docker container
+$ npm run compose:up
 ```
-
-### Initialize the database
-
-```console
-npm run db:init
-```
-
-### Start the server
-
-```console
-npm start
-```
-
-## Getting Started - Docker Compose
-
-In the `server` subdirectory, run:
-
-```console
-npm run compose:up
-```
-
-## Learn more
-
-You can learn more in the [Amplication documentation](https://docs.amplication.com/guides/getting-started).
