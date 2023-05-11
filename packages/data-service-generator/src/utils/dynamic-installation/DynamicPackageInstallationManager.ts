@@ -29,9 +29,7 @@ export class DynamicPackageInstallationManager {
         this.logger
       );
 
-      if (settings?.local) {
-        await tarball.copySync({ folderPath: settings.destPath });
-      } else {
+      if (!settings?.local) {
         await tarball.download();
         onAfterInstall && (await onAfterInstall(plugin));
       }
