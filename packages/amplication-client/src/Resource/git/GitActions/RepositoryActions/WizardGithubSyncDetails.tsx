@@ -5,7 +5,7 @@ import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 
-const CLASS_NAME = "github-repo-details";
+const CLASS_NAME = "git-repo-details";
 
 type Props = {
   repositorySelected: GitRepositorySelected;

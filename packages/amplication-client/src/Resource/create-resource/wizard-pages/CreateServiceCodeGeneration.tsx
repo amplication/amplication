@@ -110,7 +110,7 @@ const CreateServiceCodeGeneration: React.FC<
     }).catch(console.error);
   }, [commit, currentProject.id]);
 
-  const githubUrl = useMemo(() => {
+  const gitUrl = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return null;
     }
@@ -196,11 +196,11 @@ const CreateServiceCodeGeneration: React.FC<
                 <div
                   className={`${className}__status__completed__description__link`}
                 >
-                  {githubUrl}
+                  {gitUrl}
                 </div>
                 <div />
               </div>
-              <a href={githubUrl} target="docs">
+              <a href={gitUrl} target="docs">
                 <Button
                   type="button"
                   buttonStyle={EnumButtonStyle.Clear}

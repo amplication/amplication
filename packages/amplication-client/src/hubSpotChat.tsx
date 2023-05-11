@@ -10,7 +10,6 @@ export const onConversationsAPIReady = () => {
     console.log(
       `Conversation with id ${payload.conversation.conversationId} has been closed!`
     );
-    window.HubSpotConversations.widget.remove();
   });
   const handleEvent = (eventPayload) => {
     console.log(eventPayload);

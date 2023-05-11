@@ -1,2 +1,2 @@
-export * from "./NewConnection";
+export * from "./GitProviderConnection";
 export * from "./ExistingConnectionsMenu";

@@ -21,6 +21,7 @@ import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscript
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
+import { User } from "../../models";
 
 @Injectable()
 export class BillingService {
@@ -278,7 +279,8 @@ export class BillingService {
 
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace(
-    workspaceId: string
+    workspaceId: string,
+    currentUser: User
   ): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -294,9 +296,18 @@ export class BillingService {
         );
 
         if (!servicesEntitlement.hasAccess) {
-          throw new ValidationError(
-            `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-          );
+          const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
+
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -314,9 +325,18 @@ export class BillingService {
 
           const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
 
-          throw new ValidationError(
-            `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-          );
+          const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
+
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
       }
     }

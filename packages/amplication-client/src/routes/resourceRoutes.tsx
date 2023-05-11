@@ -110,7 +110,7 @@ const resourceRoutes = [
     ],
   },
   {
-    path: "/:workspace/:project/:resource/github",
+    path: "/:workspace/:project/:resource/git-sync",
     Component: lazy(() => import("../Resource/git/SyncWithGithubPage")),
     moduleName: "",
     routeTrackType: "",

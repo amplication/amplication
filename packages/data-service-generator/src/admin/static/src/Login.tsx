@@ -17,7 +17,7 @@ const Login = ({ theme }: any) => {
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
-      notify("Invalid email or password")
+      notify("Invalid username or password")
     );
   };
 
@@ -52,7 +52,7 @@ const Login = ({ theme }: any) => {
             <h2>Admin UI</h2>
             <div className={`${CLASS_NAME}__box__message`}>
               Sign in to a React-Admin client with ready-made forms for creating
-              and editing all the data models of your application.
+              and editing all the data models of your application
             </div>
             <form onSubmit={submit}>
               <label>
@@ -66,7 +66,7 @@ const Login = ({ theme }: any) => {
                 />
               </label>
               <label>
-                <span>password</span>
+                <span>Password</span>
 
                 <input
                   name="password"
