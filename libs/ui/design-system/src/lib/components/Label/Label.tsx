@@ -11,7 +11,10 @@ const CLASS_NAME = "amplication-label";
 
 export function Label({ text, ...props }: Props) {
   return (
-    <span {...props} className={`${CLASS_NAME}__${props.type || ""}`}>
+    <span
+      {...props}
+      className={`${CLASS_NAME}__${props.type || ""} ${props.className || ""}`}
+    >
       {text}
     </span>
   );

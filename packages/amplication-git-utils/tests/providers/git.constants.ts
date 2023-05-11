@@ -20,6 +20,7 @@ export const GIT_HUB_FILE: GitFile = {
 export const TEST_GIT_REMOTE_ORGANIZATION: RemoteGitOrganization = {
   name: "testGitRemoteOrganization",
   type: EnumGitOrganizationType.Organization,
+  useGroupingForRepositories: false,
 };
 
 export const TEST_GIT_REPOS: RemoteGitRepos = {
@@ -41,9 +42,11 @@ export const TEST_GIT_REPOS: RemoteGitRepos = {
       defaultBranch: "main",
     },
   ],
-  totalRepos: 2,
-  pageSize: 2,
-  currentPage: 1,
+  total: 2,
+  pagination: {
+    perPage: 2,
+    page: 1,
+  },
 };
 
 export const TEST_GIT_REPO: RemoteGitRepository = {

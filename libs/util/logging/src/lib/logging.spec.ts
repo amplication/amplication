@@ -7,6 +7,7 @@ jest.mock("winston", () => ({
     colorize: jest.fn().mockReturnValue("colorize"),
     errors: jest.fn().mockReturnValue("errors"),
     simple: jest.fn().mockReturnValue("simple"),
+    splat: jest.fn().mockReturnValue("splat"),
     json: jest.fn().mockReturnValue("json"),
     timestamp: jest.fn().mockReturnValue("timestamp"),
     combine: jest.fn().mockImplementation((...args) => args),

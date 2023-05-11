@@ -10,39 +10,46 @@ import {
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { Env } from "../env";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
-import { QueueService } from "./queue.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import {
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
 
 @Controller()
 export class PullRequestController {
   constructor(
     private readonly pullRequestService: PullRequestService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService,
+    private readonly producerService: KafkaProducerService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
   @EventPattern(KafkaTopics.CreatePrRequest)
   async generatePullRequest(
-    @Payload() message: CreatePullRequestArgs,
+    @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
   ) {
-    const validArgs = plainToInstance(CreatePullRequestArgs, message);
+    const validArgs = plainToInstance(CreatePrRequest.Value, message);
     await validateOrReject(validArgs);
 
     const offset = context.getMessage().offset;
     const topic = context.getTopic();
     const partition = context.getPartition();
+    const logger = this.logger.child({
+      resourceId: validArgs.resourceId,
+      buildId: validArgs.newBuildId,
+    });
 
-    this.logger.info(`Got a new generate pull request item from queue.`, {
+    logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
       offset: context.getMessage().offset,
       class: this.constructor.name,
-      args: validArgs,
     });
 
     try {
@@ -50,35 +57,41 @@ export class PullRequestController {
         validArgs
       );
 
-      this.logger.info(`Finish process, committing`, {
+      logger.info(`Finish process, committing`, {
         topic,
         partition,
         offset,
         class: this.constructor.name,
-        buildId: validArgs.newBuildId,
       });
 
-      const response = { url: pullRequest, buildId: validArgs.newBuildId };
-
-      this.queueService.emitMessage(
+      const successEvent: CreatePrSuccess.KafkaEvent = {
+        key: null,
+        value: {
+          url: pullRequest,
+          buildId: validArgs.newBuildId,
+        },
+      };
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrSuccess,
-        JSON.stringify(response)
+        successEvent
       );
     } catch (error) {
-      this.logger.error(error.message, error, {
+      logger.error(error.message, error, {
         class: PullRequestController.name,
         offset,
-        buildId: validArgs.newBuildId,
       });
 
-      const response = {
-        buildId: validArgs.newBuildId,
-        errorMessage: error.message,
+      const failureEvent: CreatePrFailure.KafkaEvent = {
+        key: null,
+        value: {
+          buildId: validArgs.newBuildId,
+          errorMessage: error.message,
+        },
       };
 
-      this.queueService.emitMessage(
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrFailure,
-        JSON.stringify(response)
+        failureEvent
       );
     }
   }

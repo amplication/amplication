@@ -5,7 +5,6 @@
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
   }
-  padding: var(--double-spacing);
 
   hr {
     border: none;
@@ -14,7 +13,15 @@
     margin-bottom: var(--double-spacing);
   }
 
+  &__separator {
+    margin: var(--medium-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+
   &__label {
+    margin-top: var(--medium-spacing);
     @include label;
   }
 }

@@ -64,13 +64,13 @@ type Query {
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
-  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
-  me: User!
-  userApiTokens: [ApiToken!]!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
+  me: User!
+  userApiTokens: [ApiToken!]!
 }
 
 type Account {
@@ -132,6 +132,7 @@ type GitRepository {
   gitOrganizationId: String!
   gitOrganization: GitOrganization!
   name: String!
+  groupName: String
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -144,6 +145,8 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
+
+  """Defines if a git organisation needs defined repository groups"""
   useGroupingForRepositories: Boolean!
 }
 
@@ -995,6 +998,67 @@ type PluginOrder implements IBlock {
   order: [PluginOrderItem!]!
 }
 
+"""Returns a paginated list of repository groups available to select."""
+type PaginatedGitGroup {
+  """Total number of groups"""
+  total: Float!
+
+  """Page number"""
+  page: Float!
+
+  """Number of groups per page"""
+  pageSize: Float!
+  groups: [GitGroup!]
+}
+
+"""Group of Repositories"""
+type GitGroup {
+  id: String!
+  displayName: String!
+  name: String!
+}
+
+input GitGroupInput {
+  organizationId: String!
+}
+
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  total: Float!
+  pagination: Pagination!
+}
+
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+  defaultBranch: String!
+  groupName: String
+}
+
+type Pagination {
+  page: Float!
+  perPage: Float!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+
+  """The number of items to return per page"""
+  perPage: Float! = 10
+
+  """The page number. One-based indexing"""
+  page: Float! = 1
+  groupName: String
+}
+
+input GitOrganizationWhereInput {
+  id: String
+}
+
 type ProjectConfigurationSettings implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -1021,53 +1085,6 @@ type ApiToken {
   token: String
   previewChars: String!
   lastAccessAt: DateTime!
-}
-
-type PaginatedGitGroup {
-  size: Float!
-  page: Float!
-  pagelen: Float!
-  next: String
-  previous: String
-  groups: [GitGroup!]
-}
-
-type GitGroup {
-  id: String!
-  name: String!
-  slug: String!
-}
-
-input GitGroupInput {
-  organizationId: String!
-}
-
-type RemoteGitRepos {
-  repos: [RemoteGitRepository!]!
-  totalRepos: Float!
-  currentPage: Float!
-  pageSize: Float!
-}
-
-type RemoteGitRepository {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-  defaultBranch: String!
-}
-
-input RemoteGitRepositoriesWhereUniqueInput {
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  limit: Float!
-  page: Float!
-  gitGroupName: String
-}
-
-input GitOrganizationWhereInput {
-  id: String
 }
 
 type Mutation {
@@ -1120,6 +1137,18 @@ type Mutation {
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
+  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
+
+  """Only for GitHub integrations"""
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
+  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1128,16 +1157,6 @@ type Mutation {
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  createGitRepository(data: CreateGitRepositoryInput!): Resource!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
-  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
-  connectResourceToProjectRepository(resourceId: String!): Resource!
-  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): Resource!
-  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
-  disconnectResourceGitRepository(resourceId: String!): Resource!
-  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
-  completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
 }
 
 input UpdateAccountInput {
@@ -1222,6 +1241,11 @@ input ServerSettingsUpdateInput {
 
 input ConnectGitRepositoryInput {
   name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
   resourceId: String!
   gitOrganizationId: String!
   isOverrideGitRepository: Boolean
@@ -1441,6 +1465,47 @@ input PluginSetOrderInput {
   order: Int!
 }
 
+input CreateGitRepositoryInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  public: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+  resourceId: String!
+}
+
+input CreateGitRepositoryBaseInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  public: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
+}
+
+input GitOAuth2FlowInput {
+  gitProvider: EnumGitProvider!
+  code: String!
+}
+
 input ProjectConfigurationSettingsUpdateInput {
   displayName: String
   description: String
@@ -1471,37 +1536,4 @@ input ChangePasswordInput {
 
 input CompleteInvitationInput {
   token: String!
-}
-
-input CreateGitRepositoryInput {
-  name: String!
-  public: Boolean!
-  resourceId: String!
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  gitOrganizationType: EnumGitOrganizationType!
-  gitGroupName: String
-}
-
-input CreateGitRepositoryBaseInput {
-  name: String!
-  public: Boolean!
-  gitOrganizationId: String!
-  gitGroupName: String
-  gitProvider: EnumGitProvider!
-  gitOrganizationType: EnumGitOrganizationType!
-}
-
-input GitOrganizationCreateInput {
-  installationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitGetInstallationUrlInput {
-  gitProvider: EnumGitProvider!
-}
-
-input GitOAuth2FlowInput {
-  gitProvider: EnumGitProvider!
-  code: String!
 }

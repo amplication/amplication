@@ -3,6 +3,8 @@ import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { NestFactory } from "@nestjs/core";
 import { MicroserviceOptions } from "@nestjs/microservices";
 import { AppModule } from "./app.module";
+import { Logger } from "@amplication/util/logging";
+import { Env } from "./env";
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -15,6 +17,9 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  console.error(error);
+  new Logger({ serviceName: Env.SERVICE_NAME, isProduction: true }).error(
+    error.message,
+    error
+  );
   process.exit(1);
 });
