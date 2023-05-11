@@ -66,7 +66,7 @@ export class PullRequestService {
     commit,
     gitResourceMeta,
     pullRequestMode,
-  }: CreatePrRequest.Value): Promise<string> {
+  }: CreatePullRequestArgs): Promise<string> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
     const head =
