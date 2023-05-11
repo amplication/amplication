@@ -4,6 +4,7 @@ import { ConfigModule } from "@nestjs/config";
 import { DiffModule } from "./diff/diff.module";
 import { PullRequestModule } from "./pull-request/pull-request.module";
 import { Logger } from "@amplication/util/logging";
+import { Env } from "./env";
 
 @Module({
   imports: [
@@ -14,13 +15,13 @@ import { Logger } from "@amplication/util/logging";
       envFilePath: [".env.local", ".env"],
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: SERVICE_NAME,
+      serviceName: Env.SERVICE_NAME,
     }),
   ],
 })
 export class AppModule implements OnApplicationShutdown {
   onApplicationShutdown(signal: string) {
-    new Logger({ serviceName: SERVICE_NAME, isProduction: true }).debug(
+    new Logger({ serviceName: Env.SERVICE_NAME, isProduction: true }).debug(
       `Application shut down (signal: ${signal})`
     );
   }

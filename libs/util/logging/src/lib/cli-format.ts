@@ -30,16 +30,10 @@ export const customFormat = (): Format =>
       component: componentName,
       [LEVEL]: metaLevel,
       [MESSAGE]: metaMessage,
-      [SPLAT]: splat,
+      [SPLAT]: metaSplat,
       ...metadata
     } = meta;
 
-    if (splat) {
-      const splatObj = splat.filter((s: unknown) => s);
-      if (splatObj.length > 0) {
-        metadata["i"] = [...splatObj];
-      }
-    }
     const formattedMeta = inspect(metadata, {
       colors: true,
       depth: null,
