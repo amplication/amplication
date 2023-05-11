@@ -49,7 +49,7 @@ Experience the fastest way to develop Node.js applications with Amplication.
 
 ## Features
 
-- Production-ready API's - GraphQL & REST 
+- Production-ready API's
 - Data Models
 - Role Based Access Control (RBAC)
 - Microservices Support
