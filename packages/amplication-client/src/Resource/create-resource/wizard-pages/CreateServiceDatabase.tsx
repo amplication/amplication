@@ -1,19 +1,22 @@
 import React, { useCallback } from "react";
-import "../CreateServiceWizard.scss";
-
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
 import { WizardStepProps } from "./interfaces";
-import ImgSvg from "./ImgSvg";
 
-const PLUGIN_LOGO_BASE_URL =
-  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
+import "../CreateServiceWizard.scss";
 
-const PostgresPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-postgres.png`, "large");
-const MongoPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mongo.png`, "large");
-const MysqlPng = ImgSvg(`${PLUGIN_LOGO_BASE_URL}db-mysql.png`, "large");
+interface Props extends WizardStepProps {
+  PostgresPng: React.ReactElement<any, any>;
+  MongoPng: React.ReactElement<any, any>;
+  MysqlPng: React.ReactElement<any, any>;
+}
 
-const CreateServiceDatabase: React.FC<WizardStepProps> = ({ formik }) => {
+const CreateServiceDatabase: React.FC<Props> = ({
+  formik,
+  PostgresPng,
+  MongoPng,
+  MysqlPng,
+}) => {
   const handleDatabaseSelect = useCallback(
     (database: string) => {
       formik.setValues(
