@@ -9,11 +9,12 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { CreatePrRequest } from "@amplication/schema-registry";
 
 @Injectable()
 export class PullRequestService {
   gitProvidersConfiguration: GitProvidersConfiguration;
+
   constructor(
     private readonly diffService: DiffService,
     private readonly configService: ConfigService,
@@ -59,17 +60,18 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
-    installationId,
     gitProvider,
+    gitProviderProperties,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
     commit,
     gitResourceMeta,
     pullRequestMode,
-  }: CreatePullRequestArgs): Promise<string> {
+    repositoryGroupName,
+  }: CreatePrRequest.Value): Promise<string> {
     const { body, title } = commit;
     const head =
-      commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
+      pullRequestMode === EnumPullRequestMode.Accumulative
         ? "amplication"
         : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -82,19 +84,24 @@ export class PullRequestService {
       "The changed files have returned from the diff service listOfChangedFiles are",
       { lengthOfFile: changedFiles.length }
     );
+
     const gitClientService = await new GitClientService().create(
       {
         provider: gitProvider,
-        providerOrganizationProperties: { installationId },
+        providerOrganizationProperties: gitProviderProperties,
       },
       this.gitProvidersConfiguration,
-      this.logger
+      this.logger.child({ resourceId, buildId: newBuildId })
     );
+    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
+
     const prUrl = await gitClientService.createPullRequest({
       owner,
+      cloneDirPath,
       repositoryName: repo,
+      repositoryGroupName,
       branchName: head,
-      commitMessage: commit.body,
+      commitMessage: body,
       pullRequestTitle: title,
       pullRequestBody: body,
       pullRequestMode,

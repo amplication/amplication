@@ -3,20 +3,20 @@ import {
   CloneUrlArgs,
   Commit,
   CreateBranchArgs,
-  CreateCommitArgs,
   CreatePullRequestCommentArgs,
-  CreatePullRequestForBranchArgs,
+  GitProviderCreatePullRequestArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
   CurrentUser,
   EnumGitProvider,
   GetBranchArgs,
   GetFileArgs,
-  GetPullRequestForBranchArgs,
+  GitProviderGetPullRequestArgs,
   GetRepositoriesArgs,
   GetRepositoryArgs,
   GitFile,
-  OAuthData,
+  Bot,
+  OAuthTokens,
   PaginatedGitGroup,
   PullRequest,
   RemoteGitOrganization,
@@ -30,8 +30,8 @@ export interface GitProvider {
   init(): Promise<void>;
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
-  getAccessToken(authorizationCode: string): Promise<OAuthData>;
-  refreshAccessToken(refreshToken: string): Promise<OAuthData>;
+  getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
+  refreshAccessToken(): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
@@ -48,18 +48,18 @@ export interface GitProvider {
   createPullRequestFromFiles: (
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ) => Promise<string>;
-  createCommit: (createCommitArgs: CreateCommitArgs) => Promise<void>;
-  getPullRequestForBranch: (
-    getPullRequestForBranchArgs: GetPullRequestForBranchArgs
+  getPullRequest: (
+    getPullRequestArgs: GitProviderGetPullRequestArgs
   ) => Promise<PullRequest | null>;
-  createPullRequestForBranch: (
-    createPullRequestForBranchArgs: CreatePullRequestForBranchArgs
+  createPullRequest: (
+    createPullRequestArgs: GitProviderCreatePullRequestArgs
   ) => Promise<PullRequest>;
   getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit | null>;
-  getCurrentUserCommitList: (args: GetBranchArgs) => Promise<Commit[]>;
   getCloneUrl: (args: CloneUrlArgs) => string;
-  commentOnPullRequest: (args: CreatePullRequestCommentArgs) => Promise<void>;
-  getToken(): Promise<string>;
+  createPullRequestComment: (
+    args: CreatePullRequestCommentArgs
+  ) => Promise<void>;
+  getAmplicationBotIdentity(): Promise<Bot | null>;
 }
