@@ -109,12 +109,11 @@ export default function WizardGitCreateRepo({
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__header-wizard`}>
+      <div className={`${CLASS_NAME}__header`}>
         <h4>
           Create a new {gitOrganization?.provider} repository to sync your
           resource with
         </h4>
-        <br />
       </div>
       {gitOrganization.useGroupingForRepositories && (
         <>
