@@ -50,7 +50,6 @@ describe("customFormat", () => {
           {
             foo: "bar",
             baz: 123,
-            i: ["TEST"],
           },
           {
             colors: true,
