@@ -47,7 +47,7 @@ With a strong focus on collaboration, Amplication streamlines team-oriented deve
 
 Experience the fastest way to develop Node.js applications with Amplication.
 
-<details>
+<details open>
 <summary>
  Features
 </summary> <br />
