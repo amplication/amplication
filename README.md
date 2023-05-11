@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-  <i align="center">Auto-generating TypeScript, GraphQL, REST API, and Node.js, accelerating your full-stack development 🚀</i>
+  <i align="center">Instantly generate production-ready Node.js backend apps 🚀</i>
 </p>
 
 <h4 align="center">
@@ -34,7 +34,7 @@
 </h4>
 
 <p align="center">
-    <img src="https://user-images.githubusercontent.com/73097785/237048930-5ea270a2-41f3-4b74-a6b1-7cb2fb768ef1.svg" alt="dashboard"/>
+    <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard"/>
 </p>
 
 ## Introduction
@@ -49,20 +49,34 @@ Experience the fastest way to develop Node.js applications with Amplication.
 
 <details>
 <summary>
-## Features
+ Features
 </summary> <br />
 
-</details>
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/9908a54a-7d49-4dbb-8f5e-3e99b7cadf30.png" alt="apis"/>
+</p>
 
-- Production-ready API's
-- Data Models
-- Role Based Access Control (RBAC)
-- Microservices Support
-- Continuous GitHub Sync
-- Plugin Eco-system
-- Monorepo or Polyrepo
-- Custom Code
-- Admin UI
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/ff406403-27f7-42b5-9569-d011432f16e5.png" alt="data-models"/>
+</p>
+
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/62c8d533-8475-4290-abc8-c433c095e68a.png" alt="plugins"/>
+</p>    
+    
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/9c67a354-a06f-47d1-a118-ab89b775bf91.png" alt="microservices"/>
+</p>
+    
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/a51e166b-07ec-4c80-99ed-8792a81c4064.png" alt="own-your-code"/>
+</p>
+ 
+<p align="center">
+    <img src="https://github.com/amplication/amplication/assets/73097785/1cca9721-b8d6-425b-a1a9-d10d3cdcc9b8.png" alt="customize-code"/>
+</p>  
+    
+</details>
 
 ## Usage 
 
