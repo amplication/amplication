@@ -15,7 +15,7 @@ After creating new plugin on your local environment and build it locally, you ca
     "enabled": true,
     "version": "0.0.1", // the current version on your package.json
     "pluginId": "my-plugin", // plugin id
-    "settings": { "local": true, "destPath": "../../../plugins/plugins/<plugin-name>" } => important !!! local key to true and the path of our dest plugin folder related to the dsg folder.
+    "settings": { "local": true, "destPath": "plugins/plugins/<plugin-name>" } => important !!! local key to true and the path of our dest plugin folder related to amplication folder.
   }
   ```
 now your plugin should be part of the generated code flow.
@@ -26,6 +26,7 @@ This command will generate the code under .amplication/generate-local-code/gener
 
 If you want to debug the code you should run in debug mode: 
 `npm run debug:dsg`
+in order to debug your local plugin you should add `debugger` in your code and it will stop the process there. now you can go inside/out your plugin functions. you can also add breakpoints at our code and check it there.
 
 
 ## Testing
