@@ -2,12 +2,12 @@ import React, { useEffect, useState } from "react";
 import classNames from "classnames";
 
 export const useImageLoader = (currentSrc: string) => {
-  const [imageSrc, _setImageSrc] = useState(null);
+  const [imageSrc, setImageSrc] = useState(null);
 
   useEffect(() => {
     const img = new Image();
     img.onload = () => {
-      _setImageSrc(currentSrc);
+      setImageSrc(currentSrc);
     };
     img.src = currentSrc;
   }, [currentSrc]);
