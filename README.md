@@ -1,9 +1,9 @@
 <h1 align="center">
     <a href="https://amplication.com/#gh-light-mode-only">
-    <img src="./assets/amplication-logo-light-mode.svg">
+    <img src="./.github/assets/amplication-logo-light-mode.svg">
     </a>
     <a href="https://amplication.com/#gh-dark-mode-only">
-    <img src="./assets/amplication-logo-dark-mode.svg">
+    <img src="./.github/assets/amplication-logo-dark-mode.svg">
     </a>
 </h1>
 
@@ -91,6 +91,10 @@ To be able to start development on amplication make sure that you have the follo
 <summary>
 Scripts
 </summary> <br />
+
+> **Note**
+> : it is also possible to start development with GitHub Codespaces, when navigating to `< > Code`, select `Codespaces` instead of `Local`. Click on either the `+`-sign or the `Create codespace on master`-button.
+
 Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple application and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
 
 ###
