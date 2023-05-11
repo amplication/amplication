@@ -9,7 +9,7 @@ import { GitSelectMenuItemContent } from "./GitSelectMenuItemContent";
 
 import "./GitSelectMenu.scss";
 import { EnumGitProvider } from "../../../models";
-import { gitLogoMap } from "../GitActions/ExistingConnectionsMenu";
+import { gitLogoMap } from "../git-provider-icon-map";
 
 const CLASS_NAME = "git-select-menu";
 
