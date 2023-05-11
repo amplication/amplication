@@ -46,7 +46,11 @@ export interface PackageInstallation {
   name: string;
   version: string | null;
   pluginId: string;
-  settings: { [key: string]: any };
+  settings: {
+    local?: boolean;
+    destPath?: string;
+    [key: string]: any;
+  };
 }
 
 export type HookFunction = (plugin: PackageInstallation) => Promisable<void>;

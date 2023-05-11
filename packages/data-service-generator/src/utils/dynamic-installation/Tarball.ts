@@ -37,8 +37,8 @@ export class Tarball {
         overwrite: true,
         filter: this.filterFunc,
       });
-    } catch (error) {
-      console.log("fse.copySync", error);
+    } catch (error: any) {
+      await this.logger.error("fse.copySync", {}, "", error);
     }
   }
 
