@@ -4,7 +4,7 @@ import GithubLogo from "../../assets/images/github.svg";
 
 export const gitProviderIconMap = {
   [EnumGitProvider.Github]: "github",
-  [EnumGitProvider.Bitbucket]: "git-sync",
+  [EnumGitProvider.Bitbucket]: "git-sync", // TODO: replace with bitbucket icon (once we have one)
 };
 
 export const gitLogoMap = {
