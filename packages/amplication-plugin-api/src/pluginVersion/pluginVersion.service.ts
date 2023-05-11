@@ -119,9 +119,9 @@ export class PluginVersionService extends PluginVersionServiceBase {
           "package/.amplicationrc.json"
         );
 
-        const privatePluginSettings = await this.getPluginSettings(
+        const systemPluginSettings = await this.getPluginSettings(
           tarballUrl,
-          "package/.amplicationPrivaterc.json"
+          "package/.amplicationSystemSettingsrc.json"
         );
         const upsertPluginVersion = await this.upsert({
           where: {
@@ -129,7 +129,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
           },
           update: {
             settings: pluginSettings,
-            privateSettings: privatePluginSettings,
+            systemSettings: systemPluginSettings,
             deprecated,
             updatedAt,
           },
@@ -137,7 +137,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
             pluginId,
             pluginIdVersion,
             settings: pluginSettings,
-            privateSettings: privatePluginSettings,
+            systemSettings: systemPluginSettings,
             deprecated,
             version,
             createdAt,
