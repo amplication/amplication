@@ -10,6 +10,7 @@ import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
 import useCommit from "../VersionControl/hooks/useCommits";
 import "./WorkspaceFooter.scss";
 import { EnumGitProvider } from "../models";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 const CLASS_NAME = "workspace-footer";
 
@@ -80,7 +81,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
         {gitRepositoryFullName?.includes("/") ? (
           <div className={`${CLASS_NAME}__git-connection`}>
             <Icon
-              icon="git-sync"
+              icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
               size="small"
               className={`${CLASS_NAME}__git-icon`}
             />
