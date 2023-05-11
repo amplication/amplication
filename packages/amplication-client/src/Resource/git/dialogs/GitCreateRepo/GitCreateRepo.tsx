@@ -1,21 +1,25 @@
 import {
   Button,
   CircularProgress,
+  HorizontalRule,
   Label,
   TextField,
   ToggleField,
 } from "@amplication/ui/design-system";
-import { ApolloError } from "@apollo/client";
+import { ApolloError, gql, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
+import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type Props = {
   gitProvider: EnumGitProvider;
+  gitOrganizationId: string;
   gitOrganizationName: string;
+  useGroupingForRepositories?: boolean;
   repoCreated: {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
@@ -27,7 +31,9 @@ const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
   gitProvider,
+  gitOrganizationId,
   gitOrganizationName,
+  useGroupingForRepositories,
   repoCreated,
   onCreateGitRepository,
 }: Props) {
@@ -36,9 +42,30 @@ export default function GitCreateRepo({
     public: true,
   };
 
-  const handleCreation = useCallback((data: CreateGitRepositoryInput) => {
-    onCreateGitRepository(data);
-  }, []);
+  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+    variables: {
+      organizationId: gitOrganizationId,
+    },
+  });
+
+  const gitGroups = gitGroupsData?.gitGroups?.groups;
+  const [repositoryGroup, setRepositoryGroup] = useState(null);
+
+  useEffect(() => {
+    if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
+      setRepositoryGroup(gitGroups[0]);
+    }
+  }, [gitGroups]);
+
+  const handleCreation = useCallback(
+    (data: CreateGitRepositoryInput) => {
+      const inputData = repositoryGroup
+        ? { ...data, groupName: repositoryGroup.name }
+        : data;
+      onCreateGitRepository(inputData);
+    },
+    [repositoryGroup]
+  );
 
   return (
     <Formik
@@ -49,13 +76,23 @@ export default function GitCreateRepo({
       validateOnBlur
     >
       {({ errors: formError, values, handleChange }) => (
-        <Form>
+        <Form className={CLASS_NAME}>
           <div className={`${CLASS_NAME}__header`}>
-            <h4>
-              Create a new {gitProvider} repository to sync your resource with
-            </h4>
-            <br />
+            Create a new {gitProvider} repository to sync your resource with
           </div>
+
+          {useGroupingForRepositories && (
+            <>
+              <div className={`${CLASS_NAME}__label`}>Change workspace</div>
+              <GitSelectMenu
+                gitProvider={gitProvider}
+                selectedItem={repositoryGroup}
+                items={gitGroups}
+                onSelect={setRepositoryGroup}
+              />
+            </>
+          )}
+
           <div>
             <ToggleField
               name="public"
@@ -64,23 +101,17 @@ export default function GitCreateRepo({
               onChange={handleChange}
             />
           </div>
-          <table className={`${CLASS_NAME}__table`}>
-            <tr>
-              <th>Owner</th>
-              <th>Repository name</th>
-            </tr>
-            <tr>
-              <td>{gitOrganizationName}/</td>
-              <td>
-                <TextField
-                  autoFocus
-                  name="name"
-                  autoComplete="off"
-                  showError={false}
-                />
-              </td>
-            </tr>
-          </table>
+
+          <div className={`${CLASS_NAME}__label`}>Repository name</div>
+          <TextField
+            autoFocus
+            name="name"
+            autoComplete="off"
+            showError={false}
+          />
+
+          <HorizontalRule />
+
           <Button
             type="submit"
             className={`${CLASS_NAME}__button`}
@@ -106,3 +137,18 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
+
+const GET_GROUPS = gql`
+  query gitGroups($organizationId: String!) {
+    gitGroups(where: { organizationId: $organizationId }) {
+      total
+      page
+      pageSize
+      groups {
+        id
+        name
+        displayName
+      }
+    }
+  }
+`;

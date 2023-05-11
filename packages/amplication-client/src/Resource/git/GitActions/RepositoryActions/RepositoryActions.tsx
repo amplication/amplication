@@ -48,7 +48,7 @@ export default function RepositoryActions({
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
-                      buttonStyle={EnumButtonStyle.Primary}
+                      buttonStyle={EnumButtonStyle.Outline}
                       onClick={onSelectRepository}
                     >
                       Select repository

@@ -13,7 +13,7 @@ type Props = {
   isProjectSettingsLinkShow?: boolean;
 };
 
-const CLASS_NAME = "project-configuration-github-settings";
+const CLASS_NAME = "project-configuration-git-settings";
 
 const ProjectConfigurationGitSettings: React.FC<Props> = ({
   isOverride,
@@ -34,7 +34,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
     return (
       <Link
         title={"Go to project settings"}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
         className={classNames(
           `${CLASS_NAME}__link`,
           `${CLASS_NAME}__${linkFontClass}`

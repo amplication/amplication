@@ -42,7 +42,8 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-request-service:build"
+        "buildTarget": "amplication-git-pull-request-service:build",
+        "port": 7001
       },
       "configurations": {
         "production": {

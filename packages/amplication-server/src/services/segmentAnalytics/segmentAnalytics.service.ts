@@ -11,6 +11,7 @@ export enum EnumEventType {
   WorkspaceSelected = "selectWorkspace",
   GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   ServiceWizardServiceGenerated = "ServiceWizard_ServiceGenerated",
+  SubscriptionLimitPassed = "SubscriptionLimitPassed",
 }
 
 export type IdentifyData = {

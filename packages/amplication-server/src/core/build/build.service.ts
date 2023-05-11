@@ -22,23 +22,26 @@ import { UserService } from "../user/user.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ActionService } from "../action/action.service";
 import { CommitService } from "../commit/commit.service";
-import { QueueService } from "../queue/queue.service";
 import { previousBuild } from "./utils";
-import { EnumGitProvider } from "../git/dto/enums/EnumGitProvider";
-import { CanUserAccessArgs } from "./dto/CanUserAccessArgs";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
-import { CreatePRSuccess } from "./dto/CreatePRSuccess";
-import { CreatePRFailure } from "./dto/CreatePRFailure";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
 import { EnumPullRequestMode } from "@amplication/git-utils";
-import { SendPullRequestArgs } from "./dto/sendPullRequest";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
+import {
+  CanUserAccessBuild,
+  CodeGenerationRequest,
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { GitProviderService } from "../git/git.provider.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -150,12 +153,12 @@ export class BuildService {
     private readonly commitService: CommitService,
     private readonly serviceSettingsService: ServiceSettingsService,
     private readonly userService: UserService,
-    private readonly queueService: QueueService,
+    private readonly kafkaProducerService: KafkaProducerService,
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
     private readonly billingService: BillingService,
-
+    private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
@@ -319,10 +322,20 @@ export class BuildService {
 
         logger.info("Writing build generation message to queue");
 
-        await this.queueService.emitMessage(
+        const codeGenerationEvent: CodeGenerationRequest.KafkaEvent = {
+          key: null,
+          value: {
+            resourceId,
+            buildId,
+            dsgResourceData,
+          },
+        };
+
+        await this.kafkaProducerService.emitMessage(
           this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
-          JSON.stringify({ resourceId, buildId, dsgResourceData })
+          codeGenerationEvent
         );
+
         logger.info("Build generation message sent");
 
         return null;
@@ -341,7 +354,9 @@ export class BuildService {
     });
   }
 
-  public async onCreatePRSuccess(response: CreatePRSuccess): Promise<void> {
+  public async onCreatePRSuccess(
+    response: CreatePrSuccess.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -376,7 +391,9 @@ export class BuildService {
     }
   }
 
-  public async onCreatePRFailure(response: CreatePRFailure): Promise<void> {
+  public async onCreatePRFailure(
+    response: CreatePrFailure.Value
+  ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
@@ -391,7 +408,7 @@ export class BuildService {
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
 
-  async saveToGitHub(buildId: string): Promise<void> {
+  public async saveToGitProvider(buildId: string): Promise<void> {
     const build = await this.findOne({ where: { id: buildId } });
 
     const oldBuild = await previousBuild(
@@ -478,12 +495,19 @@ export class BuildService {
               )
             : false;
 
-          const createPullRequestArgs: SendPullRequestArgs = {
+          const gitProviderArgs =
+            await this.gitProviderService.getGitProviderProperties(
+              gitOrganization
+            );
+
+          const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
+            repositoryGroupName: resourceRepository.groupName,
             resourceId: resource.id,
-            gitProvider: EnumGitProvider.Github,
-            installationId: gitOrganization.installationId,
+            gitProvider: gitProviderArgs.provider,
+            gitProviderProperties:
+              gitProviderArgs.providerOrganizationProperties,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
@@ -504,10 +528,16 @@ export class BuildService {
                 : EnumPullRequestMode.Basic,
           };
 
-          await this.queueService.emitMessageWithKey(
+          const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
+            key: {
+              resourceRepositoryId: resourceRepository.id,
+              resourceId: resource.id,
+            },
+            value: createPullRequestMessage,
+          };
+          await this.kafkaProducerService.emitMessage(
             this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
-            resourceRepository.id,
-            JSON.stringify(createPullRequestArgs)
+            createPullRequestEvent
           );
         } catch (error) {
           logger.error("Failed to emit Create Pull Request Message.", error);
@@ -551,10 +581,11 @@ export class BuildService {
       (entity) => entity.createdAt
     ) as unknown as CodeGenTypes.Entity[];
   }
+
   async canUserAccess({
     userId,
     buildId,
-  }: CanUserAccessArgs): Promise<boolean> {
+  }: CanUserAccessBuild.Value): Promise<boolean> {
     const build = this.prisma.build.findFirst({
       // eslint-disable-next-line @typescript-eslint/naming-convention
       where: { id: buildId, AND: { userId } },

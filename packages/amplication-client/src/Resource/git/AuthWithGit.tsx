@@ -1,9 +1,14 @@
-import { EnumPanelStyle, Panel, Snackbar } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumPanelStyle,
+  Panel,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { AppContext } from "../../context/appContext";
-import { AuthorizeResourceWithGitResult, EnumGitProvider } from "../../models";
+import { AuthorizeResourceWithGitResult } from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
@@ -15,8 +20,9 @@ import {
 } from "./dialogs/GitRepos/GithubRepos";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
-import WizardNewConnection from "./GitActions/WizardNewConnection";
 import { GitOrganizationFromGitRepository } from "./SyncWithGithubPage";
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
+import * as models from "../../models";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;
@@ -27,6 +33,7 @@ let triggerOnDone = () => {};
 let triggerAuthFailed = () => {};
 
 type Props = {
+  gitProvider: models.EnumGitProvider;
   onDone: () => void;
   onGitRepositorySelected: (data: GitRepositorySelected) => void;
   onGitRepositoryCreated: (data: GitRepositoryCreatedData) => void;
@@ -37,6 +44,7 @@ type Props = {
 export const CLASS_NAME = "auth-with-git";
 
 function AuthWithGit({
+  gitProvider,
   onDone,
   onGitRepositorySelected,
   onGitRepositoryCreated,
@@ -50,7 +58,9 @@ function AuthWithGit({
   const [selectRepoOpen, setSelectRepoOpen] = useState<boolean>(false);
   const [createNewRepoOpen, setCreateNewRepoOpen] = useState(false);
   const [popupFailed, setPopupFailed] = useState(false);
-
+  const openCreateNewRepo = useCallback(() => {
+    setCreateNewRepoOpen(true);
+  }, []);
   const [gitRepositorySelectedData, setGitRepositorySelectedData] =
     useState<GitRepositorySelected>(gitRepositorySelected || null);
 
@@ -105,7 +115,8 @@ function AuthWithGit({
         variables: {
           name: data.name,
           gitOrganizationId: data.gitOrganizationId,
-          gitProvider: EnumGitProvider.Github,
+          gitProvider: data.gitProvider,
+          groupName: data.groupName,
           public: data.public,
         },
         onCompleted() {
@@ -114,7 +125,9 @@ function AuthWithGit({
           setGitRepositorySelectedData({
             gitOrganizationId: data.gitOrganizationId,
             repositoryName: data.name,
-            gitRepositoryUrl: `https://github.com/${data.name}`,
+            groupName: data.groupName,
+            gitRepositoryUrl: data.gitRepositoryUrl,
+            gitProvider: gitOrganization.provider,
           });
         },
       }).catch((error) => {});
@@ -138,17 +151,6 @@ function AuthWithGit({
     setSelectRepoOpen(true);
   }, []);
 
-  const handleAuthWithGitClick = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.GitHubAuthResourceStart,
-    });
-    authWithGit({
-      variables: {
-        gitProvider: "Github",
-      },
-    }).catch(console.error);
-  }, [authWithGit, trackEvent]);
-
   triggerOnDone = () => {
     onDone();
   };
@@ -161,21 +163,31 @@ function AuthWithGit({
     onGitRepositoryDisconnected();
   }, [setGitRepositorySelectedData]);
 
+  const [isSelectOrganizationDialogOpen, setSelectOrganizationDialogOpen] =
+    useState(false);
+  const openSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(true);
+  }, []);
+  const closeSelectOrganizationDialog = useCallback(() => {
+    setSelectOrganizationDialogOpen(false);
+  }, []);
+
   const errorMessage = formatError(error);
   return (
     <>
       {gitOrganization && (
         <GitDialogsContainer
-          gitOrganizationId={gitOrganization.id}
+          gitOrganization={gitOrganization}
           isSelectRepositoryOpen={selectRepoOpen}
           isPopupFailed={popupFailed}
           gitCreateRepoOpen={createNewRepoOpen}
-          gitProvider={EnumGitProvider.Github}
-          gitOrganizationName={gitOrganization.name}
+          gitProvider={gitProvider}
           src={"serviceWizard"}
           onSelectGitRepositoryDialogClose={() => {
             setSelectRepoOpen(false);
           }}
+          setSelectRepoOpen={setSelectRepoOpen}
+          openCreateNewRepo={openCreateNewRepo}
           onSelectGitRepository={handleSelectRepository}
           onGitCreateRepositoryClose={() => {
             setCreateNewRepoOpen(false);
@@ -190,22 +202,33 @@ function AuthWithGit({
           }}
         />
       )}
+      {isSelectOrganizationDialogOpen && (
+        <Dialog
+          title="Select Git Provider"
+          className="git-organization-dialog"
+          isOpen={isSelectOrganizationDialogOpen}
+          onDismiss={closeSelectOrganizationDialog}
+        >
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
+            onProviderSelect={closeSelectOrganizationDialog}
+          />
+        </Dialog>
+      )}
       <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
-          <WizardNewConnection
-            onSyncNewGitOrganizationClick={handleAuthWithGitClick}
-            provider={EnumGitProvider.Github}
+          <GitProviderConnectionList
+            onDone={onDone}
+            setPopupFailed={setPopupFailed}
           />
         ) : (
           <div>
-            <div className={`${CLASS_NAME}__selectOrganization`}>
-              Select Organization
-            </div>
             <ExistingConnectionsMenu
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleGitOrganizationChange}
               selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={handleAuthWithGitClick}
+              onAddGitOrganization={openSelectOrganizationDialog}
             />
             <WizardRepositoryActions
               onCreateRepository={() => {
@@ -233,6 +256,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
     $gitOrganizationId: String!
     $name: String!
     $public: Boolean!
+    $groupName: String
   ) {
     createRemoteGitRepository(
       data: {
@@ -241,6 +265,7 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         gitOrganizationType: Organization
+        groupName: $groupName
       }
     )
   }
