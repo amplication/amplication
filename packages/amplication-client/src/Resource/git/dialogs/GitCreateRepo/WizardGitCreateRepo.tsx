@@ -1,6 +1,7 @@
 import {
   Button,
   CircularProgress,
+  HorizontalRule,
   Label,
   TextField,
   Toggle,
@@ -108,7 +109,7 @@ export default function WizardGitCreateRepo({
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__header`}>
+      <div className={`${CLASS_NAME}__header-wizard`}>
         <h4>
           Create a new {gitOrganization?.provider} repository to sync your
           resource with
@@ -117,7 +118,9 @@ export default function WizardGitCreateRepo({
       </div>
       {gitOrganization.useGroupingForRepositories && (
         <>
-          <div className={`${CLASS_NAME}__label`}>Change workspace</div>
+          <div className={`${CLASS_NAME}__label`}>
+            <Label text="Change workspace" />
+          </div>
           <GitSelectMenu
             gitProvider={gitOrganization?.provider}
             selectedItem={repositoryGroup}
@@ -126,7 +129,7 @@ export default function WizardGitCreateRepo({
           />
         </>
       )}
-
+      <br />
       <div>
         <Toggle
           name="public"
@@ -140,23 +143,20 @@ export default function WizardGitCreateRepo({
           }}
         />
       </div>
-      <table className={`${CLASS_NAME}__table`}>
-        <tr>
-          <th>Owner</th>
-          <th>Repository name</th>
-        </tr>
-        <tr>
-          <td>
-            <TextField
-              autoFocus
-              name="name"
-              autoComplete="off"
-              showError={false}
-              onChange={handleNameChange}
-            />
-          </td>
-        </tr>
-      </table>
+      <br />
+      <div className={`${CLASS_NAME}__label`}>
+        <Label text="Repository name" />
+      </div>
+      <TextField
+        autoFocus
+        name="name"
+        autoComplete="off"
+        showError={false}
+        onChange={handleNameChange}
+      />
+
+      <HorizontalRule />
+
       <Button
         className={`${CLASS_NAME}__button`}
         disabled={repoCreated.isRepoCreateLoading}
