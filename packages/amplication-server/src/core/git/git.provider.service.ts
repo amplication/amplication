@@ -195,7 +195,7 @@ export class GitProviderService {
       },
       groupName: args.groupName,
       owner: organization.name,
-      isPrivateRepository: args.public,
+      isPrivate: args.isPrivate,
     };
 
     const gitClientService = await this.createGitClient(organization);
@@ -234,7 +234,7 @@ export class GitProviderService {
       },
       groupName: args.groupName,
       owner: organization.name,
-      isPrivateRepository: args.public,
+      isPrivate: args.isPrivate,
     };
 
     const gitClientService = await this.createGitClient(organization);
