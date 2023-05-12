@@ -6,6 +6,7 @@ import {
   OAuthProviderOrganizationProperties,
 } from "@amplication/git-utils";
 import {
+  IsEnum,
   IsNumber,
   IsOptional,
   IsString,
@@ -27,7 +28,7 @@ export class Value {
   oldBuildId?: string | undefined;
   @IsString()
   newBuildId!: string;
-  @IsString()
+  @IsEnum(EnumGitProvider)
   gitProvider!: EnumGitProvider;
   @ValidateNested()
   gitProviderProperties!:
