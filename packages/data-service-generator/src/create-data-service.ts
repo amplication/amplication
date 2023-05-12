@@ -16,7 +16,7 @@ export async function createDataService(
   try {
     if (dSGResourceData.resourceType === EnumResourceType.MessageBroker) {
       internalLogger.info("No code to generate for a message broker");
-      return [];
+      return null;
     }
 
     const startTime = Date.now();
