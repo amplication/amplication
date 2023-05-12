@@ -23,6 +23,7 @@ export const GET_RESOURCES = gql`
           name
           type
           provider
+          useGroupingForRepositories
         }
       }
       builds(orderBy: { createdAt: Desc }, take: 1) {
