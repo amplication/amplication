@@ -39,7 +39,7 @@ export default function GitCreateRepo({
 }: Props) {
   const initialValues: Partial<CreateGitRepositoryInput> = {
     name: "",
-    public: true,
+    isPrivate: false,
   };
 
   const { data: gitGroupsData } = useQuery(GET_GROUPS, {
@@ -96,8 +96,8 @@ export default function GitCreateRepo({
           <div>
             <ToggleField
               name="public"
-              label={values.public ? "Public Repo" : "Private Repo"}
-              checked={values.public}
+              label={values.isPrivate ? "Private Repo" : "Public Repo"}
+              checked={values.isPrivate}
               onChange={handleChange}
             />
           </div>

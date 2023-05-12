@@ -17,7 +17,7 @@ import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type createRepositoryInput = {
   name: string;
-  public: boolean;
+  isPrivate: boolean;
   groupName?: string;
 };
 type Props = {
@@ -40,7 +40,7 @@ export default function WizardGitCreateRepo({
     useState<createRepositoryInput>({
       name: "",
       groupName: "",
-      public: true,
+      isPrivate: false,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
@@ -96,14 +96,14 @@ export default function WizardGitCreateRepo({
       gitProvider: gitOrganization?.provider,
       name: createRepositoryInput.name,
       groupName: createRepositoryInput.groupName,
-      public: createRepositoryInput.public,
+      isPrivate: createRepositoryInput.isPrivate,
       gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,
     createRepositoryInput.name,
     createRepositoryInput.groupName,
-    createRepositoryInput.public,
+    createRepositoryInput.isPrivate,
   ]);
 
   return (
@@ -130,12 +130,14 @@ export default function WizardGitCreateRepo({
       <div>
         <Toggle
           name="public"
-          label={createRepositoryInput.public ? "Public Repo" : "Private Repo"}
-          checked={createRepositoryInput.public}
+          label={
+            createRepositoryInput.isPrivate ? "Private Repo" : "Public Repo"
+          }
+          checked={createRepositoryInput.isPrivate}
           onChange={(event, checked) => {
             setCreateRepositoryInput({
               ...createRepositoryInput,
-              public: checked,
+              isPrivate: checked,
             });
           }}
         />

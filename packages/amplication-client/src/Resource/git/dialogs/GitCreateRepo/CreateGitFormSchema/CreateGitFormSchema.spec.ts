@@ -1,9 +1,9 @@
 import { CreateGitFormSchema } from "./CreateGitFormSchema";
 
 describe("Testing the CreateGitFormSchema", () => {
-  const validObject = { name: "ofek", public: true };
-  const UnValidObjectPublic = { name: "ofek", public: 45 };
-  const UnValidObjectNameShort = { name: "o", public: true };
+  const validObject = { name: "ofek", isPrivate: true };
+  const UnValidObjectPublic = { name: "ofek", isPrivate: 45 };
+  const UnValidObjectNameShort = { name: "o", isPrivate: true };
 
   it("should pass the validate", () => {
     return expect(CreateGitFormSchema.validate(validObject)).resolves.toBe(
