@@ -4,7 +4,7 @@ import {
   HorizontalRule,
   Label,
   TextField,
-  ToggleField,
+  Toggle,
 } from "@amplication/ui/design-system";
 import { ApolloError, gql, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -94,8 +94,8 @@ export default function GitCreateRepo({
           )}
 
           <div>
-            <ToggleField
-              name="public"
+            <Toggle
+              name="isPrivate"
               label={values.isPrivate ? "Private Repo" : "Public Repo"}
               checked={values.isPrivate}
               onChange={handleChange}

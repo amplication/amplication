@@ -129,7 +129,7 @@ export default function WizardGitCreateRepo({
 
       <div>
         <Toggle
-          name="public"
+          name="isPrivate"
           label={
             createRepositoryInput.isPrivate ? "Private Repo" : "Public Repo"
           }

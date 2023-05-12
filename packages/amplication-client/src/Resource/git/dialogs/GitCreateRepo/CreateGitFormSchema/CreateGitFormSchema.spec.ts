@@ -10,12 +10,12 @@ describe("Testing the CreateGitFormSchema", () => {
       validObject
     );
   });
-  it("should throw error if getting un valid public value", async () => {
+  it("should throw error if getting invalid value for isPrivate property", async () => {
     return expect(
       CreateGitFormSchema.validate(UnValidObjectPublic)
     ).rejects.toThrowError();
   });
-  it("should throw error if getting short name", () => {
+  it("should throw error if receiving a name shorter than 2 characters", () => {
     return expect(
       CreateGitFormSchema.validate(UnValidObjectNameShort)
     ).rejects.toThrowError();
