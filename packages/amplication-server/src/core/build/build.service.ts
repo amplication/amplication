@@ -30,7 +30,7 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import { EnumPullRequestMode } from "@amplication/git-utils";
+import { EnumGitProvider, EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
 import {
@@ -57,13 +57,16 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
-export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_START_LOG =
-  "Starting to push changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
-  "Successfully pushed changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
+export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
+  `PUSH_TO_${gitProvider.toUpperCase()}`;
+export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
+  `Push changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
+  `Starting to push changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
+  `Successfully pushed changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
+  `Push changes to ${gitProvider} failed`;
 
 export const ACTION_ZIP_LOG = "Creating ZIP file";
 export const ACTION_JOB_DONE_LOG = "Build job done";
@@ -359,7 +362,9 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+    const step = steps.find(
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
+    );
 
     try {
       await this.resourceService.reportSyncMessage(
@@ -370,7 +375,10 @@ export class BuildService {
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
       });
-      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
+      await this.actionService.logInfo(
+        step,
+        PUSH_TO_GIT_STEP_FINISH_LOG(response.gitProvider)
+      );
       await this.actionService.complete(step, EnumActionStepStatus.Success);
 
       const workspace = await this.resourceService.getResourceWorkspace(
@@ -381,7 +389,10 @@ export class BuildService {
         BillingFeature.CodePushToGit
       );
     } catch (error) {
-      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+      await this.actionService.logInfo(
+        step,
+        PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
+      );
       await this.actionService.logInfo(step, error);
       await this.actionService.complete(step, EnumActionStepStatus.Failed);
       await this.resourceService.reportSyncMessage(
@@ -396,14 +407,19 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+    const step = steps.find(
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
+    );
 
     await this.resourceService.reportSyncMessage(
       build.resourceId,
       `Error: ${response.errorMessage}`
     );
 
-    await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+    await this.actionService.logInfo(
+      step,
+      PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
+    );
     await this.actionService.logInfo(step, response.errorMessage);
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
@@ -482,11 +498,16 @@ export class BuildService {
 
     return this.actionService.run(
       build.actionId,
-      PUSH_TO_GITHUB_STEP_NAME,
-      PUSH_TO_GITHUB_STEP_MESSAGE,
+      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitOrganization.provider]),
+      PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitOrganization.provider]),
       async (step) => {
         try {
-          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+          await this.actionService.logInfo(
+            step,
+            PUSH_TO_GIT_STEP_START_LOG(
+              EnumGitProvider[gitOrganization.provider]
+            )
+          );
 
           const smartGitSyncEntitlement = this.billingService.isBillingEnabled
             ? await this.billingService.getBooleanEntitlement(
