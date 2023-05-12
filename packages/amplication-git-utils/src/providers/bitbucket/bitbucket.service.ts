@@ -263,7 +263,7 @@ export class BitBucketService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { groupName, repositoryName, isPrivateRepository, gitOrganization } =
+    const { groupName, repositoryName, isPrivate, gitOrganization } =
       createRepositoryArgs;
 
     if (!groupName) {
@@ -274,12 +274,8 @@ export class BitBucketService implements GitProvider {
     const newRepository = await repositoryCreateRequest(
       groupName,
       repositoryName,
-      /**
-       * Bitbucket API expects is_private and in our client and model (CreateGitRepositoryInput) we use public (boolean)
-       * so we need to negate the value coming from the client
-       */
       {
-        is_private: !isPrivateRepository,
+        is_private: isPrivate,
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },

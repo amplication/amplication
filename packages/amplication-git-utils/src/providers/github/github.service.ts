@@ -244,7 +244,7 @@ export class GithubService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    const { gitOrganization, owner, repositoryName, isPrivateRepository } =
+    const { gitOrganization, owner, repositoryName, isPrivate } =
       createRepositoryArgs;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
@@ -263,7 +263,7 @@ export class GithubService implements GitProvider {
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       auto_init: true,
-      private: !isPrivateRepository,
+      private: isPrivate,
     });
 
     return {
