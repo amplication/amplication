@@ -26,7 +26,7 @@ export type LabelDescriptionSelectorProps = {
   description: string;
   subDescription?: string;
   icon?: string;
-  image?: string | JSX.Element;
+  image?: string | JSX.Element | React.ReactElement<any, any>;
   imageSize?: string;
   customClassName?: string;
   onClick: (name) => void;

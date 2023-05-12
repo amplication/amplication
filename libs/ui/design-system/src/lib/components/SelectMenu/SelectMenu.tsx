@@ -24,6 +24,7 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
+  selectRef?: React.Ref<HTMLDetailsElement> | undefined;
 }
 
 const SelectButton: React.FC<Props> = ({

@@ -18,12 +18,12 @@ declare interface SERVICE {
 }
 
 declare const ENTITY_NAME: string;
-declare const RELATED_ENTITY_NAME: string;
+declare const FIND_MANY_FIELD_NAME: string;
 
 export class Mixin {
   constructor(private readonly service: SERVICE) {}
 
-  @graphql.ResolveField(() => [RELATED_ENTITY])
+  @graphql.ResolveField(() => [RELATED_ENTITY], { name: FIND_MANY_FIELD_NAME })
   async FIND_MANY(
     @graphql.Parent() parent: ENTITY,
     @graphql.Args() args: ARGS

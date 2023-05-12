@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useContext } from "react";
 import { isEmpty } from "lodash";
-import { Link } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { formatError } from "../util/error";
 import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -26,8 +26,16 @@ type Props = {
 
 const PendingChanges = ({ projectId }: Props) => {
   const [discardDialogOpen, setDiscardDialogOpen] = useState<boolean>(false);
-  const { currentWorkspace, currentProject, pendingChanges } =
+  const history = useHistory();
+  const { currentWorkspace, currentProject, pendingChanges, currentResource } =
     useContext(AppContext);
+
+  const entityMatch = useRouteMatch<{
+    workspace: string;
+    project: string;
+    resource: string;
+    entity: string;
+  }>("/:workspace/:project/:resource/entities/:entity");
   const {
     pendingChangesByResource,
     pendingChangesDataError,
@@ -40,7 +48,12 @@ const PendingChanges = ({ projectId }: Props) => {
 
   const handleDiscardDialogCompleted = useCallback(() => {
     setDiscardDialogOpen(false);
-  }, []);
+    if (entityMatch) {
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities`
+      );
+    }
+  }, [currentResource, currentProject, currentWorkspace, entityMatch]);
 
   const errorMessage = formatError(pendingChangesDataError);
 

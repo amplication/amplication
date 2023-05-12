@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { isEmpty } from "lodash";
 
 import * as models from "../models";
@@ -11,6 +11,7 @@ import { BuildStepsStatus } from "./BuildStepsStatus";
 
 import "./BuildSteps.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "build-steps";
 
@@ -33,7 +34,7 @@ type Props = {
 
 const BuildSteps = ({ build }: Props) => {
   const { data } = useBuildWatchStatus(build);
-
+  const { gitRepositoryOrganizationProvider } = useContext(AppContext);
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return EMPTY_STEP;
@@ -56,7 +57,7 @@ const BuildSteps = ({ build }: Props) => {
     );
   }, [data.build.action]);
 
-  const githubUrl = useMemo(() => {
+  const gitUrl = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return null;
     }
@@ -87,12 +88,22 @@ const BuildSteps = ({ build }: Props) => {
           className={`${CLASS_NAME}__step`}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <Icon icon="github" />
-          <span>Push Changes to GitHub</span>
+          <Icon icon="git-sync" />
+          <span>{`Push Changes to ${gitRepositoryOrganizationProvider}`}</span>
           <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />
-          {githubUrl && (
-            <a href={githubUrl} target="github">
+          {gitUrl && (
+            <a
+              href={gitUrl}
+              target={
+                gitRepositoryOrganizationProvider ===
+                models.EnumGitProvider.Github
+                  ? "github"
+                  : models.EnumGitProvider.Bitbucket
+                  ? "bitbucket"
+                  : "_blank"
+              }
+            >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
                 icon="external_link"

@@ -25,16 +25,18 @@ export async function dynamicPackagesInstallations(
     const plugin: PackageInstallation = {
       name: plugins.npm,
       version: plugins.version,
+      settings: plugins.settings,
+      pluginId: plugins.pluginId,
     };
     await manager.install(plugin, {
       onBeforeInstall: async (plugin) => {
         await context.logger.info(
-          `Installing Plugin: ${plugin.name}@${plugin.version}`
+          `Installing plugin: ${plugin.name}@${plugin.version}`
         );
       },
       onAfterInstall: async (plugin) => {
         await context.logger.info(
-          `Successfully Installed plugin: ${plugin.name}@${plugin.version}`
+          `Successfully installed plugin: ${plugin.name}@${plugin.version}`
         );
       },
       onError: async (plugin, error) => {

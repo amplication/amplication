@@ -24,10 +24,10 @@ import { resolveTopicNames } from "./utils/message-broker";
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
-  logger: ILogger,
+  internalLogger: ILogger,
   pluginInstallationPath?: string
 ): Promise<Module[]> {
-  logger.info("Preparing context...");
+  internalLogger.info("Preparing context...");
 
   const {
     pluginInstallations: resourcePlugins,
@@ -99,9 +99,13 @@ function dynamicClientPathCreator(clientPath: string): clientDirectories {
   };
 }
 
-function prepareEntityPluralName(entities: Entity[]): Entity[] {
+export function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
     entity.pluralName = pluralize(camelCase(entity.name));
+    entity.pluralName =
+      entity.pluralName === camelCase(entity.name)
+        ? `${entity.pluralName}Items`
+        : entity.pluralName;
     return entity;
   });
   return currentEntities;

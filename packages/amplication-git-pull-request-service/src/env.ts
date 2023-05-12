@@ -18,4 +18,7 @@ export class Env {
 
   static readonly BUILD_ARTIFACTS_BASE_FOLDER = "BUILD_ARTIFACTS_BASE_FOLDER";
   static readonly BUILD_ARTIFACTS_CODE_FOLDER = "BUILD_ARTIFACTS_CODE_FOLDER";
+  static readonly SERVICE_NAME = "amplication-git-pull-request-service";
+
+  static readonly CLONES_FOLDER = "CLONES_FOLDER";
 }

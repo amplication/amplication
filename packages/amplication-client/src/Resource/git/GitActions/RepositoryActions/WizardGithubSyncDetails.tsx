@@ -7,7 +7,7 @@ import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { useCallback } from "react";
 import { ENTER } from "../../../../util/hotkeys";
 
-const CLASS_NAME = "github-repo-details";
+const CLASS_NAME = "git-repo-details";
 
 type Props = {
   repositorySelected: GitRepositorySelected;

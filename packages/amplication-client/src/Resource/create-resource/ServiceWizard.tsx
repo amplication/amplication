@@ -50,22 +50,36 @@ const BackButton: React.FC<{
   activePageIndex: number;
   hideBackButton?: boolean;
   goPrevPage: () => void;
-}> = ({ hideBackButton, wizardPattern, activePageIndex, goPrevPage }) =>
-  !hideBackButton &&
-  activePageIndex !== wizardPattern[0] &&
-  activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
-    <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
-      Back
-    </Button>
-  ) : null;
+}> = ({ hideBackButton, wizardPattern, activePageIndex, goPrevPage }) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    goPrevPage();
+    event.currentTarget.blur();
+  };
+  if (
+    !hideBackButton &&
+    activePageIndex !== wizardPattern[0] &&
+    activePageIndex !== wizardPattern[wizardPattern.length - 1]
+  ) {
+    return (
+      <Button buttonStyle={EnumButtonStyle.Outline} onClick={handleClick}>
+        Back
+      </Button>
+    );
+  }
+  return null;
+};
 
 const ContinueButton: React.FC<{
   goNextPage: () => void;
   disabled: boolean;
   buttonName: string;
 }> = ({ goNextPage, disabled, buttonName }) => {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    goNextPage();
+    event.currentTarget.blur();
+  };
   return (
-    <Button onClick={goNextPage} {...(disabled ? { disabled } : {})}>
+    <Button onClick={handleClick} {...(disabled ? { disabled } : {})}>
       {buttonName}
     </Button>
   );

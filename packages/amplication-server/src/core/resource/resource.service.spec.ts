@@ -5,12 +5,7 @@ import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService,
 } from "./resource.service";
-import {
-  PrismaService,
-  EnumResourceType,
-  GitRepository,
-  Prisma,
-} from "../../prisma";
+import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
@@ -20,6 +15,8 @@ import {
   Commit,
   EntityVersion,
   Project,
+  GitRepository,
+  GitOrganization,
 } from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
@@ -94,12 +91,25 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
   },
 };
 
+const EXAMPLE_GIT_ORGANISATION: GitOrganization = {
+  id: "",
+  provider: "Github",
+  name: "",
+  installationId: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  type: "User",
+  useGroupingForRepositories: false,
+  providerProperties: "",
+};
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: "exampleGitRepositoryId",
   name: "repositoryTest",
   gitOrganizationId: "exampleGitOrganizationId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  gitOrganization: EXAMPLE_GIT_ORGANISATION,
+  groupName: "",
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
@@ -132,6 +142,7 @@ const EXAMPLE_RESOURCE: Resource = {
       commitId: "exampleCommitId",
     },
   ],
+  gitRepository: EXAMPLE_GIT_REPOSITORY,
 };
 
 const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {

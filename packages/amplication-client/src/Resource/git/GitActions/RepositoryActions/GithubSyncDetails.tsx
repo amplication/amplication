@@ -10,8 +10,9 @@ import { DISCONNECT_GIT_REPOSITORY } from "../../../../Workspaces/queries/resour
 import GitRepoDetails from "../../GitRepoDetails";
 import "./GithubSyncDetails.scss";
 import { ENTER } from "../../../../util/hotkeys";
+import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 
-const CLASS_NAME = "github-repo-details";
+const CLASS_NAME = "git-repo-details";
 
 type Props = {
   resourceWithRepository: Resource;
@@ -35,34 +36,37 @@ function GithubSyncDetails({
     }).catch(console.error);
   }, [disconnectGitRepository, resourceWithRepository.id]);
   const errorMessage = formatError(disconnectErrorUpdate);
-  const gitRepositoryFullName = `${resourceWithRepository.gitRepository?.gitOrganization.name}/${resourceWithRepository.gitRepository?.name}`;
-  const gitRepositoryUrl = `https://github.com/${gitRepositoryFullName}`;
+
+  const gitRepositoryDetails = getGitRepositoryDetails({
+    organization: resourceWithRepository.gitRepository?.gitOrganization,
+    repositoryName: resourceWithRepository.gitRepository?.name,
+    groupName: resourceWithRepository?.gitRepository?.groupName,
+  });
 
   const handleKeyDownUrl = useCallback(
     (keyEvent: React.KeyboardEvent<HTMLDivElement>) => {
       if (keyEvent.key === ENTER) {
-        window.open(gitRepositoryUrl);
+        window.open(gitRepositoryDetails.repositoryUrl);
       }
     },
-    [gitRepositoryUrl]
+    [gitRepositoryDetails.repositoryUrl]
   );
-
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__body`}>
         <div className={`${CLASS_NAME}__details`}>
           <GitRepoDetails
-            gitRepositoryFullName={gitRepositoryFullName}
+            gitRepositoryFullName={gitRepositoryDetails.repositoryFullName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
           <div tabIndex={0} onKeyDown={handleKeyDownUrl}>
             <a
               tabIndex={-1}
-              href={gitRepositoryUrl}
+              href={gitRepositoryDetails.repositoryUrl}
               target="github_repo"
               className={className}
             >
-              {gitRepositoryUrl}
+              {gitRepositoryDetails.repositoryUrl}
             </a>
           </div>
         </div>
