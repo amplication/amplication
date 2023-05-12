@@ -28,7 +28,7 @@ export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: models.EnumGitProvider) =>
-  `PUSH_TO_${gitProvider.toUpperCase()}`;
+  gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 
 type Props = {
   build: models.Build;

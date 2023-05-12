@@ -58,7 +58,7 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   "Starting to build Docker image. It should take a few minutes.";
 
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
-  `PUSH_TO_${gitProvider.toUpperCase()}`;
+  gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
   `Push changes to ${gitProvider}`;
 export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
