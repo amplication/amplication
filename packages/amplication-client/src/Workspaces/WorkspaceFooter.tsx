@@ -6,7 +6,7 @@ import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
+import { PUSH_TO_GIT_STEP_NAME } from "../VersionControl/BuildSteps";
 import useCommit from "../VersionControl/hooks/useCommits";
 import "./WorkspaceFooter.scss";
 import { EnumGitProvider } from "../models";
@@ -65,7 +65,8 @@ const WorkspaceFooter: React.FC<unknown> = () => {
         return gitRepositoryUrl;
       }
       const gitStep = lastResourceBuild?.action.steps.find(
-        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+        (step) =>
+          step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
       );
 
       const log = gitStep?.logs?.find(

@@ -34,8 +34,9 @@ export class Logger implements ILogger {
 
   public getLoggerFormat(): Format {
     const developmentFormats: Format[] = [
-      format.errors({ stack: true }),
       format.timestamp(),
+      format.errors({ stack: true }),
+      format.splat(),
       customFormat(),
     ];
     if (this.options.additionalDevelopmentFormats) {
@@ -46,8 +47,9 @@ export class Logger implements ILogger {
     }
 
     const productionFormats: Format[] = [
-      format.errors({ stack: true }),
       format.timestamp(),
+      format.errors({ stack: true }),
+      format.splat(),
       format.json(),
     ];
     if (this.options.additionalFormats) {
@@ -82,7 +84,7 @@ export class Logger implements ILogger {
   child(metadata?: Pick<LoggerOptions, "metadata">): Logger {
     return new Logger({
       ...this.options,
-      metadata: { ...this.options.metadata, metadata },
+      metadata: { ...this.options.metadata, ...metadata },
     });
   }
 }

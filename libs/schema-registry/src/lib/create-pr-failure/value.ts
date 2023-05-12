@@ -1,8 +1,12 @@
-import { IsOptional, IsString } from "class-validator";
+import { EnumGitProvider } from "@amplication/git-utils";
+import { IsEnum, IsOptional, IsString } from "class-validator";
 
 export class Value {
   @IsString()
   buildId!: string;
+
+  @IsEnum(EnumGitProvider)
+  gitProvider!: EnumGitProvider;
 
   @IsString()
   @IsOptional()

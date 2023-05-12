@@ -30,8 +30,9 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import { EnumPullRequestMode } from "@amplication/git-utils";
+import { EnumGitProvider, EnumPullRequestMode } from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
+import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
   CodeGenerationRequest,
@@ -56,13 +57,16 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
-export const PUSH_TO_GITHUB_STEP_MESSAGE = "Push changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_START_LOG =
-  "Starting to push changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_FINISH_LOG =
-  "Successfully pushed changes to GitHub";
-export const PUSH_TO_GITHUB_STEP_FAILED_LOG = "Push changes to GitHub failed";
+export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
+  `PUSH_TO_${gitProvider.toUpperCase()}`;
+export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
+  `Push changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
+  `Starting to push changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
+  `Successfully pushed changes to ${gitProvider}`;
+export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
+  `Push changes to ${gitProvider} failed`;
 
 export const ACTION_ZIP_LOG = "Creating ZIP file";
 export const ACTION_JOB_DONE_LOG = "Build job done";
@@ -217,6 +221,9 @@ export class BuildService {
 
     const logger = this.logger.child({
       buildId: build.id,
+      resourceId: build.resourceId,
+      userId: build.userId,
+      user,
     });
 
     const resource = await this.resourceService.findOne({
@@ -228,7 +235,7 @@ export class BuildService {
     }
 
     logger.info(JOB_STARTED_LOG);
-    await this.generate(build, user);
+    await this.generate(logger, build, user);
 
     return build;
   }
@@ -295,7 +302,11 @@ export class BuildService {
    * @param build the build object to generate code for
    * @param user the user that triggered the build
    */
-  private async generate(build: Build, user: User): Promise<string> {
+  private async generate(
+    logger: ILogger,
+    build: Build,
+    user: User
+  ): Promise<string> {
     return this.actionService.run(
       build.actionId,
       GENERATE_STEP_NAME,
@@ -303,10 +314,7 @@ export class BuildService {
       async (step) => {
         const { resourceId, id: buildId, version: buildVersion } = build;
 
-        const logger = this.logger.child({
-          buildId: build.id,
-        });
-        this.logger.info("Preparing build generation message");
+        logger.info("Preparing build generation message");
 
         const dsgResourceData = await this.getDSGResourceData(
           resourceId,
@@ -354,7 +362,9 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+    const step = steps.find(
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
+    );
 
     try {
       await this.resourceService.reportSyncMessage(
@@ -365,7 +375,10 @@ export class BuildService {
       await this.actionService.logInfo(step, response.url, {
         githubUrl: response.url,
       });
-      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FINISH_LOG);
+      await this.actionService.logInfo(
+        step,
+        PUSH_TO_GIT_STEP_FINISH_LOG(response.gitProvider)
+      );
       await this.actionService.complete(step, EnumActionStepStatus.Success);
 
       const workspace = await this.resourceService.getResourceWorkspace(
@@ -376,7 +389,10 @@ export class BuildService {
         BillingFeature.CodePushToGit
       );
     } catch (error) {
-      await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+      await this.actionService.logInfo(
+        step,
+        PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
+      );
       await this.actionService.logInfo(step, error);
       await this.actionService.complete(step, EnumActionStepStatus.Failed);
       await this.resourceService.reportSyncMessage(
@@ -391,14 +407,19 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find((step) => step.name === PUSH_TO_GITHUB_STEP_NAME);
+    const step = steps.find(
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
+    );
 
     await this.resourceService.reportSyncMessage(
       build.resourceId,
       `Error: ${response.errorMessage}`
     );
 
-    await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_FAILED_LOG);
+    await this.actionService.logInfo(
+      step,
+      PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
+    );
     await this.actionService.logInfo(step, response.errorMessage);
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
   }
@@ -413,18 +434,25 @@ export class BuildService {
       build.createdAt
     );
 
+    const user = await this.userService.findUser({
+      where: { id: build.userId },
+    });
+
+    const logger = this.logger.child({
+      buildId: build.id,
+      resourceId: build.resourceId,
+      userId: build.userId,
+      user,
+    });
+
     const resource = await this.resourceService.resource({
       where: { id: build.resourceId },
     });
 
     if (!resource) {
-      this.logger.warn("Resource was not found during pushing code to git");
+      logger.warn("Resource was not found during pushing code to git");
       return;
     }
-
-    const user = await this.userService.findUser({
-      where: { id: build.userId },
-    });
 
     const dSGResourceData = await this.getDSGResourceData(
       build.resourceId,
@@ -470,11 +498,16 @@ export class BuildService {
 
     return this.actionService.run(
       build.actionId,
-      PUSH_TO_GITHUB_STEP_NAME,
-      PUSH_TO_GITHUB_STEP_MESSAGE,
+      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitOrganization.provider]),
+      PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitOrganization.provider]),
       async (step) => {
         try {
-          await this.actionService.logInfo(step, PUSH_TO_GITHUB_STEP_START_LOG);
+          await this.actionService.logInfo(
+            step,
+            PUSH_TO_GIT_STEP_START_LOG(
+              EnumGitProvider[gitOrganization.provider]
+            )
+          );
 
           const smartGitSyncEntitlement = this.billingService.isBillingEnabled
             ? await this.billingService.getBooleanEntitlement(
@@ -528,10 +561,7 @@ export class BuildService {
             createPullRequestEvent
           );
         } catch (error) {
-          this.logger.error(
-            "Failed to emit Create Pull Request Message.",
-            error
-          );
+          logger.error("Failed to emit Create Pull Request Message.", error);
         }
       },
       true

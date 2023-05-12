@@ -13,7 +13,7 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
-import { PUSH_TO_GITHUB_STEP_NAME } from "../../../VersionControl/BuildSteps";
+import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
 
 const className = "create-service-code-generation";
@@ -115,7 +115,11 @@ const CreateServiceCodeGeneration: React.FC<
       return null;
     }
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      (step) =>
+        step.name ===
+        PUSH_TO_GIT_STEP_NAME(
+          resource?.gitRepository?.gitOrganization?.provider
+        )
     );
 
     const log = stepGithub?.logs?.find(

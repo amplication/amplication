@@ -111,7 +111,6 @@ export enum AnalyticsEventNames {
   // Purchase Page
   PricingPageClose = "PricingPageClose",
   PricingPageCTAClick = "PricingPageCTAClick",
-  PassedLimitsNotificationView = "PassedLimitsNotificationView",
   PassedLimitsNotificationClose = "PassedLimitsNotificationClose",
   PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
   UpgradeOnResourceListClick = "UpgradeOnResourceListClick",

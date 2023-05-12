@@ -1,8 +1,8 @@
 import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
-import { useQuery } from "@apollo/client";
-import { ServiceSettings, EnumAuthProviderType } from "../../models";
+import { gql, useQuery } from "@apollo/client";
+import { ServiceSettings, EnumAuthProviderType, Resource } from "../../models";
 import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
 
 type Props = {
@@ -25,6 +25,19 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
     },
   });
 
+  const { data: resourceGitRepository } = useQuery<{
+    resource: Resource;
+  }>(GET_RESOURCE_GIT_REPOSITORY_CONNECTED_GIT_PROVIDER, {
+    variables: {
+      resourceId,
+    },
+  });
+
+  // get the connected git provider from the resource git repository, and if the resource is still not connected to any git provider, use a fallback
+  const connectedGitProvider =
+    resourceGitRepository?.resource.gitRepository?.gitOrganization.provider ||
+    `git provider`;
+
   return (
     <Panel
       clickable={false}
@@ -38,8 +51,9 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
         </div>
         <div className={`${CLASS_NAME}__message`}>
           Your Amplication-generated resource is ready. We created it using
-          amazing open-source technologies. Push the auto-generated code to
-          GitHub and take it to the moon with your coding skills.
+          amazing open-source technologies. Push the auto-generated code to{" "}
+          {connectedGitProvider} and take it to the moon with your coding
+          skills.
         </div>
         <div className={`${CLASS_NAME}__content`}>
           <div className={`${CLASS_NAME}__content__item`}>
@@ -97,3 +111,15 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
 };
 
 export default OverviewTile;
+
+const GET_RESOURCE_GIT_REPOSITORY_CONNECTED_GIT_PROVIDER = gql`
+  query getResourceGitRepository($resourceId: String!) {
+    resource(where: { id: $resourceId }) {
+      gitRepository {
+        gitOrganization {
+          provider
+        }
+      }
+    }
+  }
+`;

@@ -27,7 +27,8 @@ export const EMPTY_STEP: models.ActionStep = {
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
-export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
+export const PUSH_TO_GIT_STEP_NAME = (gitProvider: models.EnumGitProvider) =>
+  `PUSH_TO_${gitProvider.toUpperCase()}`;
 
 type Props = {
   build: models.Build;
@@ -53,7 +54,8 @@ const BuildSteps = ({ build }: Props) => {
     }
     return (
       data.build.action.steps.find(
-        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+        (step) =>
+          step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
       ) || null
     );
   }, [data.build.action]);
@@ -63,7 +65,8 @@ const BuildSteps = ({ build }: Props) => {
       return null;
     }
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      (step) =>
+        step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
     );
 
     const log = stepGithub?.logs?.find(
