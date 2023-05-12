@@ -81,6 +81,7 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
           gitOrganization {
             id
             name
+            provider
           }
         }
         resourceType
