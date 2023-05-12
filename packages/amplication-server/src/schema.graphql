@@ -1472,7 +1472,7 @@ input CreateGitRepositoryInput {
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
   groupName: String
-  public: Boolean!
+  isPrivate: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
@@ -1486,7 +1486,7 @@ input CreateGitRepositoryBaseInput {
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
   groupName: String
-  public: Boolean!
+  isPrivate: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
