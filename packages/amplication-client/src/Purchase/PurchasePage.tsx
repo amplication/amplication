@@ -18,6 +18,7 @@ import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
+import { FAQ } from "./FAQ";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -223,6 +224,7 @@ const PurchasePage = (props) => {
             Contact Us
           </Button>
         </div>
+        <FAQ />
         <div className={`${CLASS_NAME}__footer`}>
           <div className={`${CLASS_NAME}__footer__copyright`}>
             ©2022 amplication
