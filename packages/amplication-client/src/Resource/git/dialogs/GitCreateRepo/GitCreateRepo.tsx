@@ -9,17 +9,15 @@ import {
 import { ApolloError, gql, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useEffect, useState } from "react";
-import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
+import { CreateGitRepositoryInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 
 type Props = {
-  gitProvider: EnumGitProvider;
-  gitOrganizationId: string;
-  gitOrganizationName: string;
-  useGroupingForRepositories?: boolean;
+  gitOrganization: GitOrganizationFromGitRepository;
   repoCreated: {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
@@ -30,10 +28,7 @@ type Props = {
 const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
-  gitProvider,
-  gitOrganizationId,
-  gitOrganizationName,
-  useGroupingForRepositories,
+  gitOrganization,
   repoCreated,
   onCreateGitRepository,
 }: Props) {
@@ -44,7 +39,7 @@ export default function GitCreateRepo({
 
   const { data: gitGroupsData } = useQuery(GET_GROUPS, {
     variables: {
-      organizationId: gitOrganizationId,
+      organizationId: gitOrganization.id,
     },
   });
 
@@ -78,14 +73,15 @@ export default function GitCreateRepo({
       {({ errors: formError, values, handleChange }) => (
         <Form className={CLASS_NAME}>
           <div className={`${CLASS_NAME}__header`}>
-            Create a new {gitProvider} repository to sync your resource with
+            Create a new {gitOrganization.provider} repository to sync your
+            resource with
           </div>
 
-          {useGroupingForRepositories && (
+          {gitOrganization.useGroupingForRepositories && (
             <>
               <div className={`${CLASS_NAME}__label`}>Change workspace</div>
               <GitSelectMenu
-                gitProvider={gitProvider}
+                gitProvider={gitOrganization.provider}
                 selectedItem={repositoryGroup}
                 items={gitGroups}
                 onSelect={setRepositoryGroup}
