@@ -19,10 +19,6 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
     &:hover {
       background-color: var(--black5);
     }
-
-    &:focus {
-      background-color: var(--black5);
-    }
   }
 
   & &__modal {

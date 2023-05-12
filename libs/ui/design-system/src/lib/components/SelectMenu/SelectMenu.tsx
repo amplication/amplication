@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, forwardRef } from "react";
+import React, { useCallback, useContext } from "react";
 
 import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
@@ -50,54 +50,50 @@ const SelectButton: React.FC<Props> = ({
   );
 };
 
-export const SelectMenu = forwardRef<HTMLDetailsElement, Props>(
-  (
-    {
-      disabled = false,
-      children,
-      className,
-      buttonStyle,
-      buttonClassName,
-      title,
-      icon,
-      openIcon,
-      ...rest
-    },
-    ref
-  ) => {
-    if (disabled) {
-      return (
-        <div className={classNames("select-menu", className)}>
-          <SelectButton
-            disabled={disabled}
-            buttonStyle={buttonStyle}
-            buttonClassName={buttonClassName}
-            icon={icon}
-            openIcon={openIcon}
-            title={title}
-          />
-        </div>
-      );
-    } else
-      return (
-        <PrimerSelectMenu
-          ref={ref}
-          className={classNames("select-menu", className)}
-          {...rest}
-        >
-          <SelectButton
-            disabled={disabled}
-            buttonStyle={buttonStyle}
-            buttonClassName={buttonClassName}
-            icon={icon}
-            openIcon={openIcon}
-            title={title}
-          />
-          {children}
-        </PrimerSelectMenu>
-      );
-  }
-);
+export const SelectMenu = ({
+  disabled = false,
+  children,
+  className,
+  buttonStyle,
+  buttonClassName,
+  title,
+  icon,
+  openIcon,
+  selectRef,
+  ...rest
+}: Props) => {
+  if (disabled) {
+    return (
+      <div className={classNames("select-menu", className)}>
+        <SelectButton
+          disabled={disabled}
+          buttonStyle={buttonStyle}
+          buttonClassName={buttonClassName}
+          icon={icon}
+          openIcon={openIcon}
+          title={title}
+        />
+      </div>
+    );
+  } else
+    return (
+      <PrimerSelectMenu
+        className={classNames("select-menu", className)}
+        {...(selectRef ? { ref: selectRef } : {})}
+        {...rest}
+      >
+        <SelectButton
+          disabled={disabled}
+          buttonStyle={buttonStyle}
+          buttonClassName={buttonClassName}
+          icon={icon}
+          openIcon={openIcon}
+          title={title}
+        />
+        {children}
+      </PrimerSelectMenu>
+    );
+};
 
 export type SelectMenuModalProps = PrimerSelectMenuModalProps;
 

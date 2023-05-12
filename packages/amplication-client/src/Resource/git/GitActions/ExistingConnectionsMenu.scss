@@ -71,7 +71,7 @@
     }
   }
 
-  &__item:hover {
+  &__item:hover:focus {
     background-color: var(--black5);
   }
 

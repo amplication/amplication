@@ -65,6 +65,15 @@ export default function ExistingConnectionsMenu({
     [selectRef]
   );
 
+  const handleOnAddGitOrganization = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      if (event.key === ENTER) {
+        onAddGitOrganization && onAddGitOrganization();
+      }
+    },
+    []
+  );
+
   return (
     <>
       <div className={`${CLASS_NAME}__label-title`}>
@@ -93,7 +102,7 @@ export default function ExistingConnectionsMenu({
             <>
               {gitOrganizations.map((gitOrganization) => (
                 <SelectMenuItem
-                  tabIndex={-1}
+                  tabIndex={0}
                   className={`${CLASS_NAME}__item`}
                   closeAfterSelectionChange
                   selected={selectedGitOrganization?.id === gitOrganization.id}
@@ -114,7 +123,9 @@ export default function ExistingConnectionsMenu({
             </>
           </SelectMenuList>
           <div
+            tabIndex={0}
             className={`${CLASS_NAME}__add-item`}
+            onKeyDown={handleOnAddGitOrganization}
             onClick={() => {
               selectRef.current.firstChild.click();
               onAddGitOrganization && onAddGitOrganization();
