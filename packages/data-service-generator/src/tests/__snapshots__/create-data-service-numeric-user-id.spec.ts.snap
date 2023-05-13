@@ -250,7 +250,7 @@ const Login = ({ theme }: any) => {
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
-      notify(\\"Invalid email or password\\")
+      notify(\\"Invalid username or password\\")
     );
   };
 
@@ -285,7 +285,7 @@ const Login = ({ theme }: any) => {
             <h2>Admin UI</h2>
             <div className={\`\${CLASS_NAME}__box__message\`}>
               Sign in to a React-Admin client with ready-made forms for creating
-              and editing all the data models of your application.
+              and editing all the data models of your application
             </div>
             <form onSubmit={submit}>
               <label>
@@ -299,7 +299,7 @@ const Login = ({ theme }: any) => {
                 />
               </label>
               <label>
-                <span>password</span>
+                <span>Password</span>
 
                 <input
                   name=\\"password\\"
@@ -5365,8 +5365,8 @@ export class CustomerResolverBase {
   }
 
   @Public()
-  @graphql.ResolveField(() => [Order])
-  async orders(
+  @graphql.ResolveField(() => [Order], { name: \\"orders\\" })
+  async resolveFieldOrders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
@@ -5379,8 +5379,11 @@ export class CustomerResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => Organization, { nullable: true })
-  async organization(
+  @graphql.ResolveField(() => Organization, {
+    nullable: true,
+    name: \\"organization\\",
+  })
+  async resolveFieldOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getOrganization(parent.id);
@@ -5391,8 +5394,11 @@ export class CustomerResolverBase {
     return result;
   }
 
-  @graphql.ResolveField(() => Organization, { nullable: true })
-  async vipOrganization(
+  @graphql.ResolveField(() => Organization, {
+    nullable: true,
+    name: \\"vipOrganization\\",
+  })
+  async resolveFieldVipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getVipOrganization(parent.id);
@@ -7890,8 +7896,13 @@ export class OrderResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => Customer, { nullable: true })
-  async customer(@graphql.Parent() parent: Order): Promise<Customer | null> {
+  @graphql.ResolveField(() => Customer, {
+    nullable: true,
+    name: \\"customer\\",
+  })
+  async resolveFieldCustomer(
+    @graphql.Parent() parent: Order
+  ): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -9530,8 +9541,8 @@ export class OrganizationResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => [User])
-  async users(
+  @graphql.ResolveField(() => [User], { name: \\"users\\" })
+  async resolveFieldUsers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -9544,8 +9555,8 @@ export class OrganizationResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Customer])
-  async customers(
+  @graphql.ResolveField(() => [Customer], { name: \\"customers\\" })
+  async resolveFieldCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9558,8 +9569,8 @@ export class OrganizationResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Customer])
-  async vipCustomers(
+  @graphql.ResolveField(() => [Customer], { name: \\"vipCustomers\\" })
+  async resolveFieldVipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -10963,8 +10974,13 @@ export class ProfileResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => User, { nullable: true })
-  async user(@graphql.Parent() parent: Profile): Promise<User | null> {
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: \\"user\\",
+  })
+  async resolveFieldUser(
+    @graphql.Parent() parent: Profile
+  ): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
     if (!result) {
@@ -13380,8 +13396,8 @@ export class UserResolverBase {
     }
   }
 
-  @graphql.ResolveField(() => [User])
-  async employees(
+  @graphql.ResolveField(() => [User], { name: \\"employees\\" })
+  async resolveFieldEmployees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -13394,8 +13410,8 @@ export class UserResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => [Organization])
-  async organizations(
+  @graphql.ResolveField(() => [Organization], { name: \\"organizations\\" })
+  async resolveFieldOrganizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -13408,8 +13424,13 @@ export class UserResolverBase {
     return results;
   }
 
-  @graphql.ResolveField(() => User, { nullable: true })
-  async manager(@graphql.Parent() parent: User): Promise<User | null> {
+  @graphql.ResolveField(() => User, {
+    nullable: true,
+    name: \\"manager\\",
+  })
+  async resolveFieldManager(
+    @graphql.Parent() parent: User
+  ): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
@@ -13418,8 +13439,13 @@ export class UserResolverBase {
     return result;
   }
 
-  @graphql.ResolveField(() => Profile, { nullable: true })
-  async profile(@graphql.Parent() parent: User): Promise<Profile | null> {
+  @graphql.ResolveField(() => Profile, {
+    nullable: true,
+    name: \\"profile\\",
+  })
+  async resolveFieldProfile(
+    @graphql.Parent() parent: User
+  ): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 
     if (!result) {
@@ -14692,6 +14718,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
 ",
   "server/tsconfig.json": "{
   \\"compilerOptions\\": {
+    \\"baseUrl\\": \\"./\\",
     \\"module\\": \\"commonjs\\",
     \\"declaration\\": false,
     \\"removeComments\\": true,
@@ -14708,7 +14735,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     \\"skipLibCheck\\": true,
     \\"strict\\": true,
     \\"paths\\": {
-      \\"@app/custom-validators\\": [\\"./src/validators\\"]
+      \\"@app/custom-validators\\": [\\"src/validators\\"]
     }
   },
   \\"include\\": [\\"src\\"]
