@@ -345,7 +345,7 @@ export class BillingService {
   }
 
   async resetUsage(workspaceId: string, usageReport: FeatureUsageReport) {
-    if (this.isBillingEnabled) {
+    if (!this.isBillingEnabled) {
       return;
     }
 
