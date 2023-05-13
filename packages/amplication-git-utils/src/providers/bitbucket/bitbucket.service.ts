@@ -263,7 +263,7 @@ export class BitBucketService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { groupName, repositoryName, isPrivateRepository, gitOrganization } =
+    const { groupName, repositoryName, isPrivate, gitOrganization } =
       createRepositoryArgs;
 
     if (!groupName) {
@@ -275,7 +275,7 @@ export class BitBucketService implements GitProvider {
       groupName,
       repositoryName,
       {
-        is_private: isPrivateRepository,
+        is_private: isPrivate,
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },

@@ -156,7 +156,7 @@ export interface CreateRepositoryArgs {
   gitOrganization: RemoteGitOrganization;
   owner: string;
   repositoryName: string;
-  isPrivateRepository: boolean;
+  isPrivate: boolean;
   groupName?: string;
 }
 
