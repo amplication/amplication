@@ -31,6 +31,7 @@ export class NpmPluginVersionService {
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
         settings: "{}",
+        systemSettings: "{}",
         updatedAt: now,
         version: value.version,
         tarballUrl: value.dist.tarball,
