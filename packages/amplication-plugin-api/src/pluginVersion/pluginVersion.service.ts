@@ -12,6 +12,9 @@ import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
 import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
 
+const SETTINGS_FILE = "package/.amplicationrc.json";
+const SYSTEM_SETTINGS_FILE = "package/.amplicationSystemSettingsrc.json";
+
 @Injectable()
 export class PluginVersionService extends PluginVersionServiceBase {
   constructor(
@@ -116,12 +119,12 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
         const pluginSettings = await this.getPluginSettings(
           tarballUrl,
-          "package/.amplicationrc.json"
+          SETTINGS_FILE
         );
 
         const systemPluginSettings = await this.getPluginSettings(
           tarballUrl,
-          "package/.amplicationSystemSettingsrc.json"
+          SYSTEM_SETTINGS_FILE
         );
         const upsertPluginVersion = await this.upsert({
           where: {
