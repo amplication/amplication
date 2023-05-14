@@ -3,13 +3,7 @@
     overflow: hidden;
     display: -webkit-box;
     -webkit-box-orient: vertical;
-    // text-overflow: ellipsis;
     transition: all 0.8s ease-in-out;
-
-    &.close {
-      // -webkit-line-clamp: 10;
-      //         line-clamp: 2;
-    }
   }
 
   &__link {
