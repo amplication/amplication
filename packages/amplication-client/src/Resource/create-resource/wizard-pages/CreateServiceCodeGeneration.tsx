@@ -127,7 +127,7 @@ const CreateServiceCodeGeneration: React.FC<
     );
 
     return log?.meta?.githubUrl || null;
-  }, [data.build.action]);
+  }, [data.build?.action]);
 
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
 
