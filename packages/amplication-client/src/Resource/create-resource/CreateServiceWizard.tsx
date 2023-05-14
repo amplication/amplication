@@ -402,6 +402,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             isOverrideGitRepository: isOverrideGitRepository,
           };
         }
+        const requireAuthenticationEntity = authType === "core";
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -416,7 +417,8 @@ const CreateServiceWizard: React.FC<Props> = ({
           defineUser,
           structureType,
           databaseType,
-          authType
+          authType,
+          requireAuthenticationEntity
           // gitOrganizationName
         );
         createStarterResource(resource, templateSettings.eventName);

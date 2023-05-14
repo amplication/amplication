@@ -1768,6 +1768,7 @@ export type ResourceCreateInput = {
   gitRepository?: InputMaybe<ConnectGitRepositoryInput>;
   name: Scalars['String'];
   project: WhereParentIdInput;
+  requireAuthenticationEntity?: InputMaybe<Scalars['Boolean']>;
   resourceType: EnumResourceType;
   serviceSettings?: InputMaybe<ServiceSettingsUpdateInput>;
 };

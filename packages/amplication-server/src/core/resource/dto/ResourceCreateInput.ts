@@ -18,6 +18,11 @@ export class ResourceCreateInput {
   })
   description!: string;
 
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  requireAuthenticationEntity?: boolean;
+
   @Field(() => EnumResourceType, { nullable: false })
   resourceType!: keyof typeof EnumResourceType;
 

@@ -259,7 +259,12 @@ export class ResourceService {
     user: User,
     wizardType: string = null
   ): Promise<Resource> {
-    const { serviceSettings, gitRepository, ...rest } = args.data;
+    const {
+      serviceSettings,
+      gitRepository,
+      requireAuthenticationEntity,
+      ...rest
+    } = args.data;
     const resource = await this.createResource(
       {
         data: {
@@ -275,7 +280,8 @@ export class ResourceService {
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
     });
 
-    await this.entityService.createDefaultEntities(resource.id, user);
+    requireAuthenticationEntity &&
+      (await this.entityService.createDefaultEntities(resource.id, user));
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -312,6 +318,8 @@ export class ResourceService {
     ) {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
+
+    console.log({ data });
 
     const resource = await this.createService(
       {

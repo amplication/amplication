@@ -116,7 +116,8 @@ export function prepareServiceObject(
   wizardType: DefineUser,
   repoType: string,
   dbType: string,
-  auth: string
+  auth: string,
+  requireAuthenticationEntity: boolean
   // gitOrganizationName: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
@@ -142,6 +143,7 @@ export function prepareServiceObject(
         authProvider: EnumAuthProviderType.Jwt,
       },
       gitRepository: gitRepository,
+      requireAuthenticationEntity: requireAuthenticationEntity,
     },
     commitMessage: "",
     entities: templateSettings.entities,
