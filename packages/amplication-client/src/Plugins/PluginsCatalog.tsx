@@ -1,7 +1,8 @@
 import { Snackbar } from "@amplication/ui/design-system";
 import { keyBy } from "lodash";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useContext, useMemo } from "react";
 import { match } from "react-router-dom";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
@@ -16,6 +17,11 @@ type Props = AppRouteProps & {
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
+  const { currentResource } = useContext(AppContext);
+
+  const userEntity = currentResource.entities.find(
+    (entity) => entity.name.toLowerCase() === "user"
+  );
 
   const {
     pluginInstallations,
@@ -30,7 +36,15 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
       const { name, pluginId, npm } = plugin;
-      const { version, settings } = pluginVersion;
+      const { version, settings, systemSettings } = pluginVersion;
+      const systemSettingsToJson = JSON.parse(systemSettings);
+      const requiredUser =
+        systemSettingsToJson &&
+        systemSettingsToJson["requireAuthenticationEntity"];
+
+      if (requiredUser === "true" && !userEntity) {
+        console.log("required user!");
+      }
 
       createPluginInstallation({
         variables: {
