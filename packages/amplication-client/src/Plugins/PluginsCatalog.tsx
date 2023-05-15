@@ -36,13 +36,14 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const handleInstall = useCallback(
     (plugin: Plugin, pluginVersion: PluginVersion) => {
       const { name, pluginId, npm } = plugin;
-      const { version, settings, systemSettings } = pluginVersion;
-      const systemSettingsToJson = JSON.parse(systemSettings);
-      const requiredUser =
-        systemSettingsToJson &&
-        systemSettingsToJson["requireAuthenticationEntity"];
+      const { version, settings } = pluginVersion;
+      const settingsToJson = JSON.parse(settings);
+      const requireAuthenticationEntity =
+        settingsToJson?.systemSettings?.requireAuthenticationEntity;
 
-      if (requiredUser === "true" && !userEntity) {
+      const requiredUser = requireAuthenticationEntity;
+
+      if (requiredUser && !userEntity) {
         console.log("required user!");
       }
 
