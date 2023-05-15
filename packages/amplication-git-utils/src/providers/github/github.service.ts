@@ -108,7 +108,7 @@ export class GithubService implements GitProvider {
 
     const { id, login } = data.viewer;
     // amplication[bot] <123123+amplication[bot]@users.noreply.github.com>
-    const oldAmplicationBotPattern = `${login} <.*\\+${login}@users.noreply.github.com>`;
+    const oldAmplicationBotPattern = `${login} <\\d+\\+${login}@user\\.noreply\\.github\\.com>`;
 
     return {
       id,
