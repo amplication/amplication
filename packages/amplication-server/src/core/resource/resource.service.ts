@@ -265,6 +265,7 @@ export class ResourceService {
       requireAuthenticationEntity,
       ...rest
     } = args.data;
+
     const resource = await this.createResource(
       {
         data: {
@@ -318,8 +319,6 @@ export class ResourceService {
     ) {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
-
-    console.log({ data });
 
     const resource = await this.createService(
       {
