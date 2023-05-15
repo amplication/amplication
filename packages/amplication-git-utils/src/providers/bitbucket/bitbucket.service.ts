@@ -505,13 +505,15 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  getCloneUrl(args: CloneUrlArgs): string {
+  async getCloneUrl(args: CloneUrlArgs): Promise<string> {
     const { repositoryGroupName, repositoryName } = args;
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    return `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
+    return Promise.resolve(
+      `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`
+    );
   }
 
   async createPullRequestComment(

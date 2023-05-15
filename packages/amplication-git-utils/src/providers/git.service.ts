@@ -131,7 +131,7 @@ export class GitClientService {
     const gitCli = new GitCli(gitRepoDir);
     let isCloned = false;
 
-    const cloneUrl = this.provider.getCloneUrl({
+    const cloneUrl = await this.provider.getCloneUrl({
       owner,
       repositoryName,
       repositoryGroupName,

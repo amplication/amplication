@@ -88,8 +88,8 @@ export class GithubService implements GitProvider {
     }
   }
 
-  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
-    const token = this.getToken();
+  async getCloneUrl({ owner, repositoryName }: CloneUrlArgs): Promise<string> {
+    const token = await this.getToken();
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
