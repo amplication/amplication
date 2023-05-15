@@ -74,16 +74,6 @@ class PluginVersion {
   settings!: JsonValue;
 
   @ApiProperty({
-    required: false,
-  })
-  @IsJSON()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  systemSettings!: JsonValue;
-
-  @ApiProperty({
     required: true,
   })
   @IsDate()

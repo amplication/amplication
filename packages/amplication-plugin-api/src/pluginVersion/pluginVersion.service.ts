@@ -13,7 +13,6 @@ import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
 
 const SETTINGS_FILE = "package/.amplicationrc.json";
-const SYSTEM_SETTINGS_FILE = "package/.amplicationSystemSettingsrc.json";
 
 @Injectable()
 export class PluginVersionService extends PluginVersionServiceBase {
@@ -122,17 +121,12 @@ export class PluginVersionService extends PluginVersionServiceBase {
           SETTINGS_FILE
         );
 
-        const systemPluginSettings = await this.getPluginSettings(
-          tarballUrl,
-          SYSTEM_SETTINGS_FILE
-        );
         const upsertPluginVersion = await this.upsert({
           where: {
             pluginIdVersion,
           },
           update: {
             settings: pluginSettings,
-            systemSettings: systemPluginSettings,
             deprecated,
             updatedAt,
           },
@@ -140,7 +134,6 @@ export class PluginVersionService extends PluginVersionServiceBase {
             pluginId,
             pluginIdVersion,
             settings: pluginSettings,
-            systemSettings: systemPluginSettings,
             deprecated,
             version,
             createdAt,
