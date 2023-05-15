@@ -293,7 +293,7 @@ export interface Commit {
 export interface Bot {
   id: string;
   login: string;
-  email: string;
+  gitAuthor: string;
 }
 
 export interface CloneUrlArgs {
