@@ -16,7 +16,6 @@ import { AppContext } from "../../context/appContext";
 export type PluginVersion = {
   version: string;
   settings: string;
-  systemSettings: string;
   id: string;
   pluginId: string;
 };

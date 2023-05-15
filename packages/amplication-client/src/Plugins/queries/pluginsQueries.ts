@@ -101,7 +101,6 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
         deprecated
         version
         settings
-        systemSettings
       }
     }
   }
