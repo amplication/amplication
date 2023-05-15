@@ -64,9 +64,7 @@ const LastCommit = ({ resourceId }: Props) => {
             {isEmpty(lastCommit?.message) ? (
               ClickableCommitId
             ) : (
-              <Tooltip aria-label={lastCommit?.message} direction="ne">
-                {ClickableCommitId}
-              </Tooltip>
+              <p aria-label={lastCommit?.message}>{ClickableCommitId}</p>
             )}
           </div>
           <span className={classNames("clickable-id")}>
