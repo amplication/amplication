@@ -334,7 +334,7 @@ export class GitClientService {
 
     if (amplicationBot) {
       lastAmplicationBotCommitOnBranch = await gitCli.log(
-        `${amplicationBot.login} <${amplicationBot.email}>`,
+        amplicationBot.gitAuthor,
         maxCount
       );
     }

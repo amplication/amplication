@@ -113,7 +113,7 @@ export class GithubService implements GitProvider {
     return {
       id,
       login,
-      email: oldAmplicationBotPattern,
+      gitAuthor: oldAmplicationBotPattern,
     };
   }
 
