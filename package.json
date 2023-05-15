@@ -83,7 +83,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.0",
     "classnames": "^2.3.2",
-    "core-js": "^3.6.5",
+    "core-js": "^3.30.2",
     "cron": "^2.3.0",
     "cronstrue": "^1.125.0",
     "cuid": "^2.1.8",
