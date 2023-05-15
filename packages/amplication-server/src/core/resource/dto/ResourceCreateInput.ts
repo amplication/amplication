@@ -20,6 +20,7 @@ export class ResourceCreateInput {
 
   @Field(() => Boolean, {
     nullable: true,
+    defaultValue: true,
   })
   requireAuthenticationEntity?: boolean;
 
