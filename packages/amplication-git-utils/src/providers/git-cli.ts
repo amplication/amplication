@@ -44,7 +44,9 @@ export class GitCli {
    * @param branchName name of the branch to checkout
    */
   async checkout(branchName: string): Promise<void> {
-    if (!(await this.git.branch()).all.includes(branchName)) {
+    const remoteBranches = await this.git.branch(["--remotes"]);
+    const remoteOriginBranchName = `origin/${branchName}`;
+    if (!remoteBranches.all.includes(remoteOriginBranchName)) {
       await this.git.checkoutLocalBranch(branchName);
     } else {
       await this.git.checkout(branchName);
