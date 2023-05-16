@@ -156,7 +156,7 @@ export interface CreateRepositoryArgs {
   gitOrganization: RemoteGitOrganization;
   owner: string;
   repositoryName: string;
-  isPrivateRepository: boolean;
+  isPrivate: boolean;
   groupName?: string;
 }
 
@@ -293,7 +293,7 @@ export interface Commit {
 export interface Bot {
   id: string;
   login: string;
-  email: string;
+  gitAuthor: string;
 }
 
 export interface CloneUrlArgs {

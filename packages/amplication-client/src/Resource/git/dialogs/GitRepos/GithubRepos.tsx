@@ -49,7 +49,7 @@ export type GitRepositoryCreatedData = {
   gitOrganizationId: string;
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
-  public: boolean;
+  isPrivate: boolean;
   groupName?: string;
   gitRepositoryUrl?: string;
 };
@@ -66,6 +66,7 @@ function GitRepos({
     variables: {
       organizationId: gitOrganization.id,
     },
+    skip: !gitOrganization.useGroupingForRepositories,
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;

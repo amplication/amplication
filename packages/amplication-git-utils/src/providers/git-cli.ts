@@ -44,7 +44,9 @@ export class GitCli {
    * @param branchName name of the branch to checkout
    */
   async checkout(branchName: string): Promise<void> {
-    if (!(await this.git.branch()).all.includes(branchName)) {
+    const remoteBranches = await this.git.branch(["--remotes"]);
+    const remoteOriginBranchName = `origin/${branchName}`;
+    if (!remoteBranches.all.includes(remoteOriginBranchName)) {
       await this.git.checkoutLocalBranch(branchName);
     } else {
       await this.git.checkout(branchName);
@@ -122,7 +124,7 @@ export class GitCli {
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
   async log(author: string, maxCount?: number) {
-    const authorEscaped = author.replace("[", "\\[").replace("]", "\\]");
+    const authorEscaped = author.replaceAll("[", "\\[").replaceAll("]", "\\]");
 
     maxCount = maxCount ?? -1;
     return this.git.log({

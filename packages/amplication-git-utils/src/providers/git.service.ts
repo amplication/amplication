@@ -131,7 +131,7 @@ export class GitClientService {
     const gitCli = new GitCli(gitRepoDir);
     let isCloned = false;
 
-    const cloneUrl = this.provider.getCloneUrl({
+    const cloneUrl = await this.provider.getCloneUrl({
       owner,
       repositoryName,
       repositoryGroupName,
@@ -334,7 +334,7 @@ export class GitClientService {
 
     if (amplicationBot) {
       lastAmplicationBotCommitOnBranch = await gitCli.log(
-        `${amplicationBot.login} <${amplicationBot.email}>`,
+        amplicationBot.gitAuthor,
         maxCount
       );
     }

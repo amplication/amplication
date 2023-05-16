@@ -32,7 +32,7 @@ const createGitRepositoryFullName = (
     return "Connect to Git Provider";
 
   if (provider === models.EnumGitProvider.Github) {
-    return `${gitRepository.gitOrganization?.name}/${gitRepository.name}`;
+    return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
   }
 
   if (

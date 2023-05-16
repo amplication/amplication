@@ -263,7 +263,7 @@ export class BitBucketService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    const { groupName, repositoryName, isPrivateRepository, gitOrganization } =
+    const { groupName, repositoryName, isPrivate, gitOrganization } =
       createRepositoryArgs;
 
     if (!groupName) {
@@ -275,7 +275,7 @@ export class BitBucketService implements GitProvider {
       groupName,
       repositoryName,
       {
-        is_private: isPrivateRepository,
+        is_private: isPrivate,
         name: repositoryName,
         full_name: `${gitOrganization.name}/${repositoryName}`,
       },
@@ -505,13 +505,15 @@ export class BitBucketService implements GitProvider {
     }
   }
 
-  getCloneUrl(args: CloneUrlArgs): string {
+  async getCloneUrl(args: CloneUrlArgs): Promise<string> {
     const { repositoryGroupName, repositoryName } = args;
     if (!repositoryGroupName) {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
-    return `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`;
+    return Promise.resolve(
+      `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`
+    );
   }
 
   async createPullRequestComment(
