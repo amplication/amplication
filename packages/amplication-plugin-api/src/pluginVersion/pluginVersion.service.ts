@@ -120,20 +120,22 @@ export class PluginVersionService extends PluginVersionServiceBase {
           tarballUrl,
           SETTINGS_FILE
         );
+        const pluginSettingsObject = JSON.parse(pluginSettings);
 
         const upsertPluginVersion = await this.upsert({
           where: {
             pluginIdVersion,
           },
           update: {
-            settings: pluginSettings,
+            settings: pluginSettingsObject?.settings,
             deprecated,
             updatedAt,
           },
           create: {
             pluginId,
             pluginIdVersion,
-            settings: pluginSettings,
+            settings: pluginSettingsObject?.settings,
+            configurations: pluginSettingsObject?.systemSettings,
             deprecated,
             version,
             createdAt,
