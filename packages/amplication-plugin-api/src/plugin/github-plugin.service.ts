@@ -1,12 +1,14 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Plugin } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
 import yaml from "js-yaml";
 import { PluginList, PluginYml } from "./plugin.types";
 import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class GitPluginService {
+  constructor(@Inject(AmplicationLogger) readonly logger: AmplicationLogger) {}
   /**
    * generator function to fetch each plugin yml and convert it to DB plugin structure
    * @param pluginList
@@ -44,7 +46,7 @@ export class GitPluginService {
         };
       } while (pluginListLength > index);
     } catch (error) {
-      console.log(error.message);
+      this.logger.error(error.message, error);
     }
   }
   /**
@@ -80,8 +82,7 @@ export class GitPluginService {
 
       return pluginsArr;
     } catch (error) {
-      /// return error from getPlugins
-      console.log(error);
+      this.logger.error(error.message, error);
     }
   }
 }
