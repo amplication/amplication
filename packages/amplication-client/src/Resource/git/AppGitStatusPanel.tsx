@@ -29,6 +29,7 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
     currentProject,
     gitRepositoryUrl,
     gitRepositoryFullName,
+    gitRepositoryOrganizationProvider,
   } = useContext(AppContext);
 
   const lastSync = resource?.githubLastSync
@@ -43,20 +44,21 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
         <>
           {showDisconnectedMessage && (
             <div className={`${CLASS_NAME}__message`}>
-              Connect to GitHub to create a Pull Request with the generated code
+              Connect to a git provider to create a Pull Request with the
+              generated code
             </div>
           )}
           <Link
-            title={"Connect to GitHub"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/github`}
+            title={"Connect to a git provider"}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/git-sync`}
           >
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
-              icon="github"
+              icon="git-sync"
               iconPosition={EnumIconPosition.Left}
               className={`${CLASS_NAME}__connect__button`}
             >
-              Connect to GitHub
+              Connect with a git provider
             </Button>
           </Link>
         </>
@@ -66,9 +68,17 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
           <div className={`${CLASS_NAME}__connected__details`}>
             <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
             <a
-              className={`${CLASS_NAME}__gh-link`}
+              className={`${CLASS_NAME}__git-link`}
               href={gitRepositoryUrl}
-              target="github"
+              target={
+                gitRepositoryOrganizationProvider ===
+                models.EnumGitProvider.Github
+                  ? "github"
+                  : gitRepositoryOrganizationProvider ===
+                    models.EnumGitProvider.Bitbucket
+                  ? "bitbucket"
+                  : "_blank"
+              }
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}

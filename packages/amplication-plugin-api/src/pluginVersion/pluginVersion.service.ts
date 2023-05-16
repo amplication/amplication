@@ -13,6 +13,8 @@ import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
+const SETTINGS_FILE = "package/.amplicationrc.json";
+
 @Injectable()
 export class PluginVersionService extends PluginVersionServiceBase {
   constructor(
@@ -47,13 +49,16 @@ export class PluginVersionService extends PluginVersionServiceBase {
    * @param tarBallUrl
    * @returns
    */
-  async getPluginSettings(tarBallUrl: string): Promise<string> {
+  async getPluginSettings(
+    tarBallUrl: string,
+    fileName: string
+  ): Promise<string> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
         const extract = tar.extract();
         extract.on("entry", function (header, stream, next) {
-          if (header.name === "package/.amplicationrc.json") {
+          if (header.name === fileName) {
             stream.on("data", (chunk) => {
               const data = Buffer.from(chunk);
 
@@ -114,7 +119,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
         )
           continue;
 
-        const pluginSettings = await this.getPluginSettings(tarballUrl);
+        const pluginSettings = await this.getPluginSettings(
+          tarballUrl,
+          SETTINGS_FILE
+        );
+
         const upsertPluginVersion = await this.upsert({
           where: {
             pluginIdVersion,

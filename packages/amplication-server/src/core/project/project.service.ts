@@ -250,7 +250,8 @@ export class ProjectService {
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId
+        project.workspaceId,
+        currentUser
       );
     }
 

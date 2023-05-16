@@ -7,7 +7,6 @@
   &__newConnectionBox {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
     gap: 8px;
     width: 552px;
   }
@@ -31,13 +30,6 @@
     flex-direction: row;
     align-items: center;
     gap: 8px;
-  }
-
-  &__selectOrganization {
-    font-size: 10px;
-    line-height: 15px;
-    color: var(--black80);
-    margin-bottom: 4px;
   }
 
   .toggle-field {
