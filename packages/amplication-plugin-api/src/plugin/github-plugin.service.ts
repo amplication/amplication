@@ -5,10 +5,20 @@ import yaml from "js-yaml";
 import { PluginList, PluginYml } from "./plugin.types";
 import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class GitPluginService {
-  constructor(@Inject(AmplicationLogger) readonly logger: AmplicationLogger) {}
+  private githubToken: string;
+  constructor(
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
+    configService: ConfigService
+  ) {
+    this.githubToken = configService.get("GITHUB_TOKEN");
+    if (!this.githubToken) {
+      this.logger.error("Github token is missing");
+    }
+  }
   /**
    * generator function to fetch each plugin yml and convert it to DB plugin structure
    * @param pluginList
@@ -25,10 +35,16 @@ export class GitPluginService {
         if (!pluginUrl)
           throw `Plugin ${pluginList[index].name} doesn't have url`;
 
-        const response = await fetch(pluginUrl);
+        const response = await fetch(pluginUrl, {
+          headers: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            Authorization: `token ${this.githubToken}`,
+          },
+        });
         const pluginConfig = await response.json();
 
-        if (!pluginConfig && !pluginConfig.content) yield emptyPlugin;
+        if (!response?.ok || (!pluginConfig && !pluginConfig.content))
+          yield emptyPlugin;
 
         const fileContent = await Buffer.from(
           pluginConfig.content,
@@ -55,11 +71,23 @@ export class GitPluginService {
    */
   async getPlugins(): Promise<Plugin[]> {
     try {
-      const response = await fetch(AMPLICATION_GITHUB_URL);
+      const response = await fetch(AMPLICATION_GITHUB_URL, {
+        headers: {
+          // eslint-disable-next-line @typescript-eslint/naming-convention
+          Authorization: `token ${this.githubToken}`,
+        },
+      });
+
       const pluginCatalog = await response.json();
 
-      if (!pluginCatalog) throw "Failed to fetch github plugin catalog";
-
+      if (!response?.ok || !pluginCatalog) {
+        if (response.headers.get("x-ratelimit-remaining") === "0") {
+          this.logger.error("Github rate limit exceeded", null, {
+            responseHeaders: response.headers.raw(),
+          });
+        }
+        throw new Error("Failed to fetch github plugin catalog");
+      }
       const pluginsArr: Plugin[] = [];
 
       for await (const pluginConfig of this.getPluginConfig(pluginCatalog)) {
