@@ -41,6 +41,7 @@ export default function GitCreateRepo({
     variables: {
       organizationId: gitOrganization.id,
     },
+    skip: !gitOrganization.useGroupingForRepositories,
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;

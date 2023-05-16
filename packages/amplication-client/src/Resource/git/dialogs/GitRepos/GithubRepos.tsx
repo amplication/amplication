@@ -66,6 +66,7 @@ function GitRepos({
     variables: {
       organizationId: gitOrganization.id,
     },
+    skip: !gitOrganization.useGroupingForRepositories,
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;
