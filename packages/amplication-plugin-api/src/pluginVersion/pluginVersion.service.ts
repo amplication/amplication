@@ -11,6 +11,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
 import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const SETTINGS_FILE = "package/.amplicationrc.json";
 
@@ -20,7 +21,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
     protected readonly prisma: PrismaService,
     @Inject(forwardRef(() => PluginService))
     private pluginService: PluginService,
-    private npmPluginVersionService: NpmPluginVersionService
+    private npmPluginVersionService: NpmPluginVersionService,
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
     super(prisma);
   }
@@ -78,7 +80,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
         const res = await fetch(tarBallUrl);
         res.body.pipe(zlib.createGunzip()).pipe(extract);
       } catch (error) {
-        console.error("getPluginSettings", error);
+        this.logger.error("getPluginSettings", error, { tarBallUrl });
         reject(error);
       }
     });
@@ -91,7 +93,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
     try {
       const pluginsVersions =
         await this.npmPluginVersionService.updatePluginsVersion(plugins);
-      if (!pluginsVersions.length) throw "Failed to fetch versions for plugin";
+      if (!pluginsVersions.length)
+        throw new Error("Failed to fetch versions for plugin");
 
       const insertedPluginVersionArr: PluginVersion[] = [];
       for await (const versionData of pluginsVersions) {
@@ -145,7 +148,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
       return insertedPluginVersionArr;
     } catch (error) {
-      console.error(error);
+      this.logger.error("npmPluginsVersions", error, {});
       throw error;
     }
   }
