@@ -15,7 +15,7 @@ import { Env } from "./env";
       envFilePath: [".env.local", ".env"],
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: Env.SERVICE_NAME,
+      component: Env.SERVICE_NAME,
     }),
   ],
 })

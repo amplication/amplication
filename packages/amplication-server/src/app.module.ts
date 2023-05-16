@@ -47,7 +47,7 @@ import { Logger } from "@amplication/util/logging";
       inject: [ConfigService],
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: SERVICE_NAME,
+      component: SERVICE_NAME,
     }),
     MorganModule,
     SegmentAnalyticsModule.registerAsync({
