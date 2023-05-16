@@ -47,10 +47,6 @@ const Entity = ({ match }: Props) => {
     UPDATE_ENTITY,
     {
       onCompleted: (data) => {
-        trackEvent({
-          eventName: AnalyticsEventNames.EntityUpdate,
-          entityName: data.updateEntity.displayName,
-        });
         addEntity(data.updateEntity.id);
       },
     }

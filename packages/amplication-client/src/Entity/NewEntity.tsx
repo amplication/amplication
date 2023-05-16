@@ -64,10 +64,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
-        trackEvent({
-          eventName: AnalyticsEventNames.EntityCreate,
-          entityName: data.createOneEntity.displayName,
-        });
+
         onSuccess();
         history.push(`entities/${data.createOneEntity.id}`);
       },
