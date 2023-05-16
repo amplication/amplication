@@ -16,28 +16,28 @@ import {
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
-  CurrentUser,
   EnumPullRequestMode,
   GetRepositoriesArgs,
-  GetRepositoryArgs,
   GitProviderArgs,
-  GitProvidersConfiguration,
-  OAuthData,
-  PaginatedGitGroup,
   PostCommitProcessArgs,
   PreCommitProcessArgs,
   PreCommitProcessResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
+  GetRepositoryArgs,
+  PaginatedGitGroup,
+  GitProvidersConfiguration,
+  CurrentUser,
+  OAuthTokens,
   UpdateFile,
 } from "../types";
 import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
-import { getCloneDir } from "../utils/clone-dir";
 import { isFolderEmpty } from "../utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
-import { GitClient } from "./git-client";
+import { GitCli } from "./git-cli";
 import { GitFactory } from "./git-factory";
+import { LogResult } from "simple-git";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -61,12 +61,12 @@ export class GitClientService {
     return this.provider.getGitInstallationUrl(amplicationWorkspaceId);
   }
 
-  async getAccessToken(authorizationCode: string): Promise<OAuthData> {
-    return this.provider.getAccessToken(authorizationCode);
+  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
+    return this.provider.getOAuthTokens(authorizationCode);
   }
 
-  async refreshAccessToken(refreshToken: string): Promise<OAuthData> {
-    return this.provider.refreshAccessToken(refreshToken);
+  async refreshAccessToken(): Promise<OAuthTokens> {
+    return this.provider.refreshAccessToken();
   }
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
@@ -109,6 +109,7 @@ export class GitClientService {
     const {
       owner,
       repositoryName,
+      repositoryGroupName,
       branchName,
       commitMessage,
       pullRequestTitle,
@@ -117,53 +118,58 @@ export class GitClientService {
       gitResourceMeta,
       files,
     } = createPullRequestArgs;
+    const gitRepoDir = normalize(
+      join(
+        createPullRequestArgs.cloneDirPath,
+        this.provider.name,
+        owner,
+        repositoryName,
+        v4()
+      )
+    );
 
-    const gitClient = new GitClient();
+    const gitCli = new GitCli(gitRepoDir);
     let isCloned = false;
 
-    const cloneToken = await this.provider.getToken();
-
-    const cloneUrl = this.provider.getCloneUrl({
+    const cloneUrl = await this.provider.getCloneUrl({
       owner,
       repositoryName,
-      token: cloneToken,
-    });
-
-    const cloneDir = getCloneDir({
-      owner,
-      repositoryName,
-      provider: this.provider.name,
-      suffix: v4(),
+      repositoryGroupName,
     });
 
     const { defaultBranch } = await this.provider.getRepository({
       owner,
       repositoryName,
+      groupName: repositoryGroupName,
     });
 
     const haveFirstCommitInDefaultBranch =
       await this.isHaveFirstCommitInDefaultBranch({
         owner,
         repositoryName,
+        repositoryGroupName,
         defaultBranch,
       });
 
     if (haveFirstCommitInDefaultBranch === false) {
       if (isCloned === false) {
-        await gitClient.clone(cloneUrl, cloneDir);
+        await gitCli.clone(cloneUrl);
         isCloned = true;
       }
       await this.createInitialCommit({
-        cloneDir,
-        gitClient,
+        gitRepoDir,
+        gitCli,
         repositoryName,
+        defaultBranch,
       });
     }
 
     const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
       owner,
-      repositoryName
+      repositoryName,
+      repositoryGroupName
     );
+
     const preparedFiles = await prepareFilesForPullRequest(
       gitResourceMeta,
       files,
@@ -187,10 +193,9 @@ export class GitClientService {
         });
         break;
       case EnumPullRequestMode.Accumulative:
-        pullRequestUrl = await this.accumulativePullRequest(
+        pullRequestUrl = await this.accumulativePullRequest({
           cloneUrl,
-          cloneDir,
-          gitClient,
+          gitCli,
           owner,
           repositoryName,
           branchName,
@@ -198,96 +203,99 @@ export class GitClientService {
           pullRequestBody,
           preparedFiles,
           defaultBranch,
-          isCloned
-        );
+          isCloned,
+          repositoryGroupName,
+        });
         break;
       default:
         throw new InvalidPullRequestMode();
     }
 
     if (isCloned === true) {
-      await rm(cloneDir, { recursive: true, force: true });
+      await rm(gitRepoDir, { recursive: true, force: true });
     }
 
     return pullRequestUrl;
   }
 
-  async accumulativePullRequest(
-    cloneUrl: string,
-    cloneDir: string,
-    gitClient: GitClient,
-    owner: string,
-    repositoryName: string,
-    branchName: string,
-    commitMessage: string,
-    pullRequestBody: string,
-    preparedFiles: UpdateFile[],
-    defaultBranch: string,
-    isCloned: boolean
-  ) {
-    if (isCloned === false) {
-      await gitClient.clone(cloneUrl, cloneDir);
-    }
+  async accumulativePullRequest(options: {
+    cloneUrl: string;
+    gitCli: GitCli;
+    owner: string;
+    repositoryName: string;
+    branchName: string;
+    commitMessage: string;
+    pullRequestBody: string;
+    preparedFiles: UpdateFile[];
+    defaultBranch: string;
+    isCloned: boolean;
+    repositoryGroupName?: string;
+  }): Promise<string> {
+    const {
+      cloneUrl,
+      gitCli,
+      owner,
+      repositoryName,
+      branchName,
+      commitMessage,
+      pullRequestBody,
+      preparedFiles,
+      defaultBranch,
+      isCloned,
+      repositoryGroupName,
+    } = options;
 
+    if (isCloned === false) {
+      await gitCli.clone(cloneUrl);
+    }
     await this.restoreAmplicationBranchIfNotExists({
       owner,
       repositoryName,
+      repositoryGroupName,
       branchName,
-      gitClient,
+      gitCli,
       defaultBranch,
     });
 
-    const diffFolder = normalize(
-      join(
-        `.amplication/diffs`,
-        this.provider.name,
-        owner,
-
-        repositoryName,
-        v4()
-      )
-    );
-
     const { diff } = await this.preCommitProcess({
       branchName,
-      gitClient,
-      owner,
-      repositoryName,
+      gitCli,
     });
 
-    await this.provider.createCommit({
-      owner,
-      repositoryName,
-      commitMessage,
-      branchName,
-      files: preparedFiles,
-    });
+    const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
+    this.logger.debug("New commit added", { sha });
 
     if (diff) {
-      await mkdir(diffFolder, { recursive: true });
-      const diffPath = join(diffFolder, "diff.patch");
-      await writeFile(diffPath, diff);
-      const fullDiffPath = resolve(diffPath);
-      this.logger.info(`Saving diff to: ${fullDiffPath}`);
+      const diffFolder = normalize(
+        join(
+          `.amplication/diffs`,
+          this.provider.name,
+          owner,
+          repositoryName,
+          v4()
+        )
+      );
       await this.postCommitProcess({
-        diffPath: fullDiffPath,
-        gitClient,
+        diffFolder,
+        diff,
+        gitCli,
       });
-      await rm(fullDiffPath);
     }
 
-    const existingPullRequest = await this.provider.getPullRequestForBranch({
+    const existingPullRequest = await this.provider.getPullRequest({
       owner,
       repositoryName,
+      repositoryGroupName,
       branchName,
     });
 
     let pullRequest = existingPullRequest;
 
     if (!pullRequest) {
-      pullRequest = await this.provider.createPullRequestForBranch({
+      pullRequest = await this.provider.createPullRequest({
         owner,
         repositoryName,
+        repositoryGroupName,
         pullRequestTitle: accumulativePullRequestTitle,
         pullRequestBody: accumulativePullRequestBody,
         branchName,
@@ -295,68 +303,133 @@ export class GitClientService {
       });
     }
 
-    await this.provider.commentOnPullRequest({
-      where: { issueNumber: pullRequest.number, owner, repositoryName },
+    await this.provider.createPullRequestComment({
+      where: {
+        issueNumber: pullRequest.number,
+        owner,
+        repositoryName,
+        repositoryGroupName,
+      },
       data: { body: pullRequestBody },
     });
 
     return pullRequest.url;
   }
 
-  private async preCommitProcess({
-    gitClient,
+  /**
+   * Returns git commits by amplication author
+   * @param gitCli Git client
+   * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
+   */
+  private async gitLog(
+    gitCli: GitCli,
+    maxCount = -1
+  ): Promise<{
+    amplicationGitUser: LogResult;
+    amplicationBot: LogResult | null;
+  }> {
+    const amplicationBot = await this.provider.getAmplicationBotIdentity();
+
+    let lastAmplicationBotCommitOnBranch: LogResult | null = null;
+
+    if (amplicationBot) {
+      lastAmplicationBotCommitOnBranch = await gitCli.log(
+        amplicationBot.gitAuthor,
+        maxCount
+      );
+    }
+
+    const lastAmplicationGitUserCommitOnBranch = await gitCli.log(
+      gitCli.gitAuthorUser,
+      maxCount
+    );
+
+    return {
+      amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
+      amplicationBot: lastAmplicationBotCommitOnBranch,
+    };
+  }
+
+  /**
+   * Return the git diff of the latest amplication commit in the branchName.
+   * Return null when no amplication commits are found in the branch.
+   */
+  async preCommitProcess({
+    gitCli,
     branchName,
-    owner,
-    repositoryName,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     this.logger.info("Pre commit process");
-    await gitClient.git.checkout(branchName);
+    await gitCli.checkout(branchName);
 
-    const commitsList = await this.provider.getCurrentUserCommitList({
-      branchName,
-      owner,
-      repositoryName,
-    });
-
-    const latestCommit = commitsList[0];
-
-    if (!latestCommit) {
+    const gitLogs = await this.gitLog(gitCli, 1);
+    if (
+      (!gitLogs.amplicationGitUser || !gitLogs.amplicationGitUser.latest) &&
+      (!gitLogs.amplicationBot || !gitLogs.amplicationBot.latest)
+    ) {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
       );
       return { diff: null };
     }
 
-    const { sha } = latestCommit;
-    const diff = await gitClient.git.diff([sha]);
-    if (diff.length === 0) {
-      this.logger.info("Diff returned empty");
+    const hash =
+      gitLogs.amplicationGitUser.latest?.hash ||
+      gitLogs.amplicationBot?.latest?.hash;
+    if (!hash) {
+      this.logger.warn("Didn't find a commit hash");
       return { diff: null };
     }
-    // Reset the branch to the latest commit
-    await gitClient.git.reset([sha]);
-    await gitClient.git.push(["--force"]);
-    await gitClient.resetState();
+
+    const diff = await gitCli.diff([hash]);
+    if (!diff) {
+      this.logger.warn("Diff returned empty");
+      return { diff: null };
+    }
+
+    // Reset the branch to the latest commit of the user / bot
+    await gitCli.reset([hash]);
+    await gitCli.push(["--force"]);
+    await gitCli.resetState();
     this.logger.info("Diff returned");
     return { diff };
   }
 
-  async postCommitProcess({ diffPath, gitClient }: PostCommitProcessArgs) {
-    await gitClient.resetState();
-    await gitClient.git
-      .applyPatch(diffPath, ["--3way", "--whitespace=nowarn"])
-      .add(["."])
-      .commit("Amplication diff restoration", undefined, {
-        "--author": "Amplication diff <info@amplication.com>",
-      })
-      .push();
+  /**
+   * @param diff File containing the git diff
+   * @param diffFolder Location where the git patch will be generated
+   * @param gitCli
+   */
+  private async postCommitProcess({
+    diff,
+    diffFolder,
+    gitCli,
+  }: PostCommitProcessArgs) {
+    await mkdir(diffFolder, { recursive: true });
+    const diffPatchRelativePath = join(diffFolder, "diff.patch");
+    await writeFile(diffPatchRelativePath, diff);
+    const diffPatchAbsolutePath = resolve(diffPatchRelativePath);
+    this.logger.info(`Saving diff to: ${diffPatchAbsolutePath}`);
+
+    await gitCli.resetState();
+    await gitCli.applyPatch(
+      [diffPatchAbsolutePath],
+      ["--3way", "--whitespace=nowarn"]
+    );
+
+    await rm(diffPatchAbsolutePath);
   }
 
   private async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
-    const { branchName, owner, repositoryName, gitClient, defaultBranch } =
-      args;
+    const {
+      branchName,
+      owner,
+      repositoryName,
+      gitCli,
+      repositoryGroupName,
+      defaultBranch,
+    } = args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
@@ -366,6 +439,7 @@ export class GitClientService {
         owner,
         repositoryName,
         branchName: defaultBranch,
+        repositoryGroupName,
       });
 
     if (firstCommitOnDefaultBranch === null) {
@@ -376,16 +450,15 @@ export class GitClientService {
       owner,
       branchName,
       repositoryName,
+      repositoryGroupName,
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
-    const amplicationCommits = await this.provider.getCurrentUserCommitList({
-      owner,
-      repositoryName,
-      branchName: defaultBranch,
-    });
+
+    const gitLogs = await this.gitLog(gitCli);
+
     await this.cherryPickCommits(
-      amplicationCommits,
-      gitClient,
+      { ...gitLogs.amplicationBot, ...gitLogs.amplicationGitUser },
+      gitCli,
       branchName,
       firstCommitOnDefaultBranch
     );
@@ -393,33 +466,40 @@ export class GitClientService {
   }
 
   private async cherryPickCommits(
-    commits: Commit[],
-    gitClient: GitClient,
+    commitsFromLatest: LogResult,
+    gitCli: GitCli,
     branchName: string,
     firstCommitOnDefaultBranch: Commit
   ) {
-    await gitClient.resetState();
-    await gitClient.checkout(branchName);
+    await gitCli.resetState();
+    await gitCli.checkout(branchName);
 
-    for (let index = commits.length - 1; index >= 0; index--) {
-      const commit = commits[index];
-      if (firstCommitOnDefaultBranch.sha === commit.sha) {
+    for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
+      const commit = commitsFromLatest.all[index];
+      if (firstCommitOnDefaultBranch.sha === commit.hash) {
         continue;
       }
-      await gitClient.cherryPick(commit.sha);
+      await gitCli.cherryPick(commit.hash);
     }
 
-    await gitClient.git.push();
+    await gitCli.push();
   }
 
-  private async manageAmplicationIgnoreFile(owner, repositoryName) {
+  private async manageAmplicationIgnoreFile(
+    owner: string,
+    repositoryName: string,
+    repositoryGroupName?: string,
+    gitRef?: string
+  ) {
     const amplicationIgnoreManger = new AmplicationIgnoreManger();
     await amplicationIgnoreManger.init(async (fileName) => {
       try {
         const file = await this.provider.getFile({
           owner,
           repositoryName,
+          repositoryGroupName,
           path: fileName,
+          ref: gitRef,
         });
         if (!file) {
           return "";
@@ -428,7 +508,10 @@ export class GitClientService {
         this.logger.info(`Got ${name} file ${htmlUrl}`);
         return content;
       } catch (error) {
-        this.logger.info("Repository does not have a .amplicationignore file");
+        this.logger.warn(
+          "Repository does not have a .amplicationignore file",
+          error
+        );
         return "";
       }
     });
@@ -437,32 +520,41 @@ export class GitClientService {
 
   private async createInitialCommit(args: {
     repositoryName: string;
-    gitClient: GitClient;
-    cloneDir: string;
+    gitCli: GitCli;
+    gitRepoDir: string;
+    defaultBranch: string;
   }) {
-    const { gitClient, repositoryName, cloneDir } = args;
+    const { gitCli, repositoryName, gitRepoDir, defaultBranch } = args;
     const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
     const foldersToIgnore = [".git"];
-    if ((await isFolderEmpty(cloneDir, foldersToIgnore)) === false) {
+    if ((await isFolderEmpty(gitRepoDir, foldersToIgnore)) === false) {
       throw new Error(
         "The repository is not empty, crash the pull request logic to prevent data loss"
       );
     }
-    await writeFile(normalize(join(cloneDir, "README.md")), defaultREADMEFile);
-    await gitClient.git.add(["."]).commit("Initial commit").push();
+    await gitCli.commit(defaultBranch, "Initial commit", [
+      {
+        path: "README.md",
+        content: defaultREADMEFile,
+        skipIfExists: true,
+        deleted: false,
+      },
+    ]);
   }
 
   private async isHaveFirstCommitInDefaultBranch(args: {
     owner: string;
     repositoryName: string;
+    repositoryGroupName?: string;
     defaultBranch: string;
   }): Promise<boolean> {
-    const { owner, repositoryName, defaultBranch } = args;
+    const { owner, repositoryName, repositoryGroupName, defaultBranch } = args;
     const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
       {
         branchName: defaultBranch,
         owner,
         repositoryName,
+        repositoryGroupName,
       }
     );
 

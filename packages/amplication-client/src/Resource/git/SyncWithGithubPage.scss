@@ -3,15 +3,9 @@
 $max-width: 700px;
 $icon-font-size: 40px;
 
-.sync-with-github-page {
+.sync-with-git-page {
   &__header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-    .amp-icon {
-      margin-right: var(--large-spacing);
-      font-size: $icon-font-size;
-    }
+    @include title-18;
   }
 
   &__message {
@@ -21,12 +15,5 @@ $icon-font-size: 40px;
     line-height: 1.5;
     margin-bottom: var(--default-spacing);
     max-width: $max-width;
-  }
-
-  &__separator {
-    margin: var(--large-spacing) 0;
-    height: 1px;
-    border: none;
-    background-color: var(--black5);
   }
 }

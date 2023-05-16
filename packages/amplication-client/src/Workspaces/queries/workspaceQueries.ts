@@ -21,6 +21,8 @@ export const GET_CURRENT_WORKSPACE = gql`
         name
         installationId
         type
+        provider
+        useGroupingForRepositories
       }
     }
   }

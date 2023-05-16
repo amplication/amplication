@@ -6,9 +6,11 @@ import { ClickableId } from "../Components/ClickableId";
 import { AppContext } from "../context/appContext";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { PUSH_TO_GITHUB_STEP_NAME } from "../VersionControl/BuildSteps";
+import { PUSH_TO_GIT_STEP_NAME } from "../VersionControl/BuildSteps";
 import useCommit from "../VersionControl/hooks/useCommits";
 import "./WorkspaceFooter.scss";
+import { EnumGitProvider } from "../models";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 const CLASS_NAME = "workspace-footer";
 
@@ -21,6 +23,7 @@ const WorkspaceFooter: React.FC<unknown> = () => {
     gitRepositoryFullName,
     gitRepositoryUrl,
     projectConfigurationResource,
+    gitRepositoryOrganizationProvider,
   } = useContext(AppContext);
 
   const { lastCommit } = useCommit();
@@ -56,53 +59,62 @@ const WorkspaceFooter: React.FC<unknown> = () => {
     />
   );
 
-  const githubUrl = useMemo(() => {
-    if (!lastResourceBuild?.action?.steps?.length) {
-      return gitRepositoryUrl;
-    }
-    const stepGithub = lastResourceBuild?.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
-    );
+  const gitUrl =
+    useMemo(() => {
+      if (!lastResourceBuild?.action?.steps?.length) {
+        return gitRepositoryUrl;
+      }
+      const gitStep = lastResourceBuild?.action.steps.find(
+        (step) =>
+          step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
+      );
 
-    const log = stepGithub?.logs?.find(
-      (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
-    );
-    // if there is "lastResourceBuild" link to the last PR
-    return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
-  }, [gitRepositoryUrl, lastResourceBuild]);
+      const log = gitStep?.logs?.find(
+        (log) => !isEmpty(log.meta) && !isEmpty(log.meta.githubUrl)
+      );
+      // if there is "lastResourceBuild" link to the last PR
+      return lastResourceBuild ? log?.meta?.githubUrl : gitRepositoryUrl;
+    }, [gitRepositoryUrl, lastResourceBuild]) || gitRepositoryUrl;
 
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
-        {gitRepositoryFullName.includes("/") ? (
-          <div className={`${CLASS_NAME}__gh-connection`}>
+        {gitRepositoryFullName?.includes("/") ? (
+          <div className={`${CLASS_NAME}__git-connection`}>
             <Icon
-              icon="github"
+              icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
               size="small"
-              className={`${CLASS_NAME}__github-icon`}
+              className={`${CLASS_NAME}__git-icon`}
             />
             <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
             <a
-              className={`${CLASS_NAME}__gh-link`}
-              href={githubUrl}
-              target="github"
+              className={`${CLASS_NAME}__git-link`}
+              href={gitUrl}
+              target={
+                gitRepositoryOrganizationProvider === EnumGitProvider.Github
+                  ? "github"
+                  : gitRepositoryOrganizationProvider ===
+                    EnumGitProvider.Bitbucket
+                  ? "bitbucket"
+                  : "_blank"
+              }
             >
-              Open With GitHub
+              {`Open With ${gitRepositoryOrganizationProvider}`}
             </a>
           </div>
         ) : (
-          <div className={`${CLASS_NAME}__gh-disconnected`}>
+          <div className={`${CLASS_NAME}__git-disconnected`}>
             <Icon
-              icon="github"
+              icon="git-sync"
               size="small"
-              className={`${CLASS_NAME}__github-icon`}
+              className={`${CLASS_NAME}__git-icon`}
             />
             <Link
-              className={`${CLASS_NAME}__connect-to-gh`}
-              title={"Connect to GitHub"}
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
+              className={`${CLASS_NAME}__connect-to-git`}
+              title={`Connect to git`}
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
             >
-              Connect to GitHub
+              Connect to git
             </Link>
           </div>
         )}

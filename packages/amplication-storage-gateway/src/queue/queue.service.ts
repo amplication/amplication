@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { ClientKafka } from "@nestjs/microservices";
 import assert from "assert";
 import { CHECK_USER_ACCESS_TOPIC } from "../constants";
+import { CanUserAccessBuild } from "@amplication/schema-registry";
 
 export const QUEUE_SERVICE_NAME = "QUEUE_SERVICE";
 
@@ -27,9 +28,14 @@ export class QueueService implements OnModuleInit {
   }
 
   canAccessBuild(userId: string, buildId: string): Promise<boolean> {
+    const message: CanUserAccessBuild.Value = {
+      buildId,
+      userId,
+    };
+
     return new Promise((res) => {
       this.kafkaService
-        .send(this.generatePullRequestTopic, { userId, buildId })
+        .send(this.generatePullRequestTopic, message)
         .subscribe((response: boolean) => {
           res(response);
         });

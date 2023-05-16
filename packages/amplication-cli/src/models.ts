@@ -277,27 +277,31 @@ export type CompleteInvitationInput = {
 
 export type ConnectGitRepositoryInput = {
   gitOrganizationId: Scalars['String'];
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
   isOverrideGitRepository?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
   resourceId: Scalars['String'];
 };
 
 export type CreateGitRepositoryBaseInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
+  isPrivate: Scalars['Boolean'];
   name: Scalars['String'];
-  public: Scalars['Boolean'];
 };
 
 export type CreateGitRepositoryInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
+  /** Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true */
+  groupName?: InputMaybe<Scalars['String']>;
+  isPrivate: Scalars['Boolean'];
   name: Scalars['String'];
-  public: Scalars['Boolean'];
   resourceId: Scalars['String'];
 };
 
@@ -732,10 +736,11 @@ export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
 
+/** Group of Repositories */
 export type GitGroup = {
+  displayName: Scalars['String'];
   id: Scalars['String'];
   name: Scalars['String'];
-  slug: Scalars['String'];
 };
 
 export type GitGroupInput = {
@@ -755,6 +760,7 @@ export type GitOrganization = {
   provider: EnumGitProvider;
   type: EnumGitOrganizationType;
   updatedAt: Scalars['DateTime'];
+  /** Defines if a git organisation needs defined repository groups */
   useGroupingForRepositories: Scalars['Boolean'];
 };
 
@@ -771,6 +777,7 @@ export type GitRepository = {
   createdAt?: Maybe<Scalars['DateTime']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String'];
+  groupName?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
   updatedAt?: Maybe<Scalars['DateTime']>;
@@ -847,6 +854,7 @@ export type Mutation = {
   createGitRepository: Resource;
   createMessageBroker: Resource;
   createOneEntity: Entity;
+  /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createPluginInstallations?: Maybe<Array<PluginInstallation>>;
@@ -1257,13 +1265,20 @@ export type MutationUpdateWorkspaceArgs = {
   where: WhereUniqueInput;
 };
 
+/** Returns a paginated list of repository groups available to select. */
 export type PaginatedGitGroup = {
   groups?: Maybe<Array<GitGroup>>;
-  next?: Maybe<Scalars['String']>;
+  /** Page number */
   page: Scalars['Float'];
-  pagelen: Scalars['Float'];
-  previous?: Maybe<Scalars['String']>;
-  size: Scalars['Float'];
+  /** Number of groups per page */
+  pageSize: Scalars['Float'];
+  /** Total number of groups */
+  total: Scalars['Float'];
+};
+
+export type Pagination = {
+  page: Scalars['Float'];
+  perPage: Scalars['Float'];
 };
 
 export type PendingChange = {
@@ -1688,24 +1703,26 @@ export enum QueryMode {
 }
 
 export type RemoteGitRepos = {
-  currentPage: Scalars['Float'];
-  pageSize: Scalars['Float'];
+  pagination: Pagination;
   repos: Array<RemoteGitRepository>;
-  totalRepos: Scalars['Float'];
+  total: Scalars['Float'];
 };
 
 export type RemoteGitRepositoriesWhereUniqueInput = {
-  gitGroupName?: InputMaybe<Scalars['String']>;
   gitOrganizationId: Scalars['String'];
   gitProvider: EnumGitProvider;
-  limit: Scalars['Float'];
-  page: Scalars['Float'];
+  groupName?: InputMaybe<Scalars['String']>;
+  /** The page number. One-based indexing */
+  page?: Scalars['Float'];
+  /** The number of items to return per page */
+  perPage?: Scalars['Float'];
 };
 
 export type RemoteGitRepository = {
   admin: Scalars['Boolean'];
   defaultBranch: Scalars['String'];
   fullName: Scalars['String'];
+  groupName?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   private: Scalars['Boolean'];
   url: Scalars['String'];

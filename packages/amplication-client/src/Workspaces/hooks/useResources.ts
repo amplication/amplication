@@ -10,6 +10,7 @@ import {
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -24,14 +25,22 @@ type TCreateMessageBroker = {
 };
 
 const createGitRepositoryFullName = (
+  provider: models.EnumGitProvider,
   gitRepository: models.Maybe<models.GitRepository> | undefined
 ) => {
-  return (
-    (gitRepository &&
-      gitRepository?.gitOrganization &&
-      `${gitRepository.gitOrganization?.name}/${gitRepository?.name}`) ||
-    "connect to GitHub"
-  );
+  if (!gitRepository && !gitRepository?.gitOrganization)
+    return "Connect to Git Provider";
+
+  if (provider === models.EnumGitProvider.Github) {
+    return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
+  }
+
+  if (
+    provider === models.EnumGitProvider.Bitbucket &&
+    gitRepository?.groupName
+  ) {
+    return `${gitRepository.groupName}/${gitRepository.name}`;
+  }
 };
 
 const useResources = (
@@ -73,10 +82,17 @@ const useResources = (
     useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
-    createGitRepositoryFullName(currentResource?.gitRepository)
+    createGitRepositoryFullName(
+      currentResource?.gitRepository?.gitOrganization?.provider,
+      currentResource?.gitRepository
+    )
   );
 
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
+  const [
+    gitRepositoryOrganizationProvider,
+    setGitRepositoryOrganizationProvider,
+  ] = useState<models.EnumGitProvider>(undefined);
 
   const {
     data: resourcesData,
@@ -115,7 +131,6 @@ const useResources = (
     trackEvent({
       eventName: eventName,
     });
-
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
       if (!result.data?.createServiceWithEntities.resource.id) return;
 
@@ -160,9 +175,23 @@ const useResources = (
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
       setGitRepositoryFullName(
-        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+        createGitRepositoryFullName(
+          projectConfigurationResource?.gitRepository?.gitOrganization
+            ?.provider,
+          projectConfigurationResource?.gitRepository
+        )
       );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryDetails({
+        organization:
+          projectConfigurationResource?.gitRepository?.gitOrganization,
+        repositoryName: projectConfigurationResource?.gitRepository?.name,
+        groupName: projectConfigurationResource?.gitRepository?.groupName,
+      }).repositoryUrl
+    );
+    setGitRepositoryOrganizationProvider(
+      projectConfigurationResource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     currentResource,
@@ -181,9 +210,21 @@ const useResources = (
 
     setCurrentResource(resource);
     setGitRepositoryFullName(
-      createGitRepositoryFullName(resource?.gitRepository)
+      createGitRepositoryFullName(
+        resource?.gitRepository?.gitOrganization?.provider,
+        resource?.gitRepository
+      )
     );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryDetails({
+        organization: resource?.gitRepository?.gitOrganization,
+        repositoryName: resource?.gitRepository?.name,
+        groupName: resource?.gitRepository?.groupName,
+      }).repositoryUrl
+    );
+    setGitRepositoryOrganizationProvider(
+      resource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     resources,
@@ -241,6 +282,7 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
     createServiceWithEntitiesResult,
   };
 };

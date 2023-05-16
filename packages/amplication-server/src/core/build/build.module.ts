@@ -14,12 +14,13 @@ import { BuildResolver } from "./build.resolver";
 import { BuildController } from "./build.controller";
 import { ActionModule } from "../action/action.module";
 import { BuildFilesSaver } from "./utils";
-import { QueueModule } from "../queue/queue.module";
 import { CommitModule } from "../commit/commit.module";
 import { TopicModule } from "../topic/topic.module";
 import { ServiceTopicsModule } from "../serviceTopics/serviceTopics.module";
 import { PluginInstallationModule } from "../pluginInstallation/pluginInstallation.module";
 import { BillingModule } from "../billing/billing.module";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
+import { GitProviderModule } from "../git/git.provider.module";
 
 @Module({
   imports: [
@@ -34,12 +35,13 @@ import { BillingModule } from "../billing/billing.module";
     ActionModule,
     forwardRef(() => ResourceModule),
     ServiceSettingsModule,
-    QueueModule,
+    KafkaModule,
     PluginInstallationModule,
     forwardRef(() => CommitModule),
     TopicModule,
     ServiceTopicsModule,
     BillingModule,
+    GitProviderModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

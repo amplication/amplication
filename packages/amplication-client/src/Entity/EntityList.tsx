@@ -102,7 +102,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
   );
-
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
 

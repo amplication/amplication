@@ -80,12 +80,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
       const isLimitationError =
         errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
       setOpenLimitationDialog(isLimitationError);
-      const limitationErrorMessage =
-        isLimitationError && formatLimitationError(errorMessage);
-      trackEvent({
-        eventName: AnalyticsEventNames.PassedLimitsNotificationView,
-        reason: limitationErrorMessage,
-      });
     },
     onCompleted: (response) => {
       setCommitRunning(false);

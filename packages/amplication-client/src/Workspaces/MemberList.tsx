@@ -40,6 +40,7 @@ function MemberList() {
 
           <InviteMember />
         </div>
+        <div className={`${CLASS_NAME}__separator`} />
         <div className={`${CLASS_NAME}__title`}>
           {data?.workspaceMembers.length}{" "}
           {pluralize(data?.workspaceMembers.length, "Member", "Members")}

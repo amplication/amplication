@@ -1,5 +1,5 @@
 import { LogEntry } from "@amplication/util/logging";
 
-export interface OnCodeGenerationLogRequest extends LogEntry {
+export interface CodeGenerationLogRequestDto extends LogEntry {
   buildId: string;
 }
