@@ -56,7 +56,7 @@ yarn-error.log*
     \\"build\\": \\"react-scripts build\\",
     \\"test\\": \\"react-scripts test\\",
     \\"eject\\": \\"react-scripts eject\\",
-    \\"docker:build\\": \\"docker build .\\"
+    \\"package:container\\": \\"docker build .\\"
   },
   \\"eslintConfig\\": {
     \\"extends\\": [
@@ -2952,7 +2952,7 @@ services:
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
-    \\"docker:build\\": \\"docker build .\\",
+    \\"package:container\\": \\"docker build .\\",
     \\"compose:up\\": \\"docker-compose up -d\\",
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
