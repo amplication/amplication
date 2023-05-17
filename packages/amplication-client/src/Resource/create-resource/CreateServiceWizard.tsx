@@ -233,8 +233,8 @@ const CreateServiceWizard: React.FC<Props> = ({
       npm: "@amplication/plugin-auth-core",
       version: "latest",
       resource: { connect: { id: "" } },
-      settings: JSON.parse(authCoreVersion?.settings || "{}"),
-      configurations: JSON.parse(authCoreVersion?.configurations || "{}"),
+      settings: authCoreVersion?.settings || JSON.parse("{}"),
+      configurations: authCoreVersion?.configurations || JSON.parse("{}"),
     },
     {
       displayName: "Auth-jwt",
@@ -243,8 +243,8 @@ const CreateServiceWizard: React.FC<Props> = ({
       npm: "@amplication/plugin-auth-jwt",
       version: "latest",
       resource: { connect: { id: "" } },
-      settings: JSON.parse(authJwtVersion?.settings || "{}"),
-      configurations: JSON.parse(authJwtVersion?.configurations || "{}"),
+      settings: authJwtVersion?.settings || JSON.parse("{}"),
+      configurations: authJwtVersion?.configurations || JSON.parse("{}"),
     },
   ];
 
@@ -322,8 +322,8 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
-            settings: JSON.parse(dbLastVersion?.settings || "{}"),
-            configurations: JSON.parse(dbLastVersion?.configurations || "{}"),
+            settings: dbLastVersion?.settings || JSON.parse("{}"),
+            configurations: dbLastVersion?.configurations || JSON.parse("{}"),
           },
         ],
       };
@@ -331,7 +331,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    [pluginsVersionData?.plugins]
+    [pluginsVersionData]
   );
 
   const handleCloseWizard = useCallback(
