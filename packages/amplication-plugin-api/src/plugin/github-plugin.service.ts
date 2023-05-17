@@ -31,7 +31,7 @@ export class GitPluginService {
       let index = 0;
 
       do {
-        const pluginUrl = pluginList[index].url;
+        const pluginUrl = pluginList[index].download_url;
         if (!pluginUrl)
           throw `Plugin ${pluginList[index].name} doesn't have url`;
 
@@ -41,16 +41,13 @@ export class GitPluginService {
             Authorization: `token ${this.githubToken}`,
           },
         });
-        const pluginConfig = await response.json();
+        const pluginConfig = await response.text();
 
-        if (!response?.ok || (!pluginConfig && !pluginConfig.content))
+        if (!response?.ok || !pluginConfig) {
           yield emptyPlugin;
+        }
 
-        const fileContent = await Buffer.from(
-          pluginConfig.content,
-          "base64"
-        ).toString();
-        const fileYml: PluginYml = yaml.load(fileContent) as PluginYml;
+        const fileYml: PluginYml = yaml.load(pluginConfig) as PluginYml;
 
         const pluginId = pluginList[index]["name"].replace(".yml", "");
 
