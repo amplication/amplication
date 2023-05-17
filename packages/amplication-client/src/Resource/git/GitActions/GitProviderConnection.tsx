@@ -1,18 +1,12 @@
-import {
-  Button,
-  EnumButtonStyle,
-  Icon,
-  UpgradeLink,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import { EnumGitProvider } from "../../../models";
-import { useCallback, useContext } from "react";
+import { useCallback } from "react";
 
 import "./GitProviderConnection.scss";
 import classNames from "classnames";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import { AppContext } from "../../../../src/context/appContext";
 import { ContactUsLinkForEnterprise } from "libs/ui/design-system/src/lib/components/LimitationNotification/LimitationNotification";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
@@ -53,7 +47,6 @@ export default function GitProviderConnection({
     onSyncNewGitOrganizationClick(provider);
   }, [provider]);
 
-  const { currentWorkspace } = useContext(AppContext);
   const contactUsLink = "https://amplication.com/contact-us";
 
   return (
