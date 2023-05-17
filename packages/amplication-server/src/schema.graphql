@@ -1214,7 +1214,7 @@ input PendingChangesDiscardInput {
 input ResourceCreateInput {
   name: String!
   description: String!
-  requireAuthenticationEntity: Boolean
+  requireAuthenticationEntity: Boolean = true
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
   serviceSettings: ServiceSettingsUpdateInput
@@ -1294,6 +1294,7 @@ input PluginInstallationCreateInput {
   enabled: Boolean!
   npm: String!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 
