@@ -13,6 +13,7 @@ import classNames from "classnames";
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { AppContext } from "../../../../src/context/appContext";
+import { ContactUsLinkForEnterprise } from "libs/ui/design-system/src/lib/components/LimitationNotification/LimitationNotification";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -53,7 +54,7 @@ export default function GitProviderConnection({
   }, [provider]);
 
   const { currentWorkspace } = useContext(AppContext);
-  const upgradeLink = `/${currentWorkspace?.id}/purchase`;
+  const contactUsLink = "https://amplication.com/contact-us";
 
   return (
     <div
@@ -74,10 +75,16 @@ export default function GitProviderConnection({
                 <Icon icon="info_circle" />
                 <div className={`${CLASS_NAME}__tooltip__window__info`}>
                   <span>
-                    This feature requires an Enterprise plan, Upgrade now to
-                    access Bitbucket and other premium features
+                    This feature requires an Enterprise plan.
+                    <br />
+                    For more information,
                   </span>{" "}
-                  <UpgradeLink link={upgradeLink} handleClick={() => {}} />
+                  <ContactUsLinkForEnterprise
+                    link={contactUsLink}
+                    handleClick={() => {
+                      window.open(contactUsLink, "_blank");
+                    }}
+                  />
                 </div>
               </div>
             }
