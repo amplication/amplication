@@ -1973,6 +1973,27 @@ export class EntityService {
           );
         }
 
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldCreate,
+        });
+
         // Create entity field
         return this.prisma.entityField.create({
           data: {
@@ -2281,6 +2302,28 @@ export class EntityService {
             },
           });
         }
+
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldUpdate,
+        });
+
         return updatedField;
       }
     );

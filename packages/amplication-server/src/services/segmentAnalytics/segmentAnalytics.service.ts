@@ -14,6 +14,8 @@ export enum EnumEventType {
   SubscriptionLimitPassed = "SubscriptionLimitPassed",
   EntityCreate = "createEntity",
   EntityUpdate = "updateEntity",
+  EntityFieldCreate = "createEntityField",
+  EntityFieldUpdate = "updateEntityField",
 }
 
 export type IdentifyData = {
