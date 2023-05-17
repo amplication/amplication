@@ -15,14 +15,8 @@ export class PluginService extends PluginServiceBase {
     super(prisma);
   }
 
-  async upsert<T extends Prisma.PluginUpsertArgs>(
-    args: Prisma.SelectSubset<T, Prisma.PluginUpsertArgs>
-  ): Promise<Plugin> {
-    return this.prisma.plugin.upsert(args);
-  }
-
   /**
-   * main service that trigger gitPluginService and return plugin list. It upsert the plugins to DB
+   * main service that trigger gitPluginService and return plugin list. It creates the plugins into DB
    * @returns Plugin[]
    */
   async githubCatalogPlugins(): Promise<Plugin[]> {
@@ -31,51 +25,28 @@ export class PluginService extends PluginServiceBase {
       if (
         !pluginsList.length ||
         Object.prototype.toString.call(pluginsList) === "[object String]"
-      )
+      ) {
         throw pluginsList;
-
-      const insertedPluginArr: Plugin[] = [];
-      for await (const plugin of pluginsList) {
-        const {
-          description,
-          github,
-          icon,
-          name,
-          npm,
-          website,
-          pluginId,
-          updatedAt,
-          createdAt,
-        } = plugin;
-        const upsertPlugin = await this.upsert({
-          where: {
-            pluginId,
-          },
-          update: {
-            description,
-            github,
-            icon,
-            name,
-            npm,
-            updatedAt,
-            website,
-          },
-          create: {
-            description,
-            github,
-            icon,
-            name,
-            npm,
-            updatedAt,
-            website,
-            pluginId,
-            createdAt,
-          },
-        });
-        insertedPluginArr.push(upsertPlugin);
       }
 
-      return insertedPluginArr;
+      const createdPlugins = await this.prisma.plugin.createMany({
+        data: pluginsList.map((plugin) => ({
+          description: plugin.description,
+          github: plugin.github,
+          icon: plugin.icon,
+          name: plugin.name,
+          npm: plugin.npm,
+          website: plugin.website,
+          pluginId: plugin.pluginId,
+          createdAt: plugin.createdAt,
+          updatedAt: plugin.updatedAt,
+        })),
+        skipDuplicates: true,
+      });
+
+      this.logger.debug("createdPlugins", createdPlugins);
+
+      return pluginsList;
     } catch (error) {
       this.logger.error("githubCatalogPlugins", error);
       return error.message;
