@@ -17,6 +17,7 @@ import {
   User,
   Commit,
   Resource,
+  Account,
 } from "../../models";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { FindManyEntityArgs } from "./dto";
@@ -39,6 +40,7 @@ import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -156,6 +158,13 @@ const EXAMPLE_RESOURCE: Resource = {
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
   gitRepositoryOverride: false,
+  project: {
+    id: EXAMPLE_PROJECT_ID,
+    workspaceId: "exampleWorkspaceId",
+    name: "exampleProjectName",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  },
 };
 
 const EXAMPLE_ENTITY_PENDING_CHANGE_DELETE: EntityPendingChange = {
@@ -259,17 +268,39 @@ const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
   unique: false,
   updatedAt: new Date(),
 };
+
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   isOwner: true,
+  account: EXAMPLE_ACCOUNT,
 };
 
 const RESERVED_NAME = "class";
 const UNRESERVED_NAME = "person";
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: "EXAMPLE_ID" } };
+
+const prismaResourceFindUniqueMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
 
 const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
@@ -385,8 +416,19 @@ describe("EntityService", () => {
       imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
         {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
+        {
           provide: PrismaService,
           useClass: jest.fn(() => ({
+            resource: {
+              findUnique: prismaResourceFindUniqueMock,
+            },
             entity: {
               findFirst: prismaEntityFindFirstMock,
               findMany: prismaEntityFindManyMock,
