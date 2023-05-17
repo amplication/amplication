@@ -1,4 +1,9 @@
-import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  Icon,
+  ContactUsLinkForEnterprise,
+} from "@amplication/ui/design-system";
 import { EnumGitProvider } from "../../../models";
 import { useCallback } from "react";
 
@@ -7,7 +12,6 @@ import classNames from "classnames";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
-import { ContactUsLinkForEnterprise } from "libs/ui/design-system/src/lib/components/LimitationNotification/LimitationNotification";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
