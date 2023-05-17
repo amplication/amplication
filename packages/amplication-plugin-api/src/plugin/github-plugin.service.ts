@@ -32,8 +32,9 @@ export class GitPluginService {
 
       do {
         const pluginUrl = pluginList[index].download_url;
-        if (!pluginUrl)
-          throw `Plugin ${pluginList[index].name} doesn't have url`;
+        if (!pluginUrl) {
+          throw `Plugin ${pluginList[index].name} doesn't have download_url`;
+        }
 
         const response = await fetch(pluginUrl, {
           headers: {
