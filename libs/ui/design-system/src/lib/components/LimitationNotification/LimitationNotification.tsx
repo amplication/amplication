@@ -5,6 +5,7 @@ import "./LimitationNotification.scss";
 
 const LIMIT_CLASS_NAME = "limitation-notification";
 const UPGRADE_LINK_CLASS_NAME = "upgrade-link";
+const CONTACT_US_LINK_CLASS_NAME = "contact-us-link";
 
 export type Props = {
   description: string;
@@ -13,6 +14,26 @@ export type Props = {
 export type LinkProps = {
   link: string;
   handleClick: () => void;
+};
+
+export const ContactUsLinkForEnterprise = ({
+  link,
+  handleClick,
+}: LinkProps) => {
+  return (
+    <a
+      href={link}
+      onClick={(e) => {
+        e.preventDefault();
+        handleClick();
+      }}
+      className={CONTACT_US_LINK_CLASS_NAME}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      Contact Us Now
+    </a>
+  );
 };
 
 export const UpgradeLink = ({ link, handleClick }: LinkProps) => {
