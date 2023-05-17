@@ -1,5 +1,5 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { Plugin, Prisma } from "../../prisma/generated-prisma-client";
+import { Plugin } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
@@ -43,6 +43,25 @@ export class PluginService extends PluginServiceBase {
         })),
         skipDuplicates: true,
       });
+
+      const updateMany = pluginsList.map((plugin) =>
+        this.prisma.plugin.update({
+          where: {
+            pluginId: plugin.pluginId,
+          },
+          data: {
+            createdAt: plugin.createdAt,
+            updatedAt: plugin.updatedAt,
+            description: plugin.description,
+            github: plugin.github,
+            icon: plugin.icon,
+            name: plugin.name,
+            npm: plugin.npm,
+            website: plugin.website,
+          },
+        })
+      );
+      await this.prisma.$transaction(updateMany);
 
       this.logger.debug("createdPlugins", createdPlugins);
 
