@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Link } from "react-router-dom";
 
 import "./LimitationNotification.scss";
@@ -20,13 +20,18 @@ export const ContactUsLinkForEnterprise = ({
   link,
   handleClick,
 }: LinkProps) => {
+  const handleContactUsLinkClick = useCallback(
+    (e: { preventDefault: () => void }) => {
+      e.preventDefault();
+      handleClick();
+    },
+    [handleClick]
+  );
+
   return (
     <a
       href={link}
-      onClick={(e) => {
-        e.preventDefault();
-        handleClick();
-      }}
+      onClick={handleContactUsLinkClick}
       className={CONTACT_US_LINK_CLASS_NAME}
       target="_blank"
       rel="noopener noreferrer"
