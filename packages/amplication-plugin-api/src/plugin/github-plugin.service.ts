@@ -9,15 +9,19 @@ import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class GitPluginService {
-  private githubToken: string;
+  private githubHeaders: any;
   constructor(
     @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
     configService: ConfigService
   ) {
-    this.githubToken = configService.get("GITHUB_TOKEN");
-    if (!this.githubToken) {
+    const githubToken = configService.get("GITHUB_TOKEN");
+    if (!githubToken) {
       this.logger.error("Github token is missing");
     }
+    this.githubHeaders = githubToken
+      ? // eslint-disable-next-line @typescript-eslint/naming-convention
+        { Authorization: `token ${githubToken}` }
+      : {};
   }
   /**
    * generator function to fetch each plugin yml and convert it to DB plugin structure
@@ -37,10 +41,7 @@ export class GitPluginService {
         }
 
         const response = await fetch(pluginUrl, {
-          headers: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            Authorization: `token ${this.githubToken}`,
-          },
+          headers: this.githubHeaders,
         });
         const pluginConfig = await response.text();
 
@@ -70,10 +71,7 @@ export class GitPluginService {
   async getPlugins(): Promise<Plugin[]> {
     try {
       const response = await fetch(AMPLICATION_GITHUB_URL, {
-        headers: {
-          // eslint-disable-next-line @typescript-eslint/naming-convention
-          Authorization: `token ${this.githubToken}`,
-        },
+        headers: this.githubHeaders,
       });
 
       const pluginCatalog = await response.json();
