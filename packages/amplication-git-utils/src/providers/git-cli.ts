@@ -3,6 +3,7 @@ import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
+import { ILogger } from "@amplication/util/logging";
 
 export class GitCli {
   private git: SimpleGit;
@@ -12,7 +13,10 @@ export class GitCli {
   public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
   private gitConflictsResolverAuthor = `amplication[branch whisperer] <${this.gitAuthorUserEmail}>`;
 
-  constructor(private readonly repositoryDir: string) {
+  constructor(
+    private readonly logger: ILogger,
+    private readonly repositoryDir: string
+  ) {
     this.git = simpleGit({
       config: [
         `user.name=${this.gitAuthorUserName}`,
@@ -95,9 +99,16 @@ export class GitCli {
     );
 
     await this.git.add(["."]);
-    const { commit: commitSha } = await this.git.commit(message);
-    await this.git.push();
-    return commitSha;
+
+    const status = await this.git.status();
+    if (status.staged.length !== 0) {
+      const { commit: commitSha } = await this.git.commit(message);
+      await this.git.push();
+      return commitSha;
+    } else {
+      this.logger.warn(`Trying to commit empty changeset`, { status });
+    }
+    return "";
   }
 
   async reset(options: string[], mode: ResetMode = ResetMode.HARD) {
