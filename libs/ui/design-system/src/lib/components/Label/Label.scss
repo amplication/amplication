@@ -1,0 +1,14 @@
+@import "../../style/index.scss";
+
+.amplication-label {
+  font-size: 10px;
+  &__error {
+    color: var(--negative);
+  }
+  &__normal {
+    color: #53dbee;
+    font-size: 8px;
+    font-weight: 400;
+    line-height: 12px;
+  }
+}

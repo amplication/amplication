@@ -106,5 +106,4 @@ class PluginWhereInput {
   })
   website?: StringNullableFilter;
 }
-
-export { PluginWhereInput as PluginWhereInput };
+export { PluginWhereInput };

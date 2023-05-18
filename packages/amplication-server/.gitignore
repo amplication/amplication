@@ -1,0 +1,13 @@
+node_modules/
+dist/
+prisma/dal/
+prisma/*.db
+coverage/
+ 
+.DS_Store
+
+prisma/migrations/dev/
+artifacts/
+.env.local
+.eslintcache
+.server-id

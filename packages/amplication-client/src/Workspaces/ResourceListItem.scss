@@ -1,0 +1,60 @@
+@import "../style/index.scss";
+
+.resource-list-item {
+  margin: 0;
+
+  &__row {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    @include body1;
+    color: var(--black100);
+  }
+
+  &__description {
+    @include body2;
+    color: var(--black80);
+  }
+
+  &__recently-used {
+    margin-left: var(--default-spacing-small);
+    height: var(--medium-button-height);
+    border-radius: var(--medium-button-radius);
+    @include flexFullRow;
+    box-sizing: border-box;
+    white-space: nowrap;
+    .user-and-time {
+      margin-left: var(--default-spacing-small);
+    }
+  }
+
+  &__last-build {
+    font-weight: normal;
+    &__title {
+      color: var(--black100);
+    }
+    &__not-yet {
+      color: var(--black80);
+    }
+  }
+
+  &__git-sync-repo {
+    color: var(--black20);
+    @include regular-12;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--icon-spacing);
+
+    &--not-connected {
+      color: var(--black40);
+    }
+  }
+}

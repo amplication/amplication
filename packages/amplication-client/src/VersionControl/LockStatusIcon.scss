@@ -1,0 +1,9 @@
+@import "../style/index.scss";
+
+.lock-status-icon {
+  width: var(--default-spacing-small);
+  height: var(--default-spacing-small);
+  border-radius: 50%;
+  background: var(--negative);
+  display: block;
+}

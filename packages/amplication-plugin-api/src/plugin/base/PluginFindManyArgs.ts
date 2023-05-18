@@ -50,4 +50,4 @@ class PluginFindManyArgs {
   take?: number;
 }
 
-export { PluginFindManyArgs as PluginFindManyArgs };
+export { PluginFindManyArgs };

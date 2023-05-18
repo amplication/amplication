@@ -1,0 +1,119 @@
+@import "../../../style/index.scss";
+
+.create-service-code-generation {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  padding-top: 80px;
+
+  &__buildLog {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__title {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-weight: 600;
+    font-size: 38px;
+    line-height: 57px;
+    gap: 8px;
+    color: var(--black100);
+  }
+
+  &__negative_status {
+    display: flex;
+    flex: 1;
+    margin: 64px 100px 40px 100px;
+    max-height: 50vh;
+    .action-log {
+      max-width: 1500px;
+      margin: auto;
+      border: 1px solid #f85b6e;
+    }
+  }
+
+  &__error_message_box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+  }
+
+  &__error_message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__btn_actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  h2 {
+    font-size: 18px;
+    line-height: 27px;
+    font-weight: 400;
+  }
+  &__status {
+    display: flex;
+    flex: 1;
+    margin: 100px;
+    margin-top: 64px;
+    max-height: 50vh;
+
+    .action-log {
+      max-width: 1500px;
+      margin: auto;
+    }
+
+    &__completed {
+      display: flex;
+      flex: 1;
+
+      flex-direction: column;
+
+      align-items: center;
+      justify-content: center;
+
+      background: var(--white);
+
+      gap: 32px;
+
+      &__image {
+        width: 150px;
+        height: 120px;
+      }
+
+      &__description {
+        display: flex;
+        flex-direction: column;
+
+        align-items: center;
+
+        &__header {
+          @include title-24;
+        }
+
+        &__link {
+          @include title-14;
+          font-weight: 400;
+          color: var(--black80);
+        }
+      }
+    }
+  }
+  a {
+    color: white;
+  }
+  .amp-button.amp-button--clear {
+    border: 1px solid var(--black100);
+    border-radius: 4px;
+    color: var(--black100);
+  }
+}

@@ -1,0 +1,57 @@
+@import "../../style/index.scss";
+
+.auth-app-with-git {
+  margin-left: 0 !important;
+  padding-left: 0 !important;
+  padding-bottom: 0 !important;
+
+  .toggle-field {
+    margin: 0;
+  }
+
+  .amp-panel-collapsible__header:hover {
+    box-shadow: none;
+    cursor: default;
+  }
+
+  &__notice {
+    color: var(--black100);
+    &__title {
+      @include body2;
+    }
+    text-align: left;
+    margin-top: var(--medium-spacing);
+
+    ul {
+      margin: 0;
+      padding: 0;
+      padding-top: var(--default-spacing-small);
+      li {
+        @include regular-10;
+        color: var(--black80);
+        line-height: var(--double-spacing);
+        list-style: none;
+        margin: 0;
+        @include flexFullRow;
+        justify-content: flex-start;
+        align-items: center;
+        .amp-icon {
+          margin-right: var(--default-spacing-small);
+          color: var(--positive-default);
+        }
+      }
+    }
+
+    a {
+      color: var(--primary);
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+.git-organization-dialog {
+  width: 750px !important;
+}

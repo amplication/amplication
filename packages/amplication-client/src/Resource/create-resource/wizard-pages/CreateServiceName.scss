@@ -1,0 +1,38 @@
+.create-service-name {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  &__description {
+    display: flex;
+    flex-direction: column;
+
+    width: 744px;
+  }
+
+  &__service_input {
+    width: 454px;
+    margin-top: 40px;
+
+    label.input-label {
+      font-size: 10px;
+      font-weight: 400;
+      color: var(--black80);
+    }
+
+    .text-input input {
+      max-width: none;
+      height: auto;
+      margin-top: 4px;
+      border: 1px solid #373d57;
+      border-radius: 4px;
+      padding: var(--default-spacing);
+      font-size: 14px;
+    }
+    .text-input__invalid {
+      bottom: 16px;
+    }
+  }
+}

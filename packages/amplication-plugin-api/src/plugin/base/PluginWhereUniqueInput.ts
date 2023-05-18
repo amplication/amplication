@@ -23,5 +23,4 @@ class PluginWhereUniqueInput {
   @Field(() => String)
   id!: string;
 }
-
-export { PluginWhereUniqueInput as PluginWhereUniqueInput };
+export { PluginWhereUniqueInput };

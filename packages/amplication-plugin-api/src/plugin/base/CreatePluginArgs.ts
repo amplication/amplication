@@ -18,4 +18,4 @@ class CreatePluginArgs {
   data!: PluginCreateInput;
 }
 
-export { CreatePluginArgs as CreatePluginArgs };
+export { CreatePluginArgs };

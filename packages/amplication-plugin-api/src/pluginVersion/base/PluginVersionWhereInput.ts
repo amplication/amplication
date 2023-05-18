@@ -16,7 +16,6 @@ import { Type } from "class-transformer";
 import { IsOptional } from "class-validator";
 import { StringFilter } from "../../util/StringFilter";
 import { JsonFilter } from "../../util/JsonFilter";
-
 @InputType()
 class PluginVersionWhereInput {
   @ApiProperty({

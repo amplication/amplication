@@ -1,0 +1,181 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "bootstrap",
+      "problemMatcher": [],
+      "label": "Install",
+      "detail": "lerna bootstrap"
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "packages/amplication-client/",
+      "problemMatcher": [],
+      "label": "Client Start",
+      "detail": "react-scripts start"
+    },
+    {
+      "type": "npm",
+      "script": "start",
+      "path": "packages/amplication-server/",
+      "problemMatcher": [],
+      "label": "Server Start",
+      "detail": "nest start"
+    },
+    {
+      "type": "npm",
+      "script": "docker:db",
+      "path": "packages/amplication-server/",
+      "problemMatcher": [],
+      "label": "Database Start",
+      "detail": "docker-compose -f docker-compose.yml up -d"
+    },
+    {
+      "label": "Start",
+      "dependsOn": ["Server Start", "Client Start", "Database Start"],
+      "problemMatcher": []
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-data/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-data",
+      "detail": "run-s build:generate-types build:compile"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-deployer/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-deployer",
+      "detail": "run-s build:compile build:copy-files"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-data-service-generator",
+      "detail": "run-s build:compile build:copy-files"
+    },
+    {
+      "type": "npm",
+      "script": "update-test-data-service-snapshot",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": [],
+      "label": "npm: update-snapshot - packages/amplication-data-service-generator",
+      "detail": "jest -u src/tests/create-data-service.spec.ts"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-container-builder/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-container-builder",
+      "detail": "tsc"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-server/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-server",
+      "detail": "nest build"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-client/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-client",
+      "detail": "react-scripts build"
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": ["$tsc"],
+      "group": "build",
+      "label": "npm: build - packages/amplication-design-system",
+      "detail": "rollup -c"
+    },
+    {
+      "type": "npm",
+      "script": "storybook",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": [],
+      "label": "npm: storybook - packages/amplication-design-system",
+      "detail": "start-storybook"
+    },
+    {
+      "type": "npm",
+      "script": "build-storybook",
+      "path": "packages/amplication-design-system/",
+      "problemMatcher": [],
+      "group": "build",
+      "label": "npm: build-storybook - packages/amplication-design-system",
+      "detail": "build-storybook"
+    },
+    {
+      "type": "npm",
+      "script": "generate-test-data-service",
+      "path": "packages/amplication-data-service-generator/",
+      "problemMatcher": [],
+      "label": "npm: generate-test-data-service - packages/amplication-data-service-generator",
+      "detail": "ts-node scripts/generate-test-data-service.ts generated",
+      "dependsOn": ["npm: build - packages/amplication-data-service-generator"]
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/server",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated/server",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "install",
+      "path": "packages/amplication-data-service-generator/generated/admin",
+      "problemMatcher": [],
+      "label": "npm: install - packages/amplication-data-service-generator/generated/admin",
+      "detail": "npm install",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "test",
+      "path": "packages/amplication-data-service-generator/generated/",
+      "problemMatcher": [],
+      "group": "test",
+      "label": "npm: test - packages/amplication-data-service-generator/generated",
+      "detail": "jest",
+      "dependsOn": [
+        "npm: generate-test-data-service - packages/amplication-data-service-generator"
+      ]
+    },
+    {
+      "type": "npm",
+      "script": "build",
+      "path": "packages/amplication-scheduler",
+      "label": "npm: build - packages/amplication-scheduler/",
+      "detail": "run-s build:generate-help build:generate-types build:compile",
+      "group": "build",
+      "problemMatcher": []
+    }
+  ]
+}

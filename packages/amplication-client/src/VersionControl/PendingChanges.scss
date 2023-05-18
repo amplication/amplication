@@ -1,0 +1,136 @@
+@import "../style/index.scss";
+
+$empty-state-image-size: 120px;
+$counter-height: 18px;
+$resource-name-max-width: 180px;
+
+.pending-changes {
+  padding: var(--large-spacing);
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+
+  &__title {
+    @include bold-14;
+    margin: 0;
+    padding-bottom: var(--large-spacing);
+  }
+
+  &__divider {
+    border: none;
+    margin: auto 0 0 0;
+    background-color: var(--black10);
+    height: 1px;
+  }
+
+  &__header {
+    @include flexFullRowWithSpacing;
+    h3 {
+      margin: 0;
+    }
+  }
+
+  &__changes-header {
+    @include flexFullRowWithSpacing;
+    @include regular-12;
+
+    :first-child {
+      color: var(--black100);
+    }
+
+    :last-child {
+      margin-left: 0;
+    }
+
+    .amp-button {
+      margin-left: 0;
+    }
+  }
+
+  %__changes-count {
+    height: $counter-height;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+    white-space: nowrap;
+    width: auto;
+    margin-left: var(--default-spacing-small);
+    min-width: $counter-height;
+  }
+
+  &__changes-count-warning {
+    @extend %__changes-count;
+    color: var(--warning-default);
+  }
+
+  &__changes-count {
+    @extend %__changes-count;
+    background-color: var(--black5);
+    color: var(--black100);
+  }
+
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    .svg-theme-image {
+      width: $empty-state-image-size;
+      height: $empty-state-image-size;
+    }
+
+    &__title {
+      @include body2;
+      text-align: center;
+      margin-bottom: var(--large-spacing);
+    }
+  }
+
+  &__changes-wrapper {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: var(--default-spacing);
+    border: $border-black10;
+    padding: var(--default-spacing);
+    border-radius: var(--small-border-radius);
+  }
+
+  &__changes {
+    flex-grow: 1;
+    flex-basis: 0px;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
+
+    &__resource {
+      @include bold-12;
+      margin-bottom: var(--medium-spacing);
+      max-width: $resource-name-max-width;
+      white-space: nowrap;
+      text-align: left;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      .circle-badge {
+        margin-right: var(--user-badge-spacing);
+      }
+    }
+  }
+
+  .amp-button__icon {
+    color: var(--black100);
+    font-size: var(--icon-font-size);
+    cursor: pointer;
+    margin-right: 0;
+  }
+}
+
+.commit-dialog {
+  .amp-dialog__body {
+    .amp-button {
+      width: 100%;
+    }
+  }
+}
