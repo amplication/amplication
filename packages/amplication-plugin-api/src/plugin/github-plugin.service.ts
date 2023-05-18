@@ -43,11 +43,17 @@ export class GitPluginService {
         const response = await fetch(pluginUrl, {
           headers: this.githubHeaders,
         });
-        const pluginConfig = await response.text();
 
-        if (!response?.ok || !pluginConfig) {
+        if (!response?.ok) {
+          this.logger.error("Failed to fetch github plugin catalog", null, {
+            response,
+          });
           yield emptyPlugin;
+          ++index;
+          continue;
         }
+
+        const pluginConfig = await response.text();
 
         const fileYml: PluginYml = yaml.load(pluginConfig) as PluginYml;
 
@@ -76,7 +82,7 @@ export class GitPluginService {
 
       const pluginCatalog = await response.json();
 
-      if (!response?.ok || !pluginCatalog) {
+      if (!response?.ok) {
         if (response.headers.get("x-ratelimit-remaining") === "0") {
           this.logger.error("Github rate limit exceeded", null, {
             responseHeaders: response.headers.raw(),
