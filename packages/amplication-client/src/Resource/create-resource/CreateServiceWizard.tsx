@@ -423,7 +423,6 @@ const CreateServiceWizard: React.FC<Props> = ({
           };
         }
 
-        const requireAuthenticationEntity = authType === "core";
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -438,15 +437,14 @@ const CreateServiceWizard: React.FC<Props> = ({
           defineUser,
           structureType,
           databaseType,
-          authType,
-          requireAuthenticationEntity
+          authType
           // gitOrganizationName
         );
         createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");
     },
-    []
+    [pluginsVersionData]
   );
 
   return (
