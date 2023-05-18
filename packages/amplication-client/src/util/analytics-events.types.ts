@@ -60,8 +60,6 @@ export enum AnalyticsEventNames {
 
   // entity
 
-  EntityFieldCreate = "createEntityField",
-  EntityFieldUpdate = "updateEntityField",
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
 
