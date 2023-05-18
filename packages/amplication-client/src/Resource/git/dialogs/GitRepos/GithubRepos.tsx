@@ -66,6 +66,7 @@ function GitRepos({
     variables: {
       organizationId: gitOrganization.id,
     },
+    skip: !gitOrganization.useGroupingForRepositories,
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;
@@ -222,16 +223,18 @@ function GitRepos({
           )}
         </div>
         <div className={`${CLASS_NAME}__header-right`}>
-          <Button
-            className={`${CLASS_NAME}__header-create`}
-            buttonStyle={EnumButtonStyle.Outline}
-            onClick={(e) => {
-              openCreateNewRepo();
-            }}
-            type="button"
-          >
-            Create repository
-          </Button>
+          {gitOrganization.type === EnumGitOrganizationType.Organization && (
+            <Button
+              className={`${CLASS_NAME}__header-create`}
+              buttonStyle={EnumButtonStyle.Outline}
+              onClick={(e) => {
+                openCreateNewRepo();
+              }}
+              type="button"
+            >
+              Create repository
+            </Button>
+          )}
         </div>
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch

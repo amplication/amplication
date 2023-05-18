@@ -108,15 +108,22 @@ describe("Logger", () => {
       expect(mockLogger.warn).toHaveBeenCalledWith("warn message", undefined);
     });
 
-    it("logs an error message", () => {
+    it("logs an simple error message", () => {
       const logger = new Logger(logOptions);
 
       logger.error("error message");
 
+      expect(mockLogger.error).toHaveBeenCalledWith("error message", undefined);
+    });
+
+    it("logs an error message with Error", () => {
+      const logger = new Logger(logOptions);
+
+      logger.error("error message", new Error("error"));
+
       expect(mockLogger.error).toHaveBeenCalledWith(
         "error message",
-        undefined,
-        undefined
+        expect.objectContaining({ error: expect.any(Object) })
       );
     });
   });

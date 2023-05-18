@@ -1,7 +1,8 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
 import type { AbbreviatedManifest } from "pacote";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 interface NpmVersion {
   [versionNumber: string]: AbbreviatedManifest;
@@ -9,6 +10,7 @@ interface NpmVersion {
 
 @Injectable()
 export class NpmPluginVersionService {
+  constructor(@Inject(AmplicationLogger) readonly logger: AmplicationLogger) {}
   /**
    * get npm versions results per package and structure it as plugin version DTO
    * @param npmVersions
@@ -31,7 +33,7 @@ export class NpmPluginVersionService {
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
         settings: "{}",
-        systemSettings: "{}",
+        configurations: "{}",
         updatedAt: now,
         version: value.version,
         tarballUrl: value.dist.tarball,
@@ -48,7 +50,7 @@ export class NpmPluginVersionService {
     plugins: Plugin[]
   ): AsyncGenerator<(PluginVersion & { tarballUrl: string })[], void> {
     try {
-      const pluginLength = plugins.length;
+      const pluginLength = plugins?.length || 0;
       let index = 0;
 
       do {
@@ -73,7 +75,7 @@ export class NpmPluginVersionService {
         yield pluginVersionArr;
       } while (pluginLength > index);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
   /**
@@ -86,6 +88,7 @@ export class NpmPluginVersionService {
   ): Promise<(PluginVersion & { tarballUrl: string })[]> {
     try {
       const pluginsVersions: (PluginVersion & { tarballUrl: string })[] = [];
+      if (!plugins?.length) return pluginsVersions;
 
       for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
         pluginsVersions.push(...pluginVersionArr);
@@ -93,7 +96,7 @@ export class NpmPluginVersionService {
 
       return pluginsVersions;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
 }

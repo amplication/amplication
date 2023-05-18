@@ -78,7 +78,10 @@ export class Logger implements ILogger {
     error?: Error,
     params?: Record<string, unknown>
   ): void {
-    this.logger.error(message, params, error);
+    if (error) {
+      params = { ...params, error };
+    }
+    this.logger.error(message, params);
   }
 
   child(metadata?: Pick<LoggerOptions, "metadata">): Logger {

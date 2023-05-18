@@ -1,14 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, Prisma } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class PluginService extends PluginServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
-    private gitPluginService: GitPluginService
+    private gitPluginService: GitPluginService,
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
     super(prisma);
   }
@@ -75,7 +77,7 @@ export class PluginService extends PluginServiceBase {
 
       return insertedPluginArr;
     } catch (error) {
-      console.error("githubCatalogPlugins", error);
+      this.logger.error("githubCatalogPlugins", error);
       return error.message;
     }
   }

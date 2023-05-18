@@ -81,7 +81,7 @@ class PluginVersion {
   @Field(() => GraphQLJSON, {
     nullable: true,
   })
-  systemSettings!: JsonValue;
+  configurations!: JsonValue;
 
   @ApiProperty({
     required: true,

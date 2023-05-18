@@ -1322,6 +1322,7 @@ export type PluginInstallation = IBlock & {
 };
 
 export type PluginInstallationCreateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
