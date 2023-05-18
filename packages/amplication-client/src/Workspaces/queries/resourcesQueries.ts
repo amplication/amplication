@@ -23,6 +23,7 @@ export const GET_RESOURCES = gql`
           name
           type
           provider
+          useGroupingForRepositories
         }
       }
       builds(orderBy: { createdAt: Desc }, take: 1) {
@@ -81,6 +82,7 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
           gitOrganization {
             id
             name
+            provider
           }
         }
         resourceType

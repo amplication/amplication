@@ -68,6 +68,7 @@ export class PullRequestController {
         key: null,
         value: {
           url: pullRequest,
+          gitProvider: validArgs.gitProvider,
           buildId: validArgs.newBuildId,
         },
       };
@@ -85,6 +86,7 @@ export class PullRequestController {
         key: null,
         value: {
           buildId: validArgs.newBuildId,
+          gitProvider: validArgs.gitProvider,
           errorMessage: error.message,
         },
       };

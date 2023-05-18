@@ -93,7 +93,7 @@ function AuthResourceWithGit({ resource, onDone }: Props) {
           name: data.name,
           gitOrganizationId: gitOrganization.id,
           gitProvider: gitOrganization.provider,
-          public: data.public,
+          isPublic: data.isPublic,
           resourceId: resource.id,
           groupName: data.groupName,
         },
@@ -206,13 +206,13 @@ const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
     $gitOrganizationId: String!
     $resourceId: String!
     $name: String!
-    $public: Boolean!
+    $isPublic: Boolean!
     $groupName: String
   ) {
     createGitRepository(
       data: {
         name: $name
-        public: $public
+        isPublic: $isPublic
         gitOrganizationId: $gitOrganizationId
         resourceId: $resourceId
         gitProvider: $gitProvider

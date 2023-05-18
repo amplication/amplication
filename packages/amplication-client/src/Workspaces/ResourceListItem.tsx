@@ -17,6 +17,7 @@ import {
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 type Props = {
   resource: models.Resource;
@@ -117,7 +118,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
                 })}
               >
                 <Icon
-                  icon="git-sync"
+                  icon={gitProviderIconMap[provider]}
                   size="small"
                   className={`${CLASS_NAME}__git-sync-repo__icon${
                     !gitRepo ? "-not-connected" : ""

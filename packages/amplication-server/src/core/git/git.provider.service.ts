@@ -174,6 +174,8 @@ export class GitProviderService {
   async createRemoteGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<Resource> {
+    // negate the isPublic flag to get the isPrivate flag
+    const isPrivateRepository = args.isPublic ? !args.isPublic : true;
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId,
@@ -195,7 +197,7 @@ export class GitProviderService {
       },
       groupName: args.groupName,
       owner: organization.name,
-      isPrivateRepository: args.public,
+      isPrivate: isPrivateRepository,
     };
 
     const gitClientService = await this.createGitClient(organization);
@@ -220,6 +222,8 @@ export class GitProviderService {
   async createRemoteGitRepositoryWithoutConnect(
     args: CreateGitRepositoryBaseInput
   ): Promise<boolean> {
+    // negate the isPublic flag to get the isPrivate flag
+    const isPrivateRepository = args.isPublic ? !args.isPublic : true;
     const organization = await this.getGitOrganization({
       where: {
         id: args.gitOrganizationId,
@@ -234,7 +238,7 @@ export class GitProviderService {
       },
       groupName: args.groupName,
       owner: organization.name,
-      isPrivateRepository: args.public,
+      isPrivate: isPrivateRepository,
     };
 
     const gitClientService = await this.createGitClient(organization);

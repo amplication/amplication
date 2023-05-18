@@ -88,8 +88,8 @@ export class GithubService implements GitProvider {
     }
   }
 
-  getCloneUrl({ owner, repositoryName }: CloneUrlArgs) {
-    const token = this.getToken();
+  async getCloneUrl({ owner, repositoryName }: CloneUrlArgs): Promise<string> {
+    const token = await this.getToken();
     return `https://x-access-token:${token}@${this.domain}/${owner}/${repositoryName}.git`;
   }
 
@@ -108,12 +108,12 @@ export class GithubService implements GitProvider {
 
     const { id, login } = data.viewer;
     // amplication[bot] <123123+amplication[bot]@users.noreply.github.com>
-    const oldAmplicationBotPattern = `${login} <.*\\+${login}@users.noreply.github.com>`;
+    const oldAmplicationBotPattern = `${login} <\\d+\\+${login}@user\\.noreply\\.github\\.com>`;
 
     return {
       id,
       login,
-      email: oldAmplicationBotPattern,
+      gitAuthor: oldAmplicationBotPattern,
     };
   }
 
@@ -244,7 +244,7 @@ export class GithubService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    const { gitOrganization, owner, repositoryName, isPrivateRepository } =
+    const { gitOrganization, owner, repositoryName, isPrivate } =
       createRepositoryArgs;
 
     if (gitOrganization.type === EnumGitOrganizationType.User) {
@@ -263,7 +263,7 @@ export class GithubService implements GitProvider {
       org: owner,
       // eslint-disable-next-line @typescript-eslint/naming-convention
       auto_init: true,
-      private: !isPrivateRepository,
+      private: isPrivate,
     });
 
     return {

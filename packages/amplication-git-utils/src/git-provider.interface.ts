@@ -57,7 +57,7 @@ export interface GitProvider {
   getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getFirstCommitOnBranch: (args: GetBranchArgs) => Promise<Commit | null>;
-  getCloneUrl: (args: CloneUrlArgs) => string;
+  getCloneUrl: (args: CloneUrlArgs) => Promise<string>;
   createPullRequestComment: (
     args: CreatePullRequestCommentArgs
   ) => Promise<void>;

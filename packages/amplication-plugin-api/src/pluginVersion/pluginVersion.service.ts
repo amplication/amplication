@@ -11,6 +11,9 @@ import { PrismaService } from "../prisma/prisma.service";
 import { PluginVersionServiceBase } from "./base/pluginVersion.service.base";
 import { PluginService } from "../plugin/plugin.service";
 import { NpmPluginVersionService } from "./npm-plugin-version.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+
+const SETTINGS_FILE = "package/.amplicationrc.json";
 
 @Injectable()
 export class PluginVersionService extends PluginVersionServiceBase {
@@ -18,7 +21,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
     protected readonly prisma: PrismaService,
     @Inject(forwardRef(() => PluginService))
     private pluginService: PluginService,
-    private npmPluginVersionService: NpmPluginVersionService
+    private npmPluginVersionService: NpmPluginVersionService,
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
     super(prisma);
   }
@@ -45,13 +49,16 @@ export class PluginVersionService extends PluginVersionServiceBase {
    * @param tarBallUrl
    * @returns
    */
-  async getPluginSettings(tarBallUrl: string): Promise<string> {
+  async getPluginSettings(
+    tarBallUrl: string,
+    fileName: string
+  ): Promise<string> {
     // eslint-disable-next-line no-async-promise-executor
     return new Promise(async (resolve, reject) => {
       try {
         const extract = tar.extract();
         extract.on("entry", function (header, stream, next) {
-          if (header.name === "package/.amplicationrc.json") {
+          if (header.name === fileName) {
             stream.on("data", (chunk) => {
               const data = Buffer.from(chunk);
 
@@ -73,7 +80,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
         const res = await fetch(tarBallUrl);
         res.body.pipe(zlib.createGunzip()).pipe(extract);
       } catch (error) {
-        console.error("getPluginSettings", error);
+        this.logger.error("getPluginSettings", error, { tarBallUrl });
         reject(error);
       }
     });
@@ -86,7 +93,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
     try {
       const pluginsVersions =
         await this.npmPluginVersionService.updatePluginsVersion(plugins);
-      if (!pluginsVersions.length) throw "Failed to fetch versions for plugin";
+      if (!pluginsVersions.length)
+        throw new Error("Failed to fetch versions for plugin");
 
       const insertedPluginVersionArr: PluginVersion[] = [];
       for await (const versionData of pluginsVersions) {
@@ -111,7 +119,11 @@ export class PluginVersionService extends PluginVersionServiceBase {
         )
           continue;
 
-        const pluginSettings = await this.getPluginSettings(tarballUrl);
+        const pluginSettings = await this.getPluginSettings(
+          tarballUrl,
+          SETTINGS_FILE
+        );
+
         const upsertPluginVersion = await this.upsert({
           where: {
             pluginIdVersion,
@@ -136,7 +148,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
       return insertedPluginVersionArr;
     } catch (error) {
-      console.error(error);
+      this.logger.error("npmPluginsVersions", error, {});
       throw error;
     }
   }

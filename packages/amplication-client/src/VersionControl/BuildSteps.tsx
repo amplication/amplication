@@ -12,6 +12,7 @@ import { BuildStepsStatus } from "./BuildStepsStatus";
 import "./BuildSteps.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { AppContext } from "../context/appContext";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 const CLASS_NAME = "build-steps";
 
@@ -26,7 +27,8 @@ export const EMPTY_STEP: models.ActionStep = {
 export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
-export const PUSH_TO_GITHUB_STEP_NAME = "PUSH_TO_GITHUB";
+export const PUSH_TO_GIT_STEP_NAME = (gitProvider: models.EnumGitProvider) =>
+  gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 
 type Props = {
   build: models.Build;
@@ -52,7 +54,8 @@ const BuildSteps = ({ build }: Props) => {
     }
     return (
       data.build.action.steps.find(
-        (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+        (step) =>
+          step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
       ) || null
     );
   }, [data.build.action]);
@@ -62,7 +65,8 @@ const BuildSteps = ({ build }: Props) => {
       return null;
     }
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      (step) =>
+        step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
     );
 
     const log = stepGithub?.logs?.find(
@@ -88,7 +92,7 @@ const BuildSteps = ({ build }: Props) => {
           className={`${CLASS_NAME}__step`}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <Icon icon="git-sync" />
+          <Icon icon={gitProviderIconMap[gitRepositoryOrganizationProvider]} />
           <span>{`Push Changes to ${gitRepositoryOrganizationProvider}`}</span>
           <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />

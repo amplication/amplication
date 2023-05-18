@@ -20,7 +20,7 @@ export class CreateGitRepositoryBaseInput {
   @Field(() => Boolean, {
     nullable: false,
   })
-  public!: boolean;
+  isPublic!: boolean;
 
   @Field(() => String, {
     nullable: false,

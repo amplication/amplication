@@ -7,19 +7,12 @@ import {
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
-import BitbucketLogo from "../../../assets/images/bitbucket.svg";
-import GithubLogo from "../../../assets/images/github.svg";
+import { gitLogoMap } from "../git-provider-icon-map";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./ExistingConnectionsMenu.scss";
 import { GitOrganizationMenuItemContent } from "./GitOrganizationMenuItemContent";
-import * as models from "../../../models";
 import { ENTER, ESC } from "../../../util/hotkeys";
 import { useCallback, useRef } from "react";
-
-export const gitLogoMap = {
-  [models.EnumGitProvider.Bitbucket]: BitbucketLogo,
-  [models.EnumGitProvider.Github]: GithubLogo,
-};
 
 type Props = {
   gitOrganizations: GitOrganizationFromGitRepository[];

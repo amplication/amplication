@@ -1,6 +1,7 @@
 import {
   Button,
   CircularProgress,
+  HorizontalRule,
   Label,
   TextField,
   Toggle,
@@ -17,7 +18,7 @@ import { GitSelectMenu } from "../../select/GitSelectMenu";
 
 type createRepositoryInput = {
   name: string;
-  public: boolean;
+  isPublic: boolean;
   groupName?: string;
 };
 type Props = {
@@ -40,7 +41,7 @@ export default function WizardGitCreateRepo({
     useState<createRepositoryInput>({
       name: "",
       groupName: "",
-      public: true,
+      isPublic: true,
     });
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
 
@@ -48,6 +49,7 @@ export default function WizardGitCreateRepo({
     variables: {
       organizationId: gitOrganization.id,
     },
+    skip: !gitOrganization.useGroupingForRepositories,
   });
 
   const gitGroups = gitGroupsData?.gitGroups?.groups;
@@ -96,14 +98,14 @@ export default function WizardGitCreateRepo({
       gitProvider: gitOrganization?.provider,
       name: createRepositoryInput.name,
       groupName: createRepositoryInput.groupName,
-      public: createRepositoryInput.public,
+      isPublic: createRepositoryInput.isPublic,
       gitRepositoryUrl: gitRepositoryUrl,
     });
   }, [
     onCreateGitRepository,
     createRepositoryInput.name,
     createRepositoryInput.groupName,
-    createRepositoryInput.public,
+    createRepositoryInput.isPublic,
   ]);
 
   return (
@@ -113,11 +115,12 @@ export default function WizardGitCreateRepo({
           Create a new {gitOrganization?.provider} repository to sync your
           resource with
         </h4>
-        <br />
       </div>
       {gitOrganization.useGroupingForRepositories && (
         <>
-          <div className={`${CLASS_NAME}__label`}>Change workspace</div>
+          <div className={`${CLASS_NAME}__label`}>
+            <Label text="Change workspace" />
+          </div>
           <GitSelectMenu
             gitProvider={gitOrganization?.provider}
             selectedItem={repositoryGroup}
@@ -126,37 +129,34 @@ export default function WizardGitCreateRepo({
           />
         </>
       )}
-
+      <br />
       <div>
         <Toggle
-          name="public"
-          label={createRepositoryInput.public ? "Public Repo" : "Private Repo"}
-          checked={createRepositoryInput.public}
+          name="isPublic"
+          label="Public Repo"
+          checked={createRepositoryInput.isPublic}
           onChange={(event, checked) => {
             setCreateRepositoryInput({
               ...createRepositoryInput,
-              public: checked,
+              isPublic: checked,
             });
           }}
         />
       </div>
-      <table className={`${CLASS_NAME}__table`}>
-        <tr>
-          <th>Owner</th>
-          <th>Repository name</th>
-        </tr>
-        <tr>
-          <td>
-            <TextField
-              autoFocus
-              name="name"
-              autoComplete="off"
-              showError={false}
-              onChange={handleNameChange}
-            />
-          </td>
-        </tr>
-      </table>
+      <br />
+      <div className={`${CLASS_NAME}__label`}>
+        <Label text="Repository name" />
+      </div>
+      <TextField
+        autoFocus
+        name="name"
+        autoComplete="off"
+        showError={false}
+        onChange={handleNameChange}
+      />
+
+      <HorizontalRule />
+
       <Button
         className={`${CLASS_NAME}__button`}
         disabled={repoCreated.isRepoCreateLoading}
