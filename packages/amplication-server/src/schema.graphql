@@ -1293,6 +1293,7 @@ input PluginInstallationCreateInput {
   enabled: Boolean!
   npm: String!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 

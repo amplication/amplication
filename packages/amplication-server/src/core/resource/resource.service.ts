@@ -257,9 +257,11 @@ export class ResourceService {
   async createService(
     args: CreateOneResourceArgs,
     user: User,
-    wizardType: string = null
+    wizardType: string = null,
+    requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
+
     const resource = await this.createResource(
       {
         data: {
@@ -275,7 +277,8 @@ export class ResourceService {
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
     });
 
-    await this.entityService.createDefaultEntities(resource.id, user);
+    requireAuthenticationEntity &&
+      (await this.entityService.createDefaultEntities(resource.id, user));
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -313,12 +316,18 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
+    const requireAuthenticationEntity =
+      data.plugins?.plugins?.filter((plugin) => {
+        return plugin.configurations["requireAuthenticationEntity"] === "true";
+      }).length > 0;
+
     const resource = await this.createService(
       {
         data: data.resource,
       },
       user,
-      data.wizardType
+      data.wizardType,
+      requireAuthenticationEntity
     );
 
     const newEntities: {
@@ -402,6 +411,7 @@ export class ResourceService {
     if (data.plugins?.plugins) {
       for (let index = 0; index < data.plugins.plugins.length; index++) {
         const currentPlugin = data.plugins.plugins[index];
+
         currentPlugin.resource = { connect: { id: resource.id } };
         await this.pluginInstallationService.create(
           { data: currentPlugin },
