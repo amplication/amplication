@@ -1214,7 +1214,6 @@ input PendingChangesDiscardInput {
 input ResourceCreateInput {
   name: String!
   description: String!
-  requireAuthenticationEntity: Boolean = true
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
   serviceSettings: ServiceSettingsUpdateInput
