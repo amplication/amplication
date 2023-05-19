@@ -29,7 +29,7 @@ export class PluginVersionServiceBase {
   async findOne<T extends Prisma.PluginVersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionFindUniqueArgs>
   ): Promise<PluginVersion | null> {
-    return this.prisma.pluginVersion.findUnique(args);
+    return await this.prisma.pluginVersion.findUnique(args);
   }
   async create<T extends Prisma.PluginVersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginVersionCreateArgs>
