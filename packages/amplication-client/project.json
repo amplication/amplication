@@ -149,7 +149,7 @@
       "options": {
         "commands": [
           "nx build amplication-client",
-          "aws s3 sync {workspaceRoot}/dist/packages/amplication-client s3://{args.bucket-name} --delete"
+          "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
         ],
         "parallel": false
       },
@@ -157,19 +157,19 @@
         "sandbox": {
           "commands": [
             "nx build amplication-client --configuration=sandbox",
-            "aws s3 sync {workspaceRoot}/dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
           ]
         },
         "staging": {
           "commands": [
             "nx build amplication-client --configuration=staging",
-            "aws s3 sync {workspaceRoot}/dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
           ]
         },
         "production": {
           "commands": [
             "nx build amplication-client --configuration=production",
-            "aws s3 sync {workspaceRoot}/dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
           ]
         }
       }
