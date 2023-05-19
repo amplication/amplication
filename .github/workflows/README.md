@@ -16,9 +16,11 @@ On a successfully completed `continuous integration` step for `master` and `
 
 The `release.template.yml` is in charge of building and pushing new docker images and deploying in the new clusters by leveraging the new `deployment.template.yml` and it is executed only on a successfully completed `continuous integration` step for `master` and `next` branches.
 
-> In order to package a project with docker, the project needs to have `docker:build` nx target defined in its `project.json`
+> In order to package a project as a container, the project needs to have `package:container` nx target defined in its `project.json`
 
-> In order to deploy a project, the project needs to have `deploy` nx target defined in its `project.json` 
+> In order to package a project as a static website and push to s3, the project needs to have `deploy:static` nx target defined in its `project.json`
+
+> In order to deploy a project as a container, the project needs to have `deploy:container` nx target defined in its `project.json`
 
 Example
 ```json
@@ -27,14 +29,14 @@ Example
 // ...
 "targets": {
 // ...
-"docker:build": {
-    "executor": "@nx-tools/nx-docker:build",
+"package:container": {
+    "executor": "@nx-tools/nx-package:container",
     "options": {
     "push": false,
     "tags": ["amplication/git-pull-service"]
     }
 },
-"deploy": { "executor": "nx:run-commands" }
+"deploy:container": { "executor": "nx:run-commands" }
 // ...
 }
 ```

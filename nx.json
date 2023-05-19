@@ -63,7 +63,7 @@
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     },
-    "docker:build": {
+    "package:container": {
       "dependsOn": ["prebuild", "build", "postbuild"]
     },
     "e2e": {

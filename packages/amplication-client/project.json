@@ -131,7 +131,7 @@
         "passWithNoTests": true
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
@@ -144,24 +144,42 @@
         }
       }
     },
-    "package": {
+    "deploy:static": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "nx build amplication-client"
+        "commands": [
+          "nx build amplication-client",
+          "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+          "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+        ],
+        "forwardAllArgs": false,
+        "parallel": false
       },
       "configurations": {
         "sandbox": {
-          "command": "nx build amplication-client --configuration=sandbox"
+          "commands": [
+            "nx build amplication-client --configuration=sandbox",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
         },
         "staging": {
-          "command": "nx build amplication-client --configuration=staging"
+          "commands": [
+            "nx build amplication-client --configuration=staging",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
         },
         "production": {
-          "command": "nx build amplication-client --configuration=production"
+          "commands": [
+            "nx build amplication-client --configuration=production",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
         }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy:container": { "executor": "nx:run-commands" }
   },
   "tags": []
 }

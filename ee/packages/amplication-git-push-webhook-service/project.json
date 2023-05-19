@@ -71,7 +71,7 @@
         }
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
