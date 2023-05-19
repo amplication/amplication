@@ -52,11 +52,39 @@
           "sourceMap": true,
           "vendorChunk": true
         },
+        "sandbox": {
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-client/src/environments/environment.ts",
+              "with": "packages/amplication-client/src/environments/environment.sandbox.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": true
+        },
+        "staging": {
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-client/src/environments/environment.ts",
+              "with": "packages/amplication-client/src/environments/environment.staging.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": true
+        },
         "production": {
           "fileReplacements": [
             {
               "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.prod.ts"
+              "with": "packages/amplication-client/src/environments/environment.production.ts"
             }
           ],
           "optimization": true,
@@ -108,11 +136,28 @@
       "options": {
         "push": false,
         "tags": ["amplication/client:latest"],
-        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+        "build-args": []
       },
       "configurations": {
         "production": {
-          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+          "build-args": []
+        }
+      }
+    },
+    "package": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "nx build amplication-client"
+      },
+      "configurations": {
+        "sandbox": {
+          "command": "nx build amplication-client --configuration=sandbox"
+        },
+        "staging": {
+          "command": "nx build amplication-client --configuration=staging"
+        },
+        "production": {
+          "command": "nx build amplication-client --configuration=production"
         }
       }
     },
