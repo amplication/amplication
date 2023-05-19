@@ -11,6 +11,6 @@ export const environment = {
   NX_REACT_APP_STORAGE_GATEWAY_URL: "https://server.amplication-sandbox.com",
   NX_REACT_APP_BILLING_ENABLED: true,
   NX_REACT_APP_BILLING_API_KEY:
-    "2b$10$kvZ2zkq7onj/oyxH4vZLKuO1P3E9QKuRmo9z72pzggRtYWv4fkElC:415fb9ff-a378-42d0-a849-dae7daf49646",
+    "$2b$10$kvZ2zkq7onj/oyxH4vZLKuO1P3E9QKuRmo9z72pzggRtYWv4fkElC:415fb9ff-a378-42d0-a849-dae7daf49646",
   NX_REACT_APP_AMPLITUDE_API_KEY: "aVqxCAcXOdCx5DPI41s6EmwsSCB8Kjz6",
 };
