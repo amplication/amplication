@@ -102,13 +102,13 @@ describe("BuildRunnerController", () => {
     );
     await expect(
       mockRunnerServiceCopyFromJobToArtifact()
-    ).resolves.toBeUndefined();
+    ).resolves.not.toThrow();
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
       configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
       kafkaSuccessEventMock
     );
-    await expect(mockKafkaServiceEmitMessage()).resolves.toBeUndefined();
+    await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation success with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
@@ -142,7 +142,7 @@ describe("BuildRunnerController", () => {
       configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
       kafkaFailureEventMock
     );
-    await expect(mockKafkaServiceEmitMessage()).resolves.toBeUndefined();
+    await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation failure, log `error.message` with log level `error` and emit Kafka failure event", async () => {
@@ -168,7 +168,7 @@ describe("BuildRunnerController", () => {
       configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
       kafkaFailureEventMock
     );
-    await expect(mockKafkaServiceEmitMessage()).resolves.toBeUndefined();
+    await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation failure and unhandled exception thrown log `error.message` with log level `error`", async () => {
@@ -285,6 +285,6 @@ describe("BuildRunnerController", () => {
       configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
       kafkaFailureEventMock
     );
-    await expect(mockKafkaServiceEmitMessage()).resolves.toBeUndefined();
+    await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 });

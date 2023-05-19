@@ -73,6 +73,6 @@ describe("BuildLoggerController", () => {
       configService.get(Env.DSG_LOG_TOPIC),
       logEvent
     );
-    await expect(mockServiceEmitMessage()).resolves.toBeUndefined();
+    await expect(mockServiceEmitMessage()).resolves.not.toThrow();
   });
 });

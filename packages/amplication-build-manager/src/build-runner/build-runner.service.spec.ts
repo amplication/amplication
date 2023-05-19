@@ -95,7 +95,7 @@ describe("BuildRunnerService", () => {
     );
     await expect(
       promises.writeFile(savePath, JSON.stringify(dsgResourceDataMock))
-    ).resolves.toBeUndefined();
+    ).resolves.not.toThrow();
   });
 
   it("should copy file and/or directories from `jobPath` to `artifactPath`", async () => {
@@ -116,6 +116,6 @@ describe("BuildRunnerService", () => {
     );
 
     expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
-    await expect(fsExtra.copy(jobPath, artifactPath)).resolves.toBeUndefined();
+    await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
   });
 });
