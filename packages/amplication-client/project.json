@@ -149,27 +149,32 @@
       "options": {
         "commands": [
           "nx build amplication-client",
-          "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
+          "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+          "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
         ],
+        "forwardAllArgs": false,
         "parallel": false
       },
       "configurations": {
         "sandbox": {
           "commands": [
             "nx build amplication-client --configuration=sandbox",
-            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
           ]
         },
         "staging": {
           "commands": [
             "nx build amplication-client --configuration=staging",
-            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
           ]
         },
         "production": {
           "commands": [
             "nx build amplication-client --configuration=production",
-            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete"
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
           ]
         }
       }
