@@ -128,7 +128,7 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(needs.nx.outputs.affected-deploy-static) }}
-    uses: ./.github/workflows/deployment.template.yml
+    uses: ./.github/workflows/deployment.static.template.yml
     with:
       environment-name: "production"
       project-name: ${{ matrix.project }}
