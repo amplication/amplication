@@ -6,8 +6,6 @@ import { useCallback, useContext, useState } from "react";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import "./NewEntityField.scss";
 
@@ -27,7 +25,6 @@ const INITIAL_VALUES = {
 const CLASS_NAME = "new-entity-field";
 
 const NewEntityField = ({ entity, onFieldAdd }: Props) => {
-  const { trackEvent } = useTracking();
   const { addEntity } = useContext(AppContext);
   const [autoFocus, setAutoFocus] = useState<boolean>(false);
 
@@ -71,11 +68,6 @@ const NewEntityField = ({ entity, onFieldAdd }: Props) => {
       },
       onCompleted: (data) => {
         addEntity(entity.id);
-        trackEvent({
-          eventName: AnalyticsEventNames.EntityFieldCreate,
-          entityFieldName: data.createEntityFieldByDisplayName.displayName,
-          dataType: data.createEntityFieldByDisplayName.dataType,
-        });
       },
       errorPolicy: "none",
     }
