@@ -26,7 +26,7 @@ model Plugin {
   github        String?
   icon          String?
   id            String   @id @default(cuid())
-  latestVersion Json?
+  latestVersion String?
   name          String?
   npm           String?
   pluginId      String?  @unique

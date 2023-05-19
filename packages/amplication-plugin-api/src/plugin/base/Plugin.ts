@@ -13,9 +13,6 @@ import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsString, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
-import { IsJSONValue } from "@amplication/plugin-api/validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 
 @ObjectType()
 class Plugin {
@@ -70,13 +67,14 @@ class Plugin {
 
   @ApiProperty({
     required: false,
+    type: String,
   })
-  @IsJSONValue()
+  @IsString()
   @IsOptional()
-  @Field(() => GraphQLJSON, {
+  @Field(() => String, {
     nullable: true,
   })
-  latestVersion!: JsonValue;
+  latestVersion!: string | null;
 
   @ApiProperty({
     required: false,
