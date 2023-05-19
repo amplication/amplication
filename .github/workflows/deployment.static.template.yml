@@ -81,8 +81,8 @@ jobs:
           then
             if [[ "${{ inputs.environment-name }}" == "production" ]];
             then
-              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication.com --distribution-id=${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
+              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication.com" --distribution-id="${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
             else
-              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication-${{ inputs.environment-name }}.com --distribution-id=${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
+              npx nx deploy:static --configuration="${{ inputs.environment-name }}" --bucket-name="app.amplication-${{ inputs.environment-name }}.com" --distribution-id="${{ vars.CLOUDFRONT_DISTRIBUTION_ID }}"
             fi;  
           fi;
