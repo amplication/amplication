@@ -70,6 +70,7 @@ export class GitPluginService {
           id: "",
           createdAt: currDate,
           description: pluginConfig.description,
+          latestVersion
           github: pluginConfig.github,
           icon: pluginConfig.icon,
           name: pluginConfig.name,
