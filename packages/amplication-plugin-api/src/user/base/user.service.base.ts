@@ -10,7 +10,7 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User } from "../../../prisma/generated-prisma-client";
+import { Prisma, User } from "@prisma/client";
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
 
@@ -20,8 +20,8 @@ export class UserServiceBase {
     protected readonly passwordService: PasswordService
   ) {}
 
-  async count<T extends Prisma.UserCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
+  async count<T extends Prisma.UserFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<number> {
     return this.prisma.user.count(args);
   }

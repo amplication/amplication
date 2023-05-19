@@ -103,4 +103,5 @@ class PluginCreateInput {
   })
   website?: string | null;
 }
-export { PluginCreateInput };
+
+export { PluginCreateInput as PluginCreateInput };

@@ -10,13 +10,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, PluginVersion } from "../../../prisma/generated-prisma-client";
+import { Prisma, PluginVersion } from "@prisma/client";
 
 export class PluginVersionServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.PluginVersionCountArgs>(
-    args: Prisma.SelectSubset<T, Prisma.PluginVersionCountArgs>
+  async count<T extends Prisma.PluginVersionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginVersionFindManyArgs>
   ): Promise<number> {
     return this.prisma.pluginVersion.count(args);
   }

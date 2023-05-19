@@ -128,4 +128,5 @@ class Plugin {
   })
   website!: string | null;
 }
-export { Plugin };
+
+export { Plugin as Plugin };

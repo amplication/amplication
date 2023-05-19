@@ -29,11 +29,11 @@ describe("Testing the secrets manager base class", () => {
     expect(result).toBeNull();
   });
   it("should throw error if dont get key", () => {
-    return expect(
-      secretsManagerServiceBase.getSecret(SECRET_KEY)
-    ).rejects.toThrow();
+    //@ts-ignore
+    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
   });
   it("should throw an exeption if getting null key", () => {
+    //@ts-ignore
     return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
   });
 });

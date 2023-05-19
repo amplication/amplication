@@ -1,23 +1,31 @@
-FROM node:18.12.1-slim AS base
+FROM node:18.12.1 AS base
 
-ARG user=amplication-plugin-api
-ARG uid=1001
-ARG gid=$uid
+WORKDIR /app
 
-WORKDIR /workspace/packages/${user}
+COPY package.json ./
 
-COPY ./dist/packages/${user}/package.json .
-RUN npm install --omit-dev
+RUN npm install
 
-COPY ./dist/packages/${user} .
+COPY prisma/schema.prisma ./prisma/
 
-RUN groupadd --gid ${gid} ${user}
-RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/${user}
+RUN npm run prisma:generate
 
-USER ${user}
+COPY . .
 
-ENV PORT=3005
-EXPOSE $PORT
+RUN npm run build
 
-CMD ["node", "./main.js"]
+FROM node:18.12.1 AS prod
+
+WORKDIR /app
+
+COPY --from=base /app/node_modules/ ./node_modules
+COPY --from=base /app/package.json ./package.json
+COPY --from=base /app/dist ./dist
+COPY --from=base /app/prisma ./prisma
+COPY --from=base /app/scripts ./scripts
+COPY --from=base /app/src ./src
+COPY --from=base /app/tsconfig* ./
+
+EXPOSE 3000
+
+CMD [ "node", "./dist/main"]

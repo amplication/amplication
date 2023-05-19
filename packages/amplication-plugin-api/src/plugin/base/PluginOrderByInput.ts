@@ -118,4 +118,4 @@ class PluginOrderByInput {
   website?: SortOrder;
 }
 
-export { PluginOrderByInput };
+export { PluginOrderByInput as PluginOrderByInput };
