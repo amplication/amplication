@@ -318,6 +318,7 @@ export type DateTimeFilter = {
 
 export type Entity = {
   createdAt: Scalars['DateTime'];
+  customAttributes?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   fields?: Maybe<Array<EntityField>>;
@@ -357,6 +358,7 @@ export type EntityAddPermissionFieldInput = {
 };
 
 export type EntityCreateInput = {
+  customAttributes?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
   name: Scalars['String'];
@@ -448,6 +450,7 @@ export type EntityFieldWhereInput = {
 
 export type EntityOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
+  customAttributes?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
   displayName?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -492,6 +495,7 @@ export type EntityPermissionRole = {
 };
 
 export type EntityUpdateInput = {
+  customAttributes?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   name?: InputMaybe<Scalars['String']>;
@@ -519,6 +523,7 @@ export type EntityUpdatePermissionRolesInput = {
 export type EntityVersion = {
   commit?: Maybe<Commit>;
   createdAt: Scalars['DateTime'];
+  customAttributes?: Maybe<Scalars['String']>;
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
   entity: Entity;
@@ -542,6 +547,7 @@ export type EntityVersionFieldsArgs = {
 
 export type EntityVersionOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
+  customAttributes?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
   displayName?: InputMaybe<SortOrder>;
   id?: InputMaybe<SortOrder>;
@@ -554,6 +560,7 @@ export type EntityVersionOrderByInput = {
 
 export type EntityVersionWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
+  customAttributes?: InputMaybe<StringFilter>;
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   entity?: InputMaybe<WhereUniqueInput>;
@@ -567,6 +574,7 @@ export type EntityVersionWhereInput = {
 
 export type EntityWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
+  customAttributes?: InputMaybe<StringFilter>;
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;
   fields?: InputMaybe<EntityFieldFilter>;

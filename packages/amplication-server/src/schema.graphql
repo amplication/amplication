@@ -169,6 +169,7 @@ type Entity {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
@@ -188,6 +189,7 @@ type EntityVersion {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
@@ -580,6 +582,7 @@ input EntityVersionWhereInput {
   name: StringFilter
   displayName: StringFilter
   pluralDisplayName: StringFilter
+  customAttributes: StringFilter
   description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
@@ -593,6 +596,7 @@ input EntityVersionOrderByInput {
   name: SortOrder
   displayName: SortOrder
   pluralDisplayName: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
   label: SortOrder
 }
@@ -604,6 +608,7 @@ input EntityWhereInput {
   name: StringFilter
   displayName: StringFilter
   pluralDisplayName: StringFilter
+  customAttributes: StringFilter
   description: StringFilter
   fields: EntityFieldFilter
   resource: WhereUniqueInput
@@ -622,6 +627,7 @@ input EntityOrderByInput {
   name: SortOrder
   displayName: SortOrder
   pluralDisplayName: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
 }
 
@@ -1321,6 +1327,7 @@ input EntityCreateInput {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   resource: WhereParentIdInput!
 }
@@ -1329,6 +1336,7 @@ input EntityUpdateInput {
   name: String
   displayName: String
   pluralDisplayName: String
+  customAttributes: String
   description: String
 }
 
