@@ -158,6 +158,7 @@ const GET_ENTITY_WITH_SPECIFIC_FIELD = gql`
         required
         unique
         searchable
+        customAttributes
         description
       }
     }

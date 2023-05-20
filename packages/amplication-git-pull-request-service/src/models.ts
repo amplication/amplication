@@ -368,6 +368,7 @@ export type EntityCreateInput = {
 
 export type EntityField = {
   createdAt: Scalars['DateTime'];
+  customAttributes?: Maybe<Scalars['String']>;
   dataType: EnumDataType;
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -389,6 +390,7 @@ export type EntityFieldCreateByDisplayNameInput = {
 };
 
 export type EntityFieldCreateInput = {
+  customAttributes?: InputMaybe<Scalars['String']>;
   dataType: EnumDataType;
   description: Scalars['String'];
   displayName: Scalars['String'];
@@ -409,6 +411,7 @@ export type EntityFieldFilter = {
 
 export type EntityFieldOrderByInput = {
   createdAt?: InputMaybe<SortOrder>;
+  customAttributes?: InputMaybe<SortOrder>;
   dataType?: InputMaybe<SortOrder>;
   description?: InputMaybe<SortOrder>;
   displayName?: InputMaybe<SortOrder>;
@@ -423,6 +426,7 @@ export type EntityFieldOrderByInput = {
 };
 
 export type EntityFieldUpdateInput = {
+  customAttributes?: InputMaybe<Scalars['String']>;
   dataType?: InputMaybe<EnumDataType>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
@@ -436,6 +440,7 @@ export type EntityFieldUpdateInput = {
 
 export type EntityFieldWhereInput = {
   createdAt?: InputMaybe<DateTimeFilter>;
+  customAttributes?: InputMaybe<StringFilter>;
   dataType?: InputMaybe<EnumDataTypeFilter>;
   description?: InputMaybe<StringFilter>;
   displayName?: InputMaybe<StringFilter>;

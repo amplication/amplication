@@ -456,6 +456,7 @@ type EntityField {
   unique: Boolean!
   searchable: Boolean!
   description: String
+  customAttributes: String
   position: Int
 }
 
@@ -491,6 +492,7 @@ input EntityFieldWhereInput {
   required: BooleanFilter
   unique: BooleanFilter
   searchable: BooleanFilter
+  customAttributes: StringFilter
   description: StringFilter
 }
 
@@ -517,6 +519,7 @@ input EntityFieldOrderByInput {
   required: SortOrder
   unique: SortOrder
   searchable: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
   position: SortOrder
 }
@@ -1379,6 +1382,7 @@ input EntityFieldCreateInput {
   unique: Boolean!
   searchable: Boolean!
   description: String!
+  customAttributes: String
   entity: WhereParentIdInput!
   position: Int
 }
@@ -1398,6 +1402,7 @@ input EntityFieldUpdateInput {
   unique: Boolean
   searchable: Boolean
   description: String
+  customAttributes: String
   position: Int
 }
 
