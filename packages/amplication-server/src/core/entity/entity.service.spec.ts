@@ -127,6 +127,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   unique: false,
   searchable: true,
   description: "example field",
+  customAttributes: "ExampleCustomAttributes",
 };
 
 const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
@@ -221,6 +222,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   unique: false,
   searchable: false,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
   dataType: EnumDataType.SingleLineText,
   properties: {
     maxLength: 42,
@@ -245,6 +247,7 @@ const EXAMPLE_ENTITY_FIELD_DATA_WITH_INVALID_MINIMUM_VALUE = {
   unique: false,
   searchable: true,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
 };
 const EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE = {
   name: "exampleEntityFieldNameWithInvalidMinimumValue",
@@ -255,6 +258,7 @@ const EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE = {
   unique: false,
   searchable: true,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
 };
 const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
   createdAt: new Date(),
@@ -270,6 +274,7 @@ const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
   searchable: true,
   unique: false,
   updatedAt: new Date(),
+  customAttributes: "ExampleCustomAttributes",
 };
 
 const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
