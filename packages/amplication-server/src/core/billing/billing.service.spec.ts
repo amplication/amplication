@@ -31,7 +31,9 @@ describe("BillingService", () => {
       providers: [
         {
           provide: SegmentAnalyticsService,
-          useValue: {},
+          useValue: {
+            track: jest.fn(),
+          },
         },
         {
           provide: ConfigService,
