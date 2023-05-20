@@ -253,6 +253,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   required: false,
   unique: false,
   searchable: false,
+  customAttributes: "ExampleCustomAttributes",
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {

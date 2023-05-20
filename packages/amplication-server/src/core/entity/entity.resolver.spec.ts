@@ -77,6 +77,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   unique: false,
   searchable: true,
   description: "exampleDescription",
+  customAttributes: "ExampleCustomAttributes",
   properties: {},
 };
 
@@ -205,6 +206,7 @@ const FIND_MANY_FIELDS_QUERY = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -344,6 +346,7 @@ const ADD_ENTITY_PERM_FIELD_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -379,6 +382,7 @@ const DELETE_ENTITY_PERM_FIELD_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -406,6 +410,7 @@ const UPDATE_ENTITY_PERM_FIELD_ROLES_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -422,6 +427,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
     $required: Boolean!
     $unique: Boolean!
     $searchable: Boolean!
+    $customAttributes: String
     $description: String!
     $entity: String!
   ) {
@@ -434,6 +440,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
         required: $required
         unique: $unique
         searchable: $searchable
+        customAttributes: $customAttributes
         description: $description
         entity: { connect: { id: $entity } }
       }
@@ -448,6 +455,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -472,6 +480,7 @@ const CREATE_ENTITY_FIELD_BY_DISPLAY_NAME_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -491,6 +500,7 @@ const DELETE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -510,6 +520,7 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -529,6 +540,7 @@ const CREATE_DEFAULT_RELATED_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -565,6 +577,7 @@ const GET_VERSION_FIELDS_QUERY = gql`
           required
           unique
           searchable
+          customAttributes
           description
           properties
         }
@@ -1061,6 +1074,7 @@ describe("EntityResolver", () => {
       required: EXAMPLE_ENTITY_FIELD.required,
       unique: EXAMPLE_ENTITY_FIELD.unique,
       searchable: EXAMPLE_ENTITY_FIELD.searchable,
+      customAttributes: EXAMPLE_ENTITY_FIELD.customAttributes,
       description: EXAMPLE_ENTITY_FIELD.description,
       entity: EXAMPLE_ID,
     };
