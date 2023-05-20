@@ -94,6 +94,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
   lockedByUserId: undefined,
   lockedAt: null,
@@ -136,6 +137,7 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
 };
 
@@ -193,6 +195,7 @@ const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
   fields: [
     {
@@ -493,6 +496,7 @@ describe("EntityService", () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
         },
       },
@@ -514,6 +518,7 @@ describe("EntityService", () => {
             name: createArgs.args.data.name,
             displayName: createArgs.args.data.displayName,
             pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            customAttributes: createArgs.args.data.customAttributes,
             description: createArgs.args.data.description,
             permissions: {
               create: DEFAULT_PERMISSIONS,
@@ -615,6 +620,7 @@ describe("EntityService", () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           description: EXAMPLE_ENTITY.description,
         },
       },
@@ -642,6 +648,7 @@ describe("EntityService", () => {
               name: updateArgs.args.data.name,
               displayName: updateArgs.args.data.displayName,
               pluralDisplayName: updateArgs.args.data.pluralDisplayName,
+              customAttributes: updateArgs.args.data.customAttributes,
               description: updateArgs.args.data.description,
             },
           },
@@ -695,6 +702,7 @@ describe("EntityService", () => {
         name: EXAMPLE_ENTITY.name,
         displayName: EXAMPLE_ENTITY.displayName,
         pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        customAttributes: EXAMPLE_ENTITY.customAttributes,
         description: EXAMPLE_ENTITY.description,
         commit: {
           connect: {
@@ -714,6 +722,7 @@ describe("EntityService", () => {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 
@@ -813,6 +822,7 @@ describe("EntityService", () => {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 
@@ -1430,6 +1440,7 @@ describe("EntityService", () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
         },
       },

@@ -266,6 +266,7 @@ export class EntityService {
             name: args.data.name,
             displayName: args.data.displayName,
             pluralDisplayName: args.data.pluralDisplayName,
+            customAttributes: args.data.customAttributes,
             description: args.data.description,
             permissions: {
               create: DEFAULT_PERMISSIONS,
@@ -346,6 +347,7 @@ export class EntityService {
           "name",
           "displayName",
           "pluralDisplayName",
+          "customAttributes",
           "description",
         ]);
         return this.prisma.entity.create({
@@ -635,6 +637,7 @@ export class EntityService {
                 displayName: args.data.displayName,
                 pluralDisplayName: args.data.pluralDisplayName,
                 description: args.data.description,
+                customAttributes: args.data.customAttributes,
               },
             },
           },
@@ -872,6 +875,7 @@ export class EntityService {
         displayName: firstEntityVersion.displayName,
         pluralDisplayName: firstEntityVersion.pluralDisplayName,
         description: firstEntityVersion.description,
+        customAttributes: firstEntityVersion.customAttributes,
         commit: {
           connect: {
             id: args.data.commit.connect.id,
@@ -1016,6 +1020,7 @@ export class EntityService {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 

@@ -211,6 +211,7 @@ const EXAMPLE_ENTITY_ID = "exampleEntityId";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "ExampleCustomAttributes";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
 const EXAMPLE_BLOCK_ID = "exampleBlockId";
@@ -224,6 +225,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -284,6 +286,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {

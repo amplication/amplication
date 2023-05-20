@@ -37,6 +37,7 @@ const EXAMPLE_VERSION_NUMBER = 1;
 const EXAMPLE_NAME = "exampleName";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
 const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "exampleCustomAttributes";
 
 const EXAMPLE_UNLOCKED_ID = "exampleUnlockedId";
 
@@ -54,6 +55,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
   lockedByUserId: EXAMPLE_USER_ID,
 };
 
@@ -123,6 +125,7 @@ const EXAMPLE_VERSION: EntityVersion = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
   commit: EXAMPLE_COMMIT,
 };
 
@@ -136,6 +139,7 @@ const FIND_ONE_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -151,6 +155,7 @@ const FIND_MANY_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -161,6 +166,7 @@ const CREATE_ONE_QUERY = gql`
     $name: String!
     $displayName: String!
     $pluralDisplayName: String!
+    $customAttributes: String
     $id: String!
   ) {
     createOneEntity(
@@ -168,6 +174,7 @@ const CREATE_ONE_QUERY = gql`
         name: $name
         displayName: $displayName
         pluralDisplayName: $pluralDisplayName
+        customAttributes: $customAttributes
         resource: { connect: { id: $id } }
       }
     ) {
@@ -178,6 +185,7 @@ const CREATE_ONE_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -239,6 +247,7 @@ const LOCK_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -254,6 +263,7 @@ const UPDATE_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -269,6 +279,7 @@ const DELETE_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -729,6 +740,7 @@ describe("EntityResolver", () => {
         name: EXAMPLE_ENTITY.name,
         displayName: EXAMPLE_ENTITY.displayName,
         pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        customAttributes: EXAMPLE_ENTITY.customAttributes,
         id: EXAMPLE_ID,
       },
     });
@@ -747,6 +759,7 @@ describe("EntityResolver", () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ID } },
         },
       },
