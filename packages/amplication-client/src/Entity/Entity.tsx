@@ -159,6 +159,7 @@ export const GET_ENTITY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       description
       lockedAt
       lockedByUser {
@@ -188,6 +189,7 @@ const UPDATE_ENTITY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       description
       lockedAt
       lockedByUser {

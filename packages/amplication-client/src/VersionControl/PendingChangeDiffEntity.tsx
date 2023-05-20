@@ -154,6 +154,7 @@ export const GET_ENTITY_VERSION = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
         description
         permissions {
           action
