@@ -298,7 +298,7 @@ export class BillingService {
           const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
 
           this.logger.info(`LimitationError: ${message}`);
-          
+
           await this.analytics.track({
             userId: currentUser.account.id,
             properties: {
@@ -327,7 +327,7 @@ export class BillingService {
           const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
 
           this.logger.info(`LimitationError: ${message}`);
-          
+
           await this.analytics.track({
             userId: currentUser.account.id,
             properties: {
