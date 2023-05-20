@@ -228,6 +228,7 @@ const GET_ENTITY_FIELD = gql`
         required
         unique
         searchable
+        customAttributes
         description
         permanentId
       }
@@ -258,6 +259,7 @@ const UPDATE_ENTITY_FIELD = gql`
       required
       unique
       searchable
+      customAttributes
       description
     }
   }

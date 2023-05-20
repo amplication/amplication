@@ -175,6 +175,7 @@ export const GET_ENTITY = gql`
         unique
         required
         searchable
+        customAttributes
         dataType
         description
       }
@@ -205,6 +206,7 @@ const UPDATE_ENTITY = gql`
         required
         unique
         searchable
+        customAttributes
         dataType
         description
       }
