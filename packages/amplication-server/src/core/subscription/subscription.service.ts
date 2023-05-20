@@ -244,7 +244,8 @@ export class SubscriptionService {
           );
         } else {
           this.logger.warn(
-            `Trying to create an existing subscription with id: ${updateStatusDto.id}`
+            `Trying to create an existing subscription with id: ${updateStatusDto.id}`,
+            updateStatusDto
           );
         }
         break;
