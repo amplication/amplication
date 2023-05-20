@@ -146,6 +146,7 @@ const GET_ENTITY_WITH_SPECIFIC_FIELD = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       fields(where: { permanentId: { equals: $fieldId } }) {
         id
         createdAt

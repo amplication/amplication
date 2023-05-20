@@ -216,6 +216,7 @@ const GET_ENTITY_FIELD = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       fields(where: { id: { equals: $field } }) {
         id
         createdAt
