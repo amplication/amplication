@@ -11,6 +11,7 @@ import Stigg, {
   NumericEntitlement,
 } from "@stigg/node-server-sdk";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { User } from "../../models";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -102,7 +103,26 @@ describe("BillingService", () => {
 
     spyOnLoggerLog.mockReset();
 
-    await service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId);
+    const user: User = {
+      id: "user-id",
+      account: {
+        id: "account-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        email: "email",
+        firstName: "first-name",
+        lastName: "last-name",
+        password: "password",
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isOwner: true,
+    };
+
+    await service.validateSubscriptionPlanLimitationsForWorkspace(
+      workspaceId,
+      user
+    );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
