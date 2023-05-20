@@ -42,6 +42,7 @@ export interface AppContextInterface {
   workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
+  gitRepositoryOrganizationProvider: models.EnumGitProvider | undefined;
   createMessageBroker: (
     data: models.ResourceCreateInput,
     eventName: string
@@ -89,6 +90,7 @@ const initialContext: AppContextInterface = {
   workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
+  gitRepositoryOrganizationProvider: undefined,
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,

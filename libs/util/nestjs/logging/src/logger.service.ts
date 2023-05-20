@@ -12,7 +12,7 @@ export class AmplicationLogger implements LoggerService, ILogger {
 
   constructor(
     @Inject(AMPLICATION_LOGGER_MODULE_OPTIONS)
-    private options: AmplicationLoggerModulesOptions
+    options: AmplicationLoggerModulesOptions
   ) {
     this.loggerOptions = {
       serviceName: options.serviceName,
@@ -22,15 +22,6 @@ export class AmplicationLogger implements LoggerService, ILogger {
     };
 
     this.logger = new Logger(this.loggerOptions);
-  }
-
-  private argsToObject(...args: any[]): Record<string, unknown>[] {
-    return args.map((arg) => {
-      if (typeof arg === "object") {
-        return arg;
-      }
-      return { [args.indexOf(arg).toString()]: arg };
-    });
   }
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -20,6 +20,7 @@ import {
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
+import { User } from "../../models";
 
 @Injectable()
 export class BillingService {
@@ -277,7 +278,8 @@ export class BillingService {
 
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace(
-    workspaceId: string
+    workspaceId: string,
+    currentUser: User
   ): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -293,9 +295,18 @@ export class BillingService {
         );
 
         if (!servicesEntitlement.hasAccess) {
-          this.logger.info(
-            `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-          );
+          const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
+
+          this.logger.info(`LimitationError: ${message}`);
+          
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -313,9 +324,18 @@ export class BillingService {
 
           const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
 
-          this.logger.info(
-            `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-          );
+          const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
+
+          this.logger.info(`LimitationError: ${message}`);
+          
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
         }
       }
     }

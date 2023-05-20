@@ -1,4 +1,4 @@
-export class CodeGenerationFailure {
+export class CodeGenerationFailureDto {
   resourceId!: string;
   buildId!: string;
   error!: Error;

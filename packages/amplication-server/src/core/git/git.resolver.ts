@@ -81,7 +81,9 @@ export class GitResolver {
     );
   }
 
-  @Mutation(() => GitOrganization)
+  @Mutation(() => GitOrganization, {
+    description: "Only for GitHub integrations",
+  })
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
     @UserEntity() currentUser: User,
@@ -144,7 +146,7 @@ export class GitResolver {
     AuthorizableOriginParameter.GitOrganizationId,
     "where.organizationId"
   )
-  gitGroups(@Args() args: GitGroupArgs) {
+  gitGroups(@Args() args: GitGroupArgs): Promise<PaginatedGitGroup> {
     return this.gitService.getGitGroups(args);
   }
 

@@ -60,15 +60,7 @@ const LastCommit = ({ resourceId }: Props) => {
         </p>
 
         <div className={`${CLASS_NAME}__status`}>
-          <div>
-            {isEmpty(lastCommit?.message) ? (
-              ClickableCommitId
-            ) : (
-              <Tooltip aria-label={lastCommit?.message} direction="ne">
-                {ClickableCommitId}
-              </Tooltip>
-            )}
-          </div>
+          <div>{ClickableCommitId}</div>
           <span className={classNames("clickable-id")}>
             {formatTimeToNow(lastCommit?.createdAt)}
           </span>
