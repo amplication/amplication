@@ -260,7 +260,8 @@ export class SubscriptionService {
           await this.update(updateStatusDto.id, updateSubscriptionInput);
         } else {
           this.logger.warn(
-            `Trying to update a non-existing subscription with id: ${updateStatusDto.id}`
+            `Trying to update a non-existing subscription with id: ${updateStatusDto.id}`,
+            updateStatusDto
           );
         }
         break;
