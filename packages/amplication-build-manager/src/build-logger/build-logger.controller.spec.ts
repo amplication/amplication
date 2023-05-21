@@ -8,7 +8,7 @@ import { Env } from "../env";
 import { BuildLoggerController } from "./build-logger.controller";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 
-describe("BuildLoggerController", () => {
+describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
   let configService: ConfigService;
   const mockServiceEmitMessage = jest
