@@ -43,7 +43,7 @@ node_modules
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -54,8 +54,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-infra/tilt/.temp/**
-!infra/tilt/.temp/.gitkeep
 .temp
 
 # Next.js
@@ -65,3 +63,7 @@ infra/tilt/.temp/**
 src/schema.graphql
 **/prisma/generated-prisma-client
 .tsbuildinfo
+
+.nx-container/
+
+**/prisma/migrations/dev/

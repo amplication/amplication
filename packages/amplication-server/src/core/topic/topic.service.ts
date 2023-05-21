@@ -62,7 +62,7 @@ export class TopicService extends BlockTypeService<
     @UserEntity() user: User
   ): Promise<Topic> {
     const topicId = args.where.id;
-    await this.serviceTopicsService.removeTopicFromAllServices(topicId, user);
+    await this.serviceTopicsService.deleteTopicFromAllServices(topicId, user);
     return super.delete(args, user);
   }
 }

@@ -4,7 +4,7 @@ import {
   EnumIconPosition,
   Modal,
   Snackbar,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useEffect } from "react";
 import { match, useHistory } from "react-router-dom";
 import { useTracking } from "../../util/analytics";

@@ -1,3 +1,6 @@
+import { PluginVersion } from "../pluginVersion/base/PluginVersion";
+import { Plugin } from "./base/Plugin";
+
 export interface PluginYml {
   id: string;
   name: string;
@@ -17,4 +20,8 @@ export interface PluginList {
   name: string;
   url: string;
   [key: string]: any;
+}
+
+export interface ProcessedPluginVersions extends Plugin {
+  versions: PluginVersion[];
 }

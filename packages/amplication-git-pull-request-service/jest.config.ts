@@ -7,11 +7,16 @@ export default {
       tsconfig: "<rootDir>/tsconfig.spec.json",
     },
   },
-  testEnvironment: "node",
   transform: {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory:
     "../../coverage/packages/amplication-git-pull-request-service",
+  coverageThreshold: {
+    global: {
+      branches: 30.2,
+      lines: 5,
+    },
+  },
 };

@@ -32,6 +32,11 @@ import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
+import { SubscriptionService } from "../subscription/subscription.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -40,7 +45,9 @@ export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
     private readonly projectService: ProjectService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly analytics: SegmentAnalyticsService
   ) {}
 
   @Query(() => Workspace, {
@@ -57,6 +64,14 @@ export class WorkspaceResolver {
   async currentWorkspace(
     @UserEntity() currentUser: User
   ): Promise<Workspace | null> {
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: currentUser.workspace.id,
+      },
+      event: EnumEventType.WorkspaceSelected,
+    });
+
     return currentUser.workspace;
   }
 
@@ -148,7 +163,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
-    return this.billingService.getSubscription(workspace.id);
+    return await this.subscriptionService.resolveSubscription(workspace.id);
   }
 
   @ResolveField(() => [GitOrganization])
@@ -167,7 +182,7 @@ export class WorkspaceResolver {
   ): Promise<ProvisionSubscriptionResult | null> {
     return this.billingService.provisionSubscription({
       ...args.data,
-      userId: currentUser.id,
+      userId: currentUser.account.id,
     });
   }
 }

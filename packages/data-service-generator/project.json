@@ -15,6 +15,7 @@
         "tsConfig": "packages/data-service-generator/tsconfig.app.json",
         "assets": [
           "**/*.template.env",
+          "packages/data-service-generator/src/**/package.json",
           {
             "glob": "**/*.template.(ts|env|json|yml)",
             "input": "packages/data-service-generator/src/server",
@@ -61,15 +62,14 @@
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/data-service-generator"],
       "options": {
-        "jestConfig": "packages/data-service-generator/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "packages/data-service-generator/jest.config.ts"
       }
     },
     "e2e": {
       "executor": "@nrwl/jest:jest",
       "outputs": ["coverage/packages/data-service-generator"],
       "options": {
-        "jestConfig": "packages/data-service-generator/test/jest-e2e.config.ts",
+        "jestConfig": "packages/data-service-generator/jest.e2e.config.ts",
         "passWithNoTests": false
       }
     },
@@ -87,25 +87,32 @@
         "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
-      },
-      "dependsOn": ["generate-example-input-json"]
+      }
     },
     "update-snapshot": {
       "executor": "nx:run-commands",
       "outputs": ["{projectRoot}/src/tests/__snapshots__"],
       "options": {
-        "commands": ["jest -u src/tests/*.spec.ts", "jest -u src/tests/server"],
+        "commands": [
+          "jest --collectCoverage=false -u src/tests/*.spec.ts ",
+          "jest --collectCoverage=false -u src/tests/server"
+        ],
         "parallel": false,
         "cwd": "packages/data-service-generator"
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
       "options": {
         "push": false,
-        "tags": ["amplication/data-service-generator-runner:latest"],
-        "build-args": ["GIT_REF=latest-local-unicorn-🦄"]
+        "tags": ["amplication/data-service-generator:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     }
   },

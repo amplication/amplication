@@ -5,7 +5,7 @@ import { omit } from "lodash";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import {
   validate,
   validationErrorMessages,

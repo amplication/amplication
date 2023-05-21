@@ -1,6 +1,12 @@
-generator client {
+generator serverClient {
   provider      = "prisma-client-js"
-  output        = env("PRISMA_CLIENT_OUTPUT_PATH")
+  output        = "../../amplication-server/prisma/generated-prisma-client"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+}
+
+generator pushWebhookServiceClient {
+  provider      = "prisma-client-js"
+  output        = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
   binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
@@ -50,16 +56,18 @@ model Project {
 }
 
 model GitOrganization {
-  id              String                   @id @default(cuid())
-  provider        EnumGitProvider
-  name            String
-  installationId  String
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
-  workspaceId     String
-  type            EnumGitOrganizationType? @default(User)
-  workspace       Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
-  gitRepositories GitRepository[]
+  id                         String                   @id @default(cuid())
+  provider                   EnumGitProvider
+  name                       String
+  useGroupingForRepositories Boolean                  @default(false)
+  installationId             String
+  providerProperties         Json                     @default("{}")
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  workspaceId                String
+  type                       EnumGitOrganizationType? @default(User)
+  workspace                  Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
+  gitRepositories            GitRepository[]
 
   @@unique([provider, installationId])
 }
@@ -67,6 +75,7 @@ model GitOrganization {
 model GitRepository {
   id                String          @id @default(cuid())
   name              String
+  groupName         String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String
@@ -133,6 +142,7 @@ model Resource {
   githubLastSync        DateTime?
   githubLastMessage     String?
   deletedAt             DateTime?
+  archived              Boolean          @default(false)
   gitRepositoryId       String?
   roles                 ResourceRole[]
   blocks                Block[]
@@ -499,8 +509,8 @@ model Invitation {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 
@@ -532,6 +542,7 @@ enum EnumResourceType {
 
 enum EnumGitProvider {
   Github
+  Bitbucket
 }
 
 enum EnumGitOrganizationType {

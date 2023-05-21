@@ -1,16 +1,12 @@
 import {
-  Module,
-  EventNames,
   CreateServerDotEnvParams,
+  EventNames,
+  Module,
   VariableDictionary,
 } from "@amplication/code-gen-types";
 import DsgContext from "../dsg-context";
-import { isEmpty } from "lodash";
 import pluginWrapper from "../plugin-wrapper";
-import { readCode } from "@amplication/code-gen-utils";
 import { replacePlaceholdersInCode } from "../utils/text-file-parser";
-
-const templatePath = require.resolve("./create-dotenv.template.env");
 
 export function createDotEnvModule(
   eventParams: CreateServerDotEnvParams
@@ -33,22 +29,13 @@ export async function createDotEnvModuleInternal({
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
-  const code = await readCode(templatePath);
   const formattedAdditionalVariables = convertToKeyValueSting(
     envVariablesWithoutDuplicateKeys
   );
   const codeWithAdditionalVariables = appendAdditionalVariables(
-    code,
+    "",
     formattedAdditionalVariables
   );
-
-  if (
-    !isEmpty(appInfo.settings.dbName) &&
-    !appInfo.settings.dbName.startsWith("/")
-  ) {
-    appInfo.settings.dbName = `/${appInfo.settings.dbName}`;
-  }
-
   const serviceSettingsDic: { [key: string]: any } = appInfo.settings;
 
   return [

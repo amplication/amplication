@@ -15,16 +15,20 @@ on:
         type: string
         description: Nx libraries affected by the changes
         required: true
-      affected-dockerable:
+      affected-package-container:
         type: string
-        description: Nx projects configured with docker:build affected by the changes
+        description: Nx projects configured with package:container affected by the changes
         required: true
-      affected-deployable:
+      affected-deploy-static:
+        type: string
+        description: Nx projects configured with deploy:static affected by the changes
+        required: true
+      affected-deploy-container:
         type: string
         description: Nx projects configured with deploy affected by the changes
         required: true
     secrets:
-      nx-cloud-access-token:
+      NX_CLOUD_ACCESS_TOKEN:
         required: true
       ECR_AWS_ACCESS_KEY_ID:
         required: true
@@ -35,17 +39,18 @@ on:
       AWS_SECRET_ACCESS_KEY:
         required: true
 env:
-  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.nx-cloud-access-token }}
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   BRANCH: ${{ inputs.branch }}
+  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   package:
-    if: ${{ inputs.affected-dockerable != '[]' && inputs.affected-dockerable != ''}}
+    if: ${{ inputs.affected-package-container != '[]' && inputs.affected-package-container != ''}}
     name: Package
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        project: ${{ fromJson(inputs.affected-dockerable) }}
+        project: ${{ fromJson(inputs.affected-package-container) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -111,12 +116,14 @@ jobs:
 
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       - name: Dockerize
-        run: npx nx docker:build ${{ matrix.project }}
+        run: npx nx package:container ${{ matrix.project }} --prod
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
-          INPUT_BUILD_ARGS: GIT_REF_NAME=${{ github.ref_name }}, GIT_SHA=${{ github.sha }}
-          
+          # env variables substituted in the project.json docker target build-args
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+
   configure:
     name: Configure deployment target environment
     runs-on: ubuntu-20.04
@@ -133,17 +140,35 @@ jobs:
             echo environment="staging" >> $GITHUB_OUTPUT
           fi;
 
-  deploy:
-    name: Deployment
+  deploy-container:
+    name: Deployment container
     needs: [package, configure]
-    if: ${{ inputs.affected-deployable != '[]' && inputs.affected-deployable != ''}}
+    if: ${{ inputs.affected-deploy-container != '[]' && inputs.affected-deploy-container != ''}}
     strategy:
       matrix:
-        project: ${{ fromJson(inputs.affected-deployable) }}
-    uses: ./.github/workflows/deployment.template.yml
+        project: ${{ fromJson(inputs.affected-deploy-container) }}
+    uses: ./.github/workflows/deployment.container.template.yml
     with:
       environment-name: ${{ needs.configure.outputs.environment }}
       project-name: ${{ matrix.project }}
+      deploy-type: "container"
     secrets:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  deploy-static:
+    name: Deployment static
+    needs: [package, configure]
+    if: ${{ inputs.affected-deploy-static != '[]' && inputs.affected-deploy-static != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(inputs.affected-deploy-static) }}
+    uses: ./.github/workflows/deployment.static.template.yml
+    with:
+      environment-name: ${{ needs.configure.outputs.environment }}
+      project-name: ${{ matrix.project }}
+      deploy-type: "static"
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}

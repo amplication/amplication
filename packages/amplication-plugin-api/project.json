@@ -24,7 +24,7 @@
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "webpackConfig": "packages/amplication-plugin-api/webpack.config.js",
+        "generatePackageJson": true,
         "outputPath": "dist/packages/amplication-plugin-api",
         "main": "packages/amplication-plugin-api/src/main.ts",
         "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
@@ -55,11 +55,23 @@
       "options": {
         "buildTarget": "amplication-plugin-api:build",
         "inspect": true,
-        "port": 9229
+        "port": 7005
       },
       "configurations": {
         "production": {
           "buildTarget": "amplication-plugin-api:build-nx:production"
+        }
+      }
+    },
+    "refresh:plugins": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "curl --location --request POST 'http://localhost:3005/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'",
+        "envFile": "packages/amplication-plugin-api/.env"
+      },
+      "configurations": {
+        "production": {
+          "command": "curl --location --request POST 'https://plugin-api.amplication.com/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'"
         }
       }
     },
@@ -125,14 +137,22 @@
         "cwd": "packages/amplication-plugin-api"
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"]
+        "tags": ["amplication/git-pull-service:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }

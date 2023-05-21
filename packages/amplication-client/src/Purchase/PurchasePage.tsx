@@ -2,13 +2,14 @@ import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet";
 import * as models from "../models";
 import {
   Button,
   EnumButtonStyle,
   EnumIconPosition,
   Modal,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
 
@@ -17,25 +18,35 @@ import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
+import { FAQ } from "./FAQ";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
 };
+
+type PriceParam = { price: number; currency: string };
 
 const UNKNOWN = "unknown";
 
 const getPlanPrice = (
   selectedBillingPeriod: BillingPeriod,
   pricePoints: Price[]
-) => {
-  if (!pricePoints.length) return UNKNOWN;
+): PriceParam => {
+  const unknownPrice: PriceParam = { currency: UNKNOWN, price: 0 };
 
-  return pricePoints.reduce((price: string, pricePoint: Price) => {
-    if (pricePoint.billingPeriod === selectedBillingPeriod)
-      price = `${pricePoint.amount}${pricePoint.currency}`;
+  // If there are no price points, return the unknown price
+  if (!pricePoints.length) return unknownPrice;
 
-    return price;
-  }, UNKNOWN);
+  // Return the price point with the selected billing period
+  return pricePoints.reduce(
+    (price: PriceParam, pricePoint: Price): PriceParam => {
+      if (pricePoint.billingPeriod === selectedBillingPeriod) {
+        price = { currency: pricePoint.currency, price: pricePoint.amount };
+      }
+      return price;
+    },
+    unknownPrice
+  );
 };
 
 const CLASS_NAME = "purchase-page";
@@ -69,6 +80,8 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the main flow
+    history.push("?contact-us=true");
     openHubSpotChat();
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
@@ -76,6 +89,12 @@ const PurchasePage = (props) => {
       workspaceId: currentWorkspace.id,
     });
   }, [openHubSpotChat, currentWorkspace.id]);
+
+  const handleDowngradeClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
+    history.push("?downgrade=true");
+    openHubSpotChat();
+  }, [openHubSpotChat]);
 
   const [isLoading, setLoading] = useState(false);
 
@@ -99,13 +118,20 @@ const PurchasePage = (props) => {
 
   const onPlanSelected = useCallback(
     async ({ plan, intentionType, selectedBillingPeriod }) => {
+      const { currency, price } = getPlanPrice(
+        selectedBillingPeriod,
+        plan.pricePoints
+      );
+
       trackEvent({
         eventName: AnalyticsEventNames.PricingPageCTAClick,
-        currentPlan: currentWorkspace.subscription || "Free",
+        currentPlan:
+          currentWorkspace.subscription || models.EnumSubscriptionPlan.Free,
+        price,
         type: plan.displayName,
-        price: getPlanPrice(selectedBillingPeriod, plan.pricePoints),
         action: intentionType,
         Billing: selectedBillingPeriod,
+        currency,
       });
       switch (plan.id) {
         case "plan-amplication-enterprise":
@@ -115,13 +141,21 @@ const PurchasePage = (props) => {
           setLoading(true);
           await upgradeToPro(selectedBillingPeriod, intentionType);
           break;
+        case "plan-amplication-free":
+          handleDowngradeClick();
+          break;
       }
     },
     [upgradeToPro, handleContactUsClick]
   );
 
+  const pageTitle = "Pricing & Plans";
+
   return (
     <Modal open fullScreen>
+      <Helmet>
+        <title>{`Amplication | ${pageTitle} : `}</title>
+      </Helmet>
       <div className={CLASS_NAME}>
         {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
@@ -164,6 +198,7 @@ const PurchasePage = (props) => {
               priceNotSet: "Price not set",
             },
           }}
+          preferredBillingPeriod={BillingPeriod.Monthly}
           onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
@@ -189,6 +224,7 @@ const PurchasePage = (props) => {
             Contact Us
           </Button>
         </div>
+        <FAQ />
         <div className={`${CLASS_NAME}__footer`}>
           <div className={`${CLASS_NAME}__footer__copyright`}>
             ©2022 amplication

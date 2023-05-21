@@ -22,6 +22,15 @@ export const GET_PROJECTS = gql`
         id
         name
         resourceType
+        gitRepository {
+          id
+          name
+          groupName
+          gitOrganizationId
+          gitOrganization {
+            provider
+          }
+        }
       }
       createdAt
     }

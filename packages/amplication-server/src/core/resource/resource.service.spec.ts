@@ -5,16 +5,19 @@ import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService,
 } from "./resource.service";
-import {
-  PrismaService,
-  EnumResourceType,
-  GitRepository,
-  Prisma,
-} from "../../prisma";
+import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
-import { BlockVersion, Commit, EntityVersion, Project } from "../../models";
+import {
+  Account,
+  BlockVersion,
+  Commit,
+  EntityVersion,
+  Project,
+  GitRepository,
+  GitOrganization,
+} from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
 import { EntityField } from "../../models/EntityField";
@@ -35,6 +38,7 @@ import {
   EnumPendingChangeAction,
   EnumPendingChangeOriginType,
   ResourceCreateInput,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 import { PendingChange } from "./dto/PendingChange";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
@@ -49,6 +53,13 @@ import { TopicService } from "../topic/topic.service";
 import { Topic } from "../topic/dto/Topic";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { ServiceTopics } from "../serviceTopics/dto/ServiceTopics";
+import { DeleteTopicArgs } from "../topic/dto/DeleteTopicArgs";
+import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { ServiceSettingsUpdateInput } from "../serviceSettings/dto/ServiceSettingsUpdateInput";
+import { ConnectGitRepositoryInput } from "../git/dto/inputs/ConnectGitRepositoryInput";
 
 const EXAMPLE_MESSAGE = "exampleMessage";
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -64,12 +75,41 @@ const EXAMPLE_CUID = "EXAMPLE_CUID";
 const EXAMPLE_BUILD_ID = "ExampleBuildId";
 const EXAMPLE_WORKSPACE_ID = "ExampleWorkspaceId";
 
+const EXAMPLE_GIT_REPOSITORY_INPUT: ConnectGitRepositoryInput = {
+  name: "exampleGitRepositoryInput",
+  resourceId: "",
+  gitOrganizationId: "ExampleGitOrganizationId",
+};
+
+const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
+  authProvider: EnumAuthProviderType.Jwt,
+  adminUISettings: { generateAdminUI: true, adminUIPath: "" },
+  serverSettings: {
+    generateGraphQL: true,
+    generateRestApi: true,
+    serverPath: "",
+  },
+};
+
+const EXAMPLE_GIT_ORGANISATION: GitOrganization = {
+  id: "",
+  provider: "Github",
+  name: "",
+  installationId: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  type: "User",
+  useGroupingForRepositories: false,
+  providerProperties: "",
+};
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: "exampleGitRepositoryId",
   name: "repositoryTest",
   gitOrganizationId: "exampleGitOrganizationId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  gitOrganization: EXAMPLE_GIT_ORGANISATION,
+  groupName: "",
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
@@ -77,11 +117,37 @@ const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
   name: "My sample service",
   resourceType: EnumResourceType.Service,
   project: { connect: { id: "exampleProjectId" } },
+  serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+  gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
   id: EXAMPLE_RESOURCE_ID,
   resourceType: EnumResourceType.Service,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  name: EXAMPLE_RESOURCE_NAME,
+  description: EXAMPLE_RESOURCE_DESCRIPTION,
+  deletedAt: null,
+  gitRepositoryOverride: false,
+  builds: [
+    {
+      id: EXAMPLE_BUILD_ID,
+      createdAt: new Date(),
+      userId: "exampleUserId",
+      resourceId: EXAMPLE_RESOURCE_ID,
+      version: "1.0.0",
+      message: "new build",
+      actionId: "ExampleActionId",
+      commitId: "exampleCommitId",
+    },
+  ],
+  gitRepository: EXAMPLE_GIT_REPOSITORY,
+};
+
+const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
+  id: EXAMPLE_RESOURCE_ID,
+  resourceType: EnumResourceType.MessageBroker,
   createdAt: new Date(),
   updatedAt: new Date(),
   name: EXAMPLE_RESOURCE_NAME,
@@ -111,6 +177,22 @@ const EXAMPLE_PROJECT: Project = {
 
 const EXAMPLE_USER_ID = "exampleUserId";
 
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
@@ -121,6 +203,7 @@ const EXAMPLE_USER: User = {
     updatedAt: new Date(),
     name: "example_workspace_name",
   },
+  account: EXAMPLE_ACCOUNT,
   isOwner: true,
 };
 
@@ -243,11 +326,6 @@ const EXAMPLE_BUILD: Build = {
 
 const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   resourceId: EXAMPLE_RESOURCE_ID,
-  dbHost: "exampleDbHost",
-  dbName: "exampleDbName",
-  dbUser: "exampleDbUser",
-  dbPassword: "exampleDbPassword",
-  dbPort: 5532,
   authProvider: EnumAuthProviderType.Http,
   adminUISettings: undefined,
   serverSettings: undefined,
@@ -263,6 +341,11 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   outputParameters: [],
 };
 
+const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
+  resource: EXAMPLE_RESOURCE,
+  build: EXAMPLE_BUILD,
+};
+
 const EXAMPLE_TOPIC: Topic = {
   displayName: "exampleTopicDisplayName",
   name: "exampleTopicName",
@@ -271,7 +354,7 @@ const EXAMPLE_TOPIC: Topic = {
   createdAt: undefined,
   updatedAt: undefined,
   parentBlock: new Block(),
-  blockType: "ServiceSettings",
+  blockType: EnumBlockType.Topic,
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
@@ -285,9 +368,18 @@ const defaultTopicCreateMock = jest.fn(() => {
   return EXAMPLE_TOPIC;
 });
 
+const topicFindManyMock = jest.fn(() => {
+  return [EXAMPLE_TOPIC];
+});
+
+const topicDeleteMock = jest.fn();
+
+const serviceTopicsDeleteServiceTopicMock = jest.fn();
+
 const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
+
 const prismaResourceFindOneMock = jest.fn(
   (args: Prisma.ResourceFindUniqueArgs) => {
     if (args.where.id === EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID) {
@@ -350,14 +442,26 @@ const entityServiceCreateDefaultEntitiesMock = jest.fn();
 const entityServiceFindFirstMock = jest.fn(() => USER_ENTITY_MOCK);
 const entityServiceBulkCreateEntities = jest.fn();
 const entityServiceBulkCreateFields = jest.fn();
+const analyticServiceTrack = jest.fn();
 
 const buildServiceCreateMock = jest.fn(() => EXAMPLE_BUILD);
-
-const projectServiceFindUniqueMock = jest.fn(() => EXAMPLE_PROJECT);
 
 const environmentServiceCreateDefaultEnvironmentMock = jest.fn(() => {
   return EXAMPLE_ENVIRONMENT;
 });
+
+const projectServiceFindUniqueMock = jest.fn(() => ({
+  ...EXAMPLE_PROJECT,
+  resources: [EXAMPLE_RESOURCE, EXAMPLE_PROJECT_CONFIGURATION_RESOURCE],
+  workspace: {
+    id: EXAMPLE_WORKSPACE_ID,
+  },
+}));
+
+const prismaTransactionMock = jest.fn(() => [
+  EXAMPLE_RESOURCE,
+  EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
+]);
 
 jest.mock("cuid");
 // eslint-disable-next-line
@@ -375,6 +479,16 @@ describe("ResourceService", () => {
         {
           provide: ConfigService,
           useValue: { get: () => "" },
+        },
+        {
+          provide: PluginInstallationService,
+          useValue: { get: () => "" },
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: analyticServiceTrack,
+          })),
         },
         {
           provide: BillingService,
@@ -416,10 +530,12 @@ describe("ResourceService", () => {
             gitRepository: {
               findUnique: prismaGitRepositoryCreateMock,
               delete: prismaGitRepositoryCreateMock,
+              create: prismaGitRepositoryCreateMock,
             },
             resourceRole: {
               create: prismaResourceRoleCreateMock,
             },
+            $transaction: prismaTransactionMock,
           })),
         },
         {
@@ -466,11 +582,16 @@ describe("ResourceService", () => {
           provide: TopicService,
           useClass: jest.fn(() => ({
             create: defaultTopicCreateMock,
+            findMany: topicFindManyMock,
+            delete: topicDeleteMock,
           })),
         },
         {
           provide: ServiceTopicsService,
-          useClass: jest.fn(() => ({})),
+          useClass: jest.fn(() => ({
+            deleteTopicFromAllServices: jest.fn(),
+            deleteServiceTopic: serviceTopicsDeleteServiceTopicMock,
+          })),
         },
         {
           provide: ProjectConfigurationSettingsService,
@@ -480,12 +601,18 @@ describe("ResourceService", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             findUnique: projectServiceFindUniqueMock,
+            commit: projectServiceFindUniqueMock,
           })),
         },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 
     service = module.get<ResourceService>(ResourceService);
+  });
+
+  afterEach(() => {
+    jest.clearAllMocks();
   });
 
   it("should be defined", () => {
@@ -500,11 +627,14 @@ describe("ResourceService", () => {
           description: EXAMPLE_RESOURCE_DESCRIPTION,
           color: DEFAULT_RESOURCE_COLORS.service,
           resourceType: EnumResourceType.Service,
+          wizardType: "create resource",
           project: {
             connect: {
               id: EXAMPLE_PROJECT_ID,
             },
           },
+          serviceSettings: EXAMPLE_SERVICE_SETTINGS,
+          gitRepository: EXAMPLE_GIT_REPOSITORY_INPUT,
         },
       },
       user: EXAMPLE_USER,
@@ -544,10 +674,23 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
+          plugins: {
+            plugins: [
+              {
+                id: "clb3p3uxx009bjn01zfbim7p1",
+                displayName: "jwtAuth",
+                npm: "@amplication/plugin-auth-jwt",
+                enabled: true,
+                version: "latest",
+                pluginId: "auth-jwt",
+                settings: {},
+                resource: { connect: { id: "" } },
+              },
+            ],
           },
         },
 
@@ -595,16 +738,15 @@ describe("ResourceService", () => {
               ],
             },
           ],
-          generationSettings: {
-            generateAdminUI: true,
-            generateGraphQL: true,
-            generateRestApi: true,
-          },
+          wizardType: "onboarding",
+          dbType: "postgres",
+          repoType: "Mono",
+          authType: "Jwt",
         },
 
         EXAMPLE_USER
       )
-    ).resolves.toEqual(EXAMPLE_RESOURCE);
+    ).resolves.toEqual(EXAMPLE_CREATE_RESOURCE_RESULTS);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
 
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
@@ -613,6 +755,9 @@ describe("ResourceService", () => {
         {
           where: {
             deletedAt: null,
+            archived: {
+              not: true,
+            },
             name: {
               mode: QueryMode.Insensitive,
               startsWith: SAMPLE_SERVICE_DATA.name.toLowerCase(),
@@ -644,6 +789,9 @@ describe("ResourceService", () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
+        archived: {
+          not: true,
+        },
       },
     };
     expect(await service.resource(args)).toEqual(EXAMPLE_RESOURCE);
@@ -656,6 +804,9 @@ describe("ResourceService", () => {
       where: {
         deletedAt: null,
         id: EXAMPLE_RESOURCE_ID,
+        archived: {
+          not: true,
+        },
       },
     };
     expect(await service.resources(args)).toEqual([EXAMPLE_RESOURCE]);
@@ -666,7 +817,9 @@ describe("ResourceService", () => {
   it("should delete a resource", async () => {
     const args = { where: { id: EXAMPLE_RESOURCE_ID } };
     const dateSpy = jest.spyOn(global, "Date");
-    expect(await service.deleteResource(args)).toEqual(EXAMPLE_RESOURCE);
+    expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
+      EXAMPLE_RESOURCE
+    );
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith({
       ...args,
@@ -685,9 +838,30 @@ describe("ResourceService", () => {
 
   it("should not delete a resource of Project configuration", async () => {
     const args = { where: { id: EXAMPLE_PROJECT_CONFIGURATION_RESOURCE_ID } };
-    await expect(service.deleteResource(args)).rejects.toThrow(
+    await expect(service.deleteResource(args, EXAMPLE_USER)).rejects.toThrow(
       new Error(INVALID_DELETE_PROJECT_CONFIGURATION)
     );
+  });
+
+  it("should archive resources of a project", async () => {
+    const args = { where: { id: EXAMPLE_PROJECT_ID } };
+    expect(await service.archiveProjectResources(args.where.id)).toEqual(
+      expect.arrayContaining([
+        EXAMPLE_RESOURCE,
+        EXAMPLE_PROJECT_CONFIGURATION_RESOURCE,
+      ])
+    );
+    expect(prismaResourceUpdateMock).toBeCalledTimes(2);
+    expect(prismaResourceUpdateMock).toBeCalledWith({
+      where: { id: EXAMPLE_RESOURCE.id },
+      data: {
+        archived: true,
+        name: prepareDeletedItemName(
+          EXAMPLE_RESOURCE.name,
+          EXAMPLE_RESOURCE.id
+        ),
+      },
+    });
   });
 
   it("should update a resource", async () => {
@@ -698,6 +872,93 @@ describe("ResourceService", () => {
     expect(await service.updateResource(args)).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceUpdateMock).toBeCalledTimes(1);
     expect(prismaResourceUpdateMock).toBeCalledWith(args);
+  });
+  describe("when a resource is type of MessageBroker", () => {
+    const EXAMPLE_SERVICE_TOPICS: ServiceTopics = {
+      displayName: "exampleTopicDisplayName",
+      description: "exampleTopicDescription",
+      id: "",
+      createdAt: undefined,
+      updatedAt: undefined,
+      parentBlock: new Block(),
+      blockType: EnumBlockType.ServiceTopics,
+      versionNumber: 0,
+      inputParameters: [],
+      outputParameters: [],
+      messageBrokerId: EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+      enabled: true,
+      patterns: [],
+    };
+
+    const ANOTHER_TOPIC = {
+      id: "another",
+    } as Topic;
+
+    beforeEach(() => {
+      serviceTopicsDeleteServiceTopicMock.mockImplementation(() => {
+        return [EXAMPLE_SERVICE_TOPICS];
+      });
+      prismaResourceFindOneMock.mockImplementation(
+        () => EXAMPLE_RESOURCE_MESSAGE_BROKER
+      );
+
+      topicFindManyMock.mockImplementation(() => {
+        return [EXAMPLE_TOPIC, ANOTHER_TOPIC];
+      });
+      topicDeleteMock.mockImplementation((args: DeleteTopicArgs) => {
+        switch (args.where.id) {
+          case "another":
+            return ANOTHER_TOPIC;
+          default:
+            return EXAMPLE_TOPIC;
+        }
+      });
+    });
+
+    it("should delete the message broker resource and the relative topic and connections from services that use that broker", async () => {
+      const args = { where: { id: EXAMPLE_RESOURCE_ID } };
+      const dateSpy = jest.spyOn(global, "Date");
+      expect(await service.deleteResource(args, EXAMPLE_USER)).toEqual(
+        EXAMPLE_RESOURCE_MESSAGE_BROKER
+      );
+      expect(prismaResourceUpdateMock).toBeCalledTimes(1);
+      expect(prismaResourceUpdateMock).toBeCalledWith({
+        ...args,
+        data: {
+          deletedAt: dateSpy.mock.instances[0],
+          name: prepareDeletedItemName(
+            EXAMPLE_RESOURCE.name,
+            EXAMPLE_RESOURCE.id
+          ),
+          gitRepository: {
+            disconnect: true,
+          },
+        },
+      });
+
+      expect(topicFindManyMock).toHaveBeenCalledWith({
+        where: {
+          resource: {
+            id: EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+          },
+        },
+      });
+
+      expect(topicDeleteMock).toHaveBeenCalledTimes(2);
+      expect(topicDeleteMock).toHaveBeenCalledWith(
+        {
+          where: expect.objectContaining({
+            id: EXAMPLE_TOPIC.id || ANOTHER_TOPIC.id,
+          }),
+        },
+        EXAMPLE_USER
+      );
+
+      expect(serviceTopicsDeleteServiceTopicMock).toHaveBeenCalledWith(
+        EXAMPLE_RESOURCE_MESSAGE_BROKER.id,
+        EXAMPLE_USER
+      );
+    });
   });
 
   describe("deleted resources", () => {

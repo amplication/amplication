@@ -35,6 +35,7 @@ model Plugin {
 
 model PluginVersion {
   createdAt       DateTime @default(now())
+  deprecated      String?
   id              String   @id @default(cuid())
   pluginId        String?
   pluginIdVersion String   @unique

@@ -3,7 +3,7 @@ import {
   Panel,
   TimeSince,
   Icon,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React from "react";
 import classNames from "classnames";

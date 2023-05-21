@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "./context/appContext";
 import "./hubSpotChat.scss";
@@ -10,7 +10,6 @@ export const onConversationsAPIReady = () => {
     console.log(
       `Conversation with id ${payload.conversation.conversationId} has been closed!`
     );
-    window.HubSpotConversations.widget.remove();
   });
   const handleEvent = (eventPayload) => {
     console.log(eventPayload);

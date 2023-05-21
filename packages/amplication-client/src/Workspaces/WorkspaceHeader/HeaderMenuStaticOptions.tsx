@@ -1,4 +1,4 @@
-import { Icon, SelectMenuItem } from "@amplication/design-system";
+import { Icon, SelectMenuItem } from "@amplication/ui/design-system";
 import React, { useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 

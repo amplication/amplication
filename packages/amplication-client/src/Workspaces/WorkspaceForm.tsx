@@ -8,7 +8,7 @@ import {
 import * as models from "../models";
 import { formatError } from "../util/error";
 import FormikAutoSave from "../util/formikAutoSave";
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { useTracking } from "../util/analytics";
 import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";
@@ -75,6 +75,7 @@ function WorkspaceForm() {
     >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
+        <div className={`${CLASS_NAME}__separator`} />
         {currentWorkspace && (
           <Formik
             initialValues={currentWorkspace}

@@ -3,13 +3,13 @@ import { ConfigModule } from '@nestjs/config';
 import { QueueModule } from './queue/queue.module';
 import { GitOrganizationModule } from './git-organization/git-organization.module';
 import { HealthModule } from './health/health.module';
-import { AmplicationLoggerModule } from '@amplication/nest-logger-module';
+import { AmplicationLoggerModule } from '@amplication/util/nestjs/logging';
 import { WebhookModule } from './webhook/webhook.module';
 
 @Module({
   imports: [
-    AmplicationLoggerModule.register({
-      metadata: { service: 'amplication-git-pull-service' },
+    AmplicationLoggerModule.forRoot({
+      serviceName: 'amplication-git-pull-service',
     }),
     ConfigModule.forRoot({
       isGlobal: true,

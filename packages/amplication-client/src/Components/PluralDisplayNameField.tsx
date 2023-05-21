@@ -1,7 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { useFormikContext } from "formik";
 import pluralize from "pluralize";
-import { TextField, TextFieldProps } from "@amplication/design-system";
+import { TextField, TextFieldProps } from "@amplication/ui/design-system";
 
 export const PluralDisplayNameField = (props: TextFieldProps) => {
   const formik = useFormikContext<{ displayName: string }>();

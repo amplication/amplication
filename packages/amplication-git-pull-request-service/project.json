@@ -19,8 +19,7 @@
         "{workspaceRoot}/coverage/packages/amplication-git-pull-request-service"
       ],
       "options": {
-        "jestConfig": "packages/amplication-git-pull-request-service/jest.config.ts",
-        "passWithNoTests": true
+        "jestConfig": "packages/amplication-git-pull-request-service/jest.config.ts"
       }
     },
     "build": {
@@ -30,7 +29,7 @@
         "outputPath": "dist/packages/amplication-git-pull-request-service",
         "main": "packages/amplication-git-pull-request-service/src/main.ts",
         "tsConfig": "packages/amplication-git-pull-request-service/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-git-pull-request-service/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -43,7 +42,8 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-request-service:build"
+        "buildTarget": "amplication-git-pull-request-service:build",
+        "port": 7001
       },
       "configurations": {
         "production": {
@@ -51,14 +51,22 @@
         }
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-request-service:latest"]
+        "tags": ["amplication/git-pull-request-service:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }

@@ -3,7 +3,7 @@ import { useFormikContext } from "formik";
 import React, { useEffect, useRef, useState } from "react";
 import * as models from "../models";
 import { EntityRelationFieldsChart } from "./EntityRelationFieldsChart";
-import { HorizontalRule } from "@amplication/design-system";
+import { HorizontalRule } from "@amplication/ui/design-system";
 import "./RelatedEntityFieldField.scss";
 
 const CLASS_NAME = "related-entity-field-field";

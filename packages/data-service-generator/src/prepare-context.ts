@@ -9,11 +9,11 @@ import {
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
+import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
 import { get } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
-import winston from "winston";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
 import DsgContext from "./dsg-context";
 import { EnumResourceType } from "./models";
@@ -24,10 +24,10 @@ import { resolveTopicNames } from "./utils/message-broker";
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
-  logger: winston.Logger,
+  internalLogger: ILogger,
   pluginInstallationPath?: string
 ): Promise<Module[]> {
-  logger.info("Preparing context...");
+  internalLogger.info("Preparing context...");
 
   const {
     pluginInstallations: resourcePlugins,
@@ -53,12 +53,12 @@ export async function prepareContext(
   const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
 
   const context = DsgContext.getInstance;
-  context.logger = logger;
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
+  context.pluginInstallations = resourcePlugins;
 
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
@@ -99,9 +99,13 @@ function dynamicClientPathCreator(clientPath: string): clientDirectories {
   };
 }
 
-function prepareEntityPluralName(entities: Entity[]): Entity[] {
+export function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
     entity.pluralName = pluralize(camelCase(entity.name));
+    entity.pluralName =
+      entity.pluralName === camelCase(entity.name)
+        ? `${entity.pluralName}Items`
+        : entity.pluralName;
     return entity;
   });
   return currentEntities;

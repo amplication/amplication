@@ -1,4 +1,4 @@
-import { EnumPanelStyle, Icon, Panel } from "@amplication/design-system";
+import { EnumPanelStyle, Icon, Panel } from "@amplication/ui/design-system";
 import React, { useContext } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ProjectConfigurationGitSettings.scss";
@@ -10,11 +10,15 @@ import { isEmpty } from "lodash";
 
 type Props = {
   isOverride: boolean;
+  isProjectSettingsLinkShow?: boolean;
 };
 
-const CLASS_NAME = "project-configuration-github-settings";
+const CLASS_NAME = "project-configuration-git-settings";
 
-const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
+const ProjectConfigurationGitSettings: React.FC<Props> = ({
+  isOverride,
+  isProjectSettingsLinkShow = true,
+}) => {
   const { currentWorkspace, currentProject, projectConfigurationResource } =
     useContext(AppContext);
 
@@ -30,7 +34,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
     return (
       <Link
         title={"Go to project settings"}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/github`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
         className={classNames(
           `${CLASS_NAME}__link`,
           `${CLASS_NAME}__${linkFontClass}`
@@ -45,9 +49,9 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({ isOverride }) => {
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__settingsLink`}>
         <p className={isOverride ? `${CLASS_NAME}__disabled_color` : ""}>
-          These settings are inherited from the project
+          These settings are inherited from the project settings.
         </p>
-        <p>{projectSettingsLink()}</p>
+        {isProjectSettingsLinkShow && <p>{projectSettingsLink()}</p>}
       </div>
       <Panel
         className={`${CLASS_NAME}__${gitStatusPanelClassName}`}

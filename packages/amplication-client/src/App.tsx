@@ -12,7 +12,7 @@ import {
   AnimationType,
   FullScreenLoader,
   PlanUpgradeConfirmation,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 
@@ -62,11 +62,6 @@ function App() {
     LOCAL_STORAGE_KEY_INVITATION_TOKEN,
     undefined
   );
-
-  window.hsConversationsSettings = {
-    loadImmediately: false,
-    inlineEmbedSelector: "#amplication-chat",
-  };
 
   useEffect(() => {
     const params = queryString.parse(location.search);

@@ -1,4 +1,4 @@
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback } from "react";

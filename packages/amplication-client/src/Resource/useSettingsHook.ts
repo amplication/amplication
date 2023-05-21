@@ -10,26 +10,6 @@ export interface SettingsHookParams {
 
 const SERVICE_CONFIG_FORM_SCHEMA = {
   properties: {
-    dbHost: {
-      type: "string",
-      minLength: 2,
-    },
-    dbUser: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPassword: {
-      type: "string",
-      minLength: 2,
-    },
-    dbPort: {
-      type: "integer",
-      minLength: 4,
-      maxLength: 5,
-    },
-    dbName: {
-      type: "string",
-    },
     serverSettings: {
       properties: {
         generateGraphQL: {
@@ -56,14 +36,7 @@ const SERVICE_CONFIG_FORM_SCHEMA = {
       required: ["generateAdminUI"],
     },
   },
-  required: [
-    "dbHost",
-    "dbUser",
-    "dbPassword",
-    "dbPort",
-    "serverSettings",
-    "adminUISettings",
-  ],
+  required: ["serverSettings", "adminUISettings"],
 };
 
 const useSettingsHook = ({
@@ -74,11 +47,6 @@ const useSettingsHook = ({
   const handleSubmit = useCallback(
     (data: models.ServiceSettings) => {
       const {
-        dbHost,
-        dbName,
-        dbPassword,
-        dbPort,
-        dbUser,
         authProvider,
         adminUISettings: { generateAdminUI, adminUIPath },
         serverSettings: { generateRestApi, generateGraphQL, serverPath },
@@ -93,11 +61,6 @@ const useSettingsHook = ({
               generateAdminUI,
               adminUIPath: adminUIPath || "",
             },
-            dbHost,
-            dbName,
-            dbPassword,
-            dbPort,
-            dbUser,
             authProvider,
             serverSettings: {
               generateRestApi,

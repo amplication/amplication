@@ -4,7 +4,7 @@ import { FieldArray } from "formik";
 import { Droppable } from "react-beautiful-dnd";
 import { DraggableCore, DraggableData, DraggableEvent } from "react-draggable";
 import { HotKeys } from "react-hotkeys";
-import { TextField, Icon } from "@amplication/design-system";
+import { TextField, Icon } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { DATA_TYPE_TO_LABEL_AND_ICON } from "../Entity/constants";

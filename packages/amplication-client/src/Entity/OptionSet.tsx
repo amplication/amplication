@@ -4,7 +4,7 @@ import { pascalCase } from "pascal-case";
 import { get } from "lodash";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { TextField, Icon } from "@amplication/design-system";
+import { TextField, Icon } from "@amplication/ui/design-system";
 import "./OptionSet.scss";
 
 type OptionItem = {

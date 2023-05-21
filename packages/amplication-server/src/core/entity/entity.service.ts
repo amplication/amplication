@@ -5,6 +5,8 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  BadRequestException,
+  Inject,
 } from "@nestjs/common";
 import { DataConflictError } from "../../errors/DataConflictError";
 import { Prisma, PrismaService } from "../../prisma";
@@ -73,6 +75,11 @@ import {
   DeleteEntityPermissionFieldArgs,
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -124,6 +131,9 @@ const NAME_REGEX = /^(?![0-9])[a-zA-Z0-9$_]+$/;
 export const NAME_VALIDATION_ERROR_MESSAGE =
   "Name must only contain letters, numbers, the dollar sign, or the underscore character and must not start with a number";
 
+export const NUMBER_WITH_INVALID_MINIMUM_VALUE =
+  "Minimum value can not be greater than or equal to, the Maximum value";
+
 export const DELETE_ONE_USER_ENTITY_ERROR_MESSAGE = `The 'user' entity is a reserved entity and it cannot be deleted`;
 
 const RELATED_FIELD_ID_DEFINED_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
@@ -165,7 +175,9 @@ export class EntityService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
-    private readonly diffService: DiffService
+    private readonly diffService: DiffService,
+    private readonly analytics: SegmentAnalyticsService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   async entity(args: FindOneEntityArgs): Promise<Entity | null> {
@@ -315,6 +327,27 @@ export class EntityService {
         },
       },
     });
+
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: args.data.resource.connect.id,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    await this.analytics.track({
+      userId: user.account.id,
+      properties: {
+        resourceId: args.data.resource.connect.id,
+        projectId: resourceWithProject.projectId,
+        workspaceId: resourceWithProject.project.workspaceId,
+        entityName: args.data.displayName,
+      },
+      event: EnumEventType.EntityCreate,
+    });
+
     return newEntity;
   }
 
@@ -609,6 +642,26 @@ export class EntityService {
           );
         }
       }
+
+      const resourceWithProject = await this.prisma.resource.findUnique({
+        where: {
+          id: entity.resourceId,
+        },
+        include: {
+          project: true,
+        },
+      });
+
+      await this.analytics.track({
+        userId: user.account.id,
+        properties: {
+          resourceId: entity.resourceId,
+          projectId: resourceWithProject.projectId,
+          workspaceId: resourceWithProject.project.workspaceId,
+          entityName: args.data.displayName,
+        },
+        event: EnumEventType.EntityUpdate,
+      });
 
       return this.prisma.entity.update({
         where: { ...args.where },
@@ -1920,6 +1973,27 @@ export class EntityService {
           );
         }
 
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldCreate,
+        });
+
         // Create entity field
         return this.prisma.entityField.create({
           data: {
@@ -2117,6 +2191,14 @@ export class EntityService {
         "The base properties of the ID field cannot be edited"
       );
     }
+    const { minimumValue, maximumValue } = args?.data
+      ?.properties as unknown as {
+      minimumValue: number;
+      maximumValue: number;
+    };
+    if (minimumValue && minimumValue >= maximumValue) {
+      throw new BadRequestException(NUMBER_WITH_INVALID_MINIMUM_VALUE);
+    }
 
     // Delete related field in case field data type is changed from lookup
     const shouldDeleteRelated =
@@ -2221,6 +2303,27 @@ export class EntityService {
           });
         }
 
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldUpdate,
+        });
+
         return updatedField;
       }
     );
@@ -2263,7 +2366,7 @@ export class EntityService {
           } catch (error) {
             //continue to delete the field even if the deletion of the related field failed.
             //This is done in order to allow the user to workaround issues in any case when a related field is missing
-            console.log(
+            this.logger.error(
               "Continue with FieldDelete even though the related field could not be deleted or was not found ",
               error
             );

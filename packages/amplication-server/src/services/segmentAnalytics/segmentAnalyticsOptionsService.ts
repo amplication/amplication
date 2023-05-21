@@ -1,10 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GoogleSecretsManagerService } from "../googleSecretsManager.service";
 import {
   SegmentAnalyticsOptionsFactory,
   SegmentAnalyticsOptions,
 } from "./segmentAnalytics.interfaces";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export const SEGMENT_WRITE_KEY_SECRET_VAR = "SEGMENT_WRITE_KEY_SECRET";
 export const SEGMENT_WRITE_KEY_SECRET_NAME_VAR =
@@ -17,7 +18,8 @@ export class SegmentAnalyticsOptionsService
 {
   constructor(
     private readonly configService: ConfigService,
-    private readonly googleSecretManagerService: GoogleSecretsManagerService
+    private readonly googleSecretManagerService: GoogleSecretsManagerService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   async createSegmentAnalyticsOptions(): Promise<SegmentAnalyticsOptions> {
@@ -35,7 +37,7 @@ export class SegmentAnalyticsOptionsService
       SEGMENT_WRITE_KEY_SECRET_NAME_VAR
     );
     if (!secretName) {
-      console.error(MISSING_SEGMENT_WRITE_KEY_SECRET_ERROR);
+      this.logger.error(MISSING_SEGMENT_WRITE_KEY_SECRET_ERROR);
       return "";
     }
     return this.getSecretFromManager(secretName);

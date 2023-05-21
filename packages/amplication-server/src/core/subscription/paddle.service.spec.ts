@@ -6,6 +6,7 @@ import { Subscription } from "./dto/Subscription";
 import { EnumPaddleSubscriptionStatus } from "./dto/SubscriptionData";
 import { ERR_BAD_SIGNATURE, PaddleService } from "./paddle.service";
 import { SubscriptionService } from "./subscription.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 /* eslint-disable @typescript-eslint/naming-convention*/
 const PADDLE_CREATE_EVENT: PaddleCreateSubscriptionEvent = {
@@ -51,7 +52,7 @@ const EXAMPLE_SUBSCRIPTION: Subscription = {
     paddleCancelUrl: PADDLE_CREATE_EVENT.cancel_url,
     paddleUnitPrice: +PADDLE_CREATE_EVENT.unit_price,
   },
-  subscriptionPlan: EnumSubscriptionPlan.Business,
+  subscriptionPlan: EnumSubscriptionPlan.Pro,
   status: EnumSubscriptionStatus.Active,
   updatedAt: new Date(),
   workspaceId: "ExampleWorkspaceId",
@@ -85,6 +86,7 @@ describe("PaddleService", () => {
           })),
         },
         PaddleService,
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 

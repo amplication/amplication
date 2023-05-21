@@ -1,7 +1,7 @@
 import React, { useCallback, useContext } from "react";
 import { Switch, match } from "react-router-dom";
 import { gql, useQuery, useMutation } from "@apollo/client";
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import PageContent from "../Layout/PageContent";
@@ -11,13 +11,12 @@ import EntityFieldList from "./EntityFieldList";
 import EntityField from "../Entity/EntityField";
 import PermissionsForm from "../Permissions/PermissionsForm";
 import { ENTITY_ACTIONS } from "./constants";
-import { useTracking, track } from "../util/analytics";
+import { track } from "../util/analytics";
 import InnerTabLink from "../Layout/InnerTabLink";
 import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
 import "./Entity.scss";
 import { AppContext } from "../context/appContext";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type Props = {
   match: match<{ resource: string; entityId: string; fieldId: string }>;
@@ -33,7 +32,6 @@ type UpdateData = {
 
 const Entity = ({ match }: Props) => {
   const { entityId, resource } = match.params;
-  const { trackEvent } = useTracking();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
 
@@ -47,10 +45,6 @@ const Entity = ({ match }: Props) => {
     UPDATE_ENTITY,
     {
       onCompleted: (data) => {
-        trackEvent({
-          eventName: AnalyticsEventNames.EntityUpdate,
-          entityName: data.updateEntity.displayName,
-        });
         addEntity(data.updateEntity.id);
       },
     }

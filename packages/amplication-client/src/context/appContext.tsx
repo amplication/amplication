@@ -42,6 +42,7 @@ export interface AppContextInterface {
   workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
+  gitRepositoryOrganizationProvider: models.EnumGitProvider | undefined;
   createMessageBroker: (
     data: models.ResourceCreateInput,
     eventName: string
@@ -51,6 +52,7 @@ export interface AppContextInterface {
   resetPendingChangesIndicator: boolean;
   setResetPendingChangesIndicator: (reset: boolean) => void;
   openHubSpotChat: () => void;
+  createServiceWithEntitiesResult: models.ResourceCreateWithEntitiesResult;
 }
 
 const initialContext: AppContextInterface = {
@@ -88,12 +90,14 @@ const initialContext: AppContextInterface = {
   workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
+  gitRepositoryOrganizationProvider: undefined,
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
   resetPendingChangesIndicator: false,
   setResetPendingChangesIndicator: () => {},
   openHubSpotChat: () => {},
+  createServiceWithEntitiesResult: undefined,
 };
 
 export const AppContext =

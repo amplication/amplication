@@ -72,6 +72,13 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     context: {
       clientName: "pluginApiHttpLink",
     },
+    variables: {
+      where: {
+        deprecated: {
+          equals: null,
+        },
+      },
+    },
   });
   const {
     addBlock,
@@ -91,6 +98,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     variables: {
       resourceId: resourceId,
     },
+    skip: !resourceId,
   });
 
   const {
@@ -100,10 +108,10 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   } = useQuery<{
     PluginInstallation: models.PluginInstallation;
   }>(GET_PLUGIN_INSTALLATION, {
-    skip: !pluginInstallationId,
     variables: {
       pluginId: pluginInstallationId,
     },
+    skip: !pluginInstallationId,
   });
 
   const {
@@ -115,6 +123,7 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
     variables: {
       resourceId: resourceId,
     },
+    skip: !resourceId,
   });
 
   useEffect(() => {

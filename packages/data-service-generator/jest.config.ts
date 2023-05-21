@@ -6,24 +6,26 @@ export default {
       tsconfig: "<rootDir>/tsconfig.spec.json",
     },
   },
+  fakeTimers: {
+    doNotFake: ["fast-glob"],
+  },
   testEnvironment: "node",
-  coverageProvider: "v8",
-  collectCoverageFrom: [
-    "**/*.{ts,tsx}",
-    "!**/*.template.{ts,tsx}",
-    "!**/*.spec.{ts,tsx}",
-    "!**/*.e2e-spec.{ts,tsx}",
-    "!**/node_modules/**",
-  ],
   modulePathIgnorePatterns: [
     "lint",
     "generated",
     "src/server/static",
     "src/admin/static",
-    "src/server/auth/token",
   ],
+  testPathIgnorePatterns: ["amplication_modules", "tests/e2e"],
   moduleNameMapper: {
     "^axios$": require.resolve("axios"),
   },
   transformIgnorePatterns: ["node_modules/(?!axios)"],
+  coverageDirectory: "../../coverage/packages/data-service-generator",
+  coverageThreshold: {
+    global: {
+      branches: 89,
+      lines: 92.35,
+    },
+  },
 };

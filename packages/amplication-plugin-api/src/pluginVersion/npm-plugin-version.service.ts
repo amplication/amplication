@@ -1,20 +1,16 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import fetch from "node-fetch";
+import type { AbbreviatedManifest } from "pacote";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 interface NpmVersion {
-  [versionNumber: string]: {
-    version: string;
-    name: string;
-    description: string;
-    dist: {
-      tarball: string;
-    };
-  };
+  [versionNumber: string]: AbbreviatedManifest;
 }
 
 @Injectable()
 export class NpmPluginVersionService {
+  constructor(@Inject(AmplicationLogger) readonly logger: AmplicationLogger) {}
   /**
    * get npm versions results per package and structure it as plugin version DTO
    * @param npmVersions
@@ -32,6 +28,7 @@ export class NpmPluginVersionService {
     for (const [key, value] of Object.entries(npmVersions)) {
       pluginVersions.push({
         createdAt: now,
+        deprecated: value.deprecated?.toString() || null,
         id: "",
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
@@ -41,7 +38,6 @@ export class NpmPluginVersionService {
         tarballUrl: value.dist.tarball,
       });
     }
-
     return pluginVersions;
   }
   /**
@@ -53,7 +49,7 @@ export class NpmPluginVersionService {
     plugins: Plugin[]
   ): AsyncGenerator<(PluginVersion & { tarballUrl: string })[], void> {
     try {
-      const pluginLength = plugins.length;
+      const pluginLength = plugins?.length || 0;
       let index = 0;
 
       do {
@@ -78,7 +74,7 @@ export class NpmPluginVersionService {
         yield pluginVersionArr;
       } while (pluginLength > index);
     } catch (error) {
-      // TODO add error handling
+      this.logger.error(error.message, error);
     }
   }
   /**
@@ -98,7 +94,7 @@ export class NpmPluginVersionService {
 
       return pluginsVersions;
     } catch (error) {
-      // TODO add error handling
+      this.logger.error(error.message, error);
     }
   }
 }

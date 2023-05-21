@@ -11,7 +11,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
@@ -105,6 +105,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const subscription =
     getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
 
+  const isFreePlan = subscription === models.EnumSubscriptionPlan.Free;
+
   const { stigg } = useStiggContext();
   const hideNotifications = stigg.getBooleanEntitlement({
     featureId: BillingFeature.HideNotifications,
@@ -148,7 +150,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {!subscription && !hideNotifications.hasAccess && (
+        {isFreePlan && !hideNotifications.hasAccess && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}

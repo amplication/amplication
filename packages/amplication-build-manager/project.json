@@ -28,7 +28,7 @@
         "outputPath": "dist/packages/amplication-build-manager",
         "main": "packages/amplication-build-manager/src/main.ts",
         "tsConfig": "packages/amplication-build-manager/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-build-manager/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -43,7 +43,7 @@
       "options": {
         "buildTarget": "amplication-build-manager:build",
         "inspect": true,
-        "port": 9229
+        "port": 7010
       },
       "configurations": {
         "production": {
@@ -51,14 +51,22 @@
         }
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/build-manager:latest"]
+        "tags": ["amplication/build-manager:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }

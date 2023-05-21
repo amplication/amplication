@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { PaddleEvent } from "./dto/PaddleEvent";
 import { PaddlePassthroughData } from "./dto/PaddlePassthroughData";
@@ -13,6 +13,7 @@ import { PaddleCreateSubscriptionEvent } from "./dto/PaddleCreateSubscriptionEve
 import { PaddleCancelSubscriptionEvent } from "./dto/PaddleCancelSubscriptionEvent";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "./dto";
 import { Subscription } from "./dto/Subscription";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const PADDLE_BASE64_PUBLIC_KEY_VAR = "PADDLE_BASE_64_PUBLIC_KEY";
 
@@ -26,15 +27,16 @@ const PADDLE_PLAN_ID_TO_SUBSCRIPTION_PLAN: {
   [key: string]: EnumSubscriptionPlan;
 } = {
   ["658633"]: EnumSubscriptionPlan.Pro, //prod
-  ["658632"]: EnumSubscriptionPlan.Business, //prod
+  ["658632"]: EnumSubscriptionPlan.Free, //prod
   ["13780"]: EnumSubscriptionPlan.Pro, //sandbox
-  ["13781"]: EnumSubscriptionPlan.Business, //sandbox
+  ["13781"]: EnumSubscriptionPlan.Free, //sandbox
 };
 @Injectable()
 export class PaddleService {
   constructor(
     private readonly subscriptionService: SubscriptionService,
-    private readonly configService: ConfigService
+    private readonly configService: ConfigService,
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
   // Verify Paddle webhook data using our public key
@@ -62,8 +64,8 @@ export class PaddleService {
       const decodedPublicKey = buff.toString("utf8");
 
       return verifier.verify(decodedPublicKey, signature, "base64");
-    } catch (err) {
-      console.error(err);
+    } catch (error) {
+      this.logger.error(error.message, error);
       return false;
     }
   }

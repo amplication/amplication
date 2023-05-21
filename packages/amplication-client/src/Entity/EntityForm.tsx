@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Formik } from "formik";
 
 import * as models from "../models";
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";

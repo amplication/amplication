@@ -1,4 +1,4 @@
-import { CircularProgress } from "@amplication/design-system";
+import { CircularProgress } from "@amplication/ui/design-system";
 import { StiggProvider } from "@stigg/react-sdk";
 import React, { lazy, useEffect, useState } from "react";
 import { isMobileOnly } from "react-device-detect";
@@ -85,9 +85,11 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorCreateService,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
     createMessageBroker,
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
+    createServiceWithEntitiesResult,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
@@ -157,12 +159,14 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         workspacesList,
         gitRepositoryFullName,
         gitRepositoryUrl,
+        gitRepositoryOrganizationProvider,
         createMessageBroker,
         errorCreateMessageBroker,
         loadingCreateMessageBroker,
         resetPendingChangesIndicator,
         setResetPendingChangesIndicator,
         openHubSpotChat,
+        createServiceWithEntitiesResult,
       }}
     >
       {isMobileOnly ? (
@@ -185,7 +189,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
                     <PendingChanges projectId={currentProject.id} />
                   ) : null}
                   {currentProject && (
-                    <LastCommit projectId={currentProject.id} />
+                    <LastCommit resourceId={currentResource?.id} />
                   )}
                 </div>
               </div>

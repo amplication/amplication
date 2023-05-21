@@ -1,5 +1,10 @@
 import { EnvironmentVariables } from "./environmentVariables";
-import { KAFKA_BROKERS, KAFKA_CLIENT_ID, KAFKA_GROUP_ID } from "./constants";
+import {
+  KAFKA_BROKERS,
+  KAFKA_CLIENT_CONFIG_SSL,
+  KAFKA_CLIENT_ID,
+  KAFKA_GROUP_ID,
+} from "./constants";
 
 export class KafkaEnvironmentVariables {
   private envSuffix = "";
@@ -30,5 +35,14 @@ export class KafkaEnvironmentVariables {
       `${KAFKA_CLIENT_ID}${this.envSuffix}`,
       true
     );
+  }
+
+  getClientSslConfig(): boolean {
+    const ssl = EnvironmentVariables.instance.get(
+      `${KAFKA_CLIENT_CONFIG_SSL}${this.envSuffix}`,
+      false
+    );
+
+    return ssl ? ssl === "true" : false;
   }
 }

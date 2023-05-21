@@ -1,9 +1,25 @@
 import * as fs from "fs";
 import normalize from "normalize-path";
 import fg from "fast-glob";
-import { Module } from "@amplication/code-gen-types";
+import {
+  EventNames,
+  Module,
+  LoadStaticFilesParams,
+} from "@amplication/code-gen-types";
+import pluginWrapper from "../plugin-wrapper";
+import { getFileEncoding } from "./get-file-encoding";
 
 const filesToFilter = /(\._.*)|(.DS_Store)$/;
+
+export async function readStaticModules(
+  source: string,
+  basePath: string
+): Promise<Module[]> {
+  return pluginWrapper(readStaticModulesInner, EventNames.LoadStaticFiles, {
+    source,
+    basePath,
+  });
+}
 
 /**
  * Reads files from given source directory and maps them to module objects with
@@ -12,10 +28,10 @@ const filesToFilter = /(\._.*)|(.DS_Store)$/;
  * @param basePath path to base the created modules path on
  * @returns array of modules
  */
-export async function readStaticModules(
-  source: string,
-  basePath: string
-): Promise<Module[]> {
+export async function readStaticModulesInner({
+  source,
+  basePath,
+}: LoadStaticFilesParams): Promise<Module[]> {
   const directory = `${normalize(source)}/`;
   const staticModules = await fg(`${directory}**/*`, {
     absolute: false,
@@ -32,10 +48,13 @@ export async function readStaticModules(
             module.replace(directory, basePath ? basePath + "/" : "")
           )
       )
-      .map(async (module) => ({
-        path: module.replace(directory, basePath ? basePath + "/" : ""),
-        code: await fs.promises.readFile(module, "utf-8"),
-      }))
+      .map(async (module) => {
+        const encoding = getFileEncoding(module);
+        return {
+          path: module.replace(directory, basePath ? basePath + "/" : ""),
+          code: await fs.promises.readFile(module, encoding),
+        };
+      })
   );
 }
 

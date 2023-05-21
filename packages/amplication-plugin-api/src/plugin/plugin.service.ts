@@ -1,20 +1,16 @@
-import { Injectable } from "@nestjs/common";
-import {
-  Plugin,
-  PluginVersion,
-  Prisma,
-} from "../../prisma/generated-prisma-client";
-import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
+import { Inject, Injectable } from "@nestjs/common";
+import { Plugin, Prisma } from "../../prisma/generated-prisma-client";
 import { PrismaService } from "../prisma/prisma.service";
 import { PluginServiceBase } from "./base/plugin.service.base";
 import { GitPluginService } from "./github-plugin.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class PluginService extends PluginServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
     private gitPluginService: GitPluginService,
-    private pluginVersionService: PluginVersionService
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
     super(prisma);
   }
@@ -25,19 +21,11 @@ export class PluginService extends PluginServiceBase {
     return this.prisma.plugin.upsert(args);
   }
 
-  async pluginVersions(plugin: Plugin): Promise<PluginVersion[]> {
-    return this.pluginVersionService.findMany({
-      where: {
-        pluginId: plugin.pluginId,
-      },
-    });
-  }
-
   /**
    * main service that trigger gitPluginService and return plugin list. It upsert the plugins to DB
    * @returns Plugin[]
    */
-  async githubCatalogPlugins() {
+  async githubCatalogPlugins(): Promise<Plugin[]> {
     try {
       const pluginsList = await this.gitPluginService.getPlugins();
       if (
@@ -89,7 +77,7 @@ export class PluginService extends PluginServiceBase {
 
       return insertedPluginArr;
     } catch (error) {
-      console.log("githubCatalogPlugins", error);
+      this.logger.error("githubCatalogPlugins", error);
       return error.message;
     }
   }

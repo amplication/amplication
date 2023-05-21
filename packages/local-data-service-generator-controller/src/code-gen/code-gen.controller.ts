@@ -25,12 +25,15 @@ function generateCode(req: Request, res: Response) {
     .createContainer({
       Image: imageName,
       name: containerName,
+      AttachStderr: true,
+      AttachStdout: true,
       HostConfig: {
         Binds: [`${hostMachineDsgFolder}:${dockerDsgFolder}`],
         AutoRemove: Boolean(autoRemove === "true"),
       },
       Cmd: ["node", "./src/main.js"],
       Env: [
+        "NODE_ENV=Development",
         `BUILD_OUTPUT_PATH=${buildOutputPath}`,
         `BUILD_ID=${buildId}`,
         `RESOURCE_ID=${resourceId}`,
@@ -39,7 +42,15 @@ function generateCode(req: Request, res: Response) {
         "REMOTE_ENV=true",
       ],
     })
-    .then((container: Docker.Container) => container.start())
+    .then((container: Docker.Container) => {
+      container.start();
+      container.attach(
+        { stream: true, stdout: true, stderr: true },
+        function (err, stream) {
+          stream.pipe(process.stdout);
+        }
+      );
+    })
     .catch((err: Error) => console.log(err));
 
   res.send({

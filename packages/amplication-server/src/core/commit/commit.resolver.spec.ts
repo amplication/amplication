@@ -1,9 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
 import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
+import { gql } from "apollo-server-express";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { INestApplication } from "@nestjs/common";
 import { GraphQLModule } from "@nestjs/graphql";
@@ -12,9 +13,9 @@ import { CommitService } from "./commit.service";
 import { Commit, User } from "../../models";
 import { UserService } from "../user/user.service";
 import { BuildService } from "../build/build.service";
-
 import { CommitResolver } from "./commit.resolver";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { ApolloServerBase } from "apollo-server-core";
 
 const EXAMPLE_COMMIT_ID = "exampleCommitId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -78,7 +79,7 @@ const mockCanActivate = jest.fn(() => true);
 
 describe("CommitService", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -104,7 +105,7 @@ describe("CommitService", () => {
           useValue: {},
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),
@@ -116,7 +117,12 @@ describe("CommitService", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -124,12 +130,11 @@ describe("CommitService", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find committing user", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: USER_QUERY,
       variables: {
         id: EXAMPLE_COMMIT_ID,
@@ -146,13 +151,16 @@ describe("CommitService", () => {
       },
     });
     expect(userServiceFindUserMock).toBeCalledTimes(1);
-    expect(userServiceFindUserMock).toBeCalledWith({
-      where: { id: EXAMPLE_USER_ID },
-    });
+    expect(userServiceFindUserMock).toBeCalledWith(
+      {
+        where: { id: EXAMPLE_USER_ID },
+      },
+      true
+    );
   });
 
   it("should find one Commit", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ONE_COMMIT_QUERY,
       variables: { id: EXAMPLE_COMMIT_ID },
     });
@@ -170,7 +178,7 @@ describe("CommitService", () => {
   });
 
   it("should find many Commits", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_COMMIT_QUERY,
       variables: {},
     });

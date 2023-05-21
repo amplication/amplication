@@ -28,10 +28,7 @@ import {
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -40,7 +37,7 @@ export class ProjectResolver {
   constructor(
     private projectService: ProjectService,
     private resourceService: ResourceService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
@@ -74,6 +71,12 @@ export class ProjectResolver {
     return this.projectService.createProject(args, user.id);
   }
 
+  @Mutation(() => Project, { nullable: true })
+  @Roles("ORGANIZATION_ADMIN")
+  async deleteProject(@Args() args: FindOneArgs): Promise<Project | null> {
+    return this.projectService.deleteProject(args);
+  }
+
   @Mutation(() => Project, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
@@ -97,11 +100,14 @@ export class ProjectResolver {
     "data.project.connect.id"
   )
   @InjectContextValue(InjectableOriginParameter.UserId, "data.user.connect.id")
-  async commit(@Args() args: CreateCommitArgs): Promise<Commit | null> {
+  async commit(
+    @UserEntity() currentUser: User,
+    @Args() args: CreateCommitArgs
+  ): Promise<Commit | null> {
     try {
-      return await this.projectService.commit(args);
+      return await this.projectService.commit(args, currentUser);
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
       throw error;
     }
   }

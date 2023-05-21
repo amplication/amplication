@@ -1,4 +1,5 @@
 import { Field, ObjectType } from "@nestjs/graphql";
+import type { JsonValue } from "type-fest";
 import { EnumGitOrganizationType } from "../core/git/dto/enums/EnumGitOrganizationType";
 import { EnumGitProvider } from "../core/git/dto/enums/EnumGitProvider";
 
@@ -26,4 +27,14 @@ export class GitOrganization {
 
   @Field(() => EnumGitOrganizationType, { nullable: false })
   type!: keyof typeof EnumGitOrganizationType;
+
+  @Field(() => Boolean, {
+    nullable: false,
+    description:
+      "Defines if a git organisation needs defined repository groups",
+  })
+  useGroupingForRepositories!: boolean;
+
+  // don't use field decorator to avoid exposing properties to the client
+  providerProperties!: JsonValue;
 }

@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Inject } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
@@ -12,36 +9,47 @@ import {
 } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
-import { KafkaMessage } from "kafkajs";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
-import { KafkaTopics } from "./pull-request.type";
-import { PullRequestService } from "./pull-request.service";
-import { QueueService } from "./queue.service";
 import { Env } from "../env";
+import { PullRequestService } from "./pull-request.service";
+import { KafkaTopics } from "./pull-request.type";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import {
+  CreatePrFailure,
+  CreatePrRequest,
+  CreatePrSuccess,
+} from "@amplication/schema-registry";
 
 @Controller()
 export class PullRequestController {
   constructor(
     private readonly pullRequestService: PullRequestService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly producerService: KafkaProducerService,
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
   @EventPattern(KafkaTopics.CreatePrRequest)
   async generatePullRequest(
-    @Payload() message: KafkaMessage,
+    @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
   ) {
-    const validArgs = plainToInstance(CreatePullRequestArgs, message.value);
+    const validArgs = plainToInstance(CreatePrRequest.Value, message);
     await validateOrReject(validArgs);
-    this.logger.info(`Got a new generate pull request item from queue.`, {
-      topic: context.getTopic(),
-      partition: context.getPartition(),
-      offset: message.offset,
+
+    const offset = context.getMessage().offset;
+    const topic = context.getTopic();
+    const partition = context.getPartition();
+    const logger = this.logger.child({
+      resourceId: validArgs.resourceId,
+      buildId: validArgs.newBuildId,
+    });
+
+    logger.info(`Got a new generate pull request item from queue.`, {
+      topic,
+      partition,
+      offset: context.getMessage().offset,
       class: this.constructor.name,
-      args: validArgs,
     });
 
     try {
@@ -49,35 +57,43 @@ export class PullRequestController {
         validArgs
       );
 
-      this.logger.info(`Finish process, committing`, {
-        topic: context.getTopic(),
-        partition: context.getPartition(),
-        offset: message.offset,
+      logger.info(`Finish process, committing`, {
+        topic,
+        partition,
+        offset,
         class: this.constructor.name,
-        buildId: validArgs.newBuildId,
       });
 
-      const response = { url: pullRequest, buildId: validArgs.newBuildId };
-
-      this.queueService.emitMessage(
+      const successEvent: CreatePrSuccess.KafkaEvent = {
+        key: null,
+        value: {
+          url: pullRequest,
+          gitProvider: validArgs.gitProvider,
+          buildId: validArgs.newBuildId,
+        },
+      };
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrSuccess,
-        JSON.stringify(response)
+        successEvent
       );
     } catch (error) {
-      this.logger.error(error, {
-        class: this.constructor.name,
-        offset: message.offset,
-        buildId: validArgs.newBuildId,
+      logger.error(error.message, error, {
+        class: PullRequestController.name,
+        offset,
       });
 
-      const response = {
-        buildId: validArgs.newBuildId,
-        errorMessage: error.message,
+      const failureEvent: CreatePrFailure.KafkaEvent = {
+        key: null,
+        value: {
+          buildId: validArgs.newBuildId,
+          gitProvider: validArgs.gitProvider,
+          errorMessage: error.message,
+        },
       };
 
-      this.queueService.emitMessage(
+      await this.producerService.emitMessage(
         KafkaTopics.CreatePrFailure,
-        JSON.stringify(response)
+        failureEvent
       );
     }
   }

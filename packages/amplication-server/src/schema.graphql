@@ -64,12 +64,13 @@ type Query {
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
+  gitGroups(where: GitGroupInput!): PaginatedGitGroup!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
   projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
-  gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
-  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
 }
 
 type Account {
@@ -131,6 +132,7 @@ type GitRepository {
   gitOrganizationId: String!
   gitOrganization: GitOrganization!
   name: String!
+  groupName: String
   createdAt: DateTime
   updatedAt: DateTime
 }
@@ -143,10 +145,14 @@ type GitOrganization {
   createdAt: DateTime!
   updatedAt: DateTime!
   type: EnumGitOrganizationType!
+
+  """Defines if a git organisation needs defined repository groups"""
+  useGroupingForRepositories: Boolean!
 }
 
 enum EnumGitProvider {
   Github
+  Bitbucket
 }
 
 enum EnumGitOrganizationType {
@@ -280,7 +286,7 @@ type ActionLog {
 """
 The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
 """
-scalar JSONObject @specifiedBy(url: "http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf")
+scalar JSONObject
 
 enum EnumActionLogLevel {
   Error
@@ -652,8 +658,8 @@ type Subscription {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 
@@ -750,11 +756,6 @@ type ServiceSettings implements IBlock {
   outputParameters: [BlockInputOutput!]!
   lockedByUserId: String
   lockedAt: DateTime
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
@@ -997,6 +998,67 @@ type PluginOrder implements IBlock {
   order: [PluginOrderItem!]!
 }
 
+"""Returns a paginated list of repository groups available to select."""
+type PaginatedGitGroup {
+  """Total number of groups"""
+  total: Float!
+
+  """Page number"""
+  page: Float!
+
+  """Number of groups per page"""
+  pageSize: Float!
+  groups: [GitGroup!]
+}
+
+"""Group of Repositories"""
+type GitGroup {
+  id: String!
+  displayName: String!
+  name: String!
+}
+
+input GitGroupInput {
+  organizationId: String!
+}
+
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  total: Float!
+  pagination: Pagination!
+}
+
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+  defaultBranch: String!
+  groupName: String
+}
+
+type Pagination {
+  page: Float!
+  perPage: Float!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+
+  """The number of items to return per page"""
+  perPage: Float! = 10
+
+  """The page number. One-based indexing"""
+  page: Float! = 1
+  groupName: String
+}
+
+input GitOrganizationWhereInput {
+  id: String
+}
+
 type ProjectConfigurationSettings implements IBlock {
   id: String!
   createdAt: DateTime!
@@ -1025,33 +1087,6 @@ type ApiToken {
   lastAccessAt: DateTime!
 }
 
-type RemoteGitRepos {
-  repos: [RemoteGitRepository!]!
-  totalRepos: Float!
-  currentPage: Float!
-  pageSize: Float!
-}
-
-type RemoteGitRepository {
-  name: String!
-  url: String!
-  private: Boolean!
-  fullName: String!
-  admin: Boolean!
-  defaultBranch: String!
-}
-
-input RemoteGitRepositoriesWhereUniqueInput {
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  limit: Float!
-  page: Float!
-}
-
-input GitOrganizationWhereInput {
-  id: String
-}
-
 type Mutation {
   updateAccount(data: UpdateAccountInput!): Account!
   deleteWorkspace(where: WhereUniqueInput!): Workspace
@@ -1063,12 +1098,13 @@ type Mutation {
   deleteUser(where: WhereUniqueInput!): User
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
   createProject(data: ProjectCreateInput!): Project!
+  deleteProject(where: WhereUniqueInput!): Project
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   commit(data: CommitCreateInput!): Commit
   discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createService(data: ResourceCreateInput!): Resource!
-  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): Resource!
+  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
@@ -1099,7 +1135,20 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
+  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
+
+  """Only for GitHub integrations"""
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
+  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
@@ -1108,14 +1157,6 @@ type Mutation {
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
   completeInvitation(data: CompleteInvitationInput!): Auth!
-  createGitRepository(data: CreateGitRepositoryInput!): Resource!
-  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
-  connectResourceToProjectRepository(resourceId: String!): Resource!
-  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
-  deleteGitRepository(gitRepositoryId: String!): Resource!
-  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
-  disconnectResourceGitRepository(resourceId: String!): Resource!
-  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
 }
 
 input UpdateAccountInput {
@@ -1175,13 +1216,55 @@ input ResourceCreateInput {
   description: String!
   resourceType: EnumResourceType!
   project: WhereParentIdInput!
+  serviceSettings: ServiceSettingsUpdateInput
+  gitRepository: ConnectGitRepositoryInput
+}
+
+input ServiceSettingsUpdateInput {
+  displayName: String
+  description: String
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  resourceId: String!
+  gitOrganizationId: String!
+  isOverrideGitRepository: Boolean
+}
+
+type ResourceCreateWithEntitiesResult {
+  resource: Resource!
+  build: Build
 }
 
 input ResourceCreateWithEntitiesInput {
   resource: ResourceCreateInput!
   entities: [ResourceCreateWithEntitiesEntityInput!]!
-  generationSettings: ResourceGenSettingsCreateInput!
   commitMessage: String!
+  plugins: PluginInstallationsCreateInput
+  wizardType: String!
+  authType: String!
+  dbType: String!
+  repoType: String!
 }
 
 input ResourceCreateWithEntitiesEntityInput {
@@ -1195,10 +1278,37 @@ input ResourceCreateWithEntitiesFieldInput {
   dataType: EnumDataType
 }
 
-input ResourceGenSettingsCreateInput {
-  generateAdminUI: Boolean!
-  generateGraphQL: Boolean!
-  generateRestApi: Boolean!
+input PluginInstallationsCreateInput {
+  plugins: [PluginInstallationCreateInput!]
+}
+
+input PluginInstallationCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  pluginId: String!
+  enabled: Boolean!
+  npm: String!
+  settings: JSONObject
+  version: String!
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
 }
 
 input ResourceUpdateInput {
@@ -1283,30 +1393,6 @@ input EntityFieldUpdateInput {
   position: Int
 }
 
-input ServiceSettingsUpdateInput {
-  displayName: String
-  description: String
-  dbHost: String!
-  dbName: String!
-  dbUser: String!
-  dbPassword: String!
-  dbPort: Int!
-  authProvider: EnumAuthProviderType!
-  adminUISettings: AdminUISettingsUpdateInput!
-  serverSettings: ServerSettingsUpdateInput!
-}
-
-input AdminUISettingsUpdateInput {
-  generateAdminUI: Boolean
-  adminUIPath: String
-}
-
-input ServerSettingsUpdateInput {
-  generateGraphQL: Boolean
-  generateRestApi: Boolean
-  serverPath: String
-}
-
 input ServiceTopicsCreateInput {
   displayName: String!
   description: String
@@ -1317,21 +1403,6 @@ input ServiceTopicsCreateInput {
   messageBrokerId: String!
   enabled: Boolean!
   patterns: [MessagePatternCreateInput!]
-}
-
-input BlockInputOutputInput {
-  name: String!
-  description: String!
-  dataType: EnumDataType
-  dataTypeEntityName: String
-  isList: Boolean
-  includeAllPropertiesByDefault: Boolean
-  propertyList: [PropertySelectorInput!]
-}
-
-input PropertySelectorInput {
-  propertyName: String!
-  include: Boolean!
 }
 
 input MessagePatternCreateInput {
@@ -1382,20 +1453,6 @@ input ResourceRoleUpdateInput {
   displayName: String!
 }
 
-input PluginInstallationCreateInput {
-  displayName: String!
-  description: String
-  resource: WhereParentIdInput!
-  parentBlock: WhereParentIdInput
-  inputParameters: [BlockInputOutputInput!]
-  outputParameters: [BlockInputOutputInput!]
-  pluginId: String!
-  enabled: Boolean!
-  npm: String!
-  settings: JSONObject
-  version: String!
-}
-
 input PluginInstallationUpdateInput {
   displayName: String
   description: String
@@ -1406,6 +1463,47 @@ input PluginInstallationUpdateInput {
 
 input PluginSetOrderInput {
   order: Int!
+}
+
+input CreateGitRepositoryInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  isPublic: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+  resourceId: String!
+}
+
+input CreateGitRepositoryBaseInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  isPublic: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
+}
+
+input GitOAuth2FlowInput {
+  gitProvider: EnumGitProvider!
+  code: String!
 }
 
 input ProjectConfigurationSettingsUpdateInput {
@@ -1438,28 +1536,4 @@ input ChangePasswordInput {
 
 input CompleteInvitationInput {
   token: String!
-}
-
-input CreateGitRepositoryInput {
-  name: String!
-  public: Boolean!
-  resourceId: String!
-  gitOrganizationId: String!
-  gitProvider: EnumGitProvider!
-  gitOrganizationType: EnumGitOrganizationType!
-}
-
-input ConnectGitRepositoryInput {
-  name: String!
-  resourceId: String!
-  gitOrganizationId: String!
-}
-
-input GitOrganizationCreateInput {
-  installationId: String!
-  gitProvider: EnumGitProvider!
-}
-
-input GitGetInstallationUrlInput {
-  gitProvider: EnumGitProvider!
 }

@@ -1,7 +1,4 @@
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import Stigg, {
@@ -15,8 +12,7 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan, SubscriptionData } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature } from "./BillingFeature";
-import { BillingPlan } from "./BillingPlan";
+import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
@@ -25,6 +21,7 @@ import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscript
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
+import { User } from "../../models";
 
 @Injectable()
 export class BillingService {
@@ -37,7 +34,7 @@ export class BillingService {
   }
 
   constructor(
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly analytics: SegmentAnalyticsService,
     configService: ConfigService
@@ -60,8 +57,10 @@ export class BillingService {
             this.logger.info("Successfully initialized Stigg provider");
           })
           .catch((reason) => {
-            this.logger.error("failed to initialize Stigg", { reason });
-            this.logger.error("Disabling billing module");
+            this.logger.error(
+              "Failed to initialize Stigg. Disabling billing module",
+              reason
+            );
             this.stiggClient.close();
             this.billingEnabled = false;
           });
@@ -71,8 +70,10 @@ export class BillingService {
         );
       }
     } catch (error) {
-      this.logger.error("failed to initialize Stigg", { error });
-      this.logger.error("Disabling billing module");
+      this.logger.error(
+        "Failed to initialize Stigg. Disabling billing module",
+        error
+      );
       this.billingEnabled = false;
     }
   }
@@ -82,9 +83,8 @@ export class BillingService {
       if (this.isBillingEnabled) {
         return this.stiggClient;
       }
-      return null;
-    } catch (err) {
-      this.logger.error(err);
+    } catch (error) {
+      this.logger.error(error.message, error);
     }
   }
 
@@ -103,7 +103,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -130,7 +130,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -147,7 +147,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -164,7 +164,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -181,7 +181,7 @@ export class BillingService {
         });
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
@@ -206,6 +206,9 @@ export class BillingService {
         allowPromoCodes: true,
         cancelUrl: new URL(successUrl, this.clientHost).href,
         successUrl: new URL(cancelUrl, this.clientHost).href,
+      },
+      metadata: {
+        userId: userId,
       },
     });
     await this.analytics.track({
@@ -235,10 +238,6 @@ export class BillingService {
           return subscription.status === SubscriptionStatus.Active;
         });
 
-        if (activeSub.plan.id === BillingPlan.Free) {
-          return null;
-        }
-
         const amplicationSub = {
           id: activeSub.id,
           status: this.mapSubscriptionStatus(activeSub.status),
@@ -256,7 +255,7 @@ export class BillingService {
         return null;
       }
     } catch (error) {
-      this.logger.error(error);
+      this.logger.error(error.message, error);
       return null; //on any exception, use free plan
     }
   }
@@ -269,6 +268,7 @@ export class BillingService {
       const stiggClient = await this.getStiggClient();
       await stiggClient.provisionCustomer({
         customerId: workspaceId,
+        shouldSyncFree: false,
         subscriptionParams: {
           planId: plan,
         },
@@ -279,7 +279,8 @@ export class BillingService {
 
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace(
-    workspaceId: string
+    workspaceId: string,
+    currentUser: User
   ): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -295,9 +296,18 @@ export class BillingService {
         );
 
         if (!servicesEntitlement.hasAccess) {
-          throw new ValidationError(
-            `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-          );
+          const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
+
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -315,9 +325,18 @@ export class BillingService {
 
           const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
 
-          throw new ValidationError(
-            `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-          );
+          const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
+
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
       }
     }
@@ -360,6 +379,8 @@ export class BillingService {
 
   mapSubscriptionPlan(planId: BillingPlan): EnumSubscriptionPlan {
     switch (planId) {
+      case BillingPlan.Free:
+        return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:

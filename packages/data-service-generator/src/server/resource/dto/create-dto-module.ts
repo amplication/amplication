@@ -18,8 +18,9 @@ import {
   IS_NUMBER_ID,
   IS_OPTIONAL_ID,
   IS_STRING_ID,
-  IS_JSON_ID,
+  IS_JSON_VALUE_ID,
   VALIDATE_NESTED_ID,
+  CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE,
 } from "./class-validator.util";
 import {
   CLASS_TRANSFORMER_MODULE,
@@ -46,6 +47,7 @@ import {
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import DsgContext from "../../../dsg-context";
+import { logger } from "../../../logging";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -63,11 +65,11 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_NUMBER_ID,
     IS_INT_ID,
     IS_STRING_ID,
-    IS_JSON_ID,
     IS_OPTIONAL_ID,
     IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
+  [CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE]: [IS_JSON_VALUE_ID],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
   [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
@@ -95,7 +97,7 @@ export function createDTOModule(
       path: dtoNameToPath[dto.id.name],
     };
   } catch (error) {
-    console.log(error);
+    logger.info(error);
     throw error;
   }
 }

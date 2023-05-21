@@ -1,5 +1,5 @@
 import { useCallback, useContext } from "react";
-import { ConfirmationDialog, Snackbar } from "@amplication/design-system";
+import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import * as models from "../models";
 import { gql, useMutation } from "@apollo/client";
 import { formatError } from "../util/error";

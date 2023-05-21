@@ -4,7 +4,7 @@ import {
   EnumPanelStyle,
   Icon,
   Panel,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
@@ -48,7 +48,7 @@ export default function RepositoryActions({
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
-                      buttonStyle={EnumButtonStyle.Primary}
+                      buttonStyle={EnumButtonStyle.Outline}
                       onClick={onSelectRepository}
                     >
                       Select repository

@@ -2,7 +2,7 @@ import {
   LimitationDialog,
   Snackbar,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";
@@ -80,12 +80,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
       const isLimitationError =
         errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
       setOpenLimitationDialog(isLimitationError);
-      const limitationErrorMessage =
-        isLimitationError && formatLimitationError(errorMessage);
-      trackEvent({
-        eventName: AnalyticsEventNames.PassedLimitsNotificationView,
-        reason: limitationErrorMessage,
-      });
     },
     onCompleted: (response) => {
       setCommitRunning(false);
@@ -153,7 +147,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: AnalyticsEventNames.CommitCreate,
+                  eventName: AnalyticsEventNames.CommitClicked,
                 }}
                 disabled={loading}
               >
@@ -193,12 +187,17 @@ const Commit = ({ projectId, noChanges }: Props) => {
 
 export default Commit;
 
-const COMMIT_CHANGES = gql`
+export const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $projectId: String!) {
     commit(
       data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
+      builds {
+        id
+        resourceId
+        status
+      }
     }
   }
 `;
