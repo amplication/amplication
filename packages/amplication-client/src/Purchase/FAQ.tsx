@@ -74,7 +74,7 @@ export const FAQ = () => {
         />
         <Question
           question="What if I need to add more team members?"
-          answer="No problem. Select the plan that meets your needs. The Free edition supports up to two user seats, the Pro edition supports up to ten user seats, and the Enterprise edition has no limit. "
+          answer="No problem. Select the plan that meets your needs. The Free edition supports up to two user seats, the Pro edition supports up to five user seats, and the Enterprise edition has no limit. "
         />
         <Question
           question="Can I pay for my subscription with an invoice?"
