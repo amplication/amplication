@@ -46,7 +46,7 @@ async function createServerPackageJsonInternal({
     ),
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
-  await moduleMap.set(packageJsonModule.path, packageJsonModule);
+  await moduleMap.set(packageJsonModule);
 
   const mutatedPackageJson = await updatePackageJSONs(
     moduleMap,

@@ -148,7 +148,7 @@ export async function createEntityControllerSpecInternal({
     code: print(template).code,
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 

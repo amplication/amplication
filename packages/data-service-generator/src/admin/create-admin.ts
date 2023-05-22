@@ -80,7 +80,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   const publicFilesModules = await createPublicFiles();
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(DTOs);
-  const dtoModules = await createDTOModules(DTOs, dtoNameToPath);
+  const dtoModuleMap = await createDTOModules(DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
@@ -106,17 +106,6 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   );
   const appModule = await createAppModule(entitiesComponents);
 
-  const createdModules = new ModuleMap(context.logger);
-
-  await createdModules.set(appModule.path, appModule);
-  await createdModules.set(enumRolesModule.path, enumRolesModule);
-  await createdModules.set(rolesModule.path, rolesModule);
-  await createdModules.mergeMany([
-    dtoModules,
-    entityTitleComponentsModules,
-    entityComponentsModules,
-  ]);
-
   const dotEnvModule = await createDotEnvModule(
     appInfo,
     clientDirectories.baseDirectory
@@ -124,7 +113,16 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
 
   await context.logger.info("Formatting code...");
 
-  await createdModules.replaceModulesCode((code) => formatCode(code));
+  const tsModules = new ModuleMap(context.logger);
+  await tsModules.set(appModule);
+  await tsModules.set(enumRolesModule);
+  await tsModules.set(rolesModule);
+  await tsModules.mergeMany([
+    dtoModuleMap,
+    entityTitleComponentsModules,
+    entityComponentsModules,
+  ]);
+  await tsModules.replaceModulesCode((code) => formatCode(code));
 
   const allModules = new ModuleMap(context.logger);
   await allModules.mergeMany([
@@ -132,9 +130,9 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     gitIgnore,
     packageJson,
     publicFilesModules,
-    createdModules,
+    tsModules,
   ]);
-  await allModules.set(dotEnvModule.path, dotEnvModule);
+  await allModules.set(dotEnvModule);
 
   return allModules;
 }

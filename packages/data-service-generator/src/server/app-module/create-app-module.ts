@@ -137,6 +137,6 @@ export async function createAppModuleInternal({
     code: print(template).code,
   };
   const appModuleMap = new ModuleMap(DsgContext.getInstance.logger);
-  await appModuleMap.set(appModule.path, appModule);
+  await appModuleMap.set(appModule);
   return appModuleMap;
 }

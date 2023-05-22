@@ -47,7 +47,7 @@ export async function createDotEnvModuleInternal({
     ),
   };
   const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 

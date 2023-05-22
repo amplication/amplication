@@ -131,10 +131,12 @@ export class ModuleMap {
   private map: Record<string, Module> = {};
   constructor(private readonly logger: BuildLogger) {}
 
-  async merge(anotherMap: ModuleMap): Promise<void> {
+  async merge(anotherMap: ModuleMap): Promise<ModuleMap> {
     for await (const module of anotherMap.modules()) {
-      await this.set(module.path, module);
+      await this.set(module);
     }
+
+    return this;
   }
 
   async mergeMany(maps: ModuleMap[]): Promise<void> {
@@ -143,11 +145,13 @@ export class ModuleMap {
     }
   }
 
-  async set(path: string, module: Module) {
-    if (this.map[path]) {
-      await this.logger.warn(`Module ${path} already exists. Overwriting...`);
+  async set(module: Module) {
+    if (this.map[module.path]) {
+      await this.logger.warn(
+        `Module ${module.path} already exists. Overwriting...`
+      );
     }
-    this.map[path] = module;
+    this.map[module.path] = module;
   }
 
   get(path: string) {

@@ -122,7 +122,7 @@ async function createServiceModule({
     code: print(template).code,
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 
@@ -214,7 +214,7 @@ async function createServiceBaseModule({
   };
   const context = DsgContext.getInstance;
   const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 

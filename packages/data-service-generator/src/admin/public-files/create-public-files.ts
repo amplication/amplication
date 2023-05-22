@@ -10,8 +10,8 @@ export async function createPublicFiles(): Promise<ModuleMap> {
   const publicFilesModules = new ModuleMap(DsgContext.getInstance.logger);
   const manifestModule = createManifestModule();
   const indexHTMLModule = await createIndexHTMLModule();
-  publicFilesModules.set(manifestModule.path, manifestModule);
-  publicFilesModules.set(indexHTMLModule.path, indexHTMLModule);
+  publicFilesModules.set(manifestModule);
+  publicFilesModules.set(indexHTMLModule);
   return publicFilesModules;
 }
 

@@ -60,7 +60,7 @@ export async function readStaticModulesInner({
   );
   const moduleMap: ModuleMap = new ModuleMap(DsgContext.getInstance.logger);
   for await (const module of modules) {
-    await moduleMap.set(module.path, module);
+    await moduleMap.set(module);
   }
   return moduleMap;
 }
@@ -90,7 +90,7 @@ export async function readPluginStaticModules(
       path: module.replace(directory, basePath ? basePath + "/" : ""),
       code: await fs.promises.readFile(module, "utf-8"),
     };
-    await moduleMap.set(file.path, file);
+    await moduleMap.set(file);
   }
 
   return moduleMap;

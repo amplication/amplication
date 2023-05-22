@@ -47,7 +47,7 @@ export async function createDTOModulesInternal({
   dtos,
 }: CreateDTOsParams): Promise<ModuleMap> {
   const dtoNameToPath = getDTONameToPath(dtos);
-  const modules = new ModuleMap(DsgContext.getInstance.logger);
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
 
   const entityDTOs = Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs)
@@ -62,9 +62,9 @@ export async function createDTOModulesInternal({
       module = createDTOModule(dto, dtoNameToPath);
     }
 
-    await modules.set(module.path, module);
+    await moduleMap.set(module);
   }
-  return modules;
+  return moduleMap;
 }
 
 export function getDTONameToPath(dtos: DTOs): Record<string, string> {

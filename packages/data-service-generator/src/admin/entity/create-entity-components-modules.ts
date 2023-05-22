@@ -13,7 +13,7 @@ export const createEntityComponentsModules = async (
 
   for await (const entityComponent of entityComponents) {
     const module = await createEntityComponentModule(entityComponent);
-    await entityComponentsModules.set(module.path, module);
+    await entityComponentsModules.set(module);
   }
 
   return entityComponentsModules;
@@ -27,7 +27,7 @@ export const createEntityTitleComponentsModules = async (
   );
   for await (const component of Object.values(titleComponents)) {
     const module = await createEntityComponentModule(component);
-    await entityTitleComponentsModules.set(module.path, module);
+    await entityTitleComponentsModules.set(module);
   }
 
   return entityTitleComponentsModules;

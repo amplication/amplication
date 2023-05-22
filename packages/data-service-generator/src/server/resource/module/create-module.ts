@@ -160,7 +160,7 @@ async function createModule({
   };
   const context = DsgContext.getInstance;
   const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 
@@ -185,7 +185,7 @@ async function createBaseModule({
   };
   const context = DsgContext.getInstance;
   const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(module.path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }
 

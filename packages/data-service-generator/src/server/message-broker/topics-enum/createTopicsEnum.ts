@@ -58,6 +58,6 @@ export async function createTopicsEnumInternal(
     code: print(astFile).code,
   };
   const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(path, module);
+  await moduleMap.set(module);
   return moduleMap;
 }

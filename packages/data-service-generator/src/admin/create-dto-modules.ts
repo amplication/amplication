@@ -13,7 +13,7 @@ export async function createDTOModules(
   dtos: DTOs,
   dtoNameToPath: Record<string, string>
 ): Promise<ModuleMap> {
-  const modules = new ModuleMap(DsgContext.getInstance.logger);
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
 
   const serverDtos = Object.values(dtos).flatMap((entityDTOs) =>
     Object.values(entityDTOs)
@@ -23,13 +23,13 @@ export async function createDTOModules(
     const dto = transformServerDTOToClientDTO(serverDTO);
     const modulePath = dtoNameToPath[dto.id.name];
     const file = createDTOFile(dto, modulePath, dtoNameToPath);
-    await modules.set(modulePath, {
+    await moduleMap.set({
       path: modulePath,
       code: print(file).code,
     });
   }
 
-  return modules;
+  return moduleMap;
 }
 
 function transformServerDTOToClientDTO(
