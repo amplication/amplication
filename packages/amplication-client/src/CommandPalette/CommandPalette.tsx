@@ -4,12 +4,13 @@ import { useQuery, gql } from "@apollo/client";
 import { History } from "history";
 
 import { useHistory } from "react-router-dom";
-import { CircleBadge, Icon } from "@amplication/ui/design-system";
+import { CircleBadge, Icon, Tooltip } from "@amplication/ui/design-system";
 
 import * as models from "../models";
 import { AppContext } from "../context/appContext";
 import "./CommandPalette.scss";
 import { resourceThemeMap } from "../Resource/constants";
+import { TRUNCATED_NAME_LENGTH, truncateName } from "../util/truncateName";
 
 export type ResourceDescriptor = Pick<
   models.Resource,
@@ -171,14 +172,41 @@ function CommandPaletteItem(suggestion: Command) {
                 .color
             }
           />
-          <span className="command-palette__resource-name">{resourceName}</span>
+          <Tooltip
+            noDelay
+            wrap
+            show={resourceName.length > TRUNCATED_NAME_LENGTH}
+            aria-label={`${resourceName}`}
+          >
+            <span className="command-palette__resource-name">
+              {truncateName(resourceName)}
+            </span>
+          </Tooltip>
         </>
       )}
       <Icon icon={type} />
       {highlight && highlight[0] ? (
-        <span dangerouslySetInnerHTML={{ __html: highlight[0] }} />
+        <Tooltip
+          noDelay
+          wrap
+          show={highlight[0]?.length > TRUNCATED_NAME_LENGTH}
+          aria-label={`${name}`}
+        >
+          <span
+            dangerouslySetInnerHTML={{
+              __html: truncateName(highlight[0]),
+            }}
+          />
+        </Tooltip>
       ) : (
-        <span>{name}</span>
+        <Tooltip
+          noDelay
+          wrap
+          show={name.length > TRUNCATED_NAME_LENGTH}
+          aria-label={`${name}`}
+        >
+          <span>{truncateName(name)}</span>
+        </Tooltip>
       )}
     </>
   );

@@ -10,6 +10,9 @@
     overflow-y: auto;
     @include scrollbars(16px, var(--black60), transparent);
     flex: 1;
+    .inner-tab-link {
+      margin-bottom: var(--default-spacing-small) !important;
+    }
   }
 
   & > .amp-button {

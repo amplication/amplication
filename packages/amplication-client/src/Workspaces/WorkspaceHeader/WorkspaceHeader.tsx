@@ -29,6 +29,7 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
+import { TRUNCATED_NAME_LENGTH, truncateName } from "../../util/truncateName";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -201,9 +202,17 @@ const WorkspaceHeader: React.FC<{}> = () => {
                     isProjectRoute ? "highlight" : ""
                   }`}
                 >
-                  <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
-                    {currentProject?.name}
-                  </Link>
+                  <Tooltip
+                    direction={"s"}
+                    noDelay
+                    wrap
+                    show={currentProject?.name?.length > TRUNCATED_NAME_LENGTH}
+                    aria-label={`${currentProject?.name}`}
+                  >
+                    <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
+                      {truncateName(currentProject.name)}
+                    </Link>
+                  </Tooltip>
                 </div>
                 <div>
                   <hr className={`${CLASS_NAME}__vertical_border`} />

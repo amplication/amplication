@@ -13,11 +13,13 @@ import {
   HorizontalRule,
   EnumHorizontalRuleStyle,
   Icon,
+  Tooltip,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { TRUNCATED_NAME_LENGTH, truncateName } from "../util/truncateName";
 
 type Props = {
   resource: models.Resource;
@@ -95,7 +97,17 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <div className={`${CLASS_NAME}__row`}>
             <ResourceCircleBadge type={resource.resourceType} />
 
-            <span className={`${CLASS_NAME}__title`}>{name}</span>
+            <Tooltip
+              direction={"s"}
+              noDelay
+              wrap
+              show={name?.length > TRUNCATED_NAME_LENGTH}
+              aria-label={`${name}`}
+            >
+              <span className={`${CLASS_NAME}__title`}>
+                {truncateName(name)}
+              </span>
+            </Tooltip>
 
             <span className="spacer" />
             {onDelete && (

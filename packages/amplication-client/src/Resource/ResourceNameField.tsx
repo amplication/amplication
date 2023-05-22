@@ -10,6 +10,7 @@ import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import * as models from "../models";
 import "./ResourceNameField.scss";
+import { TRUNCATED_NAME_LENGTH, truncateName } from "../util/truncateName";
 
 type Props = {
   currentResource: models.Resource;
@@ -134,9 +135,18 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
                   onMouseEnter={handleMouseEnter}
                   onMouseLeave={handleMouseLeave}
                 >
-                  <span className={`${CLASS_NAME}__text`}>
-                    {currentResource?.name}
-                  </span>
+                  <Tooltip
+                    direction={"s"}
+                    noDelay
+                    wrap
+                    show={currentResource?.name?.length > TRUNCATED_NAME_LENGTH}
+                    aria-label={`${currentResource?.name}`}
+                  >
+                    <span className={`${CLASS_NAME}__text`}>
+                      {truncateName(currentResource.name)}
+                    </span>
+                  </Tooltip>
+
                   <div
                     onClick={() => setIsEditing(true)}
                     className={`${CLASS_NAME}__edit_icon`}
