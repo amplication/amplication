@@ -120,6 +120,13 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                   name="description"
                   label="Description"
                 />
+                <TextField
+                  autoComplete="off"
+                  textarea
+                  rows={3}
+                  name="customAttributes"
+                  label="Custom Attributes"
+                />
               </>
             </Form>
           );
