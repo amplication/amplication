@@ -110,7 +110,9 @@ export class PullRequestService {
       pullRequestMode,
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      buildId: newBuildId,
     });
+
     logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
