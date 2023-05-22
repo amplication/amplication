@@ -35,7 +35,7 @@ const USER: Entity = {
   pluralDisplayName: "Users",
   pluralName: "users",
   customAttributes:
-    "@@unique([unique_1(sort: Desc), unique_2]) @@unique([unique_1(sort: Desc), unique_2])\n\n@@fsdf",
+    "@@unique([unique_1(sort: Desc), unique_2]) @@unique([unique_1(sort: Desc), unique_2])\n\n@@fsdf\n\ndfdd",
 
   fields: [
     {
