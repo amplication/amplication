@@ -117,15 +117,19 @@ export class GitClientService {
       pullRequestMode,
       gitResourceMeta,
       files,
+      cloneDirPath,
+      buildId,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
       join(
-        createPullRequestArgs.cloneDirPath,
+        cloneDirPath,
         this.provider.name,
         owner,
-        repositoryName,
-        v4()
+        repositoryGroupName
+          ? join(repositoryGroupName, repositoryName)
+          : repositoryName,
+        buildId
       )
     );
 
