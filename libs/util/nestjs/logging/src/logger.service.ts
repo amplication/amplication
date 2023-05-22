@@ -1,5 +1,10 @@
 import { Inject, Injectable, LoggerService } from "@nestjs/common";
-import { LoggerOptions, Logger, ILogger } from "@amplication/util/logging";
+import {
+  LoggerOptions,
+  Logger,
+  ILogger,
+  LogLevel,
+} from "@amplication/util/logging";
 import {
   AmplicationLoggerModulesOptions,
   AMPLICATION_LOGGER_MODULE_OPTIONS,
@@ -16,7 +21,7 @@ export class AmplicationLogger implements LoggerService, ILogger {
   ) {
     this.loggerOptions = {
       serviceName: options.serviceName,
-      logLevel: options.logLevel,
+      logLevel: options.logLevel ?? LogLevel[process.env.LOG_LEVEL],
       isProduction:
         options.isProduction ?? process.env.NODE_ENV === "production",
     };
