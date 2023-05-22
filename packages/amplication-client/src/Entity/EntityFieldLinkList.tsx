@@ -57,11 +57,11 @@ export const EntityFieldLinkList = React.memo(({ entityId }: Props) => {
             </InnerTabLink>
           </div>
         ))}
+        {data?.entity && (
+          <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
+        )}
       </div>
 
-      {data?.entity && (
-        <NewEntityField onFieldAdd={handleFieldAdd} entity={data?.entity} />
-      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
     </>
   );
