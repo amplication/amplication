@@ -140,8 +140,9 @@ export class ModuleMap {
   }
 
   async mergeMany(maps: ModuleMap[]): Promise<void> {
-    for await (const map of maps) {
-      await this.merge(map);
+    const modules = maps.map((map) => map.modules()).flat();
+    for await (const module of modules) {
+      await this.set(module);
     }
   }
 
