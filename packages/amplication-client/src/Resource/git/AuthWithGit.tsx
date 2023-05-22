@@ -117,7 +117,7 @@ function AuthWithGit({
           gitOrganizationId: data.gitOrganizationId,
           gitProvider: data.gitProvider,
           groupName: data.groupName,
-          isPrivate: data.isPrivate,
+          isPublic: data.isPublic,
         },
         onCompleted() {
           setCreateNewRepoOpen(false);
@@ -255,13 +255,13 @@ const CREATE_GIT_REMOTE_REPOSITORY = gql`
     $gitProvider: EnumGitProvider!
     $gitOrganizationId: String!
     $name: String!
-    $isPrivate: Boolean!
+    $isPublic: Boolean!
     $groupName: String
   ) {
     createRemoteGitRepository(
       data: {
         name: $name
-        isPrivate: $isPrivate
+        isPublic: $isPublic
         gitOrganizationId: $gitOrganizationId
         gitProvider: $gitProvider
         gitOrganizationType: Organization

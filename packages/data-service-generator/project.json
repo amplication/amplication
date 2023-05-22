@@ -101,7 +101,7 @@
         "cwd": "packages/data-service-generator"
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
       "options": {

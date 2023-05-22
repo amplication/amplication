@@ -13,8 +13,6 @@ import {
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
@@ -54,7 +52,6 @@ const keyMap = {
 };
 
 const NewEntity = ({ resourceId, onSuccess }: Props) => {
-  const { trackEvent } = useTracking();
   const history = useHistory();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
@@ -64,10 +61,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
-        trackEvent({
-          eventName: AnalyticsEventNames.EntityCreate,
-          entityName: data.createOneEntity.displayName,
-        });
+
         onSuccess();
         history.push(`entities/${data.createOneEntity.id}`);
       },
