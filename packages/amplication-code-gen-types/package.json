@@ -8,13 +8,7 @@
     "email": "contact@amplication.com",
     "url": "https://amplication.com"
   },
-  "dependencies": {
-    "@nestjs/core": "^9.0.9",
-    "ast-types": "^0.14.2",
-    "json-schema": "0.4.0",
-    "lodash": "^4.17.21",
-    "prisma-schema-dsl-types": "^1.0.5",
-    "type-fest": "0.11.0",
-    "winston": "3.8.2"
+  "peerDependencies": {
+    "type-fest": "^3.11.0"
   }
 }
