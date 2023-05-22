@@ -118,6 +118,7 @@ export class GitClientService {
       gitResourceMeta,
       files,
     } = createPullRequestArgs;
+
     const gitRepoDir = normalize(
       join(
         createPullRequestArgs.cloneDirPath,
@@ -128,94 +129,107 @@ export class GitClientService {
       )
     );
 
-    const gitCli = new GitCli(this.logger, gitRepoDir);
-    let isCloned = false;
+    try {
+      const gitCli = new GitCli(this.logger, gitRepoDir);
+      let isCloned = false;
 
-    const cloneUrl = await this.provider.getCloneUrl({
-      owner,
-      repositoryName,
-      repositoryGroupName,
-    });
-
-    const { defaultBranch } = await this.provider.getRepository({
-      owner,
-      repositoryName,
-      groupName: repositoryGroupName,
-    });
-
-    const haveFirstCommitInDefaultBranch =
-      await this.isHaveFirstCommitInDefaultBranch({
+      const cloneUrl = await this.provider.getCloneUrl({
         owner,
         repositoryName,
         repositoryGroupName,
-        defaultBranch,
       });
 
-    if (haveFirstCommitInDefaultBranch === false) {
-      if (isCloned === false) {
-        await gitCli.clone(cloneUrl);
-        isCloned = true;
-      }
-      await this.createInitialCommit({
-        gitRepoDir,
-        gitCli,
+      const { defaultBranch } = await this.provider.getRepository({
+        owner,
         repositoryName,
-        defaultBranch,
+        groupName: repositoryGroupName,
       });
-    }
 
-    const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
-      owner,
-      repositoryName,
-      repositoryGroupName
-    );
-
-    const preparedFiles = await prepareFilesForPullRequest(
-      gitResourceMeta,
-      files,
-      amplicationIgnoreManger
-    );
-
-    this.logger.info(`Got a ${pullRequestMode} pull request mode`);
-
-    let pullRequestUrl: string | null = null;
-
-    switch (pullRequestMode) {
-      case EnumPullRequestMode.Basic:
-        pullRequestUrl = await this.provider.createPullRequestFromFiles({
+      const haveFirstCommitInDefaultBranch =
+        await this.isHaveFirstCommitInDefaultBranch({
           owner,
           repositoryName,
-          branchName,
-          commitMessage,
-          pullRequestTitle,
-          pullRequestBody,
-          files: preparedFiles,
-        });
-        break;
-      case EnumPullRequestMode.Accumulative:
-        pullRequestUrl = await this.accumulativePullRequest({
-          cloneUrl,
-          gitCli,
-          owner,
-          repositoryName,
-          branchName,
-          commitMessage,
-          pullRequestBody,
-          preparedFiles,
-          defaultBranch,
-          isCloned,
           repositoryGroupName,
+          defaultBranch,
         });
-        break;
-      default:
-        throw new InvalidPullRequestMode();
-    }
 
-    if (isCloned === true) {
-      await rm(gitRepoDir, { recursive: true, force: true });
-    }
+      if (haveFirstCommitInDefaultBranch === false) {
+        if (isCloned === false) {
+          await gitCli.clone(cloneUrl);
+          isCloned = true;
+        }
+        await this.createInitialCommit({
+          gitRepoDir,
+          gitCli,
+          repositoryName,
+          defaultBranch,
+        });
+      }
 
-    return pullRequestUrl;
+      const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
+        owner,
+        repositoryName,
+        repositoryGroupName
+      );
+
+      const preparedFiles = await prepareFilesForPullRequest(
+        gitResourceMeta,
+        files,
+        amplicationIgnoreManger
+      );
+
+      this.logger.info(`Got a ${pullRequestMode} pull request mode`);
+
+      let pullRequestUrl: string | null = null;
+
+      switch (pullRequestMode) {
+        case EnumPullRequestMode.Basic:
+          pullRequestUrl = await this.provider.createPullRequestFromFiles({
+            owner,
+            repositoryName,
+            branchName,
+            commitMessage,
+            pullRequestTitle,
+            pullRequestBody,
+            files: preparedFiles,
+          });
+          break;
+        case EnumPullRequestMode.Accumulative:
+          pullRequestUrl = await this.accumulativePullRequest({
+            cloneUrl,
+            gitCli,
+            owner,
+            repositoryName,
+            branchName,
+            commitMessage,
+            pullRequestBody,
+            preparedFiles,
+            defaultBranch,
+            isCloned,
+            repositoryGroupName,
+          });
+          break;
+        default:
+          throw new InvalidPullRequestMode();
+      }
+
+      if (isCloned === true) {
+        await rm(gitRepoDir, { recursive: true, force: true });
+      }
+
+      return pullRequestUrl;
+    } catch (error) {
+      await rm(gitRepoDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 3,
+      }).catch((error) => {
+        this.logger.error("Failed to delete git repo dir", error, {
+          gitRepoDir,
+        });
+      });
+      throw error;
+    }
   }
 
   async accumulativePullRequest(options: {
