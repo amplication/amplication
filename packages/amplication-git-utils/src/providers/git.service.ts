@@ -303,15 +303,17 @@ export class GitClientService {
       });
     }
 
-    await this.provider.createPullRequestComment({
-      where: {
-        issueNumber: pullRequest.number,
-        owner,
-        repositoryName,
-        repositoryGroupName,
-      },
-      data: { body: pullRequestBody },
-    });
+    if (sha) {
+      await this.provider.createPullRequestComment({
+        where: {
+          issueNumber: pullRequest.number,
+          owner,
+          repositoryName,
+          repositoryGroupName,
+        },
+        data: { body: pullRequestBody },
+      });
+    }
 
     return pullRequest.url;
   }
