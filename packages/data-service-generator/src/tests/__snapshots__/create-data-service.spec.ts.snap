@@ -5427,8 +5427,8 @@ import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.CustomerFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
+  async count<T extends Prisma.CustomerCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerCountArgs>
   ): Promise<number> {
     return this.prisma.customer.count(args);
   }
@@ -6421,8 +6421,8 @@ import { Prisma, Empty } from \\"@prisma/client\\";
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.EmptyFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
+  async count<T extends Prisma.EmptyCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyCountArgs>
   ): Promise<number> {
     return this.prisma.empty.count(args);
   }
@@ -7929,8 +7929,8 @@ import { Prisma, Order, Customer } from \\"@prisma/client\\";
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
+  async count<T extends Prisma.OrderCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderCountArgs>
   ): Promise<number> {
     return this.prisma.order.count(args);
   }
@@ -9601,8 +9601,8 @@ import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrganizationFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
+  async count<T extends Prisma.OrganizationCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationCountArgs>
   ): Promise<number> {
     return this.prisma.organization.count(args);
   }
@@ -11007,8 +11007,8 @@ import { Prisma, Profile, User } from \\"@prisma/client\\";
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ProfileFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
+  async count<T extends Prisma.ProfileCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileCountArgs>
   ): Promise<number> {
     return this.prisma.profile.count(args);
   }
@@ -13467,8 +13467,8 @@ import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+  async count<T extends Prisma.UserCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
   ): Promise<number> {
     return this.prisma.user.count(args);
   }
