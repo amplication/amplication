@@ -22,6 +22,7 @@ export class GitCli {
         `user.name=${this.gitAuthorUserName}`,
         `user.email=${this.gitAuthorUserEmail}`,
         `push.autoSetupRemote=true`,
+        `safe.directory=${repositoryDir}`,
       ],
     });
   }
