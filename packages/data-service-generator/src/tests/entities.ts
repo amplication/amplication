@@ -34,6 +34,9 @@ const USER: Entity = {
   displayName: "User",
   pluralDisplayName: "Users",
   pluralName: "users",
+  customAttributes:
+    "@@unique([unique_1(sort: Desc), unique_2]) @@unique([unique_1(sort: Desc), unique_2])\n\n@@fsdf",
+
   fields: [
     {
       id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
@@ -45,6 +48,9 @@ const USER: Entity = {
         idType: "CUID",
       },
       required: true,
+      customAttributes:
+        "@unique([unique_1(sort: Desc), unique_2]) @unique([unique_2(sort: Desc), unique_2])",
+
       unique: false,
       searchable: true,
     },

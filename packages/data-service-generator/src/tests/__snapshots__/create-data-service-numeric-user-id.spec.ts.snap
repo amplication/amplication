@@ -3015,7 +3015,7 @@ generator client {
 }
 
 model User {
-  id                 Int                 @id @default(autoincrement())
+  id                 Int                 @id @unique([unique_1(sort: Desc), unique_2]) @unique([unique_2(sort: Desc), unique_2]) @default(autoincrement())
   name               String
   bio                String
   email              String
@@ -3033,6 +3033,12 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
+
+  fdsf
+
+  @@unique([unique_1(sort: Desc), unique_2])
+  @@unique([unique_1(sort: Desc), unique_2])
+  @@fsdf
 }
 
 model Profile {
