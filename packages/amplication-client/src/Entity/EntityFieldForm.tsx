@@ -172,6 +172,8 @@ const EntityFieldForm = ({
 
             <TextField
               autoComplete="off"
+              disabled={isSystemDataType}
+              placeholder='Add custom attributes to fields using the format @attribute([parameters]) or @attribute. For example: @map(name: "fieldName") @unique @default(value)'
               textarea
               rows={3}
               name="customAttributes"
