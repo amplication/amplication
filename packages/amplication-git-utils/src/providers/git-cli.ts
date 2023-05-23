@@ -7,6 +7,7 @@ import { ILogger } from "@amplication/util/logging";
 
 export class GitCli {
   private git: SimpleGit;
+  private isCloned = false;
 
   private gitAuthorUserName = "amplication[bot]";
   private gitAuthorUserEmail = "bot@amplication.com";
@@ -28,9 +29,27 @@ export class GitCli {
   }
 
   async clone(cloneUrl: string): Promise<void> {
-    await this.git.clone(cloneUrl, this.repositoryDir, ["--no-checkout"]);
+    if (!this.isCloned) {
+      await this.git.clone(cloneUrl, this.repositoryDir, ["--no-checkout"]);
+      this.isCloned = true;
+    }
     await this.git.cwd(this.repositoryDir);
     return;
+  }
+
+  async deleteRepositoryDir() {
+    if (this.isCloned || existsSync(this.repositoryDir)) {
+      await rm(this.repositoryDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 3,
+      }).catch((error) => {
+        this.logger.error(`Failed to delete repository dir`, error, {
+          repositoryDir: this.repositoryDir,
+        });
+      });
+      this.isCloned = false;
+    }
   }
 
   async cherryPick(sha: string) {
