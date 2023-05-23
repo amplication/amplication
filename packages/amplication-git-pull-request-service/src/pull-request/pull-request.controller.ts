@@ -42,7 +42,7 @@ export class PullRequestController {
     const partition = context.getPartition();
     const eventKey = plainToInstance(
       CreatePrRequest.Key,
-      context.getMessage().key.toJSON()
+      context.getMessage().key.toString()
     );
     const logger = this.logger.child({
       resourceId: validArgs.resourceId,
