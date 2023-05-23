@@ -132,17 +132,18 @@ export class GitClientService {
         buildId
       )
     );
+    const cloneUrl = await this.provider.getCloneUrl({
+      owner,
+      repositoryName,
+      repositoryGroupName,
+    });
+
+    const gitCli = new GitCli(this.logger, {
+      originUrl: cloneUrl,
+      repositoryDir: gitRepoDir,
+    });
 
     try {
-      const gitCli = new GitCli(this.logger, gitRepoDir);
-      let isCloned = false;
-
-      const cloneUrl = await this.provider.getCloneUrl({
-        owner,
-        repositoryName,
-        repositoryGroupName,
-      });
-
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
@@ -158,10 +159,7 @@ export class GitClientService {
         });
 
       if (haveFirstCommitInDefaultBranch === false) {
-        if (isCloned === false) {
-          await gitCli.clone(cloneUrl);
-          isCloned = true;
-        }
+        await gitCli.clone();
         await this.createInitialCommit({
           gitRepoDir,
           gitCli,
@@ -209,7 +207,6 @@ export class GitClientService {
             pullRequestBody,
             preparedFiles,
             defaultBranch,
-            isCloned,
             repositoryGroupName,
           });
           break;
@@ -217,21 +214,12 @@ export class GitClientService {
           throw new InvalidPullRequestMode();
       }
 
-      if (isCloned === true) {
-        await rm(gitRepoDir, { recursive: true, force: true });
-      }
+      await gitCli.deleteRepositoryDir();
 
       return pullRequestUrl;
     } catch (error) {
-      await rm(gitRepoDir, {
-        recursive: true,
-        force: true,
-        maxRetries: 3,
-      }).catch((error) => {
-        this.logger.error("Failed to delete git repo dir", error, {
-          gitRepoDir,
-        });
-      });
+      await gitCli.deleteRepositoryDir();
+
       throw error;
     }
   }
@@ -246,7 +234,6 @@ export class GitClientService {
     pullRequestBody: string;
     preparedFiles: UpdateFile[];
     defaultBranch: string;
-    isCloned: boolean;
     repositoryGroupName?: string;
   }): Promise<string> {
     const {
@@ -259,13 +246,10 @@ export class GitClientService {
       pullRequestBody,
       preparedFiles,
       defaultBranch,
-      isCloned,
       repositoryGroupName,
     } = options;
 
-    if (isCloned === false) {
-      await gitCli.clone(cloneUrl);
-    }
+    await gitCli.clone();
     await this.restoreAmplicationBranchIfNotExists({
       owner,
       repositoryName,
