@@ -52,6 +52,11 @@ export class Entity {
   @Field(() => String, {
     nullable: true,
   })
+  customAttributes?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
   description?: string;
 
   @Field(() => [EntityVersion], {
