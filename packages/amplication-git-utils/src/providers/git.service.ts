@@ -119,6 +119,7 @@ export class GitClientService {
       files,
       cloneDirPath,
       buildId,
+      resourceId,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
@@ -129,7 +130,7 @@ export class GitClientService {
         repositoryGroupName
           ? join(repositoryGroupName, repositoryName)
           : repositoryName,
-        buildId
+        `${resourceId}-${buildId}`
       )
     );
     const cloneUrl = await this.provider.getCloneUrl({
@@ -198,7 +199,6 @@ export class GitClientService {
           break;
         case EnumPullRequestMode.Accumulative:
           pullRequestUrl = await this.accumulativePullRequest({
-            cloneUrl,
             gitCli,
             owner,
             repositoryName,
@@ -225,7 +225,6 @@ export class GitClientService {
   }
 
   async accumulativePullRequest(options: {
-    cloneUrl: string;
     gitCli: GitCli;
     owner: string;
     repositoryName: string;
@@ -237,7 +236,6 @@ export class GitClientService {
     repositoryGroupName?: string;
   }): Promise<string> {
     const {
-      cloneUrl,
       gitCli,
       owner,
       repositoryName,
