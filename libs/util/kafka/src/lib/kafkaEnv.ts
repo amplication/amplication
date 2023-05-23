@@ -2,6 +2,8 @@ import { EnvironmentVariables } from "./environmentVariables";
 import {
   KAFKA_BROKERS,
   KAFKA_CLIENT_CONFIG_SSL,
+  KAFKA_CLIENT_CONSUMER_HEARTHBEAT,
+  KAFKA_CLIENT_CONSUMER_SESSION_TIMEOUT,
   KAFKA_CLIENT_ID,
   KAFKA_GROUP_ID,
 } from "./constants";
@@ -44,5 +46,21 @@ export class KafkaEnvironmentVariables {
     );
 
     return ssl ? ssl === "true" : false;
+  }
+
+  getConsumerSessionTimeout(): number {
+    const timeout = EnvironmentVariables.instance.get(
+      `${KAFKA_CLIENT_CONSUMER_SESSION_TIMEOUT}${this.envSuffix}`,
+      true
+    );
+    return timeout ? parseInt(timeout) : 30000;
+  }
+
+  getConsumerHeartbeat(): number {
+    const heartbeat = EnvironmentVariables.instance.get(
+      `${KAFKA_CLIENT_CONSUMER_HEARTHBEAT}${this.envSuffix}`,
+      true
+    );
+    return heartbeat ? parseInt(heartbeat) : 10000;
   }
 }
