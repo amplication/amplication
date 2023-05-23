@@ -34,6 +34,7 @@ export class PullRequestController {
     @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
   ) {
+    const startTime = Date.now();
     const validArgs = plainToInstance(CreatePrRequest.Value, message);
     await validateOrReject(validArgs);
 
@@ -104,5 +105,9 @@ export class PullRequestController {
         failureEvent
       );
     }
+
+    logger.info(`Pull request item processed`, {
+      timeTaken: Date.now() - startTime,
+    });
   }
 }
