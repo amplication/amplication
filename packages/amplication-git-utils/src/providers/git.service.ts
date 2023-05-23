@@ -217,9 +217,7 @@ export class GitClientService {
           throw new InvalidPullRequestMode();
       }
 
-      if (isCloned === true) {
-        await rm(gitRepoDir, { recursive: true, force: true });
-      }
+      await rm(gitRepoDir, { recursive: true, force: true, maxRetries: 3 });
 
       return pullRequestUrl;
     } catch (error) {
