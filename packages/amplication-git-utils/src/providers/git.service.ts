@@ -199,7 +199,6 @@ export class GitClientService {
           break;
         case EnumPullRequestMode.Accumulative:
           pullRequestUrl = await this.accumulativePullRequest({
-            cloneUrl,
             gitCli,
             owner,
             repositoryName,

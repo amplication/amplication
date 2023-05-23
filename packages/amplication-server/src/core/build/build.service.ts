@@ -552,7 +552,6 @@ export class BuildService {
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
             key: {
               resourceRepositoryId: resourceRepository.id,
-              resourceId: resource.id,
             },
             value: createPullRequestMessage,
           };
