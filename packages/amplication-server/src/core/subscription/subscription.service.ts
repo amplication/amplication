@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { FindSubscriptionsArgs } from "./dto/FindSubscriptionsArgs";
 import { Subscription } from "./dto/Subscription";
 import {
@@ -20,10 +20,13 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class SubscriptionService {
   constructor(
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService,
     private readonly billingService: BillingService,
     private readonly analyticsService: SegmentAnalyticsService
@@ -37,6 +40,15 @@ export class SubscriptionService {
     return subs.map((sub) => {
       return this.transformPrismaObject(sub);
     });
+  }
+
+  async getSubscriptionById(id: string): Promise<Subscription | null> {
+    const sub = await this.prisma.subscription.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return this.transformPrismaObject(sub);
   }
 
   async getCurrentSubscription(
@@ -199,6 +211,22 @@ export class SubscriptionService {
     });
   }
 
+  async trackUpgradeCompletedEvent(
+    plan: EnumSubscriptionPlan,
+    userId: string,
+    workspaceId: string
+  ): Promise<void> {
+    if (plan !== EnumSubscriptionPlan.Free && userId) {
+      await this.analyticsService.track({
+        userId: userId,
+        properties: {
+          workspaceId: workspaceId,
+        },
+        event: EnumEventType.WorkspacePlanUpgradeCompleted,
+      });
+    }
+  }
+
   async handleUpdateSubscriptionStatusEvent(
     updateStatusDto: UpdateStatusDto
   ): Promise<void> {
@@ -206,19 +234,19 @@ export class SubscriptionService {
       case "subscription.created": {
         const createSubscriptionInput =
           this.mapUpdateStatusDtoToCreateSubscriptionInput(updateStatusDto);
-        await this.create(updateStatusDto.id, createSubscriptionInput);
-        const userId = updateStatusDto.metadata?.userId;
-        if (
-          createSubscriptionInput.plan !== EnumSubscriptionPlan.Free &&
-          userId
-        ) {
-          await this.analyticsService.track({
-            userId: userId,
-            properties: {
-              workspaceId: updateStatusDto.customer.id,
-            },
-            event: EnumEventType.WorkspacePlanUpgradeCompleted,
-          });
+        const subs = await this.getSubscriptionById(updateStatusDto.id);
+        if (subs) {
+          await this.create(updateStatusDto.id, createSubscriptionInput);
+          await this.trackUpgradeCompletedEvent(
+            createSubscriptionInput.plan,
+            updateStatusDto.metadata?.userId,
+            updateStatusDto.customer.id
+          );
+        } else {
+          this.logger.warn(
+            `Trying to create an existing subscription with id: ${updateStatusDto.id}`,
+            updateStatusDto
+          );
         }
         break;
       }
@@ -227,7 +255,15 @@ export class SubscriptionService {
       case "subscription.canceled": {
         const updateSubscriptionInput =
           this.mapUpdateStatusDtoToUpdateSubscriptionInput(updateStatusDto);
-        await this.update(updateStatusDto.id, updateSubscriptionInput);
+        const subs = await this.getSubscriptionById(updateStatusDto.id);
+        if (subs) {
+          await this.update(updateStatusDto.id, updateSubscriptionInput);
+        } else {
+          this.logger.warn(
+            `Trying to update a non-existing subscription with id: ${updateStatusDto.id}`,
+            updateStatusDto
+          );
+        }
         break;
       }
     }
