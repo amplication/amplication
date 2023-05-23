@@ -90,6 +90,9 @@ export function createPrismaModel(
     entity.name,
     entity.fields.flatMap((field) =>
       createFieldsHandlers[field.dataType](field, entity, fieldNamesCount)
-    )
+    ),
+    undefined,
+    undefined,
+    entity.customAttributes
   );
 }

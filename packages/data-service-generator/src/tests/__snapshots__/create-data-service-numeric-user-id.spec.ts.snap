@@ -3016,7 +3016,7 @@ generator client {
 
 model User {
   id                 Int                 @id @default(autoincrement())
-  name               String
+  name               String              @unique @db.VarChar(200)
   bio                String
   email              String
   age                Int
@@ -3033,6 +3033,10 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
+
+  @@unique([name(sort: Desc), displayName])
+  @@index([name, displayName])
+  @@map(\\"users\\")
 }
 
 model Profile {
