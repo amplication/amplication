@@ -132,16 +132,18 @@ export class GitClientService {
         buildId
       )
     );
+    const cloneUrl = await this.provider.getCloneUrl({
+      owner,
+      repositoryName,
+      repositoryGroupName,
+    });
 
-    const gitCli = new GitCli(this.logger, gitRepoDir);
+    const gitCli = new GitCli(this.logger, {
+      originUrl: cloneUrl,
+      repositoryDir: gitRepoDir,
+    });
 
     try {
-      const cloneUrl = await this.provider.getCloneUrl({
-        owner,
-        repositoryName,
-        repositoryGroupName,
-      });
-
       const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
@@ -157,7 +159,7 @@ export class GitClientService {
         });
 
       if (haveFirstCommitInDefaultBranch === false) {
-        await gitCli.clone(cloneUrl);
+        await gitCli.clone();
         await this.createInitialCommit({
           gitRepoDir,
           gitCli,
@@ -247,7 +249,7 @@ export class GitClientService {
       repositoryGroupName,
     } = options;
 
-    await gitCli.clone(cloneUrl);
+    await gitCli.clone();
     await this.restoreAmplicationBranchIfNotExists({
       owner,
       repositoryName,

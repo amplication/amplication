@@ -4,6 +4,7 @@ import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
 import { ILogger } from "@amplication/util/logging";
+import { GitCliOptions } from "./git-cli.types";
 
 export class GitCli {
   private git: SimpleGit;
@@ -16,36 +17,38 @@ export class GitCli {
 
   constructor(
     private readonly logger: ILogger,
-    private readonly repositoryDir: string
+    private readonly options: GitCliOptions
   ) {
     this.git = simpleGit({
       config: [
         `user.name=${this.gitAuthorUserName}`,
         `user.email=${this.gitAuthorUserEmail}`,
         `push.autoSetupRemote=true`,
-        `safe.directory=${repositoryDir}`,
+        `safe.directory=${options.repositoryDir}`,
       ],
     });
   }
 
-  async clone(cloneUrl: string): Promise<void> {
+  async clone(): Promise<void> {
     if (!this.isCloned) {
-      await this.git.clone(cloneUrl, this.repositoryDir, ["--no-checkout"]);
+      await this.git.clone(this.options.originUrl, this.options.repositoryDir, [
+        "--no-checkout",
+      ]);
       this.isCloned = true;
     }
-    await this.git.cwd(this.repositoryDir);
+    await this.git.cwd(this.options.repositoryDir);
     return;
   }
 
   async deleteRepositoryDir() {
-    if (this.isCloned || existsSync(this.repositoryDir)) {
-      await rm(this.repositoryDir, {
+    if (this.isCloned || existsSync(this.options.repositoryDir)) {
+      await rm(this.options.repositoryDir, {
         recursive: true,
         force: true,
         maxRetries: 3,
       }).catch((error) => {
         this.logger.error(`Failed to delete repository dir`, error, {
-          repositoryDir: this.repositoryDir,
+          repositoryDir: this.options.repositoryDir,
         });
       });
       this.isCloned = false;
@@ -98,7 +101,7 @@ export class GitCli {
 
     await Promise.all(
       files.map(async (file) => {
-        const filePath = join(this.repositoryDir, file.path);
+        const filePath = join(this.options.repositoryDir, file.path);
         const fileParentDir = filePath.split("/").slice(0, -1).join("/");
 
         if (file.deleted) {
