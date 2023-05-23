@@ -51,7 +51,7 @@ export class KafkaEnvironmentVariables {
   getConsumerSessionTimeout(): number {
     const timeout = EnvironmentVariables.instance.get(
       `${KAFKA_CLIENT_CONSUMER_SESSION_TIMEOUT}${this.envSuffix}`,
-      true
+      false
     );
     return timeout ? parseInt(timeout) : 30000;
   }
@@ -59,7 +59,7 @@ export class KafkaEnvironmentVariables {
   getConsumerHeartbeat(): number {
     const heartbeat = EnvironmentVariables.instance.get(
       `${KAFKA_CLIENT_CONSUMER_HEARTHBEAT}${this.envSuffix}`,
-      true
+      false
     );
     return heartbeat ? parseInt(heartbeat) : 10000;
   }
