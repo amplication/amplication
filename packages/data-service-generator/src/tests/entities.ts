@@ -34,8 +34,7 @@ const USER: Entity = {
   displayName: "User",
   pluralDisplayName: "Users",
   pluralName: "users",
-  customAttributes:
-    "@@unique([unique_1(sort: Desc), unique_2]) @@unique([unique_1(sort: Desc), unique_2])",
+  customAttributes: `@@index([name, displayName]) @@unique([name(sort: Desc), displayName]) @@map("users")`,
 
   fields: [
     {
@@ -48,9 +47,6 @@ const USER: Entity = {
         idType: "CUID",
       },
       required: true,
-      customAttributes:
-        "@unique([unique_1(sort: Desc), unique_2]) @unique([unique_2(sort: Desc), unique_2])",
-
       unique: false,
       searchable: true,
     },
@@ -63,6 +59,7 @@ const USER: Entity = {
       unique: false,
       searchable: true,
       dataType: EnumDataType.SingleLineText,
+      customAttributes: "@db.VarChar(200) @unique",
     },
     {
       id: "e3fa6ddd-ad36-48ce-8042-9c0aa576e5a9",

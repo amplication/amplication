@@ -3015,8 +3015,8 @@ generator client {
 }
 
 model User {
-  id                 Int                 @id @unique([unique_1(sort: Desc), unique_2]) @unique([unique_2(sort: Desc), unique_2]) @default(autoincrement())
-  name               String
+  id                 Int                 @id @default(autoincrement())
+  name               String              @unique @db.VarChar(200)
   bio                String
   email              String
   age                Int
@@ -3034,8 +3034,9 @@ model User {
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
 
-  @@unique([unique_1(sort: Desc), unique_2])
-  @@unique([unique_1(sort: Desc), unique_2])
+  @@unique([name(sort: Desc), displayName])
+  @@index([name, displayName])
+  @@map(\\"users\\")
 }
 
 model Profile {
