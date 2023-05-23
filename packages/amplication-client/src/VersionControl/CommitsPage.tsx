@@ -16,7 +16,6 @@ import useCommit from "./hooks/useCommits";
 import "./CommitsPage.scss";
 import { EmptyState } from "../Components/EmptyState";
 import { CircularProgress } from "@amplication/ui/design-system";
-import { Commit } from "../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -27,72 +26,45 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const MAX_ITEMS_PER_LOADING = 20;
-
 const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const commitId = match.params.commit;
   const history = useHistory();
 
   const { currentProject, currentWorkspace } = useContext(AppContext);
-  const [commitsCount, setCommitsCount] = useState(1);
-  const [disableLoadMore, setDisableLoadMore] = useState(false);
 
-  const { commits, commitsError, commitsLoading, refetchCommits } = useCommit(
-    MAX_ITEMS_PER_LOADING
-  );
-
-  const [commitsData, setCommitsData] = useState<Commit[]>([]);
-
-  useEffect(() => {
-    if (commits?.length < 0 || commitsCount > 1) return;
-    setCommitsData(commits);
-  }, [commits]);
-
-  useEffect(() => {
-    setCommitsCount(1);
-  }, []);
+  const {
+    commits,
+    commitsError,
+    commitsLoading,
+    refetchCommitsData,
+    disableLoadMore,
+    commitChangesByResource,
+  } = useCommit();
 
   const handleOnLoadMoreClick = useCallback(() => {
-    setCommitsCount(commitsCount + 1);
-    const getNextCommits = {
-      variables: {
-        skip: commitsCount * MAX_ITEMS_PER_LOADING,
-        take: MAX_ITEMS_PER_LOADING,
-      },
-    };
-
-    refetchCommits(getNextCommits.variables).then((results) => {
-      setCommitsData([...commitsData, ...results.data.commits]);
-      !results.data.commits.length && setDisableLoadMore(true);
-    });
-  }, [commitsData, refetchCommits, setCommitsData, setDisableLoadMore]);
+    refetchCommitsData();
+  }, [refetchCommitsData]);
 
   const currentCommit = useMemo(() => {
-    return commitsData?.find((commit) => commit.id === commitId);
-  }, [commitId, commitsData]);
+    return commits?.find((commit) => commit.id === commitId);
+  }, [commitId, commits]);
 
   useEffect(() => {
     if (commitId) return;
-    commitsData.length &&
+    commits.length &&
       history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitsData[0].id}`
+        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commits[0].id}`
       );
-  }, [
-    commitId,
-    commitsData,
-    currentProject?.id,
-    currentWorkspace?.id,
-    history,
-  ]);
+  }, [commitId, commits, currentProject?.id, currentWorkspace?.id, history]);
 
   return (
     <PageContent
       className={moduleClass}
       pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
-        commitsData.length ? (
+        commits.length ? (
           <CommitList
-            commits={commitsData}
+            commits={commits}
             error={commitsError}
             loading={commitsLoading}
             onLoadMoreClick={handleOnLoadMoreClick}
@@ -101,8 +73,11 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         ) : null
       }
     >
-      {commitsData.length && currentCommit ? (
-        <CommitResourceList commit={currentCommit} />
+      {commits.length && currentCommit ? (
+        <CommitResourceList
+          commit={currentCommit}
+          commitChangesByResource={commitChangesByResource}
+        />
       ) : commitsLoading ? (
         <CircularProgress centerToParent />
       ) : (

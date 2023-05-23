@@ -1,11 +1,6 @@
 import { useContext, useEffect } from "react";
 import classNames from "classnames";
-import { isEmpty } from "lodash";
-import {
-  Tooltip,
-  Button,
-  EnumButtonStyle,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
@@ -26,7 +21,9 @@ const LastCommit = ({ resourceId }: Props) => {
   const { currentWorkspace, currentProject, commitRunning } =
     useContext(AppContext);
 
-  const { lastCommit, refetchCommits } = useCommit();
+  const { lastCommit, refetchCommits, commits } = useCommit();
+  console.log({ lastCommit });
+  console.log({ commits });
 
   useEffect(() => {
     refetchCommits();
