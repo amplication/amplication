@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client";
 import { AppContext } from "../../context/appContext";
 import { groupBy } from "lodash";
 
-const useCommits = () => {
+const useCommits = (maxCommits?: number) => {
   const { currentProject } = useContext(AppContext);
   const [commits, setCommits] = useState<Commit[]>([]);
 
@@ -19,6 +19,8 @@ const useCommits = () => {
     notifyOnNetworkStatusChange: true,
     variables: {
       projectId: currentProject?.id,
+      take: maxCommits || 20,
+      skip: 0,
       orderBy: {
         createdAt: SortOrder.Desc,
       },
