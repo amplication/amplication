@@ -3034,11 +3034,8 @@ model User {
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
 
-  fdsf
-
   @@unique([unique_1(sort: Desc), unique_2])
   @@unique([unique_1(sort: Desc), unique_2])
-  @@fsdf
 }
 
 model Profile {
