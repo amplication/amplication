@@ -10,9 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User } from "@prisma/client";
+import { Prisma, User } from "../../../prisma/generated-prisma-client";
 import { PasswordService } from "../../auth/password.service";
 import { transformStringFieldUpdateInput } from "../../prisma.util";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 
 export class UserServiceBase {
   constructor(
@@ -23,7 +25,7 @@ export class UserServiceBase {
   async count<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<number> {
-    return this.prisma.user.count(args);
+    return this.prisma.user.count(args as UserFindManyArgs);
   }
 
   async findMany<T extends Prisma.UserFindManyArgs>(
@@ -34,7 +36,7 @@ export class UserServiceBase {
   async findOne<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
-    return this.prisma.user.findUnique(args);
+    return this.prisma.user.findUnique(args as UserFindUniqueArgs);
   }
   async create<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>

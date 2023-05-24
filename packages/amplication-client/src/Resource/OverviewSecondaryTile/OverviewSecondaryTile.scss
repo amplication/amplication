@@ -1,0 +1,57 @@
+@import "../../style/index.scss";
+
+$overview-secondary-tile-min-height: 200px;
+$ribbon-width: 75px;
+$ribbon-height: 12px;
+
+.overview-secondary-tile {
+  padding: var(--large-spacing);
+  min-height: $overview-secondary-tile-min-height;
+  background-color: var(--black2);
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  position: relative;
+  overflow: hidden;
+
+  &__header {
+    @include flexVerticalCenter;
+    margin-bottom: var(--default-spacing);
+
+    &__title {
+      @include body4;
+      margin-bottom: 0;
+      margin-left: var(--default-spacing-small);
+    }
+
+    &__extra {
+      color: var(--dark-secondary-turquoise);
+      margin-left: auto;
+    }
+  }
+
+  &__message {
+    @include body3;
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__footer {
+    margin-top: auto;
+  }
+
+  &__ribbon {
+    position: absolute;
+    right: -17px;
+    width: $ribbon-width;
+    height: $ribbon-height;
+    background-color: var(--dark-purple);
+    color: var(--static-white);
+    transform: rotate(45deg);
+    font-weight: 600;
+    font-size: 7px;
+    line-height: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

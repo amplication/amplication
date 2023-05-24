@@ -21,4 +21,4 @@ class UpdatePluginArgs {
   data!: PluginUpdateInput;
 }
 
-export { UpdatePluginArgs as UpdatePluginArgs };
+export { UpdatePluginArgs };

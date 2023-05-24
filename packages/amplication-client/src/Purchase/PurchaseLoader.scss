@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+.purchase-loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .MuiDialog-paper {
+    border-radius: 8px;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background-color: var(--black2);
+    padding: 48px 24px 32px 24px;
+    width: 500px;
+
+    &__spinner {
+      width: 60px;
+    }
+
+    &__text {
+      @include sectionTitle;
+      font-size: 18px;
+      font-weight: 600;
+    }
+  }
+}

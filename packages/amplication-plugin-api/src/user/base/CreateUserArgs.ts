@@ -18,4 +18,4 @@ class CreateUserArgs {
   data!: UserCreateInput;
 }
 
-export { CreateUserArgs as CreateUserArgs };
+export { CreateUserArgs };

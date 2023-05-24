@@ -18,4 +18,4 @@ class DeletePluginArgs {
   where!: PluginWhereUniqueInput;
 }
 
-export { DeletePluginArgs as DeletePluginArgs };
+export { DeletePluginArgs };

@@ -1,0 +1,148 @@
+name: Deployment production
+
+on:
+  release:
+    types: [published]
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  preparation:
+    name: Preparation
+    runs-on: ubuntu-20.04
+    outputs:
+      base_tag: "${{ steps.base.outputs.tag }}"
+    steps:
+      - name: Checkout source code repository
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.ref }}"
+          fetch-depth: 0
+
+      - name: Determine base tag
+        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
+        id: base
+
+  package:
+    name: Package
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.nx.outputs.affected-deploy-container) }}
+    needs: nx
+    steps:
+      - name: Checkout source code repository
+        uses: actions/checkout@v3
+        with:
+          ref: "${{ github.ref }}"
+
+      - name: Install Dependencies
+        run: npm ci
+
+      - name: Configure AWS Credentials (operations account)
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR (operations account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          registries: "439403303254"
+
+      # https://github.com/docker/metadata-action
+      - name: Docker Metadata
+        uses: docker/metadata-action@v4
+        id: meta
+        with:
+          images: "439403303254.dkr.ecr.us-east-1.amazonaws.com/${{ matrix.project }}"
+          tags: |
+            type=raw,value=${{ github.ref_name }}
+
+      # https://www.npmjs.com/package/@nx-tools/nx-docker
+      # GIT_REF_NAME and GIT_SHA variables are substituted in the project.json docker target build-args
+      - name: Package
+        run: npx nx package:container ${{ matrix.project }} --prod 
+        env:
+          INPUT_TAGS: ${{ steps.meta.outputs.tags }}
+          INPUT_PUSH: true
+          GIT_REF_NAME: ${{ github.ref_name }}
+          GIT_SHA: ${{ github.sha }}
+
+  deployment-container:
+    name: Deployment container
+    runs-on: ubuntu-20.04
+    environment: "production"
+    needs: [preparation, nx, package]
+    steps:
+      - name: Checkout manifest repository
+        uses: actions/checkout@v3
+        with:
+          repository: "amplication/amplication-manifests"
+          token: "${{ secrets.PAT }}"
+          fetch-depth: '0'
+
+      - name: Setup yq
+        uses: mikefarah/yq@v4.30.8
+
+      - name: Replace image tag
+        run: |
+          nx=${{ needs.nx.outputs.affected-package-container }}
+          array=$(echo $nx | sed -e 's/\[//g' -e 's/\]//g' -e 's/\,/ /g')
+
+          for i in $array; do
+            project=$(echo $i | sed -e "s/^amplication-//")
+            if [[ "$project" != "data-service-generator" ]]; then
+              yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
+              git add charts/applications/$project/values/production.yaml
+            elif [[ "$project" == "data-service-generator" ]]; then
+              yq -i '.job.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
+              git add charts/applications/$project/values/production.yaml
+            fi;
+          done
+
+      - name: Create pull request on manifest repository
+        uses: peter-evans/create-pull-request@v4.2.3
+        with:
+          token: "${{ secrets.PAT }}"
+          commit-message: "feat: image.tag bump to ${{ github.ref_name }}"
+          branch: "release/${{ github.ref_name }}"
+          title: "Release: bump version of production environment to `${{ github.ref_name }}`"
+          body: |
+            This pull request was generated as a result of the `tag.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
+
+            Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
+
+            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `production-applications`. 
+
+            Releases: https://github.com/amplication/amplication/releases
+          labels: "release"
+          reviewers: "${{ github.actor }}"
+
+  deployment-static:
+    name: Deployment static
+    needs: nx
+    if: ${{ needs.nx.outputs.affected-deploy-static != '[]' && needs.nx.outputs.affected-deploy-static != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.nx.outputs.affected-deploy-static) }}
+    uses: ./.github/workflows/deployment.static.template.yml
+    with:
+      environment-name: "production"
+      project-name: ${{ matrix.project }}
+      deploy-type: "static"
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+  nx:
+    name: Nx
+    needs: preparation
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: "${{ github.ref }}"
+      nx-base: "${{ needs.preparation.outputs.base_tag }}"
+      nx-force-all: true

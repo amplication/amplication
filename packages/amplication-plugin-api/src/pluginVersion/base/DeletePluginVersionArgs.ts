@@ -18,4 +18,4 @@ class DeletePluginVersionArgs {
   where!: PluginVersionWhereUniqueInput;
 }
 
-export { DeletePluginVersionArgs as DeletePluginVersionArgs };
+export { DeletePluginVersionArgs };

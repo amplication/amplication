@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.services-page__list__item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-spacing-small);
+  padding: var(--large-spacing);
+  background-color: var(--black5);
+  border-radius: var(--default-border-radius);
+  border-color: var(--black10);
+  border-width: 1px;
+
+  &__header {
+    display: flex;
+
+    &__title {
+      color: var(--black100);
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+
+  &__description {
+    @include body2;
+    color: var(--black80);
+  }
+}

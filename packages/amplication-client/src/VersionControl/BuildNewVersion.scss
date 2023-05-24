@@ -1,0 +1,24 @@
+@import "../style/index.scss";
+
+.build-new-version {
+  &__new-version-number {
+    background-color: var(--black5);
+    border-radius: var(--default-border-radius);
+    padding: var(--large-spacing);
+    margin: var(--default-spacing) 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    @include sectionTitle;
+
+    &__version-number {
+      font-weight: bold;
+    }
+  }
+  &__instructions {
+    @include body1;
+    text-align: center;
+    margin-bottom: var(--default-spacing);
+  }
+}

@@ -18,4 +18,4 @@ class PluginVersionFindUniqueArgs {
   where!: PluginVersionWhereUniqueInput;
 }
 
-export { PluginVersionFindUniqueArgs as PluginVersionFindUniqueArgs };
+export { PluginVersionFindUniqueArgs };

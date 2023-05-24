@@ -18,4 +18,4 @@ class PluginFindUniqueArgs {
   where!: PluginWhereUniqueInput;
 }
 
-export { PluginFindUniqueArgs as PluginFindUniqueArgs };
+export { PluginFindUniqueArgs };

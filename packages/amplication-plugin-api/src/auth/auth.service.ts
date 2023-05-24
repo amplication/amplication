@@ -1,6 +1,4 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
@@ -38,6 +36,7 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException("The passed credentials are incorrect");
     }
+
     const accessToken = await this.tokenService.createToken({
       id: user.id,
       username,

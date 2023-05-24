@@ -1,0 +1,8 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/email.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "email",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}

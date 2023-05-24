@@ -50,4 +50,4 @@ class PluginVersionFindManyArgs {
   take?: number;
 }
 
-export { PluginVersionFindManyArgs as PluginVersionFindManyArgs };
+export { PluginVersionFindManyArgs };

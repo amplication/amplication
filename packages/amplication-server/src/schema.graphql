@@ -1,0 +1,1552 @@
+# ------------------------------------------------------
+# THIS FILE WAS AUTOMATICALLY GENERATED (DO NOT MODIFY)
+# ------------------------------------------------------
+
+type Auth {
+  """JWT Bearer token"""
+  token: String!
+}
+
+type AdminUISettings {
+  generateAdminUI: Boolean!
+  adminUIPath: String!
+}
+
+type MessagePattern {
+  topicId: String!
+  type: EnumMessagePatternConnectionOptions!
+}
+
+enum EnumMessagePatternConnectionOptions {
+  None
+  Receive
+  Send
+}
+
+type PluginOrderItem {
+  pluginId: String!
+  order: Int!
+}
+
+type AuthorizeResourceWithGitResult {
+  """"""
+  url: String!
+}
+
+type Query {
+  account: Account!
+  workspaces: [Workspace!]!
+  workspace(where: WhereUniqueInput!): Workspace
+  currentWorkspace: Workspace
+  workspaceMembers: [WorkspaceMember!]
+  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
+  project(where: WhereUniqueInput!): Project
+  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
+  resource(where: WhereUniqueInput!): Resource
+  resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
+  messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
+  entity(where: WhereUniqueInput!): Entity
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
+  block(where: WhereUniqueInput!): Block!
+  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
+  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
+  Topic(where: WhereUniqueInput!): Topic
+  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  build(where: WhereUniqueInput!): Build!
+  resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
+  resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
+  action(where: WhereUniqueInput!): Action!
+  commit(where: CommitWhereUniqueInput!): Commit
+  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
+  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
+  PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
+  pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  gitOrganization(where: WhereUniqueInput!): GitOrganization!
+  gitGroups(where: GitGroupInput!): PaginatedGitGroup!
+  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
+  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
+  me: User!
+  userApiTokens: [ApiToken!]!
+}
+
+type Account {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  firstName: String!
+  lastName: String!
+  password: String!
+  githubId: String
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Workspace {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  projects: [Project!]!
+  gitOrganizations: [GitOrganization!]
+  users: [User!]!
+  subscription: Subscription
+}
+
+type Project {
+  id: String!
+  name: String!
+  resources: [Resource!]
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Resource {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  project: Project
+  projectId: String
+  gitRepository: GitRepository
+  gitRepositoryId: String
+  name: String!
+  description: String!
+  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
+  environments: [Environment!]!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
+  githubLastMessage: String
+  githubLastSync: DateTime
+  resourceType: EnumResourceType!
+  gitRepositoryOverride: Boolean!
+}
+
+type GitRepository {
+  id: String!
+  gitOrganizationId: String!
+  gitOrganization: GitOrganization!
+  name: String!
+  groupName: String
+  createdAt: DateTime
+  updatedAt: DateTime
+}
+
+type GitOrganization {
+  id: String!
+  provider: EnumGitProvider!
+  name: String!
+  installationId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  type: EnumGitOrganizationType!
+
+  """Defines if a git organisation needs defined repository groups"""
+  useGroupingForRepositories: Boolean!
+}
+
+enum EnumGitProvider {
+  Github
+  Bitbucket
+}
+
+enum EnumGitOrganizationType {
+  User
+  Organization
+}
+
+type Entity {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  resource: Resource
+  resourceId: String!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  customAttributes: String
+  description: String
+  versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
+  permissions: [EntityPermission!]
+  lockedByUserId: String
+  lockedByUser: User
+  lockedAt: DateTime
+}
+
+type EntityVersion {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  entityId: String!
+  entity: Entity!
+  versionNumber: Int!
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  customAttributes: String
+  description: String
+  commit: Commit
+  fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
+  permissions: [EntityPermission!]
+}
+
+type Commit {
+  id: String!
+  createdAt: DateTime!
+  userId: String!
+  user: User
+  message: String!
+  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]
+  changes: [PendingChange!]
+}
+
+type User {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  account: Account
+  workspace: Workspace
+  userRoles: [UserRole!]
+  isOwner: Boolean!
+}
+
+type UserRole {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  role: Role!
+}
+
+enum Role {
+  Admin
+  User
+  OrganizationAdmin
+  ProjectAdmin
+}
+
+type Build {
+  id: String!
+  createdAt: DateTime!
+  resource: Resource
+  resourceId: String!
+  createdBy: User!
+  userId: String!
+  status: EnumBuildStatus
+  archiveURI: String!
+  version: String!
+  message: String!
+  actionId: String!
+  action: Action
+  commit: Commit!
+  commitId: String!
+}
+
+enum EnumBuildStatus {
+  Running
+  Completed
+  Failed
+  Invalid
+}
+
+type Action {
+  id: String!
+  createdAt: DateTime!
+  steps: [ActionStep!]
+}
+
+type ActionStep {
+  id: String!
+  createdAt: DateTime!
+  name: String!
+  message: String!
+  status: EnumActionStepStatus!
+  completedAt: DateTime
+  logs: [ActionLog!]
+}
+
+enum EnumActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
+type ActionLog {
+  id: String!
+  createdAt: DateTime!
+  message: String!
+  meta: JSONObject!
+  level: EnumActionLogLevel!
+}
+
+"""
+The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf).
+"""
+scalar JSONObject
+
+enum EnumActionLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+input BuildWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  resource: WhereUniqueInput!
+  createdBy: WhereUniqueInput
+  version: StringFilter
+  message: StringFilter
+  commit: WhereUniqueInput
+}
+
+input StringFilter {
+  equals: String
+  not: String
+  in: [String!]
+  notIn: [String!]
+  lt: String
+  lte: String
+  gt: String
+  gte: String
+  contains: String
+  startsWith: String
+  endsWith: String
+  mode: QueryMode
+}
+
+enum QueryMode {
+  Default
+  Insensitive
+}
+
+input DateTimeFilter {
+  equals: DateTime
+  not: DateTime
+  in: [DateTime!]
+  notIn: [DateTime!]
+  lt: DateTime
+  lte: DateTime
+  gt: DateTime
+  gte: DateTime
+}
+
+input WhereUniqueInput {
+  id: String!
+}
+
+input BuildOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  userId: SortOrder
+  status: SortOrder
+  version: SortOrder
+  message: SortOrder
+}
+
+enum SortOrder {
+  Asc
+  Desc
+}
+
+type PendingChange {
+  action: EnumPendingChangeAction!
+  originType: EnumPendingChangeOriginType!
+  originId: String!
+  origin: PendingChangeOrigin!
+  versionNumber: Int!
+  resource: Resource!
+}
+
+enum EnumPendingChangeAction {
+  Create
+  Update
+  Delete
+}
+
+enum EnumPendingChangeOriginType {
+  Entity
+  Block
+}
+
+union PendingChangeOrigin = Entity | Block
+
+type Block {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  resource: Resource
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float
+  lockedByUserId: String
+  lockedAt: DateTime
+  versions(where: BlockVersionWhereInput, orderBy: BlockVersionOrderByInput, skip: Int, take: Int): [BlockVersion!]
+  lockedByUser: [User!]!
+}
+
+enum EnumBlockType {
+  ServiceSettings
+  ProjectConfigurationSettings
+  Topic
+  ServiceTopics
+  PluginInstallation
+  PluginOrder
+}
+
+type BlockVersion {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  displayName: String!
+  description: String
+  block: Block!
+  versionNumber: Int!
+  commit: Commit
+  settings: JSONObject
+}
+
+input BlockVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  label: StringFilter
+  block: WhereUniqueInput
+}
+
+input IntFilter {
+  equals: Int
+  not: Int
+  in: [Int!]
+  notIn: [Int!]
+  lt: Int
+  lte: Int
+  gt: Int
+  gte: Int
+}
+
+input BlockVersionOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  versionNumber: SortOrder
+  label: SortOrder
+}
+
+type EntityField {
+  id: String!
+  permanentId: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  properties: JSONObject
+  required: Boolean!
+  unique: Boolean!
+  searchable: Boolean!
+  description: String
+  customAttributes: String
+  position: Int
+}
+
+enum EnumDataType {
+  SingleLineText
+  MultiLineText
+  Email
+  WholeNumber
+  DateTime
+  DecimalNumber
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  Boolean
+  GeographicLocation
+  Id
+  CreatedAt
+  UpdatedAt
+  Roles
+  Username
+  Password
+  Json
+}
+
+input EntityFieldWhereInput {
+  id: StringFilter
+  permanentId: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  dataType: EnumDataTypeFilter
+  required: BooleanFilter
+  unique: BooleanFilter
+  searchable: BooleanFilter
+  customAttributes: StringFilter
+  description: StringFilter
+}
+
+input EnumDataTypeFilter {
+  equals: EnumDataType
+  not: EnumDataType
+  in: [EnumDataType!]
+  notIn: [EnumDataType!]
+}
+
+input BooleanFilter {
+  equals: Boolean
+  not: Boolean
+}
+
+input EntityFieldOrderByInput {
+  id: SortOrder
+  permanentId: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  dataType: SortOrder
+  required: SortOrder
+  unique: SortOrder
+  searchable: SortOrder
+  customAttributes: SortOrder
+  description: SortOrder
+  position: SortOrder
+}
+
+type EntityPermission {
+  id: String!
+  entityVersionId: String!
+  entityVersion: EntityVersion
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+  permissionRoles: [EntityPermissionRole!]
+  permissionFields: [EntityPermissionField!]
+}
+
+enum EnumEntityAction {
+  View
+  Create
+  Update
+  Delete
+  Search
+}
+
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+  Public
+}
+
+type EntityPermissionRole {
+  id: String!
+  entityVersionId: String!
+  action: EnumEntityAction!
+  entityPermission: EntityPermission
+  resourceRoleId: String!
+  resourceRole: ResourceRole!
+}
+
+type ResourceRole {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  displayName: String!
+  description: String
+}
+
+type EntityPermissionField {
+  id: String!
+  permissionId: String!
+  permission: EntityPermission
+  fieldPermanentId: String!
+  entityVersionId: String!
+  field: EntityField!
+  permissionRoles: [EntityPermissionRole!]
+}
+
+input EntityVersionWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  versionNumber: IntFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  customAttributes: StringFilter
+  description: StringFilter
+  label: StringFilter
+  entity: WhereUniqueInput
+}
+
+input EntityVersionOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  versionNumber: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  customAttributes: SortOrder
+  description: SortOrder
+  label: SortOrder
+}
+
+input EntityWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  pluralDisplayName: StringFilter
+  customAttributes: StringFilter
+  description: StringFilter
+  fields: EntityFieldFilter
+  resource: WhereUniqueInput
+}
+
+input EntityFieldFilter {
+  every: EntityFieldWhereInput
+  some: EntityFieldWhereInput
+  none: EntityFieldWhereInput
+}
+
+input EntityOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  pluralDisplayName: SortOrder
+  customAttributes: SortOrder
+  description: SortOrder
+}
+
+type Environment {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  resource: Resource!
+  resourceId: String!
+  name: String!
+  description: String
+  address: String!
+}
+
+enum EnumResourceType {
+  Service
+  ProjectConfiguration
+  MessageBroker
+}
+
+type Subscription {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  workspace: Workspace
+  workspaceId: String!
+  subscriptionPlan: EnumSubscriptionPlan!
+  status: EnumSubscriptionStatus!
+  cancellationEffectiveDate: DateTime
+  cancelUrl: String
+  updateUrl: String
+  nextBillDate: DateTime
+  price: Float
+}
+
+enum EnumSubscriptionPlan {
+  Free
+  Pro
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+type WorkspaceMember {
+  type: EnumWorkspaceMemberType!
+  member: WorkspaceMemberType!
+}
+
+enum EnumWorkspaceMemberType {
+  User
+  Invitation
+}
+
+union WorkspaceMemberType = User | Invitation
+
+type Invitation {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  email: String!
+  workspace: Workspace
+  invitedByUser: User
+}
+
+input ProjectWhereInput {
+  id: String
+  deletedAt: DateTimeFilter
+  name: StringFilter
+  resources: ResourceListRelationFilter
+}
+
+input ResourceListRelationFilter {
+  every: ResourceWhereInput
+  some: ResourceWhereInput
+  none: ResourceWhereInput
+}
+
+input ResourceWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  description: StringFilter
+  project: ProjectWhereInput
+  projectId: String
+  resourceType: EnumResourceTypeFilter
+}
+
+input EnumResourceTypeFilter {
+  equals: EnumResourceType
+  not: EnumResourceType
+  in: [EnumResourceType!]
+  notIn: [EnumResourceType!]
+}
+
+input ProjectOrderByInput {
+  id: SortOrder
+  deletedAt: SortOrder
+  name: SortOrder
+}
+
+input PendingChangesFindInput {
+  project: WhereUniqueInput!
+}
+
+input ResourceOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  description: SortOrder
+  resourceType: SortOrder
+}
+
+type ServiceSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettings!
+  serverSettings: ServerSettings!
+}
+
+interface IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+}
+
+type BlockInputOutput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelector!]
+}
+
+type PropertySelector {
+  propertyName: String!
+  include: Boolean!
+}
+
+enum EnumAuthProviderType {
+  Http
+  Jwt
+}
+
+type ServerSettings {
+  generateGraphQL: Boolean!
+  generateRestApi: Boolean!
+  serverPath: String!
+}
+
+input BlockWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  blockType: EnumBlockTypeFilter
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input EnumBlockTypeFilter {
+  equals: EnumBlockType
+  not: EnumBlockType
+  in: [EnumBlockType!]
+  notIn: [EnumBlockType!]
+}
+
+input BlockOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type ServiceTopics implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePattern!]!
+}
+
+input ServiceTopicsWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input ServiceTopicsOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type Topic implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  name: String!
+}
+
+input TopicWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input TopicOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+input ResourceRoleWhereInput {
+  id: String
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  name: StringFilter
+  displayName: StringFilter
+  description: StringFilter
+  resource: WhereUniqueInput
+}
+
+input ResourceRoleOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  name: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+input CommitWhereUniqueInput {
+  id: String
+}
+
+input CommitWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  project: WhereUniqueInput!
+  user: WhereUniqueInput
+  message: StringFilter
+}
+
+input CommitOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  message: SortOrder
+}
+
+type PluginInstallation implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  pluginId: String!
+  enabled: Boolean!
+  npm: String!
+  settings: JSONObject
+  version: String!
+}
+
+input PluginInstallationWhereInput {
+  id: StringFilter
+  createdAt: DateTimeFilter
+  updatedAt: DateTimeFilter
+  resource: ResourceWhereInput
+  parentBlock: WhereUniqueInput
+  displayName: StringFilter
+  description: StringFilter
+}
+
+input PluginInstallationOrderByInput {
+  id: SortOrder
+  createdAt: SortOrder
+  updatedAt: SortOrder
+  blockType: SortOrder
+  displayName: SortOrder
+  description: SortOrder
+}
+
+type PluginOrder implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  order: [PluginOrderItem!]!
+}
+
+"""Returns a paginated list of repository groups available to select."""
+type PaginatedGitGroup {
+  """Total number of groups"""
+  total: Float!
+
+  """Page number"""
+  page: Float!
+
+  """Number of groups per page"""
+  pageSize: Float!
+  groups: [GitGroup!]
+}
+
+"""Group of Repositories"""
+type GitGroup {
+  id: String!
+  displayName: String!
+  name: String!
+}
+
+input GitGroupInput {
+  organizationId: String!
+}
+
+type RemoteGitRepos {
+  repos: [RemoteGitRepository!]!
+  total: Float!
+  pagination: Pagination!
+}
+
+type RemoteGitRepository {
+  name: String!
+  url: String!
+  private: Boolean!
+  fullName: String!
+  admin: Boolean!
+  defaultBranch: String!
+  groupName: String
+}
+
+type Pagination {
+  page: Float!
+  perPage: Float!
+}
+
+input RemoteGitRepositoriesWhereUniqueInput {
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+
+  """The number of items to return per page"""
+  perPage: Float! = 10
+
+  """The page number. One-based indexing"""
+  page: Float! = 1
+  groupName: String
+}
+
+input GitOrganizationWhereInput {
+  id: String
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
+}
+
+type ApiToken {
+  id: String!
+  createdAt: DateTime!
+  updatedAt: DateTime!
+  name: String!
+  userId: String!
+  token: String
+  previewChars: String!
+  lastAccessAt: DateTime!
+}
+
+type Mutation {
+  updateAccount(data: UpdateAccountInput!): Account!
+  deleteWorkspace(where: WhereUniqueInput!): Workspace
+  updateWorkspace(data: WorkspaceUpdateInput!, where: WhereUniqueInput!): Workspace
+  createWorkspace(data: WorkspaceCreateInput!): Workspace
+  inviteUser(data: InviteUserInput!): Invitation
+  revokeInvitation(where: WhereUniqueInput!): Invitation
+  resendInvitation(where: WhereUniqueInput!): Invitation
+  deleteUser(where: WhereUniqueInput!): User
+  provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
+  createProject(data: ProjectCreateInput!): Project!
+  deleteProject(where: WhereUniqueInput!): Project
+  updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
+  commit(data: CommitCreateInput!): Commit
+  discardPendingChanges(data: PendingChangesDiscardInput!): Boolean
+  createMessageBroker(data: ResourceCreateInput!): Resource!
+  createService(data: ResourceCreateInput!): Resource!
+  createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
+  deleteResource(where: WhereUniqueInput!): Resource
+  updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
+  createOneEntity(data: EntityCreateInput!): Entity!
+  deleteEntity(where: WhereUniqueInput!): Entity
+  updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
+  lockEntity(where: WhereUniqueInput!): Entity
+  updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
+  updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
+  deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
+  updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
+  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
+  deleteEntityField(where: WhereUniqueInput!): EntityField!
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
+  createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
+  updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
+  deleteServiceTopics(where: WhereUniqueInput!): ServiceTopics!
+  createTopic(data: TopicCreateInput!): Topic!
+  updateTopic(data: TopicUpdateInput!, where: WhereUniqueInput!): Topic!
+  deleteTopic(where: WhereUniqueInput!): Topic!
+  createBuild(data: BuildCreateInput!): Build!
+  createResourceRole(data: ResourceRoleCreateInput!): ResourceRole!
+  deleteResourceRole(where: WhereUniqueInput!): ResourceRole
+  updateResourceRole(data: ResourceRoleUpdateInput!, where: WhereUniqueInput!): ResourceRole
+  createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
+  updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
+  deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
+  createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
+  setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  createGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
+  connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
+  connectResourceToProjectRepository(resourceId: String!): Resource!
+
+  """Only for GitHub integrations"""
+  createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
+  deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
+  disconnectResourceGitRepository(resourceId: String!): Resource!
+  getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
+  completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
+  signup(data: SignupInput!): Auth!
+  login(data: LoginInput!): Auth!
+  createApiToken(data: ApiTokenCreateInput!): ApiToken!
+  changePassword(data: ChangePasswordInput!): Account!
+  deleteApiToken(where: WhereUniqueInput!): ApiToken!
+  setCurrentWorkspace(data: WhereUniqueInput!): Auth!
+  completeInvitation(data: CompleteInvitationInput!): Auth!
+}
+
+input UpdateAccountInput {
+  firstName: String
+  lastName: String
+}
+
+input WorkspaceUpdateInput {
+  name: String
+}
+
+input WorkspaceCreateInput {
+  name: String!
+}
+
+input InviteUserInput {
+  email: String!
+}
+
+type ProvisionSubscriptionResult {
+  provisionStatus: String!
+  checkoutUrl: String
+}
+
+input ProvisionSubscriptionInput {
+  workspaceId: String!
+  planId: String!
+  billingPeriod: String!
+  intentionType: String!
+  successUrl: String
+  cancelUrl: String
+}
+
+input ProjectCreateInput {
+  name: String!
+}
+
+input ProjectUpdateInput {
+  name: String
+}
+
+input CommitCreateInput {
+  message: String!
+  project: WhereParentIdInput!
+}
+
+input WhereParentIdInput {
+  connect: WhereUniqueInput!
+}
+
+input PendingChangesDiscardInput {
+  project: WhereParentIdInput!
+}
+
+input ResourceCreateInput {
+  name: String!
+  description: String!
+  resourceType: EnumResourceType!
+  project: WhereParentIdInput!
+  serviceSettings: ServiceSettingsUpdateInput
+  gitRepository: ConnectGitRepositoryInput
+}
+
+input ServiceSettingsUpdateInput {
+  displayName: String
+  description: String
+  authProvider: EnumAuthProviderType!
+  adminUISettings: AdminUISettingsUpdateInput!
+  serverSettings: ServerSettingsUpdateInput!
+}
+
+input AdminUISettingsUpdateInput {
+  generateAdminUI: Boolean
+  adminUIPath: String
+}
+
+input ServerSettingsUpdateInput {
+  generateGraphQL: Boolean
+  generateRestApi: Boolean
+  serverPath: String
+}
+
+input ConnectGitRepositoryInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  resourceId: String!
+  gitOrganizationId: String!
+  isOverrideGitRepository: Boolean
+}
+
+type ResourceCreateWithEntitiesResult {
+  resource: Resource!
+  build: Build
+}
+
+input ResourceCreateWithEntitiesInput {
+  resource: ResourceCreateInput!
+  entities: [ResourceCreateWithEntitiesEntityInput!]!
+  commitMessage: String!
+  plugins: PluginInstallationsCreateInput
+  wizardType: String!
+  authType: String!
+  dbType: String!
+  repoType: String!
+}
+
+input ResourceCreateWithEntitiesEntityInput {
+  name: String!
+  fields: [ResourceCreateWithEntitiesFieldInput!]!
+  relationsToEntityIndex: [Int!]
+}
+
+input ResourceCreateWithEntitiesFieldInput {
+  name: String!
+  dataType: EnumDataType
+}
+
+input PluginInstallationsCreateInput {
+  plugins: [PluginInstallationCreateInput!]
+}
+
+input PluginInstallationCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  pluginId: String!
+  enabled: Boolean!
+  npm: String!
+  settings: JSONObject
+  version: String!
+}
+
+input BlockInputOutputInput {
+  name: String!
+  description: String!
+  dataType: EnumDataType
+  dataTypeEntityName: String
+  isList: Boolean
+  includeAllPropertiesByDefault: Boolean
+  propertyList: [PropertySelectorInput!]
+}
+
+input PropertySelectorInput {
+  propertyName: String!
+  include: Boolean!
+}
+
+input ResourceUpdateInput {
+  name: String
+  description: String
+  gitRepositoryOverride: Boolean
+}
+
+input EntityCreateInput {
+  name: String!
+  displayName: String!
+  pluralDisplayName: String!
+  customAttributes: String
+  description: String
+  resource: WhereParentIdInput!
+}
+
+input EntityUpdateInput {
+  name: String
+  displayName: String
+  pluralDisplayName: String
+  customAttributes: String
+  description: String
+}
+
+input EntityUpdatePermissionInput {
+  action: EnumEntityAction!
+  type: EnumEntityPermissionType!
+}
+
+input EntityUpdatePermissionRolesInput {
+  action: EnumEntityAction!
+  entity: WhereParentIdInput!
+  deleteRoles: [WhereUniqueInput!]
+  addRoles: [WhereUniqueInput!]
+}
+
+input EntityAddPermissionFieldInput {
+  action: EnumEntityAction!
+  fieldName: String!
+  entity: WhereParentIdInput!
+}
+
+input EntityPermissionFieldWhereUniqueInput {
+  entityId: String!
+  action: EnumEntityAction!
+  fieldPermanentId: String!
+}
+
+input EntityUpdatePermissionFieldRolesInput {
+  permissionField: WhereParentIdInput!
+  deletePermissionRoles: [WhereUniqueInput!]
+  addPermissionRoles: [WhereUniqueInput!]
+}
+
+input EntityFieldCreateInput {
+  name: String!
+  displayName: String!
+  dataType: EnumDataType!
+  properties: JSONObject!
+  required: Boolean!
+  unique: Boolean!
+  searchable: Boolean!
+  description: String!
+  customAttributes: String
+  entity: WhereParentIdInput!
+  position: Int
+}
+
+input EntityFieldCreateByDisplayNameInput {
+  displayName: String!
+  dataType: EnumDataType
+  entity: WhereParentIdInput!
+}
+
+input EntityFieldUpdateInput {
+  name: String
+  displayName: String
+  dataType: EnumDataType
+  properties: JSONObject
+  required: Boolean
+  unique: Boolean
+  searchable: Boolean
+  description: String
+  customAttributes: String
+  position: Int
+}
+
+input ServiceTopicsCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
+input MessagePatternCreateInput {
+  topicId: String!
+  type: EnumMessagePatternConnectionOptions!
+}
+
+input ServiceTopicsUpdateInput {
+  displayName: String
+  description: String
+  messageBrokerId: String!
+  enabled: Boolean!
+  patterns: [MessagePatternCreateInput!]
+}
+
+input TopicCreateInput {
+  displayName: String!
+  description: String
+  resource: WhereParentIdInput!
+  parentBlock: WhereParentIdInput
+  inputParameters: [BlockInputOutputInput!]
+  outputParameters: [BlockInputOutputInput!]
+  name: String
+}
+
+input TopicUpdateInput {
+  displayName: String
+  description: String
+  name: String
+}
+
+input BuildCreateInput {
+  resource: WhereParentIdInput!
+  message: String!
+  commit: WhereParentIdInput!
+}
+
+input ResourceRoleCreateInput {
+  name: String!
+  description: String!
+  displayName: String!
+  resource: WhereParentIdInput!
+}
+
+input ResourceRoleUpdateInput {
+  name: String
+  description: String
+  displayName: String!
+}
+
+input PluginInstallationUpdateInput {
+  displayName: String
+  description: String
+  enabled: Boolean!
+  settings: JSONObject
+  version: String!
+}
+
+input PluginSetOrderInput {
+  order: Int!
+}
+
+input CreateGitRepositoryInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  isPublic: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+  resourceId: String!
+}
+
+input CreateGitRepositoryBaseInput {
+  name: String!
+
+  """
+  Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
+  """
+  groupName: String
+  isPublic: Boolean!
+  gitOrganizationId: String!
+  gitProvider: EnumGitProvider!
+  gitOrganizationType: EnumGitOrganizationType!
+}
+
+input GitOrganizationCreateInput {
+  installationId: String!
+  gitProvider: EnumGitProvider!
+}
+
+input GitGetInstallationUrlInput {
+  gitProvider: EnumGitProvider!
+}
+
+input GitOAuth2FlowInput {
+  gitProvider: EnumGitProvider!
+  code: String!
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
+}
+
+input SignupInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+  workspaceName: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+input ApiTokenCreateInput {
+  name: String!
+}
+
+input ChangePasswordInput {
+  oldPassword: String!
+  newPassword: String!
+}
+
+input CompleteInvitationInput {
+  token: String!
+}

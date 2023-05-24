@@ -1,0 +1,19 @@
+@import "../style/index.scss";
+$svg-img-width: 200px;
+$svg-img-height: 200px;
+
+.commit-resource-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  &__content {
+    flex: 1;
+  }
+
+  &__title {
+    @include regular-10;
+    color: var(--black60);
+    margin: 0 var(--default-spacing) var(--default-spacing);
+  }
+}

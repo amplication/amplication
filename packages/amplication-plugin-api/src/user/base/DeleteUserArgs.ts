@@ -18,4 +18,4 @@ class DeleteUserArgs {
   where!: UserWhereUniqueInput;
 }
 
-export { DeleteUserArgs as DeleteUserArgs };
+export { DeleteUserArgs };

@@ -53,4 +53,4 @@ class UserListRelationFilter {
   })
   none?: UserWhereInput;
 }
-export { UserListRelationFilter as UserListRelationFilter };
+export { UserListRelationFilter };

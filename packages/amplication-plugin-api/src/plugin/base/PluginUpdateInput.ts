@@ -103,5 +103,4 @@ class PluginUpdateInput {
   })
   website?: string | null;
 }
-
-export { PluginUpdateInput as PluginUpdateInput };
+export { PluginUpdateInput };

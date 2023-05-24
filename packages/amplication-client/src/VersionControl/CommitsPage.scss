@@ -1,0 +1,46 @@
+@import "../style/index.scss";
+$svg-img-width: 200px;
+$svg-img-height: 200px;
+
+.commits-page {
+  &__header {
+    @include flexFullRowWithSpacing;
+    color: var(--black80);
+    align-items: center;
+    margin-bottom: var(--default-spacing);
+
+    h2 {
+      margin: 0;
+    }
+
+    .truncated-id {
+      @include semiBold;
+      color: var(--black100);
+    }
+
+    .clickable-id {
+      color: var(--black80);
+      a {
+        color: var(--black100);
+      }
+    }
+  }
+
+  &__changes__title {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+    .multi-state-toggle {
+      margin-bottom: 0;
+      width: var(--form-field-normal);
+    }
+  }
+  &__commit-message {
+    margin-bottom: var(--double-spacing);
+    color: var(--black80);
+  }
+
+  .pending-change-with-compare {
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
