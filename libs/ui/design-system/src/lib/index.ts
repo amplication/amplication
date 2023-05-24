@@ -172,5 +172,8 @@ export type { Props as LimitationNotificationProps } from "./components/Limitati
 export { UpgradeLink } from "./components/LimitationNotification/LimitationNotification";
 export type { LinkProps as UpgradeLinkProps } from "./components/LimitationNotification/LimitationNotification";
 
+export { ContactUsLinkForEnterprise } from "./components/LimitationNotification/LimitationNotification";
+export type { LinkProps as ContactUsLinkForEnterpriseProps } from "./components/LimitationNotification/LimitationNotification";
+
 export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";

@@ -76,6 +76,10 @@ import {
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -172,6 +176,7 @@ export class EntityService {
     private readonly prisma: PrismaService,
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
     private readonly diffService: DiffService,
+    private readonly analytics: SegmentAnalyticsService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -266,6 +271,7 @@ export class EntityService {
             name: args.data.name,
             displayName: args.data.displayName,
             pluralDisplayName: args.data.pluralDisplayName,
+            customAttributes: args.data.customAttributes,
             description: args.data.description,
             permissions: {
               create: DEFAULT_PERMISSIONS,
@@ -322,6 +328,27 @@ export class EntityService {
         },
       },
     });
+
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: args.data.resource.connect.id,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    await this.analytics.track({
+      userId: user.account.id,
+      properties: {
+        resourceId: args.data.resource.connect.id,
+        projectId: resourceWithProject.projectId,
+        workspaceId: resourceWithProject.project.workspaceId,
+        entityName: args.data.displayName,
+      },
+      event: EnumEventType.EntityCreate,
+    });
+
     return newEntity;
   }
 
@@ -346,6 +373,7 @@ export class EntityService {
           "name",
           "displayName",
           "pluralDisplayName",
+          "customAttributes",
           "description",
         ]);
         return this.prisma.entity.create({
@@ -617,6 +645,26 @@ export class EntityService {
         }
       }
 
+      const resourceWithProject = await this.prisma.resource.findUnique({
+        where: {
+          id: entity.resourceId,
+        },
+        include: {
+          project: true,
+        },
+      });
+
+      await this.analytics.track({
+        userId: user.account.id,
+        properties: {
+          resourceId: entity.resourceId,
+          projectId: resourceWithProject.projectId,
+          workspaceId: resourceWithProject.project.workspaceId,
+          entityName: args.data.displayName,
+        },
+        event: EnumEventType.EntityUpdate,
+      });
+
       return this.prisma.entity.update({
         where: { ...args.where },
         data: {
@@ -635,6 +683,7 @@ export class EntityService {
                 displayName: args.data.displayName,
                 pluralDisplayName: args.data.pluralDisplayName,
                 description: args.data.description,
+                customAttributes: args.data.customAttributes,
               },
             },
           },
@@ -872,6 +921,7 @@ export class EntityService {
         displayName: firstEntityVersion.displayName,
         pluralDisplayName: firstEntityVersion.pluralDisplayName,
         description: firstEntityVersion.description,
+        customAttributes: firstEntityVersion.customAttributes,
         commit: {
           connect: {
             id: args.data.commit.connect.id,
@@ -1016,6 +1066,7 @@ export class EntityService {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 
@@ -1927,6 +1978,27 @@ export class EntityService {
           );
         }
 
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldCreate,
+        });
+
         // Create entity field
         return this.prisma.entityField.create({
           data: {
@@ -2235,6 +2307,28 @@ export class EntityService {
             },
           });
         }
+
+        const resourceWithProject = await this.prisma.resource.findUnique({
+          where: {
+            id: entity.resourceId,
+          },
+          include: {
+            project: true,
+          },
+        });
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: entity.resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            entityFieldName: args.data.displayName,
+            dataType: args.data.dataType,
+          },
+          event: EnumEventType.EntityFieldUpdate,
+        });
+
         return updatedField;
       }
     );

@@ -54,7 +54,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.MultiLineText]: (
@@ -67,7 +73,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Email]: (
@@ -80,7 +92,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.WholeNumber]: (
@@ -93,7 +111,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.Int,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.DateTime]: (
@@ -106,7 +130,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.DateTime,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.DecimalNumber]: (
@@ -119,7 +149,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.Float,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Boolean]: (
@@ -132,7 +168,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.Boolean,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.GeographicLocation]: (
@@ -145,7 +187,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Json]: (
@@ -158,7 +206,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.Json,
       false,
       field.required,
-      field.unique
+      field.unique,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Lookup]: (
@@ -223,7 +277,11 @@ export const createPrismaSchemaFieldsHandlers: {
         [scalarRelationFieldName],
         [
           "id",
-        ] /**@todo: calculate the referenced field on the related entity (currently it is always 'id') */
+        ] /**@todo: calculate the referenced field on the related entity (currently it is always 'id') */,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
       ),
       // Prisma Scalar Relation Field
       PrismaSchemaDSL.createScalarField(
@@ -237,7 +295,13 @@ export const createPrismaSchemaFieldsHandlers: {
           !relatedField?.properties.allowMultipleSelection &&
           !isOneToOneWithoutForeignKey
           ? true
-          : field.unique
+          : field.unique,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
       ),
     ];
   },
@@ -250,7 +314,14 @@ export const createPrismaSchemaFieldsHandlers: {
       field.name,
       createEnumName(field, entity),
       true,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.OptionSet]: (
@@ -262,7 +333,14 @@ export const createPrismaSchemaFieldsHandlers: {
       field.name,
       createEnumName(field, entity),
       false,
-      field.required
+      field.required,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Id]: (
@@ -290,7 +368,10 @@ export const createPrismaSchemaFieldsHandlers: {
           ? INCREMENTAL_CALL_EXPRESSION
           : isUUID
           ? UUID_CALL_EXPRESSION
-          : CUID_CALL_EXPRESSION
+          : CUID_CALL_EXPRESSION,
+        undefined,
+        undefined,
+        field.customAttributes
       ),
     ];
   },
@@ -307,7 +388,10 @@ export const createPrismaSchemaFieldsHandlers: {
       false,
       false,
       false,
-      NOW_CALL_EXPRESSION
+      NOW_CALL_EXPRESSION,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.UpdatedAt]: (
@@ -322,7 +406,11 @@ export const createPrismaSchemaFieldsHandlers: {
       field.required,
       false,
       false,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Roles]: (
@@ -334,7 +422,14 @@ export const createPrismaSchemaFieldsHandlers: {
       field.name,
       PrismaSchemaDSLTypes.ScalarType.Json,
       false,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Username]: (
@@ -347,7 +442,13 @@ export const createPrismaSchemaFieldsHandlers: {
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
       field.required,
-      true
+      true,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
   [EnumDataType.Password]: (
@@ -359,7 +460,14 @@ export const createPrismaSchemaFieldsHandlers: {
       field.name,
       PrismaSchemaDSLTypes.ScalarType.String,
       false,
-      field.required
+      field.required,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      field.customAttributes
     ),
   ],
 };

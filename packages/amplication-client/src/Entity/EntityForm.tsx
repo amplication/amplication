@@ -120,6 +120,14 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                   name="description"
                   label="Description"
                 />
+                <TextField
+                  autoComplete="off"
+                  placeholder='Add custom attributes to model using the format @@attribute([parameters]) or @@attribute(). For example: @@index([field_1, field_2])  @@map("modelName")'
+                  textarea
+                  rows={3}
+                  name="customAttributes"
+                  label="Custom Attributes"
+                />
               </>
             </Form>
           );
