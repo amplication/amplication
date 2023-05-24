@@ -7,7 +7,6 @@ import PageContent from "../Layout/PageContent";
 import { PendingChange } from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
-import useCommits from "./hooks/useCommits";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import "./PendingChangesPage.scss";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
@@ -35,12 +34,12 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
   const resourceId = match.params.resource;
   const [splitView, setSplitView] = useState<boolean>(false);
   const pageTitle = "Changes";
-  const { commitChangesByResource, commitsError } = useCommits();
-  const { currentProject, currentWorkspace } = useContext(AppContext);
+  const { currentProject, currentWorkspace, commitUtils } =
+    useContext(AppContext);
 
-  const commitResourceChanges = commitChangesByResource(commitId).find(
-    (resource) => resource.resourceId === resourceId
-  )?.changes;
+  const commitResourceChanges = commitUtils
+    .commitChangesByResource(commitId)
+    .find((resource) => resource.resourceId === resourceId)?.changes;
 
   const handleChangeType = useCallback(
     (type: string) => {
@@ -49,7 +48,7 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
     [setSplitView]
   );
 
-  const errorMessage = formatError(commitsError);
+  const errorMessage = formatError(commitUtils.commitsError);
 
   return (
     <>
@@ -81,7 +80,10 @@ const ChangesPage: React.FC<Props> = ({ match }) => {
             ))}
         </div>
       </PageContent>
-      <Snackbar open={Boolean(commitsError)} message={errorMessage} />
+      <Snackbar
+        open={Boolean(commitUtils.commitsError)}
+        message={errorMessage}
+      />
     </>
   );
 };
