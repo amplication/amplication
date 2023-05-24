@@ -141,6 +141,7 @@ const OptionSetOption = ({
 
       <div className="option-set__option__action">
         <Button
+          type="button"
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleRemoveOption}

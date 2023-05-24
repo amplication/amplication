@@ -521,6 +521,10 @@ export class BuildService {
               gitOrganization
             );
 
+          const commitMessage =
+            commit.message && `Commit message: ${commit.message}.`;
+          const buildLinkHTML = `[${url}](${url})`;
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             gitOrganizationName: gitOrganization.name,
             gitRepositoryName: resourceRepository.name,
@@ -533,11 +537,7 @@ export class BuildService {
             oldBuildId: oldBuild?.id,
             commit: {
               title: commitTitle,
-              body: `Amplication build # ${build.id}.
-              Commit message: ${commit.message}
-              
-              ${url}
-              `,
+              body: `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`,
             },
             gitResourceMeta: {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,

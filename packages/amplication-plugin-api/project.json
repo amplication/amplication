@@ -77,7 +77,8 @@
     },
     "db:prisma:generate": {
       "executor": "nx:run-commands",
-      "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
+      "inputs": ["{projectRoot}/prisma/schema.prisma"],
+      "outputs": ["{projectRoot}/prisma/generated-prisma-client"],
       "options": {
         "command": "prisma generate --schema ./prisma/schema.prisma",
         "cwd": "packages/amplication-plugin-api"

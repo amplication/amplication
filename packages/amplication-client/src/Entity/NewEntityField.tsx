@@ -148,6 +148,7 @@ const CREATE_ENTITY_FIELD = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -163,6 +164,7 @@ const NEW_ENTITY_FIELD_FRAGMENT = gql`
     required
     unique
     searchable
+    customAttributes
     description
     properties
   }
