@@ -8,18 +8,18 @@ import { Build } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import "./CommitResourceListItem.scss";
-import useCommits from "./hooks/useCommits";
+import { CommitChangesByResource } from "./hooks/useCommits";
 import useBuildWatchStatus from "./useBuildWatchStatus";
 
 const CLASS_NAME = "commit-resource-list-item";
 
 type Props = {
   build: Build;
+  commitChangesByResource: CommitChangesByResource;
 };
 
-const CommitResourceListItem = ({ build }: Props) => {
+const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const { commitChangesByResource } = useCommits();
   const { data } = useBuildWatchStatus(build);
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();

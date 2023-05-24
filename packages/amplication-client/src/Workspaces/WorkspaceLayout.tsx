@@ -24,6 +24,7 @@ import useWorkspaceSelector from "./hooks/useWorkspaceSelector";
 import WorkspaceFooter from "./WorkspaceFooter";
 import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
 import "./WorkspaceLayout.scss";
+import useCommits from "../VersionControl/hooks/useCommits";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -72,6 +73,8 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     setResetPendingChangesIndicator,
   } = usePendingChanges(currentProject);
 
+  const commitUtils = useCommits(currentProject?.id);
+
   const {
     resources,
     projectConfigurationResource,
@@ -91,6 +94,10 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     loadingCreateMessageBroker,
     createServiceWithEntitiesResult,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
+
+  useEffect(() => {
+    commitUtils.refetchLastCommit();
+  }, [currentResource?.id]);
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
@@ -167,6 +174,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         setResetPendingChangesIndicator,
         openHubSpotChat,
         createServiceWithEntitiesResult,
+        commitUtils,
       }}
     >
       {isMobileOnly ? (
@@ -188,12 +196,12 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
                   {currentProject ? (
                     <PendingChanges projectId={currentProject.id} />
                   ) : null}
-                  {currentProject && (
-                    <LastCommit resourceId={currentResource?.id} />
+                  {currentProject && commitUtils.lastCommit && (
+                    <LastCommit lastCommit={commitUtils.lastCommit} />
                   )}
                 </div>
               </div>
-              <WorkspaceFooter />
+              <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
               <HubSpotChatComponent
                 setChatStatus={setChatStatus}
                 chatStatus={chatStatus}

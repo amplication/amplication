@@ -39,6 +39,11 @@ export class EntityWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  customAttributes?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   description?: StringFilter | null;
 
   @Field(() => EntityFieldFilter, {

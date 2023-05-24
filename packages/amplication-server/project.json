@@ -115,7 +115,7 @@
         "cwd": "packages/amplication-server"
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
@@ -128,7 +128,7 @@
         }
       }
     },
-    "deploy": { "executor": "nx:run-commands" }
+    "deploy:container": { "executor": "nx:run-commands" }
   },
   "tags": []
 }
