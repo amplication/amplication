@@ -120,11 +120,13 @@ describe("Logger", () => {
       const error = new Error("error");
       logger.error("My error message", error);
 
-      expect(mockLogger.error).toHaveBeenCalledWith({
-        ...error,
+      const expectedError = error;
+      Object.assign(expectedError, {
         errorMessage: "error",
         message: "My error message",
       });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
 
     it("logs an error message with Error and additional parameters", () => {
@@ -132,12 +134,14 @@ describe("Logger", () => {
       const error = new Error("error");
       logger.error("My error message", error, { foo: { what: "yeah" } });
 
-      expect(mockLogger.error).toHaveBeenCalledWith({
-        ...error,
+      const expectedError = error;
+      Object.assign(expectedError, {
         errorMessage: "error",
         message: "My error message",
         foo: { what: "yeah" },
       });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
 
     it("logs an error message with Error without errorMessage if Error message is the same of message", () => {
@@ -145,11 +149,10 @@ describe("Logger", () => {
       const error = new Error("error");
       logger.error("error", error, { foo: { what: "yeah" } });
 
-      expect(mockLogger.error).toHaveBeenCalledWith({
-        ...error,
-        message: "error",
-        foo: { what: "yeah" },
-      });
+      const expectedError = error;
+      Object.assign(expectedError, { foo: { what: "yeah" } });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
   });
 });
