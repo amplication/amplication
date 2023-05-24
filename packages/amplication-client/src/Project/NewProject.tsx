@@ -10,10 +10,7 @@ import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import {
-  validate,
-  validationErrorMessages,
-} from "../util/formikValidateJsonSchema";
+import { validationErrorMessages } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewProject.scss";
 
@@ -23,7 +20,8 @@ const INITIAL_VALUES: CreateProjectType = {
   name: "",
 };
 
-const { AT_LEAST_TWO_CHARARCTERS } = validationErrorMessages;
+const { AT_LEAST_TWO_CHARARCTERS, AT_MOST_SIXTY_CHARACTERS } =
+  validationErrorMessages;
 
 const FORM_SCHEMA = {
   required: ["name"],
@@ -31,11 +29,7 @@ const FORM_SCHEMA = {
     name: {
       type: "string",
       minLength: 2,
-    },
-  },
-  errorMessage: {
-    properties: {
-      name: AT_LEAST_TWO_CHARARCTERS,
+      maxLength: 60,
     },
   },
 };
@@ -86,7 +80,16 @@ const NewProject = ({ onProjectCreated }: Props) => {
       </div>
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: CreateProjectType) => validate(values, FORM_SCHEMA)}
+        validate={(values: CreateProjectType) => {
+          const errors: { [key: string]: string } = {};
+          if (values.name.length < FORM_SCHEMA.properties.name.minLength) {
+            errors.name = AT_LEAST_TWO_CHARARCTERS;
+          }
+          if (values.name.length > FORM_SCHEMA.properties.name.maxLength) {
+            errors.name = AT_MOST_SIXTY_CHARACTERS;
+          }
+          return errors;
+        }}
         onSubmit={handleSubmit}
         validateOnMount
       >
