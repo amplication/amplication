@@ -190,6 +190,8 @@ export interface CreatePullRequestArgs {
   gitResourceMeta: GitResourceMeta;
   files: File[];
   cloneDirPath: string;
+  resourceId: string;
+  buildId: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {

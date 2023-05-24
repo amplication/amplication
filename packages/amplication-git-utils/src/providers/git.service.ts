@@ -117,109 +117,114 @@ export class GitClientService {
       pullRequestMode,
       gitResourceMeta,
       files,
+      cloneDirPath,
+      buildId,
+      resourceId,
     } = createPullRequestArgs;
+
     const gitRepoDir = normalize(
       join(
-        createPullRequestArgs.cloneDirPath,
+        cloneDirPath,
         this.provider.name,
         owner,
-        repositoryName,
-        v4()
+        repositoryGroupName
+          ? join(repositoryGroupName, repositoryName)
+          : repositoryName,
+        `${resourceId}-${buildId}`
       )
     );
-
-    const gitCli = new GitCli(this.logger, gitRepoDir);
-    let isCloned = false;
-
     const cloneUrl = await this.provider.getCloneUrl({
       owner,
       repositoryName,
       repositoryGroupName,
     });
 
-    const { defaultBranch } = await this.provider.getRepository({
-      owner,
-      repositoryName,
-      groupName: repositoryGroupName,
+    const gitCli = new GitCli(this.logger, {
+      originUrl: cloneUrl,
+      repositoryDir: gitRepoDir,
     });
 
-    const haveFirstCommitInDefaultBranch =
-      await this.isHaveFirstCommitInDefaultBranch({
+    try {
+      const { defaultBranch } = await this.provider.getRepository({
         owner,
         repositoryName,
-        repositoryGroupName,
-        defaultBranch,
+        groupName: repositoryGroupName,
       });
 
-    if (haveFirstCommitInDefaultBranch === false) {
-      if (isCloned === false) {
-        await gitCli.clone(cloneUrl);
-        isCloned = true;
-      }
-      await this.createInitialCommit({
-        gitRepoDir,
-        gitCli,
-        repositoryName,
-        defaultBranch,
-      });
-    }
-
-    const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
-      owner,
-      repositoryName,
-      repositoryGroupName
-    );
-
-    const preparedFiles = await prepareFilesForPullRequest(
-      gitResourceMeta,
-      files,
-      amplicationIgnoreManger
-    );
-
-    this.logger.info(`Got a ${pullRequestMode} pull request mode`);
-
-    let pullRequestUrl: string | null = null;
-
-    switch (pullRequestMode) {
-      case EnumPullRequestMode.Basic:
-        pullRequestUrl = await this.provider.createPullRequestFromFiles({
+      const haveFirstCommitInDefaultBranch =
+        await this.isHaveFirstCommitInDefaultBranch({
           owner,
           repositoryName,
-          branchName,
-          commitMessage,
-          pullRequestTitle,
-          pullRequestBody,
-          files: preparedFiles,
-        });
-        break;
-      case EnumPullRequestMode.Accumulative:
-        pullRequestUrl = await this.accumulativePullRequest({
-          cloneUrl,
-          gitCli,
-          owner,
-          repositoryName,
-          branchName,
-          commitMessage,
-          pullRequestBody,
-          preparedFiles,
-          defaultBranch,
-          isCloned,
           repositoryGroupName,
+          defaultBranch,
         });
-        break;
-      default:
-        throw new InvalidPullRequestMode();
-    }
 
-    if (isCloned === true) {
-      await rm(gitRepoDir, { recursive: true, force: true });
-    }
+      if (haveFirstCommitInDefaultBranch === false) {
+        await gitCli.clone();
+        await this.createInitialCommit({
+          gitRepoDir,
+          gitCli,
+          repositoryName,
+          defaultBranch,
+        });
+      }
 
-    return pullRequestUrl;
+      const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
+        owner,
+        repositoryName,
+        repositoryGroupName
+      );
+
+      const preparedFiles = await prepareFilesForPullRequest(
+        gitResourceMeta,
+        files,
+        amplicationIgnoreManger
+      );
+
+      this.logger.info(`Got a ${pullRequestMode} pull request mode`);
+
+      let pullRequestUrl: string | null = null;
+
+      switch (pullRequestMode) {
+        case EnumPullRequestMode.Basic:
+          pullRequestUrl = await this.provider.createPullRequestFromFiles({
+            owner,
+            repositoryName,
+            branchName,
+            commitMessage,
+            pullRequestTitle,
+            pullRequestBody,
+            files: preparedFiles,
+          });
+          break;
+        case EnumPullRequestMode.Accumulative:
+          pullRequestUrl = await this.accumulativePullRequest({
+            gitCli,
+            owner,
+            repositoryName,
+            branchName,
+            commitMessage,
+            pullRequestBody,
+            preparedFiles,
+            defaultBranch,
+            repositoryGroupName,
+          });
+          break;
+        default:
+          throw new InvalidPullRequestMode();
+      }
+
+      await gitCli.deleteRepositoryDir();
+
+      return pullRequestUrl;
+    } catch (error) {
+      await gitCli.deleteRepositoryDir();
+
+      throw error;
+    }
   }
 
   async accumulativePullRequest(options: {
-    cloneUrl: string;
     gitCli: GitCli;
     owner: string;
     repositoryName: string;
@@ -228,11 +233,9 @@ export class GitClientService {
     pullRequestBody: string;
     preparedFiles: UpdateFile[];
     defaultBranch: string;
-    isCloned: boolean;
     repositoryGroupName?: string;
   }): Promise<string> {
     const {
-      cloneUrl,
       gitCli,
       owner,
       repositoryName,
@@ -241,13 +244,10 @@ export class GitClientService {
       pullRequestBody,
       preparedFiles,
       defaultBranch,
-      isCloned,
       repositoryGroupName,
     } = options;
 
-    if (isCloned === false) {
-      await gitCli.clone(cloneUrl);
-    }
+    await gitCli.clone();
     await this.restoreAmplicationBranchIfNotExists({
       owner,
       repositoryName,
@@ -303,15 +303,17 @@ export class GitClientService {
       });
     }
 
-    await this.provider.createPullRequestComment({
-      where: {
-        issueNumber: pullRequest.number,
-        owner,
-        repositoryName,
-        repositoryGroupName,
-      },
-      data: { body: pullRequestBody },
-    });
+    if (sha) {
+      await this.provider.createPullRequestComment({
+        where: {
+          issueNumber: pullRequest.number,
+          owner,
+          repositoryName,
+          repositoryGroupName,
+        },
+        data: { body: pullRequestBody },
+      });
+    }
 
     return pullRequest.url;
   }
