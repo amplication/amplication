@@ -7,7 +7,6 @@ jest.mock("winston", () => ({
     colorize: jest.fn().mockReturnValue("colorize"),
     errors: jest.fn().mockReturnValue("errors"),
     simple: jest.fn().mockReturnValue("simple"),
-    splat: jest.fn().mockReturnValue("splat"),
     json: jest.fn().mockReturnValue("json"),
     timestamp: jest.fn().mockReturnValue("timestamp"),
     combine: jest.fn().mockImplementation((...args) => args),
@@ -118,13 +117,39 @@ describe("Logger", () => {
 
     it("logs an error message with Error", () => {
       const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("My error message", error);
 
-      logger.error("error message", new Error("error"));
+      expect(mockLogger.error).toHaveBeenCalledWith({
+        ...error,
+        errorMessage: "error",
+        message: "My error message",
+      });
+    });
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        "error message",
-        expect.objectContaining({ error: expect.any(Object) })
-      );
+    it("logs an error message with Error and additional parameters", () => {
+      const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("My error message", error, { foo: { what: "yeah" } });
+
+      expect(mockLogger.error).toHaveBeenCalledWith({
+        ...error,
+        errorMessage: "error",
+        message: "My error message",
+        foo: { what: "yeah" },
+      });
+    });
+
+    it("logs an error message with Error without errorMessage if Error message is the same of message", () => {
+      const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("error", error, { foo: { what: "yeah" } });
+
+      expect(mockLogger.error).toHaveBeenCalledWith({
+        ...error,
+        message: "error",
+        foo: { what: "yeah" },
+      });
     });
   });
 });
