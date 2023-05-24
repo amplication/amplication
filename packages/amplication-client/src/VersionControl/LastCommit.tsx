@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import classNames from "classnames";
 import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ClickableId } from "../Components/ClickableId";
@@ -9,25 +9,17 @@ import { formatDistanceToNow } from "date-fns";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import useCommit from "./hooks/useCommits";
+import { Commit } from "../models";
 
 type Props = {
-  resourceId?: string;
+  lastCommit: Commit;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ resourceId }: Props) => {
+const LastCommit = ({ lastCommit }: Props) => {
   const { currentWorkspace, currentProject, commitRunning } =
     useContext(AppContext);
-
-  const { lastCommit, refetchCommits, commits } = useCommit();
-  console.log({ lastCommit });
-  console.log({ commits });
-
-  useEffect(() => {
-    refetchCommits();
-  }, [resourceId]);
 
   const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;

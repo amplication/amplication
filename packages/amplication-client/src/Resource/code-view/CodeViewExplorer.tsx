@@ -8,7 +8,6 @@ import "./CodeViewBar.scss";
 import CodeViewExplorerTree from "./CodeViewExplorerTree";
 import { FileDetails } from "./CodeViewPage";
 import { NodeTypeEnum } from "./NodeTypeEnum";
-import useCommit from "../../VersionControl/hooks/useCommits";
 
 const CLASS_NAME = "code-view-bar";
 
@@ -25,8 +24,7 @@ export type FileMeta = {
 };
 
 const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
-  const { resources } = useContext(AppContext);
-  const { commits } = useCommit();
+  const { resources, commitUtils } = useContext(AppContext);
 
   const [selectedCommit, setSelectedCommit] = useState<Commit | null>(null);
   const [selectedResource, setSelectedResource] = useState<Resource | null>(
@@ -43,8 +41,8 @@ const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
   };
 
   useEffect(() => {
-    setSelectedCommit(commits[0]);
-  }, [commits]);
+    setSelectedCommit(commitUtils.commits[0]);
+  }, [commitUtils.commits]);
 
   useEffect(() => {
     setSelectedResource(resources[0]);
@@ -60,7 +58,7 @@ const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
     <div className={CLASS_NAME}>
       <div>
         <CommitSelector
-          commits={commits}
+          commits={commitUtils.commits}
           selectedCommit={selectedCommit}
           onSelectCommit={handleSelectedCommit}
         />

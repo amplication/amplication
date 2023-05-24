@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useMemo } from "react";
 import { match, useHistory } from "react-router-dom";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
@@ -12,7 +6,6 @@ import PageContent from "../Layout/PageContent";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
 import CommitResourceList from "./CommitResourceList";
-import useCommit from "./hooks/useCommits";
 import "./CommitsPage.scss";
 import { EmptyState } from "../Components/EmptyState";
 import { CircularProgress } from "@amplication/ui/design-system";
@@ -30,55 +23,53 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const commitId = match.params.commit;
   const history = useHistory();
 
-  const { currentProject, currentWorkspace } = useContext(AppContext);
-
-  const {
-    commits,
-    commitsError,
-    commitsLoading,
-    refetchCommitsData,
-    disableLoadMore,
-    commitChangesByResource,
-  } = useCommit();
+  const { currentProject, currentWorkspace, commitUtils } =
+    useContext(AppContext);
 
   const handleOnLoadMoreClick = useCallback(() => {
-    refetchCommitsData();
-  }, [refetchCommitsData]);
+    commitUtils.refetchCommitsData();
+  }, [commitUtils.refetchCommitsData]);
 
   const currentCommit = useMemo(() => {
-    return commits?.find((commit) => commit.id === commitId);
-  }, [commitId, commits]);
+    return commitUtils.commits?.find((commit) => commit.id === commitId);
+  }, [commitId, commitUtils.commits]);
 
   useEffect(() => {
     if (commitId) return;
-    commits.length &&
+    commitUtils.commits.length &&
       history.push(
-        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commits[0].id}`
+        `/${currentWorkspace?.id}/${currentProject?.id}/commits/${commitUtils.commits[0].id}`
       );
-  }, [commitId, commits, currentProject?.id, currentWorkspace?.id, history]);
+  }, [
+    commitId,
+    commitUtils.commits,
+    currentProject?.id,
+    currentWorkspace?.id,
+    history,
+  ]);
 
   return (
     <PageContent
       className={moduleClass}
       pageTitle={`Commit Page ${commitId ? commitId : ""}`}
       sideContent={
-        commits.length ? (
+        commitUtils.commits?.length ? (
           <CommitList
-            commits={commits}
-            error={commitsError}
-            loading={commitsLoading}
+            commits={commitUtils.commits}
+            error={commitUtils.commitsError}
+            loading={commitUtils.commitsLoading}
             onLoadMoreClick={handleOnLoadMoreClick}
-            disableLoadMore={disableLoadMore}
+            disableLoadMore={commitUtils.disableLoadMore}
           />
         ) : null
       }
     >
-      {commits.length && currentCommit ? (
+      {commitUtils.commits.length && currentCommit ? (
         <CommitResourceList
           commit={currentCommit}
-          commitChangesByResource={commitChangesByResource}
+          commitChangesByResource={commitUtils.commitChangesByResource}
         />
-      ) : commitsLoading ? (
+      ) : commitUtils.commitsLoading ? (
         <CircularProgress centerToParent />
       ) : (
         <EmptyState

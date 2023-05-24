@@ -20,7 +20,6 @@ type Props = {
 
 const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  //const { commitChangesByResource } = useCommits();
   const { data } = useBuildWatchStatus(build);
   const handleBuildLinkClick = useCallback((event) => {
     event.stopPropagation();
