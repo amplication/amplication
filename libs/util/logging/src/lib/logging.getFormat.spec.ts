@@ -53,7 +53,6 @@ describe("getLoggerFormat", () => {
     expect(spyOnCombineFormat).toHaveBeenCalledWith(
       FORMAT_TIMESTAMP,
       FORMAT_ERRORS,
-      FORMAT_SPLAT,
       { template: expect.any(Function) }
     );
   });
@@ -65,7 +64,6 @@ describe("getLoggerFormat", () => {
     expect(spyOnCombineFormat).toHaveBeenCalledWith(
       FORMAT_TIMESTAMP,
       FORMAT_ERRORS,
-      FORMAT_SPLAT,
       FORMAT_JSON
     );
   });
