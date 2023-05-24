@@ -110,6 +110,7 @@ export class PullRequestService {
       pullRequestMode,
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      resourceId,
       buildId: newBuildId,
     });
 

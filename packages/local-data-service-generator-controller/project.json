@@ -28,7 +28,7 @@
       "options": {
         "buildTarget": "local-data-service-generator-controller:build"
       },
-      "dependsOn": ["^docker:build"],
+      "dependsOn": ["^package:container"],
       "configurations": {
         "production": {
           "buildTarget": "local-data-service-generator-controller:build:production"

@@ -56,7 +56,7 @@ yarn-error.log*
     \\"build\\": \\"react-scripts build\\",
     \\"test\\": \\"react-scripts test\\",
     \\"eject\\": \\"react-scripts eject\\",
-    \\"docker:build\\": \\"docker build .\\"
+    \\"package:container\\": \\"docker build .\\"
   },
   \\"eslintConfig\\": {
     \\"extends\\": [
@@ -2952,7 +2952,7 @@ services:
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
-    \\"docker:build\\": \\"docker build .\\",
+    \\"package:container\\": \\"docker build .\\",
     \\"compose:up\\": \\"docker-compose up -d\\",
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
@@ -2973,7 +2973,6 @@ services:
     \\"graphql-type-json\\": \\"0.3.2\\",
     \\"nest-access-control\\": \\"2.0.3\\",
     \\"nest-morgan\\": \\"1.0.1\\",
-    \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
@@ -3016,7 +3015,7 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
-  name               String
+  name               String              @unique @db.VarChar(200)
   bio                String
   email              String
   age                Int
@@ -3033,6 +3032,10 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
+
+  @@unique([name(sort: Desc), displayName])
+  @@index([name, displayName])
+  @@map(\\"users\\")
 }
 
 model Profile {
@@ -11240,7 +11243,7 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
 };
 ",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
 
 describe(\\"Testing the HealthServiceBase\\", () => {

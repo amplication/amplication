@@ -49,7 +49,7 @@ export type GitRepositoryCreatedData = {
   gitOrganizationId: string;
   gitOrganizationType: EnumGitOrganizationType;
   gitProvider: EnumGitProvider;
-  isPrivate: boolean;
+  isPublic: boolean;
   groupName?: string;
   gitRepositoryUrl?: string;
 };

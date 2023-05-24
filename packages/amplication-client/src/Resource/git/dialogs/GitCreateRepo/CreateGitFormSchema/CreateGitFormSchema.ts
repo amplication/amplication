@@ -4,5 +4,5 @@ export const CreateGitFormSchema = object().shape({
   name: string()
     .min(2, "Git repository name require minimum of 2 characters")
     .required("Repository name is missing"),
-  isPrivate: bool().required("Must select if repo is private"),
+  isPublic: bool().required("Must select if repo is private"),
 });

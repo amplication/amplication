@@ -59,10 +59,7 @@ export enum AnalyticsEventNames {
   ServiceCreate = "createResourceClick-Service",
 
   // entity
-  EntityCreate = "createEntity",
-  EntityUpdate = "updateEntity",
-  EntityFieldCreate = "createEntityField",
-  EntityFieldUpdate = "updateEntityField",
+
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
 
