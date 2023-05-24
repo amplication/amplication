@@ -13,6 +13,7 @@ export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {
     consumer = {
       groupId,
       sessionTimeout: kafkaEnv.getConsumerSessionTimeout(),
+      rebalanceTimeout: kafkaEnv.getConsumerRebalanceTimeout(),
       heartbeatInterval: kafkaEnv.getConsumerHeartbeat(),
     };
   }

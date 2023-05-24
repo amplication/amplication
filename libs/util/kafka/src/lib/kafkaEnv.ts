@@ -63,4 +63,9 @@ export class KafkaEnvironmentVariables {
     );
     return heartbeat ? parseInt(heartbeat) : 10000;
   }
+
+  getConsumerRebalanceTimeout(): number {
+    const rebalanceTimeout = this.getConsumerSessionTimeout();
+    return rebalanceTimeout * 2;
+  }
 }
