@@ -18,6 +18,10 @@ export interface PluginYml {
     latest: string;
     beta?: string;
   };
+  time: {
+    created: string;
+    modified: string;
+  };
 }
 
 export interface PluginList {

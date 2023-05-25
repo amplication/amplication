@@ -65,10 +65,9 @@ export class GitPluginService {
       for await (const pluginConfig of this.getPluginConfig(pluginCatalog)) {
         if (!(pluginConfig as PluginYml).pluginId) continue;
 
-        const currDate = new Date();
         pluginsArr.push({
           id: "",
-          createdAt: currDate,
+          createdAt: new Date(pluginConfig.time.created),
           description: pluginConfig.description,
           latestVersion: pluginConfig["dist-tags"].latest,
           github: pluginConfig.github,
@@ -77,7 +76,7 @@ export class GitPluginService {
           npm: pluginConfig.npm,
           pluginId: pluginConfig.pluginId,
           website: pluginConfig.website,
-          updatedAt: currDate,
+          updatedAt: new Date(pluginConfig.time.modified),
         });
       }
 
