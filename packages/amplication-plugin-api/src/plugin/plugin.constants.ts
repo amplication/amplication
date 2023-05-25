@@ -2,6 +2,7 @@ import { PluginYml } from "./plugin.types";
 
 export const AMPLICATION_GITHUB_URL =
   "https://api.github.com/repos/amplication/plugin-catalog/contents/plugins";
+
 export const emptyPlugin: PluginYml = {
   id: "",
   name: "",
@@ -15,4 +16,12 @@ export const emptyPlugin: PluginYml = {
   categories: "",
   resourceTypes: "",
   pluginId: "",
+  "dist-tags": {
+    latest: "",
+    beta: "",
+  },
+  time: {
+    created: "",
+    modified: "",
+  },
 };

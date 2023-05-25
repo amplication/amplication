@@ -14,6 +14,10 @@ export interface PluginYml {
   categories: string;
   resourceTypes: string;
   pluginId?: string;
+  "dist-tags": {
+    latest: string;
+    beta?: string;
+  };
 }
 
 export interface PluginList {
