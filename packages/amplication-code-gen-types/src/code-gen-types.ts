@@ -159,8 +159,13 @@ export class ModuleMap {
     return this.map[path];
   }
 
+  /**
+   * Replace a module in the map. If the module does not exist, it will be added to the set.
+   * @param oldModule The module to replace
+   * @param newModule The new module to replace the old module with
+   */
   replace(oldModule: Module, newModule: Module): void {
-    if (newModule.path !== module.path) {
+    if (newModule.path !== oldModule.path) {
       delete this.map[oldModule.path];
     }
     this.map[newModule.path] = newModule;
