@@ -3,7 +3,6 @@ import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
 import { BuildLogger } from "./build-logger";
-import { EventNames } from "./plugins-types";
 
 export {
   EnumDataType,
@@ -131,6 +130,12 @@ export class ModuleMap {
   private map: Record<string, Module> = {};
   constructor(private readonly logger: BuildLogger) {}
 
+  /**
+   * Merge another map into this map
+   *
+   * @param anotherMap The map to merge into this map
+   * @returns This map
+   */
   async merge(anotherMap: ModuleMap): Promise<ModuleMap> {
     for await (const module of anotherMap.modules()) {
       await this.set(module);
@@ -139,6 +144,12 @@ export class ModuleMap {
     return this;
   }
 
+  /**
+   * Merge many maps into this map
+   * @param maps The maps to merge into this map
+   * @returns This map
+   * @see merge
+   */
   async mergeMany(maps: ModuleMap[]): Promise<void> {
     const modules = maps.map((map) => map.modules()).flat();
     for await (const module of modules) {
@@ -146,6 +157,10 @@ export class ModuleMap {
     }
   }
 
+  /**
+   * Set a module in the map. If the module already exists, it will be overwritten and a log message will be printed.
+   * @param module The module (file) to add to the set
+   */
   async set(module: Module) {
     if (this.map[module.path]) {
       await this.logger.warn(
@@ -155,6 +170,9 @@ export class ModuleMap {
     this.map[module.path] = module;
   }
 
+  /**
+   * @returns A module for the given path, or undefined if no module exists for the path
+   */
   get(path: string) {
     return this.map[path];
   }
