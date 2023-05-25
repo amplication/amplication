@@ -29,7 +29,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-deploy-container) }}
+        project: ${{ fromJson(needs.nx.outputs.affected-package-container) }}
     needs: nx
     steps:
       - name: Checkout source code repository
