@@ -4,7 +4,7 @@ const RESERVED_NAMES = [
   "case",
   "catch",
   "class",
-  "Config",
+  "config",
   "const",
   "continue",
   "debugger",
