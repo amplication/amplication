@@ -122,6 +122,7 @@ export const GET_FIELDS = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }

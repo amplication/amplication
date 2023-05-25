@@ -35,8 +35,7 @@ export class Logger implements ILogger {
   public getLoggerFormat(): Format {
     const developmentFormats: Format[] = [
       format.timestamp(),
-      format.errors({ stack: true }),
-      format.splat(),
+      format.errors({ stack: true, cause: true }),
       customFormat(),
     ];
     if (this.options.additionalDevelopmentFormats) {
@@ -48,8 +47,7 @@ export class Logger implements ILogger {
 
     const productionFormats: Format[] = [
       format.timestamp(),
-      format.errors({ stack: true }),
-      format.splat(),
+      format.errors({ stack: true, cause: true }),
       format.json(),
     ];
     if (this.options.additionalFormats) {
@@ -79,7 +77,12 @@ export class Logger implements ILogger {
     params?: Record<string, unknown>
   ): void {
     if (error) {
-      params = { ...params, error };
+      Object.assign(error, {
+        message,
+        ...(error.message !== message ? { errorMessage: error.message } : {}),
+        ...params,
+      });
+      this.logger.error(error);
     }
     this.logger.error(message, params);
   }
