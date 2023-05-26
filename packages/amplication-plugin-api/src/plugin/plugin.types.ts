@@ -14,6 +14,7 @@ export interface PluginYml {
   categories: string;
   resourceTypes: string;
   pluginId?: string;
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   "dist-tags": {
     latest: string;
     beta?: string;

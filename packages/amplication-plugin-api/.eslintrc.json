@@ -46,7 +46,13 @@
         "args": "none"
       }
     ],
-    "@typescript-eslint/no-floating-promises": "error"
+    "@typescript-eslint/no-floating-promises": "error",
+    "@nrwl/nx/enforce-module-boundaries": [
+      "error",
+      {
+        "allowCircularSelfDependency": true
+      }
+    ]
   },
   "overrides": []
 }

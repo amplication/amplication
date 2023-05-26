@@ -16,6 +16,7 @@ export const emptyPlugin: PluginYml = {
   categories: "",
   resourceTypes: "",
   pluginId: "",
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   "dist-tags": {
     latest: "",
     beta: "",
