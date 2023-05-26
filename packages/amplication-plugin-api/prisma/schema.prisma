@@ -19,23 +19,23 @@ model User {
 }
 
 model Plugin {
-  createdAt     DateTime @default(now())
-  description   String?
-  github        String?
-  icon          String?
-  id            String   @id @default(cuid())
-  latestVersion String?
-  name          String?
-  npm           String?
-  pluginId      String?  @unique
-  updatedAt     DateTime @updatedAt
-  website       String?
+  createdAt   DateTime @default(now())
+  description String?
+  github      String?
+  icon        String?
+  id          String   @id @default(cuid())
+  name        String?
+  npm         String?
+  pluginId    String?  @unique
+  updatedAt   DateTime @updatedAt
+  website     String?
 }
 
 model PluginVersion {
   createdAt       DateTime @default(now())
   deprecated      String?
   id              String   @id @default(cuid())
+  isLatest        Boolean?
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?
