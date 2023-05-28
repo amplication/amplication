@@ -12,7 +12,10 @@ import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -59,7 +62,8 @@ export class PluginInstallationService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    protected readonly pluginOrderService: PluginOrderService
+    protected readonly pluginOrderService: PluginOrderService,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     super(blockService);
   }
@@ -81,6 +85,15 @@ export class PluginInstallationService extends BlockTypeService<
       user
     );
 
+    await this.analytics.track({
+      userId: user.account.id,
+      event: EnumEventType.PluginInstall,
+      properties: {
+        pluginId: newPlugin.pluginId,
+        pluginType: "official",
+      },
+    });
+
     return newPlugin;
   }
 
@@ -97,7 +110,19 @@ export class PluginInstallationService extends BlockTypeService<
     args.data.pluginId = installation.pluginId;
     args.data.npm = installation.npm;
 
-    return super.update(args, user);
+    const updated = await super.update(args, user);
+
+    await this.analytics.track({
+      userId: user.account.id,
+      event: EnumEventType.PluginUpdate,
+      properties: {
+        pluginId: updated.pluginId,
+        pluginType: "official",
+        enabled: updated.enabled,
+      },
+    });
+
+    return updated;
   }
 
   async setOrder(args: SetPluginOrderArgs, user: User): Promise<PluginOrder> {
