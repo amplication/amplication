@@ -1,9 +1,4 @@
-import {
-  ConflictException,
-  forwardRef,
-  Inject,
-  Injectable,
-} from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
 import { BlockTypeService } from "../block/blockType.service";
@@ -19,7 +14,6 @@ import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
 import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
 import { ResourceService } from "../resource/resource.service";
-import { USER_ENTITY_NAME } from "../entity/constants";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -108,21 +102,12 @@ export class PluginInstallationService extends BlockTypeService<
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
-    //todo: remove this logic to a function in resource service.
-    const resource = await this.resourceService.findOne({
-      where: {
-        id: args.data.resource.connect.id,
-      },
-    });
+    const { configurations, resource } = args.data;
 
-    if (
-      !resource.entities.find(
-        (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
-      ) &&
-      args.data.configurations["requireAuthenticationEntity"] === "true"
-    ) {
-      throw new ConflictException("Plugin must have an User entity");
-    }
+    await this.resourceService.userEntityValidation(
+      resource.connect.id,
+      configurations
+    );
 
     const newPlugin = await super.create(args, user);
     await this.setOrder(

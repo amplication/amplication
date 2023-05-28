@@ -4,7 +4,12 @@ import {
   Prisma,
   EnumResourceType,
 } from "../../prisma";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
@@ -52,6 +57,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { JsonValue } from "type-fest";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -300,6 +306,31 @@ export class ResourceService {
     return resource;
   }
 
+  async userEntityValidation(
+    resourceId: string,
+    configurations: JsonValue
+  ): Promise<boolean> {
+    const resource = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        entities: true,
+      },
+    });
+
+    if (
+      !resource.entities?.find(
+        (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+      ) &&
+      configurations &&
+      configurations["requireAuthenticationEntity"] === "true"
+    ) {
+      throw new ConflictException("Plugin must have an User entity");
+    }
+    return true;
+  }
+
   /**
    * Create a resource of type "Service" with entities and fields in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
@@ -413,10 +444,15 @@ export class ResourceService {
         const currentPlugin = data.plugins.plugins[index];
 
         currentPlugin.resource = { connect: { id: resource.id } };
-        await this.pluginInstallationService.create(
-          { data: currentPlugin },
-          user
+        const isvValidEntityUser = await this.userEntityValidation(
+          resource.id,
+          currentPlugin.configurations
         );
+        isvValidEntityUser &&
+          (await this.pluginInstallationService.create(
+            { data: currentPlugin },
+            user
+          ));
       }
     }
 
