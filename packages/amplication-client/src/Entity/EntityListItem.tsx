@@ -99,6 +99,8 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
+  const isDeleteButtonDisable = entity.name !== USER_ENTITY;
+
   return (
     <>
       <ConfirmationDialog
@@ -143,7 +145,7 @@ export const EntityListItem = ({
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
-              disabled={true}
+              disabled={true} //todo: change according user entity
             />
           )}
         </div>

@@ -23,6 +23,7 @@ import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
+import usePlugins from "../Plugins/hooks/usePlugins";
 
 type TData = {
   entities: models.Entity[];
@@ -52,6 +53,9 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
+  const { pluginInstallations } = usePlugins(resource);
+
+  console.log({ pluginInstallations });
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
