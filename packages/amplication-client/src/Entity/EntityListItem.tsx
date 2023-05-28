@@ -138,11 +138,12 @@ export const EntityListItem = ({
           )}
 
           <span className="spacer" />
-          {!deleteLoading && entity.name !== USER_ENTITY && (
+          {!deleteLoading && (
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
+              disabled={true}
             />
           )}
         </div>
