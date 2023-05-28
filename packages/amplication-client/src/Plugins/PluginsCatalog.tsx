@@ -20,13 +20,16 @@ type Props = AppRouteProps & {
   }>;
 };
 const DIALOG_CLASS_NAME = "limitation-dialog";
+const USER_ENTITY_NAME = "user";
+const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
+
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
   const { currentResource } = useContext(AppContext);
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
 
   const userEntity = currentResource.entities.find(
-    (entity) => entity.name.toLowerCase() === "user"
+    (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
   );
 
   const {
@@ -44,7 +47,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const { name, pluginId, npm } = plugin;
       const { version, settings, configurations } = pluginVersion;
       const requireAuthenticationEntity = configurations
-        ? configurations["requireAuthenticationEntity"]
+        ? configurations[REQUIRE_AUTH_ENTITY]
         : null;
 
       if (requireAuthenticationEntity === "true" && !userEntity) {
