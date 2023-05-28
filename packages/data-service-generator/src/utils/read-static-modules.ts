@@ -7,6 +7,7 @@ import {
   LoadStaticFilesParams,
 } from "@amplication/code-gen-types";
 import pluginWrapper from "../plugin-wrapper";
+import { getFileEncoding } from "./get-file-encoding";
 
 const filesToFilter = /(\._.*)|(.DS_Store)$/;
 
@@ -47,10 +48,13 @@ export async function readStaticModulesInner({
             module.replace(directory, basePath ? basePath + "/" : "")
           )
       )
-      .map(async (module) => ({
-        path: module.replace(directory, basePath ? basePath + "/" : ""),
-        code: await fs.promises.readFile(module, "utf-8"),
-      }))
+      .map(async (module) => {
+        const encoding = getFileEncoding(module);
+        return {
+          path: module.replace(directory, basePath ? basePath + "/" : ""),
+          code: await fs.promises.readFile(module, encoding),
+        };
+      })
   );
 }
 

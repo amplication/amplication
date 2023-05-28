@@ -96,7 +96,8 @@ export class PluginVersionService extends PluginVersionServiceBase {
       if (!pluginsVersions.length)
         throw new Error("Failed to fetch versions for plugin");
 
-      const insertedPluginVersionArr: PluginVersion[] = [];
+      const insertedPluginVersionArr: Omit<PluginVersion, "id">[] = [];
+
       for await (const versionData of pluginsVersions) {
         const {
           createdAt,
@@ -107,17 +108,6 @@ export class PluginVersionService extends PluginVersionServiceBase {
           pluginIdVersion,
           tarballUrl,
         } = versionData;
-
-        const isPluginVersionExist = await this.findOne({
-          where: {
-            pluginIdVersion,
-          },
-        });
-        if (
-          isPluginVersionExist &&
-          isPluginVersionExist.deprecated === deprecated
-        )
-          continue;
 
         const pluginSettings = await this.getPluginSettings(
           tarballUrl,
@@ -148,7 +138,31 @@ export class PluginVersionService extends PluginVersionServiceBase {
         insertedPluginVersionArr.push(upsertPluginVersion);
       }
 
-      return insertedPluginVersionArr;
+      const newVersions = await this.prisma.pluginVersion.createMany({
+        data: insertedPluginVersionArr,
+        skipDuplicates: true,
+      });
+
+      this.logger.debug("New PluginVersions", newVersions);
+
+      const deprecatedVersionIds = insertedPluginVersionArr
+        .filter((version) => version.deprecated)
+        .map((version) => version.pluginIdVersion);
+
+      const updateVersions = await this.prisma.pluginVersion.updateMany({
+        data: {
+          deprecated: "deprecated",
+          updatedAt: new Date(),
+        },
+        where: {
+          pluginIdVersion: {
+            in: deprecatedVersionIds,
+          },
+        },
+      });
+      this.logger.debug("Updated versions", updateVersions);
+
+      return pluginsVersions;
     } catch (error) {
       this.logger.error("npmPluginsVersions", error, {});
       throw error;

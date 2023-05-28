@@ -34,12 +34,17 @@ export class PullRequestController {
     @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
   ) {
+    const startTime = Date.now();
     const validArgs = plainToInstance(CreatePrRequest.Value, message);
     await validateOrReject(validArgs);
 
     const offset = context.getMessage().offset;
     const topic = context.getTopic();
     const partition = context.getPartition();
+    const eventKey = plainToInstance(
+      CreatePrRequest.Key,
+      context.getMessage().key.toString()
+    );
     const logger = this.logger.child({
       resourceId: validArgs.resourceId,
       buildId: validArgs.newBuildId,
@@ -65,7 +70,9 @@ export class PullRequestController {
       });
 
       const successEvent: CreatePrSuccess.KafkaEvent = {
-        key: null,
+        key: {
+          resourceRepositoryId: eventKey.resourceRepositoryId,
+        },
         value: {
           url: pullRequest,
           gitProvider: validArgs.gitProvider,
@@ -83,7 +90,9 @@ export class PullRequestController {
       });
 
       const failureEvent: CreatePrFailure.KafkaEvent = {
-        key: null,
+        key: {
+          resourceRepositoryId: eventKey.resourceRepositoryId,
+        },
         value: {
           buildId: validArgs.newBuildId,
           gitProvider: validArgs.gitProvider,
@@ -96,5 +105,9 @@ export class PullRequestController {
         failureEvent
       );
     }
+
+    logger.info(`Pull request item processed`, {
+      timeTaken: Date.now() - startTime,
+    });
   }
 }

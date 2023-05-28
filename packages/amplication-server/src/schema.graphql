@@ -169,6 +169,7 @@ type Entity {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   versions(where: EntityVersionWhereInput, orderBy: EntityVersionOrderByInput, skip: Int, take: Int): [EntityVersion!]
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]
@@ -188,6 +189,7 @@ type EntityVersion {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   commit: Commit
   fields(where: EntityFieldWhereInput, orderBy: EntityFieldOrderByInput, skip: Int, take: Int): [EntityField!]!
@@ -454,6 +456,7 @@ type EntityField {
   unique: Boolean!
   searchable: Boolean!
   description: String
+  customAttributes: String
   position: Int
 }
 
@@ -489,6 +492,7 @@ input EntityFieldWhereInput {
   required: BooleanFilter
   unique: BooleanFilter
   searchable: BooleanFilter
+  customAttributes: StringFilter
   description: StringFilter
 }
 
@@ -515,6 +519,7 @@ input EntityFieldOrderByInput {
   required: SortOrder
   unique: SortOrder
   searchable: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
   position: SortOrder
 }
@@ -580,6 +585,7 @@ input EntityVersionWhereInput {
   name: StringFilter
   displayName: StringFilter
   pluralDisplayName: StringFilter
+  customAttributes: StringFilter
   description: StringFilter
   label: StringFilter
   entity: WhereUniqueInput
@@ -593,6 +599,7 @@ input EntityVersionOrderByInput {
   name: SortOrder
   displayName: SortOrder
   pluralDisplayName: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
   label: SortOrder
 }
@@ -604,6 +611,7 @@ input EntityWhereInput {
   name: StringFilter
   displayName: StringFilter
   pluralDisplayName: StringFilter
+  customAttributes: StringFilter
   description: StringFilter
   fields: EntityFieldFilter
   resource: WhereUniqueInput
@@ -622,6 +630,7 @@ input EntityOrderByInput {
   name: SortOrder
   displayName: SortOrder
   pluralDisplayName: SortOrder
+  customAttributes: SortOrder
   description: SortOrder
 }
 
@@ -1322,6 +1331,7 @@ input EntityCreateInput {
   name: String!
   displayName: String!
   pluralDisplayName: String!
+  customAttributes: String
   description: String
   resource: WhereParentIdInput!
 }
@@ -1330,6 +1340,7 @@ input EntityUpdateInput {
   name: String
   displayName: String
   pluralDisplayName: String
+  customAttributes: String
   description: String
 }
 
@@ -1372,6 +1383,7 @@ input EntityFieldCreateInput {
   unique: Boolean!
   searchable: Boolean!
   description: String!
+  customAttributes: String
   entity: WhereParentIdInput!
   position: Int
 }
@@ -1391,6 +1403,7 @@ input EntityFieldUpdateInput {
   unique: Boolean
   searchable: Boolean
   description: String
+  customAttributes: String
   position: Int
 }
 
@@ -1473,7 +1486,7 @@ input CreateGitRepositoryInput {
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
   groupName: String
-  isPrivate: Boolean!
+  isPublic: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
@@ -1487,7 +1500,7 @@ input CreateGitRepositoryBaseInput {
   Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true
   """
   groupName: String
-  isPrivate: Boolean!
+  isPublic: Boolean!
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!

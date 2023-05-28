@@ -117,10 +117,11 @@ jobs:
       branch: ${{ github.ref_name }}
       affected-apps: ${{ needs.nx.outputs.affected-apps }}
       affected-lib: ${{ needs.nx.outputs.affected-lib }}
-      affected-dockerable: ${{ needs.nx.outputs.affected-dockerable }}
-      affected-deployable: ${{ needs.nx.outputs.affected-deployable }}
+      affected-package-container: ${{ needs.nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ needs.nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ needs.nx.outputs.affected-deploy-container }}
     secrets:
-      nx-cloud-access-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
       ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
