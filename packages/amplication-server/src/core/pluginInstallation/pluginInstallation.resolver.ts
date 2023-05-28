@@ -42,17 +42,6 @@ export class PluginInstallationResolver extends BlockTypeResolver(
     super();
   }
 
-  @Mutation(() => [PluginInstallation], {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async createPluginInstallations(
-    @Args() args: CreatePluginInstallationsArgs,
-    @UserEntity() user: User
-  ): Promise<PluginInstallation[] | null> {
-    return await this.service.createMany(args, user);
-  }
-
   @Mutation(() => PluginOrder, {
     nullable: true,
   })
