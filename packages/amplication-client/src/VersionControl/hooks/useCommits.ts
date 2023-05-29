@@ -82,7 +82,6 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         take: MAX_ITEMS_PER_LOADING,
       });
       refetchFromStart && setCommits([]);
-
       setCommitsCount(refetchFromStart ? 1 : commitsCount + 1);
     },
     [refetchCommits, setCommitsCount, commitsCount]
