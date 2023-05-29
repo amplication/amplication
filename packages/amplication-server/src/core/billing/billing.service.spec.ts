@@ -117,7 +117,9 @@ describe("BillingService", () => {
 
     await expect(
       service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
-    ).rejects.toThrow(ValidationError);
+    ).rejects.toThrow(
+      new ValidationError("LimitationError: Allowed services per workspace: 3")
+    );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
