@@ -10,8 +10,8 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
 } from "@stigg/node-server-sdk";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { User } from "../../models";
+import { ValidationError } from "apollo-server-express";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -21,7 +21,6 @@ Stigg.prototype.waitForInitialization = jest
 
 describe("BillingService", () => {
   let service: BillingService;
-  let logger: AmplicationLogger;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -54,7 +53,6 @@ describe("BillingService", () => {
     }).compile();
 
     service = module.get<BillingService>(BillingService);
-    logger = module.get<AmplicationLogger>(AmplicationLogger);
   });
 
   it("should be defined", () => {
@@ -77,7 +75,7 @@ describe("BillingService", () => {
     );
   });
 
-  it("should provide `info` level logs for business logs if the workspace has no entitlement to bypass code generation limitation", async () => {
+  it("should throw exceptions if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const servicesPerWorkspaceLimit = 3;
     const entitiesPerServiceLimit = 5;
@@ -101,10 +99,6 @@ describe("BillingService", () => {
         value: entitiesPerServiceLimit,
       } as NumericEntitlement);
 
-    const spyOnLoggerLog = jest.spyOn(logger, "info");
-
-    spyOnLoggerLog.mockReset();
-
     const user: User = {
       id: "user-id",
       account: {
@@ -121,10 +115,13 @@ describe("BillingService", () => {
       isOwner: true,
     };
 
-    await service.validateSubscriptionPlanLimitationsForWorkspace(
-      workspaceId,
-      user
-    );
+    expect(
+      async () =>
+        await service.validateSubscriptionPlanLimitationsForWorkspace(
+          workspaceId,
+          user
+        )
+    ).toThrow(ValidationError);
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
