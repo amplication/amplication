@@ -115,13 +115,9 @@ describe("BillingService", () => {
       isOwner: true,
     };
 
-    expect(
-      async () =>
-        await service.validateSubscriptionPlanLimitationsForWorkspace(
-          workspaceId,
-          user
-        )
-    ).toThrow(ValidationError);
+    await expect(
+      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+    ).rejects.toThrow(ValidationError);
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
