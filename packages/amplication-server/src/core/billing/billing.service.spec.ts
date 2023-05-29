@@ -75,10 +75,9 @@ describe("BillingService", () => {
     );
   });
 
-  it("should throw exceptions if the workspace has no entitlement to bypass code generation limitation", async () => {
+  it("should throw exceptions on number of services if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const servicesPerWorkspaceLimit = 3;
-    const entitiesPerServiceLimit = 5;
 
     const spyOnServiceGetBooleanEntitlement = jest
       .spyOn(service, "getBooleanEntitlement")
@@ -92,12 +91,6 @@ describe("BillingService", () => {
         hasAccess: false,
         usageLimit: servicesPerWorkspaceLimit,
       } as MeteredEntitlement);
-
-    const spyOnServiceGetNumericEntitlement = jest
-      .spyOn(service, "getNumericEntitlement")
-      .mockResolvedValue({
-        value: entitiesPerServiceLimit,
-      } as NumericEntitlement);
 
     const user: User = {
       id: "user-id",
@@ -137,7 +130,7 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
       workspaceId,
@@ -150,15 +143,55 @@ describe("BillingService", () => {
         hasAccess: false,
       })
     );
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      2,
+  });
+
+  it("should throw exceptions on number of entities per service if the workspace has no entitlement to bypass code generation limitation", async () => {
+    const workspaceId = "id";
+    const entitiesPerServiceLimit = 5;
+
+    const spyOnServiceGetBooleanEntitlement = jest
+      .spyOn(service, "getBooleanEntitlement")
+      .mockResolvedValue({
+        hasAccess: false,
+      } as BooleanEntitlement);
+
+    const spyOnServiceGetNumericEntitlement = jest
+      .spyOn(service, "getNumericEntitlement")
+      .mockResolvedValue({
+        value: entitiesPerServiceLimit,
+      } as NumericEntitlement);
+
+    const user: User = {
+      id: "user-id",
+      account: {
+        id: "account-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        email: "email",
+        firstName: "first-name",
+        lastName: "last-name",
+        password: "password",
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isOwner: true,
+    };
+
+    await expect(
+      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+    ).rejects.toThrow(
+      new ValidationError("LimitationError: Allowed entities per service: 5")
+    );
+
+    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
       workspaceId,
-      BillingFeature.ServicesAboveEntitiesPerServiceLimit
+      BillingFeature.IgnoreValidationCodeGeneration
     );
     await expect(
-      service.getMeteredEntitlement(
+      service.getBooleanEntitlement(
         workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit
+        BillingFeature.IgnoreValidationCodeGeneration
       )
     ).resolves.toEqual(
       expect.objectContaining({
