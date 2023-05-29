@@ -50,7 +50,8 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
       },
     },
     onCompleted: (data) => {
-      if (!data?.commits.length) setDisableLoadMore(true);
+      if (!data?.commits.length || data?.commits.length < MAX_ITEMS_PER_LOADING)
+        setDisableLoadMore(true);
     },
   });
 
@@ -81,6 +82,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
         take: MAX_ITEMS_PER_LOADING,
       });
       refetchFromStart && setCommits([]);
+
       setCommitsCount(refetchFromStart ? 1 : commitsCount + 1);
     },
     [refetchCommits, setCommitsCount, commitsCount]
