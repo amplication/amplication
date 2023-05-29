@@ -66,7 +66,7 @@ import { Logger } from "@amplication/util/logging";
 })
 export class AppModule implements OnApplicationShutdown {
   onApplicationShutdown(signal: string): void {
-    new Logger({ serviceName: SERVICE_NAME, isProduction: true }).debug(
+    new Logger({ component: SERVICE_NAME, isProduction: true }).debug(
       `Application shut down (signal: ${signal})`
     );
   }
