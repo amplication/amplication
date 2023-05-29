@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-build-manager",
   coverageThreshold: {
     global: {
-      branches: 0,
-      lines: 0,
+      branches: 70,
+      lines: 80,
     },
   },
 };

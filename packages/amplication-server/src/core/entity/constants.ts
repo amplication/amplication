@@ -106,6 +106,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
     name: USER_ENTITY_NAME,
     displayName: "User",
     pluralDisplayName: "Users",
+    customAttributes: "",
     description:
       "An automatically created entity to manage users in the service",
     fields: [

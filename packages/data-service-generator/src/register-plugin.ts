@@ -25,9 +25,15 @@ async function* getPluginFuncGenerator(
     let index = 0;
 
     do {
-      const packageName = pluginList[index].npm;
+      const localPackage = pluginList[index].settings?.local
+        ? join("../../../../", pluginList[index].settings?.destPath)
+        : undefined;
+      const packageName = localPackage || pluginList[index].npm;
 
-      const func = await getPlugin(packageName, pluginInstallationPath);
+      const func = await getPlugin(
+        packageName,
+        localPackage ? undefined : pluginInstallationPath
+      );
 
       ++index;
       if (!func.hasOwnProperty("default")) yield EmptyClass;
@@ -45,7 +51,11 @@ async function getPlugin(
   customPath: string | undefined
 ): Promise<any> {
   if (!customPath) {
-    return await import(packageName);
+    try {
+      return await import(packageName);
+    } catch (error) {
+      logger.error(error);
+    }
   }
   const path = join(customPath, packageName);
   if (path) {

@@ -1,8 +1,18 @@
 import { gql } from "@apollo/client";
 
 export const GET_COMMITS = gql`
-  query commits($projectId: String!, $orderBy: CommitOrderByInput) {
-    commits(where: { project: { id: $projectId } }, orderBy: $orderBy) {
+  query commits(
+    $projectId: String!
+    $take: Int!
+    $skip: Int!
+    $orderBy: CommitOrderByInput
+  ) {
+    commits(
+      where: { project: { id: $projectId } }
+      take: $take
+      skip: $skip
+      orderBy: $orderBy
+    ) {
       id
       message
       createdAt

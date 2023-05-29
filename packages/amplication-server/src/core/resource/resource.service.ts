@@ -3,7 +3,6 @@ import {
   GitRepository,
   Prisma,
   EnumResourceType,
-  EnumGitProvider,
 } from "../../prisma";
 import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { isEmpty } from "lodash";
@@ -171,6 +170,7 @@ export class ResourceService {
         const wizardGitRepository = await this.prisma.gitRepository.create({
           data: {
             name: gitRepositoryToCreate.name,
+            groupName: gitRepositoryToCreate.groupName,
             resources: {},
             gitOrganization: {
               connect: { id: gitRepositoryToCreate.gitOrganizationId },
@@ -196,6 +196,7 @@ export class ResourceService {
       const wizardGitRepository = await this.prisma.gitRepository.create({
         data: {
           name: gitRepositoryToCreate.name,
+          groupName: gitRepositoryToCreate.groupName,
           resources: {},
           gitOrganization: {
             connect: { id: gitRepositoryToCreate.gitOrganizationId },
@@ -258,7 +259,7 @@ export class ResourceService {
     user: User,
     wizardType: string = null
   ): Promise<Resource> {
-    const { serviceSettings, gitRepository, dbType, ...rest } = args.data;
+    const { serviceSettings, gitRepository, ...rest } = args.data;
     const resource = await this.createResource(
       {
         data: {
@@ -281,8 +282,7 @@ export class ResourceService {
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
-      serviceSettings,
-      dbType
+      serviceSettings
     );
 
     const project = await this.projectService.findUnique({
@@ -315,7 +315,7 @@ export class ResourceService {
 
     const resource = await this.createService(
       {
-        data: { ...data.resource, dbType: data.dbType },
+        data: data.resource,
       },
       user,
       data.wizardType
@@ -444,7 +444,11 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-
+    const { provider } = await this.gitOrganizationByResource({
+      where: {
+        id: resource.id,
+      },
+    });
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -452,7 +456,7 @@ export class ResourceService {
         category: "Service Wizard",
         wizardType: data.wizardType,
         resourceName: resource.name,
-        gitProvider: EnumGitProvider.Github, // TODO: change it to dynamic variable
+        gitProvider: provider,
         gitOrganizationName: gitRepository?.name,
         repoName: gitRepository?.name,
         graphQlApi: String(serviceSettings.serverSettings.generateGraphQL),

@@ -29,7 +29,4 @@ export class ResourceCreateInput {
 
   @Field(() => ConnectGitRepositoryInput, { nullable: true })
   gitRepository?: ConnectGitRepositoryInput;
-
-  @Field(() => String, { nullable: true })
-  dbType?: string;
 }

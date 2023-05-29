@@ -13,7 +13,7 @@ import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
-import { PUSH_TO_GITHUB_STEP_NAME } from "../../../VersionControl/BuildSteps";
+import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
 
 const className = "create-service-code-generation";
@@ -110,12 +110,16 @@ const CreateServiceCodeGeneration: React.FC<
     }).catch(console.error);
   }, [commit, currentProject.id]);
 
-  const githubUrl = useMemo(() => {
+  const gitUrl = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return null;
     }
     const stepGithub = data.build.action.steps.find(
-      (step) => step.name === PUSH_TO_GITHUB_STEP_NAME
+      (step) =>
+        step.name ===
+        PUSH_TO_GIT_STEP_NAME(
+          resource?.gitRepository?.gitOrganization?.provider
+        )
     );
 
     const log = stepGithub?.logs?.find(
@@ -123,7 +127,7 @@ const CreateServiceCodeGeneration: React.FC<
     );
 
     return log?.meta?.githubUrl || null;
-  }, [data.build.action]);
+  }, [data.build?.action]);
 
   const buildRunning = data?.build?.status === models.EnumBuildStatus.Running;
 
@@ -196,11 +200,11 @@ const CreateServiceCodeGeneration: React.FC<
                 <div
                   className={`${className}__status__completed__description__link`}
                 >
-                  {githubUrl}
+                  {gitUrl}
                 </div>
                 <div />
               </div>
-              <a href={githubUrl} target="docs">
+              <a href={gitUrl} target="docs">
                 <Button
                   type="button"
                   buttonStyle={EnumButtonStyle.Clear}

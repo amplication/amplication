@@ -20,14 +20,32 @@
       "runtimeExecutable": "npx",
       "runtimeArgs": ["nx", "generate-local-code", "data-service-generator"],
       "cwd": "${workspaceRoot}",
+      "outputCapture": "std",
       "env": {}
     },
     {
       "type": "node",
-      "name": "Attach Debugger Server",
+      "name": "Debug Plugin API",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "amplication-plugin-api"],
+      "cwd": "${workspaceRoot}",
+      "outputCapture": "std",
+      "env": {}
+    },
+    {
+      "type": "node",
+      "name": "Attach Amplication Server",
       "request": "attach",
       "sourceMaps": true,
       "port": 7000
+    },
+    {
+      "type": "node",
+      "name": "Attach Amplication PR service",
+      "request": "attach",
+      "sourceMaps": true,
+      "port": 7001
     }
   ]
 }

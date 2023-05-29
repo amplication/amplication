@@ -1,4 +1,4 @@
-import { GitClient } from "./providers/git-client";
+import { GitCli } from "./providers/git-cli";
 
 export enum EnumPullRequestMode {
   Basic = "Basic",
@@ -33,13 +33,64 @@ export interface GitProvidersConfiguration {
   bitBucketConfiguration: BitBucketConfiguration;
 }
 
+export interface OAuthProviderOrganizationProperties
+  extends OAuthTokens,
+    CurrentUser {}
+
+export const isOAuthProviderOrganizationProperties = (
+  properties: unknown
+): properties is OAuthProviderOrganizationProperties => {
+  const castedProperties = properties as OAuthProviderOrganizationProperties;
+  if (
+    !(
+      castedProperties.accessToken !== undefined &&
+      castedProperties.refreshToken !== undefined &&
+      castedProperties.expiresAt !== undefined &&
+      castedProperties.useGroupingForRepositories !== undefined &&
+      castedProperties.username !== undefined
+    )
+  ) {
+    throw new Error(
+      "Missing mandatory param. Bitbucket provider requires OAuth configuration"
+    );
+  }
+  return true;
+};
+
+export interface GitHubProviderOrganizationProperties {
+  installationId: string;
+}
+
+export const isGitHubProviderOrganizationProperties = (
+  properties: unknown
+): properties is GitHubProviderOrganizationProperties => {
+  if (
+    !(
+      (properties as GitHubProviderOrganizationProperties).installationId !==
+      undefined
+    )
+  ) {
+    throw new Error(
+      "Missing mandatory param. Github provider requires installationId"
+    );
+  }
+  return true;
+};
+
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerOrganizationProperties: any;
+  providerOrganizationProperties:
+    | GitHubProviderOrganizationProperties
+    | OAuthProviderOrganizationProperties;
 }
 
 export interface GitProviderConstructorArgs {
   installationId: string;
+}
+
+export interface Pagination {
+  page: number;
+  perPage: number;
 }
 
 export interface RemoteGitOrganization {
@@ -60,13 +111,13 @@ export interface RemoteGitRepository {
   fullName: string | null;
   admin: boolean | null;
   defaultBranch: string;
+  groupName?: string | null;
 }
 
 export interface RemoteGitRepos {
   repos: RemoteGitRepository[];
-  totalRepos: number | null;
-  currentPage: number | null;
-  pageSize: number | null;
+  total: number | null;
+  pagination: Pagination;
 }
 
 export type File = {
@@ -76,7 +127,9 @@ export type File = {
 
 export type UpdateFile = {
   path: string;
-  content: string | null | UpdateFileFn;
+  content: string | null;
+  skipIfExists: boolean;
+  deleted: boolean;
 };
 
 export type UpdateFileFn = ({ exists }: { exists: boolean }) => string | null;
@@ -96,33 +149,39 @@ export interface GitResourceMeta {
 export interface GetRepositoryArgs {
   owner: string;
   repositoryName: string;
-  gitGroupName?: string;
+  groupName?: string;
 }
 
 export interface CreateRepositoryArgs {
   gitOrganization: RemoteGitOrganization;
   owner: string;
   repositoryName: string;
-  isPrivateRepository: boolean;
-  gitGroupName?: string;
+  isPrivate: boolean;
+  groupName?: string;
 }
 
 export interface GetRepositoriesArgs {
-  limit: number;
-  page: number;
-  gitGroupName?: string;
+  pagination: Pagination;
+  groupName?: string;
 }
 
 export interface GetFileArgs {
   owner: string;
   repositoryName: string;
-  baseBranchName?: string;
+  repositoryGroupName?: string;
   path: string;
+  /**
+   * Revision reference of the file to request.
+   * It can be a branch name, commit SHA, git tag.
+   * Default: default branch name HEAD
+   */
+  ref?: string;
 }
 
 export interface CreatePullRequestArgs {
   owner: string;
   repositoryName: string;
+  repositoryGroupName?: string;
   branchName: string;
   commitMessage: string;
   pullRequestTitle: string;
@@ -130,6 +189,9 @@ export interface CreatePullRequestArgs {
   pullRequestMode: EnumPullRequestMode;
   gitResourceMeta: GitResourceMeta;
   files: File[];
+  cloneDirPath: string;
+  resourceId: string;
+  buildId: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {
@@ -142,27 +204,21 @@ export interface CreatePullRequestFromFilesArgs {
   files: UpdateFile[];
 }
 
-export interface GetPullRequestForBranchArgs {
+export interface GitProviderGetPullRequestArgs {
   owner: string;
   repositoryName: string;
+  repositoryGroupName?: string;
   branchName: string;
 }
 
-export interface CreatePullRequestForBranchArgs {
+export interface GitProviderCreatePullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
   defaultBranchName: string;
   pullRequestTitle: string;
   pullRequestBody: string;
-}
-
-export interface CreateCommitArgs {
-  owner: string;
-  repositoryName: string;
-  commitMessage: string;
-  branchName: string;
-  files: UpdateFile[];
+  repositoryGroupName?: string;
 }
 
 export interface LinksMetadata {
@@ -180,7 +236,7 @@ export interface CurrentUser {
   useGroupingForRepositories: boolean;
 }
 
-export interface OAuthData {
+export interface OAuthTokens {
   accessToken: string;
   refreshToken: string;
   tokenType: string;
@@ -194,9 +250,9 @@ export interface OAuth2FlowArgs {
 }
 
 export interface PaginatedGitGroup {
-  size: number;
+  total: number;
   page: number;
-  pagelen: number;
+  pageSize: number;
   next: string;
   previous: string;
   groups: GitGroup[];
@@ -204,22 +260,24 @@ export interface PaginatedGitGroup {
 
 export interface GitGroup {
   id: string;
+  displayName: string;
   name: string;
-  slug: string;
 }
 
 export interface GetBranchArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
+  repositoryGroupName?: string;
 }
 
 export interface CreateBranchIfNotExistsArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  gitClient: GitClient;
+  gitCli: GitCli;
   defaultBranch: string;
+  repositoryGroupName?: string;
 }
 
 export interface CreateBranchArgs {
@@ -227,28 +285,28 @@ export interface CreateBranchArgs {
   repositoryName: string;
   branchName: string;
   pointingSha: string;
+  repositoryGroupName?: string;
 }
 
 export interface Commit {
   sha: string;
 }
 
-export interface GitUser {
+export interface Bot {
   id: string;
   login: string;
+  gitAuthor: string;
 }
 
 export interface CloneUrlArgs {
   owner: string;
   repositoryName: string;
-  token: string;
+  repositoryGroupName?: string;
 }
 
 export interface PreCommitProcessArgs {
-  gitClient: GitClient;
+  gitCli: GitCli;
   branchName: string;
-  owner: string;
-  repositoryName: string;
 }
 
 export type PreCommitProcessResult = Promise<{
@@ -256,13 +314,15 @@ export type PreCommitProcessResult = Promise<{
 }>;
 
 export interface PostCommitProcessArgs {
-  diffPath: string;
-  gitClient: GitClient;
+  diffFolder: string;
+  diff: string;
+  gitCli: GitCli;
 }
 
 export interface FindOneIssueInput {
   owner: string;
   repositoryName: string;
+  repositoryGroupName?: string;
   issueNumber: number;
 }
 

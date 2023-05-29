@@ -34,6 +34,7 @@ import { kebabCase } from "lodash";
 import { Plugin } from "../../Plugins/hooks/usePlugins";
 import { useQuery } from "@apollo/client";
 import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
+import ImgSvg from "./wizard-pages/ImgSvg";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -155,6 +156,9 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
     stepName: "CreateServiceNextSteps",
   },
 ];
+
+const PLUGIN_LOGO_BASE_URL =
+  "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
 const AUTH_PLUGINS = [
@@ -197,6 +201,19 @@ const CreateServiceWizard: React.FC<Props> = ({
   const [currentBuild, setCurrentBuild] = useState<models.Build>(
     createResult?.build || null
   );
+
+  const PostgresPng = ImgSvg({
+    image: `${PLUGIN_LOGO_BASE_URL}db-postgres.png`,
+    imgSize: "large",
+  });
+  const MongoPng = ImgSvg({
+    image: `${PLUGIN_LOGO_BASE_URL}db-mongo.png`,
+    imgSize: "large",
+  });
+  const MysqlPng = ImgSvg({
+    image: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
+    imgSize: "large",
+  });
 
   const { data: pluginsVersionData } = useQuery<{
     plugins: Plugin[];
@@ -354,6 +371,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         generateRestApi,
         gitOrganizationId,
         gitRepositoryName,
+        groupName,
         isOverrideGitRepository,
         authType,
         databaseType,
@@ -379,6 +397,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           currentGitRepository = {
             name: gitRepositoryName,
             gitOrganizationId: gitOrganizationId,
+            groupName,
             resourceId: "",
             isOverrideGitRepository: isOverrideGitRepository,
           };
@@ -400,7 +419,6 @@ const CreateServiceWizard: React.FC<Props> = ({
           authType
           // gitOrganizationName
         );
-
         createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");
@@ -445,6 +463,9 @@ const CreateServiceWizard: React.FC<Props> = ({
           trackWizardPageEvent={trackWizardPageEvent}
         />
         <CreateServiceDatabase
+          PostgresPng={PostgresPng}
+          MongoPng={MongoPng}
+          MysqlPng={MysqlPng}
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
         />

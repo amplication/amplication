@@ -8,9 +8,13 @@ export default function GitSyncNotes() {
       <span className={`${CLASS_NAME}__notice__title`}>Please note:</span>
       <ul>
         <li>
-          <Icon icon="check_circle" />
+          <Icon icon="check_square" size="xsmall" />
           You can connect multiple services to the same repository, next you
           will see the option to select the destination folder
+        </li>
+        <li>
+          <Icon icon="check_square" size="xsmall" />
+          The selected repository must not be empty
         </li>
       </ul>
     </div>

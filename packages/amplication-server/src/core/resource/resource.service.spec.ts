@@ -5,12 +5,7 @@ import {
   INVALID_DELETE_PROJECT_CONFIGURATION,
   ResourceService,
 } from "./resource.service";
-import {
-  PrismaService,
-  EnumResourceType,
-  GitRepository,
-  Prisma,
-} from "../../prisma";
+import { PrismaService, EnumResourceType, Prisma } from "../../prisma";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { QueryMode } from "../../enums/QueryMode";
@@ -20,6 +15,8 @@ import {
   Commit,
   EntityVersion,
   Project,
+  GitRepository,
+  GitOrganization,
 } from "../../models";
 import { Block } from "../../models/Block";
 import { Entity } from "../../models/Entity";
@@ -94,12 +91,25 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
   },
 };
 
+const EXAMPLE_GIT_ORGANISATION: GitOrganization = {
+  id: "",
+  provider: "Github",
+  name: "",
+  installationId: "",
+  createdAt: undefined,
+  updatedAt: undefined,
+  type: "User",
+  useGroupingForRepositories: false,
+  providerProperties: "",
+};
 const EXAMPLE_GIT_REPOSITORY: GitRepository = {
   id: "exampleGitRepositoryId",
   name: "repositoryTest",
   gitOrganizationId: "exampleGitOrganizationId",
   createdAt: new Date(),
   updatedAt: new Date(),
+  gitOrganization: EXAMPLE_GIT_ORGANISATION,
+  groupName: "",
 };
 
 const SAMPLE_SERVICE_DATA: ResourceCreateInput = {
@@ -132,6 +142,7 @@ const EXAMPLE_RESOURCE: Resource = {
       commitId: "exampleCommitId",
     },
   ],
+  gitRepository: EXAMPLE_GIT_REPOSITORY,
 };
 
 const EXAMPLE_RESOURCE_MESSAGE_BROKER: Resource = {
@@ -200,6 +211,7 @@ const EXAMPLE_ENTITY_ID = "exampleEntityId";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "ExampleCustomAttributes";
 const EXAMPLE_ENTITY_FIELD_NAME = "exampleEntityFieldName";
 
 const EXAMPLE_BLOCK_ID = "exampleBlockId";
@@ -213,6 +225,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -240,6 +253,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   required: false,
   unique: false,
   searchable: false,
+  customAttributes: "ExampleCustomAttributes",
 };
 
 const EXAMPLE_CHANGED_ENTITY: PendingChange = {
@@ -273,6 +287,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {

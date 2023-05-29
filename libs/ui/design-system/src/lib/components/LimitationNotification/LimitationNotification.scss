@@ -6,11 +6,12 @@
   border-radius: 8px;
   color: var(--black80);
   min-height: 42px;
+}
 
-  .upgrade-link {
-    color: #53dbee;
-    text-decoration: underline;
-    font-weight: 500;
-    margin-left: 4px;
-  }
+.upgrade-link,
+.contact-us-link {
+  color: #53dbee;
+  text-decoration: underline;
+  font-weight: 500;
+  margin-left: 4px;
 }

@@ -48,6 +48,11 @@ export class EntityVersionWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  customAttributes?: StringFilter | null;
+
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   description?: StringFilter | null;
 
   @Field(() => StringFilter, {

@@ -24,6 +24,7 @@ export interface Props extends Omit<SelectMenuProps, "title"> {
   icon?: string;
   openIcon?: string;
   buttonClassName?: string;
+  selectRef?: React.Ref<HTMLDetailsElement> | undefined;
 }
 
 const SelectButton: React.FC<Props> = ({
@@ -58,6 +59,7 @@ export const SelectMenu = ({
   title,
   icon,
   openIcon,
+  selectRef,
   ...rest
 }: Props) => {
   if (disabled) {
@@ -77,6 +79,7 @@ export const SelectMenu = ({
     return (
       <PrimerSelectMenu
         className={classNames("select-menu", className)}
+        {...(selectRef ? { ref: selectRef } : {})}
         {...rest}
       >
         <SelectButton

@@ -1,10 +1,13 @@
 import { FormikProps } from "formik";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { EnumGitProvider } from "../../../models";
 
 export interface ResourceSettings {
   serviceName: string;
   gitOrganizationId: string;
   gitRepositoryName: string;
+  groupName: string;
+  gitProvider: EnumGitProvider;
   isOverrideGitRepository: boolean;
   generateAdminUI: boolean;
   generateGraphQL: boolean;
