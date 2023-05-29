@@ -148,12 +148,20 @@ describe("BillingService", () => {
   it("should throw exceptions on number of entities per service if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const entitiesPerServiceLimit = 5;
+    const servicesPerWorkspaceLimit = 3;
 
     const spyOnServiceGetBooleanEntitlement = jest
       .spyOn(service, "getBooleanEntitlement")
       .mockResolvedValue({
         hasAccess: false,
       } as BooleanEntitlement);
+
+    const spyOnServiceGetMeteredEntitlement = jest
+      .spyOn(service, "getMeteredEntitlement")
+      .mockResolvedValue({
+        hasAccess: true,
+        usageLimit: servicesPerWorkspaceLimit,
+      } as MeteredEntitlement);
 
     const spyOnServiceGetNumericEntitlement = jest
       .spyOn(service, "getNumericEntitlement")
@@ -196,6 +204,20 @@ describe("BillingService", () => {
     ).resolves.toEqual(
       expect.objectContaining({
         hasAccess: false,
+      })
+    );
+
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
+      1,
+      workspaceId,
+      BillingFeature.Services
+    );
+    await expect(
+      service.getMeteredEntitlement(workspaceId, BillingFeature.Services)
+    ).resolves.toEqual(
+      expect.objectContaining({
+        hasAccess: true,
       })
     );
 
