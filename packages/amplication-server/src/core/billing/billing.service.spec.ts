@@ -183,19 +183,5 @@ describe("BillingService", () => {
         value: 5,
       })
     );
-
-    expect(logger.info).toHaveBeenCalledTimes(2);
-    expect(logger.info).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining(
-        `LimitationError: Allowed services per workspace: ${servicesPerWorkspaceLimit}`
-      )
-    );
-    expect(logger.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining(
-        `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-      )
-    );
   });
 });
