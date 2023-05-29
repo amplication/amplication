@@ -17,7 +17,6 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
-import useCommit from "./hooks/useCommits";
 
 const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
@@ -63,9 +62,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
     setPendingChangesError,
     currentWorkspace,
     currentProject,
+    commitUtils,
   } = useContext(AppContext);
-
-  const { refetchCommits } = useCommit();
 
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
@@ -85,7 +83,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
-      refetchCommits();
+      commitUtils.refetchCommitsData(true);
       const path = commitPath(
         currentWorkspace?.id,
         currentProject?.id,

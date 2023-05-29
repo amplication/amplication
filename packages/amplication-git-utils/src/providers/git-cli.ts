@@ -3,29 +3,56 @@ import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { join } from "node:path";
 import { existsSync } from "node:fs";
+import { ILogger } from "@amplication/util/logging";
+import { GitCliOptions } from "./git-cli.types";
 
 export class GitCli {
   private git: SimpleGit;
+  private isCloned = false;
 
   private gitAuthorUserName = "amplication[bot]";
   private gitAuthorUserEmail = "bot@amplication.com";
   public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
   private gitConflictsResolverAuthor = `amplication[branch whisperer] <${this.gitAuthorUserEmail}>`;
 
-  constructor(private readonly repositoryDir: string) {
+  constructor(
+    private readonly logger: ILogger,
+    private readonly options: GitCliOptions
+  ) {
     this.git = simpleGit({
       config: [
         `user.name=${this.gitAuthorUserName}`,
         `user.email=${this.gitAuthorUserEmail}`,
         `push.autoSetupRemote=true`,
+        `safe.directory=${options.repositoryDir}`,
       ],
     });
   }
 
-  async clone(cloneUrl: string): Promise<void> {
-    await this.git.clone(cloneUrl, this.repositoryDir, ["--no-checkout"]);
-    await this.git.cwd(this.repositoryDir);
+  async clone(): Promise<void> {
+    if (!this.isCloned) {
+      await this.git.clone(this.options.originUrl, this.options.repositoryDir, [
+        "--no-checkout",
+      ]);
+      this.isCloned = true;
+    }
+    await this.git.cwd(this.options.repositoryDir);
     return;
+  }
+
+  async deleteRepositoryDir() {
+    if (this.isCloned || existsSync(this.options.repositoryDir)) {
+      await rm(this.options.repositoryDir, {
+        recursive: true,
+        force: true,
+        maxRetries: 3,
+      }).catch((error) => {
+        this.logger.error(`Failed to delete repository dir`, error, {
+          repositoryDir: this.options.repositoryDir,
+        });
+      });
+      this.isCloned = false;
+    }
   }
 
   async cherryPick(sha: string) {
@@ -74,7 +101,7 @@ export class GitCli {
 
     await Promise.all(
       files.map(async (file) => {
-        const filePath = join(this.repositoryDir, file.path);
+        const filePath = join(this.options.repositoryDir, file.path);
         const fileParentDir = filePath.split("/").slice(0, -1).join("/");
 
         if (file.deleted) {
@@ -95,9 +122,16 @@ export class GitCli {
     );
 
     await this.git.add(["."]);
-    const { commit: commitSha } = await this.git.commit(message);
-    await this.git.push();
-    return commitSha;
+
+    const status = await this.git.status();
+    if (status.staged.length !== 0) {
+      const { commit: commitSha } = await this.git.commit(message);
+      await this.git.push();
+      return commitSha;
+    } else {
+      this.logger.warn(`Trying to commit empty changeset`, { status });
+    }
+    return "";
   }
 
   async reset(options: string[], mode: ResetMode = ResetMode.HARD) {

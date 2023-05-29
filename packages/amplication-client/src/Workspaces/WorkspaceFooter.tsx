@@ -7,14 +7,13 @@ import { AppContext } from "../context/appContext";
 import GitRepoDetails from "../Resource/git/GitRepoDetails";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { PUSH_TO_GIT_STEP_NAME } from "../VersionControl/BuildSteps";
-import useCommit from "../VersionControl/hooks/useCommits";
 import "./WorkspaceFooter.scss";
-import { EnumGitProvider } from "../models";
+import { Commit, EnumGitProvider } from "../models";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 const CLASS_NAME = "workspace-footer";
 
-const WorkspaceFooter: React.FC<unknown> = () => {
+const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
   const {
     currentWorkspace,
     currentProject,
@@ -25,8 +24,6 @@ const WorkspaceFooter: React.FC<unknown> = () => {
     projectConfigurationResource,
     gitRepositoryOrganizationProvider,
   } = useContext(AppContext);
-
-  const { lastCommit } = useCommit();
 
   const lastResourceBuild = useMemo(() => {
     if (!lastCommit) return null;

@@ -6,6 +6,7 @@ import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { BuildManagerNotifier } from "./notify-build-manager";
 import { logger as internalLogger } from "./logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
+import { getFileEncoding } from "./utils/get-file-encoding";
 
 export const AMPLICATION_MODULES = "amplication_modules";
 
@@ -27,7 +28,11 @@ const writeModules = async (
     const filePath = join(destination, module.path);
     await mkdir(dirname(filePath), { recursive: true });
     try {
-      await writeFile(filePath, module.code, { flag: "wx" });
+      const encoding = getFileEncoding(filePath);
+      await writeFile(filePath, module.code, {
+        encoding: encoding,
+        flag: "wx",
+      });
     } catch (error) {
       if (error.code === "EEXIST") {
         internalLogger.warn(`File ${filePath} already exists`);

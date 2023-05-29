@@ -31,6 +31,7 @@ const EXAMPLE_NAME = "exampleName";
 const EXAMPLE_DESCRIPTION = "exampleDescription";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
 const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "exampleCustomAttributes";
 
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -73,6 +74,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_RESOURCE: Resource = {
@@ -113,6 +115,7 @@ const FIND_ONE_RESOURCE_QUERY = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
       }
       builds {
         id
@@ -146,6 +149,7 @@ const FIND_MANY_ENTITIES_QUERY = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
       }
     }
   }
@@ -200,6 +204,7 @@ const CREATE_SERVICE_MUTATION = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
       }
       builds {
         id
@@ -239,6 +244,7 @@ const DELETE_RESOURCE_MUTATION = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
       }
       builds {
         id
@@ -278,6 +284,7 @@ const UPDATE_RESOURCE_MUTATION = gql`
         name
         displayName
         pluralDisplayName
+        customAttributes
       }
       builds {
         id

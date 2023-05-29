@@ -1,4 +1,4 @@
-name: Reusable Deployment template
+name: Reusable Deployment Container template
 
 on:
   workflow_call:
@@ -11,6 +11,10 @@ on:
         type: string
         description: Project (amplication application component) to deploy.
         required: true
+      deploy-type:
+        type: string
+        description: Deployment type, valid options are 'container' or 'static'.
+        required: true
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -18,14 +22,14 @@ on:
         required: true
 
 jobs:
-  deployment:
-    name: Deployment
+  deployment-container:
+    name: Deployment container
+    if: ${{ inputs.deploy-type == 'container' }}
     environment:
       name: ${{ inputs.environment-name }}
       url: ${{ vars.AMPLICATION_URL }}
     runs-on: ubuntu-20.04
     steps:
-      # currently a user is used, we want to switch over to assuming a role through GitHub OIDC 
       - name: AWS Credentials
         uses: aws-actions/configure-aws-credentials@v1-node16
         with:
@@ -51,7 +55,7 @@ jobs:
 
           if [[ "$project" == "build-manager" ]];
           then
-            kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}-dsg
+            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}-dsg"
           else
-            kubectl rollout restart deployments/$project -n ${{ inputs.environment-name }}
+            kubectl rollout restart deployments/$project -n "${{ inputs.environment-name }}"
           fi;
