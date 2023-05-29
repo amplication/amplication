@@ -158,9 +158,13 @@ describe("BillingService", () => {
 
     const spyOnServiceGetMeteredEntitlement = jest
       .spyOn(service, "getMeteredEntitlement")
-      .mockResolvedValue({
+      .mockResolvedValueOnce({
         hasAccess: true,
         usageLimit: servicesPerWorkspaceLimit,
+      } as MeteredEntitlement)
+      .mockResolvedValueOnce({
+        hasAccess: false,
+        usageLimit: entitiesPerServiceLimit,
       } as MeteredEntitlement);
 
     const spyOnServiceGetNumericEntitlement = jest
@@ -207,18 +211,16 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
       workspaceId,
       BillingFeature.Services
     );
-    await expect(
-      service.getMeteredEntitlement(workspaceId, BillingFeature.Services)
-    ).resolves.toEqual(
-      expect.objectContaining({
-        hasAccess: true,
-      })
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
+      2,
+      workspaceId,
+      BillingFeature.ServicesAboveEntitiesPerServiceLimit
     );
 
     expect(spyOnServiceGetNumericEntitlement).toHaveBeenCalledTimes(1);
