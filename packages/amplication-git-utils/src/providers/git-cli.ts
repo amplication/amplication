@@ -95,7 +95,7 @@ export class GitCli {
    * @see https://git-scm.com/docs/git-diff
    */
   async diff(ref: string) {
-    return this.git.diff(["--full-index", ...ref]);
+    return this.git.diff(["--full-index", ref]);
   }
 
   async commit(
