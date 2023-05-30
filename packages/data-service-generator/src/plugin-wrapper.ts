@@ -90,7 +90,12 @@ const pluginWrapper: PluginWrapper = async (
         )
       : defaultBehaviorModules;
 
-    await context.modules.merge(finalModules);
+    // Upsert all the final modules into the context.modules
+    // ModuleMap.merge is not used because it would log a warning for each module
+    for (const module of finalModules.modules()) {
+      context.modules.replace(module, module);
+    }
+
     return finalModules;
   } catch (error) {
     const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;
