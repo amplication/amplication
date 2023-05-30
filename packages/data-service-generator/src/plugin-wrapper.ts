@@ -1,14 +1,15 @@
 import {
   EventNames,
-  Module,
   EventParams,
   PluginAfterEvent,
   PluginBeforeEvent,
+  ModuleMap,
 } from "@amplication/code-gen-types";
+import util from "node:util";
 import DsgContext from "./dsg-context";
 
 export type PluginWrapper = (
-  func: (...args: any) => Module[] | Promise<Module[]>,
+  func: (...args: any) => ModuleMap | Promise<ModuleMap>,
   event: EventNames,
   ...args: any
 ) => any;
@@ -23,20 +24,28 @@ const beforeEventsPipe =
 
 const afterEventsPipe =
   (...fns: PluginAfterEvent<EventParams>[]) =>
-  (context: DsgContext, eventParams: EventParams, modules: Module[]) =>
+  (context: DsgContext, eventParams: EventParams, modules: ModuleMap) =>
     fns.reduce(
       async (res, fn) => fn(context, eventParams, await res),
       Promise.resolve(modules)
     );
 
+/**
+ * DSG default behavior
+ * @param context
+ * @param func
+ * @param beforeFuncResults
+ * @returns
+ */
 const defaultBehavior = async (
   context: DsgContext,
   func: (...args: any) => any,
   beforeFuncResults: any
-) => {
-  if (context.utils.skipDefaultBehavior) return [];
+): Promise<ModuleMap> => {
+  if (context.utils.skipDefaultBehavior)
+    return new ModuleMap(DsgContext.getInstance.logger);
 
-  return Object.prototype.toString.call(func) === "[object AsyncFunction]"
+  return util.types.isAsyncFunction(func)
     ? await func(beforeFuncResults)
     : func(beforeFuncResults);
 };
@@ -51,7 +60,7 @@ const pluginWrapper: PluginWrapper = async (
   func,
   event,
   args
-): Promise<Module[]> => {
+): Promise<ModuleMap> => {
   const context = DsgContext.getInstance;
 
   try {
@@ -81,7 +90,12 @@ const pluginWrapper: PluginWrapper = async (
         )
       : defaultBehaviorModules;
 
-    context.modules.push(finalModules);
+    // Upsert all the final modules into the context.modules
+    // ModuleMap.merge is not used because it would log a warning for each module
+    for (const module of finalModules.modules()) {
+      context.modules.replace(module, module);
+    }
+
     return finalModules;
   } catch (error) {
     const friendlyErrorMessage = `Failed to execute plugin event ${event}. ${error.message}`;

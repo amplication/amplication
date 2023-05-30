@@ -98,7 +98,7 @@ describe("GitClientService", () => {
       });
 
       expect(mockedGitLog).toBeCalledTimes(2);
-      expect(mockedGitDiff).toBeCalledWith(["sghfsjfdsfd34234"]);
+      expect(mockedGitDiff).toBeCalledWith("sghfsjfdsfd34234");
     });
   });
 
@@ -135,7 +135,7 @@ describe("GitClientService", () => {
       });
 
       expect(mockedGitLog).toBeCalledTimes(1);
-      expect(mockedGitDiff).toBeCalledWith(["sghfsjfdsfd34234"]);
+      expect(mockedGitDiff).toBeCalledWith("sghfsjfdsfd34234");
     });
 
     it("should not call the gitlog for author amplication[bot] (or amplication provider integration)", async () => {

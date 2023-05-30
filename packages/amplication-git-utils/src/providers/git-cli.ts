@@ -88,8 +88,14 @@ export class GitCli {
       .clean(CleanOptions.FORCE);
   }
 
-  async diff(ref: string[]) {
-    return this.git.diff(ref);
+  /**
+   * Returns the diff between the current branch and the given ref
+   * @param ref reference to compare to
+   * @returns diff between the current branch and the given ref
+   * @see https://git-scm.com/docs/git-diff
+   */
+  async diff(ref: string) {
+    return this.git.diff(["--full-index", ref]);
   }
 
   async commit(
@@ -143,7 +149,7 @@ export class GitCli {
   }
 
   async applyPatch(patches: string[], options?: string[]) {
-    options = options ?? ["--3way", "--whitespace=nowarn"];
+    options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
     await this.git
       .applyPatch(patches, options)
       .commit("Amplication merge conflicts auto-resolution", undefined, {
