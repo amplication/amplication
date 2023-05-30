@@ -11,6 +11,7 @@ import {
   Module,
   CreateEntityModuleParams,
   CreateEntityModuleBaseParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -36,7 +37,7 @@ export async function createModules(
   entityServiceModule: string,
   entityControllerModule: string | undefined,
   entityResolverModule: string | undefined
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const moduleBaseId = createBaseModuleId(entityType);
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
@@ -66,8 +67,9 @@ export async function createModules(
     EXPORT_ARRAY: importArray,
   };
 
-  return [
-    ...(await pluginWrapper(createModule, EventNames.CreateEntityModule, {
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.mergeMany([
+    await pluginWrapper(createModule, EventNames.CreateEntityModule, {
       entityName,
       entityType,
       entityServiceModule,
@@ -79,17 +81,14 @@ export async function createModules(
       resolverId,
       template: moduleTemplate,
       templateMapping: moduleTemplateMapping,
-    })),
-    ...(await pluginWrapper(
-      createBaseModule,
-      EventNames.CreateEntityModuleBase,
-      {
-        entityName,
-        template: moduleBaseTemplate,
-        templateMapping: moduleBaseTemplateMapping,
-      }
-    )),
-  ];
+    }),
+    await pluginWrapper(createBaseModule, EventNames.CreateEntityModuleBase, {
+      entityName,
+      template: moduleBaseTemplate,
+      templateMapping: moduleBaseTemplateMapping,
+    }),
+  ]);
+  return moduleMap;
 }
 
 async function createModule({
@@ -103,7 +102,7 @@ async function createModule({
   resolverId,
   template,
   templateMapping,
-}: CreateEntityModuleParams): Promise<Module[]> {
+}: CreateEntityModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.module.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
@@ -155,19 +154,21 @@ async function createModule({
   removeESLintComments(template);
   removeTSClassDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 async function createBaseModule({
   entityName,
   template,
   templateMapping,
-}: CreateEntityModuleBaseParams): Promise<Module[]> {
+}: CreateEntityModuleBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.module.base.ts`;
 
@@ -178,12 +179,14 @@ async function createBaseModule({
   removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 function createModuleId(entityType: string): namedTypes.Identifier {
