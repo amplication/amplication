@@ -18,6 +18,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
+import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 import { User } from "../../models";
@@ -297,8 +298,6 @@ export class BillingService {
         if (!servicesEntitlement.hasAccess) {
           const message = `Allowed services per workspace: ${servicesEntitlement.usageLimit}`;
 
-          this.logger.info(`LimitationError: ${message}`);
-
           await this.analytics.track({
             userId: currentUser.account.id,
             properties: {
@@ -307,6 +306,8 @@ export class BillingService {
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -323,10 +324,7 @@ export class BillingService {
             );
 
           const entitiesPerServiceLimit = entitiesPerServiceEntitlement.value;
-
           const message = `Allowed entities per service: ${entitiesPerServiceLimit}`;
-
-          this.logger.info(`LimitationError: ${message}`);
 
           await this.analytics.track({
             userId: currentUser.account.id,
@@ -336,6 +334,8 @@ export class BillingService {
             },
             event: EnumEventType.SubscriptionLimitPassed,
           });
+
+          throw new ValidationError(`LimitationError: ${message}`);
         }
       }
     }
