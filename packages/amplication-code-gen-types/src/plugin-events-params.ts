@@ -1,16 +1,15 @@
-import { namedTypes } from "ast-types";
+import type { namedTypes } from "ast-types";
 import {
   DTOs,
   Entity,
   EntityField,
   EntityLookupField,
   EnumDataType,
-  Module,
   ModuleMap,
   NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import {
+import type {
   Generator,
   DataSource,
   ScalarField,
