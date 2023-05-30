@@ -9,6 +9,7 @@ import {
   EntityDTOs,
   EventNames,
   CreateDTOsParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { getEnumFields } from "../../utils/entity";
 import { createEnumName } from "../prisma/create-prisma-schema-fields";
@@ -30,8 +31,9 @@ import { createCreateNestedManyDTOs } from "./dto/nested-input-dto/create-nested
 import { createUpdateManyWithoutInputDTOs } from "./dto/nested-input-dto/update-nested";
 import { createEntityListRelationFilter } from "./dto/graphql/entity-list-relation-filter/create-entity-list-relation-filter";
 import pluginWrapper from "../../plugin-wrapper";
+import DsgContext from "../../dsg-context";
 
-export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
+export async function createDTOModules(dtos: DTOs): Promise<ModuleMap> {
   return pluginWrapper(createDTOModulesInternal, EventNames.CreateDTOs, {
     dtos,
   });
@@ -41,17 +43,28 @@ export async function createDTOModules(dtos: DTOs): Promise<Module[]> {
  * creating all the DTOs files in the base (only the DTOs)
  *
  */
-export function createDTOModulesInternal({ dtos }: CreateDTOsParams): Module[] {
+export async function createDTOModulesInternal({
+  dtos,
+}: CreateDTOsParams): Promise<ModuleMap> {
   const dtoNameToPath = getDTONameToPath(dtos);
-  return Object.values(dtos).flatMap((entityDTOs) =>
-    Object.values(entityDTOs).map((dto) => {
-      const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
-      if (isEnumDTO) {
-        return createEnumDTOModule(dto, dtoNameToPath);
-      }
-      return createDTOModule(dto, dtoNameToPath);
-    })
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+
+  const entityDTOs = Object.values(dtos).flatMap((entityDTOs) =>
+    Object.values(entityDTOs)
   );
+
+  for (const dto of entityDTOs) {
+    const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
+    let module: Module;
+    if (isEnumDTO) {
+      module = createEnumDTOModule(dto, dtoNameToPath);
+    } else {
+      module = createDTOModule(dto, dtoNameToPath);
+    }
+
+    await moduleMap.set(module);
+  }
+  return moduleMap;
 }
 
 export function getDTONameToPath(dtos: DTOs): Record<string, string> {

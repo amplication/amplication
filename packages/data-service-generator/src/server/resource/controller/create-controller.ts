@@ -20,6 +20,7 @@ import {
   CreateEntityControllerBaseParams,
   CreateEntityControllerToManyRelationMethodsParams,
   EnumEntityAction,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -67,7 +68,7 @@ export async function createControllerModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { appInfo, DTOs } = DsgContext.getInstance;
   const { settings } = appInfo;
@@ -123,9 +124,9 @@ export async function createControllerModules(
 
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
-
-  return [
-    ...(await pluginWrapper(
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.mergeMany([
+    await pluginWrapper(
       createControllerModule,
       EventNames.CreateEntityController,
       {
@@ -136,8 +137,8 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
       }
-    )),
-    ...(await pluginWrapper(
+    ),
+    await pluginWrapper(
       createControllerBaseModule,
       EventNames.CreateEntityControllerBase,
       {
@@ -150,8 +151,10 @@ export async function createControllerModules(
         controllerBaseId,
         serviceId,
       }
-    )),
-  ];
+    ),
+  ]);
+
+  return moduleMap;
 }
 
 async function createControllerModule({
@@ -161,7 +164,7 @@ async function createControllerModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerParams): Promise<Module[]> {
+}: CreateEntityControllerParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
@@ -186,12 +189,14 @@ async function createControllerModule({
   removeTSInterfaceDeclares(template);
   removeTSClassDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 async function createControllerBaseModule({
@@ -203,7 +208,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerBaseParams): Promise<Module[]> {
+}: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.base.ts`;
@@ -296,12 +301,14 @@ async function createControllerBaseModule({
   removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
-  return [
-    {
-      path: moduleBasePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: moduleBasePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 export function createControllerId(entityType: string): namedTypes.Identifier {
@@ -370,7 +377,7 @@ async function createToManyRelationMethods(
 
 async function createToManyRelationMethodsInternal(
   eventParams: CreateEntityControllerToManyRelationMethodsParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const { toManyFile, toManyMapping, entity, field } = eventParams;
   const { relatedEntity } = field.properties;
 
@@ -410,5 +417,5 @@ async function createToManyRelationMethodsInternal(
 
   eventParams.methods = await getMethods(classDeclaration);
 
-  return [];
+  return new ModuleMap(DsgContext.getInstance.logger);
 }

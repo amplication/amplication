@@ -1,7 +1,7 @@
 import * as path from "path";
 import { paramCase } from "param-case";
 import { plural } from "pluralize";
-import { Module, EventNames } from "@amplication/code-gen-types";
+import { EventNames, ModuleMap } from "@amplication/code-gen-types";
 import { formatCode } from "@amplication/code-gen-utils";
 import { readStaticModules } from "../utils/read-static-modules";
 import { createAppModule } from "./app/create-app";
@@ -28,7 +28,7 @@ const API_PATHNAME = "/api";
 /**
  * responsible of the Admin ui modules generation
  */
-export function createAdminModules(): Promise<Module[]> {
+export function createAdminModules(): Promise<ModuleMap> {
   return pluginWrapper(
     createAdminModulesInternal,
     EventNames.CreateAdminUI,
@@ -36,7 +36,7 @@ export function createAdminModules(): Promise<Module[]> {
   );
 }
 
-async function createAdminModulesInternal(): Promise<Module[]> {
+async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const {
     appInfo,
@@ -80,7 +80,7 @@ async function createAdminModulesInternal(): Promise<Module[]> {
   const publicFilesModules = await createPublicFiles();
   const entityToDirectory = createEntityToDirectory(entities);
   const dtoNameToPath = createDTONameToPath(DTOs);
-  const dtoModules = createDTOModules(DTOs, dtoNameToPath);
+  const dtoModuleMap = await createDTOModules(DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
   // Create title components first so they are available when creating entity modules
@@ -105,30 +105,34 @@ async function createAdminModulesInternal(): Promise<Module[]> {
     entitiesComponents
   );
   const appModule = await createAppModule(entitiesComponents);
-  const createdModules = [
-    appModule,
-    enumRolesModule,
-    rolesModule,
-    ...dtoModules,
-    ...entityTitleComponentsModules,
-    ...entityComponentsModules,
-  ];
+
   const dotEnvModule = await createDotEnvModule(
     appInfo,
     clientDirectories.baseDirectory
   );
 
   await context.logger.info("Formatting code...");
-  const formattedModules = createdModules.map((module) => ({
-    ...module,
-    code: formatCode(module.code),
-  }));
-  return [
-    ...staticModules,
-    ...gitIgnore,
-    ...packageJson,
-    ...publicFilesModules,
-    ...formattedModules,
-    dotEnvModule,
-  ];
+
+  const tsModules = new ModuleMap(context.logger);
+  await tsModules.set(appModule);
+  await tsModules.set(enumRolesModule);
+  await tsModules.set(rolesModule);
+  await tsModules.mergeMany([
+    dtoModuleMap,
+    entityTitleComponentsModules,
+    entityComponentsModules,
+  ]);
+  await tsModules.replaceModulesCode((code) => formatCode(code));
+
+  const allModules = new ModuleMap(context.logger);
+  await allModules.mergeMany([
+    staticModules,
+    gitIgnore,
+    packageJson,
+    publicFilesModules,
+    tsModules,
+  ]);
+  await allModules.set(dotEnvModule);
+
+  return allModules;
 }
