@@ -1,4 +1,4 @@
-import { namedTypes } from "ast-types";
+import type { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
