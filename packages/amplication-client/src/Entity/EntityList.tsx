@@ -55,7 +55,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const [newEntity, setNewEntity] = useState<boolean>(false);
   const { pluginInstallations } = usePlugins(resource);
 
-  console.log({ pluginInstallations });
+  const isUserEntityMandatory =
+    pluginInstallations?.filter(
+      (x) => x.configurations?.requireAuthenticationEntity === "true"
+    ).length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -169,6 +172,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              isUserEntityMandatory={isUserEntityMandatory}
               relatedEntities={data.entities.filter(
                 (dataEntity) =>
                   dataEntity.fields.some(

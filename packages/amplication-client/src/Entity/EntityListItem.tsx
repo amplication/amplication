@@ -28,6 +28,7 @@ type Props = {
   onDelete?: () => void;
   onError: (error: Error) => void;
   relatedEntities: models.Entity[];
+  isUserEntityMandatory: boolean;
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -38,6 +39,7 @@ export const EntityListItem = ({
   onDelete,
   onError,
   relatedEntities,
+  isUserEntityMandatory,
 }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
@@ -99,7 +101,8 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isDeleteButtonDisable = entity.name !== USER_ENTITY;
+  const isDeleteButtonDisable =
+    entity.name === USER_ENTITY && isUserEntityMandatory;
 
   return (
     <>
@@ -145,7 +148,7 @@ export const EntityListItem = ({
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
-              disabled={true} //todo: change according user entity
+              disabled={isDeleteButtonDisable}
             />
           )}
         </div>
