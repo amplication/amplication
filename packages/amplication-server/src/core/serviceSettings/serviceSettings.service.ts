@@ -163,8 +163,6 @@ export class ServiceSettingsService {
             },
           },
           ...settings,
-          authProvider:
-            serviceSettings.authProvider || EnumAuthProviderType.Jwt,
           blockType: EnumBlockType.ServiceSettings,
         },
       },

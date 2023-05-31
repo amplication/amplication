@@ -139,10 +139,7 @@ export function prepareServiceObject(
           generateRestApi: generateRestApi,
           serverPath: serverDir,
         },
-        authProvider:
-          auth === "core"
-            ? EnumAuthProviderType.Jwt
-            : EnumAuthProviderType.Http,
+        authProvider: EnumAuthProviderType.Jwt,
       },
       gitRepository: gitRepository,
     },

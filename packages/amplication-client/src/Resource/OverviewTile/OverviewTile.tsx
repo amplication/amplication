@@ -2,7 +2,7 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
 import { gql, useQuery } from "@apollo/client";
-import { ServiceSettings, EnumAuthProviderType, Resource } from "../../models";
+import { ServiceSettings, Resource } from "../../models";
 import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
 import usePlugins from "../../Plugins/hooks/usePlugins";
 
@@ -10,9 +10,9 @@ type Props = {
   resourceId: string;
 };
 
-const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
-  [EnumAuthProviderType.Http]: "HTTP",
-  [EnumAuthProviderType.Jwt]: "Passport JWT",
+const AuthProviderLabels = {
+  http: "HTTP",
+  jwt: "Passport JWT",
 };
 
 export enum EnumDbType {
@@ -60,6 +60,14 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
   );
   const dbTypeDisplayName = dbPluginInstallation?.[0].displayName;
   const dbType = DbTypeLabels[dbTypeDisplayName];
+  const authTypePluginInstallation = pluginInstallations?.filter(
+    (pluginInstallation) =>
+      pluginInstallation.pluginId.split("-")[0] === "auth" &&
+      pluginInstallation.pluginId !== "auth-core"
+  );
+
+  const authType = authTypePluginInstallation?.[0]?.pluginId.split("-")[1];
+
   return (
     <Panel
       clickable={false}
@@ -128,12 +136,7 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
             <div className={`${CLASS_NAME}__content__item__text`}>
               Authentication
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
-                {
-                  AuthProviderLabels[
-                    data?.serviceSettings.authProvider ||
-                      EnumAuthProviderType.Jwt
-                  ]
-                }
+                {AuthProviderLabels[authType] || "Disabled"}
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Jest</div>
