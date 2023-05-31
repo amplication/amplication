@@ -97,14 +97,13 @@ export class GitPluginService {
       for await (const pluginConfig of this.getPluginConfig(pluginCatalog)) {
         if (!(pluginConfig as PluginYml).pluginId) continue;
 
-        const currDate = new Date();
         const npmManifest = await this.npmService.getPackagePackument(
           pluginConfig.npm
         );
 
         pluginsArr.push({
           id: "",
-          createdAt: currDate,
+          createdAt: new Date(npmManifest.time.created),
           description: pluginConfig.description,
           github: pluginConfig.github,
           icon: pluginConfig.icon,
@@ -113,7 +112,7 @@ export class GitPluginService {
           pluginId: pluginConfig.pluginId,
           taggedVersions: npmManifest["dist-tags"],
           website: pluginConfig.website,
-          updatedAt: currDate,
+          updatedAt: new Date(npmManifest.time.modified),
         });
       }
 

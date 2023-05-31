@@ -22,17 +22,15 @@ export class NpmPluginVersionService {
   ): (PluginVersion & { tarballUrl: string })[] {
     const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
-    const now = new Date();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [key, value] of Object.entries(npmManifest.versions)) {
+    for (const [, value] of Object.entries(npmManifest.versions)) {
       pluginVersions.push({
-        createdAt: now,
+        createdAt: new Date(npmManifest.time[value.version]),
         deprecated: value.deprecated?.toString() || null,
         id: "",
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
         settings: "{}",
-        updatedAt: now,
+        updatedAt: new Date(),
         version: value.version,
         tarballUrl: value.dist.tarball,
         isLatest: npmManifest["dist-tags"].latest === value.version,
