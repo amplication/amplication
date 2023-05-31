@@ -260,7 +260,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                         string | React.JSXElementConstructor<any>
                       >,
 
-                      { formik, goNextPage }
+                      { formik, goNextPage, serviceWizardFlow: defineUser }
                     )
                   )}
                 </Form>

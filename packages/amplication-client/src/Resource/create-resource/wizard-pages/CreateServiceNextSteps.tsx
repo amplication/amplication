@@ -11,6 +11,7 @@ const className = "create-service-next-steps";
 export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
   moduleClass,
   trackWizardPageEvent,
+  serviceWizardFlow,
 }) => {
   const history = useHistory();
   const {
@@ -18,6 +19,7 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     currentProject,
     createServiceWithEntitiesResult: serviceResults,
   } = useContext(AppContext);
+  const isOnBoarding = serviceWizardFlow === "Onboarding";
 
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
@@ -29,12 +31,22 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     );
   }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
-  const handleClickCreateNewService = useCallback(() => {
+  const handleAddPlugins = useCallback(() => {
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
-      { action: "Create Another Service" }
+      { action: "Add Plugins" }
     );
-    window.location.reload();
+    history.push(
+      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/plugins/catalog`
+    );
+  }, []);
+
+  const handleInviteMyTeams = useCallback(() => {
+    trackWizardPageEvent(
+      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
+      { action: "Invite Team" }
+    );
+    history.push(`/${currentWorkspace.id}/members`);
   }, []);
 
   const handleDone = useCallback(() => {
@@ -72,14 +84,17 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
         </div>
         <div
           className={`${className}__link_box`}
-          onClick={handleClickCreateNewService}
+          onClick={isOnBoarding ? handleInviteMyTeams : handleAddPlugins}
         >
-          <CircleBadge color="#A787FF" size="medium">
-            <Icon icon="services" size="small" />
+          <CircleBadge
+            color={isOnBoarding ? "#8DD9B9" : "#f85b6e"}
+            size="medium"
+          >
+            <Icon icon={isOnBoarding ? "users" : "plugins"} size="small" />
           </CircleBadge>
           <div className={`${className}__link_box__description`}>
-            <div>Create</div>
-            <div>another service</div>
+            <div>{isOnBoarding ? "Invite " : "Add plugins"}</div>
+            <div>{isOnBoarding ? "my team" : "to my service"}</div>
           </div>
         </div>
         <div className={`${className}__link_box`} onClick={handleDone}>

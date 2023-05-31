@@ -1,6 +1,7 @@
 import { FormikProps } from "formik";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { EnumGitProvider } from "../../../models";
+import { DefineUser } from "../CreateServiceWizard";
 
 export interface ResourceSettings {
   serviceName: string;
@@ -37,4 +38,5 @@ export interface WizardStepProps {
   ) => void;
   formik?: FormikProps<{ [key: string]: any }>;
   goNextPage?: () => void;
+  serviceWizardFlow?: DefineUser;
 }
