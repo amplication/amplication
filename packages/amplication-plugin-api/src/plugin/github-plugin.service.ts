@@ -6,13 +6,15 @@ import { PluginList, PluginYml } from "./plugin.types";
 import { AMPLICATION_GITHUB_URL, emptyPlugin } from "./plugin.constants";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
+import { NpmService } from "../npm/npm.service";
 
 @Injectable()
 export class GitPluginService {
   private githubHeaders: any;
   constructor(
     @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
-    configService: ConfigService
+    configService: ConfigService,
+    readonly npmService: NpmService
   ) {
     const githubToken = configService.get("GITHUB_TOKEN");
     if (!githubToken) {
@@ -96,6 +98,10 @@ export class GitPluginService {
         if (!(pluginConfig as PluginYml).pluginId) continue;
 
         const currDate = new Date();
+        const npmManifest = await this.npmService.getPackagePackument(
+          pluginConfig.npm
+        );
+
         pluginsArr.push({
           id: "",
           createdAt: currDate,
@@ -105,6 +111,7 @@ export class GitPluginService {
           name: pluginConfig.name,
           npm: pluginConfig.npm,
           pluginId: pluginConfig.pluginId,
+          taggedVersions: npmManifest["dist-tags"],
           website: pluginConfig.website,
           updatedAt: currDate,
         });

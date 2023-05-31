@@ -85,11 +85,12 @@ export class PluginVersionService extends PluginVersionServiceBase {
       }
     });
   }
+
   /**
    * main service function.upsert all plugins versions into DB
    * @returns Plugin[]
    */
-  async npmPluginsVersions(plugins: Plugin[]) {
+  async processPluginsVersions(plugins: Plugin[]) {
     try {
       const pluginsVersions =
         await this.npmPluginVersionService.updatePluginsVersion(plugins);

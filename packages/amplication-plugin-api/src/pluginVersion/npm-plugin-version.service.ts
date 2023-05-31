@@ -1,11 +1,15 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { packument, Packument } from "pacote";
+import { Packument } from "pacote";
+import { NpmService } from "../npm/npm.service";
 
 @Injectable()
 export class NpmPluginVersionService {
-  constructor(@Inject(AmplicationLogger) readonly logger: AmplicationLogger) {}
+  constructor(
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
+    private readonly npmService: NpmService
+  ) {}
   /**
    * get npm versions results per package and structure it as plugin version DTO
    * @param npmVersions
@@ -55,12 +59,9 @@ export class NpmPluginVersionService {
 
         let npmPackument: Packument;
         try {
-          npmPackument = await packument(pluginNpmName, {
-            fullMetadata: true,
-            fetchRetries: 2,
-          });
-          if (!npmPackument)
-            throw `Plugin ${plugins[index].name} doesn't have npm versions`;
+          npmPackument = await this.npmService.getPackagePackument(
+            pluginNpmName
+          );
         } catch (error) {
           this.logger.error(error.message, error, { pluginNpmName });
           ++index;
