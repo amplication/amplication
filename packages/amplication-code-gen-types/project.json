@@ -20,7 +20,7 @@
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
         "packageJson": "packages/amplication-code-gen-types/package.json",
-        "updateBuildableProjectDepsInPackageJson": false,
+        "updateBuildableProjectDepsInPackageJson": true,
         "main": "packages/amplication-code-gen-types/src/index.ts",
         "assets": ["packages/amplication-code-gen-types/*.md"]
       }
