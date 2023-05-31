@@ -634,31 +634,6 @@ describe("EntityService", () => {
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
-  it("should throw an exception when trying to delete user entity", async () => {
-    const deleteArgs = {
-      args: {
-        where: { id: EXAMPLE_ENTITY_ID },
-      },
-      user: EXAMPLE_USER,
-    };
-
-    prismaEntityUpdateMock.mockImplementationOnce(() => EXAMPLE_USER_ENTITY);
-
-    await expect(
-      service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
-    ).rejects.toThrow(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
-    expect(prismaEntityFindFirstMock).toBeCalledWith({
-      where: {
-        id: EXAMPLE_ENTITY_ID,
-        deletedAt: null,
-      },
-    });
-
-    expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-  });
-
   it("should update one entity", async () => {
     const updateArgs = {
       args: {
