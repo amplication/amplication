@@ -101,8 +101,17 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isDeleteButtonDisable =
-    entity.name === USER_ENTITY && isUserEntityMandatory;
+  const isUserEntity = entity.name === USER_ENTITY;
+
+  const isDeleteButtonDisable = isUserEntity && isUserEntityMandatory;
+
+  const deleteMessage = isUserEntity
+    ? "Deleting this entity may impact the authentication functionality of your service"
+    : "you want to delete this entity?";
+
+  const deleteMessageConfirmation = isUserEntity ? "Notice:" : "Are you sure";
+
+  const deleteClassName = isUserEntity ? "__alert-bold-notice" : "__alert-bold";
 
   return (
     <>
@@ -113,8 +122,10 @@ export const EntityListItem = ({
         dismissButton={DISMISS_BUTTON}
         message={
           <span>
-            <span className={`${CLASS_NAME}__alert-bold`}>Are you sure</span>{" "}
-            you want to delete this entity?
+            <span className={`${CLASS_NAME}${deleteClassName}`}>
+              {deleteMessageConfirmation}
+            </span>{" "}
+            {deleteMessage}
             <br />
             {relatedEntities.length > 0 && (
               <ConfirmationDialogFieldList relatedEntities={relatedEntities} />
