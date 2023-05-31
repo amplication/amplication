@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.data-panel {
+  display: flex;
+  flex-direction: column;
+
+  &__main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__title {
+    @include title-18;
+  }
+
+  &__related-data-id {
+    @include regular-12;
+    margin-left: var(--default-spacing-small);
+  }
+
+  &__description {
+    @include regular-14;
+  }
+
+  &__divider {
+    border: $border-black5;
+    width: 100%;
+    margin: var(--form-field-spacing) 0;
+  }
+}

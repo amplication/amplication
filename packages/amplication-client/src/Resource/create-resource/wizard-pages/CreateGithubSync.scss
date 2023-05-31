@@ -1,0 +1,20 @@
+.create-git-sync {
+  display: flex;
+  flex: 1;
+
+  &__description {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__github_box {
+    width: 70%;
+  }
+
+  &__right {
+    display: flex;
+    flex: 1;
+    background: var(--white);
+  }
+}

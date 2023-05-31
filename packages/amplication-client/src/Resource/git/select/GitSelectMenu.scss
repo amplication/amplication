@@ -1,0 +1,68 @@
+@import "../../../style/index.scss";
+
+.git-select-menu {
+  position: relative;
+
+  .select-menu__summary {
+    padding: 5px 4px 5px 8px;
+    border: 1px solid var(--black10);
+    background-color: var(--white);
+    width: 268px;
+    display: flex;
+    justify-content: space-between;
+  }
+  .select-menu__summary:focus {
+    background-color: var(--white);
+  }
+
+  .item-content {
+    display: flex;
+    & img {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      margin-top: 2px;
+    }
+  }
+
+  &__menu {
+    background: var(--white);
+    width: 266px;
+    margin: 0px;
+    top: 28px;
+    border: 1px solid var(--black10);
+    & div {
+      border-radius: 0px;
+      border: none;
+      margin: 0px;
+    }
+  }
+
+  &__list {
+    border: none;
+    width: 265px;
+  }
+
+  &__item {
+    background-color: transparent;
+    border: none;
+    width: 265px;
+    padding: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 5px 0px 5px 8px;
+    border-radius: 0px;
+    & .SelectMenu-icon {
+      margin-right: 0px;
+    }
+    & .item-content {
+      width: 234px;
+    }
+  }
+
+  &__item:hover {
+    background-color: var(--black5);
+  }
+}

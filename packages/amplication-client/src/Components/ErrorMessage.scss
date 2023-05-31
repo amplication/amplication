@@ -1,0 +1,21 @@
+@import "../style/index.scss";
+
+.amp-error-message {
+  @include body2;
+  box-sizing: border-box;
+  background-color: var(--black5);
+  padding: var(--default-spacing-small);
+  border-radius: var(--small-border-radius);
+  color: var(--black80);
+  text-align: left;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  border: 1px solid var(--negative-light);
+
+  .amp-icon {
+    margin-right: var(--default-spacing);
+    color: var(--negative-light);
+    font-weight: bold;
+  }
+}

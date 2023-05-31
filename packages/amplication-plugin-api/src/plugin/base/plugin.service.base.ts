@@ -10,13 +10,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Plugin } from "@prisma/client";
+import { Prisma, Plugin } from "../../../prisma/generated-prisma-client";
 
 export class PluginServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.PluginFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.PluginFindManyArgs>
+  async count<T extends Prisma.PluginCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.PluginCountArgs>
   ): Promise<number> {
     return this.prisma.plugin.count(args);
   }
@@ -29,7 +29,7 @@ export class PluginServiceBase {
   async findOne<T extends Prisma.PluginFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginFindUniqueArgs>
   ): Promise<Plugin | null> {
-    return this.prisma.plugin.findUnique(args);
+    return await this.prisma.plugin.findUnique(args);
   }
   async create<T extends Prisma.PluginCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.PluginCreateArgs>

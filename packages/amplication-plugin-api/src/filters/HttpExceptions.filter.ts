@@ -6,10 +6,7 @@ import {
   HttpStatus,
 } from "@nestjs/common";
 import { BaseExceptionFilter } from "@nestjs/core";
-import {
-  // @ts-ignore
-  Prisma,
-} from "@prisma/client";
+import { Prisma } from "../../prisma/generated-prisma-client";
 import { Response } from "express";
 
 export type ErrorCodesStatusMapping = {
@@ -28,8 +25,11 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
    * @see https://www.prisma.io/docs/reference/api-reference/error-reference#prisma-client-query-engine
    */
   private errorCodesStatusMapping: ErrorCodesStatusMapping = {
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     P2000: HttpStatus.BAD_REQUEST,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     P2002: HttpStatus.CONFLICT,
+    // eslint-disable-next-line @typescript-eslint/naming-convention
     P2025: HttpStatus.NOT_FOUND,
   };
 

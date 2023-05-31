@@ -1,0 +1,132 @@
+@import "../style/index.scss";
+
+$field-container-height: 40px;
+$many-element-size: 16px;
+
+.entity-relation-fields-chart {
+  display: flex;
+  align-items: center;
+  justify-content: stretch;
+  margin-bottom: var(--default-spacing);
+
+  &--missing &__status {
+    color: var(--negative);
+  }
+
+  &--missing &__field--target {
+    border-color: var(--negative);
+
+    &:hover {
+      border-color: var(--black100);
+    }
+  }
+
+  &:not(&--missing) &__fix {
+    visibility: hidden;
+  }
+
+  &__entity,
+  &__field {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+
+    border: $border-black30;
+    flex: 1;
+    padding: var(--default-spacing);
+    height: $field-container-height;
+
+    a {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &:hover {
+        color: var(--black100);
+      }
+    }
+  }
+
+  &__entity {
+    border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
+    border-right: none;
+    background: var(--black10);
+    .amp-icon {
+      margin-right: var(--default-spacing);
+    }
+  }
+
+  &__field {
+    border-radius: 0 var(--default-border-radius) var(--default-border-radius) 0;
+
+    &__textbox {
+      width: 100%;
+      margin: 0;
+      label {
+        margin: 0;
+      }
+
+      input,
+      input:hover,
+      input:active,
+      input:focus {
+        border: none;
+        background: none;
+      }
+    }
+  }
+
+  &__fix {
+    margin-left: var(--default-spacing);
+  }
+
+  &__status {
+    height: $field-container-height;
+    width: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    color: var(--positive-default);
+
+    &:before,
+    &:after {
+      content: "";
+      position: absolute;
+      left: 0;
+      width: calc(50% - 8px);
+      top: 50%;
+      border-top: 1px solid var(--black80);
+    }
+    &:after {
+      left: auto;
+      right: 0;
+    }
+
+    &__cardinality {
+      &--many {
+        width: $many-element-size;
+        height: $many-element-size;
+        border: 1px solid var(--black80);
+        border-top: none;
+        border-right: none;
+        transform: rotate(45deg);
+        position: absolute;
+        right: #{- ($many-element-size * 0.5)};
+        border-top: none;
+        border-right: none;
+        top: calc(50% - #{($many-element-size * 0.5)});
+      }
+      &--source {
+        transform: rotate(-135deg);
+        left: #{- ($many-element-size * 0.5)};
+        right: auto;
+      }
+      &--one {
+        display: none;
+      }
+    }
+  }
+}

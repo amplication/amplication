@@ -1,5 +1,4 @@
 import { Injectable, UnauthorizedException } from "@nestjs/common";
-// @ts-ignore
 // eslint-disable-next-line
 import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
