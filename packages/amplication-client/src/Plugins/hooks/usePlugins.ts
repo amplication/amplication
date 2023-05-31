@@ -15,6 +15,7 @@ import { AppContext } from "../../context/appContext";
 
 export type PluginVersion = {
   version: string;
+  isLatest: boolean;
   settings: string;
   id: string;
   pluginId: string;
@@ -32,6 +33,7 @@ export type Plugin = {
   website: string;
   category: string;
   type: string;
+  taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
 };
 
