@@ -738,4 +738,48 @@ export class GitProviderService {
     }
     return resourcesToConnect;
   }
+
+  async createDemoRepository(repoName: string) {
+    const organizationName = this.configService.get<string>(
+      Env.GITHUB_DEMO_REPO_ORGANIZATION_NAME
+    );
+
+    const installationId = this.configService.get<string>(
+      Env.GITHUB_DEMO_REPO_INSTALLATION_ID
+    );
+
+    const repository: CreateRepositoryArgs = {
+      repositoryName: repoName,
+      gitOrganization: {
+        name: organizationName,
+        type: EnumGitOrganizationType.Organization,
+        useGroupingForRepositories: false,
+      },
+      groupName: undefined,
+      owner: organizationName,
+      isPrivate: false,
+    };
+
+    const gitProviderArgs: GitProviderArgs = {
+      provider: EnumGitProvider.Github,
+      providerOrganizationProperties: {
+        installationId,
+      },
+    };
+
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs,
+      this.gitProvidersConfiguration,
+      this.logger
+    );
+    const remoteRepository = await gitClientService.createRepository(
+      repository
+    );
+
+    if (!remoteRepository) {
+      throw new AmplicationError(
+        `Failed to create demo repository ${organizationName}\\${repoName}`
+      );
+    }
+  }
 }

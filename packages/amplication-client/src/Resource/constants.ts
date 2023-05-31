@@ -150,7 +150,7 @@ export function prepareServiceObject(
     repoType,
     dbType,
     authType: auth,
-    // gitOrganizationName
+    connectToDemoRepo: true,
   };
 }
 

@@ -1799,6 +1799,7 @@ export type ResourceCreateWithEntitiesFieldInput = {
 export type ResourceCreateWithEntitiesInput = {
   authType: Scalars['String'];
   commitMessage: Scalars['String'];
+  connectToDemoRepo: Scalars['Boolean'];
   dbType: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   plugins?: InputMaybe<PluginInstallationsCreateInput>;

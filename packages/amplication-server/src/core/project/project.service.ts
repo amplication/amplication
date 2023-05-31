@@ -20,12 +20,14 @@ import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
 import { BillingFeature } from "../billing/billing.types";
+import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import dockerNames from "docker-names";
 
 @Injectable()
 export class ProjectService {
@@ -36,7 +38,8 @@ export class ProjectService {
     private readonly buildService: BuildService,
     private readonly entityService: EntityService,
     private readonly billingService: BillingService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly gitProviderService: GitProviderService
   ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
@@ -426,5 +429,71 @@ export class ProjectService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
+  }
+
+  /**
+   * Creates a demo repository for a project
+   */
+  async createDemoRepo(projectId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (project.useDemoRepo) {
+      throw Error("Demo repo already created for this project");
+    }
+
+    const projectResources = await this.prisma.resource.findMany({
+      where: {
+        projectId: projectId,
+      },
+    });
+
+    if (projectResources.length > 1) {
+      //single resource of type project configuration is expected
+      throw Error("Cannot use demo repo on existing project");
+    }
+
+    const demoRepoName = await this.getUniqueNameForDemoRepo(projectId);
+
+    await this.gitProviderService.createDemoRepository(demoRepoName);
+
+    await this.prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        useDemoRepo: true,
+        demoRepoName: demoRepoName,
+      },
+    });
+  }
+
+  /**
+   * Find a unique name for a demo repo.
+   * In case of no unique name was find after 3 retires, returns the default name
+   * @param defaultUniqueName
+   * @returns
+   */
+  async getUniqueNameForDemoRepo(defaultUniqueName: string): Promise<string> {
+    let i = 0;
+    let repoNameAvailable = false;
+    let demoRepoName = "";
+    while (i < 3 && !repoNameAvailable) {
+      demoRepoName = dockerNames.getRandomName(true);
+
+      repoNameAvailable =
+        (await this.prisma.project.count({
+          where: { demoRepoName: demoRepoName },
+        })) === 0;
+
+      i++;
+    }
+    if (!repoNameAvailable) {
+      return defaultUniqueName;
+    }
+    return demoRepoName;
   }
 }

@@ -30,7 +30,12 @@ import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { BillingService } from "../billing/billing.service";
-import { EnumGitProvider, EnumPullRequestMode } from "@amplication/git-utils";
+import {
+  EnumGitProvider,
+  EnumPullRequestMode,
+  GitHubProviderOrganizationProperties,
+  OAuthProviderOrganizationProperties,
+} from "@amplication/git-utils";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
 import {
@@ -67,6 +72,16 @@ export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
   `Successfully pushed changes to ${gitProvider}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
   `Push changes to ${gitProvider} failed`;
+
+export interface CreatePullRequestGitSettings {
+  gitOrganizationName: string;
+  gitRepositoryName: string;
+  repositoryGroupName?: string;
+  gitProvider: EnumGitProvider;
+  gitProviderProperties:
+    | GitHubProviderOrganizationProperties
+    | OAuthProviderOrganizationProperties;
+}
 
 export const ACTION_ZIP_LOG = "Creating ZIP file";
 export const ACTION_JOB_DONE_LOG = "Build job done";
@@ -462,18 +477,61 @@ export class BuildService {
     );
     const { resourceInfo } = dSGResourceData;
 
-    const resourceRepository = await this.resourceService.gitRepository(
-      build.resourceId
-    );
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: resource.projectId,
+      },
+    });
 
-    if (!resourceRepository) {
-      return;
+    let gitSettings: CreatePullRequestGitSettings = null;
+    let kafkaEventKey: string = null;
+
+    if (project.useDemoRepo) {
+      const organizationName = this.configService.get<string>(
+        Env.GITHUB_DEMO_REPO_ORGANIZATION_NAME
+      );
+
+      const installationId = this.configService.get<string>(
+        Env.GITHUB_DEMO_REPO_INSTALLATION_ID
+      );
+
+      gitSettings = {
+        gitOrganizationName: organizationName,
+        gitRepositoryName: project.demoRepoName,
+        repositoryGroupName: "",
+        gitProvider: EnumGitProvider.Github,
+        gitProviderProperties: {
+          installationId: installationId,
+        },
+      };
+
+      kafkaEventKey = project.demoRepoName;
+    } else {
+      const resourceRepository = await this.resourceService.gitRepository(
+        build.resourceId
+      );
+
+      kafkaEventKey = resourceRepository.id;
+
+      if (!resourceRepository) {
+        return;
+      }
+
+      const gitOrganization =
+        await this.resourceService.gitOrganizationByResource({
+          where: { id: resource.id },
+        });
+
+      const gitProviderArgs =
+        await this.gitProviderService.getGitProviderProperties(gitOrganization);
+      gitSettings = {
+        gitOrganizationName: gitOrganization.name,
+        gitRepositoryName: resourceRepository.name,
+        repositoryGroupName: resourceRepository.groupName,
+        gitProvider: gitProviderArgs.provider,
+        gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
+      };
     }
-
-    const gitOrganization =
-      await this.resourceService.gitOrganizationByResource({
-        where: { id: resource.id },
-      });
 
     const commit = await this.commitService.findOne({
       where: { id: build.commitId },
@@ -488,25 +546,17 @@ export class BuildService {
 
     const clientHost = this.configService.get(CLIENT_HOST_VAR);
 
-    const project = await this.prisma.project.findUnique({
-      where: {
-        id: resource.projectId,
-      },
-    });
-
     const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,
-      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitOrganization.provider]),
-      PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitOrganization.provider]),
+      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitSettings.gitProvider]),
+      PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitSettings.gitProvider]),
       async (step) => {
         try {
           await this.actionService.logInfo(
             step,
-            PUSH_TO_GIT_STEP_START_LOG(
-              EnumGitProvider[gitOrganization.provider]
-            )
+            PUSH_TO_GIT_STEP_START_LOG(EnumGitProvider[gitSettings.gitProvider])
           );
 
           const smartGitSyncEntitlement = this.billingService.isBillingEnabled
@@ -516,23 +566,13 @@ export class BuildService {
               )
             : false;
 
-          const gitProviderArgs =
-            await this.gitProviderService.getGitProviderProperties(
-              gitOrganization
-            );
-
           const commitMessage =
             commit.message && `Commit message: ${commit.message}.`;
           const buildLinkHTML = `[${url}](${url})`;
 
           const createPullRequestMessage: CreatePrRequest.Value = {
-            gitOrganizationName: gitOrganization.name,
-            gitRepositoryName: resourceRepository.name,
-            repositoryGroupName: resourceRepository.groupName,
+            ...gitSettings,
             resourceId: resource.id,
-            gitProvider: gitProviderArgs.provider,
-            gitProviderProperties:
-              gitProviderArgs.providerOrganizationProperties,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             commit: {
@@ -551,7 +591,7 @@ export class BuildService {
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
             key: {
-              resourceRepositoryId: resourceRepository.id,
+              resourceRepositoryId: kafkaEventKey,
             },
             value: createPullRequestMessage,
           };

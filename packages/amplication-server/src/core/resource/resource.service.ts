@@ -313,6 +313,12 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
+    if (data.connectToDemoRepo) {
+      await this.projectService.createDemoRepo(
+        data.resource.project.connect.id
+      );
+    }
+
     const resource = await this.createService(
       {
         data: data.resource,

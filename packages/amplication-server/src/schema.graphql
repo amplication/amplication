@@ -1274,6 +1274,7 @@ input ResourceCreateWithEntitiesInput {
   authType: String!
   dbType: String!
   repoType: String!
+  connectToDemoRepo: Boolean!
 }
 
 input ResourceCreateWithEntitiesEntityInput {
