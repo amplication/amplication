@@ -22,5 +22,10 @@ export class EntityUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
+  customAttributes?: string | null;
+
+  @Field(() => String, {
+    nullable: true,
+  })
   description?: string | null;
 }

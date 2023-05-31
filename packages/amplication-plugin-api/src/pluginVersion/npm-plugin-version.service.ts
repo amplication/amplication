@@ -58,10 +58,27 @@ export class NpmPluginVersionService {
         if (!pluginNpmName)
           throw `Plugin ${plugins[index].name} doesn't have npm name`;
 
+        let npmError;
         const npmResponse = await fetch(
           `https://registry.npmjs.org/${pluginNpmName}`
-        );
-        const pluginNpmData = await npmResponse.json();
+        ).catch((error) => {
+          error = npmError;
+        });
+
+        if (npmError || (npmResponse && !npmResponse?.ok)) {
+          this.logger.error(
+            npmError.message || "Response from npm was not successful",
+            npmError,
+            {
+              npmResponse,
+            }
+          );
+          ++index;
+          yield null;
+          continue;
+        }
+
+        const pluginNpmData = npmResponse && (await npmResponse.json());
         if (!pluginNpmData.versions)
           throw `Plugin ${plugins[index].name} doesn't have npm versions`;
 
@@ -91,7 +108,7 @@ export class NpmPluginVersionService {
       if (!plugins?.length) return pluginsVersions;
 
       for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
-        pluginsVersions.push(...pluginVersionArr);
+        pluginVersionArr && pluginsVersions.push(...pluginVersionArr);
       }
 
       return pluginsVersions;

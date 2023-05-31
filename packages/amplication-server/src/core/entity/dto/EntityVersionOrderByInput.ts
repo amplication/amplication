@@ -43,6 +43,11 @@ export class EntityVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  customAttributes?: SortOrder | null;
+
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   description?: SortOrder | null;
 
   @Field(() => SortOrder, {

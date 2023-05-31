@@ -72,6 +72,11 @@ export class EntityField {
   })
   description: string;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  customAttributes?: string;
+
   @Field(() => Int, {
     nullable: true,
   })
