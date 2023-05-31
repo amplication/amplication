@@ -968,6 +968,7 @@ type PluginInstallation implements IBlock {
   enabled: Boolean!
   npm: String!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 

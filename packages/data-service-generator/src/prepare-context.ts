@@ -5,7 +5,6 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-  Module,
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
@@ -26,7 +25,7 @@ export async function prepareContext(
   dSGResourceData: DSGResourceData,
   internalLogger: ILogger,
   pluginInstallationPath?: string
-): Promise<Module[]> {
+): Promise<void> {
   internalLogger.info("Preparing context...");
 
   const {
@@ -68,7 +67,6 @@ export async function prepareContext(
   );
 
   context.plugins = plugins;
-  return [];
 }
 
 function validatePath(path: string): string | null {

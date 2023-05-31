@@ -12,6 +12,7 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;

@@ -23,6 +23,7 @@ import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
+import usePlugins from "../Plugins/hooks/usePlugins";
 
 type TData = {
   entities: models.Entity[];
@@ -52,6 +53,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
+  const { pluginInstallations } = usePlugins(resource);
+
+  const isUserEntityMandatory =
+    pluginInstallations?.filter(
+      (x) => x.configurations?.requireAuthenticationEntity === "true"
+    ).length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -102,10 +109,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
     GET_CURRENT_WORKSPACE
   );
-  const subscription =
-    getWorkspaceData.currentWorkspace.subscription?.subscriptionPlan;
-
-  const isFreePlan = subscription === models.EnumSubscriptionPlan.Free;
 
   const { stigg } = useStiggContext();
   const hideNotifications = stigg.getBooleanEntitlement({
@@ -150,7 +153,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         </div>
         {loading && <CircularProgress centerToParent />}
 
-        {isFreePlan && !hideNotifications.hasAccess && (
+        {!hideNotifications.hasAccess && (
           <LimitationNotification
             description="With the current plan, you can use to 7 entities per service."
             link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
@@ -165,6 +168,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              isUserEntityMandatory={isUserEntityMandatory}
               relatedEntities={data.entities.filter(
                 (dataEntity) =>
                   dataEntity.fields.some(

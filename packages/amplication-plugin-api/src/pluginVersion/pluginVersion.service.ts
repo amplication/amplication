@@ -96,7 +96,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
       if (!pluginsVersions.length)
         throw new Error("Failed to fetch versions for plugin");
 
-      const insertedPluginVersionArr: Omit<PluginVersion, "id">[] = [];
+      const pluginVersionArr: Omit<PluginVersion, "id">[] = [];
 
       for await (const versionData of pluginsVersions) {
         const {
@@ -115,37 +115,26 @@ export class PluginVersionService extends PluginVersionServiceBase {
         );
         const pluginSettingsObject = JSON.parse(pluginSettings);
 
-        const upsertPluginVersion = await this.upsert({
-          where: {
-            pluginIdVersion,
-          },
-          update: {
-            settings: pluginSettingsObject?.settings,
-            deprecated,
-            updatedAt,
-          },
-          create: {
-            pluginId,
-            pluginIdVersion,
-            settings: pluginSettingsObject?.settings,
-            configurations: pluginSettingsObject?.systemSettings,
-            deprecated,
-            version,
-            createdAt,
-            updatedAt,
-          },
+        pluginVersionArr.push({
+          pluginId,
+          pluginIdVersion,
+          settings: pluginSettingsObject?.settings,
+          configurations: pluginSettingsObject?.systemSettings,
+          deprecated,
+          version,
+          createdAt,
+          updatedAt,
         });
-        insertedPluginVersionArr.push(upsertPluginVersion);
       }
 
       const newVersions = await this.prisma.pluginVersion.createMany({
-        data: insertedPluginVersionArr,
+        data: pluginVersionArr,
         skipDuplicates: true,
       });
 
       this.logger.debug("New PluginVersions", newVersions);
 
-      const deprecatedVersionIds = insertedPluginVersionArr
+      const deprecatedVersionIds = pluginVersionArr
         .filter((version) => version.deprecated)
         .map((version) => version.pluginIdVersion);
 

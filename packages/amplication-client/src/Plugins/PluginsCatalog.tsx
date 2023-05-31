@@ -28,9 +28,11 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { currentResource } = useContext(AppContext);
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
 
-  const userEntity = currentResource.entities.find(
-    (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
-  );
+  const userEntity = useMemo(() => {
+    return currentResource.entities.find(
+      (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
+    );
+  }, [currentResource]);
 
   const {
     pluginInstallations,

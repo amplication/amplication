@@ -1315,6 +1315,7 @@ export type PendingChangesFindInput = {
 
 export type PluginInstallation = IBlock & {
   blockType: EnumBlockType;
+  configurations?: Maybe<Scalars['JSONObject']>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];

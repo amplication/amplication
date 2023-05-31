@@ -1,7 +1,6 @@
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
-import { flatten } from "lodash";
-import { Entity, Module } from "@amplication/code-gen-types";
+import { Entity, ModuleMap } from "@amplication/code-gen-types";
 import { validateEntityName } from "../../utils/entity";
 import {
   createServiceBaseId,
@@ -17,15 +16,16 @@ import DsgContext from "../../dsg-context";
 
 export async function createResourcesModules(
   entities: Entity[]
-): Promise<Module[]> {
-  const resourceModuleLists = await Promise.all(
-    entities.map((entity) => createResourceModules(entity))
-  );
-  const resourcesModules = flatten(resourceModuleLists);
-  return resourcesModules;
+): Promise<ModuleMap> {
+  const resourceModules = new ModuleMap(DsgContext.getInstance.logger);
+  for await (const entity of entities) {
+    await resourceModules.merge(await createResourceModules(entity));
+  }
+
+  return resourceModules;
 }
 
-async function createResourceModules(entity: Entity): Promise<Module[]> {
+async function createResourceModules(entity: Entity): Promise<ModuleMap> {
   const entityType = entity.name;
   const context = DsgContext.getInstance;
   const { appInfo } = context;
@@ -48,7 +48,7 @@ async function createResourceModules(entity: Entity): Promise<Module[]> {
     delegateId
   );
 
-  const [serviceModule] = serviceModules;
+  const [serviceModule] = serviceModules.modules();
 
   const controllerModules =
     (appInfo.settings.serverSettings.generateRestApi &&
@@ -59,9 +59,9 @@ async function createResourceModules(entity: Entity): Promise<Module[]> {
         serviceModule.path,
         entity
       ))) ||
-    [];
+    new ModuleMap(DsgContext.getInstance.logger);
 
-  const [controllerModule, controllerBaseModule] = controllerModules;
+  const [controllerModule, controllerBaseModule] = controllerModules.modules();
 
   const resolverModules =
     (appInfo.settings.serverSettings.generateGraphQL &&
@@ -71,8 +71,8 @@ async function createResourceModules(entity: Entity): Promise<Module[]> {
         serviceModule.path,
         entity
       ))) ||
-    [];
-  const [resolverModule] = resolverModules;
+    new ModuleMap(DsgContext.getInstance.logger);
+  const [resolverModule] = resolverModules.modules();
 
   const resourceModules = await createModules(
     entityName,
@@ -92,13 +92,16 @@ async function createResourceModules(entity: Entity): Promise<Module[]> {
         controllerModule.path,
         controllerBaseModule.path
       ))) ||
-    [];
+    new ModuleMap(DsgContext.getInstance.logger);
 
-  return [
-    ...serviceModules,
-    ...controllerModules,
-    ...resolverModules,
-    ...resourceModules,
-    ...testModule,
-  ];
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.mergeMany([
+    serviceModules,
+    controllerModules,
+    resolverModules,
+    resourceModules,
+    testModule,
+  ]);
+
+  return moduleMap;
 }

@@ -4,7 +4,6 @@ import { camelCase } from "camel-case";
 import { pick, omit } from "lodash";
 import {
   createEntityNamesWhereInput,
-  DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE,
@@ -21,11 +20,7 @@ import {
 } from "../../models";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { FindManyEntityArgs } from "./dto";
-import {
-  CURRENT_VERSION_NUMBER,
-  DEFAULT_PERMISSIONS,
-  USER_ENTITY_NAME,
-} from "./constants";
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from "./constants";
 import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 import { DiffModule } from "../../services/diff.module";
 import { prepareDeletedItemName } from "../../util/softDelete";
@@ -106,11 +101,6 @@ const EXAMPLE_LOCKED_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
   lockedByUserId: EXAMPLE_USER_ID,
   lockedAt: new Date(),
-};
-
-const EXAMPLE_USER_ENTITY: Entity = {
-  ...EXAMPLE_ENTITY,
-  name: USER_ENTITY_NAME,
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -632,31 +622,6 @@ describe("EntityService", () => {
     });
 
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
-  });
-
-  it("should throw an exception when trying to delete user entity", async () => {
-    const deleteArgs = {
-      args: {
-        where: { id: EXAMPLE_ENTITY_ID },
-      },
-      user: EXAMPLE_USER,
-    };
-
-    prismaEntityUpdateMock.mockImplementationOnce(() => EXAMPLE_USER_ENTITY);
-
-    await expect(
-      service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
-    ).rejects.toThrow(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
-    expect(prismaEntityFindFirstMock).toBeCalledWith({
-      where: {
-        id: EXAMPLE_ENTITY_ID,
-        deletedAt: null,
-      },
-    });
-
-    expect(prismaEntityUpdateMock).toBeCalledTimes(1);
   });
 
   it("should update one entity", async () => {
