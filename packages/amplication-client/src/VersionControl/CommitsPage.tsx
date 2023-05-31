@@ -27,7 +27,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
     useContext(AppContext);
 
   const handleOnLoadMoreClick = useCallback(() => {
-    commitUtils.refetchCommitsData();
+    commitUtils.refetchCommitsData(false);
   }, [commitUtils.refetchCommitsData]);
 
   const currentCommit = useMemo(() => {

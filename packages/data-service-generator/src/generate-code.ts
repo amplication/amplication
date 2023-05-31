@@ -1,4 +1,4 @@
-import { DSGResourceData, Module } from "@amplication/code-gen-types";
+import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
@@ -17,14 +17,14 @@ const readInputJson = async (filePath: string): Promise<DSGResourceData> => {
 };
 
 const writeModules = async (
-  modules: Module[],
+  modules: ModuleMap,
   destination: string
 ): Promise<void> => {
   internalLogger.info("Creating base directory");
   await mkdir(destination, { recursive: true });
   internalLogger.info(`Writing modules to ${destination} ...`);
 
-  for await (const module of modules) {
+  for await (const module of modules.modules()) {
     const filePath = join(destination, module.path);
     await mkdir(dirname(filePath), { recursive: true });
     try {
