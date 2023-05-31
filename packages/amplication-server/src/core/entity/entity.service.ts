@@ -454,10 +454,6 @@ export class EntityService {
     user: User
   ): Promise<Entity | null> {
     return await this.useLocking(args.where.id, user, async (entity) => {
-      // if (entity.name === USER_ENTITY_NAME) {
-      //   throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-      // }
-
       const relatedEntityFields = await this.prisma.entityField.findMany({
         where: {
           dataType: EnumDataType.Lookup,
