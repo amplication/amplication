@@ -1,6 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { createWriteStream, mkdirSync, readFileSync, writeFile } from "fs";
-import { v4 as uuidv4 } from "uuid";
+import {
+  createWriteStream,
+  mkdirSync,
+  readFileSync,
+  writeFile,
+  writeFileSync,
+} from "fs";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import {
@@ -31,16 +36,21 @@ type SchemaEntityFields = {
 export class SchemaImportService {
   constructor() {}
 
-  async saveFile(file: Express.Multer.File): Promise<string> {
+  async saveFile(
+    file: Express.Multer.File,
+    resourceId: string
+  ): Promise<string> {
     const rootDir = process.cwd();
-    const randomUUid = uuidv4();
-    mkdirSync(`${rootDir}/.schema-uploads/${randomUUid}`, { recursive: true });
-    const writeDir = `${rootDir}/.schema-uploads/${randomUUid}/${file.originalname}`;
+    mkdirSync(`${rootDir}/.schema-uploads/${resourceId}`, { recursive: true });
+    const writeDir = `${rootDir}/.schema-uploads/${resourceId}/${file.originalname}`;
     return new Promise((resolve, reject) => {
-      file.stream
-        .pipe(createWriteStream(writeDir))
-        .on("finish", () => resolve(writeDir))
-        .on("error", (error) => reject(error));
+      try {
+        writeFileSync(writeDir, file.buffer);
+        console.log(writeDir);
+        resolve(writeDir);
+      } catch (error) {
+        reject(error);
+      }
     });
   }
 

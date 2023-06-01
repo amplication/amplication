@@ -1,4 +1,5 @@
 import {
+  Body,
   Controller,
   Post,
   UploadedFile,
@@ -13,9 +14,12 @@ import { Express } from "express";
 export class SchemaImportController {
   constructor(private readonly schemaImportService: SchemaImportService) {}
 
-  @Post("upload")
+  @Post("upload-schema")
   @UseInterceptors(FileInterceptor("file"))
-  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
-    return this.schemaImportService.saveFile(file);
+  async uploadFile(
+    @UploadedFile() file: Express.Multer.File,
+    @Body("resourceId") resourceId: string
+  ): Promise<string> {
+    return this.schemaImportService.saveFile(file, resourceId);
   }
 }
