@@ -368,12 +368,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
       {currentProject?.useDemoRepo && (
         <div className={`${CLASS_NAME}__highlight`}>
-          Please note that currently you are connected to a demo repository.
+          Notice: You're currently using a demo repository for your generated
+          code. For a full personalized experience, please&nbsp;
           <Link
             title={"Go to project settings"}
             to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentProjectConfiguration?.id}/git-sync`}
           >
-            Connect to your Git Repo
+            connect to your own repository
           </Link>
         </div>
       )}
