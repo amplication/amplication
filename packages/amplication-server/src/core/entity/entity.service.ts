@@ -358,17 +358,34 @@ export class EntityService {
     filePath: string,
     resourceId: string,
     user: User
-  ): Promise<any> {
+  ): Promise<Entity[]> {
     const schemaJson = await this.schemaImportService.getSchema(filePath);
-
     const preparedSchema = this.schemaImportService.prepareSchema(schemaJson);
-
     // save schema to json file for debugging
     this.schemaImportService.saveAsJsonSchema(preparedSchema, filePath);
 
-    // const entities = preparedSchema.forEach(async (entity) => {
-    //   await this.createOneEntity();
-    // });
+    // loop over the prepared schema and create entities
+    const entities = await Promise.all(
+      preparedSchema.map((entity) => {
+        return this.createOneEntity(
+          {
+            data: {
+              name: entity.name,
+              displayName: entity.displayName,
+              pluralDisplayName: entity.pluralDisplayName,
+              description: entity.description,
+              resource: {
+                connect: {
+                  id: resourceId,
+                },
+              },
+            },
+          },
+          user
+        );
+      })
+    );
+    return entities;
   }
 
   async createDefaultEntities(resourceId: string, user: User): Promise<void> {

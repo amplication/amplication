@@ -91,7 +91,7 @@ export class EntityResolver {
   async createEntitiesFromSchema(
     @UserEntity() user: User,
     @Args() args: createEntitiesFromSchemaArgs
-  ): Promise<any> {
+  ): Promise<Entity[]> {
     const { filePath, resourceId } = args.data;
     return this.entityService.createEntitiesFromSchema(
       filePath,
