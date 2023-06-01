@@ -11,6 +11,7 @@ import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
+import { Toggle } from "@amplication/ui/design-system";
 
 const className = "create-git-sync";
 
@@ -63,6 +64,28 @@ const CreateGithubSync: React.FC<props> = ({
     );
   }, [gitRepository]);
 
+  const handleDemoRepoChange = useCallback(
+    (checked: boolean) => {
+      formik.setValues(
+        {
+          ...formik.values,
+          connectToDemoRepo: checked,
+          gitRepositoryName: checked
+            ? "demo-repo"
+            : projectConfigGitRepository?.repositoryName,
+          gitOrganizationId: checked
+            ? "demo-org"
+            : projectConfigGitRepository?.gitOrganizationId,
+          gitRepositoryUrl: checked
+            ? "demo-org"
+            : projectConfigGitRepository?.gitRepositoryUrl,
+        },
+        true
+      );
+    },
+    [formik]
+  );
+
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
   }, [refreshCurrentWorkspace]);
@@ -77,6 +100,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
           groupName: data.groupName,
+          connectToDemoRepo: false,
         },
         true
       );
@@ -95,6 +119,7 @@ const CreateGithubSync: React.FC<props> = ({
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
           groupName: data.groupName,
+          connectToDemoRepo: false,
         },
         true
       );
@@ -155,6 +180,15 @@ const CreateGithubSync: React.FC<props> = ({
             ></ServiceWizardConfigurationGitSettings>
           )}
         </div>
+
+        {defineUser === "Onboarding" && (
+          <div>
+            <Toggle
+              onValueChange={handleDemoRepoChange}
+              label="Connect To Demo Repo"
+            />
+          </div>
+        )}
       </Layout.RightSide>
     </Layout.Split>
   );

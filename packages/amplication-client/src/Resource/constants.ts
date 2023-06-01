@@ -116,7 +116,8 @@ export function prepareServiceObject(
   wizardType: DefineUser,
   repoType: string,
   dbType: string,
-  auth: string
+  auth: string,
+  connectToDemoRepo: boolean
   // gitOrganizationName: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
@@ -150,7 +151,7 @@ export function prepareServiceObject(
     repoType,
     dbType,
     authType: auth,
-    connectToDemoRepo: true,
+    connectToDemoRepo,
   };
 }
 

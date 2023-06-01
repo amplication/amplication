@@ -145,6 +145,7 @@ export const ResourceInitialValues = {
   templateType: "empty",
   authType: "core",
   gitProvider: null,
+  connectToDemoRepo: false,
 };
 
 export interface WizardProgressBarInterface {
