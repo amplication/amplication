@@ -1,8 +1,8 @@
 import { ArgsType, Field } from "@nestjs/graphql";
-import { FilePathInput } from "./FilePathInput";
+import { FileUploadInput } from "./FileUploadInput";
 
 @ArgsType()
 export class createEntitiesFromSchemaArgs {
-  @Field(() => FilePathInput, { nullable: false })
-  data!: FilePathInput;
+  @Field(() => FileUploadInput, { nullable: false })
+  data!: FileUploadInput;
 }
