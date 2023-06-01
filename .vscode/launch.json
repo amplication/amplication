@@ -9,14 +9,9 @@
       "request": "attach",
       "name": "Attach NestJS WS",
       "port": 9229,
-      "restart": true
-    },
-    {
-      "name": "Debug Client",
-      "type": "chrome",
-      "request": "launch",
-      "url": "http://localhost:3001",
-      "webRoot": "${workspaceFolder}/packages/amplication-client"
+      "restart": true,
+      "stopOnEntry": false,
+      "protocol": "inspector"
     },
     {
       "type": "node",
