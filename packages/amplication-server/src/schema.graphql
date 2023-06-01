@@ -1117,7 +1117,7 @@ type Mutation {
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
-  createEntitiesFromSchema(data: FileUploadInput!): Entity!
+  createEntitiesFromSchema(data: FileUploadInput!): [Entity!]!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity

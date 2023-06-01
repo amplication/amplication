@@ -867,7 +867,7 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultRelatedField: EntityField;
-  createEntitiesFromSchema: Entity;
+  createEntitiesFromSchema: Array<Entity>;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createGitRepository: Resource;
