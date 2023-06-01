@@ -1,13 +1,31 @@
 import { Injectable } from "@nestjs/common";
 import { createWriteStream, mkdirSync, readFileSync, writeFile } from "fs";
 import { v4 as uuidv4 } from "uuid";
-import { getSchema, Schema, Model, Field } from "@mrleebo/prisma-ast";
+import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import {
   capitalizeFirstLetter,
   filterOutAmplicatoinAttributes,
   prepareModelAttributes,
 } from "./schema-utils";
+
+type SchemaEntityFields = {
+  name: string;
+  displayName: any;
+  pluralDisplayName: string;
+  pluralName: string;
+  description: string | null;
+  customAttributes: any;
+  fields: {
+    name: string;
+    displayName: any;
+    dataType: string | Func;
+    required: boolean;
+    unique: boolean;
+    properties: {};
+    customAttributes: any;
+  }[];
+};
 
 @Injectable()
 export class SchemaImportService {
@@ -33,7 +51,7 @@ export class SchemaImportService {
     return getSchema(source);
   }
 
-  prepareSchemaObj(schema: Schema) {
+  prepareSchema(schema: Schema): SchemaEntityFields[] {
     const entities = schema.list
       .filter((item: Model) => item.type === "model")
       .map((item: Model) => {
@@ -49,6 +67,7 @@ export class SchemaImportService {
           displayName: capitalizeFirstLetter(item.name),
           pluralDisplayName: pluralize(capitalizeFirstLetter(item.name)),
           pluralName: pluralize(item.name.toLowerCase()),
+          description: null,
           customAttributes: prepareModelAttributes(modelAttributes),
           fields: modelFields.map((field: Field) => {
             return {
@@ -69,7 +88,7 @@ export class SchemaImportService {
     return entities;
   }
 
-  async saveAsJsonSchema(schemaObj: object, filePath: string): Promise<any> {
+  saveAsJsonSchema(schemaObj: object, filePath: string) {
     // get the file dir from the filePath
     const fileDir = filePath.split("/").slice(0, -1).join("/");
     writeFile(
@@ -82,4 +101,11 @@ export class SchemaImportService {
       }
     );
   }
+
+  /**
+   *  TODO: add schema validation
+   * for example, check that the schema has at least one model, doesn't have duplicate models, enums, etc.
+   * return a list of errors
+   *
+   */
 }
