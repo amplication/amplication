@@ -62,6 +62,7 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  UploadSchemaClick = "uploadSchemaClick",
 
   // message broker
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
