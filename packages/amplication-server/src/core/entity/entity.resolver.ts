@@ -85,7 +85,7 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args, user);
   }
 
-  @Mutation(() => Entity, {
+  @Mutation(() => [Entity], {
     nullable: false,
   })
   async createEntitiesFromSchema(
