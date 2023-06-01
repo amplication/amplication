@@ -354,13 +354,21 @@ export class EntityService {
     return newEntity;
   }
 
-  async createEntitiesFromSchema(filePath: string, user: User): Promise<any> {
+  async createEntitiesFromSchema(
+    filePath: string,
+    resourceId: string,
+    user: User
+  ): Promise<any> {
     const schemaJson = await this.schemaImportService.getSchema(filePath);
 
-    const preparedSchemaObj =
-      this.schemaImportService.prepareSchemaObj(schemaJson);
+    const preparedSchema = this.schemaImportService.prepareSchema(schemaJson);
 
-    this.schemaImportService.saveAsJsonSchema(preparedSchemaObj, filePath);
+    // save schema to json file for debugging
+    this.schemaImportService.saveAsJsonSchema(preparedSchema, filePath);
+
+    // const entities = preparedSchema.forEach(async (entity) => {
+    //   await this.createOneEntity();
+    // });
   }
 
   async createDefaultEntities(resourceId: string, user: User): Promise<void> {
