@@ -355,9 +355,6 @@ export class EntityService {
   }
 
   async createEntitiesFromSchema(filePath: string, user: User): Promise<any> {
-    // mock the file path for now
-    filePath =
-      ".uploads/be786d01-ef86-4004-954b-6fc265b450c4/schema-introspection.prisma";
     const schemaJson = await this.schemaImportService.getSchema(filePath);
 
     const preparedSchemaObj =
