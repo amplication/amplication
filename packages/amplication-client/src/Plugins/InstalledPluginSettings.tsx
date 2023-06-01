@@ -36,8 +36,6 @@ type Props = AppRouteProps & {
 };
 
 const generatedKey = () => Math.random().toString(36).slice(2, 7);
-const LATEST_VERSION_TAG = "latest";
-const LATEST_VERSION_LABEL = (version: string) => `Latest (${version})`;
 
 const InstalledPluginSettings: React.FC<Props> = ({
   match,
@@ -95,12 +93,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
-      const selectedVersion = pluginVersion.isLatest
-        ? LATEST_VERSION_TAG
-        : pluginVersion.version;
-      setSelectedVersion(selectedVersion);
-      pluginInstallation?.PluginInstallation.version !== selectedVersion &&
-        setIsValid(false);
+      setSelectedVersion(pluginVersion.version);
+      pluginInstallation?.PluginInstallation.version !==
+        pluginVersion.version && setIsValid(false);
       editorRef.current = pluginVersion.settings;
     },
     [setSelectedVersion, setIsValid]
@@ -151,15 +146,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
               </div>
               <SelectMenu
                 title={
-                  plugin.taggedVersions[LATEST_VERSION_TAG] ===
-                    selectedVersion ||
-                  pluginInstallation.PluginInstallation.version ===
-                    LATEST_VERSION_TAG
-                    ? LATEST_VERSION_LABEL(
-                        plugin.taggedVersions[LATEST_VERSION_TAG]
-                      )
-                    : selectedVersion ||
-                      pluginInstallation.PluginInstallation.version
+                  selectedVersion ||
+                  pluginInstallation.PluginInstallation.version
                 }
                 buttonStyle={EnumButtonStyle.Secondary}
                 className={`${moduleClass}__menu`}
@@ -178,9 +166,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
                             handleSelectVersion(pluginVersion);
                           }}
                         >
-                          {pluginVersion.isLatest
-                            ? LATEST_VERSION_LABEL(pluginVersion.version)
-                            : pluginVersion.version}
+                          {pluginVersion.version}
                         </SelectMenuItem>
                       ))}
                     </>
