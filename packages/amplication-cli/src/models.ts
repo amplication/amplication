@@ -745,8 +745,9 @@ export type Environment = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type FilePathInput = {
+export type FileUploadInput = {
   filePath: Scalars['String'];
+  resourceId: Scalars['String'];
 };
 
 export type GitGetInstallationUrlInput = {
@@ -981,7 +982,7 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 
 
 export type MutationCreateEntitiesFromSchemaArgs = {
-  data: FilePathInput;
+  data: FileUploadInput;
 };
 
 
