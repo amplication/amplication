@@ -106,6 +106,8 @@ type Project {
   resources: [Resource!]
   createdAt: DateTime!
   updatedAt: DateTime!
+  useDemoRepo: Boolean!
+  demoRepoName: String
 }
 
 type Resource {

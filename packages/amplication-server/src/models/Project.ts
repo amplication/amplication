@@ -32,4 +32,14 @@ export class Project {
   updatedAt!: Date;
 
   deletedAt?: Date;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  useDemoRepo!: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  demoRepoName?: string;
 }

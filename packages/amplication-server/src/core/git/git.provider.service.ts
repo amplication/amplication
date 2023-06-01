@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { FindOneArgs } from "../../dto";
@@ -50,6 +50,7 @@ import {
 import { User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
+import { ProjectService } from "../project/project.service";
 
 @Injectable()
 export class GitProviderService {
@@ -62,7 +63,9 @@ export class GitProviderService {
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -464,6 +467,10 @@ export class GitProviderService {
       event: EnumEventType.GitHubAuthResourceComplete,
     });
 
+    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+      args.data.workspaceId
+    );
+
     return await this.prisma.gitOrganization.create({
       data: {
         workspace: {
@@ -637,6 +644,10 @@ export class GitProviderService {
     });
 
     this.logger.info("server: completeOAuth2Flow");
+
+    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+      workspaceId
+    );
 
     return this.prisma.gitOrganization.upsert({
       where: {

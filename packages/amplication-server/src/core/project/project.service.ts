@@ -496,4 +496,15 @@ export class ProjectService {
     }
     return demoRepoName;
   }
+
+  async disableDemoRepoForAllWorkspaceProjects(workspaceId: string) {
+    await this.prisma.project.updateMany({
+      where: {
+        workspaceId: workspaceId,
+      },
+      data: {
+        useDemoRepo: false,
+      },
+    });
+  }
 }

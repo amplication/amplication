@@ -1407,10 +1407,12 @@ export type PluginSetOrderInput = {
 
 export type Project = {
   createdAt: Scalars['DateTime'];
+  demoRepoName?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime'];
+  useDemoRepo: Scalars['Boolean'];
 };
 
 export type ProjectConfigurationSettings = IBlock & {

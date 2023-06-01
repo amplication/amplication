@@ -317,6 +317,8 @@ export class ResourceService {
       await this.projectService.createDemoRepo(
         data.resource.project.connect.id
       );
+      //do not use any git data when using demo repo
+      data.resource.gitRepository = undefined;
     }
 
     const resource = await this.createService(
@@ -450,11 +452,16 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-    const { provider } = await this.gitOrganizationByResource({
-      where: {
-        id: resource.id,
-      },
-    });
+    const provider = data.connectToDemoRepo
+      ? "demo-repo"
+      : (
+          await this.gitOrganizationByResource({
+            where: {
+              id: resource.id,
+            },
+          })
+        ).provider;
+
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
