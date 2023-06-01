@@ -11,19 +11,19 @@ import {
 
 type SchemaEntityFields = {
   name: string;
-  displayName: any;
+  displayName: string;
   pluralDisplayName: string;
   pluralName: string;
   description: string | null;
-  customAttributes: any;
+  customAttributes: string[];
   fields: {
     name: string;
-    displayName: any;
+    displayName: string;
     dataType: string | Func;
     required: boolean;
     unique: boolean;
     properties: {};
-    customAttributes: any;
+    customAttributes: string[];
   }[];
 };
 
