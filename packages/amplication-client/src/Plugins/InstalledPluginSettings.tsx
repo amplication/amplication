@@ -95,9 +95,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
-      const selectedVersion = pluginVersion.isLatest
-        ? LATEST_VERSION_TAG
-        : pluginVersion.version;
+      const selectedVersion = pluginVersion.version;
       setSelectedVersion(selectedVersion);
       pluginInstallation?.PluginInstallation.version !== selectedVersion &&
         setIsValid(false);
@@ -109,11 +107,15 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
     const { enabled, id } = pluginInstallation.PluginInstallation;
+    const selectedVersionOrLatest =
+      plugin.taggedVersions[LATEST_VERSION_TAG] === selectedVersion
+        ? LATEST_VERSION_TAG
+        : selectedVersion;
     updatePluginInstallation({
       variables: {
         data: {
           enabled,
-          version: selectedVersion,
+          version: selectedVersionOrLatest,
           settings: JSON.parse(editorRef.current),
         },
         where: {
@@ -152,9 +154,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
               <SelectMenu
                 title={
                   plugin.taggedVersions[LATEST_VERSION_TAG] ===
-                    selectedVersion ||
-                  pluginInstallation.PluginInstallation.version ===
-                    LATEST_VERSION_TAG
+                    selectedVersion || selectedVersion === LATEST_VERSION_TAG
                     ? LATEST_VERSION_LABEL(
                         plugin.taggedVersions[LATEST_VERSION_TAG]
                       )
@@ -172,7 +172,10 @@ const InstalledPluginSettings: React.FC<Props> = ({
                         <SelectMenuItem
                           closeAfterSelectionChange
                           itemData={pluginVersion}
-                          selected={pluginVersion.version === selectedVersion}
+                          selected={[
+                            selectedVersion,
+                            LATEST_VERSION_LABEL(pluginVersion.version),
+                          ].includes(pluginVersion.version)}
                           key={pluginVersion.id}
                           onSelectionChange={(pluginVersion) => {
                             handleSelectVersion(pluginVersion);
