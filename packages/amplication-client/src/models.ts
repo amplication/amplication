@@ -745,6 +745,10 @@ export type Environment = {
   updatedAt: Scalars['DateTime'];
 };
 
+export type FilePathInput = {
+  filePath: Scalars['String'];
+};
+
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
@@ -862,6 +866,7 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultRelatedField: EntityField;
+  createEntitiesFromSchema: Entity;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createGitRepository: Resource;
@@ -972,6 +977,11 @@ export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;
+};
+
+
+export type MutationCreateEntitiesFromSchemaArgs = {
+  data: FilePathInput;
 };
 
 
