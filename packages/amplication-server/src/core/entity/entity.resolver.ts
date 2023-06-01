@@ -44,6 +44,7 @@ import {
   CreateDefaultRelatedFieldArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
+import { createEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -82,6 +83,19 @@ export class EntityResolver {
     @Args() args: CreateOneEntityArgs
   ): Promise<Entity> {
     return this.entityService.createOneEntity(args, user);
+  }
+
+  @Mutation(() => Entity, {
+    nullable: false,
+  })
+  async createEntitiesFromSchema(
+    @UserEntity() user: User,
+    @Args() args: createEntitiesFromSchemaArgs
+  ): Promise<any> {
+    return this.entityService.createEntitiesFromSchema(
+      args.data.filePath,
+      user
+    );
   }
 
   @Mutation(() => Entity, {

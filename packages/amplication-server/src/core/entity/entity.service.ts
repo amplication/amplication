@@ -80,6 +80,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { SchemaImportService } from "../schemaImport/schemaImport.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -177,6 +178,7 @@ export class EntityService {
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
     private readonly diffService: DiffService,
     private readonly analytics: SegmentAnalyticsService,
+    private readonly schemaImportService: SchemaImportService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -350,6 +352,18 @@ export class EntityService {
     });
 
     return newEntity;
+  }
+
+  async createEntitiesFromSchema(filePath: string, user: User): Promise<any> {
+    // mock the file path for now
+    filePath =
+      ".uploads/be786d01-ef86-4004-954b-6fc265b450c4/schema-introspection.prisma";
+    const schemaJson = await this.schemaImportService.getSchema(filePath);
+
+    const preparedSchemaObj =
+      this.schemaImportService.prepareSchemaObj(schemaJson);
+
+    this.schemaImportService.saveAsJsonSchema(preparedSchemaObj, filePath);
   }
 
   async createDefaultEntities(resourceId: string, user: User): Promise<void> {
