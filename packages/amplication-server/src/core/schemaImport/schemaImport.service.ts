@@ -61,7 +61,6 @@ export class SchemaImportService {
               customAttributes: filterOutAmplicatoinAttributes(
                 prepareModelAttributes(field.attributes)
               ),
-              searchable: false,
             };
           }),
         };
