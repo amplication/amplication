@@ -364,27 +364,26 @@ export class EntityService {
     // save schema to json file for debugging
     this.schemaImportService.saveAsJsonSchema(preparedSchema, filePath);
 
-    // loop over the prepared schema and create entities
-    const entities = await Promise.all(
-      preparedSchema.map((entity) => {
-        return this.createOneEntity(
-          {
-            data: {
-              name: entity.name,
-              displayName: entity.displayName,
-              pluralDisplayName: entity.pluralDisplayName,
-              description: entity.description,
-              resource: {
-                connect: {
-                  id: resourceId,
-                },
+    const entities: Entity[] = [];
+    for (const entity of preparedSchema) {
+      const newEntity = await this.createOneEntity(
+        {
+          data: {
+            name: entity.name,
+            displayName: entity.displayName,
+            pluralDisplayName: entity.pluralDisplayName,
+            description: entity.description,
+            resource: {
+              connect: {
+                id: resourceId,
               },
             },
           },
-          user
-        );
-      })
-    );
+        },
+        user
+      );
+      entities.push(newEntity);
+    }
     return entities;
   }
 
