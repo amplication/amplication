@@ -19,7 +19,7 @@ export class PrismaSchemaImportController {
     private readonly schemaImportService: PrismaSchemaImportService
   ) {}
 
-  @Post("upload-schema")
+  @Post("upload-prisma-schema")
   @UseInterceptors(FileInterceptor("file"))
   async uploadFile(
     @UserEntity() user: User,
