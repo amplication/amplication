@@ -129,15 +129,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             placeholder="search"
             onChange={handleSearchChange}
           />
-          <PrismaSchemaUpload resourceId={resource} />
-          <Button
-            className={`${CLASS_NAME}__add-button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleNewEntityClick}
-            icon="plus"
-          >
-            Add entity
-          </Button>
+          <div className={`${CLASS_NAME}__action-buttons`}>
+            <PrismaSchemaUpload resourceId={resource} />
+            <Button
+              className={`${CLASS_NAME}__add-button`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleNewEntityClick}
+              icon="plus"
+            >
+              Add entity
+            </Button>
+          </div>
         </div>
 
         <div className={`${CLASS_NAME}__separator`} />

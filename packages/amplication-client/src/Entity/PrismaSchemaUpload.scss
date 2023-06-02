@@ -1,0 +1,17 @@
+@import "../style/index.scss";
+
+.prisma-schema-upload {
+  &__label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+  }
+
+  &__input {
+    display: none;
+  }
+
+  &__icon {
+    margin-left: var(--default-spacing-small);
+  }
+}

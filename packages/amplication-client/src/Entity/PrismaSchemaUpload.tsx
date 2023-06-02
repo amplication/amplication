@@ -3,10 +3,14 @@ import axios from "axios";
 import { gql, useMutation } from "@apollo/client";
 import { Entity } from "../models";
 import { REACT_APP_SERVER_URL } from "../env";
+import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
+import "./PrismaSchemaUpload.scss";
 
 type Props = {
   resourceId: string;
 };
+
+const CLASS_NAME = "prisma-schema-upload";
 
 const PrismaSchemaUpload = ({ resourceId }: Props) => {
   const url = `${REACT_APP_SERVER_URL}/file/upload-schema`;
@@ -41,9 +45,18 @@ const PrismaSchemaUpload = ({ resourceId }: Props) => {
   }, []);
 
   return (
-    <div>
-      <input type="file" onChange={onFileChange} />
-    </div>
+    <Button type="button" buttonStyle={EnumButtonStyle.Outline}>
+      <label htmlFor="fileInput" className={`${CLASS_NAME}__label`}>
+        Upload Prisma Schema
+        <Icon icon="upload1" size="small" className={`${CLASS_NAME}__icon`} />
+      </label>
+      <input
+        id="fileInput"
+        type="file"
+        onChange={onFileChange}
+        className={`${CLASS_NAME}__input`}
+      />
+    </Button>
   );
 };
 
