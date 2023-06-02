@@ -29,7 +29,7 @@ $tabs-width: 300px;
   }
 
   &__main {
-    @include scrollbars(16px, var(--black60), transparent);
+    @include scrollbars(1px, var(--black60), transparent);
     flex: 1;
     overflow: auto;
     position: relative;
