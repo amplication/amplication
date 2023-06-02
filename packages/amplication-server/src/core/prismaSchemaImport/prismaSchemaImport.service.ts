@@ -1,5 +1,9 @@
 import { Inject, Injectable } from "@nestjs/common";
-// import { mkdirSync, readFileSync, writeFile, writeFileSync } from "fs";
+import { ConfigService } from "@nestjs/config";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Express } from "express";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Multer } from "multer";
 import { promises as fs } from "fs";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
 import path from "path";
@@ -11,10 +15,7 @@ import {
 } from "./schema-utils";
 import { validate } from "@prisma/internals";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Express } from "express";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Multer } from "multer";
+import { Env } from "../../env";
 
 type SchemaEntityFields = {
   name: string;
@@ -36,21 +37,29 @@ type SchemaEntityFields = {
 
 @Injectable()
 export class PrismaSchemaImportService {
+  prismaSchemaUploadsFolder: string;
   constructor(
+    private readonly configService: ConfigService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.prismaSchemaUploadsFolder = configService.get(
+      Env.PRISMA_SCHEMA_UPLOAD_FOLDER
+    );
+  }
 
   async saveFile(
     file: Express.Multer.File,
     resourceId: string
   ): Promise<string> {
     this.validateSchema(file);
-
     const rootDir = process.cwd();
-    await fs.mkdir(`${rootDir}/.schema-uploads/${resourceId}`, {
-      recursive: true,
-    });
-    const writeDir = `${rootDir}/.schema-uploads/${resourceId}/${file.originalname}`;
+    await fs.mkdir(
+      `${rootDir}/${this.prismaSchemaUploadsFolder}/${resourceId}`,
+      {
+        recursive: true,
+      }
+    );
+    const writeDir = `${rootDir}/${this.prismaSchemaUploadsFolder}/${resourceId}/${file.originalname}`;
 
     try {
       await fs.writeFile(writeDir, file.buffer);
