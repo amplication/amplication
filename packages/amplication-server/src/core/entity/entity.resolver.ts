@@ -88,6 +88,7 @@ export class EntityResolver {
   @Mutation(() => [Entity], {
     nullable: false,
   })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
   async createEntitiesFromSchema(
     @UserEntity() user: User,
     @Args() args: CreateEntitiesFromSchemaArgs
