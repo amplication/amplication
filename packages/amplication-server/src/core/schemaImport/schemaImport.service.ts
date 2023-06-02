@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { mkdirSync, readFileSync, writeFile, writeFileSync } from "fs";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
@@ -7,6 +7,7 @@ import {
   filterOutAmplicatoinAttributes,
   prepareModelAttributes,
 } from "./schema-utils";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 type SchemaEntityFields = {
   name: string;
@@ -21,14 +22,16 @@ type SchemaEntityFields = {
     dataType: string | Func;
     required: boolean;
     unique: boolean;
-    properties: {};
+    properties: Record<string, unknown>;
     customAttributes: string[];
   }[];
 };
 
 @Injectable()
 export class SchemaImportService {
-  constructor() {}
+  constructor(
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
+  ) {}
 
   async saveFile(
     file: Express.Multer.File,
@@ -40,7 +43,6 @@ export class SchemaImportService {
     return new Promise((resolve, reject) => {
       try {
         writeFileSync(writeDir, file.buffer);
-        console.log(writeDir);
         resolve(writeDir);
       } catch (error) {
         reject(error);
@@ -100,7 +102,7 @@ export class SchemaImportService {
       JSON.stringify(schemaObj, null, 2),
       function (err) {
         if (err) {
-          console.log(err);
+          this.logger.error(err);
         }
       }
     );

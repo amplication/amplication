@@ -25,7 +25,6 @@ const PrismaSchemaUpload = ({ resourceId }: Props) => {
       })
       .then((response) => {
         const filePath = response.data;
-        console.log(filePath);
         createEntitiesFormSchema({
           variables: {
             data: {
