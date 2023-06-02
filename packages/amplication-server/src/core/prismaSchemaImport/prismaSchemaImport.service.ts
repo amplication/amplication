@@ -1,6 +1,8 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { mkdirSync, readFileSync, writeFile, writeFileSync } from "fs";
+// import { mkdirSync, readFileSync, writeFile, writeFileSync } from "fs";
+import { promises as fs } from "fs";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
+import path from "path";
 import pluralize from "pluralize";
 import {
   capitalizeFirstLetter,
@@ -45,17 +47,18 @@ export class PrismaSchemaImportService {
     this.validateSchema(file);
 
     const rootDir = process.cwd();
-    mkdirSync(`${rootDir}/.schema-uploads/${resourceId}`, { recursive: true });
-    const writeDir = `${rootDir}/.schema-uploads/${resourceId}/${file.originalname}`;
-    return new Promise((resolve, reject) => {
-      try {
-        writeFileSync(writeDir, file.buffer);
-        resolve(writeDir);
-      } catch (error) {
-        this.logger.error("Failed to save prisma schema", error);
-        reject(error);
-      }
+    await fs.mkdir(`${rootDir}/.schema-uploads/${resourceId}`, {
+      recursive: true,
     });
+    const writeDir = `${rootDir}/.schema-uploads/${resourceId}/${file.originalname}`;
+
+    try {
+      await fs.writeFile(writeDir, file.buffer);
+      return writeDir;
+    } catch (error) {
+      this.logger.error("Failed to save prisma schema", error);
+      throw error;
+    }
   }
 
   validateSchema(file: Express.Multer.File): void {
@@ -69,8 +72,8 @@ export class PrismaSchemaImportService {
     }
   }
 
-  getSchema(filePath: string): Schema {
-    const source = readFileSync(filePath, {
+  async getSchema(filePath: string): Promise<Schema> {
+    const source = await fs.readFile(filePath, {
       encoding: "utf8",
     });
     return getSchema(source);
@@ -113,18 +116,16 @@ export class PrismaSchemaImportService {
     return entities;
   }
 
-  saveAsJsonSchema(schemaObj: object, filePath: string) {
-    // get the file dir from the filePath
-    const fileDir = filePath.split("/").slice(0, -1).join("/");
-    writeFile(
-      `${fileDir}/schema.json`,
-      JSON.stringify(schemaObj, null, 2),
-      function (err) {
-        if (err) {
-          this.logger.error(err);
-        }
-      }
-    );
+  async saveAsJsonSchema(schemaObj: object, filePath: string) {
+    const fileDir = path.dirname(filePath);
+    try {
+      await fs.writeFile(
+        `${fileDir}/schema.json`,
+        JSON.stringify(schemaObj, null, 2)
+      );
+    } catch (err) {
+      this.logger.error(err);
+    }
   }
 
   /**

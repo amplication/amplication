@@ -363,7 +363,10 @@ export class EntityService {
     const preparedSchema =
       this.prismaSchemaImportService.prepareSchema(schemaJson);
     // save schema to json file for debugging
-    this.prismaSchemaImportService.saveAsJsonSchema(preparedSchema, filePath);
+    await this.prismaSchemaImportService.saveAsJsonSchema(
+      preparedSchema,
+      filePath
+    );
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
