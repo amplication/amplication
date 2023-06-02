@@ -7,6 +7,7 @@ import {
   filterOutAmplicatoinAttributes,
   prepareModelAttributes,
 } from "./schema-utils";
+import { validate } from "@prisma/internals";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Express } from "express";
@@ -41,6 +42,8 @@ export class PrismaSchemaImportService {
     file: Express.Multer.File,
     resourceId: string
   ): Promise<string> {
+    this.validateSchema(file);
+
     const rootDir = process.cwd();
     mkdirSync(`${rootDir}/.schema-uploads/${resourceId}`, { recursive: true });
     const writeDir = `${rootDir}/.schema-uploads/${resourceId}/${file.originalname}`;
@@ -49,9 +52,21 @@ export class PrismaSchemaImportService {
         writeFileSync(writeDir, file.buffer);
         resolve(writeDir);
       } catch (error) {
+        this.logger.error("Failed to save prisma schema", error);
         reject(error);
       }
     });
+  }
+
+  validateSchema(file: Express.Multer.File): void {
+    const schemaString = file.buffer.toString("utf-8").replace(/\\n/g, "\n");
+    try {
+      validate({ datamodel: schemaString });
+      this.logger.info("Valid schema");
+    } catch (error) {
+      this.logger.error("Invalid schema", error);
+      throw new Error("Invalid schema");
+    }
   }
 
   getSchema(filePath: string): Schema {
