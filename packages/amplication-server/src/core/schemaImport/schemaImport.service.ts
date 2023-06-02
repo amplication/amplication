@@ -1,11 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import {
-  createWriteStream,
-  mkdirSync,
-  readFileSync,
-  writeFile,
-  writeFileSync,
-} from "fs";
+import { mkdirSync, readFileSync, writeFile, writeFileSync } from "fs";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import {

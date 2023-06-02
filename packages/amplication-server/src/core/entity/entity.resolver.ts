@@ -44,7 +44,7 @@ import {
   CreateDefaultRelatedFieldArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
-import { createEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
+import { CreateEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -90,7 +90,7 @@ export class EntityResolver {
   })
   async createEntitiesFromSchema(
     @UserEntity() user: User,
-    @Args() args: createEntitiesFromSchemaArgs
+    @Args() args: CreateEntitiesFromSchemaArgs
   ): Promise<Entity[]> {
     const { filePath, resourceId } = args.data;
     return this.entityService.createEntitiesFromSchema(

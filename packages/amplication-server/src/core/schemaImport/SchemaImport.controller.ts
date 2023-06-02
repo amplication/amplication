@@ -7,6 +7,7 @@ import {
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
 import { SchemaImportService } from "./schemaImport.service";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Multer } from "multer";
 import { Express } from "express";
 

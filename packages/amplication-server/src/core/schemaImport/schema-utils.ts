@@ -18,7 +18,7 @@ export function prepareModelAttributes(attributes) {
         ? `@@${attribute.name}`
         : `@${attribute.name}`;
     }
-    let args = attribute.args.map((arg) => {
+    const args = attribute.args.map((arg) => {
       if (typeof arg.value === "object" && arg.value !== null) {
         if (arg.value.type === "array") {
           return `[${arg.value.args.join(", ")}]`;
