@@ -41,6 +41,10 @@ import {
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   INITIAL_ID_TYPE_FIELDS,
+  DEFAULT_INITIAL_ENTITY_FIELDS_CREATION,
+  InitialEntityFieldsCreation,
+  InitialEntityFieldKeys,
+  EntityFieldData,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -241,9 +245,40 @@ export class EntityService {
     });
   }
 
+  async createInitialEntityFields(
+    entity: Entity,
+    fieldsCreationConfig: InitialEntityFieldsCreation
+  ) {
+    const fields: { [K in InitialEntityFieldKeys]: EntityFieldData } = {
+      id: INITIAL_ENTITY_FIELDS[0],
+      createdAt: INITIAL_ENTITY_FIELDS[1],
+      updatedAt: INITIAL_ENTITY_FIELDS[2],
+    };
+
+    for (const field in fieldsCreationConfig) {
+      if (fieldsCreationConfig[field]) {
+        await this.prisma.entityField.create({
+          data: {
+            ...fields[field],
+            entityVersion: {
+              connect: {
+                // eslint-disable-next-line @typescript-eslint/naming-convention
+                entityId_versionNumber: {
+                  entityId: entity.id,
+                  versionNumber: CURRENT_VERSION_NUMBER,
+                },
+              },
+            },
+          },
+        });
+      }
+    }
+  }
+
   async createOneEntity(
     args: CreateOneEntityArgs,
-    user: User
+    user: User,
+    fieldsCreationConfig = DEFAULT_INITIAL_ENTITY_FIELDS_CREATION
   ): Promise<Entity> {
     if (
       args.data?.name?.toLowerCase().trim() ===
@@ -288,48 +323,7 @@ export class EntityService {
       },
     });
 
-    await this.prisma.entityField.create({
-      data: {
-        ...INITIAL_ENTITY_FIELDS[0],
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
-    });
-    await this.prisma.entityField.create({
-      data: {
-        ...INITIAL_ENTITY_FIELDS[1],
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
-    });
-    await this.prisma.entityField.create({
-      data: {
-        ...INITIAL_ENTITY_FIELDS[2],
-        entityVersion: {
-          connect: {
-            // eslint-disable-next-line @typescript-eslint/naming-convention
-            entityId_versionNumber: {
-              entityId: newEntity.id,
-              versionNumber: CURRENT_VERSION_NUMBER,
-            },
-          },
-        },
-      },
-    });
+    await this.createInitialEntityFields(newEntity, fieldsCreationConfig);
 
     const resourceWithProject = await this.prisma.resource.findUnique({
       where: {
@@ -370,6 +364,22 @@ export class EntityService {
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
+      const fieldsCreationConfig = INITIAL_ENTITY_FIELDS.reduce(
+        (acc, fieldData) => {
+          // id field is always created
+          if (fieldData.name === "id") {
+            acc[fieldData.name] = true;
+            return acc;
+          } else {
+            acc[fieldData.name] = entity.fields.some(
+              (field) => field.name === fieldData.name
+            );
+          }
+          return acc;
+        },
+        {} as Record<InitialEntityFieldKeys, boolean>
+      );
+
       const newEntity = await this.createOneEntity(
         {
           data: {
@@ -384,7 +394,8 @@ export class EntityService {
             },
           },
         },
-        user
+        user,
+        fieldsCreationConfig
       );
       entities.push(newEntity);
     }
