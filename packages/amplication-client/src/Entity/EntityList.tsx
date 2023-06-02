@@ -23,7 +23,7 @@ import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
-import PrismaSchemaUpload from "./prisma-schema-upload";
+import PrismaSchemaUpload from "./PrismaSchemaUpload";
 
 type TData = {
   entities: models.Entity[];
