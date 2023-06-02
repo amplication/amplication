@@ -13,7 +13,7 @@ type Props = {
 const CLASS_NAME = "prisma-schema-upload";
 
 const PrismaSchemaUpload = ({ resourceId }: Props) => {
-  const url = `${REACT_APP_SERVER_URL}/file/upload-schema`;
+  const url = `${REACT_APP_SERVER_URL}/file/upload-prisma-schema`;
   const [createEntitiesFormSchema, { data }] = useMutation<Entity[]>(
     CREATE_ENTITIES_FORM_SCHEMA
   );
