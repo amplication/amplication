@@ -19,7 +19,6 @@ const PrismaSchemaUpload = ({ resourceId }: Props) => {
     formData.append("file", file);
     formData.append("resourceId", resourceId);
     axios
-      // TODO: use env variable
       .post(url, formData, {
         headers: {
           "Content-Type": "multipart/form-data",
