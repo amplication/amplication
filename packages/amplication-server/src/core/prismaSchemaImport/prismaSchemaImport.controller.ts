@@ -6,7 +6,7 @@ import {
   UseInterceptors,
 } from "@nestjs/common";
 import { FileInterceptor } from "@nestjs/platform-express";
-import { SchemaImportService } from "./schemaImport.service";
+import { PrismaSchemaImportService } from "./prismaSchemaImport.service";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Multer } from "multer";
 import { Express } from "express";
@@ -14,8 +14,10 @@ import { UserEntity } from "../../decorators/user.decorator";
 import { User } from "../../models";
 
 @Controller("file")
-export class SchemaImportController {
-  constructor(private readonly schemaImportService: SchemaImportService) {}
+export class PrismaSchemaImportController {
+  constructor(
+    private readonly schemaImportService: PrismaSchemaImportService
+  ) {}
 
   @Post("upload-schema")
   @UseInterceptors(FileInterceptor("file"))

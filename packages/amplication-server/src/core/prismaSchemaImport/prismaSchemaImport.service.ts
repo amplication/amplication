@@ -32,7 +32,7 @@ type SchemaEntityFields = {
 };
 
 @Injectable()
-export class SchemaImportService {
+export class PrismaSchemaImportService {
   constructor(
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}

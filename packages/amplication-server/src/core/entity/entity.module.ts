@@ -7,7 +7,7 @@ import { EntityVersionResolver } from "./entityVersion.resolver";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
-import { SchemaImportModule } from "../schemaImport/schemaImport.module";
+import { PrismaSchemaImportModule } from "../prismaSchemaImport/prismaSchemaImport.module";
 
 @Module({
   imports: [
@@ -16,7 +16,7 @@ import { SchemaImportModule } from "../schemaImport/schemaImport.module";
     UserModule,
     JsonSchemaValidationModule,
     DiffModule,
-    SchemaImportModule,
+    PrismaSchemaImportModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
   exports: [EntityService, EntityResolver, EntityVersionResolver],

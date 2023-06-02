@@ -80,7 +80,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { SchemaImportService } from "../schemaImport/schemaImport.service";
+import { PrismaSchemaImportService } from "../prismaSchemaImport/prismaSchemaImport.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -178,7 +178,7 @@ export class EntityService {
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
     private readonly diffService: DiffService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly schemaImportService: SchemaImportService,
+    private readonly prismaSchemaImportService: PrismaSchemaImportService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -359,10 +359,11 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
-    const schemaJson = await this.schemaImportService.getSchema(filePath);
-    const preparedSchema = this.schemaImportService.prepareSchema(schemaJson);
+    const schemaJson = await this.prismaSchemaImportService.getSchema(filePath);
+    const preparedSchema =
+      this.prismaSchemaImportService.prepareSchema(schemaJson);
     // save schema to json file for debugging
-    this.schemaImportService.saveAsJsonSchema(preparedSchema, filePath);
+    this.prismaSchemaImportService.saveAsJsonSchema(preparedSchema, filePath);
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
