@@ -10,6 +10,8 @@ import { SchemaImportService } from "./schemaImport.service";
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 import { Multer } from "multer";
 import { Express } from "express";
+import { UserEntity } from "../../decorators/user.decorator";
+import { User } from "../../models";
 
 @Controller("file")
 export class SchemaImportController {
@@ -18,6 +20,7 @@ export class SchemaImportController {
   @Post("upload-schema")
   @UseInterceptors(FileInterceptor("file"))
   async uploadFile(
+    @UserEntity() user: User,
     @UploadedFile() file: Express.Multer.File,
     @Body("resourceId") resourceId: string
   ): Promise<string> {

@@ -8,6 +8,10 @@ import {
   prepareModelAttributes,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Express } from "express";
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+import { Multer } from "multer";
 
 type SchemaEntityFields = {
   name: string;
