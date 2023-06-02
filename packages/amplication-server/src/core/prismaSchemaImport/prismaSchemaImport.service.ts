@@ -127,9 +127,10 @@ export class PrismaSchemaImportService {
 
   async saveAsJsonSchema(schemaObj: object, filePath: string) {
     const fileDir = path.dirname(filePath);
+    const fileName = path.basename(filePath, ".prisma");
     try {
       await fs.writeFile(
-        `${fileDir}/schema.json`,
+        `${fileDir}/${fileName}.json`,
         JSON.stringify(schemaObj, null, 2)
       );
     } catch (err) {
