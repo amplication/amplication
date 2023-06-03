@@ -11,7 +11,7 @@ import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
-import { Toggle } from "@amplication/ui/design-system";
+import { ToggleField } from "@amplication/ui/design-system";
 
 const className = "create-git-sync";
 
@@ -45,11 +45,13 @@ const CreateGithubSync: React.FC<props> = ({
   const isNeedToConnectGitProvider = resources.length === 0 && !gitRepository;
 
   useEffect(() => {
+    handleDemoRepoChange(formik.values.connectToDemoRepo);
     formik.validateForm();
   }, []);
 
   useEffect(() => {
     if (formik.values.gitOrganizationId && formik.values.groupName) return;
+    if (formik.values.connectToDemoRepo) return;
 
     formik.setValues(
       {
@@ -182,10 +184,11 @@ const CreateGithubSync: React.FC<props> = ({
         </div>
 
         {defineUser === "Onboarding" && (
-          <div>
-            <Toggle
+          <div className={`${className}__demo`}>
+            <ToggleField
               onValueChange={handleDemoRepoChange}
-              label="Connect To Demo Repo"
+              name="connectToDemoRepo"
+              label="Push the generated code to a preview repository on GitHub"
             />
           </div>
         )}
