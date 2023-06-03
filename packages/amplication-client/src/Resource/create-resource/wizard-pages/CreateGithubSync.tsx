@@ -48,7 +48,6 @@ const CreateGithubSync: React.FC<props> = ({
   const isNeedToConnectGitProvider = resources.length === 0 && !gitRepository;
 
   useEffect(() => {
-    handleDemoRepoChange(formik.values.connectToDemoRepo);
     formik.validateForm();
   }, []);
 
@@ -59,6 +58,7 @@ const CreateGithubSync: React.FC<props> = ({
     formik.setValues(
       {
         ...formik.values,
+        connectToDemoRepo: false,
         gitRepositoryName: projectConfigGitRepository?.repositoryName,
         gitOrganizationId: projectConfigGitRepository?.gitOrganizationId,
         gitRepositoryUrl: projectConfigGitRepository?.gitRepositoryUrl,
@@ -69,28 +69,6 @@ const CreateGithubSync: React.FC<props> = ({
     );
   }, [gitRepository]);
 
-  const handleDemoRepoChange = useCallback(
-    (checked: boolean) => {
-      formik.setValues(
-        {
-          ...formik.values,
-          connectToDemoRepo: checked,
-          gitRepositoryName: checked
-            ? "demo-repo"
-            : projectConfigGitRepository?.repositoryName,
-          gitOrganizationId: checked
-            ? "demo-org"
-            : projectConfigGitRepository?.gitOrganizationId,
-          gitRepositoryUrl: checked
-            ? "demo-org"
-            : projectConfigGitRepository?.gitRepositoryUrl,
-        },
-        true
-      );
-    },
-    [formik]
-  );
-
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
   }, [refreshCurrentWorkspace]);
@@ -100,12 +78,12 @@ const CreateGithubSync: React.FC<props> = ({
       formik.setValues(
         {
           ...formik.values,
+          connectToDemoRepo: false,
           gitRepositoryName: data.repositoryName,
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
           groupName: data.groupName,
-          connectToDemoRepo: false,
         },
         true
       );
@@ -119,12 +97,12 @@ const CreateGithubSync: React.FC<props> = ({
       formik.setValues(
         {
           ...formik.values,
+          connectToDemoRepo: false,
           gitRepositoryName: data.name,
           gitOrganizationId: data.gitOrganizationId,
           gitRepositoryUrl: data.gitRepositoryUrl,
           gitProvider: data.gitProvider,
           groupName: data.groupName,
-          connectToDemoRepo: false,
         },
         true
       );
@@ -195,8 +173,9 @@ const CreateGithubSync: React.FC<props> = ({
               >
                 <Icon icon="info_circle" size="small" />
               </Tooltip>
+
               <ToggleField
-                onValueChange={handleDemoRepoChange}
+                disabled={formik.values.gitRepositoryName}
                 name="connectToDemoRepo"
                 label="Push the generated code to a preview repository on GitHub"
               />

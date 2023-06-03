@@ -12,25 +12,34 @@ const ResourceName = {
 };
 
 const GitRepository = {
-  properties: {
-    gitOrganizationId: {
-      type: "string",
-      minLength: 2,
+  anyOf: [
+    {
+      properties: {
+        gitOrganizationId: {
+          type: "string",
+          minLength: 2,
+        },
+        gitRepositoryName: {
+          type: "string",
+          minLength: 2,
+        },
+        gitRepositoryUrl: {
+          type: "string",
+          minLength: 2,
+        },
+        isOverrideGitRepository: {
+          type: "boolean",
+          default: false,
+        },
+      },
+      required: ["gitOrganizationId", "gitRepositoryName"],
     },
-    gitRepositoryName: {
-      type: "string",
-      minLength: 2,
+    {
+      properties: {
+        connectToDemoRepo: { const: true },
+      },
     },
-    gitRepositoryUrl: {
-      type: "string",
-      minLength: 2,
-    },
-    isOverrideGitRepository: {
-      type: "boolean",
-      default: false,
-    },
-  },
-  required: ["gitOrganizationId", "gitRepositoryName"],
+  ],
 };
 
 const codeGeneration = {
