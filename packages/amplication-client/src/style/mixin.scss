@@ -242,7 +242,7 @@ $bullet-size: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba($foreground-color, 0.5);
+    background-color: $foreground-color;
     border-radius: $size * 0.5;
     background-clip: padding-box;
     border: math.div($size, 3) solid transparent;
@@ -251,12 +251,6 @@ $bullet-size: 6px;
   &::-webkit-scrollbar-track {
     background-color: $background-color;
     margin: math.div(-$size, 3);
-  }
-
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background-color: $foreground-color;
-    }
   }
 
   &::-webkit-scrollbar-corner {
