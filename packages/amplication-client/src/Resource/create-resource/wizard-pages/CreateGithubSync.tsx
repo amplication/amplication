@@ -16,7 +16,7 @@ import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
 const TOOLTIP_DIRECTION = "n";
 const CLASS_NAME = "create-git-sync";
 const DEMO_REPO_TOOLTIP =
-  "Take Amplicaiton for a test drive with a preview repository on our GitHub account. You can later connect to you own repository.";
+  "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to you own repository.";
 
 type props = {
   defineUser: DefineUser;
