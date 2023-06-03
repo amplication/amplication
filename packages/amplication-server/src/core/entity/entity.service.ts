@@ -85,6 +85,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaImportService } from "../prismaSchemaImport/prismaSchemaImport.service";
+import { fi } from "date-fns/locale";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -379,6 +380,8 @@ export class EntityService {
         },
         {} as Record<InitialEntityFieldKeys, boolean>
       );
+
+      this.logger.info("initial entity fields config", fieldsCreationConfig);
 
       const newEntity = await this.createOneEntity(
         {
