@@ -11,9 +11,12 @@ import { WizardStepProps } from "./interfaces";
 import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
-import { ToggleField } from "@amplication/ui/design-system";
+import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
 
-const className = "create-git-sync";
+const TOOLTIP_DIRECTION = "n";
+const CLASS_NAME = "create-git-sync";
+const DEMO_REPO_TOOLTIP =
+  "Take Amplicaiton for a test drive with a preview repository on our GitHub account. You can later connect to you own repository.";
 
 type props = {
   defineUser: DefineUser;
@@ -146,7 +149,7 @@ const CreateGithubSync: React.FC<props> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${className}__github_box`}>
+        <div className={`${CLASS_NAME}__github_box`}>
           {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
             <AuthWithGit
               gitProvider={gitProvider}
@@ -181,17 +184,25 @@ const CreateGithubSync: React.FC<props> = ({
               onGitRepositoryCreated={handleOnGitRepositoryCreated}
             ></ServiceWizardConfigurationGitSettings>
           )}
-        </div>
 
-        {defineUser === "Onboarding" && (
-          <div className={`${className}__demo`}>
-            <ToggleField
-              onValueChange={handleDemoRepoChange}
-              name="connectToDemoRepo"
-              label="Push the generated code to a preview repository on GitHub"
-            />
-          </div>
-        )}
+          {defineUser === "Onboarding" && (
+            <div className={`${CLASS_NAME}__demo`}>
+              <Tooltip
+                wrap
+                direction={TOOLTIP_DIRECTION}
+                aria-label={DEMO_REPO_TOOLTIP}
+                className={`${CLASS_NAME}__demo__tooltip`}
+              >
+                <Icon icon="info_circle" size="small" />
+              </Tooltip>
+              <ToggleField
+                onValueChange={handleDemoRepoChange}
+                name="connectToDemoRepo"
+                label="Push the generated code to a preview repository on GitHub"
+              />
+            </div>
+          )}
+        </div>
       </Layout.RightSide>
     </Layout.Split>
   );
