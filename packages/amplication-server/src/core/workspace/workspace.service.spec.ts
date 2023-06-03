@@ -62,6 +62,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   deletedAt: undefined,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;

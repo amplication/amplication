@@ -31,6 +31,7 @@ import { BlockService } from "../block/block.service";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { GitProviderService } from "../git/git.provider.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -189,6 +190,8 @@ const EXAMPLE_PROJECT_2: Project = {
   name: EXAMPLE_PROJECT_NAME,
   createdAt: new Date(),
   updatedAt: new Date(),
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -206,6 +209,8 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: new Date(),
   workspace: EXAMPLE_WORKSPACE,
   resources: [EXAMPLE_RESOURCE],
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION = {};
@@ -333,6 +338,10 @@ describe("ProjectService", () => {
               return;
             }),
           })),
+        },
+        {
+          provide: GitProviderService,
+          useClass: jest.fn(() => ({})),
         },
       ],
     }).compile();
