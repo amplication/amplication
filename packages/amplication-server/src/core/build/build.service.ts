@@ -511,11 +511,10 @@ export class BuildService {
         build.resourceId
       );
 
-      kafkaEventKey = resourceRepository.id;
-
       if (!resourceRepository) {
         return;
       }
+      kafkaEventKey = resourceRepository.id;
 
       const gitOrganization =
         await this.resourceService.gitOrganizationByResource({
