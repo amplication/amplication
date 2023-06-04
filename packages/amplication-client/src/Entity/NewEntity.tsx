@@ -211,7 +211,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         },
       },
     }).catch(console.error);
-  }, [setConfirmInstall, createEntity, resourceId]);
+  }, [setConfirmInstall, createEntity, resourceId, currentNewEntity]);
 
   useEffect(() => {
     if (data) {
