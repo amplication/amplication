@@ -444,11 +444,15 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-    const { provider } = await this.gitOrganizationByResource({
-      where: {
-        id: resource.id,
-      },
-    });
+    const provider =
+      gitRepository &&
+      (
+        await this.gitOrganizationByResource({
+          where: {
+            id: resource.id,
+          },
+        })
+      ).provider;
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -696,7 +700,7 @@ export class ResourceService {
         ...args,
         include: { gitRepository: { include: { gitOrganization: true } } },
       })
-    ).gitRepository.gitOrganization;
+    ).gitRepository?.gitOrganization;
   }
 
   async project(resourceId: string): Promise<Project> {
