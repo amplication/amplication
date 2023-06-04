@@ -42,9 +42,9 @@ import {
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
   CreateDefaultRelatedFieldArgs,
+  CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
-import { CreateDefaultEntitiesArgs } from "./dto/createDefaultEntitiesArgs";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
