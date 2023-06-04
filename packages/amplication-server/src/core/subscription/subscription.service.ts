@@ -6,14 +6,13 @@ import {
   EnumSubscriptionStatus,
   SubscriptionData,
 } from "./dto";
-import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
 import {
   PrismaService,
   Prisma,
   EnumSubscriptionStatus as PrismaEnumSubscriptionStatus,
   Subscription as PrismaSubscription,
 } from "../../prisma";
-import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
+import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
 import { UpdateStatusDto } from "./dto/UpdateStatusDto";
 import {
@@ -78,23 +77,6 @@ export class SubscriptionService {
     return this.transformPrismaObject(sub);
   }
 
-  private async getSubscriptionByPaddleSubscriptionId(
-    workspaceId: string,
-    paddleSubscriptionId: string
-  ): Promise<Subscription> {
-    const subscriptions = await this.getSubscriptions({
-      where: {
-        workspace: {
-          id: workspaceId,
-        },
-      },
-    });
-
-    return subscriptions.find((sub) => {
-      return sub.subscriptionData.paddleSubscriptionId === paddleSubscriptionId;
-    });
-  }
-
   private transformPrismaObject(
     subscription: PrismaSubscription | null
   ): Subscription | null {
@@ -111,104 +93,6 @@ export class SubscriptionService {
       price: data.paddleUnitPrice,
       subscriptionData: data,
     };
-  }
-
-  async createSubscription(
-    data: CreateSubscriptionInput
-  ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
-
-    if (subscriptionToUpdate) {
-      return this.updateSubscription(data);
-    }
-
-    return this.transformPrismaObject(
-      await this.prisma.subscription.create({
-        data: {
-          workspace: {
-            connect: {
-              id: data.workspaceId,
-            },
-          },
-          status: data.status,
-          subscriptionPlan: data.plan,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
-        },
-      })
-    );
-  }
-
-  async updateSubscription(
-    data: UpdateSubscriptionInput
-  ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
-
-    if (!subscriptionToUpdate) {
-      throw new Error(
-        `Can't find subscription to update for workspace ID ${data.workspaceId} and paddle subscription ID ${data.subscriptionData.paddleSubscriptionId}`
-      );
-    }
-
-    const cancellationEffectiveDate =
-      data.status === PrismaEnumSubscriptionStatus.Deleted
-        ? data.subscriptionData.paddleCancellationEffectiveDate
-        : null;
-
-    return this.transformPrismaObject(
-      await this.prisma.subscription.update({
-        where: {
-          id: subscriptionToUpdate.id,
-        },
-        data: {
-          status: data.status,
-          subscriptionPlan: data.plan,
-          cancellationEffectiveDate: cancellationEffectiveDate,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
-        },
-      })
-    );
-  }
-
-  async create(
-    id: string,
-    data: CreateSubscriptionInput
-  ): Promise<PrismaSubscription> {
-    return await this.prisma.subscription.create({
-      data: {
-        id: id,
-        workspaceId: data.workspaceId,
-        status: data.status,
-        subscriptionPlan: data.plan,
-        subscriptionData:
-          data.subscriptionData as unknown as Prisma.InputJsonValue,
-      },
-    });
-  }
-
-  async update(
-    id: string,
-    data: UpdateSubscriptionInput
-  ): Promise<PrismaSubscription> {
-    return await this.prisma.subscription.update({
-      where: {
-        id: id,
-      },
-      data: {
-        status: data.status,
-        subscriptionData:
-          data.subscriptionData as unknown as Prisma.InputJsonValue,
-      },
-    });
   }
 
   async trackUpgradeCompletedEvent(
@@ -230,59 +114,47 @@ export class SubscriptionService {
   async handleUpdateSubscriptionStatusEvent(
     updateStatusDto: UpdateStatusDto
   ): Promise<void> {
+    const data =
+      this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
+
     switch (updateStatusDto.type) {
-      case "subscription.created": {
-        const createSubscriptionInput =
-          this.mapUpdateStatusDtoToCreateSubscriptionInput(updateStatusDto);
-        const subs = await this.getSubscriptionById(updateStatusDto.id);
-        if (subs) {
-          await this.create(updateStatusDto.id, createSubscriptionInput);
-          await this.trackUpgradeCompletedEvent(
-            createSubscriptionInput.plan,
-            updateStatusDto.metadata?.userId,
-            updateStatusDto.customer.id
-          );
-        } else {
-          this.logger.warn(
-            `Trying to create an existing subscription with id: ${updateStatusDto.id}`,
-            updateStatusDto
-          );
-        }
-        break;
-      }
+      case "subscription.created":
       case "subscription.updated":
       case "subscription.expired":
       case "subscription.canceled": {
-        const updateSubscriptionInput =
-          this.mapUpdateStatusDtoToUpdateSubscriptionInput(updateStatusDto);
-        const subs = await this.getSubscriptionById(updateStatusDto.id);
-        if (subs) {
-          await this.update(updateStatusDto.id, updateSubscriptionInput);
-        } else {
-          this.logger.warn(
-            `Trying to update a non-existing subscription with id: ${updateStatusDto.id}`,
-            updateStatusDto
-          );
-        }
+        await this.prisma.subscription.upsert({
+          where: {
+            id: updateStatusDto.id,
+          },
+          create: {
+            id: updateStatusDto.id,
+            workspaceId: data.workspaceId,
+            status: data.status,
+            subscriptionPlan: data.plan,
+            subscriptionData:
+              data.subscriptionData as unknown as Prisma.InputJsonValue,
+          },
+          update: {
+            status: data.status,
+            subscriptionData:
+              data.subscriptionData as unknown as Prisma.InputJsonValue,
+          },
+        });
         break;
       }
     }
+    if (updateStatusDto.type === "subscription.created") {
+      await this.trackUpgradeCompletedEvent(
+        data.plan,
+        updateStatusDto.metadata?.userId,
+        updateStatusDto.customer.id
+      );
+    }
   }
 
-  mapUpdateStatusDtoToCreateSubscriptionInput(
+  mapUpdateStatusDtoToUpsertSubscriptionInput(
     updateStatusDto: UpdateStatusDto
-  ): CreateSubscriptionInput {
-    return {
-      workspaceId: updateStatusDto.customer.id,
-      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
-      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
-      subscriptionData: new SubscriptionData(),
-    };
-  }
-
-  mapUpdateStatusDtoToUpdateSubscriptionInput(
-    updateStatusDto: UpdateStatusDto
-  ): UpdateSubscriptionInput {
+  ): UpsertSubscriptionInput {
     return {
       workspaceId: updateStatusDto.customer.id,
       status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
@@ -301,17 +173,24 @@ export class SubscriptionService {
       workspaceId
     );
     if (stiggSubscription) {
-      const createSubscriptionInput: CreateSubscriptionInput = {
+      const createSubscriptionInput: UpsertSubscriptionInput = {
         workspaceId: workspaceId,
         status: stiggSubscription.status as EnumSubscriptionStatus,
         plan: stiggSubscription.subscriptionPlan as EnumSubscriptionPlan,
         subscriptionData: new SubscriptionData(),
       };
 
-      const savedSubscription = await this.create(
-        stiggSubscription.id,
-        createSubscriptionInput
-      );
+      const savedSubscription = await this.prisma.subscription.create({
+        data: {
+          id: stiggSubscription.id,
+          workspaceId: createSubscriptionInput.workspaceId,
+          status: createSubscriptionInput.status,
+          subscriptionPlan: createSubscriptionInput.plan,
+          subscriptionData:
+            createSubscriptionInput.subscriptionData as unknown as Prisma.InputJsonValue,
+        },
+      });
+
       const mappedSubscription = {
         ...savedSubscription,
         subscriptionData: null,
