@@ -245,28 +245,42 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         For example: Customer, Support Ticket, Purchase Order...
       </div>
       <Dialog
-        title=""
+        title="Restore 'User' Entity?"
         className={DIALOG_CLASS_NAME}
         isOpen={confirmInstall}
         onDismiss={handleDismissConfirmationInstall}
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Do you want to use the default User entity?
+          We've noticed you're creating a new 'User' entity. This entity is used
+          by the Authentication plugin. Would you like to:
         </div>
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
+          1. Restore the Default 'User' Entity - This will re-establish the
+          original 'User' entity provided by Amplication, including all
+          associated settings and functionalities.
+        </div>
+        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
+          2. Create a New 'User' Entity - This will create a fresh 'User' entity
+          for you to customize as per your needs. Please note that this may
+          require additional configuration for the Authentication plugin.
+        </div>
+        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
+          Please select your preferred option to continue.
+        </div>
+        <div className={`${CLASS_NAME}__dialog_btn`}>
           <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
             buttonStyle={EnumButtonStyle.Primary}
             onClick={handleConfirmationInstall}
           >
-            Install default user entity
+            Restore Default
           </Button>
           <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
             buttonStyle={EnumButtonStyle.Primary}
             onClick={handleDismissInstall}
           >
-            Dismiss
+            Create New
           </Button>
         </div>
       </Dialog>
