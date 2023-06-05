@@ -1,8 +1,6 @@
 import React, { useCallback } from "react";
-import axios from "axios";
 import { gql, useMutation } from "@apollo/client";
 import { Entity } from "../models";
-import { REACT_APP_SERVER_URL } from "../env";
 import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import "./PrismaSchemaUpload.scss";
 
@@ -13,36 +11,27 @@ type Props = {
 const CLASS_NAME = "prisma-schema-upload";
 
 const PrismaSchemaUtils = ({ resourceId }: Props) => {
-  const url = `${REACT_APP_SERVER_URL}/file/upload-prisma-schema`;
-  const [createEntitiesFormSchema, { data }] = useMutation<Entity[]>(
+  const [createEntitiesFormSchema] = useMutation<Entity[]>(
     CREATE_ENTITIES_FORM_SCHEMA
   );
-  const onFileChange = useCallback((event) => {
-    const file = event.target.files[0];
-    const formData = new FormData();
-    formData.append("file", file);
-    formData.append("resourceId", resourceId);
-    axios
-      .post(url, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      })
-      .then((response) => {
-        const filePath = response.data;
-        createEntitiesFormSchema({
-          variables: {
-            data: {
-              filePath,
-              resourceId,
-            },
+  const onFileChange = useCallback(
+    (event) => {
+      const file = event.target.files[0];
+      console.log(file, "file");
+      createEntitiesFormSchema({
+        variables: {
+          data: {
+            resourceId,
           },
-        });
-      })
-      .catch((error) => {
-        console.error(error);
+          file,
+        },
+        context: {
+          hasUpload: true, // This line
+        },
       });
-  }, []);
+    },
+    [createEntitiesFormSchema, resourceId]
+  );
 
   return (
     <Button type="button" buttonStyle={EnumButtonStyle.Outline}>
@@ -53,6 +42,7 @@ const PrismaSchemaUtils = ({ resourceId }: Props) => {
       <input
         id="fileInput"
         type="file"
+        accept=".prisma"
         onChange={onFileChange}
         className={`${CLASS_NAME}__input`}
       />
@@ -63,8 +53,11 @@ const PrismaSchemaUtils = ({ resourceId }: Props) => {
 export default PrismaSchemaUtils;
 
 const CREATE_ENTITIES_FORM_SCHEMA = gql`
-  mutation createEntitiesFromSchema($data: FileUploadInput!) {
-    createEntitiesFromSchema(data: $data) {
+  mutation createEntitiesFromSchema(
+    $data: CreateEntitiesFromPrismaSchemaInput!
+    $file: Upload!
+  ) {
+    createEntitiesFromSchema(data: $data, file: $file) {
       name
       displayName
       pluralDisplayName
