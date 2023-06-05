@@ -27,9 +27,11 @@ type SchemaEntityFields = {
   fields: {
     name: string;
     displayName: string;
+    description: string;
     dataType: string | Func;
     required: boolean;
     unique: boolean;
+    searchable: boolean;
     properties: Record<string, unknown>;
     customAttributes: string[];
   }[];
@@ -111,8 +113,10 @@ export class PrismaSchemaImportService {
               name: field.name,
               displayName: capitalizeFirstLetter(field.name),
               dataType: field.fieldType,
+              description: "",
               required: field.optional,
               unique: field.attributes?.some((attr) => attr.name === "unique"),
+              searchable: false, // TODO: check if searchable and not hardcoded
               properties: {},
               customAttributes: filterOutAmplicatoinAttributes(
                 prepareModelAttributes(field.attributes)

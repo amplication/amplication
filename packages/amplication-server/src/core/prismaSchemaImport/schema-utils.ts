@@ -4,7 +4,7 @@ const idTypePropertyMap = {
   uuid: { idType: "UUID" },
 };
 
-export function capitalizeFirstLetter(string) {
+export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
@@ -36,7 +36,7 @@ export function prepareModelAttributes(attributes) {
   });
 }
 
-export function filterOutAmplicatoinAttributes(attributes) {
+export function filterOutAmplicatoinAttributes(attributes): string[] {
   // amplication attributes are @id @default @updatedAt @createdAt @relation
   return attributes.filter(
     (attribute) =>

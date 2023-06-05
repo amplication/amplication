@@ -11,7 +11,7 @@ import { Prisma } from "../../prisma";
  */
 export const CURRENT_VERSION_NUMBER = 0;
 
-export type EntityFieldData = Omit<
+type EntityFieldData = Omit<
   EntityField,
   | "id"
   | "createdAt"
@@ -98,19 +98,6 @@ type EntityData = Omit<
 > & {
   fields: EntityFieldData[];
 };
-
-export type InitialEntityFieldKeys = "id" | "createdAt" | "updatedAt";
-
-export type InitialEntityFieldsCreation = Record<
-  InitialEntityFieldKeys,
-  boolean
->;
-export const DEFAULT_INITIAL_ENTITY_FIELDS_CREATION: InitialEntityFieldsCreation =
-  {
-    id: true,
-    createdAt: true,
-    updatedAt: true,
-  };
 
 export const DEFAULT_SINGLE_LINE_TEXT_MAX_LENGTH = 256;
 
