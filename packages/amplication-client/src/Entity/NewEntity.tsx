@@ -218,7 +218,11 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       history.push(
         `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${data.createOneEntity.id}`
       );
-    } else if (defaultEntityData) {
+    }
+  }, [history, data, resourceId, currentWorkspace, currentProject]);
+
+  useEffect(() => {
+    if (defaultEntityData) {
       const userEntity = defaultEntityData.createDefaultEntities.find(
         (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
@@ -228,7 +232,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     }
   }, [
     history,
-    data,
     defaultEntityData,
     resourceId,
     currentWorkspace,
