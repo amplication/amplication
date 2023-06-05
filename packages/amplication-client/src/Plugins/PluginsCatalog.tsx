@@ -4,10 +4,11 @@ import {
   EnumButtonStyle,
   Snackbar,
 } from "@amplication/ui/design-system";
+import { useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
-import React, { useCallback, useContext, useMemo, useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { match } from "react-router-dom";
-import { AppContext } from "../context/appContext";
+import { GET_ENTITIES } from "../Entity/EntityList";
 import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
@@ -19,20 +20,29 @@ type Props = AppRouteProps & {
     resource: string;
   }>;
 };
-const DIALOG_CLASS_NAME = "limitation-dialog";
+
+type TData = {
+  entities: models.Entity[];
+};
+export const DIALOG_CLASS_NAME = "limitation-dialog";
 const USER_ENTITY_NAME = "user";
 const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
-  const { currentResource } = useContext(AppContext);
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
 
+  const { data: entities } = useQuery<TData>(GET_ENTITIES, {
+    variables: {
+      id: resource,
+    },
+  });
+
   const userEntity = useMemo(() => {
-    return currentResource.entities.find(
+    return entities.entities?.find(
       (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
     );
-  }, [currentResource]);
+  }, [entities]);
 
   const {
     pluginInstallations,
@@ -72,7 +82,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [createPluginInstallation, setConfirmInstall, resource]
+    [createPluginInstallation, setConfirmInstall, resource, userEntity]
   );
 
   const handleDismissInstall = useCallback(() => {

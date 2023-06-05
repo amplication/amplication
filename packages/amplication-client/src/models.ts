@@ -316,6 +316,10 @@ export type DateTimeFilter = {
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
 };
 
+export type DefaultEntitiesInput = {
+  resourceId: Scalars['String'];
+};
+
 export type Entity = {
   createdAt: Scalars['DateTime'];
   customAttributes?: Maybe<Scalars['String']>;
@@ -861,6 +865,7 @@ export type Mutation = {
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
+  createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -965,6 +970,11 @@ export type MutationCreateApiTokenArgs = {
 
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
+};
+
+
+export type MutationCreateDefaultEntitiesArgs = {
+  data: DefaultEntitiesInput;
 };
 
 
