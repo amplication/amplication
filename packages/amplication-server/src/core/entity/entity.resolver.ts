@@ -45,6 +45,7 @@ import {
 } from "./dto";
 import { EntityService } from "./entity.service";
 import { CreateEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -91,11 +92,20 @@ export class EntityResolver {
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
   async createEntitiesFromSchema(
     @UserEntity() user: User,
-    @Args() args: CreateEntitiesFromSchemaArgs
+    @Args() args: CreateEntitiesFromSchemaArgs,
+    @Args({ name: "file", type: () => GraphQLUpload })
+    file: FileUpload
   ): Promise<Entity[]> {
-    const { filePath, resourceId } = args.data;
+    const { resourceId } = args.data;
+    const chunks = [];
+    for await (const chunk of file.createReadStream()) {
+      chunks.push(chunk);
+    }
+    const fileBuffer = Buffer.concat(chunks);
+    const fileContent = fileBuffer.toString("utf8");
+
     return this.entityService.createEntitiesFromSchema(
-      filePath,
+      fileContent,
       resourceId,
       user
     );

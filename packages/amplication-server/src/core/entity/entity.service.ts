@@ -357,14 +357,12 @@ export class EntityService {
   }
 
   async createEntitiesFromSchema(
-    filePath: string,
+    file: string,
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
-    const schemaJson = await this.schemaUtilsService.getSchema(filePath);
+    const schemaJson = await this.schemaUtilsService.getSchema(file);
     const preparedSchema = this.schemaUtilsService.prepareSchema(schemaJson);
-    // save schema to json file for debugging
-    await this.schemaUtilsService.saveAsJsonSchema(preparedSchema, filePath);
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
