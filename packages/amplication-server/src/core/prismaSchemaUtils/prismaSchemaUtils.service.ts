@@ -1,20 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Express } from "express";
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-import { Multer } from "multer";
-import { promises as fs } from "fs";
+import { validate } from "@prisma/internals";
 import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
-import path from "path";
-import pluralize from "pluralize";
 import {
   capitalizeFirstLetter,
   filterOutAmplicatoinAttributes,
   prepareModelAttributes,
 } from "./schema-utils";
-import { validate } from "@prisma/internals";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import pluralize from "pluralize";
 import { Env } from "../../env";
 
 type SchemaEntityFields = {
@@ -49,31 +43,8 @@ export class PrismaSchemaUtilsService {
     );
   }
 
-  async saveFile(
-    file: Express.Multer.File,
-    resourceId: string
-  ): Promise<string> {
-    this.validateSchema(file);
-    const rootDir = process.cwd();
-    await fs.mkdir(
-      `${rootDir}/${this.prismaSchemaUploadsFolder}/${resourceId}`,
-      {
-        recursive: true,
-      }
-    );
-    const writeDir = `${rootDir}/${this.prismaSchemaUploadsFolder}/${resourceId}/${file.originalname}`;
-
-    try {
-      await fs.writeFile(writeDir, file.buffer);
-      return writeDir;
-    } catch (error) {
-      this.logger.error("Failed to save prisma schema", error);
-      throw error;
-    }
-  }
-
-  validateSchema(file: Express.Multer.File): void {
-    const schemaString = file.buffer.toString("utf-8").replace(/\\n/g, "\n");
+  validateSchemaOnUpload(file: string): void {
+    const schemaString = file.replace(/\\n/g, "\n");
     try {
       validate({ datamodel: schemaString });
       this.logger.info("Valid schema");
@@ -83,11 +54,10 @@ export class PrismaSchemaUtilsService {
     }
   }
 
-  async getSchema(filePath: string): Promise<Schema> {
-    const source = await fs.readFile(filePath, {
-      encoding: "utf8",
-    });
-    return getSchema(source);
+  async getSchema(source: string): Promise<Schema> {
+    const schema = getSchema(source);
+    this.logger.debug("Schema", { schema });
+    return schema;
   }
 
   prepareSchema(schema: Schema): SchemaEntityFields[] {
@@ -127,19 +97,6 @@ export class PrismaSchemaUtilsService {
       });
 
     return entities;
-  }
-
-  async saveAsJsonSchema(schemaObj: object, filePath: string) {
-    const fileDir = path.dirname(filePath);
-    const fileName = path.basename(filePath, ".prisma");
-    try {
-      await fs.writeFile(
-        `${fileDir}/${fileName}.json`,
-        JSON.stringify(schemaObj, null, 2)
-      );
-    } catch (err) {
-      this.logger.error(err);
-    }
   }
 
   /**
