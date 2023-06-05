@@ -115,6 +115,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const [createDefaultEntities, { data: defaultEntityData }] =
     useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
       onCompleted: (data) => {
+        if (!data) return;
         const userEntity = data.createDefaultEntities.find(
           (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
         );
@@ -183,7 +184,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   }, [setConfirmInstall]);
 
   const handleConfirmationInstall = useCallback(() => {
-    setConfirmInstall(false);
     createDefaultEntities({
       variables: {
         data: {
