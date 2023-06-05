@@ -1,5 +1,5 @@
 import { Dialog, Snackbar, TextField } from "@amplication/ui/design-system";
-import { gql, Reference, useMutation } from "@apollo/client";
+import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext, useEffect, useState } from "react";
@@ -17,6 +17,11 @@ import { DIALOG_CLASS_NAME } from "../Plugins/PluginsCatalog";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
+import {
+  CREATE_DEFAULT_ENTITIES,
+  CREATE_ENTITY,
+  NEW_ENTITY_FRAGMENT,
+} from "../Workspaces/queries/entitiesQueries";
 import { USER_ENTITY } from "./constants";
 import "./NewEntity.scss";
 
@@ -326,39 +331,3 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 };
 
 export default NewEntity;
-
-const CREATE_ENTITY = gql`
-  mutation createEntity($data: EntityCreateInput!) {
-    createOneEntity(data: $data) {
-      id
-      name
-      fields {
-        id
-        name
-        dataType
-      }
-    }
-  }
-`;
-
-const CREATE_DEFAULT_ENTITIES = gql`
-  mutation createDefaultEntities($data: DefaultEntitiesInput!) {
-    createDefaultEntities(data: $data) {
-      id
-      displayName
-      name
-    }
-  }
-`;
-
-const NEW_ENTITY_FRAGMENT = gql`
-  fragment NewEntity on Entity {
-    id
-    name
-    fields {
-      id
-      name
-      dataType
-    }
-  }
-`;
