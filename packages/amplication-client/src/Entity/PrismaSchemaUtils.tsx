@@ -12,7 +12,7 @@ type Props = {
 
 const CLASS_NAME = "prisma-schema-upload";
 
-const PrismaSchemaUpload = ({ resourceId }: Props) => {
+const PrismaSchemaUtils = ({ resourceId }: Props) => {
   const url = `${REACT_APP_SERVER_URL}/file/upload-prisma-schema`;
   const [createEntitiesFormSchema, { data }] = useMutation<Entity[]>(
     CREATE_ENTITIES_FORM_SCHEMA
@@ -60,7 +60,7 @@ const PrismaSchemaUpload = ({ resourceId }: Props) => {
   );
 };
 
-export default PrismaSchemaUpload;
+export default PrismaSchemaUtils;
 
 const CREATE_ENTITIES_FORM_SCHEMA = gql`
   mutation createEntitiesFromSchema($data: FileUploadInput!) {

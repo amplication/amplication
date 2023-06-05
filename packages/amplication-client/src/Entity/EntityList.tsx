@@ -23,7 +23,7 @@ import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
-import PrismaSchemaUpload from "./PrismaSchemaUpload";
+import PrismaSchemaUtils from "./PrismaSchemaUtils";
 
 type TData = {
   entities: models.Entity[];
@@ -130,7 +130,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             onChange={handleSearchChange}
           />
           <div className={`${CLASS_NAME}__action-buttons`}>
-            <PrismaSchemaUpload resourceId={resource} />
+            <PrismaSchemaUtils resourceId={resource} />
             <Button
               className={`${CLASS_NAME}__add-button`}
               buttonStyle={EnumButtonStyle.Primary}
