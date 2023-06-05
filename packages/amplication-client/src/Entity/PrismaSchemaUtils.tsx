@@ -17,7 +17,6 @@ const PrismaSchemaUtils = ({ resourceId }: Props) => {
   const onFileChange = useCallback(
     (event) => {
       const file = event.target.files[0];
-      console.log(file, "file");
       createEntitiesFormSchema({
         variables: {
           data: {
