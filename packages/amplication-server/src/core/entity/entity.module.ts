@@ -7,7 +7,7 @@ import { EntityVersionResolver } from "./entityVersion.resolver";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
-import { PrismaSchemaImportModule } from "../prismaSchemaImport/prismaSchemaImport.module";
+import { PrismaSchemaImportModule } from "../prismaSchemaUtils/prismaSchemaUtils.module";
 
 @Module({
   imports: [

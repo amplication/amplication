@@ -38,7 +38,7 @@ type SchemaEntityFields = {
 };
 
 @Injectable()
-export class PrismaSchemaImportService {
+export class PrismaSchemaUtilsService {
   prismaSchemaUploadsFolder: string;
   constructor(
     private readonly configService: ConfigService,
