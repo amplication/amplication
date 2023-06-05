@@ -11,7 +11,7 @@ import {
   Label,
 } from "@amplication/ui/design-system";
 
-import { gql, NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
+import { NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {

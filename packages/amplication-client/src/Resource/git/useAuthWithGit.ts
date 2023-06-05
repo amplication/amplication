@@ -119,7 +119,6 @@ const useAuthWithGit: UseAuthWithGit = ({
           ...(resource ? { resourceId: resource.id } : {}),
         },
         onCompleted() {
-          console.log("handleRepoCreated");
           closeCreateNewRepo();
           gitRepositoryCreatedCB && gitRepositoryCreatedCB(data);
           gitRepositorySelected &&
@@ -151,7 +150,13 @@ const useAuthWithGit: UseAuthWithGit = ({
       gitRepositorySelectedData && setGitRepositorySelectedData(null);
       gitRepositoryDisconnectedCB && gitRepositoryDisconnectedCB();
     },
-    []
+    [
+      setGitOrganization,
+      gitRepositorySelectedData,
+      gitRepositoryDisconnectedCB,
+      gitRepositoryDisconnectedCB,
+      setGitRepositorySelectedData,
+    ]
   );
 
   const handleRepoDisconnected = useCallback(() => {
