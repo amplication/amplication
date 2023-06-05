@@ -174,18 +174,18 @@ export class GitProviderService {
   async connectGitRepository(
     args: CreateGitRepositoryInput
   ): Promise<Resource | boolean> {
-    await this.createRemoteGitRepository(args);
-    return true;
-    // const remoteRepository = await this.createRemoteGitRepository(args)
+    const remoteRepository = await this.createRemoteGitRepository(args);
 
-    // const { groupName, gitOrganizationId, resourceId } = args;
+    const { groupName, gitOrganizationId, resourceId } = args;
 
-    // return resourceId ? await this.connectResourceGitRepository({
-    //   name: remoteRepository.name,
-    //   ...(groupName ? { groupName } : {}),
-    //   gitOrganizationId,
-    //   resourceId,
-    // }) : true;
+    return resourceId
+      ? await this.connectResourceGitRepository({
+          name: remoteRepository.name,
+          ...(groupName ? { groupName } : {}),
+          gitOrganizationId,
+          resourceId,
+        })
+      : true;
   }
 
   async createRemoteGitRepository(
@@ -302,6 +302,7 @@ export class GitProviderService {
   async connectResourceToProjectRepository(
     resourceId: string
   ): Promise<Resource> {
+    console.log("connectResourceToProjectRepository");
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
