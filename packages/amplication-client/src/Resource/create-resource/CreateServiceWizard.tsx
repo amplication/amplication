@@ -243,6 +243,17 @@ const CreateServiceWizard: React.FC<Props> = ({
       ? CREATE_SERVICE_PATTERN
       : ONBOARDING_PATTERN;
 
+  const serviceNextStepStatus = {
+    description:
+      signupCookie === "1"
+        ? ["Invite", "my team"]
+        : ["Add plugins", "to my service"],
+    defineUser,
+    icon: signupCookie === "1" ? "users" : "plugins",
+    iconBackgroundColor: signupCookie === "1" ? "#8DD9B9" : "#f85b6e",
+    eventActionName: signupCookie === "1" ? "Invite Team" : "Add Plugins",
+  };
+
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
     const pagesMap = {};
@@ -488,6 +499,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceNextSteps
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          {...serviceNextStepStatus}
         />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />

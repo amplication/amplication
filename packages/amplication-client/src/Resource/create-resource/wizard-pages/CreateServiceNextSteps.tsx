@@ -5,13 +5,26 @@ import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { DefineUser } from "../CreateServiceWizard";
 
 const className = "create-service-next-steps";
 
-export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
+export const CreateServiceNextSteps: React.FC<
+  WizardStepProps & {
+    defineUser: DefineUser;
+    description: string[];
+    icon: string;
+    iconBackgroundColor: string;
+    eventActionName: string;
+  }
+> = ({
   moduleClass,
   trackWizardPageEvent,
-  serviceWizardFlow,
+  description,
+  defineUser,
+  icon,
+  iconBackgroundColor,
+  eventActionName,
 }) => {
   const history = useHistory();
   const {
@@ -19,7 +32,6 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     currentProject,
     createServiceWithEntitiesResult: serviceResults,
   } = useContext(AppContext);
-  const isOnBoarding = serviceWizardFlow === "Onboarding";
 
   const handleClickEntities = useCallback(() => {
     trackWizardPageEvent(
@@ -31,23 +43,18 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     );
   }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
-  const handleAddPlugins = useCallback(() => {
-    trackWizardPageEvent(
-      AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
-      { action: "Add Plugins" }
-    );
-    history.push(
-      `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/plugins/catalog`
-    );
-  }, []);
+  const handleClickRoute = useCallback(() => {
+    const routeUrl =
+      defineUser === "Onboarding"
+        ? `/${currentWorkspace.id}/members`
+        : `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/plugins/catalog`;
 
-  const handleInviteMyTeams = useCallback(() => {
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
-      { action: "Invite Team" }
+      { action: eventActionName }
     );
-    history.push(`/${currentWorkspace.id}/members`);
-  }, []);
+    history.push(routeUrl);
+  }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
@@ -82,19 +89,14 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
             <div>for my service</div>
           </div>
         </div>
-        <div
-          className={`${className}__link_box`}
-          onClick={isOnBoarding ? handleInviteMyTeams : handleAddPlugins}
-        >
-          <CircleBadge
-            color={isOnBoarding ? "#8DD9B9" : "#f85b6e"}
-            size="medium"
-          >
-            <Icon icon={isOnBoarding ? "users" : "plugins"} size="small" />
+        <div className={`${className}__link_box`} onClick={handleClickRoute}>
+          <CircleBadge color={iconBackgroundColor} size="medium">
+            <Icon icon={icon} size="small" />
           </CircleBadge>
           <div className={`${className}__link_box__description`}>
-            <div>{isOnBoarding ? "Invite " : "Add plugins"}</div>
-            <div>{isOnBoarding ? "my team" : "to my service"}</div>
+            {description.map((c) => (
+              <div>{c}</div>
+            ))}
           </div>
         </div>
         <div className={`${className}__link_box`} onClick={handleDone}>
