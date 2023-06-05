@@ -228,7 +228,8 @@ $bullet-size: 6px;
 @mixin scrollbars(
   $size,
   $foreground-color,
-  $background-color: mix($foreground-color, white, 50%)
+  $background-color: mix($foreground-color, white, 50%),
+  $transparent-color: var(--black10)
 ) {
   // For Google Chrome
   &::-webkit-scrollbar {
@@ -242,7 +243,7 @@ $bullet-size: 6px;
   }
 
   &::-webkit-scrollbar-thumb {
-    background-color: rgba($foreground-color, 0.5);
+    background-color: $transparent-color;
     border-radius: $size * 0.5;
     background-clip: padding-box;
     border: math.div($size, 3) solid transparent;

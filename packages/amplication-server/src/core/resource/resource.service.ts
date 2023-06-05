@@ -465,9 +465,11 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
+
     const provider = data.connectToDemoRepo
       ? "demo-repo"
-      : (
+      : gitRepository &&
+        (
           await this.gitOrganizationByResource({
             where: {
               id: resource.id,
@@ -724,7 +726,7 @@ export class ResourceService {
         ...args,
         include: { gitRepository: { include: { gitOrganization: true } } },
       })
-    ).gitRepository.gitOrganization;
+    ).gitRepository?.gitOrganization;
   }
 
   async project(resourceId: string): Promise<Project> {
