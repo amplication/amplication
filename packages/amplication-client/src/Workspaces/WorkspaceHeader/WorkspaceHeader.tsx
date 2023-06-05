@@ -368,7 +368,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
       {currentProject?.useDemoRepo && (
         <div className={`${CLASS_NAME}__highlight`}>
-          Notice: You're currently using a demo repository for your generated
+          Notice: You're currently using a preview repository for your generated
           code. For a full personalized experience, please&nbsp;
           <Link
             title={"Go to project settings"}
