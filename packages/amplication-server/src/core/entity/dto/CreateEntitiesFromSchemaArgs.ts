@@ -1,8 +1,8 @@
 import { ArgsType, Field } from "@nestjs/graphql";
-import { FileUploadInput } from "./FileUploadInput";
+import { CreateEntitiesFromPrismaSchemaInput } from "./CreateEntitiesFromPrismaSchemaInput";
 
 @ArgsType()
 export class CreateEntitiesFromSchemaArgs {
-  @Field(() => FileUploadInput, { nullable: false })
-  data!: FileUploadInput;
+  @Field(() => CreateEntitiesFromPrismaSchemaInput, { nullable: false })
+  data!: CreateEntitiesFromPrismaSchemaInput;
 }
