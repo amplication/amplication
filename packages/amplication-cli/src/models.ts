@@ -14,6 +14,8 @@ export type Scalars = {
   DateTime: any;
   /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSONObject: any;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Account = {
@@ -281,6 +283,10 @@ export type ConnectGitRepositoryInput = {
   groupName?: InputMaybe<Scalars['String']>;
   isOverrideGitRepository?: InputMaybe<Scalars['Boolean']>;
   name: Scalars['String'];
+  resourceId: Scalars['String'];
+};
+
+export type CreateEntitiesFromPrismaSchemaInput = {
   resourceId: Scalars['String'];
 };
 
@@ -745,11 +751,6 @@ export type Environment = {
   updatedAt: Scalars['DateTime'];
 };
 
-export type FileUploadInput = {
-  filePath: Scalars['String'];
-  resourceId: Scalars['String'];
-};
-
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
@@ -982,7 +983,8 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 
 
 export type MutationCreateEntitiesFromSchemaArgs = {
-  data: FileUploadInput;
+  data: CreateEntitiesFromPrismaSchemaInput;
+  file: Scalars['Upload'];
 };
 
 

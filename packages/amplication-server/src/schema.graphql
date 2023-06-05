@@ -1117,7 +1117,7 @@ type Mutation {
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
-  createEntitiesFromSchema(data: FileUploadInput!): [Entity!]!
+  createEntitiesFromSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): [Entity!]!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
@@ -1336,10 +1336,12 @@ input EntityCreateInput {
   resource: WhereParentIdInput!
 }
 
-input FileUploadInput {
-  filePath: String!
+input CreateEntitiesFromPrismaSchemaInput {
   resourceId: String!
 }
+
+"""The `Upload` scalar type represents a file upload."""
+scalar Upload
 
 input EntityUpdateInput {
   name: String
