@@ -1,12 +1,44 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { CreateGitRepositoryBaseInput } from "./CreateGitRepositoryBaseInput";
+import { EnumGitOrganizationType } from "../enums/EnumGitOrganizationType";
+import { EnumGitProvider } from "../enums/EnumGitProvider";
 
 @InputType({
   isAbstract: true,
 })
-export class CreateGitRepositoryInput extends CreateGitRepositoryBaseInput {
+export class CreateGitRepositoryInput {
   @Field(() => String, {
     nullable: false,
   })
-  resourceId!: string;
+  name!: string;
+  @Field(() => String, {
+    nullable: true,
+    description:
+      "Name of the git provider repository group. It is mandatory when GitOrganisation.useGroupingForRepositories is true",
+  })
+  groupName?: string;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  isPublic!: boolean;
+
+  @Field(() => String, {
+    nullable: false,
+  })
+  gitOrganizationId!: string;
+
+  @Field(() => EnumGitProvider, {
+    nullable: false,
+  })
+  gitProvider!: EnumGitProvider;
+
+  @Field(() => EnumGitOrganizationType, {
+    nullable: false,
+  })
+  gitOrganizationType!: EnumGitOrganizationType;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  resourceId?: string;
 }

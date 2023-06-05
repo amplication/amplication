@@ -1,26 +1,5 @@
 import { gql } from "@apollo/client";
 
-export const CREATE_GIT_REMOTE_REPOSITORY = gql`
-  mutation createRemoteGitRepository(
-    $gitProvider: EnumGitProvider!
-    $gitOrganizationId: String!
-    $name: String!
-    $isPublic: Boolean!
-    $groupName: String
-  ) {
-    createRemoteGitRepository(
-      data: {
-        name: $name
-        isPublic: $isPublic
-        gitOrganizationId: $gitOrganizationId
-        gitProvider: $gitProvider
-        gitOrganizationType: Organization
-        groupName: $groupName
-      }
-    )
-  }
-`;
-
 export const START_AUTH_APP_WITH_GITHUB = gql`
   mutation getGitResourceInstallationUrl($gitProvider: EnumGitProvider!) {
     getGitResourceInstallationUrl(data: { gitProvider: $gitProvider }) {
@@ -29,16 +8,16 @@ export const START_AUTH_APP_WITH_GITHUB = gql`
   }
 `;
 
-export const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
-  mutation createGitRepository(
+export const CONNECT_GIT_PROVIDER_REPOSITORY = gql`
+  mutation connectGitRepository(
     $gitProvider: EnumGitProvider!
     $gitOrganizationId: String!
-    $resourceId: String!
+    $resourceId: String
     $name: String!
     $isPublic: Boolean!
     $groupName: String
   ) {
-    createGitRepository(
+    connectGitRepository(
       data: {
         name: $name
         isPublic: $isPublic
@@ -49,7 +28,6 @@ export const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
         groupName: $groupName
       }
     ) {
-      id
       gitRepository {
         id
         groupName

@@ -87,11 +87,13 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   );
 
   const refetchLastCommit = useCallback(() => {
+    if (!currentProjectId) return;
+
     refetchCommits({
       skip: 0,
       take: 1,
     });
-  }, []);
+  }, [currentProjectId]);
 
   // pagination refetch
   useEffect(() => {

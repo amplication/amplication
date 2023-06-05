@@ -58,6 +58,7 @@ export default function RepositoryActions({
                     EnumGitOrganizationType.Organization && (
                     <div className={`${CLASS_NAME}__action`}>
                       <Button
+                        type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
                         icon="plus"
