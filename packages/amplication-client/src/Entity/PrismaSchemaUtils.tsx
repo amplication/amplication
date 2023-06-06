@@ -57,14 +57,20 @@ const CREATE_ENTITIES_FORM_SCHEMA = gql`
     $file: Upload!
   ) {
     createEntitiesFromSchema(data: $data, file: $file) {
-      name
-      displayName
-      pluralDisplayName
-      description
-      fields {
+      entities {
         name
         displayName
-        dataType
+        pluralDisplayName
+        description
+        fields {
+          name
+          displayName
+          dataType
+        }
+      }
+      errors {
+        message
+        details
       }
     }
   }
