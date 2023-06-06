@@ -1,5 +1,4 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { validate } from "@prisma/internals";
 import { getSchema, Schema, Model, Field } from "@mrleebo/prisma-ast";
 import {
@@ -15,7 +14,6 @@ import { ErrorMessage } from "./ErrorMessages";
 @Injectable()
 export class PrismaSchemaUtilsService {
   constructor(
-    private readonly configService: ConfigService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
