@@ -4,7 +4,6 @@ lerna-debug.log
 .idea/
 helm/**/secrets/
 .amplication
-.prisma-schema-uploads
 
 *.tgz
 values-secret*
