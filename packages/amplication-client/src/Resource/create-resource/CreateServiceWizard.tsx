@@ -230,8 +230,11 @@ const CreateServiceWizard: React.FC<Props> = ({
     },
   });
 
-  const defineUser: DefineUser =
-    signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
+  const isSignupUser = signupCookie === "1";
+
+  const defineUser: DefineUser = isSignupUser
+    ? FLOW_ONBOARDING
+    : FLOW_CREATE_SERVICE;
 
   const wizardSteps =
     defineUser === FLOW_CREATE_SERVICE
@@ -244,14 +247,13 @@ const CreateServiceWizard: React.FC<Props> = ({
       : ONBOARDING_PATTERN;
 
   const serviceNextStepStatus = {
-    description:
-      signupCookie === "1"
-        ? ["Invite", "my team"]
-        : ["Add plugins", "to my service"],
+    description: isSignupUser
+      ? ["Invite", "my team"]
+      : ["Add plugins", "to my service"],
     defineUser,
-    icon: signupCookie === "1" ? "users" : "plugins",
-    iconBackgroundColor: signupCookie === "1" ? "#8DD9B9" : "#f85b6e",
-    eventActionName: signupCookie === "1" ? "Invite Team" : "Add Plugins",
+    icon: isSignupUser ? "users" : "plugins",
+    iconBackgroundColor: isSignupUser ? "#8DD9B9" : "#f85b6e",
+    eventActionName: isSignupUser ? "Invite Team" : "Add Plugins",
   };
 
   const errorMessage = formatError(errorCreateService);
