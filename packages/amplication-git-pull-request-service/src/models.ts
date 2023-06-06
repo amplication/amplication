@@ -290,6 +290,11 @@ export type CreateEntitiesFromPrismaSchemaInput = {
   resourceId: Scalars['String'];
 };
 
+export type CreateEntitiesFromSchemaResponse = {
+  entities: Array<Entity>;
+  errors?: Maybe<Array<ErrorMessage>>;
+};
+
 export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -751,6 +756,23 @@ export type Environment = {
   updatedAt: Scalars['DateTime'];
 };
 
+export enum ErrorLevel {
+  Error = 'Error',
+  Warning = 'Warning'
+}
+
+export type ErrorMessage = {
+  details?: Maybe<Scalars['String']>;
+  level: ErrorLevel;
+  message: ErrorMessages;
+};
+
+export enum ErrorMessages {
+  InvalidSchema = 'InvalidSchema',
+  NoEnums = 'NoEnums',
+  NoModels = 'NoModels'
+}
+
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
 };
@@ -868,7 +890,7 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultRelatedField: EntityField;
-  createEntitiesFromSchema: Array<Entity>;
+  createEntitiesFromSchema: CreateEntitiesFromSchemaResponse;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createGitRepository: Resource;
