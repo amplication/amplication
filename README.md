@@ -145,19 +145,19 @@ npm run db:migrate:deploy
 
 ```shell
 # running the server component
-npm run server:server
+npm run serve:server
 
 # running the client component
-npm run server:client
+npm run serve:client
 
 # running the data-service-generator component
-npm run server:dsg
+npm run serve:dsg
 
 # running the git-pull-request-service component
-npm run server:git
+npm run serve:git
 
 # running the plugin-api component
-npm run server:plugins
+npm run serve:plugins
 ```
 
 > **Note**
