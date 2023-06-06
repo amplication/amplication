@@ -64,7 +64,7 @@ export class PrismaSchemaUtilsService {
     return entities;
   }
 
-  validateSchemaProcessing(schema: Schema): ErrorMessage[] {
+  validateSchemaProcessing(schema: Schema): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
     const models = schema.list.filter((item: Model) => item.type === "model");
 
@@ -76,7 +76,7 @@ export class PrismaSchemaUtilsService {
       });
     }
 
-    return errors;
+    return errors.length > 0 ? errors : null;
   }
 
   validateSchemaUpload(file: string): void {
