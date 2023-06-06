@@ -4,7 +4,7 @@ import { getSchema, Schema, Model, Field } from "@mrleebo/prisma-ast";
 import {
   capitalizeFirstLetter,
   filterOutAmplicatoinAttributes,
-  prepareModelAttributes,
+  idTypePropertyMap,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -40,7 +40,7 @@ export class PrismaSchemaUtilsService {
           pluralDisplayName: pluralize(capitalizeFirstLetter(item.name)),
           pluralName: pluralize(item.name.toLowerCase()),
           description: null,
-          customAttributes: prepareModelAttributes(modelAttributes),
+          customAttributes: this.prepareModelAttributes(modelAttributes),
           fields: modelFields.map((field: Field) => {
             return {
               name: field.name,
@@ -52,7 +52,7 @@ export class PrismaSchemaUtilsService {
               searchable: false, // TODO: check if searchable and not hardcoded
               properties: {},
               customAttributes: filterOutAmplicatoinAttributes(
-                prepareModelAttributes(field.attributes)
+                this.prepareModelAttributes(field.attributes)
               ),
             };
           }),
@@ -60,6 +60,42 @@ export class PrismaSchemaUtilsService {
       });
 
     return entities;
+  }
+
+  private prepareModelAttributes(attributes) {
+    if (!attributes && !attributes?.length) {
+      return [];
+    }
+    return attributes.map((attribute) => {
+      if (!attribute.arg && !attribute.args?.length) {
+        return attribute.kind === "model"
+          ? `@@${attribute.name}`
+          : `@${attribute.name}`;
+      }
+      const args = attribute.args.map((arg) => {
+        if (typeof arg.value === "object" && arg.value !== null) {
+          if (arg.value.type === "array") {
+            return `[${arg.value.args.join(", ")}]`;
+          } else if (arg.value.type === "keyValue") {
+            return `${arg.value.key}: ${arg.value.value}`;
+          }
+        } else {
+          return arg.value;
+        }
+      });
+
+      return `${attribute.kind === "model" ? "@@" : "@"}${
+        attribute.name
+      }(${args.join(", ")})`;
+    });
+  }
+
+  private createAmplcationFiledProperties(field) {
+    const defaultIdAttribute = field.attributes?.find(
+      (attr) => attr.name === "default"
+    );
+    if (!defaultIdAttribute) return;
+    return idTypePropertyMap[defaultIdAttribute.args[0].value.name];
   }
 
   validateSchemaProcessing(schema: Schema): ErrorMessage[] | null {
