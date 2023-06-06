@@ -127,7 +127,7 @@
     "prettier": "^2.7.1",
     "prisma-schema-dsl": "^2.1.2",
     "prisma-schema-dsl-types": "^1.1.0",
-    "query-string": "^7.1.1",
+    "query-string": "^8.1.0",
     "rc": "^1.2.8",
     "react-animate-height": "^3.0.4",
     "react-beautiful-dnd": "^13.1.1",
