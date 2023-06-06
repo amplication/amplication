@@ -9,7 +9,6 @@ export const environment = {
     "https://plugin-api.amplication-staging.com/graphql",
   NX_REACT_APP_DATA_SOURCE: "https://server.amplication-staging.com/graphql",
   NX_REACT_APP_STORAGE_GATEWAY_URL: "https://server.amplication-staging.com",
-  NX_REACT_APP_SERVER_URL: "https://server.amplication-staging.com",
   NX_REACT_APP_BILLING_ENABLED: true,
   NX_REACT_APP_BILLING_API_KEY:
     "$2b$10$kvZ2zkq7onj/oyxH4vZLKuO1P3E9QKuRmo9z72pzggRtYWv4fkElC:415fb9ff-a378-42d0-a849-dae7daf49646",
