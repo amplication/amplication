@@ -59,6 +59,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation?.PluginInstallation.version
   );
 
+  console.log({ pluginInstallation });
+
   useEffect(() => {
     editorRef.current = JSON.stringify(
       pluginInstallation?.PluginInstallation.settings
@@ -103,13 +105,16 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-    const { enabled, id } = pluginInstallation.PluginInstallation;
+    const { enabled, id, configurations } =
+      pluginInstallation.PluginInstallation;
+
     updatePluginInstallation({
       variables: {
         data: {
           enabled,
           version: selectedVersion,
           settings: editorRef.current || JSON.parse("{}"),
+          configurations: configurations,
         },
         where: {
           id: id,

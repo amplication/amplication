@@ -26,6 +26,7 @@ export const GET_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;

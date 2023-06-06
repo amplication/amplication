@@ -1478,6 +1478,7 @@ input PluginInstallationUpdateInput {
   description: String
   enabled: Boolean!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 

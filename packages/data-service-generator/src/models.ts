@@ -1370,6 +1370,7 @@ export type PluginInstallationOrderByInput = {
 };
 
 export type PluginInstallationUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
