@@ -20,7 +20,7 @@ const CLASS_NAME = "service-configuration-git-settings";
 type Props = {
   resource: models.Resource;
   onDone: () => void;
-  gitRepositorySelectedCB: (data: GitRepositorySelected) => void;
+  gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
 };
 
 type TData = {
@@ -30,7 +30,7 @@ type TData = {
 const ServiceConfigurationGitSettings: React.FC<Props> = ({
   resource,
   onDone,
-  gitRepositorySelectedCB,
+  gitRepositorySelectedCb,
 }) => {
   const [isOverride, setIsOverride] = useState<boolean>(
     resource.gitRepositoryOverride
@@ -122,7 +122,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
                 type="resource"
                 resource={resource}
                 onDone={onDone}
-                gitRepositorySelectedCB={gitRepositorySelectedCB}
+                gitRepositorySelectedCb={gitRepositorySelectedCb}
               />
             </div>
           )}

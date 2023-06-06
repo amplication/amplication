@@ -138,9 +138,9 @@ const CreateGithubSync: React.FC<props> = ({
               type="wizard"
               gitProvider={gitProvider}
               onDone={handleOnDone}
-              gitRepositoryDisconnectedCB={handleRepositoryDisconnected}
-              gitRepositoryCreatedCB={handleOnGitRepositoryCreated}
-              gitRepositorySelectedCB={handleOnGitRepositorySelected}
+              gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
+              gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
+              gitRepositorySelectedCb={handleOnGitRepositorySelected}
               gitRepositorySelected={{
                 gitOrganizationId: formik.values.gitOrganizationId,
                 repositoryName: formik.values.gitRepositoryName,
@@ -153,9 +153,9 @@ const CreateGithubSync: React.FC<props> = ({
             <ServiceWizardConfigurationGitSettings
               onDone={handleOnDone}
               formik={formik}
-              gitRepositoryDisconnectedCB={handleRepositoryDisconnected}
-              gitRepositoryCreatedCB={handleOnGitRepositoryCreated}
-              gitRepositorySelectedCB={handleOnGitRepositorySelected}
+              gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
+              gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
+              gitRepositorySelectedCb={handleOnGitRepositorySelected}
             />
           )}
         </div>

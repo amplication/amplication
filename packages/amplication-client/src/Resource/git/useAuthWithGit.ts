@@ -11,12 +11,12 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { ApolloError, useMutation } from "@apollo/client";
 import { CONNECT_GIT_PROVIDER_REPOSITORY } from "./queries/gitProvider";
 
-type UseAuthWithGit = (obj: {
+type UseGitHook = (obj: {
   resource: Resource;
   gitRepositorySelected?: GitRepositorySelected;
-  gitRepositoryDisconnectedCB?: () => void;
-  gitRepositoryCreatedCB: (data: GitRepositoryCreatedData) => void;
-  gitRepositorySelectedCB?: (data: GitRepositorySelected) => void;
+  gitRepositoryDisconnectedCb?: () => void;
+  gitRepositoryCreatedCb: (data: GitRepositoryCreatedData) => void;
+  gitRepositorySelectedCb?: (data: GitRepositorySelected) => void;
 }) => {
   gitOrganizations: GitOrganization[];
   gitOrganization: GitOrganizationFromGitRepository;
@@ -49,12 +49,12 @@ interface setGitOrganizationCompose {
   gitOrganization: GitOrganization;
 }
 
-const useAuthWithGit: UseAuthWithGit = ({
+const useGitHook: UseGitHook = ({
   resource,
   gitRepositorySelected,
-  gitRepositoryDisconnectedCB,
-  gitRepositoryCreatedCB,
-  gitRepositorySelectedCB,
+  gitRepositoryDisconnectedCb,
+  gitRepositoryCreatedCb,
+  gitRepositorySelectedCb,
 }) => {
   const { currentWorkspace } = useContext(AppContext);
   const { trackEvent } = useTracking();
@@ -97,7 +97,7 @@ const useAuthWithGit: UseAuthWithGit = ({
 
   const handleRepoSelected = useCallback(
     (data: GitRepositorySelected) => {
-      gitRepositorySelectedCB(data);
+      gitRepositorySelectedCb(data);
       gitRepositorySelected && setSelectRepoOpen(false);
       gitRepositorySelected && setGitRepositorySelectedData(data);
       trackEvent({
@@ -120,7 +120,7 @@ const useAuthWithGit: UseAuthWithGit = ({
         },
         onCompleted() {
           closeCreateNewRepo();
-          gitRepositoryCreatedCB && gitRepositoryCreatedCB(data);
+          gitRepositoryCreatedCb && gitRepositoryCreatedCb(data);
           gitRepositorySelected &&
             setGitRepositorySelectedData({
               gitOrganizationId: data.gitOrganizationId,
@@ -136,7 +136,7 @@ const useAuthWithGit: UseAuthWithGit = ({
       });
     },
     [
-      gitRepositoryCreatedCB,
+      gitRepositoryCreatedCb,
       gitRepositorySelected,
       setGitRepositorySelectedData,
       setCreateNewRepoOpen,
@@ -148,21 +148,21 @@ const useAuthWithGit: UseAuthWithGit = ({
     (organization: GitOrganizationFromGitRepository) => {
       setGitOrganization(organization);
       gitRepositorySelectedData && setGitRepositorySelectedData(null);
-      gitRepositoryDisconnectedCB && gitRepositoryDisconnectedCB();
+      gitRepositoryDisconnectedCb && gitRepositoryDisconnectedCb();
     },
     [
       setGitOrganization,
       gitRepositorySelectedData,
-      gitRepositoryDisconnectedCB,
-      gitRepositoryDisconnectedCB,
+      gitRepositoryDisconnectedCb,
+      gitRepositoryDisconnectedCb,
       setGitRepositorySelectedData,
     ]
   );
 
   const handleRepoDisconnected = useCallback(() => {
     setGitRepositorySelectedData(null);
-    gitRepositoryDisconnectedCB && gitRepositoryDisconnectedCB();
-  }, [setGitRepositorySelectedData, gitRepositoryDisconnectedCB]);
+    gitRepositoryDisconnectedCb && gitRepositoryDisconnectedCb();
+  }, [setGitRepositorySelectedData, gitRepositoryDisconnectedCb]);
 
   const openSelectOrganizationDialog = useCallback(() => {
     setSelectOrganizationDialogOpen(true);
@@ -212,7 +212,7 @@ const useAuthWithGit: UseAuthWithGit = ({
   };
 };
 
-export default useAuthWithGit;
+export default useGitHook;
 
 const compose =
   (...fns) =>

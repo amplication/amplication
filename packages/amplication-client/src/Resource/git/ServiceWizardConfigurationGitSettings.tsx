@@ -19,17 +19,17 @@ const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
   onDone: () => void;
-  gitRepositoryDisconnectedCB: () => void;
-  gitRepositoryCreatedCB: (data: GitRepositoryCreatedData) => void;
-  gitRepositorySelectedCB: (data: GitRepositorySelected) => void;
+  gitRepositoryDisconnectedCb: () => void;
+  gitRepositoryCreatedCb: (data: GitRepositoryCreatedData) => void;
+  gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
   formik: FormikProps<{ [key: string]: any }>;
 };
 
 const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   onDone,
-  gitRepositoryDisconnectedCB,
-  gitRepositoryCreatedCB,
-  gitRepositorySelectedCB,
+  gitRepositoryDisconnectedCb,
+  gitRepositoryCreatedCb,
+  gitRepositorySelectedCb,
   formik,
 }) => {
   const { currentProjectConfiguration, resources } = useContext(AppContext);
@@ -115,9 +115,9 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
                 type="wizard"
                 gitProvider={gitProvider}
                 onDone={onDone}
-                gitRepositoryDisconnectedCB={gitRepositoryDisconnectedCB}
-                gitRepositoryCreatedCB={gitRepositoryCreatedCB}
-                gitRepositorySelectedCB={gitRepositorySelectedCB}
+                gitRepositoryDisconnectedCb={gitRepositoryDisconnectedCb}
+                gitRepositoryCreatedCb={gitRepositoryCreatedCb}
+                gitRepositorySelectedCb={gitRepositorySelectedCb}
                 gitRepositorySelected={{
                   gitOrganizationId: formik.values.gitOrganizationId,
                   repositoryName: formik.values.gitRepositoryName,

@@ -49,7 +49,7 @@ const SyncWithGithubPage: React.FC = () => {
   const errorMessage = formatError(error);
   const isProjectConfiguration =
     data?.resource.resourceType === EnumResourceType.ProjectConfiguration;
-  const gitRepositorySelectedCB = useCallback(
+  const gitRepositorySelectedCb = useCallback(
     (gitRepository: GitRepositorySelected) => {
       connectGitRepository({
         variables: {
@@ -81,14 +81,14 @@ const SyncWithGithubPage: React.FC = () => {
             type="resource"
             resource={data.resource}
             onDone={handleOnDone}
-            gitRepositorySelectedCB={gitRepositorySelectedCB}
+            gitRepositorySelectedCb={gitRepositorySelectedCb}
           />
         )}
         {!isProjectConfiguration && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
             onDone={handleOnDone}
-            gitRepositorySelectedCB={gitRepositorySelectedCB}
+            gitRepositorySelectedCb={gitRepositorySelectedCb}
           />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />

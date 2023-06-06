@@ -302,7 +302,6 @@ export class GitProviderService {
   async connectResourceToProjectRepository(
     resourceId: string
   ): Promise<Resource> {
-    console.log("connectResourceToProjectRepository");
     const resource = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,

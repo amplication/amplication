@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import React from "react";
 import { EnumGitProvider, Resource } from "../../models";
 import { Dialog, EnumPanelStyle, Panel } from "@amplication/ui/design-system";
 import GitDialogsContainer from "./dialogs/GitDialogsContainer";
@@ -7,22 +7,21 @@ import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import useAuthWithGit from "./useAuthWithGit";
+import useGitHook from "./useAuthWithGit";
 import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
 import { isEmpty } from "lodash";
 import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
 import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
 import "./AuthWithGit.scss";
-// import "./AuthResourceWithGit.scss";
 
 interface AuthWithGitProviderProps {
   type: "wizard" | "resource";
   gitProvider?: EnumGitProvider;
   onDone: () => void;
   resource?: Resource;
-  gitRepositoryDisconnectedCB?: () => void;
-  gitRepositoryCreatedCB?: (data: GitRepositoryCreatedData) => void;
-  gitRepositorySelectedCB: (data: GitRepositorySelected) => void;
+  gitRepositoryDisconnectedCb?: () => void;
+  gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
+  gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
   gitRepositorySelected?: GitRepositorySelected;
 }
 
@@ -31,9 +30,9 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
   gitProvider,
   onDone,
   resource,
-  gitRepositoryDisconnectedCB,
-  gitRepositoryCreatedCB,
-  gitRepositorySelectedCB,
+  gitRepositoryDisconnectedCb,
+  gitRepositoryCreatedCb,
+  gitRepositorySelectedCb,
   gitRepositorySelected,
 }) => {
   const CLASS_NAME = type === "wizard" ? "auth-with-git" : "auth-app-with-git";
@@ -59,12 +58,12 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
     closeSelectRepoDialog,
     openCreateNewRepo,
     closeCreateNewRepo,
-  } = useAuthWithGit({
+  } = useGitHook({
     resource,
     gitRepositorySelected,
-    gitRepositoryDisconnectedCB,
-    gitRepositoryCreatedCB,
-    gitRepositorySelectedCB,
+    gitRepositoryDisconnectedCb,
+    gitRepositoryCreatedCb,
+    gitRepositorySelectedCb,
   });
 
   return (
