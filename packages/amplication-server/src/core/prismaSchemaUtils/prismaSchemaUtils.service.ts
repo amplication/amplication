@@ -9,7 +9,6 @@ import {
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
-import { Env } from "../../env";
 
 type SchemaEntityFields = {
   name: string;
@@ -33,15 +32,10 @@ type SchemaEntityFields = {
 
 @Injectable()
 export class PrismaSchemaUtilsService {
-  prismaSchemaUploadsFolder: string;
   constructor(
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
-  ) {
-    this.prismaSchemaUploadsFolder = configService.get(
-      Env.PRISMA_SCHEMA_UPLOAD_FOLDER
-    );
-  }
+  ) {}
 
   validateSchemaOnUpload(file: string): void {
     const schemaString = file.replace(/\\n/g, "\n");

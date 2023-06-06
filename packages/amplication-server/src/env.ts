@@ -28,6 +28,4 @@ export class Env {
   static readonly BILLING_API_KEY = "BILLING_API_KEY";
 
   static readonly STIGG_WEBHOOKS_SECRET = "STIGG_WEBHOOKS_SECRET";
-
-  static readonly PRISMA_SCHEMA_UPLOAD_FOLDER = "PRISMA_SCHEMA_UPLOAD_FOLDER";
 }
