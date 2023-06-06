@@ -17,12 +17,6 @@ import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
 
 const className = "create-service-code-generation";
-const INITIAL_COMMIT_MESSAGE = `Congratulations on your first commit with Amplication! 
-We encourage you to continue exploring the many ways Amplication can supercharge your development. 
- 
-If you find Amplication useful, please show your support and give our GitHub repo a star ⭐️   
-This simple action helps our open-source project grow and reach more developers like you. 
-Thank you and happy coding!`;
 
 type TData = {
   commit: models.Commit;
@@ -110,7 +104,7 @@ const CreateServiceCodeGeneration: React.FC<
     trackWizardPageEvent(AnalyticsEventNames.ServiceWizardError_TryAgain);
     commit({
       variables: {
-        message: INITIAL_COMMIT_MESSAGE,
+        message: "Initial commit",
         projectId: currentProject.id,
       },
     }).catch(console.error);
