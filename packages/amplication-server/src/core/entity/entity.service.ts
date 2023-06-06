@@ -81,6 +81,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
+import { CreateEntitiesFromSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromSchemaResponse";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -360,9 +361,12 @@ export class EntityService {
     file: string,
     resourceId: string,
     user: User
-  ): Promise<Entity[]> {
-    const schemaJson = await this.schemaUtilsService.getSchema(file);
-    const preparedSchema = this.schemaUtilsService.prepareSchema(schemaJson);
+  ): Promise<CreateEntitiesFromSchemaResponse> {
+    this.schemaUtilsService.validateSchemaUpload(file);
+
+    const schema = await this.schemaUtilsService.getSchema(file);
+    const preparedSchema = this.schemaUtilsService.prepareSchema(schema);
+    const errors = this.schemaUtilsService.validateSchemaProcessing(schema);
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
@@ -406,7 +410,10 @@ export class EntityService {
       });
       entities.push(newEntity);
     }
-    return entities;
+    return {
+      entities,
+      errors,
+    };
   }
 
   async createDefaultEntities(resourceId: string, user: User): Promise<void> {

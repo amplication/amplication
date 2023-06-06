@@ -46,6 +46,7 @@ import {
 import { EntityService } from "./entity.service";
 import { CreateEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
+import { CreateEntitiesFromSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromSchemaResponse";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -86,7 +87,7 @@ export class EntityResolver {
     return this.entityService.createOneEntity(args, user);
   }
 
-  @Mutation(() => [Entity], {
+  @Mutation(() => CreateEntitiesFromSchemaResponse, {
     nullable: false,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
@@ -95,7 +96,7 @@ export class EntityResolver {
     @Args() args: CreateEntitiesFromSchemaArgs,
     @Args({ name: "file", type: () => GraphQLUpload })
     file: FileUpload
-  ): Promise<Entity[]> {
+  ): Promise<CreateEntitiesFromSchemaResponse> {
     const { resourceId } = args.data;
     const chunks = [];
     for await (const chunk of file.createReadStream()) {

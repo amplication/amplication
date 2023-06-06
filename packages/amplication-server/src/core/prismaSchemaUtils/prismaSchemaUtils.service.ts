@@ -1,7 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { validate } from "@prisma/internals";
-import { getSchema, Schema, Model, Field, Func } from "@mrleebo/prisma-ast";
+import { getSchema, Schema, Model, Field } from "@mrleebo/prisma-ast";
 import {
   capitalizeFirstLetter,
   filterOutAmplicatoinAttributes,
@@ -9,26 +9,8 @@ import {
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
-
-type SchemaEntityFields = {
-  name: string;
-  displayName: string;
-  pluralDisplayName: string;
-  pluralName: string;
-  description: string | null;
-  customAttributes: string[];
-  fields: {
-    name: string;
-    displayName: string;
-    description: string;
-    dataType: string | Func;
-    required: boolean;
-    unique: boolean;
-    searchable: boolean;
-    properties: Record<string, unknown>;
-    customAttributes: string[];
-  }[];
-};
+import { ErrorLevel, ErrorMessages, SchemaEntityFields } from "./types";
+import { ErrorMessage } from "./ErrorMessages";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -36,17 +18,6 @@ export class PrismaSchemaUtilsService {
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
-
-  validateSchemaOnUpload(file: string): void {
-    const schemaString = file.replace(/\\n/g, "\n");
-    try {
-      validate({ datamodel: schemaString });
-      this.logger.info("Valid schema");
-    } catch (error) {
-      this.logger.error("Invalid schema", error);
-      throw new Error("Invalid schema");
-    }
-  }
 
   async getSchema(source: string): Promise<Schema> {
     const schema = getSchema(source);
@@ -93,10 +64,29 @@ export class PrismaSchemaUtilsService {
     return entities;
   }
 
-  /**
-   *  TODO: add schema validation
-   * for example, check that the schema has at least one model, doesn't have duplicate models, enums, etc.
-   * return a list of errors
-   *
-   */
+  validateSchemaProcessing(schema: Schema): ErrorMessage[] {
+    const errors: ErrorMessage[] = [];
+    const models = schema.list.filter((item: Model) => item.type === "model");
+
+    if (models.length === 0) {
+      errors.push({
+        message: ErrorMessages.NoModels,
+        level: ErrorLevel.Error,
+        details: "A schema must contain at least one model",
+      });
+    }
+
+    return errors;
+  }
+
+  validateSchemaUpload(file: string): void {
+    const schemaString = file.replace(/\\n/g, "\n");
+    try {
+      validate({ datamodel: schemaString });
+      this.logger.info("Valid schema");
+    } catch (error) {
+      this.logger.error("Invalid schema", error);
+      throw new Error("Invalid schema");
+    }
+  }
 }
