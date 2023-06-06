@@ -4,7 +4,7 @@ import {
   SubscriptionData,
 } from "./index";
 
-export class UpdateSubscriptionInput {
+export class UpsertSubscriptionInput {
   workspaceId: string;
   status: EnumSubscriptionStatus;
   plan: EnumSubscriptionPlan;
