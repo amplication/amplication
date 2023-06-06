@@ -2,6 +2,7 @@
   "extends": "../../tsconfig.base.json",
   "files": [],
   "include": [],
+  "allowJs": true,
   "compilerOptions": {
     "resolveJsonModule": true
   },
