@@ -35,12 +35,7 @@ const USER_RESOURCE_ROLE = {
 };
 
 export const DEFAULT_ENVIRONMENT_NAME = "Sandbox environment";
-export const INITIAL_COMMIT_MESSAGE = `Congratulations on your first commit with Amplication! 
-We encourage you to continue exploring the many ways Amplication can supercharge your development. 
- 
-If you find Amplication useful, please show your support and give our GitHub repo a star ⭐️   
-This simple action helps our open-source project grow and reach more developers like you. 
-Thank you and happy coding!`;
+export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
