@@ -1,3 +1,5 @@
+import pluralize from "pluralize";
+
 export const idTypePropertyMap = {
   autoincrement: { idType: "AUTO_INCREMENT" },
   cuid: { idType: "CUID" },
@@ -20,4 +22,16 @@ export function filterOutAmplicatoinAttributes(attributes): string[] {
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@relation")
   );
+}
+
+export function handleModelName(modelName: string): string {
+  // plural models are mapped to singular
+  if (pluralize.isPlural(modelName)) {
+    return capitalizeFirstLetter(pluralize.singular(modelName));
+  }
+  // snake case models are mapped to pascal case
+  if (modelName.includes("_")) {
+    return modelName.split("_").map(capitalizeFirstLetter).join("");
+  }
+  return modelName;
 }

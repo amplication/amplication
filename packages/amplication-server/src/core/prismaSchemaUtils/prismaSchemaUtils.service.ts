@@ -1,9 +1,16 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { validate } from "@prisma/internals";
-import { getSchema, Schema, Model, Field } from "@mrleebo/prisma-ast";
+import {
+  getSchema,
+  Schema,
+  Model,
+  Field,
+  createPrismaSchemaBuilder,
+} from "@mrleebo/prisma-ast";
 import {
   capitalizeFirstLetter,
   filterOutAmplicatoinAttributes,
+  handleModelName,
   idTypePropertyMap,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -17,28 +24,40 @@ export class PrismaSchemaUtilsService {
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
-  async getSchema(source: string): Promise<Schema> {
+  getSchema(source: string): Schema {
     const schema = getSchema(source);
     this.logger.debug("Schema", { schema });
     return schema;
   }
 
-  prepareSchema(schema: Schema): SchemaEntityFields[] {
-    const entities = schema.list
+  /**
+   * Handle all the preparation needed for the schema before converting it to entities
+   * @param schema the schema to prepare
+   * @returns the prepared schema
+   */
+  prepareSchema(schema: Schema): Schema {
+    this.handleModelMapping(schema);
+
+    return schema;
+  }
+
+  prepareEntities(schema: Schema): SchemaEntityFields[] {
+    const preparedSchema = this.prepareSchema(schema);
+    const entities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
-      .map((item: Model) => {
-        const modelAttributes = item.properties.filter(
+      .map((model: Model) => {
+        const modelAttributes = model.properties.filter(
           (prop) => prop.type === "attribute"
         );
-        const modelFields = item.properties.filter(
+        const modelFields = model.properties.filter(
           (prop) => prop.type === "field"
         );
 
         return {
-          name: item.name,
-          displayName: capitalizeFirstLetter(item.name),
-          pluralDisplayName: pluralize(capitalizeFirstLetter(item.name)),
-          pluralName: pluralize(item.name.toLowerCase()),
+          name: handleModelName(model.name),
+          displayName: handleModelName(model.name),
+          pluralDisplayName: pluralize(capitalizeFirstLetter(model.name)),
+          pluralName: pluralize(model.name.toLowerCase()),
           description: null,
           customAttributes: this.prepareModelAttributes(modelAttributes),
           fields: modelFields.map((field: Field) => {
@@ -59,7 +78,49 @@ export class PrismaSchemaUtilsService {
         };
       });
 
+    this.logger.debug("Entities", { entities });
     return entities;
+  }
+
+  /**
+   * add "@@map" attribute to model name if its name is plural
+   * @param schema
+   * @returns
+   */
+  private handleModelMapping(schema: Schema): Schema {
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      if (pluralize.isPlural(model.name)) {
+        const schemaString = schema.toString();
+        const builder = createPrismaSchemaBuilder(schemaString);
+        builder.model(model.name).blockAttribute(`@@map${model.name}`);
+        return builder.getSchema();
+      }
+    });
+    return schema;
+  }
+
+  /**
+   * convert model names from snake_case to PascalCase
+   * @param schema
+   */
+  private handleSnakeCase(schema: Schema): Schema {
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      if (model.name.includes("_")) {
+        const schemaString = schema.toString();
+        const builder = createPrismaSchemaBuilder(schemaString);
+        builder.model(model.name).blockAttribute(`@@map${model.name}`);
+        const snakeCaseName = model.name;
+        const pascalCaseName = snakeCaseName
+          .split("_")
+          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+          .join("");
+        builder.model(pascalCaseName).blockAttribute(`@@map${pascalCaseName}`);
+        return builder.getSchema();
+      }
+    });
+    return schema;
   }
 
   private prepareModelAttributes(attributes) {
