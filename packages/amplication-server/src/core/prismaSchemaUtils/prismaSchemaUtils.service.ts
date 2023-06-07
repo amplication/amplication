@@ -2,10 +2,11 @@ import { Inject, Injectable } from "@nestjs/common";
 import { validate } from "@prisma/internals";
 import {
   getSchema,
-  Schema,
   Model,
   Field,
   createPrismaSchemaBuilder,
+  ConcretePrismaSchemaBuilder,
+  Schema,
 } from "@mrleebo/prisma-ast";
 import {
   capitalizeFirstLetter,
@@ -15,35 +16,44 @@ import {
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
-import { ErrorLevel, ErrorMessages, SchemaEntityFields } from "./types";
+import {
+  ErrorLevel,
+  ErrorMessages,
+  Operation,
+  SchemaEntityFields,
+} from "./types";
 import { ErrorMessage } from "./ErrorMessages";
+import { writeFile } from "fs/promises";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
+  private operations: Operation[] = [this.handleModelNamesRenaming];
+
   constructor(
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
-  getSchema(source: string): Schema {
-    const schema = getSchema(source);
-    this.logger.debug("Schema", { schema });
-    return schema;
+  prepareSchema =
+    (...operations: Operation[]) =>
+    (initialSchema: string): Schema => {
+      let builder = createPrismaSchemaBuilder(initialSchema);
+
+      operations.forEach((operation) => {
+        builder = operation.call(this, builder);
+      });
+
+      return builder.getSchema();
+    };
+
+  private async writeSchemaToJson(schema: Schema) {
+    const schemaJson = JSON.stringify(schema, null, 2);
+    await writeFile("./schema.json", schemaJson, "utf8");
   }
 
-  /**
-   * Handle all the preparation needed for the schema before converting it to entities
-   * @param schema the schema to prepare
-   * @returns the prepared schema
-   */
-  prepareSchema(schema: Schema): Schema {
-    this.handleModelMapping(schema);
-
-    return schema;
-  }
-
-  prepareEntities(schema: Schema): SchemaEntityFields[] {
-    const preparedSchema = this.prepareSchema(schema);
-    const entities = preparedSchema.list
+  async prepareEntities(schema: string): Promise<SchemaEntityFields[]> {
+    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    await this.writeSchemaToJson(preparedSchema);
+    const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
         const modelAttributes = model.properties.filter(
@@ -78,49 +88,33 @@ export class PrismaSchemaUtilsService {
         };
       });
 
-    this.logger.debug("Entities", { entities });
-    return entities;
+    // this.logger.debug("prepareEntities", { prepareEntities });
+    return preparedEntities;
   }
 
   /**
-   * add "@@map" attribute to model name if its name is plural
+   * add "@@map" attribute to model name if its name is plural or snake case
+   * and rename model name to singular and in pascal case
    * @param schema
    * @returns
    */
-  private handleModelMapping(schema: Schema): Schema {
+  private handleModelNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === "model");
     models.map((model: Model) => {
-      if (pluralize.isPlural(model.name)) {
-        const schemaString = schema.toString();
-        const builder = createPrismaSchemaBuilder(schemaString);
-        builder.model(model.name).blockAttribute(`@@map${model.name}`);
+      const isInvalidModelName =
+        pluralize.isPlural(model.name) || model.name.includes("_");
+      if (isInvalidModelName) {
+        builder.model(model.name).blockAttribute("map", model.name);
+        builder.model(model.name).then<Model>((model) => {
+          model.name = handleModelName(model.name);
+        });
         return builder.getSchema();
       }
     });
-    return schema;
-  }
-
-  /**
-   * convert model names from snake_case to PascalCase
-   * @param schema
-   */
-  private handleSnakeCase(schema: Schema): Schema {
-    const models = schema.list.filter((item) => item.type === "model");
-    models.map((model: Model) => {
-      if (model.name.includes("_")) {
-        const schemaString = schema.toString();
-        const builder = createPrismaSchemaBuilder(schemaString);
-        builder.model(model.name).blockAttribute(`@@map${model.name}`);
-        const snakeCaseName = model.name;
-        const pascalCaseName = snakeCaseName
-          .split("_")
-          .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-          .join("");
-        builder.model(pascalCaseName).blockAttribute(`@@map${pascalCaseName}`);
-        return builder.getSchema();
-      }
-    });
-    return schema;
+    return builder;
   }
 
   private prepareModelAttributes(attributes) {
@@ -159,9 +153,12 @@ export class PrismaSchemaUtilsService {
     return idTypePropertyMap[defaultIdAttribute.args[0].value.name];
   }
 
-  validateSchemaProcessing(schema: Schema): ErrorMessage[] | null {
+  validateSchemaProcessing(schema: string): ErrorMessage[] | null {
+    const schemaObject = getSchema(schema);
     const errors: ErrorMessage[] = [];
-    const models = schema.list.filter((item: Model) => item.type === "model");
+    const models = schemaObject.list.filter(
+      (item: Model) => item.type === "model"
+    );
 
     if (models.length === 0) {
       errors.push({

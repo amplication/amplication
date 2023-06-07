@@ -1,4 +1,4 @@
-import { Func } from "@mrleebo/prisma-ast";
+import { ConcretePrismaSchemaBuilder, Func } from "@mrleebo/prisma-ast";
 import { registerEnumType } from "@nestjs/graphql";
 
 export enum ErrorMessages {
@@ -19,6 +19,10 @@ export enum ErrorLevel {
 registerEnumType(ErrorLevel, {
   name: "ErrorLevel",
 });
+
+export type Operation = (
+  builder: ConcretePrismaSchemaBuilder
+) => ConcretePrismaSchemaBuilder;
 
 export type SchemaEntityFields = {
   name: string;
