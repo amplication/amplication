@@ -29,6 +29,7 @@ import { ErrorMessage } from "./ErrorMessages";
 export class PrismaSchemaUtilsService {
   private operations: Operation[] = [
     this.handleModelNamesRenaming,
+    this.handleFieldNamesRenaming,
     this.handleIdField,
   ];
 
@@ -130,6 +131,45 @@ export class PrismaSchemaUtilsService {
         });
         return builder.getSchema();
       }
+    });
+    return builder;
+  }
+
+  /**
+   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
+   * Then, rename field name to camel case
+   * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleFieldNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const fields = model.properties.filter(
+        (property) =>
+          property.type === "field" &&
+          !property.attributes?.some((attr) => attr.name === "id")
+      ) as Field[];
+      fields.map((field: Field) => {
+        const isInvalidFieldName = field.name.includes("_");
+        if (isInvalidFieldName) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = field.name.replace(/_([a-z])/g, (g) =>
+                g[1].toUpperCase()
+              );
+            });
+          return builder.getSchema();
+        }
+      });
     });
     return builder;
   }
