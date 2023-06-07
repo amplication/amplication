@@ -294,6 +294,7 @@
     "webpack": "^5.76.2",
     "webpack-merge": "^5.8.0",
     "winston-transport": "^4.5.0",
+    "yargs": "^17.7.2",
     "yup": "^0.32.11"
   },
   "engines": {
