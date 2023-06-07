@@ -8,7 +8,7 @@ import {
   Dialog,
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useState, useEffect } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import useLocalStorage from "react-use-localstorage";
@@ -158,6 +158,26 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
+  const [stars, setStars] = useState<string | number>();
+
+  useEffect(() => {
+    async function fetchGithubStars() {
+      const response = await fetch(
+        "https://api.github.com/repos/amplication/amplication"
+      );
+      const data = await response.json();
+      const num: number = data.stargazers_count;
+      const a = Math.abs(num) / 1000;
+      setStars(
+        Math.abs(num) > 999
+          ? `${(Math.sign(num) * a).toFixed(1)}k`
+          : Math.sign(num) * Math.abs(num)
+      );
+    }
+
+    fetchGithubStars();
+  }, []);
+
   return (
     <>
       <Dialog
@@ -173,7 +193,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
           className={`${CLASS_NAME}__banner`}
           onClick={() => setShowBanner("false")}
         >
-          Star us on GitHub
+          <a
+            href="https://github.com/amplication/amplication"
+            target="_blank"
+            rel="noreferrer"
+          >
+            Star us on GitHub {stars}
+          </a>
         </div>
       )}
       <div className={CLASS_NAME}>
