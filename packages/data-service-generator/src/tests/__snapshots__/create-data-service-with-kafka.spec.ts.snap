@@ -3000,6 +3000,7 @@ services:
     \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
+    \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@prisma/client\\": \\"4.6.1\\",
     \\"apollo-server-express\\": \\"3.6.1\\",
     \\"bcrypt\\": \\"5.0.1\\",
@@ -3018,7 +3019,6 @@ services:
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
     \\"@nestjs/testing\\": \\"8.4.7\\",
-    \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@types/express\\": \\"4.17.9\\",
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
     \\"@types/jest\\": \\"26.0.19\\",
@@ -11445,12 +11445,12 @@ describe(\\"Testing the secrets manager base class\\", () => {
     expect(result).toBeNull();
   });
   it(\\"should throw error if dont get key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
+    return expect(secretsManagerServiceBase.getSecret(\\"\\")).rejects.toThrow();
   });
   it(\\"should throw an exeption if getting null key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
+    return expect(
+      secretsManagerServiceBase.getSecret(null as unknown as string)
+    ).rejects.toThrow();
   });
 });
 ",
@@ -11571,9 +11571,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return true if allow connection to db\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.resolve(true));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.resolve(true)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -11581,9 +11581,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return false if db is not available\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.reject(false));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.reject(false)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
