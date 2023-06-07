@@ -28,7 +28,10 @@ import { writeFileSync } from "fs";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
-  private operations: Operation[] = [this.handleModelNamesRenaming];
+  private operations: Operation[] = [
+    this.handleModelNamesRenaming,
+    this.handleIdField,
+  ];
 
   constructor(
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
@@ -113,6 +116,38 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
+   * search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
+   * @param builder - prisma schema builder
+   */
+  private handleIdField(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const idField = model.properties.find(
+        (property) =>
+          property.type === "field" &&
+          property.attributes?.some((attr) => attr.name === "id")
+      ) as Field;
+      if (idField && idField.name !== "id") {
+        builder
+          .model(model.name)
+          .field(idField.name)
+          .attribute("map", [idField.name]);
+        builder
+          .model(model.name)
+          .field(idField.name)
+          .then<Field>((field) => {
+            field.name = "id";
+          });
+        return builder.getSchema();
+      }
+    });
+    return builder;
+  }
+
+  /**
    * take the model or field attributes from the schema object and translate it to array of strings like Amplication expects
    * @param attributes
    * @returns array of strings representing the attributes
@@ -122,7 +157,7 @@ export class PrismaSchemaUtilsService {
       return [];
     }
     return attributes.map((attribute) => {
-      if (!attribute.arg && !attribute.args?.length) {
+      if (!attribute.args && !attribute.args?.length) {
         return attribute.kind === "model"
           ? `@@${attribute.name}`
           : `@${attribute.name}`;
