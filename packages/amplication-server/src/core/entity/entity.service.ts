@@ -364,9 +364,8 @@ export class EntityService {
   ): Promise<CreateEntitiesFromSchemaResponse> {
     this.schemaUtilsService.validateSchemaUpload(file);
 
-    const schema = this.schemaUtilsService.getSchema(file);
-    const preparedSchema = this.schemaUtilsService.prepareEntities(schema);
-    const errors = this.schemaUtilsService.validateSchemaProcessing(schema);
+    const preparedSchema = await this.schemaUtilsService.prepareEntities(file);
+    const errors = this.schemaUtilsService.validateSchemaProcessing(file);
 
     const entities: Entity[] = [];
     for (const entity of preparedSchema) {
@@ -410,11 +409,6 @@ export class EntityService {
       });
       entities.push(newEntity);
     }
-
-    this.logger.debug(`Created ${entities.length} entities from schema`, {
-      entities,
-      errors,
-    });
 
     return {
       entities,

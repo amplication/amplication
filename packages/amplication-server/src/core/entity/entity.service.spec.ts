@@ -435,13 +435,10 @@ describe("EntityService", () => {
         {
           provide: PrismaSchemaUtilsService,
           useClass: jest.fn(() => ({
-            getSchema: jest.fn(() => {
+            prepareEntities: jest.fn(() => {
               return;
             }),
-            prepareSchema: jest.fn(() => {
-              return;
-            }),
-            saveAsJsonSchema: jest.fn(() => {
+            validateSchemaProcessing: jest.fn(() => {
               return;
             }),
           })),
