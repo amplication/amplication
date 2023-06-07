@@ -6,7 +6,7 @@ import {
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
-import { ApolloError, gql, useQuery } from "@apollo/client";
+import { ApolloError, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useEffect, useState } from "react";
 import { CreateGitRepositoryInput } from "../../../../models";
@@ -15,6 +15,7 @@ import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GET_GROUPS } from "../../queries/gitProvider";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -134,18 +135,3 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
-
-const GET_GROUPS = gql`
-  query gitGroups($organizationId: String!) {
-    gitGroups(where: { organizationId: $organizationId }) {
-      total
-      page
-      pageSize
-      groups {
-        id
-        name
-        displayName
-      }
-    }
-  }
-`;

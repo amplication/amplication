@@ -113,6 +113,13 @@ export const ACTION_LOG_LEVEL: {
 
 const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
+const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
+We encourage you to continue exploring the many ways Amplication can supercharge your development. 
+ 
+If you find Amplication useful, please show your support and give our GitHub repo a star ⭐️   
+This simple action helps our open-source project grow and reach more developers like you. 
+Thank you and happy coding!`;
+
 export function createInitialStepData(
   version: string,
   message: string
@@ -521,8 +528,10 @@ export class BuildService {
               gitOrganization
             );
 
-          const commitMessage =
-            commit.message && `Commit message: ${commit.message}.`;
+          const commitMessage = oldBuild
+            ? commit.message && `Commit message: ${commit.message}.`
+            : INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY;
+
           const buildLinkHTML = `[${url}](${url})`;
 
           const createPullRequestMessage: CreatePrRequest.Value = {
@@ -537,7 +546,7 @@ export class BuildService {
             oldBuildId: oldBuild?.id,
             commit: {
               title: commitTitle,
-              body: `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`,
+              body: `${commitMessage}\n\nAmplication build # ${build.id}\n\nBuild URL: ${buildLinkHTML}`,
             },
             gitResourceMeta: {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,

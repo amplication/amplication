@@ -8720,12 +8720,12 @@ describe(\\"Testing the secrets manager base class\\", () => {
     expect(result).toBeNull();
   });
   it(\\"should throw error if dont get key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
+    return expect(secretsManagerServiceBase.getSecret(\\"\\")).rejects.toThrow();
   });
   it(\\"should throw an exeption if getting null key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
+    return expect(
+      secretsManagerServiceBase.getSecret(null as unknown as string)
+    ).rejects.toThrow();
   });
 });
 ",
@@ -8846,9 +8846,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return true if allow connection to db\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.resolve(true));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.resolve(true)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -8856,9 +8856,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return false if db is not available\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.reject(false));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.reject(false)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
