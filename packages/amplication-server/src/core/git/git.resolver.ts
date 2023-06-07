@@ -28,6 +28,7 @@ import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { User } from "../../models";
 import { UserEntity } from "../../decorators/user.decorator";
+import { RemoteGitRepository } from "@amplication/git-utils";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -38,10 +39,10 @@ export class GitResolver {
     AuthorizableOriginParameter.GitOrganizationId,
     "data.gitOrganizationId"
   )
-  async createGitRepository(
+  async connectGitRepository(
     @Args() args: CreateGitRepositoryArgs
-  ): Promise<Resource> {
-    return this.gitService.createRemoteGitRepository(args.data);
+  ): Promise<Resource | boolean> {
+    return this.gitService.connectGitRepository(args.data);
   }
 
   @Mutation(() => Boolean)
@@ -51,8 +52,8 @@ export class GitResolver {
   )
   async createRemoteGitRepository(
     @Args() args: CreateGitRepositoryBaseArgs
-  ): Promise<boolean> {
-    return this.gitService.createRemoteGitRepositoryWithoutConnect(args.data);
+  ): Promise<RemoteGitRepository> {
+    return this.gitService.createRemoteGitRepository(args.data);
   }
 
   @Query(() => GitOrganization)
