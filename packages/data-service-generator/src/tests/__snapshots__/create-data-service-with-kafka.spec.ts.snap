@@ -4930,7 +4930,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -4940,9 +4939,8 @@ import { Public } from \\"../../decorators/public.decorator\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
-import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
-import { CustomerCountArgs } from \\"./CustomerCountArgs\\";
 import { CustomerFindManyArgs } from \\"./CustomerFindManyArgs\\";
+import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 import { Customer } from \\"./Customer\\";
 import { OrderFindManyArgs } from \\"../../order/base/OrderFindManyArgs\\";
 import { Order } from \\"../../order/base/Order\\";
@@ -4998,47 +4996,6 @@ export class CustomerControllerBase {
         },
       },
     });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(CustomerCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(CustomerCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        email: true,
-        firstName: true,
-        lastName: true,
-        isVip: true,
-        birthData: true,
-        averageSale: true,
-        favoriteNumber: true,
-        geoLocation: true,
-        comments: true,
-        favoriteColors: true,
-        customerType: true,
-
-        organization: {
-          select: {
-            id: true,
-          },
-        },
-
-        vipOrganization: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @common.Get()
@@ -6334,7 +6291,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -6343,9 +6299,8 @@ import { EmptyService } from \\"../empty.service\\";
 import { EmptyCreateInput } from \\"./EmptyCreateInput\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
-import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
-import { EmptyCountArgs } from \\"./EmptyCountArgs\\";
 import { EmptyFindManyArgs } from \\"./EmptyFindManyArgs\\";
+import { EmptyUpdateInput } from \\"./EmptyUpdateInput\\";
 import { Empty } from \\"./Empty\\";
 
 export class EmptyControllerBase {
@@ -6361,24 +6316,6 @@ export class EmptyControllerBase {
         updatedAt: true,
       },
     });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(EmptyCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(EmptyCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @common.Get()
@@ -7766,7 +7703,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -7776,9 +7712,8 @@ import { Public } from \\"../../decorators/public.decorator\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
-import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
-import { OrderCountArgs } from \\"./OrderCountArgs\\";
 import { OrderFindManyArgs } from \\"./OrderFindManyArgs\\";
+import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 import { Order } from \\"./Order\\";
 
 export class OrderControllerBase {
@@ -7810,34 +7745,6 @@ export class OrderControllerBase {
         label: true,
       },
     });
-  }
-
-  @Public()
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(OrderCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(OrderCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-
-        customer: {
-          select: {
-            id: true,
-          },
-        },
-
-        status: true,
-        label: true,
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @Public()
@@ -9238,7 +9145,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -9247,9 +9153,8 @@ import { OrganizationService } from \\"../organization.service\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
-import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
-import { OrganizationCountArgs } from \\"./OrganizationCountArgs\\";
 import { OrganizationFindManyArgs } from \\"./OrganizationFindManyArgs\\";
+import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 import { Organization } from \\"./Organization\\";
 import { UserFindManyArgs } from \\"../../user/base/UserFindManyArgs\\";
 import { User } from \\"../../user/base/User\\";
@@ -9274,25 +9179,6 @@ export class OrganizationControllerBase {
         name: true,
       },
     });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(OrganizationCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(OrganizationCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        createdAt: true,
-        updatedAt: true,
-        name: true,
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @common.Get()
@@ -10947,7 +10833,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -10956,9 +10841,8 @@ import { ProfileService } from \\"../profile.service\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
-import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
-import { ProfileCountArgs } from \\"./ProfileCountArgs\\";
 import { ProfileFindManyArgs } from \\"./ProfileFindManyArgs\\";
+import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
 import { Profile } from \\"./Profile\\";
 
 export class ProfileControllerBase {
@@ -10991,33 +10875,6 @@ export class ProfileControllerBase {
         },
       },
     });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(ProfileCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(ProfileCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        createdIn: true,
-        createdAt: true,
-        updatedIn: true,
-        updatedAt: true,
-        email: true,
-
-        user: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @common.Get()
@@ -13164,7 +13021,6 @@ https://docs.amplication.com/how-to/custom-code
 import * as common from \\"@nestjs/common\\";
 import * as swagger from \\"@nestjs/swagger\\";
 import { isRecordNotFoundError } from \\"../../prisma.util\\";
-import { MetaQueryPayload } from \\"../../util/MetaQueryPayload\\";
 import * as errors from \\"../../errors\\";
 import { Request } from \\"express\\";
 import { plainToClass } from \\"class-transformer\\";
@@ -13173,9 +13029,8 @@ import { UserService } from \\"../user.service\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
-import { UserUpdateInput } from \\"./UserUpdateInput\\";
-import { UserCountArgs } from \\"./UserCountArgs\\";
 import { UserFindManyArgs } from \\"./UserFindManyArgs\\";
+import { UserUpdateInput } from \\"./UserUpdateInput\\";
 import { User } from \\"./User\\";
 import { OrganizationFindManyArgs } from \\"../../organization/base/OrganizationFindManyArgs\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -13230,46 +13085,6 @@ export class UserControllerBase {
         },
       },
     });
-  }
-
-  @common.Get()
-  @swagger.ApiOkResponse({ type: MetaQueryPayload })
-  @ApiNestedQuery(UserCountArgs)
-  async count(@common.Req() request: Request): Promise<MetaQueryPayload> {
-    const args = plainToClass(UserCountArgs, request.query);
-    const result = await this.service.count({
-      ...args,
-      select: {
-        id: true,
-        name: true,
-        bio: true,
-        email: true,
-        age: true,
-        birthDate: true,
-        score: true,
-
-        manager: {
-          select: {
-            id: true,
-          },
-        },
-
-        interests: true,
-        priority: true,
-        isCurious: true,
-        location: true,
-        extendedProperties: true,
-
-        profile: {
-          select: {
-            id: true,
-          },
-        },
-      },
-    });
-    return {
-      count: result,
-    };
   }
 
   @common.Get()
