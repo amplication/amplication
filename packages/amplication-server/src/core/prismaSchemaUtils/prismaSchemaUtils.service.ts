@@ -84,14 +84,13 @@ export class PrismaSchemaUtilsService {
         };
       });
 
-    // this.logger.debug("prepareEntities", { prepareEntities });
     return preparedEntities;
   }
 
   /**
    * add "@@map" attribute to model name if its name is plural or snake case
    * and rename model name to singular and in pascal case
-   * @param schema
+   * @param builder - prisma schema builder
    * @returns
    */
   private handleModelNamesRenaming(
@@ -113,7 +112,12 @@ export class PrismaSchemaUtilsService {
     return builder;
   }
 
-  private prepareModelAttributes(attributes) {
+  /**
+   * take the model or field attributes from the schema object and translate it to array of strings like Amplication expects
+   * @param attributes
+   * @returns array of strings representing the attributes
+   */
+  private prepareModelAttributes(attributes): string[] {
     if (!attributes && !attributes?.length) {
       return [];
     }
