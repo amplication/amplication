@@ -24,8 +24,6 @@ import {
   SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
-import { writeFileSync } from "fs";
-import { join } from "path";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -237,14 +235,5 @@ export class PrismaSchemaUtilsService {
       this.logger.error("Invalid schema", error);
       throw new Error("Invalid schema");
     }
-  }
-
-  /**
-   * debug schema to file by writing it to schema.json file
-   * @param schema - prisma schema as Object
-   */
-  private debugSchema(schema: Schema) {
-    const schemaJson = JSON.stringify(schema, null, 2);
-    writeFileSync(join(__dirname, "schema.json"), schemaJson, "utf8");
   }
 }
