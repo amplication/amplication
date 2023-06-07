@@ -161,6 +161,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
       >
         <ProfileForm />
       </Dialog>
+      <div className={`${CLASS_NAME}__banner`}>Banner</div>
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
