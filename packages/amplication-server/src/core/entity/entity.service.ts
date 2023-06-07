@@ -393,7 +393,11 @@ export class EntityService {
             ...BASE_FIELD,
             name: field.name,
             displayName: field.displayName,
-            dataType: EnumDataType.Lookup,
+            required: field.required,
+            unique: field.unique,
+            dataType:
+              EnumDataType[field.dataType as string] ||
+              EnumDataType.SingleLineText, // TODO: handle this case
             // permanentId: field.id,
             entityVersion: {
               connect: {

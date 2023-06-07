@@ -99,7 +99,7 @@ export class PrismaSchemaUtilsService {
       return {
         name: field.name,
         displayName: field.name,
-        dataType: field.type,
+        dataType: field.fieldType,
         required: field.optional,
         unique: isUniqueField,
         searchable: false,
