@@ -50,7 +50,6 @@ export class PrismaSchemaUtilsService {
 
   prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
     const preparedSchema = this.prepareSchema(...this.operations)(schema);
-    this.debugSchema(preparedSchema);
     const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
