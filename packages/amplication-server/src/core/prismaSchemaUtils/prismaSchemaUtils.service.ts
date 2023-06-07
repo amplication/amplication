@@ -23,7 +23,8 @@ import {
   SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
-import { writeFile } from "fs/promises";
+import { cwd } from "process";
+import { writeFileSync } from "fs";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -45,14 +46,9 @@ export class PrismaSchemaUtilsService {
       return builder.getSchema();
     };
 
-  private async writeSchemaToJson(schema: Schema) {
-    const schemaJson = JSON.stringify(schema, null, 2);
-    await writeFile("./schema.json", schemaJson, "utf8");
-  }
-
-  async prepareEntities(schema: string): Promise<SchemaEntityFields[]> {
+  prepareEntities(schema: string): SchemaEntityFields[] {
     const preparedSchema = this.prepareSchema(...this.operations)(schema);
-    await this.writeSchemaToJson(preparedSchema);
+    this.debugSchema(preparedSchema);
     const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
@@ -180,5 +176,14 @@ export class PrismaSchemaUtilsService {
       this.logger.error("Invalid schema", error);
       throw new Error("Invalid schema");
     }
+  }
+
+  /**
+   * debug schema to file by writing it to schema.json file
+   * @param schema - prisma schema as Object
+   */
+  private debugSchema(schema: Schema) {
+    const schemaJson = JSON.stringify(schema, null, 2);
+    writeFileSync(cwd() + "./schema.json", schemaJson, "utf8");
   }
 }
