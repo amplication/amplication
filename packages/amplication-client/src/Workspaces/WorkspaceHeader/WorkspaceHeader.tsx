@@ -11,6 +11,7 @@ import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import useLocalStorage from "react-use-localstorage";
 import { unsetToken } from "../../authentication/authentication";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
@@ -33,6 +34,7 @@ import {
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
+const LOCAL_STORAGE_KEY_SHOW_BANNER = "showBanner";
 
 enum ItemDataCommand {
   COMMAND_CONTACT_US = "command_contact_us",
@@ -109,6 +111,11 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
 
+  const [showBanner, setShowBanner] = useLocalStorage(
+    LOCAL_STORAGE_KEY_SHOW_BANNER,
+    "true"
+  );
+
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -161,7 +168,14 @@ const WorkspaceHeader: React.FC<{}> = () => {
       >
         <ProfileForm />
       </Dialog>
-      <div className={`${CLASS_NAME}__banner`}>Banner</div>
+      {JSON.parse(showBanner) && (
+        <div
+          className={`${CLASS_NAME}__banner`}
+          onClick={() => setShowBanner("false")}
+        >
+          Star us on GitHub
+        </div>
+      )}
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
