@@ -10,8 +10,7 @@ export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
-export function filterOutAmplicatoinAttributes(attributes): string[] {
-  // amplication attributes are @id @default @updatedAt @createdAt @relation
+export function filterOutAmplicationAttributes(attributes): string[] {
   return attributes.filter(
     (attribute) =>
       !attribute.startsWith("@id") &&

@@ -364,7 +364,8 @@ export class EntityService {
   ): Promise<CreateEntitiesFromSchemaResponse> {
     this.schemaUtilsService.validateSchemaUpload(file);
 
-    const preparedSchema = this.schemaUtilsService.prepareEntities(file);
+    const preparedSchema =
+      this.schemaUtilsService.prepareEntitiesWithFields(file);
     const errors = this.schemaUtilsService.validateSchemaProcessing(file);
 
     const entities: Entity[] = [];

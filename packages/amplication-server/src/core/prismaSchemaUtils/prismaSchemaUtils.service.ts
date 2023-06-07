@@ -9,22 +9,23 @@ import {
   Schema,
 } from "@mrleebo/prisma-ast";
 import {
-  capitalizeFirstLetter,
-  filterOutAmplicatoinAttributes,
+  filterOutAmplicationAttributes,
   handleModelName,
   idTypePropertyMap,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
+  CreateEntityFieldInput,
+  CreateEntityInput,
   ErrorLevel,
   ErrorMessages,
   Operation,
   SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
-import { cwd } from "process";
 import { writeFileSync } from "fs";
+import { join } from "path";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -49,45 +50,66 @@ export class PrismaSchemaUtilsService {
       return builder.getSchema();
     };
 
-  prepareEntities(schema: string): SchemaEntityFields[] {
+  prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
     const preparedSchema = this.prepareSchema(...this.operations)(schema);
     this.debugSchema(preparedSchema);
     const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
-        const modelAttributes = model.properties.filter(
-          (prop) => prop.type === "attribute"
-        );
-        const modelFields = model.properties.filter(
-          (prop) => prop.type === "field"
-        );
+        const entity = this.prepareEntity(model);
+        const fields = this.prepareEntityFields(model);
 
-        return {
-          name: handleModelName(model.name),
-          displayName: handleModelName(model.name),
-          pluralDisplayName: pluralize(capitalizeFirstLetter(model.name)),
-          pluralName: pluralize(model.name.toLowerCase()),
-          description: null,
-          customAttributes: this.prepareModelAttributes(modelAttributes),
-          fields: modelFields.map((field: Field) => {
-            return {
-              name: field.name,
-              displayName: capitalizeFirstLetter(field.name),
-              dataType: field.fieldType,
-              description: "",
-              required: field.optional,
-              unique: field.attributes?.some((attr) => attr.name === "unique"),
-              searchable: false, // TODO: check if searchable and not hardcoded
-              properties: {},
-              customAttributes: filterOutAmplicatoinAttributes(
-                this.prepareModelAttributes(field.attributes)
-              ),
-            };
-          }),
+        const preparedEntityWithFields: SchemaEntityFields = {
+          ...entity,
+          fields: fields,
         };
+
+        return preparedEntityWithFields;
       });
 
     return preparedEntities;
+  }
+
+  prepareEntity(model: Model): CreateEntityInput {
+    const modelAttributes = model.properties.filter(
+      (prop) => prop.type === "attribute"
+    );
+    const entityPluralDisplayName = pluralize(model.name);
+    const entityAttributes = this.prepareAttributes(modelAttributes);
+
+    return {
+      name: model.name,
+      displayName: model.name,
+      pluralDisplayName: entityPluralDisplayName,
+      description: null,
+      customAttributes: entityAttributes,
+    };
+  }
+
+  prepareEntityFields(model: Model): CreateEntityFieldInput[] {
+    const modelFields = model.properties.filter(
+      (prop) => prop.type === "field"
+    );
+    return modelFields.map((field: Field) => {
+      const isUniqueField = field.attributes?.some(
+        (attr) => attr.name === "unique"
+      );
+      const fieldProperties = this.prepareFiledProperties(field);
+      const fieldAttributes = filterOutAmplicationAttributes(
+        this.prepareAttributes(field.attributes)
+      );
+      return {
+        name: field.name,
+        displayName: field.name,
+        dataType: field.type,
+        required: field.optional,
+        unique: isUniqueField,
+        searchable: false,
+        description: null,
+        properties: fieldProperties,
+        customAttributes: fieldAttributes,
+      };
+    });
   }
 
   /**
@@ -152,7 +174,7 @@ export class PrismaSchemaUtilsService {
    * @param attributes
    * @returns array of strings representing the attributes
    */
-  private prepareModelAttributes(attributes): string[] {
+  private prepareAttributes(attributes): string[] {
     if (!attributes && !attributes?.length) {
       return [];
     }
@@ -180,7 +202,7 @@ export class PrismaSchemaUtilsService {
     });
   }
 
-  private createAmplcationFiledProperties(field) {
+  private prepareFiledProperties(field) {
     const defaultIdAttribute = field.attributes?.find(
       (attr) => attr.name === "default"
     );
@@ -223,6 +245,6 @@ export class PrismaSchemaUtilsService {
    */
   private debugSchema(schema: Schema) {
     const schemaJson = JSON.stringify(schema, null, 2);
-    writeFileSync(cwd() + "./schema.json", schemaJson, "utf8");
+    writeFileSync(join(__dirname, "schema.json"), schemaJson, "utf8");
   }
 }
