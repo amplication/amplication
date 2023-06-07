@@ -86,7 +86,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
             enabled: !enabled,
             version,
             settings,
-            configurations: !enabled ? configurations : null,
+            configurations,
           },
           where: {
             id: id,
