@@ -32,5 +32,5 @@ export function handleModelName(modelName: string): string {
   if (modelName.includes("_")) {
     return modelName.split("_").map(capitalizeFirstLetter).join("");
   }
-  return modelName;
+  return capitalizeFirstLetter(modelName);
 }
