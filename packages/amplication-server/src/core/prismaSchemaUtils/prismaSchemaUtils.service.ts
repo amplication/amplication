@@ -43,9 +43,9 @@ export class PrismaSchemaUtilsService {
 
   /**
    * Validate schema by Prisma
-   * @param file - the schema file that was uploaded
-   * @throws - if the schema is invalid
-   * @returns - void
+   * @param file the schema file that was uploaded
+   * @throws if the schema is invalid
+   * @returns void
    **/
   validateSchemaUpload(file: string): void {
     const schemaString = file.replace(/\\n/g, "\n");
@@ -60,10 +60,10 @@ export class PrismaSchemaUtilsService {
 
   /**
    * Prepare schema before passing it to entities and fields creation
-   * @param operations - functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
+   * @param operations functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
    * The functions are called one after the other and perform operations on the schema
    * The functions have a name pattern: handle{OperationName}
-   * @returns  - function that accepts the initial schema and returns the prepared schema
+   * @returns function that accepts the initial schema and returns the prepared schema
    */
   prepareSchema =
     (...operations: Operation[]) =>
@@ -147,7 +147,7 @@ export class PrismaSchemaUtilsService {
    * **************************/
 
   /**
-   * prepare entity for Amplication like in EntityCreateInput
+   * Prepare an entity in a form of EntityCreateInput
    * @param model the model to prepare
    * @returns entity in a structure like in EntityCreateInput
    */
@@ -167,6 +167,11 @@ export class PrismaSchemaUtilsService {
     };
   }
 
+  /**
+   * Prepare the entity fields in a form of EntityFieldCreateInput
+   * @param model the model to prepare
+   * @returns entity fields in a structure like in EntityFieldCreateInput
+   */
   private prepareEntityFields(
     schema: string,
     model: Model
@@ -200,10 +205,10 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * add "@@map" attribute to model name if its name is plural or snake case
+   * Add "@@map" attribute to model name if its name is plural or snake case
    * and rename model name to singular and in pascal case
-   * @param builder - prisma schema builder
-   * @returns
+   * @param builder prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
    */
   private handleModelNamesRenaming(
     builder: ConcretePrismaSchemaBuilder
@@ -265,8 +270,9 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
+   * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
    * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
    */
   private handleIdField(
     builder: ConcretePrismaSchemaBuilder
@@ -299,6 +305,12 @@ export class PrismaSchemaUtilsService {
     return builder;
   }
 
+  /**
+   *
+   * @param schema the schema (string) to perform the operation on
+   * @param field the field to on which to determine the data type
+   * @returns the data type of the field
+   */
   private prepareFieldDataType(schema: string, field: Field): EnumDataType {
     const schemaObject = getSchema(schema);
     const fieldIdType = field.attributes?.find(
@@ -352,8 +364,8 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * take the model or field attributes from the schema object and translate it to array of strings like Amplication expects
-   * @param attributes
+   * Take the model or field attributes from the schema object and translate it to array of strings like Amplication expects
+   * @param attributes the attributes to prepare and convert from the AST form to array of strings
    * @returns array of strings representing the attributes
    */
   private prepareAttributes(attributes): string[] {
@@ -434,7 +446,6 @@ export class PrismaSchemaUtilsService {
 
   validateModelName(modelName: string): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
-    // Define the regular expression
     const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
     if (!modelNameRegex.test(modelName)) {
       errors.push({
@@ -453,7 +464,6 @@ export class PrismaSchemaUtilsService {
 
   validateFieldName(modelName: string): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
-    // Define the regular expression
     const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
     if (!modelNameRegex.test(modelName)) {
       errors.push({
