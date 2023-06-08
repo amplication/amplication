@@ -114,6 +114,30 @@ export class PrismaSchemaUtilsService {
     return preparedEntities;
   }
 
+  prepareEntities(schema: string): CreateEntityInput[] {
+    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedEntities = preparedSchema.list
+      .filter((item: Model) => item.type === "model")
+      .map((model: Model) => this.prepareEntity(model));
+
+    return preparedEntities;
+  }
+
+  prepareEntitiesFields(
+    schema: string
+  ): Record<string, CreateEntityFieldInput[]> {
+    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedEntitiesFields = preparedSchema.list
+      .filter((item: Model) => item.type === "model")
+      .reduce((acc: Record<string, CreateEntityFieldInput[]>, model: Model) => {
+        const fields = this.prepareEntityFields(schema, model);
+        acc[model.name] = fields;
+        return acc;
+      }, {});
+
+    return preparedEntitiesFields;
+  }
+
   /****************************
    * PRIVATE FUNCTIONS SECTIONS
    * **************************/
