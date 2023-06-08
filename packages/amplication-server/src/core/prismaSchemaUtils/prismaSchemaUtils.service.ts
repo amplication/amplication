@@ -37,6 +37,30 @@ export class PrismaSchemaUtilsService {
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
+  /**
+   * Validate schema by Prisma
+   * @param file - the schema file that was uploaded
+   * @throws - if the schema is invalid
+   * @returns - void
+   **/
+  validateSchemaUpload(file: string): void {
+    const schemaString = file.replace(/\\n/g, "\n");
+    try {
+      validate({ datamodel: schemaString });
+      this.logger.info("Valid schema");
+    } catch (error) {
+      this.logger.error("Invalid schema", error);
+      throw new Error("Invalid schema");
+    }
+  }
+
+  /**
+   * Prepare schema before passing it to entities and fields creation
+   * @param operations - functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
+   * The functions are called one after the other and perform operations on the schema
+   * The functions have a name pattern: handle{OperationName}
+   * @returns  - function that accepts the initial schema and returns the prepared schema
+   */
   prepareSchema =
     (...operations: Operation[]) =>
     (initialSchema: string): Schema => {
@@ -46,8 +70,30 @@ export class PrismaSchemaUtilsService {
         builder = operation.call(this, builder);
       });
 
+      this.logger.debug(
+        "Generated Prisma schema",
+        { schema: builder.getSchema() },
+        PrismaSchemaUtilsService.name
+      );
       return builder.getSchema();
     };
+
+  /**
+   * ************************************************
+   * Two ways to use the prepare entities and fields:
+   * ************************************************
+   * 1. prepareEntitiesWithFields - get a schema as a string, call prepareSchema with the operations array,
+   *    and returns an array of the entities with their fields.
+   *    To create Amplication entities with their fields, you can use this function only
+   *
+   * 2. prepareEntities - get a schema as a string, call prepareSchema with the operations array,
+   *    and returns an array of the entities without their fields.
+   *    To create Amplication entities with their fields, you will need to use also prepareEntitiesFields.
+   *
+   * 3. prepareEntitiesFields - get a schema as a string, call prepareSchema with the operations array,
+   *    and returns an object of the entities as a key (string, without the entity data) and their fields as a value.
+   *   To create Amplication entities with their fields, you will need to use also prepareEntities.
+   */
 
   prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
     const preparedSchema = this.prepareSchema(...this.operations)(schema);
@@ -88,6 +134,7 @@ export class PrismaSchemaUtilsService {
     const modelFields = model.properties.filter(
       (prop) => prop.type === "field"
     );
+
     return modelFields.map((field: Field) => {
       const isUniqueField = field.attributes?.some(
         (attr) => attr.name === "unique"
@@ -129,7 +176,7 @@ export class PrismaSchemaUtilsService {
         builder.model(model.name).then<Model>((model) => {
           model.name = handleModelName(model.name);
         });
-        return builder.getSchema();
+        return builder;
       }
     });
     return builder;
@@ -167,7 +214,7 @@ export class PrismaSchemaUtilsService {
                 g[1].toUpperCase()
               );
             });
-          return builder.getSchema();
+          return builder;
         }
       });
     });
@@ -183,12 +230,14 @@ export class PrismaSchemaUtilsService {
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === "model");
+
     models.map((model: Model) => {
       const idField = model.properties.find(
         (property) =>
           property.type === "field" &&
           property.attributes?.some((attr) => attr.name === "id")
       ) as Field;
+
       if (idField && idField.name !== "id") {
         builder
           .model(model.name)
@@ -200,7 +249,8 @@ export class PrismaSchemaUtilsService {
           .then<Field>((field) => {
             field.name = "id";
           });
-        return builder.getSchema();
+
+        return builder;
       }
     });
     return builder;
