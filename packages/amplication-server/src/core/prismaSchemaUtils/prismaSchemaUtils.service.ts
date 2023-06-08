@@ -7,9 +7,11 @@ import {
   createPrismaSchemaBuilder,
   ConcretePrismaSchemaBuilder,
   Schema,
+  Enum,
 } from "@mrleebo/prisma-ast";
 import {
   filterOutAmplicationAttributes,
+  handleFieldName,
   handleModelName,
   idTypePropertyMap,
 } from "./schema-utils";
@@ -24,6 +26,8 @@ import {
   SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
+import { EnumDataType } from "@amplication/code-gen-types";
+import { ScalarType } from "prisma-schema-dsl-types";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
