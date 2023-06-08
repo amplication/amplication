@@ -181,7 +181,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         },
       }).catch(console.error);
     },
-    [createEntity, resourceId]
+    [createEntity, setCurrentNewEntity, setConfirmInstall, resourceId]
   );
 
   const handleDismissConfirmationInstall = useCallback(() => {

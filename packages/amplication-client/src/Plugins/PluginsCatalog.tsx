@@ -99,7 +99,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           data: {
             enabled: !enabled,
             version,
-            settings: settings,
+            settings,
             configurations,
           },
           where: {

@@ -59,8 +59,6 @@ const InstalledPluginSettings: React.FC<Props> = ({
     pluginInstallation?.PluginInstallation.version
   );
 
-  console.log({ pluginInstallation });
-
   useEffect(() => {
     editorRef.current = JSON.stringify(
       pluginInstallation?.PluginInstallation.settings

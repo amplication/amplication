@@ -310,25 +310,31 @@ export class ResourceService {
     resourceId: string,
     configurations: JsonValue
   ): Promise<boolean> {
-    const resource = await this.prisma.resource.findUnique({
-      where: {
-        id: resourceId,
-      },
-      include: {
-        entities: true,
-      },
-    });
+    try {
+      const resource = await this.prisma.resource.findUnique({
+        where: {
+          id: resourceId,
+        },
+        include: {
+          entities: true,
+        },
+      });
 
-    if (
-      !resource.entities?.find(
-        (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
-      ) &&
-      configurations &&
-      configurations["requireAuthenticationEntity"] === "true"
-    ) {
-      throw new ConflictException("Plugin must have an User entity");
+      if (
+        !resource.entities?.find(
+          (entity) =>
+            entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+        ) &&
+        configurations &&
+        configurations["requireAuthenticationEntity"] === "true"
+      ) {
+        throw new ConflictException("Plugin must have an User entity");
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return false;
     }
-    return true;
   }
 
   /**
