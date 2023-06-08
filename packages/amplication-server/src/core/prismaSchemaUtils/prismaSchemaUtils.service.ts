@@ -101,7 +101,7 @@ export class PrismaSchemaUtilsService {
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
         const entity = this.prepareEntity(model);
-        const fields = this.prepareEntityFields(model);
+        const fields = this.prepareEntityFields(schema, model);
 
         const preparedEntityWithFields: SchemaEntityFields = {
           ...entity,
@@ -130,12 +130,16 @@ export class PrismaSchemaUtilsService {
     };
   }
 
-  prepareEntityFields(model: Model): CreateEntityFieldInput[] {
+  private prepareEntityFields(
+    schema: string,
+    model: Model
+  ): CreateEntityFieldInput[] {
     const modelFields = model.properties.filter(
       (prop) => prop.type === "field"
     );
 
     return modelFields.map((field: Field) => {
+      const fieldDataType = this.prepareFieldDataType(schema, field);
       const isUniqueField = field.attributes?.some(
         (attr) => attr.name === "unique"
       );
@@ -256,6 +260,58 @@ export class PrismaSchemaUtilsService {
       }
     });
     return builder;
+  }
+
+  private prepareFieldDataType(schema: string, field: Field): EnumDataType {
+    const schemaObject = getSchema(schema);
+    const fieldIdType = field.attributes?.find(
+      (attribute) => attribute.name === "id"
+    );
+    if (fieldIdType) {
+      return EnumDataType.Id;
+    }
+
+    const fieldLookupType = field.attributes?.find(
+      (attribute) => attribute.name === "relation"
+    );
+    if (fieldLookupType) {
+      return EnumDataType.Lookup;
+    }
+
+    const modelList = schemaObject.list.filter((item) => item.type === "model");
+    const fieldModelType = modelList.find(
+      (modelItem: Model) =>
+        handleModelName(modelItem.name).toLowerCase() ===
+        pluralize.singular(handleFieldName(field.fieldType)).toLowerCase()
+    );
+    if (fieldModelType) {
+      return EnumDataType.Lookup;
+    }
+
+    const enumList = schemaObject.list.filter((item) => item.type === "enum");
+    const fieldOptionSetType = enumList.find(
+      (enumItem: Enum) => enumItem.name === field.fieldType
+    );
+    if (fieldOptionSetType) {
+      return EnumDataType.OptionSet;
+    }
+
+    switch (field.fieldType) {
+      case ScalarType.String:
+        return EnumDataType.SingleLineText;
+      case ScalarType.Int:
+        return EnumDataType.WholeNumber;
+      case ScalarType.Float:
+        return EnumDataType.DecimalNumber;
+      case ScalarType.Boolean:
+        return EnumDataType.Boolean;
+      case ScalarType.DateTime:
+        return EnumDataType.DateTime;
+      case ScalarType.Json:
+        return EnumDataType.Json;
+      default:
+        throw new Error(`Unsupported data type: ${field.fieldType}`);
+    }
   }
 
   /**
