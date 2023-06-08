@@ -81,6 +81,10 @@ export interface CreatePullRequestGitSettings {
   gitProviderProperties:
     | GitHubProviderOrganizationProperties
     | OAuthProviderOrganizationProperties;
+  commit: {
+    title: string;
+    body: string;
+  };
 }
 
 export const ACTION_ZIP_LOG = "Creating ZIP file";
@@ -486,6 +490,8 @@ export class BuildService {
     let gitSettings: CreatePullRequestGitSettings = null;
     let kafkaEventKey: string = null;
 
+    const clientHost = this.configService.get(CLIENT_HOST_VAR);
+
     if (project.useDemoRepo) {
       const organizationName = this.configService.get<string>(
         Env.GITHUB_DEMO_REPO_ORGANIZATION_NAME
@@ -495,6 +501,11 @@ export class BuildService {
         Env.GITHUB_DEMO_REPO_INSTALLATION_ID
       );
 
+      const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/git-sync`;
+      const buildLinkHTML = `[${url}](${url})`;
+
+      const commitBody = `This is a preview PR.\nConnect Amplication to your Git account to get a Pull Request to your repo, and a full personalized experience. \nGo back to Amplication: ${buildLinkHTML}`;
+
       gitSettings = {
         gitOrganizationName: organizationName,
         gitRepositoryName: project.demoRepoName,
@@ -502,6 +513,10 @@ export class BuildService {
         gitProvider: EnumGitProvider.Github,
         gitProviderProperties: {
           installationId: installationId,
+        },
+        commit: {
+          title: "Preview PR from Amplication",
+          body: commitBody,
         },
       };
 
@@ -521,6 +536,24 @@ export class BuildService {
           where: { id: resource.id },
         });
 
+      const commit = await this.commitService.findOne({
+        where: { id: build.commitId },
+      });
+      const truncateBuildId = build.id.slice(build.id.length - 8);
+
+      const commitTitle =
+        (commit.message &&
+          `${commit.message} (Amplication build ${truncateBuildId})`) ||
+        `Amplication build ${truncateBuildId}`;
+
+      const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
+      const buildLinkHTML = `[${url}](${url})`;
+
+      const commitMessage =
+        commit.message && `Commit message: ${commit.message}.`;
+
+      const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
+
       const gitProviderArgs =
         await this.gitProviderService.getGitProviderProperties(gitOrganization);
       gitSettings = {
@@ -529,23 +562,12 @@ export class BuildService {
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
+        commit: {
+          title: commitTitle,
+          body: commitBody,
+        },
       };
     }
-
-    const commit = await this.commitService.findOne({
-      where: { id: build.commitId },
-    });
-
-    const truncateBuildId = build.id.slice(build.id.length - 8);
-
-    const commitTitle =
-      (commit.message &&
-        `${commit.message} (Amplication build ${truncateBuildId})`) ||
-      `Amplication build ${truncateBuildId}`;
-
-    const clientHost = this.configService.get(CLIENT_HOST_VAR);
-
-    const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
 
     return this.actionService.run(
       build.actionId,
@@ -565,19 +587,11 @@ export class BuildService {
               )
             : false;
 
-          const commitMessage =
-            commit.message && `Commit message: ${commit.message}.`;
-          const buildLinkHTML = `[${url}](${url})`;
-
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
-            commit: {
-              title: commitTitle,
-              body: `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`,
-            },
             gitResourceMeta: {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
