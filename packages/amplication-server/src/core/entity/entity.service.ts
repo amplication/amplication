@@ -362,21 +362,21 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<CreateEntitiesFromSchemaResponse> {
+    // validate on upload to avoid unnecessary processing
     this.schemaUtilsService.validateSchemaUpload(file);
 
-    const preparedSchema =
-      this.schemaUtilsService.prepareEntitiesWithFields(file);
     const errors = this.schemaUtilsService.validateSchemaProcessing(file);
+    const preparedEntities = this.schemaUtilsService.prepareEntities(file);
+    const preparedEntitiesFields =
+      this.schemaUtilsService.prepareEntitiesFields(file);
 
     const entities: Entity[] = [];
-    for (const entity of preparedSchema) {
+
+    for (const entity of preparedEntities) {
       const newEntity = await this.createOneEntity(
         {
           data: {
-            name: entity.name,
-            displayName: entity.displayName,
-            pluralDisplayName: entity.pluralDisplayName,
-            description: entity.description,
+            ...entity,
             resource: {
               connect: {
                 id: resourceId,
@@ -387,7 +387,7 @@ export class EntityService {
         user,
         false
       );
-      entity.fields.map(async (field) => {
+      preparedEntitiesFields[entity.name].map(async (field) => {
         await this.prisma.entityField.create({
           data: {
             ...BASE_FIELD,
@@ -395,10 +395,8 @@ export class EntityService {
             displayName: field.displayName,
             required: field.required,
             unique: field.unique,
-            dataType:
-              EnumDataType[field.dataType as string] ||
-              EnumDataType.SingleLineText, // TODO: handle this case
-            // permanentId: field.id,
+            dataType: EnumDataType[field.dataType as string],
+            permanentId: cuid(),
             entityVersion: {
               connect: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -412,6 +410,7 @@ export class EntityService {
           },
         });
       });
+
       entities.push(newEntity);
     }
 
