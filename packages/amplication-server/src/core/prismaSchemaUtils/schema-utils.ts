@@ -18,6 +18,7 @@ export function filterOutAmplicationAttributes(attributes): string[] {
       !attribute.startsWith("@default(cuid())") &&
       !attribute.startsWith("@default(uuid())") &&
       !attribute.startsWith("@default(autoincrement())") &&
+      !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@relation")
   );
