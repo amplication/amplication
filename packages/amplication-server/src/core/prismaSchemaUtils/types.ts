@@ -2,9 +2,9 @@ import { ConcretePrismaSchemaBuilder, Func } from "@mrleebo/prisma-ast";
 import { registerEnumType } from "@nestjs/graphql";
 
 export enum ErrorMessages {
-  InvalidSchema = "INVALID_SCHEMA",
-  NoModels = "NO_MODELS",
-  NoEnums = "NO_ENUMS",
+  InvalidSchema = "Invalid schema",
+  InvalidModelName = "Invalid model name",
+  NoModels = "No models",
 }
 
 registerEnumType(ErrorMessages, {

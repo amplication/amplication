@@ -247,6 +247,11 @@ export class PrismaSchemaUtilsService {
     return idTypePropertyMap[defaultIdAttribute.args[0].value.name];
   }
 
+  /**
+   * Get the schema as a string after the upload and validate it against the schema validation rules for models and fields
+   * @param schema schema string
+   * @returns array of errors if there are any or null if there are no errors
+   */
   validateSchemaProcessing(schema: string): ErrorMessage[] | null {
     const schemaObject = getSchema(schema);
     const errors: ErrorMessage[] = [];
@@ -262,17 +267,63 @@ export class PrismaSchemaUtilsService {
       });
     }
 
+    models.map((model: Model) => {
+      const invalidModelNameErrors = this.validateModelName(model.name);
+
+      if (invalidModelNameErrors) {
+        errors.push(...invalidModelNameErrors);
+      }
+
+      const fields = model.properties.filter(
+        (property) => property.type === "field"
+      ) as Field[];
+
+      fields.map((field: Field) => {
+        const invalidFieldNameErrors = this.validateFieldName(field.name);
+        if (invalidFieldNameErrors) {
+          errors.push(...invalidFieldNameErrors);
+        }
+      });
+    });
+
     return errors.length > 0 ? errors : null;
   }
 
-  validateSchemaUpload(file: string): void {
-    const schemaString = file.replace(/\\n/g, "\n");
-    try {
-      validate({ datamodel: schemaString });
-      this.logger.info("Valid schema");
-    } catch (error) {
-      this.logger.error("Invalid schema", error);
-      throw new Error("Invalid schema");
+  validateModelName(modelName: string): ErrorMessage[] | null {
+    const errors: ErrorMessage[] = [];
+    // Define the regular expression
+    const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
+    if (!modelNameRegex.test(modelName)) {
+      errors.push({
+        message: ErrorMessages.InvalidModelName,
+        level: ErrorLevel.Error,
+        details: `ModelName: "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
+      });
+      this.logger.error(
+        `Model name "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
+        null,
+        PrismaSchemaUtilsService.name
+      );
+      return errors;
+    }
+  }
+
+  validateFieldName(modelName: string): ErrorMessage[] | null {
+    const errors: ErrorMessage[] = [];
+    // Define the regular expression
+    const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
+    if (!modelNameRegex.test(modelName)) {
+      errors.push({
+        message: ErrorMessages.InvalidModelName,
+        level: ErrorLevel.Error,
+        details: `modelName: "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
+      });
+      this.logger.error(
+        `Model name "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
+        null,
+        PrismaSchemaUtilsService.name
+      );
+      return errors;
     }
   }
 }
