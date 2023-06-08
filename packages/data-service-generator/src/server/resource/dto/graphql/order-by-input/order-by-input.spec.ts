@@ -28,6 +28,9 @@ class ExampleEntityOrderByInput {
     required: false,
     enum: ["asc", "desc"]
 })
+@IsOptional()
+@ValidateNested()
+@IsEnum(SortOrder)
 @Field(() => SortOrder, {
     nullable: true
 })
@@ -37,6 +40,9 @@ class ExampleEntityOrderByInput {
     required: false,
     enum: ["asc", "desc"]
 })
+@IsOptional()
+@ValidateNested()
+@IsEnum(SortOrder)
 @Field(() => SortOrder, {
     nullable: true
 })
