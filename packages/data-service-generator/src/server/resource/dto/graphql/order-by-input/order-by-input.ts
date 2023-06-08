@@ -24,11 +24,7 @@ import {
   SORT_ORDER_DESC_LITERAL,
   SORT_ORDER_ASC_LITERAL,
 } from "../../sort-order.util";
-import {
-  IS_ENUM_ID,
-  IS_OPTIONAL_ID,
-  VALIDATE_NESTED_ID,
-} from "../../class-validator.util";
+import { IS_ENUM_ID, IS_OPTIONAL_ID } from "../../class-validator.util";
 
 const templatePath = require.resolve("./order-by-input.template.ts");
 
@@ -64,7 +60,6 @@ export async function createOrderByInput(
       ])
     ),
     builders.decorator(builders.callExpression(IS_OPTIONAL_ID, [])),
-    builders.decorator(builders.callExpression(VALIDATE_NESTED_ID, [])),
     builders.decorator(builders.callExpression(IS_ENUM_ID, [SORT_ORDER_ID])),
     createGraphQLFieldDecorator(),
   ];
