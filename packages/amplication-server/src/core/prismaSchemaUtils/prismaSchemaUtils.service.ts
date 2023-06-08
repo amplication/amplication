@@ -119,7 +119,7 @@ export class PrismaSchemaUtilsService {
       (prop) => prop.type === "attribute"
     );
     const entityPluralDisplayName = pluralize(model.name);
-    const entityAttributes = this.prepareAttributes(modelAttributes);
+    const entityAttributes = this.prepareAttributes(modelAttributes).join(" ");
 
     return {
       name: model.name,
@@ -142,7 +142,8 @@ export class PrismaSchemaUtilsService {
       const fieldProperties = this.prepareFiledProperties(field);
       const fieldAttributes = filterOutAmplicationAttributes(
         this.prepareAttributes(field.attributes)
-      );
+      ).join(" ");
+
       return {
         name: field.name,
         displayName: field.name,
@@ -170,7 +171,10 @@ export class PrismaSchemaUtilsService {
     const models = schema.list.filter((item) => item.type === "model");
     models.map((model: Model) => {
       const isInvalidModelName =
-        pluralize.isPlural(model.name) || model.name.includes("_");
+        pluralize.isPlural(model.name) ||
+        model.name.includes("_") ||
+        !/^[A-Z]/.test(model.name);
+
       if (isInvalidModelName) {
         builder.model(model.name).blockAttribute("map", model.name);
         builder.model(model.name).then<Model>((model) => {
@@ -210,9 +214,7 @@ export class PrismaSchemaUtilsService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = field.name.replace(/_([a-z])/g, (g) =>
-                g[1].toUpperCase()
-              );
+              field.name = handleFieldName(field.name);
             });
           return builder;
         }

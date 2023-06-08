@@ -29,7 +29,7 @@ export type CreateEntityInput = {
   displayName: string;
   pluralDisplayName: string;
   description: string | null;
-  customAttributes: string[];
+  customAttributes: string;
 };
 
 export type CreateEntityFieldInput = {
@@ -41,7 +41,13 @@ export type CreateEntityFieldInput = {
   unique: boolean;
   searchable: boolean;
   properties: Record<string, unknown>;
-  customAttributes: string[];
+  customAttributes: string;
+};
+
+export type CreateOneEntityFieldInput = {
+  data: CreateEntityFieldInput;
+  relatedFieldName?: string;
+  relatedFieldDisplayName?: string;
 };
 
 export type SchemaEntityFields = {
@@ -49,6 +55,6 @@ export type SchemaEntityFields = {
   displayName: string;
   pluralDisplayName: string;
   description: string | null;
-  customAttributes: string[];
+  customAttributes: string;
   fields: CreateEntityFieldInput[];
 };

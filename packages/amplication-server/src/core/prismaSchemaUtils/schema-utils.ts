@@ -1,3 +1,4 @@
+import { Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 
 export const idTypePropertyMap = {
@@ -24,6 +25,11 @@ export function filterOutAmplicationAttributes(attributes): string[] {
   );
 }
 
+/**
+ * make sure the model name is in pascal case, singular and without underscores
+ * @param modelName - model name
+ * @returns - the valid model name
+ */
 export function handleModelName(modelName: string): string {
   // plural models are mapped to singular
   if (pluralize.isPlural(modelName)) {
@@ -34,4 +40,12 @@ export function handleModelName(modelName: string): string {
     return modelName.split("_").map(capitalizeFirstLetter).join("");
   }
   return capitalizeFirstLetter(modelName);
+}
+
+export function handleFieldName(fieldName: string | Func): string {
+  if (typeof fieldName === "string") {
+    return fieldName.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+  }
+
+  return fieldName.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
 }
