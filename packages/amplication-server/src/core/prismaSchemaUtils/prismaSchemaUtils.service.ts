@@ -114,7 +114,16 @@ export class PrismaSchemaUtilsService {
     return preparedEntities;
   }
 
-  prepareEntity(model: Model): CreateEntityInput {
+  /****************************
+   * PRIVATE FUNCTIONS SECTIONS
+   * **************************/
+
+  /**
+   * prepare entity for Amplication like in EntityCreateInput
+   * @param model the model to prepare
+   * @returns entity in a structure like in EntityCreateInput
+   */
+  private prepareEntity(model: Model): CreateEntityInput {
     const modelAttributes = model.properties.filter(
       (prop) => prop.type === "attribute"
     );
@@ -363,9 +372,7 @@ export class PrismaSchemaUtilsService {
   validateSchemaProcessing(schema: string): ErrorMessage[] | null {
     const schemaObject = getSchema(schema);
     const errors: ErrorMessage[] = [];
-    const models = schemaObject.list.filter(
-      (item: Model) => item.type === "model"
-    );
+    const models = schemaObject.list.filter((item) => item.type === "model");
 
     if (models.length === 0) {
       errors.push({
