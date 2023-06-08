@@ -21,6 +21,7 @@ import { formatError } from "../util/error";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
+import { EnterpriseLoginButton } from "./EnterpriseLoginButton";
 
 type Values = {
   email: string;
@@ -99,10 +100,11 @@ const Login = () => {
           {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to {content.name}. Please use any supported account to
-                sign&nbsp;in.
+                Welcome to {content.name}. Please use your GitHub or SSO account
+                to sign&nbsp;in.
               </div>
               <GitHubLoginButton />
+              <EnterpriseLoginButton />
               <div className={`${CLASS_NAME}__signup`}>
                 Do not have a supported account or you need SSO?{" "}
                 <a
