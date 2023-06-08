@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/ui/design-system";
 import { gql } from "@apollo/client";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { match } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
@@ -34,6 +34,16 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
 
+  const [hovered, setHovered] = useState(false);
+
+  const handleMouseEnter = () => {
+    setHovered(true);
+  };
+
+  const handleMouseLeave = () => {
+    setHovered(false);
+  };
+
   return (
     <>
       <ResourceMenu />
@@ -49,12 +59,19 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
               backgroundColor:
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
           >
             <ResourceNameField
+              hovered={hovered}
+              hoverHandler={setHovered}
               currentResource={currentResource}
               resourceId={resourceId}
             />
-            <div className="circle-badge-container">
+            <div
+              className="circle-badge-container"
+              style={{ border: "1px solid red" }}
+            >
               <CircleBadge
                 name={currentResource?.name || ""}
                 color={

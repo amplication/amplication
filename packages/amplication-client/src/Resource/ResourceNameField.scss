@@ -1,14 +1,21 @@
 .resource-namefield {
+  &__icon__contianer {
+    width: 30px;
+  }
   &__input__container {
     z-index: 10;
   }
   &__form {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: flex-end;
   }
+  &__form-value {
+    display: flex;
+    justify-content: flex-end;
+  }
   &__input {
-    text-align: center;
+    text-align: right;
     outline: none;
     border: none;
     background: none;
@@ -32,7 +39,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
   }
   &__edit_icon {
     cursor: pointer;
