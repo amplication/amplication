@@ -15,8 +15,8 @@ type ErrorMessage {
 
 enum ErrorMessages {
   InvalidSchema
+  InvalidModelName
   NoModels
-  NoEnums
 }
 
 enum ErrorLevel {

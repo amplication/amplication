@@ -768,8 +768,8 @@ export type ErrorMessage = {
 };
 
 export enum ErrorMessages {
+  InvalidModelName = 'InvalidModelName',
   InvalidSchema = 'InvalidSchema',
-  NoEnums = 'NoEnums',
   NoModels = 'NoModels'
 }
 
