@@ -306,60 +306,91 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   *
+   * Loop over fieldTypCases and return the first one that matches the field type, if none matches,
+   * it will get to the last one - which is an error, an return it
    * @param schema the schema (string) to perform the operation on
    * @param field the field to on which to determine the data type
    * @returns the data type of the field
    */
   private prepareFieldDataType(schema: string, field: Field): EnumDataType {
-    const schemaObject = getSchema(schema);
-    const fieldIdType = field.attributes?.find(
-      (attribute) => attribute.name === "id"
-    );
-    if (fieldIdType) {
-      return EnumDataType.Id;
-    }
+    const scalarType = () => {
+      switch (field.fieldType) {
+        case ScalarType.String:
+          return EnumDataType.SingleLineText;
+        case ScalarType.Int:
+          return EnumDataType.WholeNumber;
+        case ScalarType.Float:
+          return EnumDataType.DecimalNumber;
+        case ScalarType.Boolean:
+          return EnumDataType.Boolean;
+        case ScalarType.DateTime:
+          return EnumDataType.DateTime;
+        case ScalarType.Json:
+          return EnumDataType.Json;
+      }
+    };
 
-    const fieldLookupType = field.attributes?.find(
-      (attribute) => attribute.name === "relation"
-    );
-    if (fieldLookupType) {
-      return EnumDataType.Lookup;
-    }
+    const idType = () => {
+      const fieldIdType = field.attributes?.find(
+        (attribute) => attribute.name === "id"
+      );
+      if (fieldIdType) {
+        return EnumDataType.Id;
+      }
+    };
 
-    const modelList = schemaObject.list.filter((item) => item.type === "model");
-    const fieldModelType = modelList.find(
-      (modelItem: Model) =>
-        handleModelName(modelItem.name).toLowerCase() ===
-        pluralize.singular(handleFieldName(field.fieldType)).toLowerCase()
-    );
-    if (fieldModelType) {
-      return EnumDataType.Lookup;
-    }
+    const lookupRelationType = () => {
+      const fieldLookupType = field.attributes?.find(
+        (attribute) => attribute.name === "relation"
+      );
+      if (fieldLookupType) {
+        return EnumDataType.Lookup;
+      }
+    };
 
-    const enumList = schemaObject.list.filter((item) => item.type === "enum");
-    const fieldOptionSetType = enumList.find(
-      (enumItem: Enum) => enumItem.name === field.fieldType
-    );
-    if (fieldOptionSetType) {
-      return EnumDataType.OptionSet;
-    }
+    const lookupModelType = () => {
+      const schemaObject = getSchema(schema);
+      const modelList = schemaObject.list.filter(
+        (item) => item.type === "model"
+      );
+      const fieldModelType = modelList.find(
+        (modelItem: Model) =>
+          handleModelName(modelItem.name).toLowerCase() ===
+          pluralize.singular(handleFieldName(field.fieldType)).toLowerCase()
+      );
+      if (fieldModelType) {
+        return EnumDataType.Lookup;
+      }
+    };
 
-    switch (field.fieldType) {
-      case ScalarType.String:
-        return EnumDataType.SingleLineText;
-      case ScalarType.Int:
-        return EnumDataType.WholeNumber;
-      case ScalarType.Float:
-        return EnumDataType.DecimalNumber;
-      case ScalarType.Boolean:
-        return EnumDataType.Boolean;
-      case ScalarType.DateTime:
-        return EnumDataType.DateTime;
-      case ScalarType.Json:
-        return EnumDataType.Json;
-      default:
+    const optionSetType = () => {
+      const schemaObject = getSchema(schema);
+      const enumList = schemaObject.list.filter((item) => item.type === "enum");
+      const fieldOptionSetType = enumList.find(
+        (enumItem: Enum) => enumItem.name === field.fieldType
+      );
+      if (fieldOptionSetType) {
+        return EnumDataType.OptionSet;
+      }
+    };
+
+    const fieldTypCases: (() => EnumDataType | undefined)[] = [
+      scalarType,
+      idType,
+      lookupRelationType,
+      lookupModelType,
+      optionSetType,
+      // must be last
+      () => {
         throw new Error(`Unsupported data type: ${field.fieldType}`);
+      },
+    ];
+
+    for (const fieldTypCase of fieldTypCases) {
+      const result = fieldTypCase();
+      if (result) {
+        return result;
+      }
     }
   }
 
