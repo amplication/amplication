@@ -348,6 +348,7 @@ export class PrismaSchemaUtilsService {
       }
     };
 
+    // for cases where the field type is a model name but there is no relation attribute
     const lookupModelType = () => {
       const schemaObject = getSchema(schema);
       const modelList = schemaObject.list.filter(
@@ -374,7 +375,7 @@ export class PrismaSchemaUtilsService {
       }
     };
 
-    const fieldTypCases: (() => EnumDataType | undefined)[] = [
+    const fieldDataTypCases: (() => EnumDataType | undefined)[] = [
       scalarType,
       idType,
       lookupRelationType,
@@ -386,8 +387,8 @@ export class PrismaSchemaUtilsService {
       },
     ];
 
-    for (const fieldTypCase of fieldTypCases) {
-      const result = fieldTypCase();
+    for (const fieldDataTypCase of fieldDataTypCases) {
+      const result = fieldDataTypCase();
       if (result) {
         return result;
       }
