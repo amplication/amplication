@@ -81,6 +81,7 @@ export async function createResolverModules(
     updateArgs,
     deleteArgs,
     findManyArgs,
+    countArgs,
     findOneArgs,
   } = entityDTOs;
   const createMutationId = builders.identifier(`create${entityType}`);
@@ -108,6 +109,7 @@ export async function createResolverModules(
     CREATE_ARGS: createArgs?.id,
     UPDATE_ARGS: updateArgs?.id,
     DELETE_ARGS: deleteArgs.id,
+    COUNT_ARGS: countArgs.id,
     FIND_MANY_ARGS: findManyArgs.id,
     FIND_ONE_ARGS: findOneArgs.id,
     CREATE_DATA_MAPPING: createDataMapping(
