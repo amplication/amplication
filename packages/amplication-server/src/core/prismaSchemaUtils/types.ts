@@ -1,5 +1,6 @@
 import { ConcretePrismaSchemaBuilder, Func } from "@mrleebo/prisma-ast";
 import { registerEnumType } from "@nestjs/graphql";
+import { JsonValue } from "type-fest";
 
 export enum ErrorMessages {
   InvalidSchema = "Invalid schema",
@@ -40,11 +41,11 @@ export type CreateEntityFieldInput = {
   required: boolean;
   unique: boolean;
   searchable: boolean;
-  properties: Record<string, unknown>;
+  properties: { [x: string]: JsonValue };
   customAttributes: string;
 };
 
-export type CreateOneEntityFieldInput = {
+export type CreateOneEntityFieldArgs = {
   data: CreateEntityFieldInput;
   relatedFieldName?: string;
   relatedFieldDisplayName?: string;
@@ -56,5 +57,5 @@ export type SchemaEntityFields = {
   pluralDisplayName: string;
   description: string | null;
   customAttributes: string;
-  fields: CreateEntityFieldInput[];
+  fields: CreateOneEntityFieldArgs[];
 };
