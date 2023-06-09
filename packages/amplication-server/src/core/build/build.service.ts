@@ -162,6 +162,9 @@ export function createInitialStepData(
     },
   };
 }
+
+const PREVIEW_PR_BODY = `Welcome to your first sync with Amplication's Preview Repo! 🚀 \n\nYou’ve taken the first step in supercharging your development. This Preview Repo is a sandbox for you to see what Amplication can do.\n\nRemember, by connecting to your own repository, you’ll have even more power - like customizing the code to fit your needs.\n\nNow, head back to Amplication, connect to your own repo and keep building! Define data entities, set up roles, and extend your service’s functionality with our versatile plugin system. The possibilities are endless.\n\n[link]\n\nThank you, and let's build something amazing together! 🚀\n\n`;
+
 @Injectable()
 export class BuildService {
   constructor(
@@ -504,7 +507,7 @@ export class BuildService {
       const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/git-sync`;
       const buildLinkHTML = `[${url}](${url})`;
 
-      const commitBody = `This is a preview PR.\nConnect Amplication to your Git account to get a Pull Request to your repo, and a full personalized experience. \nGo back to Amplication: ${buildLinkHTML}`;
+      const commitBody = PREVIEW_PR_BODY.replace("[link]", buildLinkHTML);
 
       gitSettings = {
         gitOrganizationName: organizationName,
