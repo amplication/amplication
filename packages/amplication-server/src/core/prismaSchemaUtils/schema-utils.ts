@@ -1,5 +1,6 @@
 import { Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
+import { sentenceCase } from "sentence-case";
 
 export const idTypePropertyMap = {
   autoincrement: { idType: "AUTO_INCREMENT" },
@@ -30,7 +31,7 @@ export function filterOutAmplicationAttributes(attributes): string[] {
  * @param modelName - model name
  * @returns - the valid model name
  */
-export function handleModelName(modelName: string): string {
+export function formatModelName(modelName: string): string {
   // plural models are mapped to singular
   if (pluralize.isPlural(modelName)) {
     return capitalizeFirstLetter(pluralize.singular(modelName));
@@ -42,10 +43,14 @@ export function handleModelName(modelName: string): string {
   return capitalizeFirstLetter(modelName);
 }
 
-export function handleFieldName(fieldName: string | Func): string {
+export function formatFieldName(fieldName: string | Func): string {
   if (typeof fieldName === "string") {
     return fieldName.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
   }
 
   return fieldName.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+}
+
+export function formatDisplayName(displayName: string): string {
+  return capitalizeFirstLetter(sentenceCase(displayName));
 }

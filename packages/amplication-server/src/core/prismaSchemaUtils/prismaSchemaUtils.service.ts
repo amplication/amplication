@@ -11,8 +11,9 @@ import {
 } from "@mrleebo/prisma-ast";
 import {
   filterOutAmplicationAttributes,
-  handleFieldName,
-  handleModelName,
+  formatDisplayName,
+  formatFieldName,
+  formatModelName,
   idTypePropertyMap,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -152,6 +153,7 @@ export class PrismaSchemaUtilsService {
    * @returns entity in a structure like in EntityCreateInput
    */
   private prepareEntity(model: Model): CreateEntityInput {
+    const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
       (prop) => prop.type === "attribute"
     );
@@ -160,7 +162,7 @@ export class PrismaSchemaUtilsService {
 
     return {
       name: model.name,
-      displayName: model.name,
+      displayName: modelDisplayName,
       pluralDisplayName: entityPluralDisplayName,
       description: null,
       customAttributes: entityAttributes,
@@ -181,6 +183,7 @@ export class PrismaSchemaUtilsService {
     );
 
     return modelFields.map((field: Field) => {
+      const fieldDisplayName = formatDisplayName(field.name);
       const fieldDataType = this.prepareFieldDataType(schema, field);
       const isUniqueField = field.attributes?.some(
         (attr) => attr.name === "unique"
@@ -192,7 +195,7 @@ export class PrismaSchemaUtilsService {
 
       return {
         name: field.name,
-        displayName: field.name,
+        displayName: fieldDisplayName,
         dataType: fieldDataType,
         required: field.optional,
         unique: isUniqueField,
@@ -224,7 +227,7 @@ export class PrismaSchemaUtilsService {
       if (isInvalidModelName) {
         builder.model(model.name).blockAttribute("map", model.name);
         builder.model(model.name).then<Model>((model) => {
-          model.name = handleModelName(model.name);
+          model.name = formatModelName(model.name);
         });
         return builder;
       }
@@ -260,7 +263,7 @@ export class PrismaSchemaUtilsService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = handleFieldName(field.name);
+              field.name = formatFieldName(field.name);
             });
           return builder;
         }
@@ -356,8 +359,8 @@ export class PrismaSchemaUtilsService {
       );
       const fieldModelType = modelList.find(
         (modelItem: Model) =>
-          handleModelName(modelItem.name).toLowerCase() ===
-          pluralize.singular(handleFieldName(field.fieldType)).toLowerCase()
+          formatModelName(modelItem.name).toLowerCase() ===
+          pluralize.singular(formatFieldName(field.fieldType)).toLowerCase()
       );
       if (fieldModelType) {
         return EnumDataType.Lookup;
