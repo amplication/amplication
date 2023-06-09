@@ -58,11 +58,6 @@ export class PrismaSchemaUtilsService {
         builder = operation.call(this, builder);
       });
 
-      this.logger.debug(
-        "Generated Prisma schema",
-        { schema: builder.getSchema() },
-        PrismaSchemaUtilsService.name
-      );
       return builder.getSchema();
     };
 
