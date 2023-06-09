@@ -95,6 +95,7 @@
     "download": "^8.0.0",
     "eventsource": "^2.0.2",
     "express": "^4.18.1",
+    "express-openid-connect": "^2.15.0",
     "fast-glob": "^3.2.12",
     "formik": "^2.2.9",
     "fs-extra": "^11.1.1",
