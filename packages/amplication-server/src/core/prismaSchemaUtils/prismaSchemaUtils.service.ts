@@ -43,33 +43,16 @@ export class PrismaSchemaUtilsService {
   ) {}
 
   /**
-   * Validate schema by Prisma
-   * @param file the schema file that was uploaded
-   * @throws if the schema is invalid
-   * @returns void
-   **/
-  validateSchemaUpload(file: string): void {
-    const schemaString = file.replace(/\\n/g, "\n");
-    try {
-      validate({ datamodel: schemaString });
-      this.logger.info("Valid schema");
-    } catch (error) {
-      this.logger.error("Invalid schema", error);
-      throw new Error("Invalid schema");
-    }
-  }
-
-  /**
    * Prepare schema before passing it to entities and fields creation
    * @param operations functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
    * The functions are called one after the other and perform operations on the schema
    * The functions have a name pattern: handle{OperationName}
    * @returns function that accepts the initial schema and returns the prepared schema
    */
-  prepareSchema =
+  processSchema =
     (...operations: Operation[]) =>
-    (initialSchema: string): Schema => {
-      let builder = createPrismaSchemaBuilder(initialSchema);
+    (inputSchema: string): Schema => {
+      let builder = createPrismaSchemaBuilder(inputSchema);
 
       operations.forEach((operation) => {
         builder = operation.call(this, builder);
@@ -84,24 +67,27 @@ export class PrismaSchemaUtilsService {
     };
 
   /**
-   * ************************************************
-   * Two ways to use the prepare entities and fields:
-   * ************************************************
-   * 1. prepareEntitiesWithFields - get a schema as a string, call prepareSchema with the operations array,
+   * *************************************************
+   * Two ways to use the prepare entities and fields *
+   * *************************************************
+   * 1. prepareEntitiesWithFields - get a schema as a string, call processSchema with the operations array,
    *    and returns an array of the entities with their fields.
    *    To create Amplication entities with their fields, you can use this function only
    *
-   * 2. prepareEntities - get a schema as a string, call prepareSchema with the operations array,
+   * 2. prepareEntities - get a schema as a string, call processSchema with the operations array,
    *    and returns an array of the entities without their fields.
    *    To create Amplication entities with their fields, you will need to use also prepareEntitiesFields.
    *
-   * 3. prepareEntitiesFields - get a schema as a string, call prepareSchema with the operations array,
+   * 3. prepareEntitiesFields - get a schema as a string, call processSchema with the operations array,
    *    and returns an object of the entities as a key (string, without the entity data) and their fields as a value.
    *   To create Amplication entities with their fields, you will need to use also prepareEntities.
+   *
+   * * All functions that are used to prepare the entities and fields for in Amplication structure have the same pattern name: prepare{operationName}
+   *
    */
 
   prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedSchema = this.processSchema(...this.operations)(schema);
     const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
@@ -120,7 +106,7 @@ export class PrismaSchemaUtilsService {
   }
 
   prepareEntities(schema: string): CreateEntityInput[] {
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedSchema = this.processSchema(...this.operations)(schema);
     const preparedEntities = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => this.prepareEntity(model));
@@ -131,7 +117,7 @@ export class PrismaSchemaUtilsService {
   prepareEntitiesFields(
     schema: string
   ): Record<string, CreateEntityFieldInput[]> {
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedSchema = this.processSchema(...this.operations)(schema);
     const preparedEntitiesFields = preparedSchema.list
       .filter((item: Model) => item.type === "model")
       .reduce((acc: Record<string, CreateEntityFieldInput[]>, model: Model) => {
@@ -143,9 +129,9 @@ export class PrismaSchemaUtilsService {
     return preparedEntitiesFields;
   }
 
-  /****************************
-   * PRIVATE FUNCTIONS SECTIONS
-   * **************************/
+  /*****************************
+   * PREPARE FUNCTIONS SECTION *
+   *****************************/
 
   /**
    * Prepare an entity in a form of EntityCreateInput
@@ -205,107 +191,6 @@ export class PrismaSchemaUtilsService {
         customAttributes: fieldAttributes,
       };
     });
-  }
-
-  /**
-   * Add "@@map" attribute to model name if its name is plural or snake case
-   * and rename model name to singular and in pascal case
-   * @param builder prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleModelNamesRenaming(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-    models.map((model: Model) => {
-      const isInvalidModelName =
-        pluralize.isPlural(model.name) ||
-        model.name.includes("_") ||
-        !/^[A-Z]/.test(model.name);
-
-      if (isInvalidModelName) {
-        builder.model(model.name).blockAttribute("map", model.name);
-        builder.model(model.name).then<Model>((model) => {
-          model.name = formatModelName(model.name);
-        });
-        return builder;
-      }
-    });
-    return builder;
-  }
-
-  /**
-   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
-   * Then, rename field name to camel case
-   * @param builder - prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleFieldNamesRenaming(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-    models.map((model: Model) => {
-      const fields = model.properties.filter(
-        (property) =>
-          property.type === "field" &&
-          !property.attributes?.some((attr) => attr.name === "id")
-      ) as Field[];
-      fields.map((field: Field) => {
-        const isInvalidFieldName = field.name.includes("_");
-        if (isInvalidFieldName) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = formatFieldName(field.name);
-            });
-          return builder;
-        }
-      });
-    });
-    return builder;
-  }
-
-  /**
-   * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
-   * @param builder - prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleIdField(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-
-    models.map((model: Model) => {
-      const idField = model.properties.find(
-        (property) =>
-          property.type === "field" &&
-          property.attributes?.some((attr) => attr.name === "id")
-      ) as Field;
-
-      if (idField && idField.name !== "id") {
-        builder
-          .model(model.name)
-          .field(idField.name)
-          .attribute("map", [idField.name]);
-        builder
-          .model(model.name)
-          .field(idField.name)
-          .then<Field>((field) => {
-            field.name = "id";
-          });
-
-        return builder;
-      }
-    });
-    return builder;
   }
 
   /**
@@ -437,6 +322,132 @@ export class PrismaSchemaUtilsService {
     );
     if (!defaultIdAttribute) return;
     return idTypePropertyMap[defaultIdAttribute.args[0].value.name];
+  }
+
+  /**********************
+   * OPERATIONS SECTION *
+   **********************/
+
+  /**
+   * Add "@@map" attribute to model name if its name is plural or snake case
+   * and rename model name to singular and in pascal case
+   * @param builder prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleModelNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const isInvalidModelName =
+        pluralize.isPlural(model.name) ||
+        model.name.includes("_") ||
+        !/^[A-Z]/.test(model.name);
+
+      if (isInvalidModelName) {
+        builder.model(model.name).blockAttribute("map", model.name);
+        builder.model(model.name).then<Model>((model) => {
+          model.name = formatModelName(model.name);
+        });
+        return builder;
+      }
+    });
+    return builder;
+  }
+
+  /**
+   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
+   * Then, rename field name to camel case
+   * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleFieldNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const fields = model.properties.filter(
+        (property) =>
+          property.type === "field" &&
+          !property.attributes?.some((attr) => attr.name === "id")
+      ) as Field[];
+      fields.map((field: Field) => {
+        const isInvalidFieldName = field.name.includes("_");
+        if (isInvalidFieldName) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = formatFieldName(field.name);
+            });
+          return builder;
+        }
+      });
+    });
+    return builder;
+  }
+
+  /**
+   * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
+   * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleIdField(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+
+    models.map((model: Model) => {
+      const idField = model.properties.find(
+        (property) =>
+          property.type === "field" &&
+          property.attributes?.some((attr) => attr.name === "id")
+      ) as Field;
+
+      if (idField && idField.name !== "id") {
+        builder
+          .model(model.name)
+          .field(idField.name)
+          .attribute("map", [idField.name]);
+        builder
+          .model(model.name)
+          .field(idField.name)
+          .then<Field>((field) => {
+            field.name = "id";
+          });
+
+        return builder;
+      }
+    });
+    return builder;
+  }
+
+  /**********************
+   * VALIDATIONS SECTION *
+   **********************/
+
+  /**
+   * Validate schema by Prisma
+   * @param file the schema file that was uploaded
+   * @throws if the schema is invalid
+   * @returns void
+   **/
+  validateSchemaUpload(file: string): void {
+    const schemaString = file.replace(/\\n/g, "\n");
+    try {
+      validate({ datamodel: schemaString });
+      this.logger.info("Valid schema");
+    } catch (error) {
+      this.logger.error("Invalid schema", error);
+      throw new Error("Invalid schema");
+    }
   }
 
   /**
