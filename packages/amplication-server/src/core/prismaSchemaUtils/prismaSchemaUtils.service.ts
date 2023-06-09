@@ -19,16 +19,17 @@ import {
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
-  CreateEntityFieldInput,
   CreateEntityInput,
+  CreateOneEntityFieldArgs,
   ErrorLevel,
   ErrorMessages,
   Operation,
   SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
-import { EnumDataType } from "@amplication/code-gen-types";
 import { ScalarType } from "prisma-schema-dsl-types";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { JsonValue } from "type-fest";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -111,15 +112,18 @@ export class PrismaSchemaUtilsService {
 
   prepareEntitiesFields(
     schema: string
-  ): Record<string, CreateEntityFieldInput[]> {
+  ): Record<string, CreateOneEntityFieldArgs[]> {
     const preparedSchema = this.processSchema(...this.operations)(schema);
     const preparedEntitiesFields = preparedSchema.list
       .filter((item: Model) => item.type === "model")
-      .reduce((acc: Record<string, CreateEntityFieldInput[]>, model: Model) => {
-        const fields = this.prepareEntityFields(schema, model);
-        acc[model.name] = fields;
-        return acc;
-      }, {});
+      .reduce(
+        (acc: Record<string, CreateOneEntityFieldArgs[]>, model: Model) => {
+          const fields = this.prepareEntityFields(schema, model);
+          acc[model.name] = fields;
+          return acc;
+        },
+        {}
+      );
 
     return preparedEntitiesFields;
   }
@@ -151,14 +155,14 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * Prepare the entity fields in a form of EntityFieldCreateInput
+   * Prepare the entity fields in a form of CreateOneEntityFieldArgs
    * @param model the model to prepare
-   * @returns entity fields in a structure like in EntityFieldCreateInput
+   * @returns array entity fields in a structure like in CreateOneEntityFieldArgs
    */
   private prepareEntityFields(
     schema: string,
     model: Model
-  ): CreateEntityFieldInput[] {
+  ): CreateOneEntityFieldArgs[] {
     const modelFields = model.properties.filter(
       (prop) => prop.type === "field"
     );
@@ -174,16 +178,22 @@ export class PrismaSchemaUtilsService {
         this.prepareAttributes(field.attributes)
       ).join(" ");
 
+      const relatedEntity = this.prepareRelations(model, field);
+
       return {
-        name: field.name,
-        displayName: fieldDisplayName,
-        dataType: fieldDataType,
-        required: field.optional,
-        unique: isUniqueField,
-        searchable: false,
-        description: null,
-        properties: fieldProperties,
-        customAttributes: fieldAttributes,
+        data: {
+          name: field.name,
+          displayName: fieldDisplayName,
+          dataType: fieldDataType,
+          required: field.optional,
+          unique: isUniqueField,
+          searchable: false,
+          description: null,
+          properties: fieldProperties,
+          customAttributes: fieldAttributes,
+        },
+        relatedFieldName: relatedEntity?.relatedFieldName,
+        relatedFieldDisplayName: relatedEntity?.relatedFieldDisplayName,
       };
     });
   }
@@ -309,6 +319,22 @@ export class PrismaSchemaUtilsService {
         attribute.name
       }(${args.join(", ")})`;
     });
+  }
+
+  private prepareRelations(
+    model: Model,
+    field: Field
+  ): { relatedFieldName: string; relatedFieldDisplayName: string } {
+    const relationAttribute = field.attributes?.find(
+      (attr) => attr.name === "relation"
+    );
+
+    if (!relationAttribute) return;
+
+    return {
+      relatedFieldName: model.name,
+      relatedFieldDisplayName: formatDisplayName(model.name),
+    };
   }
 
   private prepareFiledProperties(field) {

@@ -388,14 +388,15 @@ export class EntityService {
         false
       );
       preparedEntitiesFields[entity.name].map(async (field) => {
+        const { name, displayName, required, unique, dataType } = field.data;
         await this.prisma.entityField.create({
           data: {
             ...BASE_FIELD,
-            name: field.name,
-            displayName: field.displayName,
-            required: field.required,
-            unique: field.unique,
-            dataType: EnumDataType[field.dataType as string],
+            name,
+            displayName,
+            required,
+            unique,
+            dataType: EnumDataType[dataType as string],
             permanentId: cuid(),
             entityVersion: {
               connect: {
@@ -409,6 +410,21 @@ export class EntityService {
             properties: {},
           },
         });
+
+        // const oneFieldArgs = {
+        //   data: {
+        //     ...field.data,
+        //     dataType: field.data.dataType as EnumDataType,
+        //     entity: {
+        //       connect: {
+        //         id: newEntity.id,
+        //       },
+        //     },
+        //   },
+        //   relatedFieldName: field.relatedFieldName,
+        //   relatedFieldDisplayName: field.relatedFieldDisplayName,
+        // };
+        // await this.createField(oneFieldArgs, user);
       });
 
       entities.push(newEntity);
