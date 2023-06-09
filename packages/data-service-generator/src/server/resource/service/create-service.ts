@@ -304,6 +304,7 @@ function createTemplateMapping(
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
+    COUNT_ARGS: builders.identifier(`${entityType}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
     CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),
