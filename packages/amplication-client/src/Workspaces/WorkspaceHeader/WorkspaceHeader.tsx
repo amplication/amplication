@@ -164,6 +164,18 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
+  const handleBannerClick = (
+    eventName:
+      | AnalyticsEventNames.StarUsBannerCTAClick
+      | AnalyticsEventNames.StarUsBannerClose
+  ) => {
+    setShowBanner("false");
+    trackEvent({
+      eventName,
+      workspace: currentWorkspace.id,
+    });
+  };
+
   return (
     <>
       <Dialog
@@ -181,13 +193,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
             target="_blank"
             rel="noreferrer"
             className={`${CLASS_NAME}__banner__cta`}
-            onClick={() => {
-              setShowBanner("false");
-              trackEvent({
-                eventName: AnalyticsEventNames.StarUsBannerCTAClick,
-                workspace: currentWorkspace.id,
-              });
-            }}
+            onClick={() => {}}
           >
             <Icon icon="github" />
             Star us on GitHub{" "}
@@ -198,11 +204,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <div
             className={`${CLASS_NAME}__banner__close`}
             onClick={() => {
-              setShowBanner("false");
-              trackEvent({
-                eventName: AnalyticsEventNames.StarUsBannerClose,
-                workspace: currentWorkspace.id,
-              });
+              handleBannerClick(AnalyticsEventNames.StarUsBannerClose);
             }}
           >
             <Icon icon="close" size="xsmall" />
