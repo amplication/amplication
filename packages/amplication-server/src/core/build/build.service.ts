@@ -559,8 +559,9 @@ export class BuildService {
       const url = `${clientHost}/${project.workspaceId}/${project.id}/${resource.id}/builds/${build.id}`;
       const buildLinkHTML = `[${url}](${url})`;
 
-      const commitMessage =
-        commit.message && `Commit message: ${commit.message}.`;
+      const commitMessage = oldBuild
+        ? commit.message && `Commit message: ${commit.message}.`
+        : INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY;
 
       const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
 
@@ -597,26 +598,11 @@ export class BuildService {
               )
             : false;
 
-          const gitProviderArgs =
-            await this.gitProviderService.getGitProviderProperties(
-              gitOrganization
-            );
-
-          const commitMessage = oldBuild
-            ? commit.message && `Commit message: ${commit.message}.`
-            : INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY;
-
-          const buildLinkHTML = `[${url}](${url})`;
-
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
-            commit: {
-              title: commitTitle,
-              body: `${commitMessage}\n\nAmplication build # ${build.id}\n\nBuild URL: ${buildLinkHTML}`,
-            },
             gitResourceMeta: {
               adminUIPath: resourceInfo.settings.adminUISettings.adminUIPath,
               serverPath: resourceInfo.settings.serverSettings.serverPath,
