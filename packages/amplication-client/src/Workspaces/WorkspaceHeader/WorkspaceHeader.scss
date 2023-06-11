@@ -251,5 +251,55 @@ $select-menu-max-width: 300px;
   &__banner {
     text-align: center;
     background-color: var(--white);
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+
+    &__cta {
+      .amp-icon {
+        font-size: 12px;
+      }
+      i {
+        margin-right: 5px;
+      }
+      color: #ffffff;
+      font-weight: 400;
+      font-size: 12px;
+      &__stars {
+        color: #15192c;
+        background-color: var(--dark-secondary-turquoise);
+        margin-left: 8px;
+        padding: 0px, 2px, 0px, 4px;
+        border-radius: 2px;
+        padding-left: 4px;
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        i {
+          margin-left: 2px;
+          margin-right: 2px;
+        }
+        ::after {
+          // Arrow icon left of box
+          content: "";
+          position: absolute;
+          right: 100%;
+          top: 32%;
+          margin-left: -6px;
+          border-width: 3px;
+          border-style: solid;
+          border-color: transparent var(--dark-secondary-turquoise) transparent
+            transparent;
+        }
+      }
+    }
+    &__close {
+      position: absolute;
+      right: 6px;
+      top: 7px;
+      cursor: pointer;
+    }
   }
 }

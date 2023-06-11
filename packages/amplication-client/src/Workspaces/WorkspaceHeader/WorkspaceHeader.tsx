@@ -6,6 +6,7 @@ import {
   SelectMenuModal,
   Tooltip,
   Dialog,
+  Icon,
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState, useEffect } from "react";
@@ -30,6 +31,7 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
+import useFetchGithubStars from "../hooks/useFetchGithubStars";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -116,6 +118,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
     "true"
   );
 
+  const isBannerShowing = JSON.parse(showBanner);
+
+  const stars = useFetchGithubStars();
+
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -158,26 +164,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
-  const [stars, setStars] = useState<string | number>();
-
-  useEffect(() => {
-    async function fetchGithubStars() {
-      const response = await fetch(
-        "https://api.github.com/repos/amplication/amplication"
-      );
-      const data = await response.json();
-      const num: number = data.stargazers_count;
-      const a = Math.abs(num) / 1000;
-      setStars(
-        Math.abs(num) > 999
-          ? `${(Math.sign(num) * a).toFixed(1)}k`
-          : Math.sign(num) * Math.abs(num)
-      );
-    }
-
-    fetchGithubStars();
-  }, []);
-
   return (
     <>
       <Dialog
@@ -188,18 +174,39 @@ const WorkspaceHeader: React.FC<{}> = () => {
       >
         <ProfileForm />
       </Dialog>
-      {JSON.parse(showBanner) && (
-        <div
-          className={`${CLASS_NAME}__banner`}
-          onClick={() => setShowBanner("false")}
-        >
+      {isBannerShowing && (
+        <div className={`${CLASS_NAME}__banner`}>
           <a
             href="https://github.com/amplication/amplication"
             target="_blank"
             rel="noreferrer"
+            className={`${CLASS_NAME}__banner__cta`}
+            onClick={() => {
+              setShowBanner("false");
+              trackEvent({
+                eventName: AnalyticsEventNames.StarUsBannerCTAClick,
+                workspace: currentWorkspace.id,
+              });
+            }}
           >
-            Star us on GitHub {stars}
+            <Icon icon="github" />
+            Star us on GitHub{" "}
+            <span className={`${CLASS_NAME}__banner__cta__stars`}>
+              {stars} <Icon icon="star" />
+            </span>
           </a>
+          <div
+            className={`${CLASS_NAME}__banner__close`}
+            onClick={() => {
+              setShowBanner("false");
+              trackEvent({
+                eventName: AnalyticsEventNames.StarUsBannerClose,
+                workspace: currentWorkspace.id,
+              });
+            }}
+          >
+            <Icon icon="close" size="xsmall" />
+          </div>
         </div>
       )}
       <div className={CLASS_NAME}>
