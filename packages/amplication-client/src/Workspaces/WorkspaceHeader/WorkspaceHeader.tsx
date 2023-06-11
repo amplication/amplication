@@ -6,13 +6,12 @@ import {
   SelectMenuModal,
   Tooltip,
   Dialog,
-  Icon,
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
-import React, { useCallback, useContext, useState, useEffect } from "react";
+import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import useLocalStorage from "react-use-localstorage";
+import GitHubBanner from "./GitHubBanner";
 import { unsetToken } from "../../authentication/authentication";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
@@ -31,12 +30,10 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
-import useFetchGithubStars from "../hooks/useFetchGithubStars";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
 export const PROJECT_CONFIGURATION_RESOURCE_NAME = "Project Configuration";
-const LOCAL_STORAGE_KEY_SHOW_BANNER = "showBanner";
 
 enum ItemDataCommand {
   COMMAND_CONTACT_US = "command_contact_us",
@@ -113,15 +110,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
 
-  const [showBanner, setShowBanner] = useLocalStorage(
-    LOCAL_STORAGE_KEY_SHOW_BANNER,
-    "true"
-  );
-
-  const isBannerShowing = JSON.parse(showBanner);
-
-  const stars = useFetchGithubStars();
-
   const handleSignOut = useCallback(() => {
     /**@todo: sign out on server */
     unsetToken();
@@ -164,18 +152,6 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
-  const handleBannerClick = (
-    eventName:
-      | AnalyticsEventNames.StarUsBannerCTAClick
-      | AnalyticsEventNames.StarUsBannerClose
-  ) => {
-    setShowBanner("false");
-    trackEvent({
-      eventName,
-      workspace: currentWorkspace.id,
-    });
-  };
-
   return (
     <>
       <Dialog
@@ -186,31 +162,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
       >
         <ProfileForm />
       </Dialog>
-      {isBannerShowing && (
-        <div className={`${CLASS_NAME}__banner`}>
-          <a
-            href="https://github.com/amplication/amplication"
-            target="_blank"
-            rel="noreferrer"
-            className={`${CLASS_NAME}__banner__cta`}
-            onClick={() => {}}
-          >
-            <Icon icon="github" />
-            Star us on GitHub{" "}
-            <span className={`${CLASS_NAME}__banner__cta__stars`}>
-              {stars} <Icon icon="star" />
-            </span>
-          </a>
-          <div
-            className={`${CLASS_NAME}__banner__close`}
-            onClick={() => {
-              handleBannerClick(AnalyticsEventNames.StarUsBannerClose);
-            }}
-          >
-            <Icon icon="close" size="xsmall" />
-          </div>
-        </div>
-      )}
+      <GitHubBanner />
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
