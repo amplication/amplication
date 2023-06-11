@@ -4,6 +4,7 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { EnumGitProvider } from "../../models";
 import { COMPLETE_OAUTH2_FLOW } from "./queries/git-callback";
+import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
 
 const AuthResourceWithBitbucketCallback = () => {
   const { trackEvent } = useTracking();
@@ -13,6 +14,11 @@ const AuthResourceWithBitbucketCallback = () => {
       // close the popup
       window.close();
     },
+    refetchQueries: [
+      {
+        query: GET_PROJECTS,
+      },
+    ],
   });
 
   useEffect(() => {

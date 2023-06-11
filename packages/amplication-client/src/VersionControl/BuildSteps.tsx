@@ -36,7 +36,13 @@ type Props = {
 
 const BuildSteps = ({ build }: Props) => {
   const { data } = useBuildWatchStatus(build);
-  const { gitRepositoryOrganizationProvider } = useContext(AppContext);
+  const { gitRepositoryOrganizationProvider, currentProject } =
+    useContext(AppContext);
+
+  const providerName = currentProject.useDemoRepo
+    ? models.EnumGitProvider.Github
+    : gitRepositoryOrganizationProvider;
+
   const stepGenerateCode = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return EMPTY_STEP;
@@ -54,8 +60,7 @@ const BuildSteps = ({ build }: Props) => {
     }
     return (
       data.build.action.steps.find(
-        (step) =>
-          step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
+        (step) => step.name === PUSH_TO_GIT_STEP_NAME(providerName)
       ) || null
     );
   }, [data.build.action]);
@@ -65,8 +70,7 @@ const BuildSteps = ({ build }: Props) => {
       return null;
     }
     const stepGithub = data.build.action.steps.find(
-      (step) =>
-        step.name === PUSH_TO_GIT_STEP_NAME(gitRepositoryOrganizationProvider)
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(providerName)
     );
 
     const log = stepGithub?.logs?.find(
@@ -92,16 +96,15 @@ const BuildSteps = ({ build }: Props) => {
           className={`${CLASS_NAME}__step`}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <Icon icon={gitProviderIconMap[gitRepositoryOrganizationProvider]} />
-          <span>{`Push Changes to ${gitRepositoryOrganizationProvider}`}</span>
+          <Icon icon={gitProviderIconMap[providerName]} />
+          <span>{`Push Changes to ${providerName}`}</span>
           <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />
           {gitUrl && (
             <a
               href={gitUrl}
               target={
-                gitRepositoryOrganizationProvider ===
-                models.EnumGitProvider.Github
+                providerName === models.EnumGitProvider.Github
                   ? "github"
                   : models.EnumGitProvider.Bitbucket
                   ? "bitbucket"

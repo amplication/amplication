@@ -15,6 +15,7 @@ import { useMutation } from "@apollo/client";
 import { COMMIT_CHANGES } from "../../../VersionControl/Commit";
 import { PUSH_TO_GIT_STEP_NAME } from "../../../VersionControl/BuildSteps";
 import { isEmpty } from "lodash";
+import { EnumGitProvider } from "@amplication/code-gen-types/models";
 
 const className = "create-service-code-generation";
 
@@ -114,12 +115,12 @@ const CreateServiceCodeGeneration: React.FC<
     if (!data.build.action?.steps?.length) {
       return null;
     }
+
+    const provider = formik.values.connectToDemoRepo
+      ? EnumGitProvider.Github
+      : resource?.gitRepository?.gitOrganization?.provider;
     const stepGithub = data.build.action.steps.find(
-      (step) =>
-        step.name ===
-        PUSH_TO_GIT_STEP_NAME(
-          resource?.gitRepository?.gitOrganization?.provider
-        )
+      (step) => step.name === PUSH_TO_GIT_STEP_NAME(provider)
     );
 
     const log = stepGithub?.logs?.find(

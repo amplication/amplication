@@ -91,6 +91,7 @@
     "deepdash": "^5.3.9",
     "deepdash-es": "^5.3.9",
     "dir-compare": "^4.0.0",
+    "docker-names": "^1.2.1",
     "dotenv": "^16.0.0",
     "download": "^8.0.0",
     "eventsource": "^2.0.2",
