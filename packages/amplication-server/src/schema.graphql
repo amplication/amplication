@@ -1148,8 +1148,8 @@ type Mutation {
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
-  createGitRepository(data: CreateGitRepositoryInput!): Resource!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
+  connectGitRepository(data: CreateGitRepositoryInput!): Resource!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
 

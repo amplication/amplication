@@ -710,6 +710,7 @@ export class ResourceService {
   }
 
   async gitRepository(resourceId: string): Promise<GitRepository | null> {
+    if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({
         where: { id: resourceId },

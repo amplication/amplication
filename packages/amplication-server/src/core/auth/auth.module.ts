@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { MiddlewareConsumer, Module, NestModule } from "@nestjs/common";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -11,7 +11,13 @@ import { ExceptionFiltersModule } from "../../filters/exceptionFilters.module";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { AuthService } from "./auth.service";
 import { AuthResolver } from "./auth.resolver";
-import { AuthController } from "./auth.controller";
+import {
+  AUTH_AFTER_CALLBACK_PATH,
+  AUTH_CALLBACK_PATH,
+  AUTH_LOGIN_PATH,
+  AUTH_LOGOUT_PATH,
+  AuthController,
+} from "./auth.controller";
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
 import { GoogleSecretsManagerModule } from "../../services/googleSecretsManager.module";
@@ -19,10 +25,10 @@ import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
 import { GoogleSecretsManagerService } from "../../services/googleSecretsManager.service";
 import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
+import { Auth0Middleware } from "./auth0.middleware";
 
 @Module({
   imports: [
-    ConfigModule,
     PassportModule.register({ defaultStrategy: "jwt" }),
     JwtModule.registerAsync({
       imports: [ConfigModule],
@@ -68,8 +74,21 @@ import { GitHubAuthGuard } from "./github.guard";
     GqlAuthGuard,
     AuthResolver,
     GitHubStrategyConfigService,
+    Auth0Middleware,
   ],
   controllers: [AuthController],
   exports: [GqlAuthGuard, AuthService, AuthResolver],
 })
-export class AuthModule {}
+// export class AuthModule {}
+export class AuthModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(Auth0Middleware)
+      .forRoutes(
+        AUTH_LOGIN_PATH,
+        AUTH_LOGOUT_PATH,
+        AUTH_CALLBACK_PATH,
+        AUTH_AFTER_CALLBACK_PATH
+      );
+  }
+}

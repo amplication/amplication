@@ -1,6 +1,5 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { AppContext } from "../../../context/appContext";
-import AuthWithGit from "../../git/AuthWithGit";
 import "./CreateGithubSync.scss";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import {
@@ -12,6 +11,7 @@ import { DefineUser } from "../CreateServiceWizard";
 import ServiceWizardConfigurationGitSettings from "../../git/ServiceWizardConfigurationGitSettings";
 import { getGitRepositoryDetails } from "../../../util/git-repository-details";
 import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
+import AuthWithGitProvider from "../../git/AuthWithGitProvider";
 
 const TOOLTIP_DIRECTION = "n";
 const CLASS_NAME = "create-git-sync";
@@ -111,6 +111,19 @@ const CreateGithubSync: React.FC<props> = ({
     [refreshCurrentWorkspace, formik]
   );
 
+  const handleRepositoryDisconnected = useCallback(() => {
+    formik.setValues(
+      {
+        ...formik.values,
+        gitRepositoryName: null,
+        gitOrganizationId: null,
+        gitRepositoryUrl: null,
+        groupName: null,
+      },
+      true
+    );
+  }, [formik]);
+
   return (
     <Layout.Split>
       <Layout.LeftSide>
@@ -129,23 +142,13 @@ const CreateGithubSync: React.FC<props> = ({
       <Layout.RightSide>
         <div className={`${CLASS_NAME}__github_box`}>
           {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
-            <AuthWithGit
+            <AuthWithGitProvider
+              type="wizard"
               gitProvider={gitProvider}
               onDone={handleOnDone}
-              onGitRepositorySelected={handleOnGitRepositorySelected}
-              onGitRepositoryCreated={handleOnGitRepositoryCreated}
-              onGitRepositoryDisconnected={() => {
-                formik.setValues(
-                  {
-                    ...formik.values,
-                    gitRepositoryName: null,
-                    gitOrganizationId: null,
-                    gitRepositoryUrl: null,
-                    groupName: null,
-                  },
-                  true
-                );
-              }}
+              gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
+              gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
+              gitRepositorySelectedCb={handleOnGitRepositorySelected}
               gitRepositorySelected={{
                 gitOrganizationId: formik.values.gitOrganizationId,
                 repositoryName: formik.values.gitRepositoryName,
@@ -153,14 +156,15 @@ const CreateGithubSync: React.FC<props> = ({
                 gitProvider: formik.values.gitProvider,
                 groupName: formik.values.groupName,
               }}
-            ></AuthWithGit>
+            />
           ) : (
             <ServiceWizardConfigurationGitSettings
               onDone={handleOnDone}
               formik={formik}
-              onGitRepositorySelected={handleOnGitRepositorySelected}
-              onGitRepositoryCreated={handleOnGitRepositoryCreated}
-            ></ServiceWizardConfigurationGitSettings>
+              gitRepositoryDisconnectedCb={handleRepositoryDisconnected}
+              gitRepositoryCreatedCb={handleOnGitRepositoryCreated}
+              gitRepositorySelectedCb={handleOnGitRepositorySelected}
+            />
           )}
 
           {defineUser === "Onboarding" && (

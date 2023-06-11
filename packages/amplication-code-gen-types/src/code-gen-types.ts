@@ -243,6 +243,7 @@ export type EntityDTOs = {
   whereInput: NamedClassDeclaration;
   whereUniqueInput: NamedClassDeclaration;
   deleteArgs: NamedClassDeclaration;
+  countArgs: NamedClassDeclaration;
   findManyArgs: NamedClassDeclaration;
   findOneArgs: NamedClassDeclaration;
   createArgs?: NamedClassDeclaration;

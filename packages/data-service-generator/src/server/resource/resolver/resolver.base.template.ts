@@ -20,6 +20,9 @@ declare interface UPDATE_ARGS {
 declare interface DELETE_ARGS {
   where: WHERE_UNIQUE_INPUT;
 }
+declare interface COUNT_ARGS {
+  where: WHERE_INPUT;
+}
 declare interface FIND_MANY_ARGS {
   where: WHERE_INPUT;
   skip: number | undefined;
@@ -36,7 +39,7 @@ declare const UPDATE_DATA_MAPPING: UPDATE_INPUT;
 
 declare interface SERVICE {
   create(args: { data: CREATE_INPUT }): Promise<ENTITY>;
-  count(args: FIND_MANY_ARGS): Promise<number>;
+  count(args: COUNT_ARGS): Promise<number>;
   findMany(args: FIND_MANY_ARGS): Promise<ENTITY[]>;
   findOne(args: { where: WHERE_UNIQUE_INPUT }): Promise<ENTITY | null>;
   update(args: {
@@ -52,15 +55,11 @@ export class RESOLVER_BASE {
   constructor(protected readonly service: SERVICE) {}
 
   async META_QUERY(
-    @graphql.Args() args: FIND_MANY_ARGS
+    @graphql.Args() args: COUNT_ARGS
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 
