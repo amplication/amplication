@@ -17,16 +17,16 @@
       i {
         margin-right: 5px;
       }
-      color: #ffffff;
+      color: var(--static-white);
       font-weight: 400;
-      font-size: 12px;
+      font-size: var(--normal-font-size);
       &__stars {
-        color: #15192c;
+        color: var(--static-black);
         background-color: var(--dark-secondary-turquoise);
-        margin-left: 8px;
+        margin-left: var(--default-spacing-small);
         padding: 0px, 2px, 0px, 4px;
         border-radius: 2px;
-        padding-left: 4px;
+        padding-left: var(--icon-spacing);
         position: relative;
         display: inline-flex;
         align-items: center;
