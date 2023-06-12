@@ -99,24 +99,7 @@ export class PluginVersionService extends PluginVersionServiceBase {
 
       const pluginVersionArr: Omit<PluginVersion, "id">[] = [];
 
-      const pluginVersionsSettingsPromises = await Promise.allSettled(
-        pluginsVersions.map(async (versionData) => {
-          const { version, tarballUrl } = versionData;
-          const pluginSettings = await this.getPluginSettings(
-            tarballUrl,
-            SETTINGS_FILE
-          );
-          return { version, pluginSettings };
-        })
-      );
-      const pluginVersionsSettings = pluginVersionsSettingsPromises
-        .map((result) => {
-          if (result.status === "fulfilled") return result.value;
-          return undefined;
-        })
-        .filter((versionSettings) => versionSettings !== undefined);
-
-      for (const versionData of pluginsVersions) {
+      for await (const versionData of pluginsVersions) {
         const {
           createdAt,
           deprecated,
@@ -124,25 +107,25 @@ export class PluginVersionService extends PluginVersionServiceBase {
           updatedAt,
           version,
           pluginIdVersion,
+          tarballUrl,
           isLatest,
         } = versionData;
 
-        const pluginSettings = pluginVersionsSettings.find(
-          (versionSettings) => versionSettings.version === version
-        ).pluginSettings;
+        const pluginSettings = await this.getPluginSettings(
+          tarballUrl,
+          SETTINGS_FILE
+        );
 
-        if (pluginSettings) {
-          pluginVersionArr.push({
-            pluginId,
-            pluginIdVersion,
-            isLatest,
-            settings: pluginSettings,
-            deprecated,
-            version,
-            createdAt,
-            updatedAt,
-          });
-        }
+        pluginVersionArr.push({
+          pluginId,
+          pluginIdVersion,
+          isLatest,
+          settings: pluginSettings,
+          deprecated,
+          version,
+          createdAt,
+          updatedAt,
+        });
       }
 
       const newVersions = await this.prisma.pluginVersion.createMany({
