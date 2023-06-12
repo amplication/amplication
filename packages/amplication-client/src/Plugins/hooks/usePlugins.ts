@@ -42,6 +42,8 @@ export type OnPluginDropped = (
   hoverItem: models.PluginInstallation
 ) => void;
 
+const LASTEST_VERSION_TAG = "latest";
+
 const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   return pluginOrder.reduce(
     (
@@ -131,10 +133,32 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   useEffect(() => {
     if (!pluginsVersionData || loadingPluginsVersionData) return;
 
+    const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
+      (plugin) => {
+        const latestVersion = plugin.versions.find(
+          (pluginVersion) => pluginVersion.isLatest
+        );
+        if (latestVersion) {
+          return {
+            ...plugin,
+            versions: [
+              {
+                ...latestVersion,
+                id: `${latestVersion.id}-${LASTEST_VERSION_TAG}`,
+                version: LASTEST_VERSION_TAG,
+              },
+              ...plugin.versions,
+            ],
+          };
+        } else return plugin;
+      }
+    );
+
     const sortedPlugins = keyBy(
-      pluginsVersionData.plugins,
+      pluginsWithLatestVersion,
       (plugin) => plugin.pluginId
     );
+
     setPluginsVersion(sortedPlugins);
   }, [pluginsVersionData, loadingPluginsVersionData]);
 
