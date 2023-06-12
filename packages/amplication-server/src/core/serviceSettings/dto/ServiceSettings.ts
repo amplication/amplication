@@ -1,6 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import type { JsonValue } from "type-fest";
-import { IBlock } from "../../../models";
+import { Entity, IBlock } from "../../../models";
 import { AdminUISettings } from "./AdminUISettings";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettings } from "./ServerSettings";
@@ -24,4 +24,9 @@ export class ServiceSettings extends IBlock {
     nullable: false,
   })
   serverSettings: ServerSettings & JsonValue;
+
+  @Field(() => Entity, {
+    nullable: true,
+  })
+  authEntity?: Entity & JsonValue;
 }

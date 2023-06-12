@@ -24,7 +24,7 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const { authProvider, serverSettings, adminUISettings } =
+    const { authProvider, serverSettings, adminUISettings, authEntity } =
       await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -32,6 +32,7 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
+      authEntity,
     };
   }
 
