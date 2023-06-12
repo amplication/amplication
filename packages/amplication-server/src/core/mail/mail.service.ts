@@ -69,7 +69,7 @@ export class MailService {
       const message = {
         to: args.to,
         from: fromAddress,
-        templateId: templateId,
+        templateId,
         dynamicTemplateData: {
           url: args.url,
         },
