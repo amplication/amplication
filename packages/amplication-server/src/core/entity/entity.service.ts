@@ -400,7 +400,14 @@ export class EntityService {
         }
 
         for (const field of fields) {
-          const { name, displayName, required, unique, dataType } = field.data;
+          const {
+            name,
+            displayName,
+            required,
+            unique,
+            dataType,
+            customAttributes,
+          } = field.data;
           try {
             await this.prisma.entityField.create({
               data: {
@@ -410,6 +417,7 @@ export class EntityService {
                 required,
                 unique,
                 dataType: EnumDataType[dataType as string],
+                customAttributes,
                 permanentId: cuid(),
                 entityVersion: {
                   connect: {

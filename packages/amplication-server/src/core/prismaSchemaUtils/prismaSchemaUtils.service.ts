@@ -174,9 +174,13 @@ export class PrismaSchemaUtilsService {
         (attr) => attr.name === "unique"
       );
       const fieldProperties = this.prepareFiledProperties(field);
-      const fieldAttributes = filterOutAmplicationAttributes(
+      let fieldAttributes = filterOutAmplicationAttributes(
         this.prepareAttributes(field.attributes)
       ).join(" ");
+
+      if (fieldDataType === "Id" && fieldAttributes.includes("@default()")) {
+        fieldAttributes = fieldAttributes.replace("@default()", "");
+      }
 
       const relatedEntity = this.prepareRelations(model, field);
 
@@ -457,50 +461,47 @@ export class PrismaSchemaUtilsService {
     const models = schema.list.filter((item) => item.type === "model");
 
     models.map((model: Model) => {
-      const idFieldIsNotNamedId = model.properties.find(
-        (property) =>
-          property.type === "field" &&
-          property.name !== "id" &&
-          property.attributes?.some((attr) => attr.name === "id")
-      ) as Field;
+      const modelFields = model.properties.filter(
+        (property) => property.type === "field"
+      ) as Field[];
 
-      const notIdFieldNamedId = model.properties.find(
-        (property) =>
-          property.type === "field" &&
-          property.name === "id" &&
-          !property.attributes?.some((attr) => attr.name === "id")
-      ) as Field;
+      modelFields.map((field: Field) => {
+        const idFieldIsNotNamedId =
+          field.name !== "id" &&
+          field.attributes?.some((attr) => attr.name === "id");
 
-      if (notIdFieldNamedId) {
-        builder
-          .model(model.name)
-          .field(notIdFieldNamedId.name)
-          .attribute("map", [notIdFieldNamedId.name]);
-        builder
-          .model(model.name)
-          .field(notIdFieldNamedId.name)
-          .then<Field>((field) => {
-            field.name = `${model.name}Id`;
-          });
-        builder.model(model.name).field("id").attribute("id", []);
+        const notIdFieldIsNamedId =
+          field.name === "id" &&
+          !field.attributes?.some((attr) => attr.name === "id");
 
-        return builder;
-      }
+        if (idFieldIsNotNamedId) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = "id";
+            });
+          return builder;
+        }
 
-      if (idFieldIsNotNamedId) {
-        builder
-          .model(model.name)
-          .field(idFieldIsNotNamedId.name)
-          .attribute("map", [idFieldIsNotNamedId.name]);
-        builder
-          .model(model.name)
-          .field(idFieldIsNotNamedId.name)
-          .then<Field>((field) => {
-            field.name = "id";
-          });
-
-        return builder;
-      }
+        if (notIdFieldIsNamedId) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = `${model.name}Id`;
+            });
+          return builder;
+        }
+      });
     });
     return builder;
   }
