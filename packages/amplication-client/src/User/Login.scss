@@ -5,6 +5,10 @@ $policy-margin-top: 64px;
 $message-margin-bottom: 40px;
 
 .login-page {
+  &__sso {
+    text-decoration: underline;
+  }
+
   &__signup {
     @include body2;
     color: var(--black80);
