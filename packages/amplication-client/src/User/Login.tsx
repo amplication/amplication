@@ -14,7 +14,10 @@ import { setToken } from "../authentication/authentication";
 import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import { Form } from "../Components/Form";
-import { REACT_APP_GITHUB_AUTH_ENABLED } from "../env";
+import {
+  NX_REACT_APP_AUTH_LOGIN_URI,
+  REACT_APP_GITHUB_AUTH_ENABLED,
+} from "../env";
 import WelcomePage from "../Layout/WelcomePage";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
@@ -99,16 +102,16 @@ const Login = () => {
           {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to {content.name}. Please use your GitHub account to
+                Welcome to {content.name}. Please use your account to
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
-              <div className={`${CLASS_NAME}__signup`}>
-                Do not have a GitHub account?{" "}
-                <a href="https://github.com/join" target="Github">
-                  Join GitHub
-                </a>
-              </div>
+              <a
+                href={NX_REACT_APP_AUTH_LOGIN_URI}
+                className={`${CLASS_NAME}__sso`}
+              >
+                Continue with SSO
+              </a>
             </>
           ) : (
             <>
@@ -141,7 +144,7 @@ const Login = () => {
           )}
 
           <div className={`${CLASS_NAME}__policy`}>
-            By signing up to {content.name}, you agree to our{" "}
+            By signing up to {content.name}, you agree to our <br />
             <a href="https://amplication.com/terms" target="terms">
               terms of service
             </a>{" "}

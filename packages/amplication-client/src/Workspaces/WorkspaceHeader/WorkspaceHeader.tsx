@@ -11,6 +11,7 @@ import { useApolloClient } from "@apollo/client";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import GitHubBanner from "./GitHubBanner";
 import { unsetToken } from "../../authentication/authentication";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
@@ -29,6 +30,7 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
+import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -110,11 +112,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
     useState<boolean>(false);
 
   const handleSignOut = useCallback(() => {
-    /**@todo: sign out on server */
     unsetToken();
     apolloClient.clearStore();
 
-    history.replace("/login");
+    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const handleUpgradeClick = useCallback(() => {
@@ -161,6 +162,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
       >
         <ProfileForm />
       </Dialog>
+      <GitHubBanner />
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
@@ -365,6 +367,19 @@ const WorkspaceHeader: React.FC<{}> = () => {
           />
         </div>
       </div>
+
+      {currentProject?.useDemoRepo && (
+        <div className={`${CLASS_NAME}__highlight`}>
+          Notice: You're currently using a preview repository for your generated
+          code. For a full personalized experience, please&nbsp;
+          <Link
+            title={"Go to project settings"}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentProjectConfiguration?.id}/git-sync`}
+          >
+            connect to your own repository
+          </Link>
+        </div>
+      )}
     </>
   );
 };

@@ -11,6 +11,7 @@ import {
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
+import { GET_PROJECTS } from "../queries/projectQueries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -122,7 +123,13 @@ const useResources = (
   const [
     createServiceWithEntities,
     { loading: loadingCreateService, error: errorCreateService },
-  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES);
+  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES, {
+    refetchQueries: [
+      {
+        query: GET_PROJECTS,
+      },
+    ],
+  });
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,

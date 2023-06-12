@@ -6,7 +6,7 @@ import { CreateGitRepositoryBaseInput } from "./CreateGitRepositoryBaseInput";
 })
 export class CreateGitRepositoryInput extends CreateGitRepositoryBaseInput {
   @Field(() => String, {
-    nullable: false,
+    nullable: true,
   })
-  resourceId!: string;
+  resourceId?: string;
 }

@@ -1,9 +1,11 @@
 @import "../../../../style/index.scss";
 
 .git-create-repo {
+  flex-direction: column;
   &__header {
     font-size: 14px;
     margin-bottom: var(--large-spacing);
+    color: var(--black100);
   }
 
   &__button {

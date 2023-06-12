@@ -173,6 +173,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   workspaceId: EXAMPLE_WORKSPACE_ID,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -696,6 +698,7 @@ describe("ResourceService", () => {
               },
             ],
           },
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER
@@ -746,6 +749,7 @@ describe("ResourceService", () => {
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER
