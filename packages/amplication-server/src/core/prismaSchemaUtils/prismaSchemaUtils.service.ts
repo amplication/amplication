@@ -185,7 +185,7 @@ export class PrismaSchemaUtilsService {
           name: field.name,
           displayName: fieldDisplayName,
           dataType: fieldDataType,
-          required: field.optional,
+          required: field.optional || false,
           unique: isUniqueField,
           searchable: false,
           description: null,
@@ -206,23 +206,6 @@ export class PrismaSchemaUtilsService {
    * @returns the data type of the field
    */
   private prepareFieldDataType(schema: string, field: Field): EnumDataType {
-    const scalarType = () => {
-      switch (field.fieldType) {
-        case ScalarType.String:
-          return EnumDataType.SingleLineText;
-        case ScalarType.Int:
-          return EnumDataType.WholeNumber;
-        case ScalarType.Float:
-          return EnumDataType.DecimalNumber;
-        case ScalarType.Boolean:
-          return EnumDataType.Boolean;
-        case ScalarType.DateTime:
-          return EnumDataType.DateTime;
-        case ScalarType.Json:
-          return EnumDataType.Json;
-      }
-    };
-
     const idType = () => {
       const fieldIdType = field.attributes?.some(
         (attribute) => attribute.name === "id"
@@ -268,12 +251,30 @@ export class PrismaSchemaUtilsService {
       }
     };
 
+    const scalarType = () => {
+      switch (field.fieldType) {
+        case ScalarType.String:
+          return EnumDataType.SingleLineText;
+        case ScalarType.Int:
+          return EnumDataType.WholeNumber;
+        case ScalarType.Float:
+          return EnumDataType.DecimalNumber;
+        case ScalarType.Boolean:
+          return EnumDataType.Boolean;
+        case ScalarType.DateTime:
+          return EnumDataType.DateTime;
+        case ScalarType.Json:
+          return EnumDataType.Json;
+      }
+    };
+
     const fieldDataTypCases: (() => EnumDataType | undefined)[] = [
-      scalarType,
       idType,
       lookupRelationType,
       lookupModelType,
       optionSetType,
+      // must be the one before the last
+      scalarType,
       // must be last
       () => {
         throw new Error(`Unsupported data type: ${field.fieldType}`);
@@ -338,11 +339,41 @@ export class PrismaSchemaUtilsService {
   }
 
   private prepareFiledProperties(field) {
-    const defaultIdAttribute = field.attributes?.find(
-      (attr) => attr.name === "default"
-    );
-    if (!defaultIdAttribute) return;
-    return idTypePropertyMap[defaultIdAttribute.args[0].value.name];
+    const idTypeProperties: () => Record<string, JsonValue> = () => {
+      const idAttribute = field.attributes?.some((attr) => attr.name === "id");
+      const defaultIdAttribute = field.attributes?.find(
+        (attr) => attr.name === "default"
+      );
+
+      if (idAttribute && defaultIdAttribute && defaultIdAttribute.args)
+        return {
+          properties: idTypePropertyMap[defaultIdAttribute.args[0].value.name],
+        };
+    };
+    const fieldTypePropertyMap: Record<EnumDataType, JsonValue> = {
+      // data types that have no properties
+      [EnumDataType.Username]: {},
+      [EnumDataType.Password]: {},
+      [EnumDataType.Email]: {},
+      [EnumDataType.Roles]: {},
+      [EnumDataType.CreatedAt]: {},
+      [EnumDataType.UpdatedAt]: {},
+      [EnumDataType.Boolean]: {},
+      [EnumDataType.Json]: {},
+      [EnumDataType.GeographicLocation]: {},
+      // data types that have properties
+      [EnumDataType.SingleLineText]: {},
+      [EnumDataType.MultiLineText]: {},
+      [EnumDataType.WholeNumber]: {},
+      [EnumDataType.DecimalNumber]: {},
+      [EnumDataType.DateTime]: {},
+      [EnumDataType.OptionSet]: {},
+      [EnumDataType.MultiSelectOptionSet]: {},
+      [EnumDataType.Lookup]: {},
+      [EnumDataType.Id]: idTypeProperties(),
+    };
+
+    return fieldTypePropertyMap[field.dataType];
   }
 
   /**********************
@@ -426,20 +457,44 @@ export class PrismaSchemaUtilsService {
     const models = schema.list.filter((item) => item.type === "model");
 
     models.map((model: Model) => {
-      const idField = model.properties.find(
+      const idFieldIsNotNamedId = model.properties.find(
         (property) =>
           property.type === "field" &&
+          property.name !== "id" &&
           property.attributes?.some((attr) => attr.name === "id")
       ) as Field;
 
-      if (idField && idField.name !== "id") {
+      const notIdFieldNamedId = model.properties.find(
+        (property) =>
+          property.type === "field" &&
+          property.name === "id" &&
+          !property.attributes?.some((attr) => attr.name === "id")
+      ) as Field;
+
+      if (notIdFieldNamedId) {
         builder
           .model(model.name)
-          .field(idField.name)
-          .attribute("map", [idField.name]);
+          .field(notIdFieldNamedId.name)
+          .attribute("map", [notIdFieldNamedId.name]);
         builder
           .model(model.name)
-          .field(idField.name)
+          .field(notIdFieldNamedId.name)
+          .then<Field>((field) => {
+            field.name = `${model.name}Id`;
+          });
+        builder.model(model.name).field("id").attribute("id", []);
+
+        return builder;
+      }
+
+      if (idFieldIsNotNamedId) {
+        builder
+          .model(model.name)
+          .field(idFieldIsNotNamedId.name)
+          .attribute("map", [idFieldIsNotNamedId.name]);
+        builder
+          .model(model.name)
+          .field(idFieldIsNotNamedId.name)
           .then<Field>((field) => {
             field.name = "id";
           });
