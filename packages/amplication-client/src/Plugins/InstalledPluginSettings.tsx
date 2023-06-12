@@ -36,8 +36,6 @@ type Props = AppRouteProps & {
 };
 
 const generatedKey = () => Math.random().toString(36).slice(2, 7);
-const LATEST_VERSION_TAG = "latest";
-const LATEST_VERSION_LABEL = (version: string) => `Latest (${version})`;
 
 const InstalledPluginSettings: React.FC<Props> = ({
   match,
@@ -95,10 +93,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
 
   const handleSelectVersion = useCallback(
     (pluginVersion: PluginVersion) => {
-      const selectedVersion = pluginVersion.version;
-      setSelectedVersion(selectedVersion);
-      pluginInstallation?.PluginInstallation.version !== selectedVersion &&
-        setIsValid(false);
+      setSelectedVersion(pluginVersion.version);
+      pluginInstallation?.PluginInstallation.version !==
+        pluginVersion.version && setIsValid(false);
       editorRef.current = pluginVersion.settings;
     },
     [setSelectedVersion, setIsValid]
@@ -107,15 +104,11 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
     const { enabled, id } = pluginInstallation.PluginInstallation;
-    const selectedVersionOrLatest =
-      plugin.taggedVersions[LATEST_VERSION_TAG] === selectedVersion
-        ? LATEST_VERSION_TAG
-        : selectedVersion;
     updatePluginInstallation({
       variables: {
         data: {
           enabled,
-          version: selectedVersionOrLatest,
+          version: selectedVersion,
           settings: JSON.parse(editorRef.current),
         },
         where: {
@@ -153,13 +146,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
               </div>
               <SelectMenu
                 title={
-                  plugin.taggedVersions[LATEST_VERSION_TAG] ===
-                    selectedVersion || selectedVersion === LATEST_VERSION_TAG
-                    ? LATEST_VERSION_LABEL(
-                        plugin.taggedVersions[LATEST_VERSION_TAG]
-                      )
-                    : selectedVersion ||
-                      pluginInstallation.PluginInstallation.version
+                  selectedVersion ||
+                  pluginInstallation.PluginInstallation.version
                 }
                 buttonStyle={EnumButtonStyle.Secondary}
                 className={`${moduleClass}__menu`}
@@ -172,18 +160,13 @@ const InstalledPluginSettings: React.FC<Props> = ({
                         <SelectMenuItem
                           closeAfterSelectionChange
                           itemData={pluginVersion}
-                          selected={[
-                            selectedVersion,
-                            LATEST_VERSION_LABEL(pluginVersion.version),
-                          ].includes(pluginVersion.version)}
+                          selected={pluginVersion.version === selectedVersion}
                           key={pluginVersion.id}
                           onSelectionChange={(pluginVersion) => {
                             handleSelectVersion(pluginVersion);
                           }}
                         >
-                          {pluginVersion.isLatest
-                            ? LATEST_VERSION_LABEL(pluginVersion.version)
-                            : pluginVersion.version}
+                          {pluginVersion.version}
                         </SelectMenuItem>
                       ))}
                     </>

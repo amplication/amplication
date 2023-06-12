@@ -56,7 +56,7 @@ function PluginsCatalogItem({
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
-    const lastVersion = plugin.versions.find((version) => version.isLatest);
+    const lastVersion = plugin.versions[plugin.versions.length - 1];
     onInstall && onInstall(plugin, lastVersion);
   }, [onInstall, plugin]);
 
