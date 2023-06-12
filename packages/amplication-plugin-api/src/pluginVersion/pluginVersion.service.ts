@@ -230,4 +230,21 @@ export class PluginVersionService extends PluginVersionServiceBase {
       throw error;
     }
   }
+
+  async findMany(
+    args: Prisma.PluginVersionFindManyArgs
+  ): Promise<PluginVersion[]> {
+    const versions = await super.findMany(args);
+
+    const latestVersion = versions.find((version) => version.isLatest);
+
+    if (latestVersion) {
+      versions.unshift({
+        ...latestVersion,
+        id: "latest",
+        version: "latest",
+      });
+    }
+    return versions;
+  }
 }
