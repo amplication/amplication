@@ -113,11 +113,13 @@ export class PluginVersionService extends PluginVersionServiceBase {
           tarballUrl,
           SETTINGS_FILE
         );
+        const pluginSettingsObject = JSON.parse(pluginSettings);
 
         pluginVersionArr.push({
           pluginId,
           pluginIdVersion,
-          settings: pluginSettings,
+          settings: pluginSettingsObject?.settings,
+          configurations: pluginSettingsObject?.systemSettings,
           deprecated,
           version,
           createdAt,

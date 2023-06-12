@@ -12,6 +12,7 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;
@@ -25,6 +26,7 @@ export const GET_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;
@@ -101,6 +103,7 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
         deprecated
         version
         settings
+        configurations
       }
     }
   }

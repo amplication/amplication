@@ -26,6 +26,10 @@ export const GET_RESOURCES = gql`
           useGroupingForRepositories
         }
       }
+      entities {
+        id
+        name
+      }
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
         version
