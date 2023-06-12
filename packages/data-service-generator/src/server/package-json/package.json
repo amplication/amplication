@@ -32,7 +32,7 @@
     "apollo-server-express": "3.6.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
-    "class-validator": "0.13.2",
+    "class-validator": "0.14.0",
     "graphql": "15.7.2",
     "graphql-type-json": "0.3.2",
     "nest-access-control": "2.0.3",

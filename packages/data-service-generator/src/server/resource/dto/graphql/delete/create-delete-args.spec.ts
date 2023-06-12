@@ -25,6 +25,12 @@ describe("createDeleteArgs", () => {
         .code
     ).toEqual(`@ArgsType()
 class ${createDeleteArgsId(EXAMPLE_ENTITY.name).name} {
+  @ApiProperty({
+    required: true,
+    type: () => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name},
+  })
+  @ValidateNested()
+  @Type(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name})
   @Field(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name}, { nullable: false })
   where!: ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name};
 }`);
