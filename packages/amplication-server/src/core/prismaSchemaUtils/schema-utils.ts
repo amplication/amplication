@@ -12,6 +12,13 @@ export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+export function capitalizeFirstLetterOfEachWord(str: string): string {
+  return str
+    .split(" ")
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
+
 export function filterOutAmplicationAttributes(attributes): string[] {
   return attributes.filter(
     (attribute) =>
@@ -34,13 +41,16 @@ export function filterOutAmplicationAttributes(attributes): string[] {
 export function formatModelName(modelName: string): string {
   // plural models are mapped to singular
   if (pluralize.isPlural(modelName)) {
-    return capitalizeFirstLetter(pluralize.singular(modelName));
+    modelName = capitalizeFirstLetter(pluralize.singular(modelName));
   }
   // snake case models are mapped to pascal case
   if (modelName.includes("_")) {
-    return modelName.split("_").map(capitalizeFirstLetter).join("");
+    modelName = modelName.split("_").map(capitalizeFirstLetter).join("");
   }
-  return capitalizeFirstLetter(modelName);
+
+  // always make sure the model name is in pascal case
+  modelName = capitalizeFirstLetter(modelName);
+  return modelName;
 }
 
 export function formatFieldName(fieldName: string | Func): string {
@@ -52,5 +62,5 @@ export function formatFieldName(fieldName: string | Func): string {
 }
 
 export function formatDisplayName(displayName: string): string {
-  return capitalizeFirstLetter(sentenceCase(displayName));
+  return capitalizeFirstLetterOfEachWord(sentenceCase(displayName));
 }

@@ -224,7 +224,7 @@ export class PrismaSchemaUtilsService {
     };
 
     const idType = () => {
-      const fieldIdType = field.attributes?.find(
+      const fieldIdType = field.attributes?.some(
         (attribute) => attribute.name === "id"
       );
       if (fieldIdType) {
@@ -233,7 +233,7 @@ export class PrismaSchemaUtilsService {
     };
 
     const lookupRelationType = () => {
-      const fieldLookupType = field.attributes?.find(
+      const fieldLookupType = field.attributes?.some(
         (attribute) => attribute.name === "relation"
       );
       if (fieldLookupType) {
