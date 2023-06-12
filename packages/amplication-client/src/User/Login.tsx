@@ -21,7 +21,6 @@ import { formatError } from "../util/error";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
-import { EnterpriseLoginButton } from "./EnterpriseLoginButton";
 
 type Values = {
   email: string;
@@ -104,7 +103,12 @@ const Login = () => {
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
-              <EnterpriseLoginButton />
+              <a
+                href="http://localhost:3000/auth/login"
+                className={`${CLASS_NAME}__sso`}
+              >
+                Continue with SSO
+              </a>
             </>
           ) : (
             <>
@@ -137,7 +141,7 @@ const Login = () => {
           )}
 
           <div className={`${CLASS_NAME}__policy`}>
-            By signing up to {content.name}, you agree to our{" "}
+            By signing up to {content.name}, you agree to our <br />
             <a href="https://amplication.com/terms" target="terms">
               terms of service
             </a>{" "}
