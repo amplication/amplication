@@ -6,8 +6,9 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
 import "./GitHubBanner.scss";
 
-const CLASS_NAME = "amp-github";
+const CLASS_NAME = "amp-github-banner";
 const LOCAL_STORAGE_KEY_SHOW_BANNER = "showBanner";
+const AMP_GITHUB_URL = "https://github.com/amplication/amplication";
 
 export default function GitHubBanner() {
   const stars = useFetchGithubStars();
@@ -34,7 +35,7 @@ export default function GitHubBanner() {
   return (
     <div className={`${CLASS_NAME}__banner`}>
       <a
-        href="https://github.com/amplication/amplication"
+        href={AMP_GITHUB_URL}
         target="_blank"
         rel="noreferrer"
         className={`${CLASS_NAME}__banner__cta`}
