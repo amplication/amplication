@@ -23,6 +23,7 @@
     "util-kafka": "libs/util/kafka",
     "util-logging": "libs/util/logging",
     "util-nestjs-kafka": "libs/util/nestjs/kafka",
-    "util-nestjs-logging": "libs/util/nestjs/logging"
+    "util-nestjs-logging": "libs/util/nestjs/logging",
+    "util-nestjs-tracing": "libs/util/nestjs/tracing"
   }
 }

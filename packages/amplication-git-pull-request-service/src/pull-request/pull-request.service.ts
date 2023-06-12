@@ -10,7 +10,13 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
 import { CreatePrRequest } from "@amplication/schema-registry";
+import {
+  TraceService,
+  TraceWrapper,
+  Traceable,
+} from "@overbit/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class PullRequestService {
   gitProvidersConfiguration: GitProvidersConfiguration;
@@ -19,7 +25,8 @@ export class PullRequestService {
     private readonly diffService: DiffService,
     private readonly configService: ConfigService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly traceService: TraceService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -88,14 +95,18 @@ export class PullRequestService {
       }
     );
 
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerOrganizationProperties: gitProviderProperties,
-      },
-      this.gitProvidersConfiguration,
+    const gitClientService = TraceWrapper.trace(
+      await new GitClientService().create(
+        {
+          provider: gitProvider,
+          providerOrganizationProperties: gitProviderProperties,
+        },
+        this.gitProvidersConfiguration,
+        logger
+      ),
       logger
     );
+
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 
     const prUrl = await gitClientService.createPullRequest({

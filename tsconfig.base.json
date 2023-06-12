@@ -51,6 +51,9 @@
       "@amplication/util/nestjs/logging/test-utils": [
         "libs/util/nestjs/logging/tests/utils/index.ts"
       ],
+      "@amplication/util/nestjs/tracing": [
+        "libs/util/nestjs/tracing/src/index.ts"
+      ],
       "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
     }
   },

@@ -10,7 +10,9 @@ import { mapDiffSetToPrModule } from "./diffset-mapper";
 import { BuildPathFactory } from "./build-path-factory";
 import { deleteFilesVisitor } from "./delete-files";
 import { MissingBuildFiles } from "../errors/MissingBuildFiles";
+import { Traceable } from "@overbit/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class DiffService {
   constructor(
