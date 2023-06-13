@@ -25,7 +25,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
   CreateEntityInput,
-  CreateOneEntityFieldArgs,
   ErrorLevel,
   ErrorMessages,
   Operation,
@@ -190,33 +189,6 @@ export class PrismaSchemaUtilsService {
     return preparedEntities;
   }
 
-  prepareEntities(schema: string): CreateEntityInput[] {
-    const preparedSchema = this.processSchema(...this.operations)(schema);
-    const preparedEntities = preparedSchema.list
-      .filter((item: Model) => item.type === "model")
-      .map((model: Model) => this.prepareEntity(model));
-
-    return preparedEntities;
-  }
-
-  prepareEntitiesFields(
-    schema: string
-  ): Record<string, CreateOneEntityFieldArgs[]> {
-    const preparedSchema = this.processSchema(...this.operations)(schema);
-    const preparedEntitiesFields = preparedSchema.list
-      .filter((item: Model) => item.type === "model")
-      .reduce(
-        (acc: Record<string, CreateOneEntityFieldArgs[]>, model: Model) => {
-          const fields = this.prepareEntityFields(preparedSchema, model);
-          acc[model.name] = fields;
-          return acc;
-        },
-        {}
-      );
-
-    return preparedEntitiesFields;
-  }
-
   /*****************************
    * PREPARE FUNCTIONS SECTION *
    *****************************/
@@ -242,54 +214,6 @@ export class PrismaSchemaUtilsService {
       customAttributes: entityAttributes,
       fields: [],
     };
-  }
-
-  /**
-   * Prepare the entity fields in a form of CreateOneEntityFieldArgs
-   * @param model the model to prepare
-   * @returns array entity fields in a structure like in CreateOneEntityFieldArgs
-   */
-  private prepareEntityFields(
-    schema: Schema,
-    model: Model
-  ): CreateOneEntityFieldArgs[] {
-    const modelFields = model.properties.filter(
-      (prop) => prop.type === "field"
-    );
-
-    return modelFields.map((field: Field) => {
-      const fieldDisplayName = formatDisplayName(field.name);
-      const fieldDataType = this.resolveFieldDataType(schema, field);
-      const isUniqueField = field.attributes?.some(
-        (attr) => attr.name === "unique"
-      );
-
-      let fieldAttributes = filterOutAmplicationAttributes(
-        this.prepareAttributes(field.attributes)
-      ).join(" ");
-
-      if (fieldDataType === "Id" && fieldAttributes.includes("@default()")) {
-        fieldAttributes = fieldAttributes.replace("@default()", "");
-      }
-
-      const relatedEntity = this.prepareRelations(model, field);
-
-      return {
-        data: {
-          name: field.name,
-          displayName: fieldDisplayName,
-          dataType: fieldDataType,
-          required: field.optional || false,
-          unique: isUniqueField,
-          searchable: false,
-          description: null,
-          properties: {},
-          customAttributes: fieldAttributes,
-        },
-        relatedFieldName: relatedEntity?.relatedFieldName,
-        relatedFieldDisplayName: relatedEntity?.relatedFieldDisplayName,
-      };
-    });
   }
 
   private prepareEntityFieldsByType(field: Field, fieldDataType: EnumDataType) {

@@ -366,80 +366,13 @@ export class EntityService {
     this.schemaUtilsService.validateSchemaUpload(file);
 
     const errors = this.schemaUtilsService.validateSchemaProcessing(file);
-    const preparedEntities = this.schemaUtilsService.prepareEntities(file);
-    const preparedEntitiesFields =
-      this.schemaUtilsService.prepareEntitiesFields(file);
-
+    const preparedEntitiesWithFields =
+      this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+    preparedEntitiesWithFields.forEach((entity) => {
+      // create entity
+      // create fields
+    });
     const entities: Entity[] = [];
-
-    for (const entity of preparedEntities) {
-      const newEntity = await this.createOneEntity(
-        {
-          data: {
-            ...entity,
-            resource: {
-              connect: {
-                id: resourceId,
-              },
-            },
-          },
-        },
-        user,
-        false
-      );
-
-      entities.push(newEntity);
-    }
-
-    Object.entries(preparedEntitiesFields).forEach(
-      async ([entityName, fields]) => {
-        const entity = entities.find((entity) => entity.name === entityName);
-        if (!entity) {
-          this.logger.error(`Entity ${entityName} not found`);
-          throw new Error(`Entity ${entityName} not found`);
-        }
-
-        for (const field of fields) {
-          const {
-            name,
-            displayName,
-            required,
-            unique,
-            dataType,
-            customAttributes,
-          } = field.data;
-          try {
-            await this.prisma.entityField.create({
-              data: {
-                ...BASE_FIELD,
-                name,
-                displayName,
-                required,
-                unique,
-                dataType: EnumDataType[dataType as string],
-                customAttributes,
-                permanentId: cuid(),
-                entityVersion: {
-                  connect: {
-                    // eslint-disable-next-line @typescript-eslint/naming-convention
-                    entityId_versionNumber: {
-                      entityId: entity.id,
-                      versionNumber: CURRENT_VERSION_NUMBER,
-                    },
-                  },
-                },
-                properties: {},
-              },
-            });
-          } catch (error) {
-            this.logger.error(error.message, error, [
-              "CreateEntitiesFromSchema",
-              { entity, field },
-            ]);
-          }
-        }
-      }
-    );
 
     return {
       entities,
