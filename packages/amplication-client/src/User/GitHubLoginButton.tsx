@@ -22,6 +22,7 @@ export const GitHubLoginButton = () => {
           eventName: AnalyticsEventNames.SignInWithGitHub,
         }}
       >
+        <Icon icon="github" />
         Continue with GitHub
       </Button>
     </a>
