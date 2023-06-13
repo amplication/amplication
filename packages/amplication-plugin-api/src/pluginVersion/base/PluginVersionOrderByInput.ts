@@ -52,6 +52,15 @@ class PluginVersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  isLatest?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   pluginId?: SortOrder;
 
   @ApiProperty({
@@ -91,4 +100,4 @@ class PluginVersionOrderByInput {
   version?: SortOrder;
 }
 
-export { PluginVersionOrderByInput };
+export { PluginVersionOrderByInput as PluginVersionOrderByInput };

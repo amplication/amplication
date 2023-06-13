@@ -8,7 +8,6 @@ import GitRepos, {
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
-
 import "./GitDialogsContainer.scss";
 import { useCallback } from "react";
 
@@ -29,7 +28,7 @@ type Props = {
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: GitRepositorySelected) => void;
   openCreateNewRepo?: () => void;
-  setSelectRepoOpen?: (state: boolean) => void;
+  closeSelectRepoDialog?: () => void;
 };
 
 export default function GitDialogsContainer({
@@ -46,12 +45,12 @@ export default function GitDialogsContainer({
   onSelectGitRepository,
   onGitCreateRepositoryClose,
   openCreateNewRepo,
-  setSelectRepoOpen,
+  closeSelectRepoDialog,
 }: Props) {
   const handleCreateNewRepoClick = useCallback(() => {
-    setSelectRepoOpen(false);
+    closeSelectRepoDialog();
     openCreateNewRepo();
-  }, [setSelectRepoOpen, openCreateNewRepo]);
+  }, [closeSelectRepoDialog, openCreateNewRepo]);
 
   return (
     <div>

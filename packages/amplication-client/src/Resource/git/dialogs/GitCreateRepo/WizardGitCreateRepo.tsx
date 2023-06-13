@@ -15,6 +15,7 @@ import "./GitCreateRepo.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GET_GROUPS } from "../../queries/gitProvider";
 
 type createRepositoryInput = {
   name: string;
@@ -158,6 +159,7 @@ export default function WizardGitCreateRepo({
       <HorizontalRule />
 
       <Button
+        type="button"
         className={`${CLASS_NAME}__button`}
         disabled={repoCreated.isRepoCreateLoading}
         onClick={handleCreation}
@@ -178,18 +180,3 @@ export default function WizardGitCreateRepo({
     </div>
   );
 }
-
-const GET_GROUPS = gql`
-  query gitGroups($organizationId: String!) {
-    gitGroups(where: { organizationId: $organizationId }) {
-      total
-      page
-      pageSize
-      groups {
-        id
-        name
-        displayName
-      }
-    }
-  }
-`;

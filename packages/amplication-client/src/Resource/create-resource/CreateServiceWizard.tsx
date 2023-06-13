@@ -316,7 +316,9 @@ const CreateServiceWizard: React.FC<Props> = ({
 
   const handleCloseWizard = useCallback(
     (currentPage: string) => {
-      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick);
+      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick, {
+        step: currentPage,
+      });
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
     },
     [currentWorkspace, currentProject]
@@ -330,18 +332,8 @@ const CreateServiceWizard: React.FC<Props> = ({
       page: string,
       pageEventName: AnalyticsEventNames
     ) => {
-      trackEvent({
-        eventName,
-        category: "Service Wizard",
-        WizardType: defineUser,
-        step: page,
-      });
-
-      trackEvent({
-        eventName: pageEventName,
-        category: "Service Wizard",
-        WizardType: defineUser,
-      });
+      trackWizardPageEvent(eventName, { step: page });
+      trackWizardPageEvent(pageEventName);
     },
     []
   );
@@ -378,6 +370,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         templateType,
         structureType,
         baseDir,
+        connectToDemoRepo,
       } = values;
 
       const kebabCaseServiceName = kebabCase(serviceName);
@@ -416,8 +409,8 @@ const CreateServiceWizard: React.FC<Props> = ({
           defineUser,
           structureType,
           databaseType,
-          authType
-          // gitOrganizationName
+          authType,
+          connectToDemoRepo
         );
         createStarterResource(resource, templateSettings.eventName);
       }

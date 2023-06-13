@@ -4,6 +4,14 @@ import "./FAQ.scss";
 
 const CLASS_NAME = "faq";
 
+const MailTo = ({ email, subject, body }) => {
+  return (
+    <a className="mail-link" href={`mailto:${email}?subject=${subject}`}>
+      {body}
+    </a>
+  );
+};
+
 export const FAQ = () => {
   return (
     <div className={CLASS_NAME}>
@@ -11,11 +19,16 @@ export const FAQ = () => {
       <div className={`${CLASS_NAME}__list`}>
         <Question
           question="How does Amplication pricing work?"
-          answer={`Our pricing plans are applied per each workspace individually.
-
-          Free edition is offered for **FREE**. 
-          Pro edition is currently $320 per month (paid annually) or $400 per month (paid monthly).
-          Enterprise edition pricing will be tailored to your specific requirements. Contact us to get a quote.`}
+          answer={
+            <div>
+              Our pricing plans are applied per each workspace individually.
+              Free edition is offered for <span className="bold">FREE</span>.
+              Pro edition is currently $320 per month (paid annually) or $400
+              per month (paid monthly). Enterprise edition pricing will be
+              tailored to your specific requirements. Contact us to get a
+              quote.`
+            </div>
+          }
         />
         <Question
           question="What plan is best for me and my team?"
@@ -39,12 +52,18 @@ export const FAQ = () => {
         />
         <Question
           question="How do I cancel my subscription?"
-          answer={`Very soon you will be able to manage your subscriptions in the workspace settings.
-          For now, you can reach out directly to us <here> and we will update your plan as requested.
-          
-          link is to send an email to sales@amplication.com
-          
-          email subject - “Update workspace plan”`}
+          answer={
+            <div>
+              Very soon you will be able to manage your subscriptions in the
+              workspace settings. For now, you can reach out directly to us{" "}
+              <MailTo
+                email="mailto:sales@amplication.com"
+                subject="Update workspace plan"
+                body="here"
+              />{" "}
+              and we will update your plan as requested.
+            </div>
+          }
         />
         <Question
           question="What happens when I downgrade a subscription?"
@@ -74,23 +93,37 @@ export const FAQ = () => {
         />
         <Question
           question="What if I need to add more team members?"
-          answer="No problem. Select the plan that meets your needs. The Free edition supports up to two user seats, the Pro edition supports up to ten user seats, and the Enterprise edition has no limit. "
+          answer="No problem. Select the plan that meets your needs. The Free edition supports up to two user seats, the Pro edition supports up to five user seats, and the Enterprise edition has no limit. "
         />
         <Question
           question="Can I pay for my subscription with an invoice?"
-          answer={`Companies can use invoices to purchase Enterprise subscriptions. Please <contact sales> for more information and to purchase.
-
-          link is to send an email to sales@amplication.com
-          
-          email subject - “Amplication Enterprise Plan Inquiry”`}
+          answer={
+            <div>
+              Companies can use invoices to purchase Enterprise subscriptions.
+              Please{" "}
+              <MailTo
+                email="mailto:sales@amplication.com"
+                subject="Amplication Enterprise Plan Inquiry"
+                body="contact sales"
+              />{" "}
+              for more information and to purchase.
+            </div>
+          }
         />
         <Question
           question="We're an open-source project, is there special pricing available?"
-          answer={`Yes, as part of our commitment to support open-source projects, we offer the pro plan for free. Reach out <here> and we will set you up.
-
-          link is to send an email to sales@amplication.com
-          
-          email subject - “Pro plan for Open Source project”`}
+          answer={
+            <div>
+              Yes, as part of our commitment to support open-source projects, we
+              offer the pro plan for free. Reach out{" "}
+              <MailTo
+                email="mailto:sales@amplication.com"
+                subject="Pro plan for Open Source project"
+                body="here"
+              />{" "}
+              and we will set you up.
+            </div>
+          }
         />
       </div>
     </div>
