@@ -102,7 +102,7 @@ const Login = () => {
           {REACT_APP_GITHUB_AUTH_ENABLED ? (
             <>
               <div className={`${CLASS_NAME}__message`}>
-                Welcome to {content.name}. Please use your account to
+                Welcome to {content.name}. Please use your GitHub account to
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
