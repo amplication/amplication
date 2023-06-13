@@ -12,6 +12,7 @@ import * as models from "../../models";
 import { keyBy } from "lodash";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/appContext";
+import { LATEST_VERSION_TAG } from "../constant";
 
 export type PluginVersion = {
   version: string;
@@ -41,8 +42,6 @@ export type OnPluginDropped = (
   dragItem: models.PluginInstallation,
   hoverItem: models.PluginInstallation
 ) => void;
-
-const LASTEST_VERSION_TAG = "latest";
 
 const setPluginOrderMap = (pluginOrder: models.PluginOrderItem[]) => {
   return pluginOrder.reduce(
@@ -144,8 +143,8 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
             versions: [
               {
                 ...latestVersion,
-                id: `${latestVersion.id}-${LASTEST_VERSION_TAG}`,
-                version: LASTEST_VERSION_TAG,
+                id: `${latestVersion.id}-${LATEST_VERSION_TAG}`,
+                version: LATEST_VERSION_TAG,
               },
               ...plugin.versions,
             ],
