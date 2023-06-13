@@ -58,8 +58,10 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
   const dbPluginInstallation = pluginInstallations?.filter(
     (pluginInstallation) => pluginInstallation.pluginId.split("-")[0] === "db"
   );
-  const dbTypeDisplayName = dbPluginInstallation?.[0].displayName;
-  const dbType = DbTypeLabels[dbTypeDisplayName];
+  const dbTypeDisplayName = dbPluginInstallation?.[0]?.displayName;
+  const dbType = dbTypeDisplayName
+    ? DbTypeLabels[dbTypeDisplayName]
+    : "PostgresSQL";
   const authTypePluginInstallation = pluginInstallations?.filter(
     (pluginInstallation) =>
       pluginInstallation.pluginId.split("-")[0] === "auth" &&
