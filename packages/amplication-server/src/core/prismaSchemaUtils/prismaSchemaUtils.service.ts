@@ -256,30 +256,24 @@ export class PrismaSchemaUtilsService {
       }
     };
 
-    // for cases where the field type is a model name but there is no relation attribute
-    const lookupModelType = () => {
-      const schemaObject = getSchema(schema);
-      const modelList = schemaObject.list.filter(
-        (item) => item.type === "model"
-      );
-      const fieldModelType = modelList.find(
-        (modelItem: Model) =>
-          formatModelName(modelItem.name).toLowerCase() ===
-          pluralize.singular(formatFieldName(field.fieldType)).toLowerCase()
-      );
-      if (fieldModelType) {
-        return EnumDataType.Lookup;
-      }
-    };
-
     const optionSetType = () => {
-      const schemaObject = getSchema(schema);
-      const enumList = schemaObject.list.filter((item) => item.type === "enum");
+      const enumList = schema.list.filter((item) => item.type === "enum");
       const fieldOptionSetType = enumList.find(
         (enumItem: Enum) => enumItem.name === field.fieldType
       );
       if (fieldOptionSetType) {
         return EnumDataType.OptionSet;
+      }
+    };
+
+    const multiSelectOptionSetType = () => {
+      const enumList = schema.list.filter((item) => item.type === "enum");
+      const fieldOptionSetType = enumList.find(
+        (enumItem: Enum) =>
+          enumItem.name === field.fieldType && field.name.includes("[]")
+      );
+      if (fieldOptionSetType) {
+        return EnumDataType.MultiSelectOptionSet;
       }
     };
 
@@ -303,8 +297,8 @@ export class PrismaSchemaUtilsService {
     const fieldDataTypCases: (() => EnumDataType | undefined)[] = [
       idType,
       lookupRelationType,
-      lookupModelType,
       optionSetType,
+      multiSelectOptionSetType,
       // must be the one before the last
       scalarType,
       // must be last
