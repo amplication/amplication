@@ -207,6 +207,29 @@ export class PrismaSchemaUtilsService {
     });
   }
 
+  private prepareEntityFieldsByType(field: Field, fieldDataType: EnumDataType) {
+    const fieldDisplayName = formatDisplayName(field.name);
+    const isUniqueField = field.attributes?.some(
+      (attr) => attr.name === "unique"
+    );
+
+    const fieldAttributes = filterOutAmplicationAttributes(
+      this.prepareAttributes(field.attributes)
+    ).join(" ");
+
+    return {
+      name: field.name,
+      displayName: fieldDisplayName,
+      dataType: fieldDataType,
+      required: field.optional || false,
+      unique: isUniqueField,
+      searchable: false,
+      description: null,
+      properties: {},
+      customAttributes: fieldAttributes,
+    };
+  }
+
   /**
    * Loop over fieldTypCases and return the first one that matches the field type, if none matches,
    * it will get to the last one - which is an error, an return it
