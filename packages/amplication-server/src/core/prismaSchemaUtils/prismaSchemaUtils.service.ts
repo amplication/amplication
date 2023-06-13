@@ -86,6 +86,131 @@ export class PrismaSchemaUtilsService {
    *
    */
 
+  convertPrismaSchemaForImportObjects(schema: string) {
+    const preparedSchema = this.processSchema(...this.operations)(schema);
+    return this.convertPreparedSchemaForImportObjects(preparedSchema);
+  }
+
+  convertPreparedSchemaForImportObjects(schema: Schema) {
+    const preparedEntities = schema.list
+      .filter((item: Model) => item.type === "model")
+      .map((model: Model) => this.prepareEntity(model));
+
+    schema.list
+      .filter((item: Model) => item.type === "model")
+      .forEach((model: Model) => {
+        model.properties
+          .filter((property) => property.type === "field")
+          .forEach((field: Field) => {
+            if (this.isFkFieldOfARelation(schema, field)) return;
+            if (this.isNotAnnotatedRelationField(schema, field)) return;
+
+            if (this.isBooleanField(schema, field)) {
+              this.convertPrismaBooleanToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isDateTimeField(schema, field)) {
+              this.convertPrismaDateTimeToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isDecimalNumberField(schema, field)) {
+              this.convertPrismaDecimalNumberToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isWholeNumberField(schema, field)) {
+              this.convertPrismaWholeNumberToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isSingleLineTextField(schema, field)) {
+              this.convertPrismaSingleLineTextToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+            // TODO: text - multi line (?)
+
+            if (this.isJsonField(schema, field)) {
+              this.convertPrismaJsonToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isIdField(schema, field)) {
+              this.convertPrismaIdToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isOptionSetField(schema, field)) {
+              this.convertPrismaOptionSetToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isMultiSelectOptionSetField(schema, field)) {
+              this.convertPrismaMultiSelectOptionSetToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            if (this.isLookupField(schema, field)) {
+              this.convertPrismaLookupToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities
+              );
+            }
+
+            /*******************************************************************
+             * fields that doesn't have properties and we don't catch their type
+             if (isCreatedAtField(field)) {}
+             if (isUpdatedAtField(field)) {}
+             if (isEmailField(field)) {}
+             if (isPasswordField(field)) {}
+             if (isUsernameField(field)) {}
+             if (isRolesField(field)) {}
+             if (isGeographicLocationField(field)) {}
+             *******************************************************************/
+          });
+      });
+    return preparedEntities;
+  }
+
   prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
     const preparedSchema = this.processSchema(...this.operations)(schema);
     const preparedEntities = preparedSchema.list
@@ -364,42 +489,469 @@ export class PrismaSchemaUtilsService {
     };
   }
 
-  private prepareFiledProperties(field) {
-    const idTypeProperties: () => Record<string, JsonValue> = () => {
-      const idAttribute = field.attributes?.some((attr) => attr.name === "id");
-      const defaultIdAttribute = field.attributes?.find(
-        (attr) => attr.name === "default"
+  /************************
+   * FIELD DATA TYPE CHECKS *
+   ************************/
+
+  private isSingleLineTextField(schema: Schema, field: Field): boolean {
+    return (
+      this.resolveFieldDataType(schema, field) === EnumDataType.SingleLineText
+    );
+  }
+
+  private isWholeNumberField(schema: Schema, field: Field): boolean {
+    return (
+      this.resolveFieldDataType(schema, field) === EnumDataType.WholeNumber
+    );
+  }
+
+  private isDecimalNumberField(schema: Schema, field: Field): boolean {
+    return (
+      this.resolveFieldDataType(schema, field) === EnumDataType.DecimalNumber
+    );
+  }
+
+  private isBooleanField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.Boolean;
+  }
+
+  private isDateTimeField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.DateTime;
+  }
+
+  private isJsonField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.Json;
+  }
+
+  private isIdField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.Id;
+  }
+
+  private isLookupField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.Lookup;
+  }
+
+  private isOptionSetField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet;
+  }
+
+  private isMultiSelectOptionSetField(schema: Schema, field: Field): boolean {
+    return (
+      this.resolveFieldDataType(schema, field) ===
+      EnumDataType.MultiSelectOptionSet
+    );
+  }
+
+  private isNotAnnotatedRelationField(schema: Schema, field: Field): boolean {
+    const modelList = schema.list.filter((item) => item.type === "model");
+    const relationAttribute = field.attributes?.find(
+      (attr) => attr.name === "relation"
+    );
+    const fieldModelType = modelList.find(
+      (modelItem: Model) =>
+        formatModelName(modelItem.name).toLowerCase() ===
+        pluralize.singular(formatFieldName(field.fieldType)).toLowerCase()
+    );
+
+    // check if the field is a relation field but not annotated with @relation, like order[] on Customer model
+    if (!relationAttribute && fieldModelType) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  private isFkFieldOfARelation(schema: Schema, field: Field): boolean {
+    const modelList = schema.list.filter((item) => item.type === "model");
+    const fKFieldOfARelationOnModel = modelList.find((model: Model) => {
+      const modelFields = model.properties.filter((property) => {
+        property.type === "field";
+      });
+      const currentField = modelFields.find(
+        (modelField: Field) =>
+          formatFieldName(modelField.name).toLowerCase() ===
+          formatFieldName(field.name).toLowerCase()
+      ) as Field;
+
+      if (!currentField) {
+        this.logger.error(
+          `Field ${field.name} not found in model ${model.name}`
+        );
+        throw new Error(`Field ${field.name} not found in model ${model.name}`);
+      }
+
+      const fkFieldOfARelation = modelFields.find((field: Field) => {
+        field.attributes?.find((attr) => {
+          const relationAttribute = attr.name === "relation";
+
+          const relationField = attr.args.find(
+            (attributeArgument: AttributeArgument) =>
+              (attributeArgument.value as KeyValue).key === "fields"
+          );
+
+          const isRelationFieldIsOnRelationFieldArray = (
+            relationField?.value as RelationArray
+          ).args.find(
+            (relationField: string) =>
+              formatFieldName(relationField).toLowerCase() ===
+              formatFieldName(field.name).toLowerCase()
+          );
+
+          if (
+            relationAttribute &&
+            relationField &&
+            isRelationFieldIsOnRelationFieldArray
+          ) {
+            return field;
+          }
+        });
+      });
+
+      return fkFieldOfARelation;
+    });
+    return !!fKFieldOfARelationOnModel;
+  }
+
+  /********************
+   * CONVERSION SECTION *
+   ********************/
+  convertPrismaBooleanToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.Boolean
+    );
+    entityFields.properties = {};
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaDateTimeToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.DateTime
+    );
+
+    entityFields.properties = {
+      timezone: "localTime",
+      dateOnly: false,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaDecimalNumberToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.DecimalNumber
+    );
+
+    entityFields.properties = {
+      minimumValue: 0,
+      maximumValue: 99999999999,
+      precision: 8,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaWholeNumberToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.WholeNumber
+    );
+
+    entityFields.properties = {
+      minimumValue: 0,
+      maximumValue: 99999999999,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaSingleLineTextToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.SingleLineText
+    );
+
+    entityFields.properties = {
+      maxLength: 256,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaJsonToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.Json
+    );
+
+    entityFields.properties = {};
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaIdToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(field, EnumDataType.Id);
+    if (entityFields.customAttributes.includes("@default()")) {
+      entityFields.customAttributes = entityFields.customAttributes.replace(
+        "@default()",
+        ""
       );
+    }
+    const defaultIdAttribute = field.attributes?.find(
+      (attr) => attr.name === "default"
+    );
+    if (defaultIdAttribute && defaultIdAttribute.args) {
+      entityFields.properties =
+        idTypePropertyMap[(defaultIdAttribute.args[0].value as Func).name];
+    } else {
+      entityFields.properties = {};
+    }
 
-      if (idAttribute && defaultIdAttribute && defaultIdAttribute.args)
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaOptionSetToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.OptionSet
+    );
+
+    const enums = schema.list.filter((item) => item.type === "enum");
+    const enumOfTheField = enums.find(
+      (item: Enum) => item.name === field.name
+    ) as Enum;
+
+    if (!enumOfTheField) {
+      this.logger.error(`Enum ${field.name} not found`);
+      throw new Error(`Enum ${field.name} not found`);
+    }
+
+    const enumOptions = enumOfTheField.enumerators.map(
+      (enumerator: Enumerator) => {
         return {
-          properties: idTypePropertyMap[defaultIdAttribute.args[0].value.name],
+          label: enumerator.name,
+          value: enumerator.name,
         };
-    };
-    const fieldTypePropertyMap: Record<EnumDataType, JsonValue> = {
-      // data types that have no properties
-      [EnumDataType.Username]: {},
-      [EnumDataType.Password]: {},
-      [EnumDataType.Email]: {},
-      [EnumDataType.Roles]: {},
-      [EnumDataType.CreatedAt]: {},
-      [EnumDataType.UpdatedAt]: {},
-      [EnumDataType.Boolean]: {},
-      [EnumDataType.Json]: {},
-      [EnumDataType.GeographicLocation]: {},
-      // data types that have properties
-      [EnumDataType.SingleLineText]: {},
-      [EnumDataType.MultiLineText]: {},
-      [EnumDataType.WholeNumber]: {},
-      [EnumDataType.DecimalNumber]: {},
-      [EnumDataType.DateTime]: {},
-      [EnumDataType.OptionSet]: {},
-      [EnumDataType.MultiSelectOptionSet]: {},
-      [EnumDataType.Lookup]: {},
-      [EnumDataType.Id]: idTypeProperties(),
+      }
+    );
+
+    entityFields.properties = {
+      options: enumOptions,
     };
 
-    return fieldTypePropertyMap[field.dataType];
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  convertPrismaMultiSelectOptionSetToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.MultiSelectOptionSet
+    );
+
+    const enums = schema.list.filter((item) => item.type === "enum");
+    const enumOfTheField = enums.find(
+      (item: Enum) => item.name === field.name
+    ) as Enum;
+
+    if (!enumOfTheField) {
+      this.logger.error(`Enum ${field.name} not found`);
+      throw new Error(`Enum ${field.name} not found`);
+    }
+
+    const enumOptions = enumOfTheField.enumerators.map(
+      (enumerator: Enumerator) => {
+        return {
+          label: enumerator.name,
+          value: enumerator.name,
+        };
+      }
+    );
+
+    entityFields.properties = {
+      options: enumOptions,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
+  }
+
+  // TODO: handle this: create the relation, the other side of the relation and the properties
+  convertPrismaLookupToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityFields = this.prepareEntityFieldsByType(
+      field,
+      EnumDataType.Lookup
+    );
+
+    entityFields.properties = {
+      relatedEntityId: null,
+      relatedFieldId: null,
+      allowMultipleSelection: false,
+      fkHolder: null,
+    };
+
+    entity.fields.push(entityFields);
+
+    return entity;
   }
 
   /**********************
