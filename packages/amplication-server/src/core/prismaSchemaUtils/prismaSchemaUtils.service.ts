@@ -50,9 +50,8 @@ export class PrismaSchemaUtilsService {
    * The functions have a name pattern: handle{OperationName}
    * @returns function that accepts the initial schema and returns the prepared schema
    */
-  processSchema =
-    (...operations: Operation[]) =>
-    (inputSchema: string): Schema => {
+  processSchema(...operations: Operation[]): (inputSchema: string) => Schema {
+    return (inputSchema: string): Schema => {
       let builder = createPrismaSchemaBuilder(inputSchema);
 
       operations.forEach((operation) => {
@@ -61,6 +60,7 @@ export class PrismaSchemaUtilsService {
 
       return builder.getSchema();
     };
+  }
 
   /**
    * *************************************************
