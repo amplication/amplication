@@ -8,6 +8,11 @@ import {
   ConcretePrismaSchemaBuilder,
   Schema,
   Enum,
+  AttributeArgument,
+  KeyValue,
+  RelationArray,
+  Func,
+  Enumerator,
 } from "@mrleebo/prisma-ast";
 import {
   filterOutAmplicationAttributes,
@@ -29,7 +34,6 @@ import {
 import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { JsonValue } from "type-fest";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
