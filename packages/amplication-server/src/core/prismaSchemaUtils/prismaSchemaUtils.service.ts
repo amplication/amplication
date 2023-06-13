@@ -29,7 +29,6 @@ import {
   ErrorLevel,
   ErrorMessages,
   Operation,
-  SchemaEntityFields,
 } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
@@ -66,32 +65,12 @@ export class PrismaSchemaUtilsService {
     };
   }
 
-  /**
-   * *************************************************
-   * Two ways to use the prepare entities and fields *
-   * *************************************************
-   * 1. prepareEntitiesWithFields - get a schema as a string, call processSchema with the operations array,
-   *    and returns an array of the entities with their fields.
-   *    To create Amplication entities with their fields, you can use this function only
-   *
-   * 2. prepareEntities - get a schema as a string, call processSchema with the operations array,
-   *    and returns an array of the entities without their fields.
-   *    To create Amplication entities with their fields, you will need to use also prepareEntitiesFields.
-   *
-   * 3. prepareEntitiesFields - get a schema as a string, call processSchema with the operations array,
-   *    and returns an object of the entities as a key (string, without the entity data) and their fields as a value.
-   *   To create Amplication entities with their fields, you will need to use also prepareEntities.
-   *
-   * * All functions that are used to prepare the entities and fields for in Amplication structure have the same pattern name: prepare{operationName}
-   *
-   */
-
-  convertPrismaSchemaForImportObjects(schema: string) {
+  convertPrismaSchemaForImportObjects(schema: string): CreateEntityInput[] {
     const preparedSchema = this.processSchema(...this.operations)(schema);
     return this.convertPreparedSchemaForImportObjects(preparedSchema);
   }
 
-  convertPreparedSchemaForImportObjects(schema: Schema) {
+  convertPreparedSchemaForImportObjects(schema: Schema): CreateEntityInput[] {
     const preparedEntities = schema.list
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => this.prepareEntity(model));
@@ -208,25 +187,6 @@ export class PrismaSchemaUtilsService {
              *******************************************************************/
           });
       });
-    return preparedEntities;
-  }
-
-  prepareEntitiesWithFields(schema: string): SchemaEntityFields[] {
-    const preparedSchema = this.processSchema(...this.operations)(schema);
-    const preparedEntities = preparedSchema.list
-      .filter((item: Model) => item.type === "model")
-      .map((model: Model) => {
-        const entity = this.prepareEntity(model);
-        const fields = this.prepareEntityFields(preparedSchema, model);
-
-        const preparedEntityWithFields: SchemaEntityFields = {
-          ...entity,
-          fields: fields,
-        };
-
-        return preparedEntityWithFields;
-      });
-
     return preparedEntities;
   }
 
