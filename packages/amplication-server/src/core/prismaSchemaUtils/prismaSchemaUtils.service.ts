@@ -88,7 +88,7 @@ export class PrismaSchemaUtilsService {
       .filter((item: Model) => item.type === "model")
       .map((model: Model) => {
         const entity = this.prepareEntity(model);
-        const fields = this.prepareEntityFields(schema, model);
+        const fields = this.prepareEntityFields(preparedSchema, model);
 
         const preparedEntityWithFields: SchemaEntityFields = {
           ...entity,
@@ -118,7 +118,7 @@ export class PrismaSchemaUtilsService {
       .filter((item: Model) => item.type === "model")
       .reduce(
         (acc: Record<string, CreateOneEntityFieldArgs[]>, model: Model) => {
-          const fields = this.prepareEntityFields(schema, model);
+          const fields = this.prepareEntityFields(preparedSchema, model);
           acc[model.name] = fields;
           return acc;
         },
@@ -151,6 +151,7 @@ export class PrismaSchemaUtilsService {
       pluralDisplayName: entityPluralDisplayName,
       description: null,
       customAttributes: entityAttributes,
+      fields: [],
     };
   }
 
@@ -160,7 +161,7 @@ export class PrismaSchemaUtilsService {
    * @returns array entity fields in a structure like in CreateOneEntityFieldArgs
    */
   private prepareEntityFields(
-    schema: string,
+    schema: Schema,
     model: Model
   ): CreateOneEntityFieldArgs[] {
     const modelFields = model.properties.filter(
@@ -169,11 +170,11 @@ export class PrismaSchemaUtilsService {
 
     return modelFields.map((field: Field) => {
       const fieldDisplayName = formatDisplayName(field.name);
-      const fieldDataType = this.prepareFieldDataType(schema, field);
+      const fieldDataType = this.resolveFieldDataType(schema, field);
       const isUniqueField = field.attributes?.some(
         (attr) => attr.name === "unique"
       );
-      const fieldProperties = this.prepareFiledProperties(field);
+
       let fieldAttributes = filterOutAmplicationAttributes(
         this.prepareAttributes(field.attributes)
       ).join(" ");
@@ -193,7 +194,7 @@ export class PrismaSchemaUtilsService {
           unique: isUniqueField,
           searchable: false,
           description: null,
-          properties: fieldProperties,
+          properties: {},
           customAttributes: fieldAttributes,
         },
         relatedFieldName: relatedEntity?.relatedFieldName,
@@ -209,7 +210,7 @@ export class PrismaSchemaUtilsService {
    * @param field the field to on which to determine the data type
    * @returns the data type of the field
    */
-  private prepareFieldDataType(schema: string, field: Field): EnumDataType {
+  private resolveFieldDataType(schema: Schema, field: Field): EnumDataType {
     const idType = () => {
       const fieldIdType = field.attributes?.some(
         (attribute) => attribute.name === "id"
