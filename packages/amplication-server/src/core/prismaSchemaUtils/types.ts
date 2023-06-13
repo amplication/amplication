@@ -31,6 +31,7 @@ export type CreateEntityInput = {
   pluralDisplayName: string;
   description: string | null;
   customAttributes: string;
+  fields: CreateEntityFieldInput[];
 };
 
 export type CreateEntityFieldInput = {
