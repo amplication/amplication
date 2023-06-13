@@ -432,7 +432,11 @@ export class PrismaSchemaUtilsService {
       ) as Field[];
       fields.map((field: Field) => {
         const isInvalidFieldName = field.name.includes("_");
-        if (isInvalidFieldName) {
+        const isEnumFieldType =
+          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
+          this.resolveFieldDataType(schema, field) ===
+            EnumDataType.MultiSelectOptionSet;
+        if (isInvalidFieldName && !isEnumFieldType) {
           builder
             .model(model.name)
             .field(field.name)
