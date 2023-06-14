@@ -173,7 +173,7 @@
     "@graphql-codegen/cli": "3.2.2",
     "@graphql-codegen/typescript": "3.0.2",
     "@lcov-viewer/cli": "^1.3.0",
-    "@nestjs/cli": "^9.2.0",
+    "@nestjs/cli": "^9.5.0",
     "@nestjs/schematics": "^9.1.0",
     "@nestjs/testing": "^9.4.0",
     "@nrwl/cypress": "15.4.5",
