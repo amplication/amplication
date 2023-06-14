@@ -64,7 +64,7 @@ const SupportMenu = () => {
         rel="noopener"
         onClick={handleFeatureRequestClick}
       >
-        Submit a feature request
+        Submit a Feature Request
       </a>
     </div>
   );
