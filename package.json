@@ -262,6 +262,7 @@
     "@types/supertest": "^2.0.12",
     "@types/tar-stream": "^2.2.2",
     "@types/triple-beam": "^1.3.2",
+    "@types/uuid": "^9.0.2",
     "@types/yargs": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.39.0",
