@@ -260,7 +260,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           We've noticed you're creating a new 'User' entity. This entity is used
-          by the Authentication plugin. Would you like to:
+          by the Authentication plugin.
         </div>
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           Restore the Default 'User' Entity - This will re-establish the
