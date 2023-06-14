@@ -35,6 +35,7 @@ describe.skip("GitFactory", () => {
             bitBucketConfiguration: {} as unknown as BitBucketConfiguration,
             gitHubConfiguration: {} as unknown as GitHubConfiguration,
           },
+          null,
           logger
         )
       ).toBe(github);
