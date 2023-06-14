@@ -1,9 +1,4 @@
-import {
-  Button,
-  Dialog,
-  EnumButtonStyle,
-  Snackbar,
-} from "@amplication/ui/design-system";
+import { Snackbar } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
@@ -13,6 +8,7 @@ import * as models from "../models";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins, { Plugin, PluginVersion } from "./hooks/usePlugins";
+import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import PluginsCatalogItem from "./PluginsCatalogItem";
 
 type Props = AppRouteProps & {
@@ -25,8 +21,8 @@ type TData = {
   entities: models.Entity[];
 };
 export const DIALOG_CLASS_NAME = "limitation-dialog";
-const USER_ENTITY_NAME = "user";
-const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
+export const USER_ENTITY_NAME = "user";
+export const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
@@ -94,6 +90,14 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const { enabled, version, settings, configurations, id } =
         pluginInstallation;
 
+      const requireAuthenticationEntity = configurations
+        ? configurations[REQUIRE_AUTH_ENTITY]
+        : null;
+      if (requireAuthenticationEntity === "true" && !userEntity && !enabled) {
+        setConfirmInstall(true);
+        return;
+      }
+
       updatePluginInstallation({
         variables: {
           data: {
@@ -121,26 +125,10 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   return (
     <div>
-      <Dialog
-        title=""
-        className={DIALOG_CLASS_NAME}
-        isOpen={confirmInstall}
-        onDismiss={handleDismissInstall}
-      >
-        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Plugin installation cannot proceed as an entity for authentication has
-          not been defined. Please refer to our documentation on how to define
-          an entity for authentication before attempting to install the
-          authentication plugin
-        </div>
-        <Button
-          className={`${DIALOG_CLASS_NAME}__upgrade_button`}
-          buttonStyle={EnumButtonStyle.Primary}
-          onClick={handleDismissInstall}
-        >
-          Dismiss
-        </Button>
-      </Dialog>
+      <PluginInstallConfirmationDialog
+        confirmInstall={confirmInstall}
+        handleDismissInstall={handleDismissInstall}
+      ></PluginInstallConfirmationDialog>
       {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
         <PluginsCatalogItem
           key={pluginId}
