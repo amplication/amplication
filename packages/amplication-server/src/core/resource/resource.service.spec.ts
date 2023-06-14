@@ -648,7 +648,9 @@ describe("ResourceService", () => {
     expect(
       await service.createService(
         createResourceArgs.args,
-        createResourceArgs.user
+        createResourceArgs.user,
+        null,
+        true
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -694,6 +696,7 @@ describe("ResourceService", () => {
                 version: "latest",
                 pluginId: "auth-jwt",
                 settings: {},
+                configurations: {},
                 resource: { connect: { id: "" } },
               },
             ],
