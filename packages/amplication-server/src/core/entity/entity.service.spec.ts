@@ -167,6 +167,7 @@ const EXAMPLE_RESOURCE: Resource = {
     name: "exampleProjectName",
     createdAt: new Date(),
     updatedAt: new Date(),
+    useDemoRepo: false,
   },
 };
 

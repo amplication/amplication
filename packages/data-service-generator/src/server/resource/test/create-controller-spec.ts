@@ -20,11 +20,13 @@ import {
   EntityField,
   EventNames,
   Module,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
 import { createServiceId } from "../service/create-service";
 import { createControllerId } from "../controller/create-controller";
 import pluginWrapper from "../../../plugin-wrapper";
+import DsgContext from "../../../dsg-context";
 
 const testTemplatePath = require.resolve("./controller.spec.template.ts");
 const TO_ISO_STRING_ID = builders.identifier("toISOString");
@@ -39,7 +41,7 @@ export async function createEntityControllerSpec(
   entityServiceModulePath: string,
   entityControllerModulePath: string,
   entityControllerBaseModulePath: string
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   /** @todo make dynamic */
   const param = "id";
   const paramType = builders.tsStringKeyword();
@@ -119,7 +121,7 @@ export async function createEntityControllerSpecInternal({
   entityControllerBaseModulePath,
   controllerId,
   serviceId,
-}: CreateEntityControllerSpecParams): Promise<Module[]> {
+}: CreateEntityControllerSpecParams): Promise<ModuleMap> {
   const modulePath = replaceExt(entityControllerBaseModulePath, ".spec.ts");
 
   const importResourceModule = importNames(
@@ -141,12 +143,13 @@ export async function createEntityControllerSpecInternal({
   removeTSClassDeclares(template);
   removeTSInterfaceDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 function createExpectedResult<T extends kinds.ExpressionKind>(

@@ -24,6 +24,7 @@ import {
   EventNames,
   CreateEntityResolverToManyRelationMethodsParams,
   CreateEntityResolverToOneRelationMethodsParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -67,7 +68,7 @@ export async function createResolverModules(
   entityType: string,
   entityServiceModule: string,
   entity: Entity
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const resolverBaseId = createResolverBaseId(entityType);
@@ -80,6 +81,7 @@ export async function createResolverModules(
     updateArgs,
     deleteArgs,
     findManyArgs,
+    countArgs,
     findOneArgs,
   } = entityDTOs;
   const createMutationId = builders.identifier(`create${entityType}`);
@@ -107,6 +109,7 @@ export async function createResolverModules(
     CREATE_ARGS: createArgs?.id,
     UPDATE_ARGS: updateArgs?.id,
     DELETE_ARGS: deleteArgs.id,
+    COUNT_ARGS: countArgs.id,
     FIND_MANY_ARGS: findManyArgs.id,
     FIND_ONE_ARGS: findOneArgs.id,
     CREATE_DATA_MAPPING: createDataMapping(
@@ -121,20 +124,18 @@ export async function createResolverModules(
     ),
   };
 
-  return [
-    ...(await pluginWrapper(
-      createResolverModule,
-      EventNames.CreateEntityResolver,
-      {
-        template,
-        entityName,
-        entityServiceModule,
-        serviceId,
-        resolverBaseId,
-        templateMapping,
-      }
-    )),
-    ...(await pluginWrapper(
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.mergeMany([
+    await pluginWrapper(createResolverModule, EventNames.CreateEntityResolver, {
+      template,
+      entityName,
+      entityServiceModule,
+      serviceId,
+      resolverBaseId,
+      templateMapping,
+    }),
+    await pluginWrapper(
       createResolverBaseModule,
       EventNames.CreateEntityResolverBase,
       {
@@ -152,8 +153,10 @@ export async function createResolverModules(
         updateMutationId,
         templateMapping,
       }
-    )),
-  ];
+    ),
+  ]);
+
+  return moduleMap;
 }
 
 async function createResolverModule({
@@ -163,7 +166,7 @@ async function createResolverModule({
   serviceId,
   resolverBaseId,
   templateMapping,
-}: CreateEntityResolverParams): Promise<Module[]> {
+}: CreateEntityResolverParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.resolver.ts`;
@@ -202,12 +205,14 @@ async function createResolverModule({
   removeTSInterfaceDeclares(template);
   removeTSClassDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 async function createResolverBaseModule({
@@ -223,7 +228,7 @@ async function createResolverBaseModule({
   createMutationId,
   updateMutationId,
   templateMapping,
-}: CreateEntityResolverBaseParams): Promise<Module[]> {
+}: CreateEntityResolverBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { serverDirectories, DTOs } = DsgContext.getInstance;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.resolver.base.ts`;
@@ -335,12 +340,14 @@ async function createResolverBaseModule({
   removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
-  return [
-    {
-      path: moduleBasePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: moduleBasePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 export function createResolverId(entityType: string): namedTypes.Identifier {
@@ -396,7 +403,7 @@ async function createToOneRelationMethods(
 
 async function createToOneRelationMethodsInternal(
   eventParams: CreateEntityResolverToOneRelationMethodsParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   interpolate(eventParams.toOneFile, eventParams.toOneMapping);
 
   const classDeclaration = getClassDeclarationById(
@@ -413,7 +420,7 @@ async function createToOneRelationMethodsInternal(
   );
 
   eventParams.methods = getMethods(classDeclaration);
-  return [];
+  return new ModuleMap(DsgContext.getInstance.logger);
 }
 
 async function createToManyRelationMethods(
@@ -460,7 +467,7 @@ async function createToManyRelationMethods(
 
 async function createToManyRelationMethodsInternal(
   eventParams: CreateEntityResolverToManyRelationMethodsParams
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   interpolate(eventParams.toManyFile, eventParams.toManyMapping);
   const { relatedEntity } = eventParams.field.properties;
   const classDeclaration = getClassDeclarationById(
@@ -476,5 +483,5 @@ async function createToManyRelationMethodsInternal(
   );
 
   eventParams.methods = getMethods(classDeclaration);
-  return [];
+  return new ModuleMap(DsgContext.getInstance.logger);
 }

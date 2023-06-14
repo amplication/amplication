@@ -6,7 +6,8 @@ $tabs-width: 300px;
   display: flex;
   flex: 1;
   gap: var(--large-spacing);
-  padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
+  padding: var(--large-spacing);
+  padding-right: 0;
   background: var(--page-content-background);
   box-sizing: border-box;
   overflow: hidden;
@@ -30,6 +31,7 @@ $tabs-width: 300px;
 
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
+    padding-right: var(--large-spacing);
     flex: 1;
     overflow: auto;
     position: relative;

@@ -20,6 +20,7 @@ import { AmplicationError } from "../../errors/AmplicationError";
 import { FindOneArgs } from "../../dto";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
+import { AuthProfile } from "./types";
 
 export type AuthUser = User & {
   account: Account;
@@ -83,6 +84,35 @@ export class AuthService {
       where: { id: user.account.id },
       data: {
         githubId: profile.id,
+      },
+    });
+    return {
+      ...user,
+      account,
+    };
+  }
+
+  async createUser(profile: AuthProfile): Promise<AuthUser> {
+    const account = await this.accountService.createAccount({
+      data: {
+        email: profile.email,
+        firstName: profile.given_name || profile.nickname || profile.email,
+        lastName: profile.family_name,
+        password: "",
+        githubId: profile.sub,
+      },
+    });
+
+    const user = await this.bootstrapUser(account, profile.sub);
+
+    return user;
+  }
+
+  async updateUser(user: AuthUser, profile: AuthProfile): Promise<AuthUser> {
+    const account = await this.accountService.updateAccount({
+      where: { id: user.account.id },
+      data: {
+        githubId: profile.sub,
       },
     });
     return {

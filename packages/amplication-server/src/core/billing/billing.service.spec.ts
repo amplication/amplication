@@ -10,8 +10,8 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
 } from "@stigg/node-server-sdk";
-import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { User } from "../../models";
+import { ValidationError } from "apollo-server-express";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -21,7 +21,6 @@ Stigg.prototype.waitForInitialization = jest
 
 describe("BillingService", () => {
   let service: BillingService;
-  let logger: AmplicationLogger;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -54,7 +53,6 @@ describe("BillingService", () => {
     }).compile();
 
     service = module.get<BillingService>(BillingService);
-    logger = module.get<AmplicationLogger>(AmplicationLogger);
   });
 
   it("should be defined", () => {
@@ -77,10 +75,9 @@ describe("BillingService", () => {
     );
   });
 
-  it("should provide `info` level logs for business logs if the workspace has no entitlement to bypass code generation limitation", async () => {
+  it("should throw exceptions on number of services if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
     const servicesPerWorkspaceLimit = 3;
-    const entitiesPerServiceLimit = 5;
 
     const spyOnServiceGetBooleanEntitlement = jest
       .spyOn(service, "getBooleanEntitlement")
@@ -94,16 +91,6 @@ describe("BillingService", () => {
         hasAccess: false,
         usageLimit: servicesPerWorkspaceLimit,
       } as MeteredEntitlement);
-
-    const spyOnServiceGetNumericEntitlement = jest
-      .spyOn(service, "getNumericEntitlement")
-      .mockResolvedValue({
-        value: entitiesPerServiceLimit,
-      } as NumericEntitlement);
-
-    const spyOnLoggerLog = jest.spyOn(logger, "info");
-
-    spyOnLoggerLog.mockReset();
 
     const user: User = {
       id: "user-id",
@@ -121,9 +108,91 @@ describe("BillingService", () => {
       isOwner: true,
     };
 
-    await service.validateSubscriptionPlanLimitationsForWorkspace(
+    await expect(
+      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+    ).rejects.toThrow(
+      new ValidationError("LimitationError: Allowed services per workspace: 3")
+    );
+
+    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledWith(
       workspaceId,
-      user
+      BillingFeature.IgnoreValidationCodeGeneration
+    );
+    await expect(
+      service.getBooleanEntitlement(
+        workspaceId,
+        BillingFeature.IgnoreValidationCodeGeneration
+      )
+    ).resolves.toEqual(
+      expect.objectContaining({
+        hasAccess: false,
+      })
+    );
+
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
+      1,
+      workspaceId,
+      BillingFeature.Services
+    );
+    await expect(
+      service.getMeteredEntitlement(workspaceId, BillingFeature.Services)
+    ).resolves.toEqual(
+      expect.objectContaining({
+        hasAccess: false,
+      })
+    );
+  });
+
+  it("should throw exceptions on number of entities per service if the workspace has no entitlement to bypass code generation limitation", async () => {
+    const workspaceId = "id";
+    const entitiesPerServiceLimit = 5;
+    const servicesPerWorkspaceLimit = 3;
+
+    const spyOnServiceGetBooleanEntitlement = jest
+      .spyOn(service, "getBooleanEntitlement")
+      .mockResolvedValue({
+        hasAccess: false,
+      } as BooleanEntitlement);
+
+    const spyOnServiceGetMeteredEntitlement = jest
+      .spyOn(service, "getMeteredEntitlement")
+      .mockResolvedValueOnce({
+        hasAccess: true,
+        usageLimit: servicesPerWorkspaceLimit,
+      } as MeteredEntitlement)
+      .mockResolvedValueOnce({
+        hasAccess: false,
+        usageLimit: entitiesPerServiceLimit,
+      } as MeteredEntitlement);
+
+    const spyOnServiceGetNumericEntitlement = jest
+      .spyOn(service, "getNumericEntitlement")
+      .mockResolvedValue({
+        value: entitiesPerServiceLimit,
+      } as NumericEntitlement);
+
+    const user: User = {
+      id: "user-id",
+      account: {
+        id: "account-id",
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        email: "email",
+        firstName: "first-name",
+        lastName: "last-name",
+        password: "password",
+      },
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      isOwner: true,
+    };
+
+    await expect(
+      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+    ).rejects.toThrow(
+      new ValidationError("LimitationError: Allowed entities per service: 5")
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
@@ -148,27 +217,10 @@ describe("BillingService", () => {
       workspaceId,
       BillingFeature.Services
     );
-    await expect(
-      service.getMeteredEntitlement(workspaceId, BillingFeature.Services)
-    ).resolves.toEqual(
-      expect.objectContaining({
-        hasAccess: false,
-      })
-    );
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       2,
       workspaceId,
       BillingFeature.ServicesAboveEntitiesPerServiceLimit
-    );
-    await expect(
-      service.getMeteredEntitlement(
-        workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit
-      )
-    ).resolves.toEqual(
-      expect.objectContaining({
-        hasAccess: false,
-      })
     );
 
     expect(spyOnServiceGetNumericEntitlement).toHaveBeenCalledTimes(1);
@@ -185,20 +237,6 @@ describe("BillingService", () => {
       expect.objectContaining({
         value: 5,
       })
-    );
-
-    expect(logger.info).toHaveBeenCalledTimes(2);
-    expect(logger.info).toHaveBeenNthCalledWith(
-      1,
-      expect.stringContaining(
-        `LimitationError: Allowed services per workspace: ${servicesPerWorkspaceLimit}`
-      )
-    );
-    expect(logger.info).toHaveBeenNthCalledWith(
-      2,
-      expect.stringContaining(
-        `LimitationError: Allowed entities per service: ${entitiesPerServiceLimit}`
-      )
     );
   });
 });

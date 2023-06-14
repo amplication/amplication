@@ -313,6 +313,27 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
+    const project = await this.projectService.findUnique({
+      where: { id: data.resource.project.connect.id },
+    });
+
+    if (data.connectToDemoRepo) {
+      await this.projectService.createDemoRepo(
+        data.resource.project.connect.id
+      );
+      //do not use any git data when using demo repo
+      data.resource.gitRepository = undefined;
+
+      await this.analytics.track({
+        userId: user.account.id,
+        event: EnumEventType.DemoRepoCreate,
+        properties: {
+          projectId: project.id,
+          workspaceId: project.workspaceId,
+        },
+      });
+    }
+
     const resource = await this.createService(
       {
         data: data.resource,
@@ -444,11 +465,18 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-    const { provider } = await this.gitOrganizationByResource({
-      where: {
-        id: resource.id,
-      },
-    });
+
+    const provider = data.connectToDemoRepo
+      ? "demo-repo"
+      : gitRepository &&
+        (
+          await this.gitOrganizationByResource({
+            where: {
+              id: resource.id,
+            },
+          })
+        ).provider;
+
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -465,6 +493,8 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
+        projectId: project.id,
+        workspaceId: project.workspaceId,
       },
     });
 
@@ -680,6 +710,7 @@ export class ResourceService {
   }
 
   async gitRepository(resourceId: string): Promise<GitRepository | null> {
+    if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({
         where: { id: resourceId },
@@ -696,7 +727,7 @@ export class ResourceService {
         ...args,
         include: { gitRepository: { include: { gitOrganization: true } } },
       })
-    ).gitRepository.gitOrganization;
+    ).gitRepository?.gitOrganization;
   }
 
   async project(resourceId: string): Promise<Project> {

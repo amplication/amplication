@@ -1,4 +1,5 @@
 import {
+  AmplicationPlugin,
   EventNames,
   Events,
   PluginInstallation,
@@ -7,7 +8,12 @@ import {
 import { join } from "path";
 import { logger } from "./logging";
 
-class EmptyClass {}
+class EmptyPlugin implements AmplicationPlugin {
+  init?: (name: string, version: string) => void;
+  register: () => Events = () => {
+    return {};
+  };
+}
 
 const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 
@@ -19,7 +25,7 @@ const functionsObject = ["[object Function]", "[object AsyncFunction]"];
 async function* getPluginFuncGenerator(
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
-): AsyncGenerator<new () => any> {
+): AsyncGenerator<new () => AmplicationPlugin> {
   try {
     const pluginListLength = pluginList.length;
     let index = 0;
@@ -36,13 +42,14 @@ async function* getPluginFuncGenerator(
       );
 
       ++index;
-      if (!func.hasOwnProperty("default")) yield EmptyClass;
+      if (!func.hasOwnProperty("default")) yield EmptyPlugin;
 
+      func.default.prototype.pluginName = packageName;
       yield func.default;
     } while (pluginListLength > index);
   } catch (error) {
     logger.error(error);
-    return EmptyClass;
+    return EmptyPlugin;
   }
 }
 
@@ -79,11 +86,11 @@ const getAllPlugins = async (
     pluginInstallationPath
   )) {
     const initializeClass = new pluginFunc();
-    if (!initializeClass.register) continue;
 
     const pluginEvents = initializeClass.register();
-    if (Object.prototype.toString.call(pluginEvents) !== "[object Object]")
+    if (!Object.entries(pluginEvents).length) {
       continue;
+    }
 
     pluginFuncsArr.push(pluginEvents);
   }
@@ -97,7 +104,7 @@ const getAllPlugins = async (
 const registerPlugins = async (
   pluginList: PluginInstallation[],
   pluginInstallationPath?: string
-): Promise<{ [K in EventNames]?: any }> => {
+): Promise<PluginMap> => {
   const pluginMap: PluginMap = {};
 
   const pluginFuncsArr = (await getAllPlugins(

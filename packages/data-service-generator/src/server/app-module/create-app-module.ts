@@ -10,6 +10,7 @@ import {
   EventNames,
   Module,
   CreateServerAppModuleParams,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../utils/module";
 
@@ -37,12 +38,12 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
 export async function createAppModule(
-  modulesFiles: Module[]
-): Promise<Module[]> {
+  modulesFiles: ModuleMap
+): Promise<ModuleMap> {
   const template = await readFile(appModuleTemplatePath);
-  const nestModules = modulesFiles.filter((module) =>
-    module.path.match(MODULE_PATTERN)
-  );
+  const nestModules = modulesFiles
+    .modules()
+    .filter((module) => module.path.match(MODULE_PATTERN));
 
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
@@ -95,12 +96,12 @@ export async function createAppModuleInternal({
   modulesFiles,
   template,
   templateMapping,
-}: CreateServerAppModuleParams): Promise<Module[]> {
+}: CreateServerAppModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
-  const nestModules = modulesFiles.filter((module) =>
-    module.path.match(MODULE_PATTERN)
-  );
+  const nestModules = modulesFiles
+    .modules()
+    .filter((module) => module.path.match(MODULE_PATTERN));
 
   const nestModulesWithExports = nestModules.map((module) => ({
     module,
@@ -131,10 +132,11 @@ export async function createAppModuleInternal({
   removeESLintComments(template);
   removeTSVariableDeclares(template);
 
-  return [
-    {
-      path: MODULE_PATH,
-      code: print(template).code,
-    },
-  ];
+  const appModule: Module = {
+    path: MODULE_PATH,
+    code: print(template).code,
+  };
+  const appModuleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await appModuleMap.set(appModule);
+  return appModuleMap;
 }
