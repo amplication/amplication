@@ -22,11 +22,14 @@ export const FAQ = () => {
           answer={
             <div>
               Our pricing plans are applied per each workspace individually.
+              <br />
+              <br />
               Free edition is offered for <span className="bold">FREE</span>.
+              <br />
               Pro edition is currently $320 per month (paid annually) or $400
-              per month (paid monthly). Enterprise edition pricing will be
-              tailored to your specific requirements. Contact us to get a
-              quote.`
+              per month (paid monthly).
+              <br /> Enterprise edition pricing will be tailored to your
+              specific requirements. Contact us to get a quote.
             </div>
           }
         />
