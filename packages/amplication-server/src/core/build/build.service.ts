@@ -157,7 +157,7 @@ export function createInitialStepData(
         },
         {
           level: EnumActionLogLevel.Info,
-          message: `Build Version: ${version}`,
+          message: `Build version: ${version}`,
           meta: {},
         },
         {
