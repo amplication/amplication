@@ -33,7 +33,7 @@ const ServiceSettingsPage: React.FC<{}> = () => {
           to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories/update`}
           icon="settings"
         >
-          Base Directories
+          Base Directory
         </InnerTabLink>
       </div>
       <div>
