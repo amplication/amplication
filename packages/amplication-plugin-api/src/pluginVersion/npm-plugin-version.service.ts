@@ -30,6 +30,7 @@ export class NpmPluginVersionService {
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
         settings: "{}",
+        configurations: "{}",
         updatedAt: new Date(),
         version: value.version,
         tarballUrl: value.dist.tarball,
@@ -90,6 +91,7 @@ export class NpmPluginVersionService {
   ): Promise<(PluginVersion & { tarballUrl: string })[]> {
     try {
       const pluginsVersions: (PluginVersion & { tarballUrl: string })[] = [];
+      if (!plugins?.length) return pluginsVersions;
 
       for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
         pluginVersionArr && pluginsVersions.push(...pluginVersionArr);

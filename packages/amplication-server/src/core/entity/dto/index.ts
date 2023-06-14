@@ -1,5 +1,6 @@
 export { FindManyEntityArgs } from "./FindManyEntityArgs";
 export { CreateOneEntityArgs } from "./CreateOneEntityArgs";
+export { CreateDefaultEntitiesArgs } from "./CreateDefaultEntitiesArgs";
 export { UpdateOneEntityArgs } from "./UpdateOneEntityArgs";
 export { DeleteOneEntityArgs } from "./DeleteOneEntityArgs";
 export { DeleteEntityFieldArgs } from "./DeleteEntityFieldArgs";

@@ -161,25 +161,6 @@ const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
-const AUTH_PLUGINS = [
-  {
-    displayName: "Auth-core",
-    pluginId: "auth-core",
-    enabled: true,
-    npm: "@amplication/plugin-auth-core",
-    version: "latest",
-    resource: { connect: { id: "" } },
-  },
-  {
-    displayName: "Auth-jwt",
-    pluginId: "auth-jwt",
-    enabled: true,
-    npm: "@amplication/plugin-auth-jwt",
-    version: "latest",
-    resource: { connect: { id: "" } },
-  },
-];
-
 const signupCookie = getCookie("signup");
 
 const CreateServiceWizard: React.FC<Props> = ({
@@ -229,6 +210,43 @@ const CreateServiceWizard: React.FC<Props> = ({
       },
     },
   });
+
+  const authCorePlugin = pluginsVersionData?.plugins.find(
+    (x) => x.pluginId === "auth-core"
+  );
+
+  const authCoreVersion =
+    authCorePlugin?.versions[authCorePlugin?.versions.length - 1];
+
+  const authJwtPlugin = pluginsVersionData?.plugins.find(
+    (x) => x.pluginId === "auth-jwt"
+  );
+
+  const authJwtVersion =
+    authCorePlugin?.versions[authJwtPlugin?.versions.length - 1];
+
+  const AUTH_PLUGINS = [
+    {
+      displayName: "Auth-core",
+      pluginId: "auth-core",
+      enabled: true,
+      npm: "@amplication/plugin-auth-core",
+      version: "latest",
+      resource: { connect: { id: "" } },
+      settings: authCoreVersion?.settings || JSON.parse("{}"),
+      configurations: authCoreVersion?.configurations || JSON.parse("{}"),
+    },
+    {
+      displayName: "Auth-jwt",
+      pluginId: "auth-jwt",
+      enabled: true,
+      npm: "@amplication/plugin-auth-jwt",
+      version: "latest",
+      resource: { connect: { id: "" } },
+      settings: authJwtVersion?.settings || JSON.parse("{}"),
+      configurations: authJwtVersion?.configurations || JSON.parse("{}"),
+    },
+  ];
 
   const defineUser: DefineUser =
     signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
@@ -290,6 +308,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       const dbPlugin = pluginsVersionData?.plugins.find(
         (x) => x.pluginId === `db-${databaseType}`
       );
+
       const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
 
       const authCorePlugins = authType === "core" && AUTH_PLUGINS;
@@ -303,7 +322,8 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
-            settings: JSON.parse(dbLastVersion?.settings || "{}"),
+            settings: dbLastVersion?.settings || JSON.parse("{}"),
+            configurations: dbLastVersion?.configurations || JSON.parse("{}"),
           },
         ],
       };
@@ -311,7 +331,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    [pluginsVersionData?.plugins]
+    [pluginsVersionData]
   );
 
   const handleCloseWizard = useCallback(
@@ -395,6 +415,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             isOverrideGitRepository: isOverrideGitRepository,
           };
         }
+
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -416,7 +437,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       }
       expireCookie("signup");
     },
-    []
+    [pluginsVersionData]
   );
 
   return (
