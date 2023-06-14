@@ -260,21 +260,21 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           We've noticed you're creating a new 'User' entity. This entity is used
-          by the Authentication plugin. Would you like to:
+          by the Authentication plugin.
         </div>
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          1. Restore the Default 'User' Entity - This will re-establish the
+          Restore the Default 'User' Entity - This will re-establish the
           original 'User' entity provided by Amplication, including all
           associated settings and functionalities.
         </div>
-        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
+        {/* <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           2. Create a New 'User' Entity - This will create a fresh 'User' entity
           for you to customize as per your needs. Please note that this may
           require additional configuration for the Authentication plugin.
         </div>
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           Please select your preferred option to continue.
-        </div>
+        </div> */}
         <div className={`${CLASS_NAME}__dialog_btn`}>
           <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
@@ -283,13 +283,13 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           >
             Restore Default
           </Button>
-          <Button
+          {/* <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
             buttonStyle={EnumButtonStyle.Primary}
             onClick={handleDismissInstall}
           >
             Create New
-          </Button>
+          </Button> */}
         </div>
       </Dialog>
       <Formik

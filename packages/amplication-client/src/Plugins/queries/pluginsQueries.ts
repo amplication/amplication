@@ -94,13 +94,15 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
       name
       icon
       description
+      taggedVersions
       npm
       github
       website
-      versions(where: $where) {
+      versions(where: $where, orderBy: { createdAt: Desc }) {
         id
         pluginId
         deprecated
+        isLatest
         version
         settings
         configurations

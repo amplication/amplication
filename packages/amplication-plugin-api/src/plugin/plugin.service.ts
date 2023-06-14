@@ -19,7 +19,7 @@ export class PluginService extends PluginServiceBase {
    * main service that trigger gitPluginService and return plugin list. It creates the plugins into DB
    * @returns Plugin[]
    */
-  async githubCatalogPlugins(): Promise<Plugin[]> {
+  async processCatalogPlugins(): Promise<Plugin[]> {
     try {
       const pluginsList = await this.gitPluginService.getPlugins();
       if (
@@ -37,6 +37,7 @@ export class PluginService extends PluginServiceBase {
           name: plugin.name,
           npm: plugin.npm,
           website: plugin.website,
+          taggedVersions: plugin.taggedVersions,
           pluginId: plugin.pluginId,
           createdAt: plugin.createdAt,
           updatedAt: plugin.updatedAt,
@@ -54,6 +55,7 @@ export class PluginService extends PluginServiceBase {
             updatedAt: plugin.updatedAt,
             description: plugin.description,
             github: plugin.github,
+            taggedVersions: plugin.taggedVersions,
             icon: plugin.icon,
             name: plugin.name,
             npm: plugin.npm,

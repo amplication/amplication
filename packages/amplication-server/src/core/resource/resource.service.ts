@@ -353,6 +353,10 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
+    const requireAuthenticationEntity =
+      data.plugins?.plugins?.filter((plugin) => {
+        return plugin.configurations["requireAuthenticationEntity"] === "true";
+      }).length > 0;
     const project = await this.projectService.findUnique({
       where: { id: data.resource.project.connect.id },
     });
@@ -373,10 +377,6 @@ export class ResourceService {
         },
       });
     }
-    const requireAuthenticationEntity =
-      data.plugins?.plugins?.filter((plugin) => {
-        return plugin.configurations["requireAuthenticationEntity"] === "true";
-      }).length > 0;
 
     const resource = await this.createService(
       {
