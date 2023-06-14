@@ -2,6 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 //@ts-ignore
 import { SortOrder } from "../../util/SortOrder";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional, IsEnum } from "class-validator";
 
 @InputType({
   isAbstract: true,
@@ -12,6 +13,8 @@ export class ID {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })

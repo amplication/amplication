@@ -106,6 +106,8 @@ type Project {
   resources: [Resource!]
   createdAt: DateTime!
   updatedAt: DateTime!
+  useDemoRepo: Boolean!
+  demoRepoName: String
 }
 
 type Resource {
@@ -1275,6 +1277,7 @@ input ResourceCreateWithEntitiesInput {
   authType: String!
   dbType: String!
   repoType: String!
+  connectToDemoRepo: Boolean!
 }
 
 input ResourceCreateWithEntitiesEntityInput {

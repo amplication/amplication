@@ -357,6 +357,26 @@ export class ResourceService {
       data.plugins?.plugins?.filter((plugin) => {
         return plugin.configurations["requireAuthenticationEntity"] === "true";
       }).length > 0;
+    const project = await this.projectService.findUnique({
+      where: { id: data.resource.project.connect.id },
+    });
+
+    if (data.connectToDemoRepo) {
+      await this.projectService.createDemoRepo(
+        data.resource.project.connect.id
+      );
+      //do not use any git data when using demo repo
+      data.resource.gitRepository = undefined;
+
+      await this.analytics.track({
+        userId: user.account.id,
+        event: EnumEventType.DemoRepoCreate,
+        properties: {
+          projectId: project.id,
+          workspaceId: project.workspaceId,
+        },
+      });
+    }
 
     const resource = await this.createService(
       {
@@ -496,15 +516,18 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-    const provider =
-      gitRepository &&
-      (
-        await this.gitOrganizationByResource({
-          where: {
-            id: resource.id,
-          },
-        })
-      ).provider;
+
+    const provider = data.connectToDemoRepo
+      ? "demo-repo"
+      : gitRepository &&
+        (
+          await this.gitOrganizationByResource({
+            where: {
+              id: resource.id,
+            },
+          })
+        ).provider;
+
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -521,6 +544,8 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
+        projectId: project.id,
+        workspaceId: project.workspaceId,
       },
     });
 

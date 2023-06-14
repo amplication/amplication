@@ -1,3 +1,5 @@
+@import "../style/index.scss";
+
 .faq {
   display: flex;
   flex-direction: column;
@@ -19,5 +21,14 @@
     display: flex;
     flex-direction: column;
     gap: var(--icon-spacing);
+  }
+
+  a.mail-link {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  span.bold {
+    font-weight: 600;
   }
 }
