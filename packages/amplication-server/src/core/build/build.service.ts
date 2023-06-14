@@ -152,7 +152,7 @@ export function createInitialStepData(
       create: [
         {
           level: EnumActionLogLevel.Info,
-          message: "create build generation task",
+          message: "Create build generation task",
           meta: {},
         },
         {
