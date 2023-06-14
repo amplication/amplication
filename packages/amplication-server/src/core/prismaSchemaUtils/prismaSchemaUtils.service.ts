@@ -33,6 +33,7 @@ import {
 import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
+import cuid from "cuid";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -208,6 +209,7 @@ export class PrismaSchemaUtilsService {
     const entityAttributes = this.prepareAttributes(modelAttributes).join(" ");
 
     return {
+      id: cuid(), // creating here the entity id because we need it for the relation
       name: model.name,
       displayName: modelDisplayName,
       pluralDisplayName: entityPluralDisplayName,
@@ -231,6 +233,7 @@ export class PrismaSchemaUtilsService {
     ).join(" ");
 
     return {
+      permanentId: cuid(),
       name: field.name,
       displayName: fieldDisplayName,
       dataType: fieldDataType,

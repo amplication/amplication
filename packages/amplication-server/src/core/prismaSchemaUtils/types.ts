@@ -26,6 +26,7 @@ export type Operation = (
 ) => ConcretePrismaSchemaBuilder;
 
 export type CreateEntityInput = {
+  id: string;
   name: string;
   displayName: string;
   pluralDisplayName: string;
@@ -35,6 +36,7 @@ export type CreateEntityInput = {
 };
 
 export type CreateEntityFieldInput = {
+  permanentId: string;
   name: string;
   displayName: string;
   description: string;
