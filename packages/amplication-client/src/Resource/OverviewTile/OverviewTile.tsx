@@ -51,8 +51,7 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
         </div>
         <div className={`${CLASS_NAME}__message`}>
           Your Amplication-generated resource is ready. We created it using
-          amazing open-source technologies. Push the auto-generated code to{" "}
-          {connectedGitProvider} and take it to the moon with your coding
+          amazing open-source technologies. Push the auto-generated code to your Git provider and take it to the moon with your coding
           skills.
         </div>
         <div className={`${CLASS_NAME}__content`}>
