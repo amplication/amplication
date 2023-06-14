@@ -43,7 +43,7 @@ export type CreateEntityFieldInput = {
   unique: boolean;
   searchable: boolean;
   properties: { [x: string]: JsonValue };
-  customAttributes: string;
+  customAttributes?: string;
 };
 
 export type CreateOneEntityFieldArgs = {

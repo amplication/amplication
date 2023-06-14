@@ -24,6 +24,7 @@ import {
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
+  CreateEntityFieldInput,
   CreateEntityInput,
   ErrorLevel,
   ErrorMessages,
@@ -216,7 +217,10 @@ export class PrismaSchemaUtilsService {
     };
   }
 
-  private prepareEntityFieldsByType(field: Field, fieldDataType: EnumDataType) {
+  private createOneEntityFieldCommonProperties(
+    field: Field,
+    fieldDataType: EnumDataType
+  ): CreateEntityFieldInput {
     const fieldDisplayName = formatDisplayName(field.name);
     const isUniqueField = field.attributes?.some(
       (attr) => attr.name === "unique"
@@ -355,22 +359,6 @@ export class PrismaSchemaUtilsService {
         attribute.name
       }(${args.join(", ")})`;
     });
-  }
-
-  private prepareRelations(
-    model: Model,
-    field: Field
-  ): { relatedFieldName: string; relatedFieldDisplayName: string } {
-    const relationAttribute = field.attributes?.find(
-      (attr) => attr.name === "relation"
-    );
-
-    if (!relationAttribute) return;
-
-    return {
-      relatedFieldName: model.name,
-      relatedFieldDisplayName: formatDisplayName(model.name),
-    };
   }
 
   /************************
@@ -514,13 +502,12 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Boolean
     );
-    entityFields.properties = {};
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -540,17 +527,17 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.DateTime
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       timezone: "localTime",
       dateOnly: false,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -570,18 +557,18 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.DecimalNumber
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -601,17 +588,17 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.WholeNumber
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       minimumValue: 0,
       maximumValue: 99999999999,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -631,16 +618,16 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.SingleLineText
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       maxLength: 256,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -660,14 +647,12 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Json
     );
 
-    entityFields.properties = {};
-
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -687,9 +672,12 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(field, EnumDataType.Id);
-    if (entityFields.customAttributes.includes("@default()")) {
-      entityFields.customAttributes = entityFields.customAttributes.replace(
+    const entityField = this.createOneEntityFieldCommonProperties(
+      field,
+      EnumDataType.Id
+    );
+    if (entityField.customAttributes.includes("@default()")) {
+      entityField.customAttributes = entityField.customAttributes.replace(
         "@default()",
         ""
       );
@@ -698,13 +686,11 @@ export class PrismaSchemaUtilsService {
       (attr) => attr.name === "default"
     );
     if (defaultIdAttribute && defaultIdAttribute.args) {
-      entityFields.properties =
+      entityField.properties =
         idTypePropertyMap[(defaultIdAttribute.args[0].value as Func).name];
-    } else {
-      entityFields.properties = {};
     }
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -724,7 +710,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.OptionSet
     );
@@ -748,11 +734,11 @@ export class PrismaSchemaUtilsService {
       }
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       options: enumOptions,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -772,7 +758,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityFields = this.prepareEntityFieldsByType(
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.MultiSelectOptionSet
     );
@@ -796,11 +782,11 @@ export class PrismaSchemaUtilsService {
       }
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       options: enumOptions,
     };
 
-    entity.fields.push(entityFields);
+    entity.fields.push(entityField);
 
     return entity;
   }
@@ -820,22 +806,18 @@ export class PrismaSchemaUtilsService {
       this.logger.error(`Entity ${model.name} not found`);
       throw new Error(`Entity ${model.name} not found`);
     }
-
-    const entityFields = this.prepareEntityFieldsByType(
+    // create the relation filed on the main side of the relation
+    const entityField = this.createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Lookup
     );
 
-    entityFields.properties = {
+    entityField.properties = {
       relatedEntityId: null,
       relatedFieldId: null,
       allowMultipleSelection: false,
       fkHolder: null,
     };
-
-    entity.fields.push(entityFields);
-
-    return entity;
   }
 
   /**********************
