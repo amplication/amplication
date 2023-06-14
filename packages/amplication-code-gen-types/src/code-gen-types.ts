@@ -210,7 +210,7 @@ export class ModuleMap {
   async replaceModulesCode(fn: (code: string) => string): Promise<void> {
     for await (const module of Object.values(this.map)) {
       module.code = fn(module.code);
-      this[module.path] = module;
+      this.map[module.path] = module;
     }
   }
 
