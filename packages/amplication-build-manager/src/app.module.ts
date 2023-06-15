@@ -4,6 +4,8 @@ import { BuildRunnerModule } from "./build-runner/build-runner.module";
 import { BuildLoggerModule } from "./build-logger/build-logger.module";
 import { HealthModule } from "./health/health.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { Env } from "./env";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   imports: [
@@ -12,7 +14,10 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
       envFilePath: [".env.local", ".env"],
     }),
     AmplicationLoggerModule.forRoot({
-      component: "amplication-build-manager",
+      component: Env.SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: Env.SERVICE_NAME,
     }),
     HealthModule,
     BuildRunnerModule,
