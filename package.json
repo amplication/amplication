@@ -70,7 +70,7 @@
     "@opentelemetry/instrumentation-aws-sdk": "^0.34.3",
     "@opentelemetry/propagator-aws-xray": "^1.2.1",
     "@opentelemetry/sdk-trace-base": "^1.14.0",
-    "@overbit/opentelemetry-nestjs": "^4.0.0-beta.5",
+    "@overbit/opentelemetry-nestjs": "^4.1.0",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.6.1",
     "@sendgrid/mail": "^7.7.0",

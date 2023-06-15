@@ -145,7 +145,7 @@ export class GitClientService {
         originUrl: cloneUrl,
         repositoryDir: gitRepoDir,
       }),
-      this.logger
+      { logger: this.logger }
     );
 
     try {
