@@ -223,7 +223,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const authJwtVersion =
-    authCorePlugin?.versions[authJwtPlugin?.versions.length - 1];
+    authJwtPlugin?.versions[authJwtPlugin?.versions.length - 1];
 
   const AUTH_PLUGINS = [
     {
