@@ -35,6 +35,7 @@ import { Plugin } from "../../Plugins/hooks/usePlugins";
 import { useQuery } from "@apollo/client";
 import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 import ImgSvg from "./wizard-pages/ImgSvg";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../../env";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -46,6 +47,7 @@ type Props = AppRouteProps & {
 
 const FLOW_ONBOARDING = "Onboarding";
 const FLOW_CREATE_SERVICE = "Create Service";
+const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
 
 export type DefineUser = "Onboarding" | "Create Service";
 
@@ -215,15 +217,17 @@ const CreateServiceWizard: React.FC<Props> = ({
     (x) => x.pluginId === "auth-core"
   );
 
-  const authCoreVersion =
-    authCorePlugin?.versions[authCorePlugin?.versions.length - 1];
+  const authCoreVersion = pluginUseLatest
+    ? authCorePlugin?.versions[authCorePlugin?.versions.length - 1]
+    : authCorePlugin?.versions[0];
 
   const authJwtPlugin = pluginsVersionData?.plugins.find(
     (x) => x.pluginId === "auth-jwt"
   );
 
-  const authJwtVersion =
-    authCorePlugin?.versions[authJwtPlugin?.versions.length - 1];
+  const authJwtVersion = pluginUseLatest
+    ? authJwtPlugin?.versions[authJwtPlugin?.versions.length - 1]
+    : authJwtPlugin?.versions[0];
 
   const AUTH_PLUGINS = [
     {
@@ -309,7 +313,9 @@ const CreateServiceWizard: React.FC<Props> = ({
         (x) => x.pluginId === `db-${databaseType}`
       );
 
-      const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
+      const dbLastVersion = pluginUseLatest
+        ? dbPlugin?.versions[dbPlugin?.versions.length - 1]
+        : dbPlugin?.versions[0];
 
       const authCorePlugins = authType === "core" && AUTH_PLUGINS;
 
