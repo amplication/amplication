@@ -42,15 +42,17 @@ model Workspace {
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  name        String
-  workspaceId String
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  resources   Resource[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
-  commits     Commit[]
+  id           String     @id @default(cuid())
+  name         String
+  workspaceId  String
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resources    Resource[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  commits      Commit[]
+  useDemoRepo  Boolean    @default(false)
+  demoRepoName String?
 
   @@unique([workspaceId, name])
 }

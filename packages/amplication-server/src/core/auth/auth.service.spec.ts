@@ -37,6 +37,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   deletedAt: undefined,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";

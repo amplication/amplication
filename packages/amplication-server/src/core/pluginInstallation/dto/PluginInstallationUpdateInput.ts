@@ -17,6 +17,11 @@ export class PluginInstallationUpdateInput extends BlockUpdateInput {
   })
   settings?: JsonValue;
 
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  configurations?: JsonValue;
+
   @Field(() => String, {
     nullable: false,
   })

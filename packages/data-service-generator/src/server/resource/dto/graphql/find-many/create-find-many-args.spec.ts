@@ -40,6 +40,8 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
     required: false,
     type: () => ${EXAMPLE_WHERE_INPUT.id.name},
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
   @Type(() => ${EXAMPLE_WHERE_INPUT.id.name})
   where?: ${EXAMPLE_WHERE_INPUT.id.name};
@@ -48,6 +50,8 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
     required: false,
     type: [${EXAMPLE_ORDER_BY_INPUT.id.name}],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [${EXAMPLE_ORDER_BY_INPUT.id.name}], { nullable: true })
   @Type(() => ${EXAMPLE_ORDER_BY_INPUT.id.name})
   orderBy?: Array<${EXAMPLE_ORDER_BY_INPUT.id.name}>;
@@ -56,6 +60,8 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -64,6 +70,8 @@ class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
