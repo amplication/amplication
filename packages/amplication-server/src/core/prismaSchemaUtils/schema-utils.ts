@@ -1,4 +1,4 @@
-import { Func, Value } from "@mrleebo/prisma-ast";
+import { Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 
@@ -63,13 +63,4 @@ export function formatFieldName(fieldName: string | Func): string {
 
 export function formatDisplayName(displayName: string): string {
   return capitalizeFirstLetterOfEachWord(sentenceCase(displayName));
-}
-
-export function isValue(value: any): value is Value {
-  return (
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    (Array.isArray(value) && value.every(isValue))
-  );
 }

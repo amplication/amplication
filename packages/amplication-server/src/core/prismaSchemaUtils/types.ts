@@ -47,18 +47,3 @@ export type CreateEntityFieldInput = {
   properties: { [x: string]: JsonValue };
   customAttributes?: string;
 };
-
-export type CreateOneEntityFieldArgs = {
-  data: CreateEntityFieldInput;
-  relatedFieldName?: string;
-  relatedFieldDisplayName?: string;
-};
-
-export type SchemaEntityFields = {
-  name: string;
-  displayName: string;
-  pluralDisplayName: string;
-  description: string | null;
-  customAttributes: string;
-  fields: CreateOneEntityFieldArgs[];
-};

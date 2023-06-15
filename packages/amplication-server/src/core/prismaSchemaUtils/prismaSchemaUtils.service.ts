@@ -20,7 +20,6 @@ import {
   formatFieldName,
   formatModelName,
   idTypePropertyMap,
-  isValue,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -190,6 +189,136 @@ export class PrismaSchemaUtilsService {
           });
       });
     return preparedEntities;
+  }
+
+  /**********************
+   * OPERATIONS SECTION *
+   **********************/
+
+  /**
+   * Add "@@map" attribute to model name if its name is plural or snake case
+   * and rename model name to singular and in pascal case
+   * @param builder prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleModelNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const isInvalidModelName =
+        pluralize.isPlural(model.name) ||
+        model.name.includes("_") ||
+        !/^[A-Z]/.test(model.name);
+
+      if (isInvalidModelName) {
+        builder.model(model.name).blockAttribute("map", model.name);
+        builder.model(model.name).then<Model>((model) => {
+          model.name = formatModelName(model.name);
+        });
+        return builder;
+      }
+    });
+    return builder;
+  }
+
+  /**
+   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
+   * Then, rename field name to camel case
+   * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleFieldNamesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const fields = model.properties.filter(
+        (property) =>
+          property.type === "field" &&
+          !property.attributes?.some((attr) => attr.name === "id")
+      ) as Field[];
+      fields.map((field: Field) => {
+        const isInvalidFieldName = field.name.includes("_");
+        const isEnumFieldType =
+          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
+          this.resolveFieldDataType(schema, field) ===
+            EnumDataType.MultiSelectOptionSet;
+        if (isInvalidFieldName && !isEnumFieldType) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = formatFieldName(field.name);
+            });
+          return builder;
+        }
+      });
+    });
+    return builder;
+  }
+
+  /**
+   * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
+   * @param builder - prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
+  private handleIdField(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+
+    models.map((model: Model) => {
+      const modelFields = model.properties.filter(
+        (property) => property.type === "field"
+      ) as Field[];
+
+      modelFields.map((field: Field) => {
+        const idFieldIsNotNamedId =
+          field.name !== "id" &&
+          field.attributes?.some((attr) => attr.name === "id");
+
+        const notIdFieldIsNamedId =
+          field.name === "id" &&
+          !field.attributes?.some((attr) => attr.name === "id");
+
+        if (idFieldIsNotNamedId) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = "id";
+            });
+          return builder;
+        }
+
+        if (notIdFieldIsNamedId) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = `${model.name}Id`;
+            });
+          return builder;
+        }
+      });
+    });
+    return builder;
   }
 
   /*****************************
@@ -425,7 +554,8 @@ export class PrismaSchemaUtilsService {
     );
     const hasRelationAttributeWithoutReferenceField = field.attributes?.some(
       (attr) =>
-        attr.name === "relation" && attr.args[0].value instanceof isValue
+        attr.name === "relation" &&
+        attr.args.some((arg) => typeof arg.value === "string")
     );
     const fieldModelType = modelList.find(
       (modelItem: Model) =>
@@ -868,136 +998,6 @@ export class PrismaSchemaUtilsService {
     entity.fields.push(entityField);
     // add the field to related entity
     relatedEntity.fields.push(relatedField);
-  }
-
-  /**********************
-   * OPERATIONS SECTION *
-   **********************/
-
-  /**
-   * Add "@@map" attribute to model name if its name is plural or snake case
-   * and rename model name to singular and in pascal case
-   * @param builder prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleModelNamesRenaming(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-    models.map((model: Model) => {
-      const isInvalidModelName =
-        pluralize.isPlural(model.name) ||
-        model.name.includes("_") ||
-        !/^[A-Z]/.test(model.name);
-
-      if (isInvalidModelName) {
-        builder.model(model.name).blockAttribute("map", model.name);
-        builder.model(model.name).then<Model>((model) => {
-          model.name = formatModelName(model.name);
-        });
-        return builder;
-      }
-    });
-    return builder;
-  }
-
-  /**
-   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
-   * Then, rename field name to camel case
-   * @param builder - prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleFieldNamesRenaming(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-    models.map((model: Model) => {
-      const fields = model.properties.filter(
-        (property) =>
-          property.type === "field" &&
-          !property.attributes?.some((attr) => attr.name === "id")
-      ) as Field[];
-      fields.map((field: Field) => {
-        const isInvalidFieldName = field.name.includes("_");
-        const isEnumFieldType =
-          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
-          this.resolveFieldDataType(schema, field) ===
-            EnumDataType.MultiSelectOptionSet;
-        if (isInvalidFieldName && !isEnumFieldType) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = formatFieldName(field.name);
-            });
-          return builder;
-        }
-      });
-    });
-    return builder;
-  }
-
-  /**
-   * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
-   * @param builder - prisma schema builder
-   * @returns the new builder if there was a change or the old one if there was no change
-   */
-  private handleIdField(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
-
-    models.map((model: Model) => {
-      const modelFields = model.properties.filter(
-        (property) => property.type === "field"
-      ) as Field[];
-
-      modelFields.map((field: Field) => {
-        const idFieldIsNotNamedId =
-          field.name !== "id" &&
-          field.attributes?.some((attr) => attr.name === "id");
-
-        const notIdFieldIsNamedId =
-          field.name === "id" &&
-          !field.attributes?.some((attr) => attr.name === "id");
-
-        if (idFieldIsNotNamedId) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = "id";
-            });
-          return builder;
-        }
-
-        if (notIdFieldIsNamedId) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = `${model.name}Id`;
-            });
-          return builder;
-        }
-      });
-    });
-    return builder;
   }
 
   /******************
