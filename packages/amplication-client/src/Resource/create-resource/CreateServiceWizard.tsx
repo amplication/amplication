@@ -35,7 +35,7 @@ import { Plugin } from "../../Plugins/hooks/usePlugins";
 import { useQuery } from "@apollo/client";
 import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 import ImgSvg from "./wizard-pages/ImgSvg";
-import { REACT_PLUGIN_VERSION_USE_LATEST } from "../../env";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../../env";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -47,7 +47,7 @@ type Props = AppRouteProps & {
 
 const FLOW_ONBOARDING = "Onboarding";
 const FLOW_CREATE_SERVICE = "Create Service";
-const pluginUseLatest = REACT_PLUGIN_VERSION_USE_LATEST === "true";
+const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
 
 export type DefineUser = "Onboarding" | "Create Service";
 
