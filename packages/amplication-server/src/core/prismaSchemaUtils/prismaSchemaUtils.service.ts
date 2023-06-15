@@ -20,6 +20,7 @@ import {
   formatFieldName,
   formatModelName,
   idTypePropertyMap,
+  isValue,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -419,8 +420,12 @@ export class PrismaSchemaUtilsService {
 
   private isNotAnnotatedRelationField(schema: Schema, field: Field): boolean {
     const modelList = schema.list.filter((item) => item.type === "model");
-    const relationAttribute = field.attributes?.find(
+    const relationAttribute = field.attributes?.some(
       (attr) => attr.name === "relation"
+    );
+    const hasRelationAttributeWithoutReferenceField = field.attributes?.some(
+      (attr) =>
+        attr.name === "relation" && attr.args[0].value instanceof isValue
     );
     const fieldModelType = modelList.find(
       (modelItem: Model) =>
@@ -428,8 +433,13 @@ export class PrismaSchemaUtilsService {
         pluralize.singular(formatFieldName(field.fieldType)).toLowerCase()
     );
 
-    // check if the field is a relation field but not annotated with @relation, like order[] on Customer model
-    if (!relationAttribute && fieldModelType) {
+    // check if the field is a relation field but it doesn't have the @relation attribute, like order[] on Customer model,
+    // or it has the @relation attribute but without reference field
+    if (
+      !relationAttribute &&
+      fieldModelType &&
+      hasRelationAttributeWithoutReferenceField
+    ) {
       return true;
     } else {
       return false;
@@ -794,7 +804,6 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  // TODO: handle this: create the relation, the other side of the relation and the properties
   convertPrismaLookupToEntityField(
     schema: Schema,
     model: Model,
@@ -815,12 +824,113 @@ export class PrismaSchemaUtilsService {
       EnumDataType.Lookup
     );
 
+    /**
+     * find the relation field/s on the other side in prisma schema. There are two cases:
+     * 1. the regular case, when the other side is a model or Model[] => relatedModelField
+     * 2. the case when the other side also has a relation attribute, but with value of name and without reference field => relateModelByRelationName
+     */
+
+    // find the models in the schema
+    const schemaModels = schema.list.filter(
+      (item: Model) => item.type === "model"
+    );
+
+    // from all the models find the one that is related to the current field, meaning its name is the same as the current field type
+    // TODO: find method that will return the first item that matches the condition, but what if there are more than one?
+    const relatedEntityModel = schemaModels.find(
+      (model: Model) => model.name === field.fieldType
+    ) as Model;
+
+    if (!relatedEntityModel) {
+      this.logger.error(`Model ${entityField.dataType} not found`);
+      throw new Error(`Model ${entityField.dataType} not found`);
+    }
+
+    // list the model fields
+    const relatedEntityModelFields = relatedEntityModel.properties.filter(
+      (item: Field) => item.type === "field"
+    ) as Field[];
+
+    if (!relatedEntityModelFields) {
+      this.logger.error(`Model ${entityField.dataType} has no fields`);
+      throw new Error(`Model ${entityField.dataType} has no fields`);
+    }
+
+    // 1. the regular case - find the related field by the current entity name, for example, if the entity name is Order
+    const relatedModelField = relatedEntityModelFields.find(
+      (field) =>
+        pluralize.singular(field.fieldType as string).toLocaleLowerCase() ===
+        entity.name.toLocaleLowerCase()
+    ) as Field;
+
+    // create the the first relation filed on the other side of the relation
+    const relatedEntityFieldProperties =
+      this.createOneEntityFieldCommonProperties(
+        relatedModelField,
+        EnumDataType.Lookup
+      );
+
+    // 2. the case when the other side also has a relation attribute, but with value of name and without reference field
+    // find the field that has relation attribute with value of name
+    const relateModelByRelationName = relatedEntityModelFields.find((field) =>
+      field.attributes?.some(
+        (attr) =>
+          attr.name === "relation" && attr.args[0].value instanceof isValue
+      )
+    ) as Field;
+
+    // create the second relation filed on the other side of the relation
+    const relateEntityByRelationNameProperties =
+      this.createOneEntityFieldCommonProperties(
+        relateModelByRelationName,
+        EnumDataType.Lookup
+      );
+
+    const relatedEntityFieldByModelName = preparedEntities.find(
+      (entity) => entity.name === relatedEntityModel.name
+    ) as CreateEntityInput;
+
+    const relatedEntityFieldByRelationName = preparedEntities.find(
+      (entity) => entity.name === relateModelByRelationName.fieldType
+    ) as CreateEntityInput;
+
+    // create the field's properties of the main side of the relation
+    // TODO: how to add properties if there is more than one relation field?
     entityField.properties = {
-      relatedEntityId: null,
-      relatedFieldId: null,
-      allowMultipleSelection: false,
-      fkHolder: null,
+      relatedEntityId: relatedEntityFieldByModelName.id,
+      relatedFieldId: relatedEntityFieldProperties.permanentId,
+      allowMultipleSelection: (field.fieldType as string).includes("[]"),
+      fkHolder: true,
     };
+
+    // create the field's properties of the first side of the relation
+    relatedEntityFieldProperties.properties = {
+      relatedEntityId: entity.id,
+      relatedFieldId: entityField.permanentId,
+      allowMultipleSelection: (relatedModelField.fieldType as string).includes(
+        "[]"
+      ),
+      fkHolder: false,
+    };
+
+    // create the field's properties of the second side of the relation
+    relateEntityByRelationNameProperties.properties = {
+      relatedEntityId: entity.id,
+      relatedFieldId: entityField.permanentId,
+      allowMultipleSelection: (
+        relateModelByRelationName.fieldType as string
+      ).includes("[]"),
+      fkHolder: false,
+    };
+
+    // add the field to main entity
+    entity.fields.push(entityField);
+
+    // add the fields to the related entity
+    relatedEntityFieldByModelName.fields.push(relatedEntityFieldProperties);
+    relatedEntityFieldByRelationName.fields.push(
+      relateEntityByRelationNameProperties
+    );
   }
 
   /**********************
