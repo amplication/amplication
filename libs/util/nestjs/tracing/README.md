@@ -69,22 +69,23 @@ To enable the tracing for an instance of a class that is not part of NestJS DI (
 the `TraceWrapper.trace()` methods as mentioned here [@overbit/opentelemetry-nestjs Trace Not @Injectable() classes](https://github.com/overbit/opentelemetry-nestjs#trace-not-injectable-classes) 
 
 ```ts
-import {
-  Span,
-} from "@overbit/opentelemetry-nestjs";
+import { TraceWrapper } from '@overbit/opentelemetry-nestjs';
 
-@Injectable()
-export class PullRequestService {
+class MyClass {
+  hello() {
+    console.log('Hi');
+  }
 
-    async method1(args:unknown){
-        // ....
-    } 
-
-    @Span()
-    async method2(args:unknown){
-        // ....
-    } 
+  async bye() {
+    await new Promise(() => console.log('bye bye'));
+  }
 }
+
+// ....
+const instance = new MyClass();
+const tracedInstance = TraceWrapper.trace(instance);
+
+// ....
 ```
 
 ## Running unit tests
