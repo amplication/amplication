@@ -15,6 +15,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
+    "strict": true,
     "paths": {
       "@amplication/code-gen-types": [
         "packages/amplication-code-gen-types/src/index.ts"
