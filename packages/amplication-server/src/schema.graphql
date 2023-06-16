@@ -1350,6 +1350,8 @@ input ResourceUpdateInput {
 }
 
 input EntityCreateInput {
+  """allow creating an id for the entity when using import schema"""
+  id: String
   name: String!
   displayName: String!
   pluralDisplayName: String!

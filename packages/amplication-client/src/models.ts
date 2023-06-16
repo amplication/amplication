@@ -372,6 +372,8 @@ export type EntityCreateInput = {
   customAttributes?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
+  /** allow creating an id for the entity when using import schema */
+  id?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   pluralDisplayName: Scalars['String'];
   resource: WhereParentIdInput;
