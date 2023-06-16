@@ -372,7 +372,7 @@ export type EntityCreateInput = {
   customAttributes?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
-  /** allow creating an id for the entity when using import schema */
+  /** allow creating the id for the entity when using import prisma schema because we need it for the relation */
   id?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   pluralDisplayName: Scalars['String'];

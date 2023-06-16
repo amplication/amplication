@@ -1350,7 +1350,9 @@ input ResourceUpdateInput {
 }
 
 input EntityCreateInput {
-  """allow creating an id for the entity when using import schema"""
+  """
+  allow creating the id for the entity when using import prisma schema because we need it for the relation
+  """
   id: String
   name: String!
   displayName: String!
