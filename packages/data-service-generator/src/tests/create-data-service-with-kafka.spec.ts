@@ -33,7 +33,6 @@ describe("createDataService", () => {
         description: "This is the message broker description",
         name: "Kafka broker",
         url: "",
-        //@ts-ignore
         settings: {},
         version: "1.0.0",
       },

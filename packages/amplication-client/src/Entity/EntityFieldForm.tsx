@@ -103,7 +103,6 @@ const EntityFieldForm = ({
         // Ignore related field ID error
         if ("relatedFieldId" in propertiesError) {
           // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-          // @ts-ignore
           delete propertiesError.relatedFieldId;
         }
 

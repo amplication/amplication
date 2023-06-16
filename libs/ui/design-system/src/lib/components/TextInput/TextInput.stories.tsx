@@ -21,7 +21,6 @@ export const Controlled = () => {
       <TextInput
         value={value}
         onChange={(e) => {
-          // @ts-ignore
           const { value } = e.target;
           if (value.match(ALPHABET_ONLY)) {
             setValue(value);

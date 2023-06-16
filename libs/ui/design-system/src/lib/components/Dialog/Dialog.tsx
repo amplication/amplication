@@ -46,7 +46,6 @@ export const Dialog: React.FC<Props> = ({
 
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <ThemeProvider theme={theme}>
       <PrimerDialog
         isOpen={isOpen}

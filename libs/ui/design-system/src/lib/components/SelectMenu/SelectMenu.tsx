@@ -100,7 +100,6 @@ export type SelectMenuModalProps = PrimerSelectMenuModalProps;
 export const SelectMenuModal: React.FC<SelectMenuModalProps> = (props) => {
   return (
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
     <PrimerSelectMenu.Modal
       className={classNames("select-menu__modal", props.className)}
       {...props}

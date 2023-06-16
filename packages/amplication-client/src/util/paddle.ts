@@ -5,7 +5,6 @@ const PADDLE_SANDBOX_VENDOR_ID = "2673";
 export function init() {
   if (REACT_APP_PADDLE_VENDOR_ID) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const Paddle = window.Paddle;
 
     if (REACT_APP_PADDLE_VENDOR_ID === PADDLE_SANDBOX_VENDOR_ID) {
@@ -22,7 +21,6 @@ export function createSubscription(
   onSuccess: () => void
 ) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   const Paddle = window.Paddle;
 
   Paddle.Checkout.open({
@@ -38,7 +36,6 @@ export function cancelSubscription(
   onSuccess: () => void
 ) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   const Paddle = window.Paddle;
 
   Paddle.Checkout.open({
@@ -54,7 +51,6 @@ export function updateSubscription(
   onSuccess: () => void
 ) {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  //@ts-ignore
   const Paddle = window.Paddle;
 
   Paddle.Checkout.open({

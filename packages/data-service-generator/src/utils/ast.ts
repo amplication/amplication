@@ -316,7 +316,6 @@ export function classDeclaration(
     return declaration;
   }
 
-  //@ts-ignore
   declaration.decorators = decorators;
   return declaration;
 }

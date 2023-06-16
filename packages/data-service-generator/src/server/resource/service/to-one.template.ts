@@ -2,7 +2,6 @@ import { PrismaService } from "../../prisma/prisma.service";
 
 import {
   RELATED_ENTITY,
-  // @ts-ignore
 } from "@prisma/client";
 
 declare class PARENT_ID_TYPE {}

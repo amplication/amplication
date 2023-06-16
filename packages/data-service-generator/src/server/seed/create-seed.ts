@@ -162,7 +162,6 @@ export function createUserObjectCustomProperties(
     .map(([field, value]) =>
       builders.objectProperty(
         builders.identifier(field.name),
-        // @ts-ignore
         value
       )
     );

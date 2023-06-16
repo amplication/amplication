@@ -5,7 +5,6 @@ import { environment } from "./environments/environment";
  */
 
 function get(name: string): string | undefined {
-  // @ts-ignore
   return window[name] || environment[name] || process.env[name];
 }
 

@@ -1,8 +1,6 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import {
-  // @ts-ignore
   Prisma,
-  // @ts-ignore
   ENTITY,
 } from "@prisma/client";
 
@@ -31,13 +29,11 @@ export class SERVICE_BASE {
   async create<T extends Prisma.CREATE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.CREATE_ARGS>
   ): Promise<ENTITY> {
-    // @ts-ignore
     return this.prisma.DELEGATE.create<T>(CREATE_ARGS_MAPPING);
   }
   async update<T extends Prisma.UPDATE_ARGS>(
     args: Prisma.SelectSubset<T, Prisma.UPDATE_ARGS>
   ): Promise<ENTITY> {
-    // @ts-ignore
     return this.prisma.DELEGATE.update<T>(UPDATE_ARGS_MAPPING);
   }
   async delete<T extends Prisma.DELETE_ARGS>(

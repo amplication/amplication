@@ -77,7 +77,6 @@ const Login = () => {
     if (data) {
       setToken(data.login.token);
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
       let { from } = location.state || { from: { pathname: "/" } };
       if (from === "login") {
         from = "/";

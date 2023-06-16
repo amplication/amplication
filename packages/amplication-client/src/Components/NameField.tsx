@@ -24,7 +24,6 @@ const NameField = ({ capitalized, ...rest }: Props) => {
   const [regexp, pattern, helpText] = capitalized
     ? [CAPITALIZED_NAME_REGEX, CAPITALIZED_NAME_PATTERN, CAPITALIZED_HELP_TEXT]
     : [NAME_REGEX, NAME_PATTERN, HELP_TEXT];
-  // @ts-ignore
   const [field] = useField<string>({
     ...rest,
     validate: (value) => (value.match(regexp) ? undefined : helpText),

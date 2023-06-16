@@ -34,7 +34,6 @@ const writeFileMock = jest.fn();
 
 jest.mock("fs");
 
-// @ts-ignore
 fs.promises = {
   readFile: readFileMock,
   writeFile: writeFileMock,
@@ -84,9 +83,7 @@ describe("getReactAppEnv", () => {
 
 describe("injectVariables", () => {
   test("injects variables to HTML file", async () => {
-    // @ts-ignore
     fs.promises.readFile.mockImplementation(() => EXAMPLE_HTML);
-    // @ts-ignore
     fs.promises.writeFile.mockImplementation(() => {});
     expect(
       await injectVariables(EXAMPLE_ENVIRONMENT, EXAMPLE_HTML_FILE_PATH)

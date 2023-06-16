@@ -111,7 +111,6 @@ export async function createAppModuleInternal({
     /** @todo explicitly check for "@Module" decorated classes */
     return importNames(
       // eslint-disable-next-line
-      // @ts-ignore
       exports,
       relativeImportPath(MODULE_PATH, module.path)
     );

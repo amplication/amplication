@@ -1,8 +1,6 @@
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
-// @ts-ignore
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 
 declare interface CREATE_INPUT {}
@@ -83,7 +81,6 @@ export class RESOLVER_BASE {
 
   @graphql.Mutation(() => ENTITY)
   async CREATE_MUTATION(@graphql.Args() args: CREATE_ARGS): Promise<ENTITY> {
-    // @ts-ignore
     return await this.service.create({
       ...args,
       data: CREATE_DATA_MAPPING,
@@ -95,7 +92,6 @@ export class RESOLVER_BASE {
     @graphql.Args() args: UPDATE_ARGS
   ): Promise<ENTITY | null> {
     try {
-      // @ts-ignore
       return await this.service.update({
         ...args,
         data: UPDATE_DATA_MAPPING,
@@ -115,7 +111,6 @@ export class RESOLVER_BASE {
     @graphql.Args() args: DELETE_ARGS
   ): Promise<ENTITY | null> {
     try {
-      // @ts-ignore
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {

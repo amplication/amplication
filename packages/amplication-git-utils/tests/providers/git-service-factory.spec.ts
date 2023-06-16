@@ -28,7 +28,6 @@ describe.skip("GitFactory", () => {
     });
     it("should throw error if source control dont exist", () => {
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      //@ts-ignore
       expect(() => gitServiceFactory.getService("GitNone")).toThrow(Error);
     });
   });

@@ -26,7 +26,6 @@ describe("Testing the BuildFilesSaver service", () => {
     configService.get.mockClear();
     configService.get.mockReturnValue(tmpdir());
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     buildFilesSaver = new BuildFilesSaver(configService, logger);
   });
   it("should save a resource files to a build folder", async () => {

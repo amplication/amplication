@@ -78,7 +78,6 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
     } else {
       // Log the original exception and return a generic server error to client
       // eslint-disable-next-line
-      // @ts-ignore
       exception.requestData = requestData;
       this.logger.error(exception.message, exception);
       clientError =

@@ -1,4 +1,3 @@
-//@ts-ignore
 import { ROLES } from "./roles";
 
 declare interface Role {

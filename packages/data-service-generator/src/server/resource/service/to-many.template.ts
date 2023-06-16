@@ -1,9 +1,7 @@
 import { PrismaService } from "../../prisma/prisma.service";
 
 import {
-  // @ts-ignore
   Prisma,
-  // @ts-ignore
   RELATED_ENTITY,
 } from "@prisma/client";
 

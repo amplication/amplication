@@ -1825,8 +1825,6 @@ export const EmptyTitle = (record: TEmpty): string => {
   "test-ui/src/index.tsx": "import React from \\"react\\";
 import ReactDOM from \\"react-dom\\";
 import \\"./index.css\\";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
 import App from \\"./App\\";
 import reportWebVitals from \\"./reportWebVitals\\";
 
@@ -2485,7 +2483,7 @@ export type InputJsonValue = Omit<JsonValue, \\"null\\">;
   AreaManager = \\"areaManager\\",
 }
 ",
-  "test-ui/src/user/RolesOptions.ts": "//@ts-ignore
+  "test-ui/src/user/RolesOptions.ts": "
 import { ROLES } from \\"./roles\\";
 
 declare interface Role {
@@ -6740,7 +6738,6 @@ export class NotFoundException extends common.NotFoundException {
 } from \\"@nestjs/common\\";
 import { BaseExceptionFilter } from \\"@nestjs/core\\";
 import {
-  // @ts-ignore
   Prisma,
 } from \\"@prisma/client\\";
 import { Response } from \\"express\\";
@@ -6897,14 +6894,12 @@ export class HealthService extends HealthServiceBase {
 import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
 import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
-// @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
   // eslint-disable-next-line
 } from \\"./swagger\\";
 

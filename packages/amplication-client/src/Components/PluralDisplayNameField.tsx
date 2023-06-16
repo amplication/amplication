@@ -16,7 +16,6 @@ export const PluralDisplayNameField = (props: TextFieldProps) => {
     previousNameValue.current = nextDisplayNameValue;
   }, [formik, props.name]);
 
-  // @ts-ignore
   return <TextField {...props} />;
 };
 

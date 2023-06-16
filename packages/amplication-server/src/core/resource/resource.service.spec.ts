@@ -471,7 +471,6 @@ const prismaTransactionMock = jest.fn(() => [
 
 jest.mock("cuid");
 // eslint-disable-next-line
-// @ts-ignore
 cuid.mockImplementation(() => EXAMPLE_CUID);
 
 describe("ResourceService", () => {

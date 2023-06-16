@@ -1,6 +1,5 @@
 import * as React from "react";
 import { List, Datagrid, ListProps } from "react-admin";
-//@ts-ignore
 import Pagination from "../Components/Pagination";
 
 declare const ENTITY_PLURAL_DISPLAY_NAME: string;

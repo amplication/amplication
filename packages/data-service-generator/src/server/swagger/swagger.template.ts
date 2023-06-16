@@ -8,7 +8,6 @@ export const swaggerPath = "api";
 export const swaggerDocumentOptions = new DocumentBuilder()
   .setTitle(TITLE)
   .setDescription(DESCRIPTION)
-  //@ts-ignore
   .AUTH_FUNCTION()
   .build();
 

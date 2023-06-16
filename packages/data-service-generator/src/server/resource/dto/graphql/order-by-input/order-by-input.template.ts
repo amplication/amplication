@@ -1,5 +1,4 @@
 import { Field, InputType } from "@nestjs/graphql";
-//@ts-ignore
 import { SortOrder } from "../../util/SortOrder";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional, IsEnum } from "class-validator";

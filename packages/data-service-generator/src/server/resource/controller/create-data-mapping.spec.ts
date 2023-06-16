@@ -40,13 +40,11 @@ describe("createDataMapping", () => {
         builders.spreadElement(DATA_ID),
         builders.property(
           "init",
-          // @ts-ignore
           property.key,
           builders.objectExpression([
             builders.property(
               "init",
               CONNECT_ID,
-              // @ts-ignore
               builders.memberExpression(DATA_ID, property.key)
             ),
           ])

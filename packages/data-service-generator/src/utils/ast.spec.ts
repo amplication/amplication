@@ -16,11 +16,8 @@ import {
 const actualRecast = jest.requireActual("recast");
 
 jest.mock("recast");
-// @ts-ignore
 recast.parse = jest.fn(actualRecast.parse).mockName("parseMock");
-// @ts-ignore
 recast.print = jest.fn(actualRecast.print);
-// @ts-ignore
 recast.visit = jest.fn(actualRecast.visit);
 
 describe("interpolate", () => {

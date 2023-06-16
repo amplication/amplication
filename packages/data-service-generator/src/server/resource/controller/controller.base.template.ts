@@ -1,12 +1,9 @@
 import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
-// @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
-// @ts-ignore
 import * as errors from "../../errors";
 import { Request } from "express";
 import { plainToClass } from "class-transformer";
-// @ts-ignore
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 
 declare interface CREATE_INPUT {}

@@ -73,7 +73,6 @@ describe("createUserObjectCustomProperties", () => {
     expect(createUserObjectCustomProperties(userEntity)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
-        // @ts-ignore
         createDefaultValue(EXAMPLE_SINGLE_LINE_TEXT_FIELD)
       ),
     ]);

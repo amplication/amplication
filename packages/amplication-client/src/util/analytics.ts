@@ -10,7 +10,6 @@ export interface Event {
 
 const MISSING_EVENT_NAME = "MISSING_EVENT_NAME";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-//@ts-ignore
 const _hsq = (window._hsq = window._hsq || []);
 
 export const track: reactTracking.Track<Event> = reactTracking.track;
@@ -31,7 +30,6 @@ export function dispatch(event: Partial<Event>) {
   ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const analytics = window.analytics;
     analytics.track(eventName || MISSING_EVENT_NAME, {
       ...versionObj,
@@ -43,7 +41,6 @@ export function dispatch(event: Partial<Event>) {
 export function init() {
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const analytics = window.analytics;
     analytics.load(REACT_APP_AMPLITUDE_API_KEY);
     dispatch({
@@ -60,7 +57,6 @@ export function identity(userId: string, props: EventProps) {
   _hsq.push(["identify", { id: userId, ...props }]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const analytics = window.analytics;
     analytics.identify(userId, props);
   }
@@ -70,7 +66,6 @@ export function page(name?: string, props?: EventProps) {
   _hsq.push(["trackPageView"]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    //@ts-ignore
     const analytics = window.analytics;
     analytics.page(name, props);
   }

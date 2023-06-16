@@ -64,7 +64,6 @@ describe("InjectContextInterceptor", () => {
       data: { name: "Foo" },
     };
     // eslint-disable-next-line
-    // @ts-ignore
     NestJsGraphQL.GqlExecutionContext.create.mockReturnValue({
       getContext() {
         return {
