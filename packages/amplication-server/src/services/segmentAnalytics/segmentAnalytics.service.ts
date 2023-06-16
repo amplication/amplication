@@ -16,6 +16,7 @@ export enum EnumEventType {
   EntityUpdate = "updateEntity",
   EntityFieldCreate = "createEntityField",
   EntityFieldUpdate = "updateEntityField",
+  EntityFieldFromImportPrismaSchemaCreate = "EntityFieldFromImportPrismaSchemaCreate",
 }
 
 export type IdentifyData = {
