@@ -72,122 +72,155 @@ export class PrismaSchemaUtilsService {
   }
 
   convertPreparedSchemaForImportObjects(schema: Schema): CreateEntityInput[] {
-    const preparedEntities = schema.list
-      .filter((item: Model) => item.type === "model")
-      .map((model: Model) => this.prepareEntity(model));
+    const modelList = schema.list.filter(
+      (item: Model) => item.type === "model"
+    ) as Model[];
 
-    schema.list
-      .filter((item: Model) => item.type === "model")
-      .forEach((model: Model) => {
-        model.properties
-          .filter((property) => property.type === "field")
-          .forEach((field: Field) => {
-            if (this.isFkFieldOfARelation(schema, field)) return;
-            if (this.isNotAnnotatedRelationField(schema, field)) return;
+    const preparedEntities = modelList.map((model: Model) =>
+      this.prepareEntity(model)
+    );
 
-            if (this.isBooleanField(schema, field)) {
-              this.convertPrismaBooleanToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
+    for (const model of modelList) {
+      const modelFields = model.properties.filter(
+        (property) => property.type === "field"
+      ) as Field[];
 
-            if (this.isDateTimeField(schema, field)) {
-              this.convertPrismaDateTimeToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isDecimalNumberField(schema, field)) {
-              this.convertPrismaDecimalNumberToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isWholeNumberField(schema, field)) {
-              this.convertPrismaWholeNumberToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isSingleLineTextField(schema, field)) {
-              this.convertPrismaSingleLineTextToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-            // TODO: text - multi line (?)
-
-            if (this.isJsonField(schema, field)) {
-              this.convertPrismaJsonToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isIdField(schema, field)) {
-              this.convertPrismaIdToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isOptionSetField(schema, field)) {
-              this.convertPrismaOptionSetToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isMultiSelectOptionSetField(schema, field)) {
-              this.convertPrismaMultiSelectOptionSetToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            if (this.isLookupField(schema, field)) {
-              this.convertPrismaLookupToEntityField(
-                schema,
-                model,
-                field,
-                preparedEntities
-              );
-            }
-
-            /*******************************************************************
-             * fields that doesn't have properties and we don't catch their type
-             if (isCreatedAtField(field)) {}
-             if (isUpdatedAtField(field)) {}
-             if (isEmailField(field)) {}
-             if (isPasswordField(field)) {}
-             if (isUsernameField(field)) {}
-             if (isRolesField(field)) {}
-             if (isGeographicLocationField(field)) {}
-             *******************************************************************/
+      for (const field of modelFields) {
+        if (this.isFkFieldOfARelation(schema, model, field)) {
+          this.logger.info("FK field of a relation", {
+            fieldName: field.name,
+            modelName: model.name,
           });
-      });
+          continue;
+        }
+
+        if (this.isNotAnnotatedRelationField(schema, field)) {
+          this.logger.info("Not annotated relation field", {
+            fieldName: field.name,
+            modelName: model.name,
+          });
+          continue;
+        }
+
+        if (this.isBooleanField(schema, field)) {
+          this.convertPrismaBooleanToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isCreatedAtField(schema, field)) {
+          this.convertPrismaCreatedAtToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isUpdatedAtField(schema, field)) {
+          this.convertPrismaUpdatedAtToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isDateTimeField(schema, field)) {
+          this.convertPrismaDateTimeToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isDecimalNumberField(schema, field)) {
+          this.convertPrismaDecimalNumberToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isWholeNumberField(schema, field)) {
+          this.convertPrismaWholeNumberToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isSingleLineTextField(schema, field)) {
+          this.convertPrismaSingleLineTextToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isJsonField(schema, field)) {
+          this.convertPrismaJsonToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isIdField(schema, field)) {
+          this.convertPrismaIdToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isOptionSetField(schema, field)) {
+          this.convertPrismaOptionSetToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isMultiSelectOptionSetField(schema, field)) {
+          this.convertPrismaMultiSelectOptionSetToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+
+        if (this.isLookupField(schema, field)) {
+          this.convertPrismaLookupToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        }
+      }
+    }
+
+    /*****************************************
+      if (MultiLineText(field)) {}
+      if (isEmailField(field)) {}
+      if (isPasswordField(field)) {}
+      if (isUsernameField(field)) {}
+      if (isRolesField(field)) {}
+      if (isGeographicLocationField(field)) {}
+    ******************************************/
+
     return preparedEntities;
   }
 
@@ -343,7 +376,7 @@ export class PrismaSchemaUtilsService {
       name: model.name,
       displayName: modelDisplayName,
       pluralDisplayName: entityPluralDisplayName,
-      description: null,
+      description: "",
       customAttributes: entityAttributes,
       fields: [],
     };
@@ -370,7 +403,7 @@ export class PrismaSchemaUtilsService {
       required: field.optional || false,
       unique: isUniqueField,
       searchable: false,
-      description: null,
+      description: "",
       properties: {},
       customAttributes: fieldAttributes,
     };
@@ -399,6 +432,55 @@ export class PrismaSchemaUtilsService {
       );
       if (fieldLookupType) {
         return EnumDataType.Lookup;
+      }
+    };
+
+    const lookupModelType = () => {
+      const modelList = schema.list.filter((item) => item.type === "model");
+      const fieldModelType = modelList.find((model: Model) => {
+        return (
+          formatModelName(model.name) ===
+          formatModelName(field.fieldType as string)
+        );
+      });
+
+      if (fieldModelType) {
+        return EnumDataType.Lookup;
+      }
+    };
+
+    const createAtType = () => {
+      const createdAtDefaultAttribute = field.attributes?.find(
+        (attribute) => attribute.name === "default"
+      );
+
+      const createdAtNowArg = createdAtDefaultAttribute?.args?.some(
+        (arg) => (arg.value as Func).name === "now"
+      );
+
+      if (createdAtDefaultAttribute && createdAtNowArg) {
+        return EnumDataType.CreatedAt;
+      }
+    };
+
+    const updatedAtType = () => {
+      const updatedAtAttribute = field.attributes?.some(
+        (attribute) => attribute.name === "updatedAt"
+      );
+
+      const updatedAtDefaultAttribute = field.attributes?.find(
+        (attribute) => attribute.name === "default"
+      );
+
+      const updatedAtNowArg = updatedAtDefaultAttribute?.args?.some(
+        (arg) => (arg.value as Func).name === "now"
+      );
+
+      if (
+        updatedAtAttribute ||
+        (updatedAtDefaultAttribute && updatedAtNowArg)
+      ) {
+        return EnumDataType.UpdatedAt;
       }
     };
 
@@ -443,8 +525,11 @@ export class PrismaSchemaUtilsService {
     const fieldDataTypCases: (() => EnumDataType | undefined)[] = [
       idType,
       lookupRelationType,
+      lookupModelType,
       optionSetType,
       multiSelectOptionSetType,
+      createAtType,
+      updatedAtType,
       // must be the one before the last
       scalarType,
       // must be last
@@ -520,6 +605,14 @@ export class PrismaSchemaUtilsService {
     return this.resolveFieldDataType(schema, field) === EnumDataType.Boolean;
   }
 
+  private isCreatedAtField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.CreatedAt;
+  }
+
+  private isUpdatedAtField(schema: Schema, field: Field): boolean {
+    return this.resolveFieldDataType(schema, field) === EnumDataType.UpdatedAt;
+  }
+
   private isDateTimeField(schema: Schema, field: Field): boolean {
     return this.resolveFieldDataType(schema, field) === EnumDataType.DateTime;
   }
@@ -552,23 +645,23 @@ export class PrismaSchemaUtilsService {
     const relationAttribute = field.attributes?.some(
       (attr) => attr.name === "relation"
     );
-    const hasRelationAttributeWithoutReferenceField = field.attributes?.some(
+
+    const hasRelationAttributeWithRelationName = field.attributes?.some(
       (attr) =>
         attr.name === "relation" &&
         attr.args.some((arg) => typeof arg.value === "string")
     );
+
     const fieldModelType = modelList.find(
       (modelItem: Model) =>
-        formatModelName(modelItem.name).toLowerCase() ===
-        pluralize.singular(formatFieldName(field.fieldType)).toLowerCase()
+        formatModelName(modelItem.name) === formatFieldName(field.fieldType)
     );
 
     // check if the field is a relation field but it doesn't have the @relation attribute, like order[] on Customer model,
     // or it has the @relation attribute but without reference field
     if (
-      !relationAttribute &&
-      fieldModelType &&
-      hasRelationAttributeWithoutReferenceField
+      (!relationAttribute && fieldModelType) ||
+      (fieldModelType && hasRelationAttributeWithRelationName)
     ) {
       return true;
     } else {
@@ -576,55 +669,32 @@ export class PrismaSchemaUtilsService {
     }
   }
 
-  private isFkFieldOfARelation(schema: Schema, field: Field): boolean {
-    const modelList = schema.list.filter((item) => item.type === "model");
-    const fKFieldOfARelationOnModel = modelList.find((model: Model) => {
-      const modelFields = model.properties.filter((property) => {
-        property.type === "field";
-      });
-      const currentField = modelFields.find(
-        (modelField: Field) =>
-          formatFieldName(modelField.name).toLowerCase() ===
-          formatFieldName(field.name).toLowerCase()
-      ) as Field;
-
-      if (!currentField) {
-        this.logger.error(
-          `Field ${field.name} not found in model ${model.name}`
-        );
-        throw new Error(`Field ${field.name} not found in model ${model.name}`);
-      }
-
-      const fkFieldOfARelation = modelFields.find((field: Field) => {
-        field.attributes?.find((attr) => {
-          const relationAttribute = attr.name === "relation";
-
-          const relationField = attr.args.find(
-            (attributeArgument: AttributeArgument) =>
-              (attributeArgument.value as KeyValue).key === "fields"
-          );
-
-          const isRelationFieldIsOnRelationFieldArray = (
-            relationField?.value as RelationArray
-          ).args.find(
-            (relationField: string) =>
-              formatFieldName(relationField).toLowerCase() ===
-              formatFieldName(field.name).toLowerCase()
-          );
-
-          if (
-            relationAttribute &&
-            relationField &&
-            isRelationFieldIsOnRelationFieldArray
-          ) {
-            return field;
-          }
-        });
-      });
-
-      return fkFieldOfARelation;
+  private isFkFieldOfARelation(
+    schema: Schema,
+    model: Model,
+    field: Field
+  ): boolean {
+    const modelFields = model.properties.filter((property) => {
+      property.type === "field";
     });
-    return !!fKFieldOfARelationOnModel;
+
+    return modelFields.some((relationField: Field) => {
+      const relationAttribute = relationField.attributes?.find(
+        (attr) => attr.name === "relation"
+      );
+      const relationFieldArg = relationAttribute.args.find(
+        (attributeArgument: AttributeArgument) =>
+          (attributeArgument.value as KeyValue).key === "fields"
+      );
+
+      const relationFieldArgValue = (
+        relationFieldArg.value as RelationArray
+      ).args.find(
+        (argName) => formatFieldName(argName) === formatFieldName(field.name)
+      );
+
+      return relationFieldArgValue;
+    });
   }
 
   /********************
@@ -649,6 +719,70 @@ export class PrismaSchemaUtilsService {
       field,
       EnumDataType.Boolean
     );
+
+    entity.fields.push(entityField);
+
+    return entity;
+  }
+
+  convertPrismaCreatedAtToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityField = this.createOneEntityFieldCommonProperties(
+      field,
+      EnumDataType.CreatedAt
+    );
+
+    if (entityField.customAttributes.includes("@default()")) {
+      entityField.customAttributes = entityField.customAttributes.replace(
+        "@default()",
+        ""
+      );
+    }
+
+    entity.fields.push(entityField);
+
+    return entity;
+  }
+
+  convertPrismaUpdatedAtToEntityField(
+    schema: Schema,
+    model: Model,
+    field: Field,
+    preparedEntities: CreateEntityInput[]
+  ) {
+    const entity = preparedEntities.find(
+      (entity) => entity.name === model.name
+    ) as CreateEntityInput;
+
+    if (!entity) {
+      this.logger.error(`Entity ${model.name} not found`);
+      throw new Error(`Entity ${model.name} not found`);
+    }
+
+    const entityField = this.createOneEntityFieldCommonProperties(
+      field,
+      EnumDataType.UpdatedAt
+    );
+
+    if (entityField.customAttributes.includes("@default()")) {
+      entityField.customAttributes = entityField.customAttributes.replace(
+        "@default()",
+        ""
+      );
+    }
 
     entity.fields.push(entityField);
 
@@ -819,15 +953,18 @@ export class PrismaSchemaUtilsService {
       field,
       EnumDataType.Id
     );
+
     if (entityField.customAttributes.includes("@default()")) {
       entityField.customAttributes = entityField.customAttributes.replace(
         "@default()",
         ""
       );
     }
+
     const defaultIdAttribute = field.attributes?.find(
       (attr) => attr.name === "default"
     );
+
     if (defaultIdAttribute && defaultIdAttribute.args) {
       entityField.properties =
         idTypePropertyMap[(defaultIdAttribute.args[0].value as Func).name];
@@ -860,7 +997,9 @@ export class PrismaSchemaUtilsService {
 
     const enums = schema.list.filter((item) => item.type === "enum");
     const enumOfTheField = enums.find(
-      (item: Enum) => item.name === field.name
+      (item: Enum) =>
+        formatModelName(item.name) ===
+        formatModelName(field.fieldType as string)
     ) as Enum;
 
     if (!enumOfTheField) {
@@ -971,28 +1110,32 @@ export class PrismaSchemaUtilsService {
 
     const { remoteModel, remoteField } = remoteModelAndField;
 
-    const relatedEntity = preparedEntities.find(
-      (entity) => entity.name === remoteModel.name
-    ) as CreateEntityInput;
-
     const relatedField = this.createOneEntityFieldCommonProperties(
       remoteField,
       EnumDataType.Lookup
     );
 
+    const relatedEntity = preparedEntities.find(
+      (entity) => entity.name === remoteModel.name
+    ) as CreateEntityInput;
+
     entityField.properties = {
       relatedEntityId: relatedEntity.id,
       relatedFieldId: relatedField.permanentId,
       allowMultipleSelection: (field.fieldType as string).includes("[]"),
-      fkHolder: true,
+      fkHolder: null,
     };
+    entityField.relatedFieldName = relatedField.name;
+    entityField.relatedFieldDisplayName = relatedField.displayName;
 
     relatedField.properties = {
       relatedEntityId: entity.id,
       relatedFieldId: entityField.permanentId,
       allowMultipleSelection: (remoteField.fieldType as string).includes("[]"),
-      fkHolder: false,
+      fkHolder: null,
     };
+    relatedField.relatedFieldName = entityField.name;
+    relatedField.relatedFieldDisplayName = entityField.displayName;
 
     // add the field to main entity
     entity.fields.push(entityField);
@@ -1015,26 +1158,43 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field
   ): { remoteModel: Model; remoteField: Field } | undefined {
-    // in the main relation, check if the relation annotation has a name
-    let relationAttributeName = "";
+    let relationAttributeName: string | undefined;
     let remoteField: Field | undefined;
+
+    // in the main relation, check if the relation annotation has a name
     field.attributes?.find((attr) => {
       const relationAttribute = attr.name === "relation";
       const relationAttributeStringArgument =
         relationAttribute &&
         attr.args.find((arg) => typeof arg.value === "string");
-      relationAttributeName = relationAttributeStringArgument.value as string;
+
+      relationAttributeName =
+        relationAttributeStringArgument &&
+        (relationAttributeStringArgument.value as string);
     });
 
     const remoteModel = schema.list.find(
-      (item) => item.type === "model" && item.name === field.type
+      (item) =>
+        item.type === "model" &&
+        formatModelName(item.name) ===
+          formatModelName(field.fieldType as string)
     ) as Model;
+
+    if (!remoteModel) {
+      this.logger.error(
+        `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
+      );
+      throw new Error(
+        `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
+      );
+    }
 
     const remoteModelFields = remoteModel.properties.filter(
       (property) => property.type === "field"
     ) as Field[];
 
     if (relationAttributeName) {
+      // find the remote field in the remote model that has the relation attribute with the name we found
       remoteField = remoteModelFields.find((field: Field) => {
         return field.attributes?.some(
           (attr) =>
@@ -1043,10 +1203,13 @@ export class PrismaSchemaUtilsService {
         );
       });
     } else {
-      const remoteFields = remoteModelFields.filter((field: Field) => {
+      const remoteFields = remoteModelFields.filter((remoteField: Field) => {
+        const hasRelationAttribute = remoteField.attributes?.some(
+          (attr) => attr.name === "relation"
+        );
         return (
-          field.fieldType === model.name &&
-          !field.attributes.some((attr) => attr.name === "relation")
+          formatModelName(remoteField.fieldType as string) ===
+            formatModelName(model.name) && !hasRelationAttribute
         );
       });
 
@@ -1056,7 +1219,15 @@ export class PrismaSchemaUtilsService {
         );
       }
 
-      remoteField = remoteFields[0];
+      if (remoteFields.length === 1) {
+        remoteField = remoteFields[0];
+      }
+
+      if (!remoteField) {
+        throw new Error(
+          `No field found in model ${remoteModel.name} that reference ${model.name}`
+        );
+      }
     }
 
     return { remoteModel, remoteField };

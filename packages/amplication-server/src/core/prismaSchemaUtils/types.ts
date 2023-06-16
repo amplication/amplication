@@ -1,6 +1,7 @@
-import { ConcretePrismaSchemaBuilder, Func } from "@mrleebo/prisma-ast";
+import { ConcretePrismaSchemaBuilder } from "@mrleebo/prisma-ast";
 import { registerEnumType } from "@nestjs/graphql";
 import { JsonValue } from "type-fest";
+import { EnumDataType } from "../../prisma";
 
 export enum ErrorMessages {
   InvalidSchema = "Invalid schema",
@@ -40,10 +41,12 @@ export type CreateEntityFieldInput = {
   name: string;
   displayName: string;
   description: string;
-  dataType: string | Func;
+  dataType: EnumDataType;
   required: boolean;
   unique: boolean;
   searchable: boolean;
   properties: { [x: string]: JsonValue };
   customAttributes?: string;
+  relatedFieldName?: string;
+  relatedFieldDisplayName?: string;
 };
