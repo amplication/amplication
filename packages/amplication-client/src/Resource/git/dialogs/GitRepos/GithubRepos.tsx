@@ -237,6 +237,22 @@ function GitRepos({
               Create repository
             </Button>
           )}
+          {gitOrganization.type === EnumGitOrganizationType.User &&
+            gitOrganization.provider === EnumGitProvider.Github && (
+              <a
+                href={`https://github.com/new?&owner=${gitOrganization.name}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button
+                  className={`${CLASS_NAME}__header-create`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  type="button"
+                >
+                  Create repository
+                </Button>
+              </a>
+            )}
         </div>
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
