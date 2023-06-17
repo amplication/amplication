@@ -316,6 +316,10 @@ export type DateTimeFilter = {
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
 };
 
+export type DefaultEntitiesInput = {
+  resourceId: Scalars['String'];
+};
+
 export type Entity = {
   createdAt: Scalars['DateTime'];
   customAttributes?: Maybe<Scalars['String']>;
@@ -861,6 +865,7 @@ export type Mutation = {
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
+  createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -965,6 +970,11 @@ export type MutationCreateApiTokenArgs = {
 
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
+};
+
+
+export type MutationCreateDefaultEntitiesArgs = {
+  data: DefaultEntitiesInput;
 };
 
 
@@ -1315,6 +1325,7 @@ export type PendingChangesFindInput = {
 
 export type PluginInstallation = IBlock & {
   blockType: EnumBlockType;
+  configurations?: Maybe<Scalars['JSONObject']>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -1335,6 +1346,7 @@ export type PluginInstallation = IBlock & {
 };
 
 export type PluginInstallationCreateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
@@ -1358,6 +1370,7 @@ export type PluginInstallationOrderByInput = {
 };
 
 export type PluginInstallationUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];

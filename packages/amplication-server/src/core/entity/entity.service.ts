@@ -352,7 +352,10 @@ export class EntityService {
     return newEntity;
   }
 
-  async createDefaultEntities(resourceId: string, user: User): Promise<void> {
+  async createDefaultEntities(
+    resourceId: string,
+    user: User
+  ): Promise<Entity[]> {
     return this.bulkCreateEntities(resourceId, user, DEFAULT_ENTITIES);
   }
 
@@ -366,8 +369,8 @@ export class EntityService {
     resourceId: string,
     user: User,
     entities: BulkEntityData[]
-  ): Promise<void> {
-    await Promise.all(
+  ): Promise<Entity[]> {
+    return await Promise.all(
       entities.map((entity) => {
         const names = pick(entity, [
           "name",
@@ -454,10 +457,6 @@ export class EntityService {
     user: User
   ): Promise<Entity | null> {
     return await this.useLocking(args.where.id, user, async (entity) => {
-      if (entity.name === USER_ENTITY_NAME) {
-        throw new ConflictException(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-      }
-
       const relatedEntityFields = await this.prisma.entityField.findMany({
         where: {
           dataType: EnumDataType.Lookup,

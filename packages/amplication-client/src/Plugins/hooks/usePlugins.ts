@@ -18,6 +18,7 @@ export type PluginVersion = {
   version: string;
   isLatest: boolean;
   settings: string;
+  configurations: string;
   id: string;
   pluginId: string;
 };

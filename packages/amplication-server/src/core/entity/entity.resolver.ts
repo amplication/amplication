@@ -42,6 +42,7 @@ import {
   CreateOneEntityFieldByDisplayNameArgs,
   UpdateOneEntityFieldArgs,
   CreateDefaultRelatedFieldArgs,
+  CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
 
@@ -82,6 +83,20 @@ export class EntityResolver {
     @Args() args: CreateOneEntityArgs
   ): Promise<Entity> {
     return this.entityService.createOneEntity(args, user);
+  }
+
+  @Mutation(() => [Entity], {
+    nullable: true,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  async createDefaultEntities(
+    @UserEntity() user: User,
+    @Args() args: CreateDefaultEntitiesArgs
+  ): Promise<Entity[]> {
+    return await this.entityService.createDefaultEntities(
+      args.data.resourceId,
+      user
+    );
   }
 
   @Mutation(() => Entity, {
