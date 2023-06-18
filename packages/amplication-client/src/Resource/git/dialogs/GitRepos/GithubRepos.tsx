@@ -11,7 +11,7 @@ import {
   Label,
 } from "@amplication/ui/design-system";
 
-import { gql, NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
+import { NetworkStatus, useQuery, useLazyQuery } from "@apollo/client";
 import React, { useCallback, useEffect, useState } from "react";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import {
@@ -25,6 +25,7 @@ import GitRepoItem from "./GitRepoItem/GitRepoItem";
 import "./GitRepos.scss";
 import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { FIND_GIT_REPOS, GET_GROUPS } from "../../queries/gitProvider";
 
 const CLASS_NAME = "git-repos";
 const MAX_ITEMS_PER_PAGE = 10;
@@ -52,6 +53,7 @@ export type GitRepositoryCreatedData = {
   isPublic: boolean;
   groupName?: string;
   gitRepositoryUrl?: string;
+  resourceId?: string;
 };
 
 function GitRepos({
@@ -235,6 +237,22 @@ function GitRepos({
               Create repository
             </Button>
           )}
+          {gitOrganization.type === EnumGitOrganizationType.User &&
+            gitOrganization.provider === EnumGitProvider.Github && (
+              <a
+                href={`https://github.com/new?&owner=${gitOrganization.name}`}
+                target="_blank"
+                rel="noreferrer"
+              >
+                <Button
+                  className={`${CLASS_NAME}__header-create`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  type="button"
+                >
+                  Create repository
+                </Button>
+              </a>
+            )}
         </div>
       </div>
       {networkStatus !== NetworkStatus.refetch && // hide data if refetch
@@ -251,76 +269,3 @@ function GitRepos({
 }
 
 export default GitRepos;
-
-export const CONNECT_GIT_REPOSITORY = gql`
-  mutation connectResourceGitRepository(
-    $name: String!
-    $gitOrganizationId: String!
-    $resourceId: String!
-    $groupName: String
-  ) {
-    connectResourceGitRepository(
-      data: {
-        name: $name
-        resourceId: $resourceId
-        gitOrganizationId: $gitOrganizationId
-        groupName: $groupName
-      }
-    ) {
-      id
-      gitRepository {
-        id
-        groupName
-      }
-    }
-  }
-`;
-
-const FIND_GIT_REPOS = gql`
-  query remoteGitRepositories(
-    $groupName: String
-    $gitOrganizationId: String!
-    $gitProvider: EnumGitProvider!
-    $perPage: Float!
-    $page: Float!
-  ) {
-    remoteGitRepositories(
-      where: {
-        groupName: $groupName
-        gitOrganizationId: $gitOrganizationId
-        gitProvider: $gitProvider
-        perPage: $perPage
-        page: $page
-      }
-    ) {
-      repos {
-        name
-        url
-        private
-        fullName
-        admin
-        groupName
-      }
-      total
-      pagination {
-        page
-        perPage
-      }
-    }
-  }
-`;
-
-const GET_GROUPS = gql`
-  query gitGroups($organizationId: String!) {
-    gitGroups(where: { organizationId: $organizationId }) {
-      total
-      page
-      pageSize
-      groups {
-        id
-        name
-        displayName
-      }
-    }
-  }
-`;

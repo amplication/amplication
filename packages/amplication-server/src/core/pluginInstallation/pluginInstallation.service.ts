@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { forwardRef, Inject, Injectable } from "@nestjs/common";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { User } from "../../models";
 import { BlockTypeService } from "../block/blockType.service";
@@ -16,6 +16,8 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
+import { ResourceService } from "../resource/resource.service";
 
 const reOrderPlugins = (
   argsData: PluginOrderItem,
@@ -62,6 +64,8 @@ export class PluginInstallationService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
+    @Inject(forwardRef(() => ResourceService))
+    protected readonly resourceService: ResourceService,
     protected readonly pluginOrderService: PluginOrderService,
     private readonly analytics: SegmentAnalyticsService
   ) {
@@ -72,6 +76,13 @@ export class PluginInstallationService extends BlockTypeService<
     args: CreatePluginInstallationArgs,
     user: User
   ): Promise<PluginInstallation> {
+    const { configurations, resource } = args.data;
+
+    await this.resourceService.userEntityValidation(
+      resource.connect.id,
+      configurations
+    );
+
     const newPlugin = await super.create(args, user);
     await this.setOrder(
       {

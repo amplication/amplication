@@ -382,7 +382,7 @@ export class GitClientService {
       return { diff: null };
     }
 
-    const diff = await gitCli.diff([hash]);
+    const diff = await gitCli.diff(hash);
     if (!diff) {
       this.logger.warn("Diff returned empty");
       return { diff: null };

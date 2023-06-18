@@ -316,6 +316,10 @@ export type DateTimeFilter = {
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
 };
 
+export type DefaultEntitiesInput = {
+  resourceId: Scalars['String'];
+};
+
 export type Entity = {
   createdAt: Scalars['DateTime'];
   customAttributes?: Maybe<Scalars['String']>;
@@ -861,6 +865,7 @@ export type Mutation = {
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
+  createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -964,6 +969,11 @@ export type MutationCreateApiTokenArgs = {
 
 export type MutationCreateBuildArgs = {
   data: BuildCreateInput;
+};
+
+
+export type MutationCreateDefaultEntitiesArgs = {
+  data: DefaultEntitiesInput;
 };
 
 
@@ -1308,6 +1318,7 @@ export type PendingChangesFindInput = {
 
 export type PluginInstallation = IBlock & {
   blockType: EnumBlockType;
+  configurations?: Maybe<Scalars['JSONObject']>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -1328,6 +1339,7 @@ export type PluginInstallation = IBlock & {
 };
 
 export type PluginInstallationCreateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
@@ -1351,6 +1363,7 @@ export type PluginInstallationOrderByInput = {
 };
 
 export type PluginInstallationUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
@@ -1400,10 +1413,12 @@ export type PluginSetOrderInput = {
 
 export type Project = {
   createdAt: Scalars['DateTime'];
+  demoRepoName?: Maybe<Scalars['String']>;
   id: Scalars['String'];
   name: Scalars['String'];
   resources?: Maybe<Array<Resource>>;
   updatedAt: Scalars['DateTime'];
+  useDemoRepo: Scalars['Boolean'];
 };
 
 export type ProjectConfigurationSettings = IBlock & {
@@ -1792,6 +1807,7 @@ export type ResourceCreateWithEntitiesFieldInput = {
 export type ResourceCreateWithEntitiesInput = {
   authType: Scalars['String'];
   commitMessage: Scalars['String'];
+  connectToDemoRepo: Scalars['Boolean'];
   dbType: Scalars['String'];
   entities: Array<ResourceCreateWithEntitiesEntityInput>;
   plugins?: InputMaybe<PluginInstallationsCreateInput>;

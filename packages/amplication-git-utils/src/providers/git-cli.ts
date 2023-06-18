@@ -1,7 +1,7 @@
 import { CleanOptions, ResetMode, simpleGit, SimpleGit } from "simple-git";
 import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
 import { ILogger } from "@amplication/util/logging";
 import { GitCliOptions } from "./git-cli.types";
@@ -88,8 +88,14 @@ export class GitCli {
       .clean(CleanOptions.FORCE);
   }
 
-  async diff(ref: string[]) {
-    return this.git.diff(ref);
+  /**
+   * Returns the diff between the current branch and the given ref
+   * @param ref reference to compare to
+   * @returns diff between the current branch and the given ref
+   * @see https://git-scm.com/docs/git-diff
+   */
+  async diff(ref: string) {
+    return this.git.diff(["--full-index", ref]);
   }
 
   async commit(
@@ -102,7 +108,7 @@ export class GitCli {
     await Promise.all(
       files.map(async (file) => {
         const filePath = join(this.options.repositoryDir, file.path);
-        const fileParentDir = filePath.split("/").slice(0, -1).join("/");
+        const fileParentDir = dirname(filePath);
 
         if (file.deleted) {
           await rm(filePath);
@@ -143,7 +149,7 @@ export class GitCli {
   }
 
   async applyPatch(patches: string[], options?: string[]) {
-    options = options ?? ["--3way", "--whitespace=nowarn"];
+    options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
     await this.git
       .applyPatch(patches, options)
       .commit("Amplication merge conflicts auto-resolution", undefined, {

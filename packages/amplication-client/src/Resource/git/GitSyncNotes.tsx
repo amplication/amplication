@@ -1,6 +1,7 @@
 import { Icon } from "@amplication/ui/design-system";
 import React from "react";
-import { CLASS_NAME } from "./AuthResourceWithGit";
+
+const CLASS_NAME = "auth-app-with-git";
 
 export default function GitSyncNotes() {
   return (

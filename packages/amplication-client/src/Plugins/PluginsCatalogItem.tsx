@@ -15,6 +15,7 @@ import { AppContext } from "../context/appContext";
 import { Plugin, PluginVersion } from "./hooks/usePlugins";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
+import { LATEST_VERSION_TAG } from "./constant";
 
 type Props = {
   plugin: Plugin;
@@ -56,8 +57,11 @@ function PluginsCatalogItem({
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
-    const lastVersion = plugin.versions[plugin.versions.length - 1];
-    onInstall && onInstall(plugin, lastVersion);
+    // Get the "latest" version
+    const hardcodedLatestVersion = plugin.versions.find(
+      (version) => version.version === LATEST_VERSION_TAG
+    );
+    onInstall && onInstall(plugin, hardcodedLatestVersion);
   }, [onInstall, plugin]);
 
   const handleEnableStateChange = useCallback(() => {

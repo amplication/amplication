@@ -11,6 +11,7 @@ import {
   EnumDataType,
   EventNames,
   Module,
+  ModuleMap,
   types,
 } from "@amplication/code-gen-types";
 import {
@@ -78,7 +79,7 @@ export const createDefaultAuthProperties = ({
   ),
 ];
 
-export async function createSeed(): Promise<Module[]> {
+export async function createSeed(): Promise<ModuleMap> {
   const {
     serverDirectories,
     entities,
@@ -92,19 +93,20 @@ export async function createSeed(): Promise<Module[]> {
   const outputFileName = "seed.ts";
 
   const userEntity = entities.find((entity) => entity.name === userEntityName);
-  const customProperties = createUserObjectCustomProperties(
-    userEntity as Entity
-  );
+  const customProperties =
+    userEntity && createUserObjectCustomProperties(userEntity as Entity);
 
   const template = await readFile(seedTemplatePath);
-  const seedingProperties = [
-    ...createDefaultAuthProperties({
-      userNameFieldName,
-      userPasswordFieldName,
-      userRolesFieldName,
-    }),
-    ...customProperties,
-  ];
+  const seedingProperties = customProperties
+    ? [
+        ...createDefaultAuthProperties({
+          userNameFieldName,
+          userPasswordFieldName,
+          userRolesFieldName,
+        }),
+        ...customProperties,
+      ]
+    : [];
   const templateMapping = {
     DATA: builders.objectExpression(seedingProperties),
   };
@@ -122,7 +124,7 @@ async function createSeedInternal({
   templateMapping,
   fileDir,
   outputFileName,
-}: CreateSeedParams): Promise<Module[]> {
+}: CreateSeedParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs } = DsgContext.getInstance;
 
@@ -138,12 +140,14 @@ async function createSeedInternal({
 
   addImports(template, dtoImports);
 
-  return [
-    {
-      path: `${fileDir}/${outputFileName}`,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: `${fileDir}/${outputFileName}`,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 export function createUserObjectCustomProperties(

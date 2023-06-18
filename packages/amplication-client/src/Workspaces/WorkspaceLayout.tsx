@@ -96,8 +96,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   useEffect(() => {
-    commitUtils.refetchLastCommit();
-  }, [currentResource?.id]);
+    if (!currentProject?.id) return;
+    commitUtils.refetchCommitsData(true);
+  }, [currentProject?.id]);
 
   const { trackEvent, Track } = useTracking<{ [key: string]: any }>({
     workspaceId: currentWorkspace?.id,
