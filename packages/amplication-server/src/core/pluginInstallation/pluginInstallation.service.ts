@@ -16,7 +16,6 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
 import { ResourceService } from "../resource/resource.service";
 
 const reOrderPlugins = (

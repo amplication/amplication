@@ -21,7 +21,6 @@ import { User } from "../../models";
 import { FindOneArgs } from "../../dto";
 import { PluginOrderService } from "./pluginOrder.service";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
 
 @Resolver(() => PluginInstallation)
 export class PluginInstallationResolver extends BlockTypeResolver(
