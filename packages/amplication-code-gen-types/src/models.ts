@@ -875,7 +875,6 @@ export type Mutation = {
   /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
-  createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
   createRemoteGitRepository: Scalars['Boolean'];
   createResourceRole: ResourceRole;
@@ -1019,12 +1018,6 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
-};
-
-
-export type MutationCreatePluginInstallationsArgs = {
-  data: PluginInstallationsCreateInput;
-  where: WhereUniqueInput;
 };
 
 

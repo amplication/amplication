@@ -12,7 +12,10 @@ import { PluginOrder } from "./dto/PluginOrder";
 import { SetPluginOrderArgs } from "./dto/SetPluginOrderArgs";
 import { PluginOrderItem } from "./dto/PluginOrderItem";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ResourceService } from "../resource/resource.service";
 
 const reOrderPlugins = (
@@ -62,40 +65,10 @@ export class PluginInstallationService extends BlockTypeService<
     protected readonly blockService: BlockService,
     @Inject(forwardRef(() => ResourceService))
     protected readonly resourceService: ResourceService,
-    protected readonly pluginOrderService: PluginOrderService
+    protected readonly pluginOrderService: PluginOrderService,
+    private readonly analytics: SegmentAnalyticsService
   ) {
     super(blockService);
-  }
-
-  async createMany(
-    args: CreatePluginInstallationsArgs,
-    user: User
-  ): Promise<PluginInstallation[]> {
-    const { plugins } = args.data;
-
-    const newPlugins: PluginInstallation[] = [];
-
-    for (let index = 0; index < plugins.length; index++) {
-      const currentArgs: CreatePluginInstallationArgs = {
-        data: plugins[index],
-      };
-      const newPlugin = await super.create(currentArgs, user);
-      newPlugins.push(newPlugin);
-
-      await this.setOrder(
-        {
-          data: {
-            order: -1,
-          },
-          where: {
-            id: newPlugin.id,
-          },
-        },
-        user
-      );
-    }
-
-    return newPlugins;
   }
 
   async create(
@@ -122,6 +95,15 @@ export class PluginInstallationService extends BlockTypeService<
       user
     );
 
+    await this.analytics.track({
+      userId: user.account.id,
+      event: EnumEventType.PluginInstall,
+      properties: {
+        pluginId: newPlugin.pluginId,
+        pluginType: "official",
+      },
+    });
+
     return newPlugin;
   }
 
@@ -138,7 +120,19 @@ export class PluginInstallationService extends BlockTypeService<
     args.data.pluginId = installation.pluginId;
     args.data.npm = installation.npm;
 
-    return super.update(args, user);
+    const updated = await super.update(args, user);
+
+    await this.analytics.track({
+      userId: user.account.id,
+      event: EnumEventType.PluginUpdate,
+      properties: {
+        pluginId: updated.pluginId,
+        pluginType: "official",
+        enabled: updated.enabled,
+      },
+    });
+
+    return updated;
   }
 
   async setOrder(args: SetPluginOrderArgs, user: User): Promise<PluginOrder> {
