@@ -64,7 +64,9 @@ function PluginsCatalogItem({
       ? plugin.versions.find(
           (version) => version.version === LATEST_VERSION_TAG
         )
-      : plugin.versions[0];
+      : plugin.versions.find(
+          (version) => version.version !== LATEST_VERSION_TAG
+        );
 
     onInstall && onInstall(plugin, hardcodedLatestVersion);
   }, [onInstall, plugin]);
