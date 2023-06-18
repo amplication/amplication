@@ -93,19 +93,20 @@ export async function createSeed(): Promise<ModuleMap> {
   const outputFileName = "seed.ts";
 
   const userEntity = entities.find((entity) => entity.name === userEntityName);
-  const customProperties = createUserObjectCustomProperties(
-    userEntity as Entity
-  );
+  const customProperties =
+    userEntity && createUserObjectCustomProperties(userEntity as Entity);
 
   const template = await readFile(seedTemplatePath);
-  const seedingProperties = [
-    ...createDefaultAuthProperties({
-      userNameFieldName,
-      userPasswordFieldName,
-      userRolesFieldName,
-    }),
-    ...customProperties,
-  ];
+  const seedingProperties = customProperties
+    ? [
+        ...createDefaultAuthProperties({
+          userNameFieldName,
+          userPasswordFieldName,
+          userRolesFieldName,
+        }),
+        ...customProperties,
+      ]
+    : [];
   const templateMapping = {
     DATA: builders.objectExpression(seedingProperties),
   };

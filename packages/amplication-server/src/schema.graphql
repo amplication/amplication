@@ -64,11 +64,11 @@ type Query {
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
 }
@@ -970,6 +970,7 @@ type PluginInstallation implements IBlock {
   enabled: Boolean!
   npm: String!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 
@@ -1007,6 +1008,23 @@ type PluginOrder implements IBlock {
   lockedByUserId: String
   lockedAt: DateTime
   order: [PluginOrderItem!]!
+}
+
+type ProjectConfigurationSettings implements IBlock {
+  id: String!
+  createdAt: DateTime!
+  resourceId: String
+  updatedAt: DateTime!
+  parentBlock: Block
+  displayName: String!
+  description: String
+  blockType: EnumBlockType!
+  versionNumber: Float!
+  inputParameters: [BlockInputOutput!]!
+  outputParameters: [BlockInputOutput!]!
+  lockedByUserId: String
+  lockedAt: DateTime
+  baseDirectory: String!
 }
 
 """Returns a paginated list of repository groups available to select."""
@@ -1070,23 +1088,6 @@ input GitOrganizationWhereInput {
   id: String
 }
 
-type ProjectConfigurationSettings implements IBlock {
-  id: String!
-  createdAt: DateTime!
-  resourceId: String
-  updatedAt: DateTime!
-  parentBlock: Block
-  displayName: String!
-  description: String
-  blockType: EnumBlockType!
-  versionNumber: Float!
-  inputParameters: [BlockInputOutput!]!
-  outputParameters: [BlockInputOutput!]!
-  lockedByUserId: String
-  lockedAt: DateTime
-  baseDirectory: String!
-}
-
 type ApiToken {
   id: String!
   createdAt: DateTime!
@@ -1119,6 +1120,7 @@ type Mutation {
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
+  createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
@@ -1146,7 +1148,6 @@ type Mutation {
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
-  createPluginInstallations(data: PluginInstallationsCreateInput!, where: WhereUniqueInput!): [PluginInstallation!]
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
@@ -1160,7 +1161,6 @@ type Mutation {
   disconnectResourceGitRepository(resourceId: String!): Resource!
   getGitResourceInstallationUrl(data: GitGetInstallationUrlInput!): AuthorizeResourceWithGitResult!
   completeGitOAuth2Flow(data: GitOAuth2FlowInput!): GitOrganization!
-  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   signup(data: SignupInput!): Auth!
   login(data: LoginInput!): Auth!
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
@@ -1305,6 +1305,7 @@ input PluginInstallationCreateInput {
   enabled: Boolean!
   npm: String!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 
@@ -1336,6 +1337,10 @@ input EntityCreateInput {
   customAttributes: String
   description: String
   resource: WhereParentIdInput!
+}
+
+input DefaultEntitiesInput {
+  resourceId: String!
 }
 
 input EntityUpdateInput {
@@ -1474,11 +1479,18 @@ input PluginInstallationUpdateInput {
   description: String
   enabled: Boolean!
   settings: JSONObject
+  configurations: JSONObject
   version: String!
 }
 
 input PluginSetOrderInput {
   order: Int!
+}
+
+input ProjectConfigurationSettingsUpdateInput {
+  displayName: String
+  description: String
+  baseDirectory: String
 }
 
 input CreateGitRepositoryInput {
@@ -1520,12 +1532,6 @@ input GitGetInstallationUrlInput {
 input GitOAuth2FlowInput {
   gitProvider: EnumGitProvider!
   code: String!
-}
-
-input ProjectConfigurationSettingsUpdateInput {
-  displayName: String
-  description: String
-  baseDirectory: String
 }
 
 input SignupInput {

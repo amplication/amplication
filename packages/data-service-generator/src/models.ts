@@ -316,6 +316,10 @@ export type DateTimeFilter = {
   notIn?: InputMaybe<Array<Scalars['DateTime']>>;
 };
 
+export type DefaultEntitiesInput = {
+  resourceId: Scalars['String'];
+};
+
 export type Entity = {
   createdAt: Scalars['DateTime'];
   customAttributes?: Maybe<Scalars['String']>;
@@ -861,6 +865,7 @@ export type Mutation = {
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
+  createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -870,7 +875,6 @@ export type Mutation = {
   /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
-  createPluginInstallations?: Maybe<Array<PluginInstallation>>;
   createProject: Project;
   createRemoteGitRepository: Scalars['Boolean'];
   createResourceRole: ResourceRole;
@@ -968,6 +972,11 @@ export type MutationCreateBuildArgs = {
 };
 
 
+export type MutationCreateDefaultEntitiesArgs = {
+  data: DefaultEntitiesInput;
+};
+
+
 export type MutationCreateDefaultRelatedFieldArgs = {
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
@@ -1009,12 +1018,6 @@ export type MutationCreateOrganizationArgs = {
 
 export type MutationCreatePluginInstallationArgs = {
   data: PluginInstallationCreateInput;
-};
-
-
-export type MutationCreatePluginInstallationsArgs = {
-  data: PluginInstallationsCreateInput;
-  where: WhereUniqueInput;
 };
 
 
@@ -1315,6 +1318,7 @@ export type PendingChangesFindInput = {
 
 export type PluginInstallation = IBlock & {
   blockType: EnumBlockType;
+  configurations?: Maybe<Scalars['JSONObject']>;
   createdAt: Scalars['DateTime'];
   description?: Maybe<Scalars['String']>;
   displayName: Scalars['String'];
@@ -1335,6 +1339,7 @@ export type PluginInstallation = IBlock & {
 };
 
 export type PluginInstallationCreateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
   enabled: Scalars['Boolean'];
@@ -1358,6 +1363,7 @@ export type PluginInstallationOrderByInput = {
 };
 
 export type PluginInstallationUpdateInput = {
+  configurations?: InputMaybe<Scalars['JSONObject']>;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;
   enabled: Scalars['Boolean'];
