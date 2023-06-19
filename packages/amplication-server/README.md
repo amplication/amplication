@@ -16,7 +16,7 @@ You can find a full list of targets in the [project.json](/Users/arielweinberger
 
 ### `serve`
 
-Runs the app in development mode.
+Runs the app in development mode. By default, your app comes with one user with the username "admin" and password "admin".
 
 ```
 npx nx serve amplication-server
