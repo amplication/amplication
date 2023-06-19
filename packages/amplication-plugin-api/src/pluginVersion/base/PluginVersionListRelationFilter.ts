@@ -53,4 +53,4 @@ class PluginVersionListRelationFilter {
   })
   none?: PluginVersionWhereInput;
 }
-export { PluginVersionListRelationFilter };
+export { PluginVersionListRelationFilter as PluginVersionListRelationFilter };

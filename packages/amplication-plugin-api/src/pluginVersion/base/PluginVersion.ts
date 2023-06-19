@@ -11,10 +11,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsString, IsOptional, IsJSON } from "class-validator";
+import { IsDate, IsString, IsOptional, IsBoolean } from "class-validator";
 import { Type } from "class-transformer";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import type { JsonValue } from "type-fest";
+
 @ObjectType()
 class PluginVersion {
   @ApiProperty({
@@ -46,6 +48,17 @@ class PluginVersion {
 
   @ApiProperty({
     required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isLatest!: boolean | null;
+
+  @ApiProperty({
+    required: false,
     type: String,
   })
   @IsString()
@@ -66,12 +79,22 @@ class PluginVersion {
   @ApiProperty({
     required: false,
   })
-  @IsJSON()
+  @IsJSONValue()
   @IsOptional()
   @Field(() => GraphQLJSON, {
     nullable: true,
   })
   settings!: JsonValue;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  configurations!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -92,4 +115,5 @@ class PluginVersion {
   })
   version!: string | null;
 }
-export { PluginVersion };
+
+export { PluginVersion as PluginVersion };

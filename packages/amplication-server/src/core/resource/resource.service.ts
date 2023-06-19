@@ -4,7 +4,12 @@ import {
   Prisma,
   EnumResourceType,
 } from "../../prisma";
-import { forwardRef, Inject, Injectable } from "@nestjs/common";
+import {
+  ConflictException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
@@ -35,12 +40,7 @@ const USER_RESOURCE_ROLE = {
 };
 
 export const DEFAULT_ENVIRONMENT_NAME = "Sandbox environment";
-export const INITIAL_COMMIT_MESSAGE = `Congratulations on your first commit with Amplication! 
-We encourage you to continue exploring the many ways Amplication can supercharge your development. 
- 
-If you find Amplication useful, please show your support and give our GitHub repo a star ⭐️   
-This simple action helps our open-source project grow and reach more developers like you. 
-Thank you and happy coding!`;
+export const INITIAL_COMMIT_MESSAGE = "Initial Commit";
 
 export const INVALID_RESOURCE_ID = "Invalid resourceId";
 export const INVALID_DELETE_PROJECT_CONFIGURATION =
@@ -57,6 +57,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { JsonValue } from "type-fest";
 
 const DEFAULT_PROJECT_CONFIGURATION_DESCRIPTION =
   "This resource is used to store project configuration.";
@@ -262,9 +263,11 @@ export class ResourceService {
   async createService(
     args: CreateOneResourceArgs,
     user: User,
-    wizardType: string = null
+    wizardType: string = null,
+    requireAuthenticationEntity: boolean = null
   ): Promise<Resource> {
     const { serviceSettings, gitRepository, ...rest } = args.data;
+
     const resource = await this.createResource(
       {
         data: {
@@ -280,7 +283,8 @@ export class ResourceService {
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
     });
 
-    await this.entityService.createDefaultEntities(resource.id, user);
+    requireAuthenticationEntity &&
+      (await this.entityService.createDefaultEntities(resource.id, user));
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
@@ -302,6 +306,37 @@ export class ResourceService {
     return resource;
   }
 
+  async userEntityValidation(
+    resourceId: string,
+    configurations: JsonValue
+  ): Promise<boolean> {
+    try {
+      const resource = await this.prisma.resource.findUnique({
+        where: {
+          id: resourceId,
+        },
+        include: {
+          entities: true,
+        },
+      });
+
+      if (
+        !resource.entities?.find(
+          (entity) =>
+            entity.name.toLowerCase() === USER_ENTITY_NAME.toLowerCase()
+        ) &&
+        configurations &&
+        configurations["requireAuthenticationEntity"] === "true"
+      ) {
+        throw new ConflictException("Plugin must have an User entity");
+      }
+      return true;
+    } catch (error) {
+      this.logger.error(error.message, error);
+      return false;
+    }
+  }
+
   /**
    * Create a resource of type "Service" with entities and fields in one transaction, based only on entities and fields names
    * @param user the user to associate the created resource with
@@ -318,12 +353,38 @@ export class ResourceService {
       throw new ReservedEntityNameError(USER_ENTITY_NAME);
     }
 
+    const requireAuthenticationEntity =
+      data.plugins?.plugins?.filter((plugin) => {
+        return plugin.configurations["requireAuthenticationEntity"] === "true";
+      }).length > 0;
+    const project = await this.projectService.findUnique({
+      where: { id: data.resource.project.connect.id },
+    });
+
+    if (data.connectToDemoRepo) {
+      await this.projectService.createDemoRepo(
+        data.resource.project.connect.id
+      );
+      //do not use any git data when using demo repo
+      data.resource.gitRepository = undefined;
+
+      await this.analytics.track({
+        userId: user.account.id,
+        event: EnumEventType.DemoRepoCreate,
+        properties: {
+          projectId: project.id,
+          workspaceId: project.workspaceId,
+        },
+      });
+    }
+
     const resource = await this.createService(
       {
         data: data.resource,
       },
       user,
-      data.wizardType
+      data.wizardType,
+      requireAuthenticationEntity
     );
 
     const newEntities: {
@@ -407,11 +468,17 @@ export class ResourceService {
     if (data.plugins?.plugins) {
       for (let index = 0; index < data.plugins.plugins.length; index++) {
         const currentPlugin = data.plugins.plugins[index];
+
         currentPlugin.resource = { connect: { id: resource.id } };
-        await this.pluginInstallationService.create(
-          { data: currentPlugin },
-          user
+        const isvValidEntityUser = await this.userEntityValidation(
+          resource.id,
+          currentPlugin.configurations
         );
+        isvValidEntityUser &&
+          (await this.pluginInstallationService.create(
+            { data: currentPlugin },
+            user
+          ));
       }
     }
 
@@ -449,15 +516,18 @@ export class ResourceService {
     });
 
     const { gitRepository, serviceSettings } = data.resource;
-    const provider =
-      gitRepository &&
-      (
-        await this.gitOrganizationByResource({
-          where: {
-            id: resource.id,
-          },
-        })
-      ).provider;
+
+    const provider = data.connectToDemoRepo
+      ? "demo-repo"
+      : gitRepository &&
+        (
+          await this.gitOrganizationByResource({
+            where: {
+              id: resource.id,
+            },
+          })
+        ).provider;
+
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -474,6 +544,8 @@ export class ResourceService {
         repoType: data.repoType,
         dbType: data.dbType,
         auth: data.authType,
+        projectId: project.id,
+        workspaceId: project.workspaceId,
       },
     });
 
@@ -689,6 +761,7 @@ export class ResourceService {
   }
 
   async gitRepository(resourceId: string): Promise<GitRepository | null> {
+    if (!resourceId) return;
     return (
       await this.prisma.resource.findUnique({
         where: { id: resourceId },

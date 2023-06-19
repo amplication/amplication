@@ -35,7 +35,7 @@ export class GitHubStrategy extends PassportStrategy(Strategy) {
         }
       );
     }
-    if (!user.account.githubId) {
+    if (!user.account.githubId || user.account.githubId !== profile.id) {
       return done(
         null,
         await this.authService.updateGitHubUser(user, profile),

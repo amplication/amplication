@@ -14,6 +14,18 @@ $select-menu-max-width: 300px;
   background: var(--black2);
   border-bottom: $border-black5;
 
+  &__highlight {
+    background-color: var(--warning-default);
+    text-align: center;
+    color: var(--white);
+    padding: var(--default-spacing-small);
+
+    a {
+      @include bold;
+      color: var(--white);
+      text-decoration: underline;
+    }
+  }
   &__version {
     color: var(--dark-secondary-turquoise) !important;
     margin-left: var(--user-badge-spacing);

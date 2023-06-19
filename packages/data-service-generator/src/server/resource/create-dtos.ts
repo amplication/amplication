@@ -23,6 +23,7 @@ import { createWhereInput } from "./dto/create-where-input";
 import { createWhereUniqueInput } from "./dto/create-where-unique-input";
 import { createCreateArgs } from "./dto/graphql/create/create-create-args";
 import { createDeleteArgs } from "./dto/graphql/delete/create-delete-args";
+import { createCountArgs } from "./dto/graphql/count/create-count-args";
 import { createFindManyArgs } from "./dto/graphql/find-many/create-find-many-args";
 import { createFindOneArgs } from "./dto/graphql/find-one/create-find-one-args";
 import { createOrderByInput } from "./dto/graphql/order-by-input/order-by-input";
@@ -104,6 +105,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
   const createArgs = await createCreateArgs(entity, createInput);
   const orderByInput = await createOrderByInput(entity);
   const deleteArgs = await createDeleteArgs(entity, whereUniqueInput);
+  const countArgs = await createCountArgs(entity, whereInput);
   const findManyArgs = await createFindManyArgs(
     entity,
     whereInput,
@@ -126,6 +128,7 @@ async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
     whereInput,
     whereUniqueInput,
     deleteArgs,
+    countArgs,
     findManyArgs,
     findOneArgs,
     orderByInput,

@@ -34,7 +34,7 @@ export class PluginResolver extends PluginResolverBase {
     const startTime = new Date().getTime();
 
     try {
-      const amplicationPlugins = await this.service.githubCatalogPlugins();
+      const amplicationPlugins = await this.service.processCatalogPlugins();
       if (
         Object.prototype.toString.call(amplicationPlugins) === "[object String]"
       ) {
@@ -42,7 +42,9 @@ export class PluginResolver extends PluginResolverBase {
       }
 
       const npmPluginsVersions =
-        await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
+        await this.pluginVersionService.processPluginsVersions(
+          amplicationPlugins
+        );
 
       const npmPluginsVersionsMap = groupBy(
         npmPluginsVersions,

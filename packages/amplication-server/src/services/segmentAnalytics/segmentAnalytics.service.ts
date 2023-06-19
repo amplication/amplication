@@ -16,6 +16,9 @@ export enum EnumEventType {
   EntityUpdate = "updateEntity",
   EntityFieldCreate = "createEntityField",
   EntityFieldUpdate = "updateEntityField",
+  PluginInstall = "installPlugin",
+  PluginUpdate = "updatePlugin",
+  DemoRepoCreate = "CreateDemoRepo",
 }
 
 export type IdentifyData = {

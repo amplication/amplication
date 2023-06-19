@@ -18,6 +18,8 @@ export const GET_PROJECTS = gql`
     projects {
       id
       name
+      useDemoRepo
+      demoRepoName
       resources {
         id
         name
