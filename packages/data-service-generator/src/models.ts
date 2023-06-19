@@ -1000,6 +1000,7 @@ export type MutationCreateBuildArgs = {
 
 
 export type MutationCreateDefaultRelatedFieldArgs = {
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;
@@ -1014,6 +1015,7 @@ export type MutationCreateEntitiesFromSchemaArgs = {
 
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
 };
@@ -1240,6 +1242,7 @@ export type MutationUpdateEntityArgs = {
 
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;

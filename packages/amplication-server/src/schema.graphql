@@ -1148,11 +1148,11 @@ type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
-  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  createEntityField(data: EntityFieldCreateInput!, relatedFieldName: String, relatedFieldDisplayName: String, relatedFieldAllowMultipleSelection: Boolean): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   deleteEntityField(where: WhereUniqueInput!): EntityField!
-  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
-  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String): EntityField!
+  updateEntityField(data: EntityFieldUpdateInput!, where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String, relatedFieldAllowMultipleSelection: Boolean): EntityField!
+  createDefaultRelatedField(where: WhereUniqueInput!, relatedFieldName: String, relatedFieldDisplayName: String, relatedFieldAllowMultipleSelection: Boolean): EntityField!
   updateServiceSettings(data: ServiceSettingsUpdateInput!, where: WhereUniqueInput!): ServiceSettings
   createServiceTopics(data: ServiceTopicsCreateInput!): ServiceTopics!
   updateServiceTopics(data: ServiceTopicsUpdateInput!, where: WhereUniqueInput!): ServiceTopics!
