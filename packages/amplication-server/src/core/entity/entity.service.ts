@@ -411,32 +411,24 @@ export class EntityService {
 
       for (const field of currentEntity.fields) {
         const {
-          permanentId,
-          name,
-          displayName,
-          dataType,
-          required,
-          unique,
-          searchable,
-          description,
-          properties,
-          customAttributes,
           relatedFieldName,
           relatedFieldDisplayName,
+          relatedFieldAllowMultipleSelection,
+          ...rest
         } = field;
         try {
-          await this.createFieldFromImportPrismaSchema(
+          await this.createField(
             {
               data: {
-                name,
-                displayName,
-                dataType,
-                required,
-                unique,
-                searchable,
-                description,
-                properties,
-                customAttributes,
+                name: rest.name,
+                displayName: rest.displayName,
+                dataType: rest.dataType,
+                required: rest.required,
+                unique: rest.unique,
+                searchable: rest.searchable,
+                description: rest.description,
+                properties: rest.properties,
+                customAttributes: rest.customAttributes,
                 entity: {
                   connect: {
                     id: entity.id,
@@ -445,9 +437,10 @@ export class EntityService {
               },
               relatedFieldName,
               relatedFieldDisplayName,
+              relatedFieldAllowMultipleSelection,
             },
             user,
-            permanentId,
+
             false
           );
         } catch (error) {
@@ -2085,7 +2078,7 @@ export class EntityService {
             properties.relatedFieldId,
             args.relatedFieldName,
             args.relatedFieldDisplayName,
-            !properties.allowMultipleSelection,
+            args.relatedFieldAllowMultipleSelection,
             properties.relatedEntityId,
             entity.id,
             fieldId,
@@ -2120,87 +2113,6 @@ export class EntityService {
           data: {
             ...data,
             permanentId: fieldId,
-            entityVersion: {
-              connect: {
-                // eslint-disable-next-line @typescript-eslint/naming-convention
-                entityId_versionNumber: {
-                  entityId: entity.id,
-                  versionNumber: CURRENT_VERSION_NUMBER,
-                },
-              },
-            },
-          },
-        });
-      }
-    );
-  }
-
-  async createFieldFromImportPrismaSchema(
-    args: CreateOneEntityFieldArgs,
-    user: User,
-    permanentId?: string,
-    enforceValidation = true
-  ): Promise<EntityField> {
-    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
-      throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
-    }
-    // Omit entity from received data
-    const data = omit(args.data, ["entity"]);
-
-    return await this.useLocking(
-      args.data.entity.connect.id,
-      user,
-      async (entity) => {
-        // Validate args
-        this.validateFieldMutationArgs(args, entity);
-
-        // Validate data
-        await this.validateFieldData(data, entity, enforceValidation);
-
-        if (args.data.dataType === EnumDataType.Lookup) {
-          // Cast the received properties to Lookup properties type
-          const properties = args.data.properties as unknown as types.Lookup;
-
-          // Create a related lookup field in the related entity
-          await this.createRelatedField(
-            properties.relatedFieldId,
-            args.relatedFieldName,
-            args.relatedFieldDisplayName,
-            !properties.allowMultipleSelection,
-            properties.relatedEntityId,
-            entity.id,
-            permanentId,
-            user,
-            properties.fkHolder
-          );
-        }
-
-        const resourceWithProject = await this.prisma.resource.findUnique({
-          where: {
-            id: entity.resourceId,
-          },
-          include: {
-            project: true,
-          },
-        });
-
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: entity.resourceId,
-            projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
-            entityFieldName: args.data.displayName,
-            dataType: args.data.dataType,
-          },
-          event: EnumEventType.EntityFieldFromImportPrismaSchemaCreate,
-        });
-
-        // Create entity field
-        return this.prisma.entityField.create({
-          data: {
-            ...data,
-            permanentId: permanentId,
             entityVersion: {
               connect: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2272,7 +2184,7 @@ export class EntityService {
           relatedFieldId,
           args.relatedFieldName,
           args.relatedFieldDisplayName,
-          !properties.allowMultipleSelection,
+          args.relatedFieldAllowMultipleSelection,
           properties.relatedEntityId,
           entity.id,
           field.permanentId,
@@ -2299,7 +2211,7 @@ export class EntityService {
     id: string,
     name: string,
     displayName: string,
-    allowMultipleSelection: boolean,
+    relatedFieldAllowMultipleSelection: boolean,
     entityId: string,
     relatedEntityId: string,
     relatedFieldId: string,
@@ -2325,7 +2237,7 @@ export class EntityService {
             },
           },
           properties: {
-            allowMultipleSelection,
+            allowMultipleSelection: relatedFieldAllowMultipleSelection || false,
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2462,7 +2374,7 @@ export class EntityService {
             properties.relatedFieldId,
             args.relatedFieldName,
             args.relatedFieldDisplayName,
-            !properties.allowMultipleSelection,
+            args.relatedFieldAllowMultipleSelection,
             properties.relatedEntityId,
             entity.id,
             field.permanentId,
@@ -2472,7 +2384,11 @@ export class EntityService {
         }
 
         const updatedField = await this.prisma.entityField.update(
-          omit(args, ["relatedFieldName", "relatedFieldDisplayName"])
+          omit(args, [
+            "relatedFieldName",
+            "relatedFieldDisplayName",
+            "relatedFieldAllowMultipleSelection",
+          ])
         );
 
         const updateFieldProperties =
