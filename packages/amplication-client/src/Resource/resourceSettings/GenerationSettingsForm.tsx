@@ -25,7 +25,7 @@ const CLASS_NAME = "generation-settings-form";
 function GenerationSettingsForm({ match }: Props) {
   const resourceId = match.params.resource;
 
-  const { data, error } = useQuery<{
+  const { data, error, refetch } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
@@ -48,6 +48,7 @@ function GenerationSettingsForm({ match }: Props) {
     trackEvent,
     updateResourceSettings,
     resourceId,
+    refetch,
   });
 
   return (

@@ -29,7 +29,7 @@ const CLASS_NAME = "generation-settings-form";
 // eslint-disable-next-line @typescript-eslint/ban-types
 const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
   const { currentResource, addBlock } = useContext(AppContext);
-  const { data, error } = useQuery<{
+  const { data, error, refetch } = useQuery<{
     serviceSettings: models.ServiceSettings;
   }>(GET_RESOURCE_SETTINGS, {
     variables: {
@@ -51,6 +51,7 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
     trackEvent,
     resourceId,
     updateResourceSettings,
+    refetch,
   });
 
   return (
@@ -64,7 +65,7 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
           enableReinitialize
           onSubmit={handleSubmit}
         >
-          {(formik) => {
+          {() => {
             return (
               <Form>
                 <div className={`${CLASS_NAME}__header`}>

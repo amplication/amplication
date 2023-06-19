@@ -6,6 +6,7 @@ export interface SettingsHookParams {
   trackEvent: (event: { eventName: string; [key: string]: any }) => void;
   resourceId: string | undefined;
   updateResourceSettings: any;
+  refetch: () => void;
 }
 
 const SERVICE_CONFIG_FORM_SCHEMA = {
@@ -43,38 +44,47 @@ const useSettingsHook = ({
   trackEvent,
   resourceId,
   updateResourceSettings,
+  refetch,
 }: SettingsHookParams) => {
   const handleSubmit = useCallback(
-    (data: models.ServiceSettings) => {
+    async (data: models.ServiceSettings) => {
       const {
         authProvider,
         adminUISettings: { generateAdminUI, adminUIPath },
         serverSettings: { generateRestApi, generateGraphQL, serverPath },
       } = data;
+
       trackEvent({
         eventName: AnalyticsEventNames.ServiceSettingsUpdate,
       });
-      updateResourceSettings({
-        variables: {
-          data: {
-            adminUISettings: {
-              generateAdminUI,
-              adminUIPath: adminUIPath || "",
-            },
-            authProvider,
-            serverSettings: {
-              generateRestApi,
-              generateGraphQL,
-              serverPath: serverPath || "",
-            },
-          },
-          resourceId,
-        },
-      }).catch(console.error);
-    },
-    [updateResourceSettings, resourceId, trackEvent]
-  );
 
+      try {
+        await updateResourceSettings({
+          variables: {
+            data: {
+              adminUISettings: {
+                generateAdminUI,
+                adminUIPath: adminUIPath || "",
+              },
+              authProvider,
+              serverSettings: {
+                generateRestApi,
+                generateGraphQL,
+                serverPath: serverPath || "",
+              },
+            },
+            resourceId: resourceId,
+          },
+        });
+
+        // Fetch the latest data after the form submission
+        refetch();
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [updateResourceSettings, resourceId, trackEvent, refetch]
+  );
   return {
     handleSubmit,
     SERVICE_CONFIG_FORM_SCHEMA,
