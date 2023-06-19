@@ -39,6 +39,7 @@ export class PrismaSchemaUtilsService {
   private operations: Operation[] = [
     this.handleModelNamesRenaming,
     this.handleFieldNamesRenaming,
+    this.handleFieldTypesRenaming,
     this.handleIdField,
   ];
 
@@ -299,6 +300,36 @@ export class PrismaSchemaUtilsService {
     return builder;
   }
 
+  private handleFieldTypesRenaming(
+    builder: ConcretePrismaSchemaBuilder
+  ): ConcretePrismaSchemaBuilder {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === "model");
+    models.map((model: Model) => {
+      const fields = model.properties.filter(
+        (property) => property.type === "field"
+      ) as Field[];
+
+      return fields.map((field: Field) => {
+        const isEnumFieldType =
+          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
+          this.resolveFieldDataType(schema, field) ===
+            EnumDataType.MultiSelectOptionSet;
+        if (!isEnumFieldType) {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.fieldType = formatModelName(field.fieldType as string);
+            });
+          return builder;
+        }
+        return builder;
+      });
+    });
+    return builder;
+  }
+
   /**
    * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
    * @param builder - prisma schema builder
@@ -310,48 +341,50 @@ export class PrismaSchemaUtilsService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === "model");
 
-    models.map((model: Model) => {
+    models.forEach((model: Model) => {
       const modelFields = model.properties.filter(
         (property) => property.type === "field"
       ) as Field[];
 
-      modelFields.map((field: Field) => {
-        const idFieldIsNotNamedId =
-          field.name !== "id" &&
-          field.attributes?.some((attr) => attr.name === "id");
-
-        const notIdFieldIsNamedId =
+      const notIdFieldIsNamedId = modelFields.find((field: Field) => {
+        return (
           field.name === "id" &&
-          !field.attributes?.some((attr) => attr.name === "id");
-
-        if (idFieldIsNotNamedId) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = "id";
-            });
-          return builder;
-        }
-
-        if (notIdFieldIsNamedId) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [field.name]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = `${model.name}Id`;
-            });
-          return builder;
-        }
+          !field.attributes?.some((attr) => attr.name === "id")
+        );
       });
+
+      if (notIdFieldIsNamedId) {
+        builder
+          .model(model.name)
+          .field(notIdFieldIsNamedId.name)
+          .attribute("map", [notIdFieldIsNamedId.name]);
+        builder
+          .model(model.name)
+          .field(notIdFieldIsNamedId.name)
+          .then<Field>((field) => {
+            field.name = `${model.name}Id`;
+          });
+      }
+
+      const idFieldIsNotNamedId = modelFields.find((field: Field) => {
+        return (
+          field.name !== "id" &&
+          field.attributes?.some((attr) => attr.name === "id")
+        );
+      });
+
+      if (idFieldIsNotNamedId) {
+        builder
+          .model(model.name)
+          .field(idFieldIsNotNamedId.name)
+          .attribute("map", [idFieldIsNotNamedId.name]);
+        builder
+          .model(model.name)
+          .field(idFieldIsNotNamedId.name)
+          .then<Field>((field) => {
+            field.name = "id";
+          });
+      }
     });
     return builder;
   }
@@ -498,9 +531,9 @@ export class PrismaSchemaUtilsService {
 
     const multiSelectOptionSetType = () => {
       const enumList = schema.list.filter((item) => item.type === "enum");
+      const isMultiSelect = field.array || false;
       const fieldOptionSetType = enumList.find(
-        (enumItem: Enum) =>
-          enumItem.name === field.fieldType && field.name.includes("[]")
+        (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
       );
       if (fieldOptionSetType) {
         return EnumDataType.MultiSelectOptionSet;
@@ -688,8 +721,7 @@ export class PrismaSchemaUtilsService {
             (arg) =>
               (arg.value as KeyValue).key === "fields" &&
               ((arg.value as KeyValue).value as RelationArray).args.find(
-                (argName) =>
-                  formatFieldName(argName) === formatFieldName(field.name)
+                (argName) => formatFieldName(argName) === field.name
               )
           )
       )
@@ -820,7 +852,7 @@ export class PrismaSchemaUtilsService {
     );
 
     entityField.properties = {
-      timezone: "localTime",
+      timeZone: "localTime",
       dateOnly: false,
     };
 
@@ -976,8 +1008,8 @@ export class PrismaSchemaUtilsService {
     );
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
-      entityField.properties =
-        idTypePropertyMap[(defaultIdAttribute.args[0].value as Func).name];
+      const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
+      entityField.properties = idTypePropertyMap[idType];
     }
 
     entity.fields.push(entityField);
@@ -1205,6 +1237,7 @@ export class PrismaSchemaUtilsService {
         const hasRelationAttribute = remoteField.attributes?.some(
           (attr) => attr.name === "relation"
         );
+
         return (
           formatModelName(remoteField.fieldType as string) ===
             formatModelName(model.name) && !hasRelationAttribute
