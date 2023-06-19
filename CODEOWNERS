@@ -6,4 +6,4 @@
 # as the snapshot files are required to be updated when changes to the data-service-generator
 # are made, as this impacts the generated code it is important that changes are validated before
 # merging them to the default branch.
-packages/data-service-generator/src/test/**snapshots**/ @amplication/data-service-generator
+packages/data-service-generator/src/test/__snapshots__/ @amplication/data-service-generator
