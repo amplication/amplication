@@ -8,7 +8,6 @@ import {
   ConcretePrismaSchemaBuilder,
   Schema,
   Enum,
-  AttributeArgument,
   KeyValue,
   RelationArray,
   Func,
@@ -87,7 +86,7 @@ export class PrismaSchemaUtilsService {
 
       for (const field of modelFields) {
         if (this.isFkFieldOfARelation(schema, model, field)) {
-          this.logger.info("FK field of a relation", {
+          this.logger.info("FK field of a relation. Skip field creation", {
             fieldName: field.name,
             modelName: model.name,
           });
@@ -95,10 +94,13 @@ export class PrismaSchemaUtilsService {
         }
 
         if (this.isNotAnnotatedRelationField(schema, field)) {
-          this.logger.info("Not annotated relation field", {
-            fieldName: field.name,
-            modelName: model.name,
-          });
+          this.logger.info(
+            "Not annotated relation field. Skip field creation",
+            {
+              fieldName: field.name,
+              modelName: model.name,
+            }
+          );
           continue;
         }
 
@@ -674,27 +676,35 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field
   ): boolean {
-    const modelFields = model.properties.filter((property) => {
-      property.type === "field";
-    });
+    const modelFields = model.properties.filter(
+      (property) => property.type === "field"
+    ) as Field[];
 
-    return modelFields.some((relationField: Field) => {
-      const relationAttribute = relationField.attributes?.find(
-        (attr) => attr.name === "relation"
-      );
-      const relationFieldArg = relationAttribute.args.find(
-        (attributeArgument: AttributeArgument) =>
-          (attributeArgument.value as KeyValue).key === "fields"
-      );
+    const relationFiledWithReference = modelFields.filter((modelField: Field) =>
+      modelField.attributes?.some(
+        (attr) =>
+          attr.name === "relation" &&
+          attr.args.some(
+            (arg) =>
+              (arg.value as KeyValue).key === "fields" &&
+              ((arg.value as KeyValue).value as RelationArray).args.find(
+                (argName) =>
+                  formatFieldName(argName) === formatFieldName(field.name)
+              )
+          )
+      )
+    );
 
-      const relationFieldArgValue = (
-        relationFieldArg.value as RelationArray
-      ).args.find(
-        (argName) => formatFieldName(argName) === formatFieldName(field.name)
+    if (relationFiledWithReference.length > 1) {
+      this.logger.error(
+        `Field ${field.name} on model ${model.name} has more than one relation field`
       );
+      this.logger.error(
+        `Field ${field.name} on model ${model.name} has more than one relation field`
+      );
+    }
 
-      return relationFieldArgValue;
-    });
+    return !!(relationFiledWithReference.length === 1);
   }
 
   /********************
@@ -1121,26 +1131,14 @@ export class PrismaSchemaUtilsService {
 
     entityField.properties = {
       relatedEntityId: relatedEntity.id,
-      relatedFieldId: relatedField.permanentId,
-      allowMultipleSelection: (field.fieldType as string).includes("[]"),
+      allowMultipleSelection: field.array || false,
       fkHolder: null,
     };
     entityField.relatedFieldName = relatedField.name;
     entityField.relatedFieldDisplayName = relatedField.displayName;
+    entityField.relatedFieldAllowMultipleSelection = remoteField.array || false;
 
-    relatedField.properties = {
-      relatedEntityId: entity.id,
-      relatedFieldId: entityField.permanentId,
-      allowMultipleSelection: (remoteField.fieldType as string).includes("[]"),
-      fkHolder: null,
-    };
-    relatedField.relatedFieldName = entityField.name;
-    relatedField.relatedFieldDisplayName = entityField.displayName;
-
-    // add the field to main entity
     entity.fields.push(entityField);
-    // add the field to related entity
-    relatedEntity.fields.push(relatedField);
   }
 
   /******************

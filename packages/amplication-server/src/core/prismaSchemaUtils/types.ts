@@ -49,4 +49,5 @@ export type CreateEntityFieldInput = {
   customAttributes?: string;
   relatedFieldName?: string;
   relatedFieldDisplayName?: string;
+  relatedFieldAllowMultipleSelection?: boolean;
 };
