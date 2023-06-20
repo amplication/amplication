@@ -16,6 +16,7 @@ You can find a full list of targets in the [project.json](/Users/arielweinberger
 
 ### `serve`
 
+Runs the app in development mode.
 
 ```
 npx nx serve amplication-server
