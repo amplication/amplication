@@ -82,6 +82,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
 import { CreateEntitiesFromSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromSchemaResponse";
+import { CreateBulkEntityFromSchemaImport } from "../prismaSchemaUtils/types";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -368,10 +369,29 @@ export class EntityService {
   ): Promise<CreateEntitiesFromSchemaResponse> {
     // validate on upload to avoid unnecessary processing
     this.schemaUtilsService.validateSchemaUpload(file);
-    const entities: Entity[] = [];
+
     const errors = this.schemaUtilsService.validateSchemaProcessing(file);
     const preparedEntitiesWithFields =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+
+    const entities = await this.createBulkEntitiesAndFieldsFromSchemaImport(
+      preparedEntitiesWithFields,
+      resourceId,
+      user
+    );
+
+    return {
+      entities,
+      errors,
+    };
+  }
+
+  async createBulkEntitiesAndFieldsFromSchemaImport(
+    preparedEntitiesWithFields: CreateBulkEntityFromSchemaImport[],
+    resourceId: string,
+    user: User
+  ): Promise<Entity[]> {
+    const entities: Entity[] = [];
     for (const entity of preparedEntitiesWithFields) {
       const {
         id,
@@ -457,10 +477,7 @@ export class EntityService {
       }
     }
 
-    return {
-      entities,
-      errors,
-    };
+    return entities;
   }
 
   async createDefaultEntities(resourceId: string, user: User): Promise<void> {

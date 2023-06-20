@@ -29,17 +29,17 @@ export type Operation = (
   builder: ConcretePrismaSchemaBuilder
 ) => ConcretePrismaSchemaBuilder;
 
-export type CreateEntityInput = {
+export type CreateBulkEntityFromSchemaImport = {
   id: string;
   name: string;
   displayName: string;
   pluralDisplayName: string;
   description: string | null;
   customAttributes: string;
-  fields: CreateEntityFieldInput[];
+  fields: CreateEntityFieldCommonProperties[];
 };
 
-export type CreateEntityFieldInput = {
+export type CreateEntityFieldCommonProperties = {
   permanentId: string;
   name: string;
   displayName: string;
