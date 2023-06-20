@@ -33,52 +33,6 @@ type CreateEntitiesFromSchemaResponse {
 }
 
 type Entity {
-type AuthorizeResourceWithGitResult {
-  """"""
-  url: String!
-}
-
-type Query {
-  account: Account!
-  workspaces: [Workspace!]!
-  workspace(where: WhereUniqueInput!): Workspace
-  currentWorkspace: Workspace
-  workspaceMembers: [WorkspaceMember!]
-  projects(where: ProjectWhereInput, orderBy: ProjectOrderByInput, skip: Int, take: Int): [Project!]!
-  project(where: WhereUniqueInput!): Project
-  pendingChanges(where: PendingChangesFindInput!): [PendingChange!]!
-  resource(where: WhereUniqueInput!): Resource
-  resources(where: ResourceWhereInput, orderBy: [ResourceOrderByInput!], skip: Int, take: Int): [Resource!]!
-  messageBrokerConnectedServices(where: WhereUniqueInput!): [Resource!]!
-  entity(where: WhereUniqueInput!): Entity
-  entities(where: EntityWhereInput, orderBy: EntityOrderByInput, skip: Int, take: Int): [Entity!]!
-  serviceSettings(where: WhereUniqueInput!): ServiceSettings!
-  blocks(where: BlockWhereInput, orderBy: BlockOrderByInput, skip: Int, take: Int): [Block!]!
-  block(where: WhereUniqueInput!): Block!
-  ServiceTopics(where: WhereUniqueInput!): ServiceTopics
-  ServiceTopicsList(where: ServiceTopicsWhereInput, orderBy: ServiceTopicsOrderByInput, skip: Int, take: Int): [ServiceTopics!]!
-  Topic(where: WhereUniqueInput!): Topic
-  Topics(where: TopicWhereInput, orderBy: TopicOrderByInput, skip: Int, take: Int): [Topic!]!
-  builds(where: BuildWhereInput, orderBy: BuildOrderByInput, take: Int, skip: Int): [Build!]!
-  build(where: WhereUniqueInput!): Build!
-  resourceRole(where: WhereUniqueInput!, version: Float): ResourceRole
-  resourceRoles(where: ResourceRoleWhereInput, orderBy: ResourceRoleOrderByInput, skip: Int, take: Int): [ResourceRole!]!
-  action(where: WhereUniqueInput!): Action!
-  commit(where: CommitWhereUniqueInput!): Commit
-  commits(where: CommitWhereInput, orderBy: CommitOrderByInput, cursor: CommitWhereUniqueInput, take: Int, skip: Int): [Commit!]
-  PluginInstallation(where: WhereUniqueInput!): PluginInstallation
-  PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
-  pluginOrder(where: WhereUniqueInput!): PluginOrder!
-  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
-  gitOrganization(where: WhereUniqueInput!): GitOrganization!
-  gitGroups(where: GitGroupInput!): PaginatedGitGroup!
-  remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
-  gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  me: User!
-  userApiTokens: [ApiToken!]!
-}
-
-type Account {
   id: String!
   createdAt: DateTime!
   updatedAt: DateTime!
@@ -101,27 +55,6 @@ type Account {
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
 scalar DateTime
-
-type Workspace {
-  id: String!
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  name: String!
-  projects: [Project!]!
-  gitOrganizations: [GitOrganization!]
-  users: [User!]!
-  subscription: Subscription
-}
-
-type Project {
-  id: String!
-  name: String!
-  resources: [Resource!]
-  createdAt: DateTime!
-  updatedAt: DateTime!
-  useDemoRepo: Boolean!
-  demoRepoName: String
-}
 
 type Resource {
   id: String!
@@ -148,6 +81,8 @@ type Project {
   resources: [Resource!]
   createdAt: DateTime!
   updatedAt: DateTime!
+  useDemoRepo: Boolean!
+  demoRepoName: String
 }
 
 type GitRepository {
@@ -763,11 +698,11 @@ type Query {
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(where: PluginInstallationWhereInput, orderBy: PluginInstallationOrderByInput, skip: Int, take: Int): [PluginInstallation!]!
   pluginOrder(where: WhereUniqueInput!): PluginOrder!
+  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   gitOrganization(where: WhereUniqueInput!): GitOrganization!
   gitGroups(where: GitGroupInput!): PaginatedGitGroup!
   remoteGitRepositories(where: RemoteGitRepositoriesWhereUniqueInput!): RemoteGitRepos!
   gitOrganizations(where: GitOrganizationWhereInput, skip: Float, take: Float): [GitOrganization!]!
-  projectConfigurationSettings(where: WhereUniqueInput!): ProjectConfigurationSettings!
   me: User!
   userApiTokens: [ApiToken!]!
 }
@@ -1210,8 +1145,8 @@ type Mutation {
   deleteResource(where: WhereUniqueInput!): Resource
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
-  createEntitiesFromSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): CreateEntitiesFromSchemaResponse!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
+  createEntitiesFromSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): CreateEntitiesFromSchemaResponse!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity
@@ -1240,8 +1175,9 @@ type Mutation {
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
 
@@ -1434,16 +1370,16 @@ input EntityCreateInput {
   resource: WhereParentIdInput!
 }
 
+input DefaultEntitiesInput {
+  resourceId: String!
+}
+
 input CreateEntitiesFromPrismaSchemaInput {
   resourceId: String!
 }
 
 """The `Upload` scalar type represents a file upload."""
 scalar Upload
-
-input DefaultEntitiesInput {
-  resourceId: String!
-}
 
 input EntityUpdateInput {
   name: String
@@ -1606,7 +1542,7 @@ input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-  resourceId: String!
+  resourceId: String
 }
 
 input CreateGitRepositoryBaseInput {
