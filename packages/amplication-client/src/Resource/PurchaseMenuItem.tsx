@@ -9,7 +9,7 @@ import * as models from "../models";
 
 const CLASS_NAME = "purchase-menu-item";
 
-const PurchaseButton: React.FC<{}> = () => {
+function PurchaseButton() {
   const { currentWorkspace } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
@@ -51,6 +51,6 @@ const PurchaseButton: React.FC<{}> = () => {
       </Popover>
     )
   );
-};
+}
 
 export default PurchaseButton;
