@@ -131,7 +131,7 @@ export class GitCli {
       })
     );
 
-    await this.git.add(["."]);
+    await this.add(["."]);
 
     const status = await this.git.status();
     if (status.staged.length !== 0) {
@@ -160,6 +160,10 @@ export class GitCli {
         "--author": this.gitConflictsResolverAuthor,
       })
       .push();
+  }
+
+  private async add(files?: string | string[]) {
+    return this.git.add(files ?? ["."]);
   }
 
   /**
