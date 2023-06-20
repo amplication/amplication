@@ -278,12 +278,14 @@ export class PrismaSchemaUtilsService {
           !property.attributes?.some((attr) => attr.name === "id")
       ) as Field[];
       fields.map((field: Field) => {
+        // we don't want to rename field if it is a foreign key holder
+        const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
         const isInvalidFieldName = field.name.includes("_");
         const isEnumFieldType =
           this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
           this.resolveFieldDataType(schema, field) ===
             EnumDataType.MultiSelectOptionSet;
-        if (isInvalidFieldName && !isEnumFieldType) {
+        if (isInvalidFieldName && !isEnumFieldType && !isFkHolder) {
           builder
             .model(model.name)
             .field(field.name)
@@ -722,7 +724,7 @@ export class PrismaSchemaUtilsService {
             (arg) =>
               (arg.value as KeyValue).key === "fields" &&
               ((arg.value as KeyValue).value as RelationArray).args.find(
-                (argName) => formatFieldName(argName) === field.name
+                (argName) => argName === field.name
               )
           )
       )
