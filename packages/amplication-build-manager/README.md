@@ -44,7 +44,6 @@ $ npm run start:dev
 # production mode
 $ npm run start:prod
 ```
-By default, your app comes with one user with the username "admin" and password "admin".
 
 ## Test
 
