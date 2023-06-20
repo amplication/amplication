@@ -3,9 +3,9 @@ import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 
 export const idTypePropertyMap = {
-  autoincrement: { idType: "AUTO_INCREMENT" },
-  cuid: { idType: "CUID" },
-  uuid: { idType: "UUID" },
+  autoincrement: "AUTO_INCREMENT",
+  cuid: "CUID",
+  uuid: "UUID",
 };
 
 export function capitalizeFirstLetter(string): string {

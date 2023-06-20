@@ -34,6 +34,8 @@ import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
+import { types } from "@amplication/code-gen-types";
+import { JsonValue } from "type-fest";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -818,13 +820,6 @@ export class PrismaSchemaUtilsService {
       EnumDataType.UpdatedAt
     );
 
-    if (entityField.customAttributes.includes("@default()")) {
-      entityField.customAttributes = entityField.customAttributes.replace(
-        "@default()",
-        ""
-      );
-    }
-
     entity.fields.push(entityField);
 
     return entity;
@@ -850,9 +845,13 @@ export class PrismaSchemaUtilsService {
       EnumDataType.DateTime
     );
 
-    entityField.properties = {
+    const properties = <types.DateTime>{
       timeZone: "localTime",
       dateOnly: false,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -880,10 +879,14 @@ export class PrismaSchemaUtilsService {
       EnumDataType.DecimalNumber
     );
 
-    entityField.properties = {
+    const properties = <types.DecimalNumber>{
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -911,9 +914,13 @@ export class PrismaSchemaUtilsService {
       EnumDataType.WholeNumber
     );
 
-    entityField.properties = {
+    const properties = <types.WholeNumber>{
       minimumValue: 0,
       maximumValue: 99999999999,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -941,8 +948,12 @@ export class PrismaSchemaUtilsService {
       EnumDataType.SingleLineText
     );
 
-    entityField.properties = {
+    const properties: types.SingleLineText = <types.SingleLineText>{
       maxLength: 256,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -1001,7 +1012,12 @@ export class PrismaSchemaUtilsService {
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
       const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
-      entityField.properties = idTypePropertyMap[idType];
+      const properties = <types.Id>{
+        idType: idTypePropertyMap[idType],
+      };
+      entityField.properties = properties as unknown as {
+        [key: string]: JsonValue;
+      };
     }
 
     entity.fields.push(entityField);
@@ -1050,8 +1066,12 @@ export class PrismaSchemaUtilsService {
       }
     );
 
-    entityField.properties = {
+    const properties = <types.OptionSet>{
       options: enumOptions,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -1098,8 +1118,12 @@ export class PrismaSchemaUtilsService {
       }
     );
 
-    entityField.properties = {
+    const properties = <types.MultiSelectOptionSet>{
       options: enumOptions,
+    };
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
     };
 
     entity.fields.push(entityField);
@@ -1149,18 +1173,23 @@ export class PrismaSchemaUtilsService {
       EnumDataType.Lookup
     );
 
+    entityField.relatedFieldName = relatedField.name;
+    entityField.relatedFieldDisplayName = relatedField.displayName;
+    entityField.relatedFieldAllowMultipleSelection = remoteField.array || false;
+
     const relatedEntity = preparedEntities.find(
       (entity) => entity.name === remoteModel.name
     ) as CreateEntityInput;
 
-    entityField.properties = {
+    const properties = <types.Lookup>{
       relatedEntityId: relatedEntity.id,
       allowMultipleSelection: field.array || false,
       fkHolder: null,
     };
-    entityField.relatedFieldName = relatedField.name;
-    entityField.relatedFieldDisplayName = relatedField.displayName;
-    entityField.relatedFieldAllowMultipleSelection = remoteField.array || false;
+
+    entityField.properties = properties as unknown as {
+      [key: string]: JsonValue;
+    };
 
     entity.fields.push(entityField);
   }
