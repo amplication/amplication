@@ -154,12 +154,19 @@ export class GitCli {
 
   async applyPatch(patches: string[], options?: string[]) {
     options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
-    await this.git
-      .applyPatch(patches, options)
-      .commit("Amplication merge conflicts auto-resolution", undefined, {
+
+    this.logger.debug(`Applying patches`, { patches, options });
+    await this.git.applyPatch(patches, options);
+    this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
+    await this.git.commit(
+      "Amplication merge conflicts auto-resolution",
+      undefined,
+      {
         "--author": this.gitConflictsResolverAuthor,
-      })
-      .push();
+      }
+    );
+    this.logger.debug(`Pushing Amplication merge conflicts auto-resolution`);
+    await this.push();
   }
 
   private async add(files?: string | string[]) {

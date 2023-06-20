@@ -410,14 +410,15 @@ export class GitClientService {
     const diffPatchRelativePath = join(diffFolder, "diff.patch");
     await writeFile(diffPatchRelativePath, diff);
     const diffPatchAbsolutePath = resolve(diffPatchRelativePath);
-    this.logger.info(`Saving diff to: ${diffPatchAbsolutePath}`);
+    this.logger.debug("Saving diff patch", { diffPatchAbsolutePath });
 
     await gitCli.resetState();
+    this.logger.debug("Applying diff patch", { diffPatchAbsolutePath });
     await gitCli.applyPatch(
       [diffPatchAbsolutePath],
       ["--3way", "--whitespace=nowarn"]
     );
-
+    this.logger.debug("Deleting diff patch", { diffPatchAbsolutePath });
     await rm(diffPatchAbsolutePath);
   }
 
