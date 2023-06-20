@@ -29,10 +29,18 @@ export class GitCli {
     });
   }
 
+  /**
+   * Clones the repository if not already cloned and sets the working directory to the repository directory.
+   * It performs a clone with the following options:
+   * --no-checkout - Do not checkout the HEAD after cloning is complete
+   * --filter=blob:none - Do not checkout blobs during clone
+   * @see https://git-scm.com/docs/git-clone
+   */
   async clone(): Promise<void> {
     if (!this.isCloned) {
       await this.git.clone(this.options.originUrl, this.options.repositoryDir, [
         "--no-checkout",
+        "--filter=blob:none",
       ]);
       this.isCloned = true;
     }
@@ -81,11 +89,7 @@ export class GitCli {
   }
 
   async resetState() {
-    await this.git
-      .fetch(["--all"])
-      .pull()
-      .reset(ResetMode.HARD)
-      .clean(CleanOptions.FORCE);
+    await this.git.reset(ResetMode.HARD).clean(CleanOptions.FORCE);
   }
 
   /**
