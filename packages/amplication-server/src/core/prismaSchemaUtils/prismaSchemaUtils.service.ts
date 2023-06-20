@@ -223,15 +223,6 @@ export class PrismaSchemaUtilsService {
       }
     }
 
-    /*****************************************
-      if (MultiLineText(field)) {}
-      if (isEmailField(field)) {}
-      if (isPasswordField(field)) {}
-      if (isUsernameField(field)) {}
-      if (isRolesField(field)) {}
-      if (isGeographicLocationField(field)) {}
-    ******************************************/
-
     return preparedEntities;
   }
 
@@ -771,7 +762,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -796,7 +787,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -821,7 +812,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -846,7 +837,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -880,7 +871,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -915,7 +906,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -949,7 +940,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -982,7 +973,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -1007,7 +998,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -1046,7 +1037,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -1100,7 +1091,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -1152,7 +1143,7 @@ export class PrismaSchemaUtilsService {
     model: Model,
     field: Field,
     preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ) {
+  ): CreateBulkEntityFromSchemaImport {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
     ) as CreateBulkEntityFromSchemaImport;
@@ -1208,6 +1199,8 @@ export class PrismaSchemaUtilsService {
     };
 
     entity.fields.push(entityField);
+
+    return entity;
   }
 
   /******************
@@ -1454,7 +1447,9 @@ export class PrismaSchemaUtilsService {
     return errors.length > 0 ? errors : null;
   }
 
-  private validateFieldNamesReservedWords(fieldName: string) {
+  private validateFieldNamesReservedWords(
+    fieldName: string
+  ): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
     const isReservedFieldName = isReservedName(fieldName.toLowerCase().trim());
     if (isReservedFieldName) {
