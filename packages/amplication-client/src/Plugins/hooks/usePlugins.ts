@@ -12,10 +12,13 @@ import * as models from "../../models";
 import { keyBy } from "lodash";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../../context/appContext";
+import { LATEST_VERSION_TAG } from "../constant";
 
 export type PluginVersion = {
   version: string;
+  isLatest: boolean;
   settings: string;
+  configurations: string;
   id: string;
   pluginId: string;
 };
@@ -32,6 +35,7 @@ export type Plugin = {
   website: string;
   category: string;
   type: string;
+  taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
 };
 
@@ -129,10 +133,32 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   useEffect(() => {
     if (!pluginsVersionData || loadingPluginsVersionData) return;
 
+    const pluginsWithLatestVersion = pluginsVersionData.plugins.map(
+      (plugin) => {
+        const latestVersion = plugin.versions.find(
+          (pluginVersion) => pluginVersion.isLatest
+        );
+        if (latestVersion) {
+          return {
+            ...plugin,
+            versions: [
+              {
+                ...latestVersion,
+                id: `${latestVersion.id}-${LATEST_VERSION_TAG}`,
+                version: LATEST_VERSION_TAG,
+              },
+              ...plugin.versions,
+            ],
+          };
+        } else return plugin;
+      }
+    );
+
     const sortedPlugins = keyBy(
-      pluginsVersionData.plugins,
+      pluginsWithLatestVersion,
       (plugin) => plugin.pluginId
     );
+
     setPluginsVersion(sortedPlugins);
   }, [pluginsVersionData, loadingPluginsVersionData]);
 

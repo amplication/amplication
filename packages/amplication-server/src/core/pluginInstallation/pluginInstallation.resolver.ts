@@ -21,7 +21,6 @@ import { User } from "../../models";
 import { FindOneArgs } from "../../dto";
 import { PluginOrderService } from "./pluginOrder.service";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
 
 @Resolver(() => PluginInstallation)
 export class PluginInstallationResolver extends BlockTypeResolver(
@@ -40,17 +39,6 @@ export class PluginInstallationResolver extends BlockTypeResolver(
     private readonly pluginOrderService: PluginOrderService
   ) {
     super();
-  }
-
-  @Mutation(() => [PluginInstallation], {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async createPluginInstallations(
-    @Args() args: CreatePluginInstallationsArgs,
-    @UserEntity() user: User
-  ): Promise<PluginInstallation[] | null> {
-    return await this.service.createMany(args, user);
   }
 
   @Mutation(() => PluginOrder, {

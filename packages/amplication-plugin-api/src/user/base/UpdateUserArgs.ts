@@ -21,4 +21,4 @@ class UpdateUserArgs {
   data!: UserUpdateInput;
 }
 
-export { UpdateUserArgs };
+export { UpdateUserArgs as UpdateUserArgs };

@@ -50,4 +50,4 @@ class UserFindManyArgs {
   take?: number;
 }
 
-export { UserFindManyArgs };
+export { UserFindManyArgs as UserFindManyArgs };

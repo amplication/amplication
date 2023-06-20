@@ -173,6 +173,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   workspaceId: EXAMPLE_WORKSPACE_ID,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -646,7 +648,9 @@ describe("ResourceService", () => {
     expect(
       await service.createService(
         createResourceArgs.args,
-        createResourceArgs.user
+        createResourceArgs.user,
+        null,
+        true
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -692,10 +696,12 @@ describe("ResourceService", () => {
                 version: "latest",
                 pluginId: "auth-jwt",
                 settings: {},
+                configurations: {},
                 resource: { connect: { id: "" } },
               },
             ],
           },
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER
@@ -746,6 +752,7 @@ describe("ResourceService", () => {
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER

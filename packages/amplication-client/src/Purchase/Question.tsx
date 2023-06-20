@@ -6,7 +6,7 @@ import "./Question.scss";
 
 type Props = {
   question: string;
-  answer: string;
+  answer: string | React.ReactNode;
 };
 
 const CLASS_NAME = "question";

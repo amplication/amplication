@@ -41,6 +41,13 @@ type Props = {
 
 const CLASS_NAME = "git-provider-connection";
 
+const PROVIDERS_DISPLAY_NAME: {
+  [key in EnumGitProvider]: string;
+} = {
+  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+};
+
 export default function GitProviderConnection({
   onSyncNewGitOrganizationClick,
   provider,
@@ -53,6 +60,8 @@ export default function GitProviderConnection({
 
   const contactUsLink = "https://amplication.com/contact-us";
 
+  const providerDisplayName = PROVIDERS_DISPLAY_NAME[provider];
+
   return (
     <div
       className={classNames(CLASS_NAME, { enabled: !comingSoon && !disabled })}
@@ -61,7 +70,7 @@ export default function GitProviderConnection({
         src={`../../../../assets/images/${provider?.toLowerCase()}.svg`}
         alt=""
       />
-      <div className={`${CLASS_NAME}__name`}>{provider}</div>
+      <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
         {disabled && (
           <WarningTooltip

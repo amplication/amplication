@@ -12,8 +12,8 @@ declare const UPDATE_ARGS_MAPPING: Prisma.UPDATE_ARGS;
 export class SERVICE_BASE {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.FIND_MANY_ARGS>(
-    args: Prisma.SelectSubset<T, Prisma.FIND_MANY_ARGS>
+  async count<T extends Prisma.COUNT_ARGS>(
+    args: Prisma.SelectSubset<T, Prisma.COUNT_ARGS>
   ): Promise<number> {
     return this.prisma.DELEGATE.count(args);
   }

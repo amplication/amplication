@@ -24,6 +24,7 @@ import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
 import PrismaSchemaUtils from "./PrismaSchemaUtils";
+import usePlugins from "../Plugins/hooks/usePlugins";
 
 type TData = {
   entities: models.Entity[];
@@ -53,6 +54,13 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
+  const { pluginInstallations } = usePlugins(resource);
+
+  const isUserEntityMandatory =
+    pluginInstallations?.filter(
+      (x) =>
+        x.configurations?.requireAuthenticationEntity === "true" && x.enabled
+    ).length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -165,6 +173,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              isUserEntityMandatory={isUserEntityMandatory}
               relatedEntities={data.entities.filter(
                 (dataEntity) =>
                   dataEntity.fields.some(

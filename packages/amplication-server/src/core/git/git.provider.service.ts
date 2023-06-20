@@ -1,4 +1,4 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { isEmpty } from "lodash";
 import { PrismaService, Prisma, EnumResourceType } from "../../prisma";
 import { FindOneArgs } from "../../dto";
@@ -24,6 +24,7 @@ import {
   isOAuthProviderOrganizationProperties,
   GetRepositoriesArgs,
   CreateRepositoryArgs,
+  RemoteGitRepository,
 } from "@amplication/git-utils";
 import {
   INVALID_RESOURCE_ID,
@@ -34,7 +35,6 @@ import { EnumGitOrganizationType } from "./dto/enums/EnumGitOrganizationType";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { CreateGitRepositoryBaseInput } from "./dto/inputs/CreateGitRepositoryBaseInput";
 import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { EnumGitProvider } from "./dto/enums/EnumGitProvider";
@@ -50,6 +50,7 @@ import {
 import { User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
+import { ProjectService } from "../project/project.service";
 
 @Injectable()
 export class GitProviderService {
@@ -62,7 +63,9 @@ export class GitProviderService {
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    @Inject(forwardRef(() => ProjectService))
+    private readonly projectService: ProjectService
   ) {
     const bitbucketClientId = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_ID
@@ -171,9 +174,26 @@ export class GitProviderService {
     return gitClientService.getRepositories(repositoriesArgs);
   }
 
+  async connectGitRepository(
+    args: CreateGitRepositoryInput
+  ): Promise<Resource | boolean> {
+    const remoteRepository = await this.createRemoteGitRepository(args);
+
+    const { groupName, gitOrganizationId, resourceId } = args;
+
+    return resourceId
+      ? await this.connectResourceGitRepository({
+          name: remoteRepository.name,
+          ...(groupName ? { groupName } : {}),
+          gitOrganizationId,
+          resourceId,
+        })
+      : true;
+  }
+
   async createRemoteGitRepository(
     args: CreateGitRepositoryInput
-  ): Promise<Resource> {
+  ): Promise<RemoteGitRepository> {
     // negate the isPublic flag to get the isPrivate flag
     const isPrivateRepository = args.isPublic ? !args.isPublic : true;
     const organization = await this.getGitOrganization({
@@ -201,47 +221,6 @@ export class GitProviderService {
     };
 
     const gitClientService = await this.createGitClient(organization);
-    const remoteRepository = await gitClientService.createRepository(
-      repository
-    );
-
-    if (!remoteRepository) {
-      throw new AmplicationError(
-        `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
-      );
-    }
-
-    return await this.connectResourceGitRepository({
-      name: remoteRepository.name,
-      groupName: args.groupName,
-      gitOrganizationId: args.gitOrganizationId,
-      resourceId: args.resourceId,
-    });
-  }
-
-  async createRemoteGitRepositoryWithoutConnect(
-    args: CreateGitRepositoryBaseInput
-  ): Promise<boolean> {
-    // negate the isPublic flag to get the isPrivate flag
-    const isPrivateRepository = args.isPublic ? !args.isPublic : true;
-    const organization = await this.getGitOrganization({
-      where: {
-        id: args.gitOrganizationId,
-      },
-    });
-    const repository: CreateRepositoryArgs = {
-      repositoryName: args.name,
-      gitOrganization: {
-        name: organization.name,
-        type: EnumGitOrganizationType[organization.type],
-        useGroupingForRepositories: organization.useGroupingForRepositories,
-      },
-      groupName: args.groupName,
-      owner: organization.name,
-      isPrivate: isPrivateRepository,
-    };
-
-    const gitClientService = await this.createGitClient(organization);
 
     const remoteRepository = await gitClientService.createRepository(
       repository
@@ -252,7 +231,7 @@ export class GitProviderService {
         `Failed to create ${args.gitProvider} repository ${organization.name}\\${args.name}`
       );
     }
-    return true;
+    return remoteRepository;
   }
 
   async deleteGitRepository(args: DeleteGitRepositoryArgs): Promise<boolean> {
@@ -464,6 +443,10 @@ export class GitProviderService {
       event: EnumEventType.GitHubAuthResourceComplete,
     });
 
+    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+      args.data.workspaceId
+    );
+
     return await this.prisma.gitOrganization.create({
       data: {
         workspace: {
@@ -638,6 +621,10 @@ export class GitProviderService {
 
     this.logger.info("server: completeOAuth2Flow");
 
+    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+      workspaceId
+    );
+
     return this.prisma.gitOrganization.upsert({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -737,5 +724,49 @@ export class GitProviderService {
       ];
     }
     return resourcesToConnect;
+  }
+
+  async createDemoRepository(repoName: string) {
+    const organizationName = this.configService.get<string>(
+      Env.GITHUB_DEMO_REPO_ORGANIZATION_NAME
+    );
+
+    const installationId = this.configService.get<string>(
+      Env.GITHUB_DEMO_REPO_INSTALLATION_ID
+    );
+
+    const repository: CreateRepositoryArgs = {
+      repositoryName: repoName,
+      gitOrganization: {
+        name: organizationName,
+        type: EnumGitOrganizationType.Organization,
+        useGroupingForRepositories: false,
+      },
+      groupName: undefined,
+      owner: organizationName,
+      isPrivate: false,
+    };
+
+    const gitProviderArgs: GitProviderArgs = {
+      provider: EnumGitProvider.Github,
+      providerOrganizationProperties: {
+        installationId,
+      },
+    };
+
+    const gitClientService = await new GitClientService().create(
+      gitProviderArgs,
+      this.gitProvidersConfiguration,
+      this.logger
+    );
+    const remoteRepository = await gitClientService.createRepository(
+      repository
+    );
+
+    if (!remoteRepository) {
+      throw new AmplicationError(
+        `Failed to create demo repository ${organizationName}\\${repoName}`
+      );
+    }
   }
 }

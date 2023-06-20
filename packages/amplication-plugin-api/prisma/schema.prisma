@@ -1,6 +1,6 @@
 datasource postgres {
   provider = "postgresql"
-  url      = env("POSTGRESQL_URL")
+  url      = env("DB_URL")
 }
 
 generator client {
@@ -21,25 +21,28 @@ model User {
 }
 
 model Plugin {
-  createdAt   DateTime @default(now())
-  description String?
-  github      String?
-  icon        String?
-  id          String   @id @default(cuid())
-  name        String?
-  npm         String?
-  pluginId    String?  @unique
-  updatedAt   DateTime @updatedAt
-  website     String?
+  createdAt      DateTime @default(now())
+  description    String?
+  github         String?
+  icon           String?
+  id             String   @id @default(cuid())
+  name           String?
+  npm            String?
+  pluginId       String?  @unique
+  taggedVersions Json?
+  updatedAt      DateTime @updatedAt
+  website        String?
 }
 
 model PluginVersion {
   createdAt       DateTime @default(now())
   deprecated      String?
   id              String   @id @default(cuid())
+  isLatest        Boolean?
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?
+  configurations  Json?
   updatedAt       DateTime @updatedAt
   version         String?
 }

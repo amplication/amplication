@@ -18,4 +18,4 @@ class CreatePluginVersionArgs {
   data!: PluginVersionCreateInput;
 }
 
-export { CreatePluginVersionArgs };
+export { CreatePluginVersionArgs as CreatePluginVersionArgs };

@@ -102,6 +102,8 @@ export enum AnalyticsEventNames {
   CreateService = "CreateService",
   CreateMessageBroker = "CreateMessageBroker",
   CreateProjectConfiguration = "CreateProjectConfiguration",
+  StarUsBannerCTAClick = "StarUsBannerCTAClick",
+  StarUsBannerClose = "StarUsBannerClose",
 
   // new event for startAuthResourceWithGitHub
   AddGitProviderClick = "addGitProviderClick",
