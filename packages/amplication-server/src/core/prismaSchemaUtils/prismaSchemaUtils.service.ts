@@ -70,6 +70,14 @@ export class PrismaSchemaUtilsService {
     };
   }
 
+  /**
+   * This function is the starting point for the schema processing after the schema is uploaded
+   * First we make all the operations on the schema
+   * Then we pass the prepared schema a function that converts the schema into entities and fields object
+   * in a format that Amplication (entity service) can use to create the entities and fields
+   * @param schema The schema to be processed
+   * @returns The processed schema
+   */
   convertPrismaSchemaForImportObjects(
     schema: string
   ): CreateBulkEntityFromSchemaImport[] {
@@ -77,6 +85,13 @@ export class PrismaSchemaUtilsService {
     return this.convertPreparedSchemaForImportObjects(preparedSchema);
   }
 
+  /**
+   * This functions handles the models and the fields of the schema and converts them into entities and fields object.
+   * First we create the entities by calling the prepareEntity function for each model.
+   * Then we create the fields by determining the type of the field and calling the convertPrisma{filedType}ToEntityField function
+   * @param schema
+   * @returns entities and fields object in a format that Amplication (entity service) can use to create the entities and fields
+   */
   convertPreparedSchemaForImportObjects(
     schema: Schema
   ): CreateBulkEntityFromSchemaImport[] {
@@ -231,8 +246,7 @@ export class PrismaSchemaUtilsService {
    **********************/
 
   /**
-   * Add "@@map" attribute to model name if its name is plural or snake case
-   * and rename model name to singular and in pascal case
+   * Add "@@map" attribute to model name if its name is not in the correct format and rename model name to the correct format
    * @param builder prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
@@ -260,8 +274,8 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * Add "@map" attribute to field name if its name is in snake case and it does not have "@id" attribute
-   * Then, rename field name to camel case
+   * Add "@map" attribute to field name if its name is in not in the correct format and it does not have "@id" attribute
+   * Then, rename field name to the correct format
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
@@ -304,6 +318,11 @@ export class PrismaSchemaUtilsService {
     return builder;
   }
 
+  /**
+   * Format field types to the correct format (like the model name), but only if the type is not an enum type or scalar type
+   * @param builder  prisma schema builder
+   * @returns the new builder if there was a change or the old one if there was no change
+   */
   private handleFieldTypesRenaming(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
@@ -406,9 +425,9 @@ export class PrismaSchemaUtilsService {
    *****************************/
 
   /**
-   * Prepare an entity in a form of EntityCreateInput
+   * Prepare an entity in a form of CreateBulkEntityFromSchemaImport
    * @param model the model to prepare
-   * @returns entity in a structure like in EntityCreateInput
+   * @returns entity in a structure of CreateBulkEntityFromSchemaImport
    */
   private prepareEntity(model: Model): CreateBulkEntityFromSchemaImport {
     const modelDisplayName = formatDisplayName(model.name);
@@ -429,6 +448,12 @@ export class PrismaSchemaUtilsService {
     };
   }
 
+  /**
+   * Prepare the fields of an entity in a form of createOneEntityFieldCommonProperties[]
+   * @param field the current field to prepare
+   * @param fieldDataType the field data type
+   * @returns the field in a structure of createOneEntityFieldCommonProperties[]
+   */
   private createOneEntityFieldCommonProperties(
     field: Field,
     fieldDataType: EnumDataType
