@@ -25,7 +25,7 @@ const PrismaSchemaUtils = ({ resourceId }: Props) => {
           file,
         },
         context: {
-          hasUpload: true, // This line
+          hasUpload: true,
         },
       });
     },
