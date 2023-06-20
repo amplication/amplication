@@ -391,7 +391,6 @@ export class GitClientService {
     // Reset the branch to the latest commit of the user / bot
     await gitCli.reset([hash]);
     await gitCli.push(["--force"]);
-    await gitCli.resetState();
     this.logger.info("Diff returned");
     return { diff };
   }
