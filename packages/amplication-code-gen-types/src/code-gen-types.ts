@@ -113,8 +113,8 @@ export type Entity = Omit<
   | "lockedByUser"
   | "lockedAt"
 > & {
-  fields?: EntityField[];
-  permissions?: EntityPermission[];
+  fields: EntityField[];
+  permissions: EntityPermission[];
   pluralName: string;
 };
 

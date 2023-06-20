@@ -1922,7 +1922,7 @@ export type ServerSettingsUpdateInput = {
 
 export type ServiceSettings = IBlock & {
   adminUISettings: AdminUiSettings;
-  authEntity?: Maybe<Entity>;
+  authEntityName?: Maybe<Scalars['String']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime'];
@@ -1942,6 +1942,7 @@ export type ServiceSettings = IBlock & {
 
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
+  authEntityName?: InputMaybe<Scalars['String']>;
   authProvider: EnumAuthProviderType;
   description?: InputMaybe<Scalars['String']>;
   displayName?: InputMaybe<Scalars['String']>;

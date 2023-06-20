@@ -25,8 +25,8 @@ export class ServiceSettings extends IBlock {
   })
   serverSettings: ServerSettings & JsonValue;
 
-  @Field(() => Entity, {
+  @Field(() => String, {
     nullable: true,
   })
-  authEntity?: Entity & JsonValue;
+  authEntityName?: string & JsonValue;
 }

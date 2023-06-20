@@ -24,5 +24,4 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
     generateAdminUI: true,
     adminUIPath: "",
   },
-  authEntity: null,
 };

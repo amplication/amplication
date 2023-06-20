@@ -770,7 +770,7 @@ type ServiceSettings implements IBlock {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettings!
   serverSettings: ServerSettings!
-  authEntity: Entity
+  authEntityName: String
 }
 
 interface IBlock {
@@ -1240,6 +1240,7 @@ input ServiceSettingsUpdateInput {
   authProvider: EnumAuthProviderType!
   adminUISettings: AdminUISettingsUpdateInput!
   serverSettings: ServerSettingsUpdateInput!
+  authEntityName: String
 }
 
 input AdminUISettingsUpdateInput {
