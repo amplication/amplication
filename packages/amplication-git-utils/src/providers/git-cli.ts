@@ -136,7 +136,7 @@ export class GitCli {
     const status = await this.git.status();
     if (status.staged.length !== 0) {
       const { commit: commitSha } = await this.git.commit(message);
-      await this.git.push();
+      await this.push();
       return commitSha;
     } else {
       this.logger.warn(`Trying to commit empty changeset`, { status });
