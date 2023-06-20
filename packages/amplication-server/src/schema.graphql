@@ -16,6 +16,8 @@ type ErrorMessage {
 enum ErrorMessages {
   InvalidSchema
   InvalidModelName
+  InvalidFieldName
+  ReservedWord
   NoModels
   InvalidFKFieldName
 }

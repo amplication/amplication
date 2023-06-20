@@ -771,9 +771,11 @@ export type ErrorMessage = {
 
 export enum ErrorMessages {
   InvalidFkFieldName = 'InvalidFKFieldName',
+  InvalidFieldName = 'InvalidFieldName',
   InvalidModelName = 'InvalidModelName',
   InvalidSchema = 'InvalidSchema',
-  NoModels = 'NoModels'
+  NoModels = 'NoModels',
+  ReservedWord = 'ReservedWord'
 }
 
 export type GitGetInstallationUrlInput = {
