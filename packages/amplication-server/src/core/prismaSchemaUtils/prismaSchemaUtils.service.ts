@@ -19,6 +19,7 @@ import {
   formatFieldName,
   formatModelName,
   idTypePropertyMap,
+  isCamelCaseWithIdSuffix,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -1319,6 +1320,14 @@ export class PrismaSchemaUtilsService {
         if (invalidFieldNameErrors) {
           errors.push(...invalidFieldNameErrors);
         }
+
+        const isInvalidFkFieldName = this.validateFKFieldName(
+          model.name,
+          field.name
+        );
+        if (isInvalidFkFieldName) {
+          errors.push(...isInvalidFkFieldName);
+        }
       });
     });
 
@@ -1359,5 +1368,23 @@ export class PrismaSchemaUtilsService {
       );
       return errors;
     }
+  }
+
+  validateFKFieldName(
+    modelName: string,
+    fieldName: string
+  ): ErrorMessage[] | null {
+    const errors: ErrorMessage[] = [];
+    const isValidFkFieldName = isCamelCaseWithIdSuffix(fieldName);
+
+    if (!isValidFkFieldName) {
+      errors.push({
+        message: ErrorMessages.InvalidFKFieldName,
+        level: ErrorLevel.Error,
+        details: `Field name: "${fieldName}" in model: "${modelName}" must be in camelCase and end with "Id"`,
+      });
+    }
+
+    return errors.length > 0 ? errors : null;
   }
 }

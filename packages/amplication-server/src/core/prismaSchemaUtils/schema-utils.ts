@@ -12,6 +12,10 @@ export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+export function isCamelCaseWithIdSuffix(string) {
+  return /^[a-z]+([A-Z][a-z]*)*Id$/.test(string);
+}
+
 export function capitalizeFirstLetterOfEachWord(str: string): string {
   return str
     .split(" ")

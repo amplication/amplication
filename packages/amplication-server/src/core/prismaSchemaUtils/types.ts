@@ -7,6 +7,7 @@ export enum ErrorMessages {
   InvalidSchema = "Invalid schema",
   InvalidModelName = "Invalid model name",
   NoModels = "No models",
+  InvalidFKFieldName = "Invalid field name",
 }
 
 registerEnumType(ErrorMessages, {
