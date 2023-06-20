@@ -1,6 +1,7 @@
 import { Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
+import { isReservedName } from "../entity/reservedNames";
 
 export const idTypePropertyMap = {
   autoincrement: "AUTO_INCREMENT",
@@ -53,6 +54,10 @@ export function formatModelName(modelName: string): string {
     modelName = modelName.split("_").map(capitalizeFirstLetter).join("");
   }
 
+  if (isReservedName(modelName.toLowerCase().trim())) {
+    modelName = `${modelName}Model`;
+  }
+
   // always make sure the model name is in pascal case
   modelName = capitalizeFirstLetter(modelName);
   return modelName;
@@ -60,7 +65,13 @@ export function formatModelName(modelName: string): string {
 
 export function formatFieldName(fieldName: string | Func): string {
   if (typeof fieldName === "string") {
-    return fieldName.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+    fieldName = fieldName.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+
+    if (isReservedName(fieldName.toLowerCase().trim())) {
+      fieldName = `${fieldName}Field`;
+    }
+
+    return fieldName;
   }
 
   return fieldName.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());

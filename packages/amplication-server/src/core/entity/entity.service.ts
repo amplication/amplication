@@ -245,7 +245,8 @@ export class EntityService {
   async createOneEntity(
     args: CreateOneEntityArgs,
     user: User,
-    createInitialEntityFields = true
+    createInitialEntityFields = true,
+    enforceValidation = true
   ): Promise<Entity> {
     if (
       args.data?.name?.toLowerCase().trim() ===
@@ -255,7 +256,10 @@ export class EntityService {
         `The entity name and plural display name cannot be the same.`
       );
     }
-    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+    if (
+      enforceValidation &&
+      isReservedName(args.data?.name?.toLowerCase().trim())
+    ) {
       throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
 
@@ -396,6 +400,7 @@ export class EntityService {
             },
           },
           user,
+          false,
           false
         );
         entities.push(newEntity);
@@ -2044,7 +2049,10 @@ export class EntityService {
     user: User,
     enforceValidation = true
   ): Promise<EntityField> {
-    if (isReservedName(args.data?.name?.toLowerCase().trim())) {
+    if (
+      enforceValidation &&
+      isReservedName(args.data?.name?.toLowerCase().trim())
+    ) {
       throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
     }
 

@@ -6,6 +6,8 @@ import { EnumDataType } from "../../prisma";
 export enum ErrorMessages {
   InvalidSchema = "Invalid schema",
   InvalidModelName = "Invalid model name",
+  InvalidFieldName = "Invalid field name",
+  ReservedWord = "Reserved word",
   NoModels = "No models",
   InvalidFKFieldName = "Invalid field name",
 }

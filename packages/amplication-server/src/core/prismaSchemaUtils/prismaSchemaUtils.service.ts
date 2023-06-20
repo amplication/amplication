@@ -36,6 +36,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
 import { types } from "@amplication/code-gen-types";
 import { JsonValue } from "type-fest";
+import { isReservedName } from "../entity/reservedNames";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -249,7 +250,8 @@ export class PrismaSchemaUtilsService {
       const isInvalidModelName =
         pluralize.isPlural(model.name) ||
         model.name.includes("_") ||
-        !/^[A-Z]/.test(model.name);
+        !/^[A-Z]/.test(model.name) ||
+        isReservedName(model.name.toLowerCase().trim());
 
       if (isInvalidModelName) {
         builder.model(model.name).blockAttribute("map", model.name);
@@ -282,7 +284,9 @@ export class PrismaSchemaUtilsService {
       fields.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
-        const isInvalidFieldName = field.name.includes("_");
+        const isInvalidFieldName =
+          field.name.includes("_") ||
+          isReservedName(field.name.toLowerCase().trim());
         const isEnumFieldType =
           this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
           this.resolveFieldDataType(schema, field) ===
@@ -317,10 +321,18 @@ export class PrismaSchemaUtilsService {
 
       return fields.map((field: Field) => {
         const isEnumFieldType =
-          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
-          this.resolveFieldDataType(schema, field) ===
-            EnumDataType.MultiSelectOptionSet;
-        if (!isEnumFieldType) {
+          this.isOptionSetField(schema, field) ||
+          this.isMultiSelectOptionSetField(schema, field);
+
+        const isScalarFieldType =
+          this.isSingleLineTextField(schema, field) ||
+          this.isWholeNumberField(schema, field) ||
+          this.isDecimalNumberField(schema, field) ||
+          this.isBooleanField(schema, field) ||
+          this.isDateTimeField(schema, field) ||
+          this.isJsonField(schema, field);
+
+        if (!isEnumFieldType && !isScalarFieldType) {
           builder
             .model(model.name)
             .field(field.name)
@@ -1341,12 +1353,24 @@ export class PrismaSchemaUtilsService {
           errors.push(...invalidFieldNameErrors);
         }
 
-        const isInvalidFkFieldName = this.validateFKFieldName(
+        const invalidFkFieldNameErrors = this.validateFKFieldName(
           model.name,
           field.name
         );
-        if (isInvalidFkFieldName) {
-          errors.push(...isInvalidFkFieldName);
+        if (invalidFkFieldNameErrors) {
+          errors.push(...invalidFkFieldNameErrors);
+        }
+
+        const invalidModelNamesReservedWordsErrors =
+          this.validateModelNamesReservedWords(model.name);
+        if (invalidModelNamesReservedWordsErrors) {
+          errors.push(...invalidModelNamesReservedWordsErrors);
+        }
+
+        const invalidFieldNamesReservedWordsErrors =
+          this.validateFieldNamesReservedWords(field.name);
+        if (invalidFieldNamesReservedWordsErrors) {
+          errors.push(...invalidFieldNamesReservedWordsErrors);
         }
       });
     });
@@ -1354,7 +1378,7 @@ export class PrismaSchemaUtilsService {
     return errors.length > 0 ? errors : null;
   }
 
-  validateModelName(modelName: string): ErrorMessage[] | null {
+  private validateModelName(modelName: string): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
     const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
     if (!modelNameRegex.test(modelName)) {
@@ -1368,16 +1392,17 @@ export class PrismaSchemaUtilsService {
         null,
         PrismaSchemaUtilsService.name
       );
-      return errors;
+
+      return errors.length > 0 ? errors : null;
     }
   }
 
-  validateFieldName(modelName: string): ErrorMessage[] | null {
+  private validateFieldName(modelName: string): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
     const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
     if (!modelNameRegex.test(modelName)) {
       errors.push({
-        message: ErrorMessages.InvalidModelName,
+        message: ErrorMessages.InvalidFieldName,
         level: ErrorLevel.Error,
         details: `modelName: "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
       });
@@ -1386,11 +1411,12 @@ export class PrismaSchemaUtilsService {
         null,
         PrismaSchemaUtilsService.name
       );
-      return errors;
+
+      return errors.length > 0 ? errors : null;
     }
   }
 
-  validateFKFieldName(
+  private validateFKFieldName(
     modelName: string,
     fieldName: string
   ): ErrorMessage[] | null {
@@ -1402,6 +1428,36 @@ export class PrismaSchemaUtilsService {
         message: ErrorMessages.InvalidFKFieldName,
         level: ErrorLevel.Error,
         details: `Field name: "${fieldName}" in model: "${modelName}" must be in camelCase and end with "Id"`,
+      });
+    }
+
+    return errors.length > 0 ? errors : null;
+  }
+
+  private validateModelNamesReservedWords(
+    modelName: string
+  ): ErrorMessage[] | null {
+    const errors: ErrorMessage[] = [];
+    const isReservedModelName = isReservedName(modelName.toLowerCase().trim());
+    if (isReservedModelName) {
+      errors.push({
+        message: ErrorMessages.ReservedWord,
+        level: ErrorLevel.Warning,
+        details: `Model name: "${modelName}" is a reserved word. Please be aware that we renamed it to "${modelName}Model"`,
+      });
+    }
+
+    return errors.length > 0 ? errors : null;
+  }
+
+  private validateFieldNamesReservedWords(fieldName: string) {
+    const errors: ErrorMessage[] = [];
+    const isReservedFieldName = isReservedName(fieldName.toLowerCase().trim());
+    if (isReservedFieldName) {
+      errors.push({
+        message: ErrorMessages.ReservedWord,
+        level: ErrorLevel.Warning,
+        details: `Field name: "${fieldName}" is a reserved word. Please be aware that we renamed it to "${fieldName}Field"`,
       });
     }
 
