@@ -431,7 +431,10 @@ export class PrismaSchemaUtilsService {
 
     const fieldAttributes = filterOutAmplicationAttributes(
       this.prepareAttributes(field.attributes)
-    ).join(" ");
+    )
+      // in some case we get "@default()" as an attribute, we want to filter it out
+      .filter((attr) => attr !== "@default()")
+      .join(" ");
 
     return {
       permanentId: cuid(),
@@ -790,13 +793,6 @@ export class PrismaSchemaUtilsService {
       EnumDataType.CreatedAt
     );
 
-    if (entityField.customAttributes.includes("@default()")) {
-      entityField.customAttributes = entityField.customAttributes.replace(
-        "@default()",
-        ""
-      );
-    }
-
     entity.fields.push(entityField);
 
     return entity;
@@ -998,13 +994,6 @@ export class PrismaSchemaUtilsService {
       field,
       EnumDataType.Id
     );
-
-    if (entityField.customAttributes.includes("@default()")) {
-      entityField.customAttributes = entityField.customAttributes.replace(
-        "@default()",
-        ""
-      );
-    }
 
     const defaultIdAttribute = field.attributes?.find(
       (attr) => attr.name === "default"
