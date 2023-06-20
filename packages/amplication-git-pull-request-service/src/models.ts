@@ -770,6 +770,7 @@ export type ErrorMessage = {
 };
 
 export enum ErrorMessages {
+  InvalidFkFieldName = 'InvalidFKFieldName',
   InvalidModelName = 'InvalidModelName',
   InvalidSchema = 'InvalidSchema',
   NoModels = 'NoModels'

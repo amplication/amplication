@@ -17,6 +17,7 @@ enum ErrorMessages {
   InvalidSchema
   InvalidModelName
   NoModels
+  InvalidFKFieldName
 }
 
 enum ErrorLevel {
