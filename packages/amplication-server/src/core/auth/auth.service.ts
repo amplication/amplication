@@ -32,7 +32,7 @@ const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
 export const IDENTITY_PROVIDER_GITHUB = "GitHub";
 export const IDENTITY_PROVIDER_SSO = "SSO";
-export const IDENTITY_PROVIDER_MANUAL = "Manuel";
+export const IDENTITY_PROVIDER_MANUAL = "Manual";
 
 const AUTH_USER_INCLUDE = {
   account: true,
