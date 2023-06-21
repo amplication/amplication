@@ -86,7 +86,7 @@ function WelcomePage({
           </div>
         </div>
         <a
-          href="https://discord.gg/Z2CG3rUFnu"
+          href="https://amplication.com/discord"
           target="discord"
           className="discord-button"
         >
