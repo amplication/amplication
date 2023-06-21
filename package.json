@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.7.5",
+  "version": "1.7.6",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -92,7 +92,7 @@
     "deepdash-es": "^5.3.9",
     "dir-compare": "^4.0.0",
     "docker-names": "^1.2.1",
-    "dotenv": "^16.0.0",
+    "dotenv": "^16.3.1",
     "download": "^8.0.0",
     "eventsource": "^2.0.2",
     "express": "^4.18.1",
@@ -245,7 +245,7 @@
     "babel-jest": "^28.1.0",
     "base-64": "^1.0.0",
     "copy-webpack-plugin": "^11.0.0",
-    "css-loader": "^6.7.3",
+    "css-loader": "^6.8.1",
     "cypress": "^11.0.0",
     "docker-compose": "^0.23.19",
     "dockerode": "^3.3.5",

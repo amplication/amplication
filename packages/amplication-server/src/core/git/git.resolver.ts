@@ -18,7 +18,10 @@ import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
 import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
-import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import {
+  RemoteGitRepos,
+  RemoteGitRepository,
+} from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
@@ -28,7 +31,6 @@ import { GitGroupArgs } from "./dto/args/GitGroupArgs";
 import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
 import { User } from "../../models";
 import { UserEntity } from "../../decorators/user.decorator";
-import { RemoteGitRepository } from "@amplication/git-utils";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -45,7 +47,7 @@ export class GitResolver {
     return this.gitService.connectGitRepository(args.data);
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => RemoteGitRepository)
   @AuthorizeContext(
     AuthorizableOriginParameter.GitOrganizationId,
     "data.gitOrganizationId"
