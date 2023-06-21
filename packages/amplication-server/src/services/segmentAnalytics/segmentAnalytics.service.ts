@@ -20,6 +20,7 @@ export enum EnumEventType {
   PluginInstall = "installPlugin",
   PluginUpdate = "updatePlugin",
   DemoRepoCreate = "CreateDemoRepo",
+  InvitationAcceptance = "invitationAcceptance",
 }
 
 export type IdentifyData = {

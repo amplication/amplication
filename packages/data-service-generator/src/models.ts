@@ -910,7 +910,7 @@ export type Mutation = {
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
-  createRemoteGitRepository: Scalars['Boolean'];
+  createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;

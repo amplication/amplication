@@ -10,6 +10,7 @@ export enum AnalyticsEventNames {
   ApiTokenCreate = "createApiToken",
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
+  ContinueWithSSOClick = "continueWithSSOClick",
 
   // account
   AccountInfoUpdate = "updateAccountInfo",

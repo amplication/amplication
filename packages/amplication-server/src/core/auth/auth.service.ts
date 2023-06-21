@@ -30,6 +30,9 @@ export type AuthUser = User & {
 
 const TOKEN_PREVIEW_LENGTH = 8;
 const TOKEN_EXPIRY_DAYS = 30;
+export const IDENTITY_PROVIDER_GITHUB = "GitHub";
+export const IDENTITY_PROVIDER_SSO = "SSO";
+export const IDENTITY_PROVIDER_MANUAL = "Manual";
 
 const AUTH_USER_INCLUDE = {
   account: true,
@@ -61,15 +64,18 @@ export class AuthService {
     payload: GitHubProfile,
     email: string
   ): Promise<AuthUser> {
-    const account = await this.accountService.createAccount({
-      data: {
-        email,
-        firstName: email,
-        lastName: "",
-        password: "",
-        githubId: payload.id,
+    const account = await this.accountService.createAccount(
+      {
+        data: {
+          email,
+          firstName: email,
+          lastName: "",
+          password: "",
+          githubId: payload.id,
+        },
       },
-    });
+      IDENTITY_PROVIDER_GITHUB
+    );
 
     const user = await this.bootstrapUser(account, payload.id);
 
@@ -93,15 +99,18 @@ export class AuthService {
   }
 
   async createUser(profile: AuthProfile): Promise<AuthUser> {
-    const account = await this.accountService.createAccount({
-      data: {
-        email: profile.email,
-        firstName: profile.given_name || profile.nickname || profile.email,
-        lastName: profile.family_name,
-        password: "",
-        githubId: profile.sub,
+    const account = await this.accountService.createAccount(
+      {
+        data: {
+          email: profile.email,
+          firstName: profile.given_name || profile.nickname || profile.email,
+          lastName: profile.family_name,
+          password: "",
+          githubId: profile.sub,
+        },
       },
-    });
+      IDENTITY_PROVIDER_SSO
+    );
 
     const user = await this.bootstrapUser(account, profile.sub);
 
@@ -126,14 +135,17 @@ export class AuthService {
       payload.password
     );
 
-    const account = await this.accountService.createAccount({
-      data: {
-        email: payload.email,
-        firstName: payload.firstName,
-        lastName: payload.lastName,
-        password: hashedPassword,
+    const account = await this.accountService.createAccount(
+      {
+        data: {
+          email: payload.email,
+          firstName: payload.firstName,
+          lastName: payload.lastName,
+          password: hashedPassword,
+        },
       },
-    });
+      IDENTITY_PROVIDER_MANUAL
+    );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
 
