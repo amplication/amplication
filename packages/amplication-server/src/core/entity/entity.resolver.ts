@@ -45,9 +45,10 @@ import {
   CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
-import { CreateEntitiesFromSchemaArgs } from "./dto/CreateEntitiesFromSchemaArgs";
+import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { CreateEntitiesFromSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromSchemaResponse";
+import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
+import { graphqlUpload } from "../../util/graphqlUpload";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -102,27 +103,21 @@ export class EntityResolver {
     );
   }
 
-  @Mutation(() => CreateEntitiesFromSchemaResponse, {
+  @Mutation(() => CreateEntitiesFromPrismaSchemaResponse, {
     nullable: false,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
-  async createEntitiesFromSchema(
+  async createEntitiesFromPrismaSchema(
     @UserEntity() user: User,
-    @Args() args: CreateEntitiesFromSchemaArgs,
+    @Args() args: CreateEntitiesFromPrismaSchemaArgs,
     @Args({ name: "file", type: () => GraphQLUpload })
     file: FileUpload
-  ): Promise<CreateEntitiesFromSchemaResponse> {
-    const { resourceId } = args.data;
-    const chunks = [];
-    for await (const chunk of file.createReadStream()) {
-      chunks.push(chunk);
-    }
-    const fileBuffer = Buffer.concat(chunks);
-    const fileContent = fileBuffer.toString("utf8");
+  ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
+    const fileContent = await graphqlUpload(file);
 
-    return this.entityService.createEntitiesFromSchema(
+    return this.entityService.createEntitiesFromPrismaSchema(
       fileContent,
-      resourceId,
+      args,
       user
     );
   }
