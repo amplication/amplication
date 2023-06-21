@@ -1,10 +1,11 @@
 ## Amplication Build Manager
 
- Amplication Build Manager (ABM) is the component responsible for the generation of source code by Amplication and allows the integration of plugins into the code generation process.
+ amplication-build-manager is an essential part of the Amplication project. This package is responsible for managing the queue of build requests and running the DSG to generate the code.
 
-## Installation
-To use this package, follow the instructions on https://github.com/amplication/amplication
+### Installation
 
-## Contributing
+To use this package, follow the instructions at https://github.com/amplication/amplication
 
-We welcome contributions from the community. If you wish to contribute, please take a look at our [contributing guidelines](https://github.com/amplication/amplication/blob/master/CONTRIBUTING.md).
+### Contributing
+
+We welcome contributions from the community. If you wish to contribute, please take a look at our contributing guidelines.
