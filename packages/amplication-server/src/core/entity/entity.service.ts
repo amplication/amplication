@@ -73,6 +73,7 @@ import {
   UpdateEntityPermissionFieldRolesArgs,
   AddEntityPermissionFieldArgs,
   DeleteEntityPermissionFieldArgs,
+  EntityCreateInput,
 } from "./dto";
 import { ReservedNameError } from "../resource/ReservedNameError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -81,8 +82,8 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
-import { CreateEntitiesFromSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromSchemaResponse";
-import { CreateBulkEntityFromSchemaImport } from "../prismaSchemaUtils/types";
+import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
+import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -104,6 +105,26 @@ export type EntityPendingChange = {
   origin: Entity;
 
   resource: Resource;
+};
+
+export type CreateBulkEntitiesAndFieldsArgs = {
+  resourceId: string;
+  user: User;
+  preparedEntitiesWithFields: CreateBulkEntitiesInput[];
+};
+
+export type CreateBulkEntitiesInput = Omit<EntityCreateInput, "resource"> & {
+  fields: CreateBulkFieldsInput[];
+};
+
+export type CreateBulkFieldsInput = Omit<
+  EntityFieldCreateInput,
+  "entity" | "properties"
+> & {
+  properties: JsonObject;
+  relatedFieldName?: string;
+  relatedFieldDisplayName?: string;
+  relatedFieldAllowMultipleSelection?: boolean;
 };
 
 /**
@@ -341,23 +362,23 @@ export class EntityService {
     return newEntity;
   }
 
-  async createEntitiesFromSchema(
+  async createEntitiesFromPrismaSchema(
     file: string,
-    resourceId: string,
+    args: CreateEntitiesFromPrismaSchemaArgs,
     user: User
-  ): Promise<CreateEntitiesFromSchemaResponse> {
-    // validate on upload to avoid unnecessary processing
-    this.schemaUtilsService.validateSchemaUpload(file);
+  ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
+    const { resourceId } = args.data;
 
+    this.schemaUtilsService.validateSchemaUpload(file);
     const errors = this.schemaUtilsService.validateSchemaProcessing(file);
     const preparedEntitiesWithFields =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
-    const entities = await this.createBulkEntitiesAndFieldsFromSchemaImport(
-      preparedEntitiesWithFields,
+    const entities = await this.createBulkEntitiesAndFields({
       resourceId,
-      user
-    );
+      user,
+      preparedEntitiesWithFields,
+    });
 
     return {
       entities,
@@ -365,11 +386,11 @@ export class EntityService {
     };
   }
 
-  async createBulkEntitiesAndFieldsFromSchemaImport(
-    preparedEntitiesWithFields: CreateBulkEntityFromSchemaImport[],
-    resourceId: string,
-    user: User
-  ): Promise<Entity[]> {
+  async createBulkEntitiesAndFields({
+    resourceId,
+    user,
+    preparedEntitiesWithFields,
+  }: CreateBulkEntitiesAndFieldsArgs): Promise<Entity[]> {
     const entities: Entity[] = [];
     for (const entity of preparedEntitiesWithFields) {
       const {

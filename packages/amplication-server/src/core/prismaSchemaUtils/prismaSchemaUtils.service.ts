@@ -23,13 +23,7 @@ import {
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
-import {
-  CreateEntityFieldCommonProperties,
-  CreateBulkEntityFromSchemaImport,
-  ErrorLevel,
-  ErrorMessages,
-  Operation,
-} from "./types";
+import { ErrorLevel, ErrorMessages, Operation } from "./types";
 import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -37,6 +31,10 @@ import cuid from "cuid";
 import { types } from "@amplication/code-gen-types";
 import { JsonValue } from "type-fest";
 import { isReservedName } from "../entity/reservedNames";
+import {
+  CreateBulkEntitiesInput,
+  CreateBulkFieldsInput,
+} from "../entity/entity.service";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -80,7 +78,7 @@ export class PrismaSchemaUtilsService {
    */
   convertPrismaSchemaForImportObjects(
     schema: string
-  ): CreateBulkEntityFromSchemaImport[] {
+  ): CreateBulkEntitiesInput[] {
     const preparedSchema = this.processSchema(...this.operations)(schema);
     return this.convertPreparedSchemaForImportObjects(preparedSchema);
   }
@@ -94,7 +92,7 @@ export class PrismaSchemaUtilsService {
    */
   convertPreparedSchemaForImportObjects(
     schema: Schema
-  ): CreateBulkEntityFromSchemaImport[] {
+  ): CreateBulkEntitiesInput[] {
     const modelList = schema.list.filter(
       (item: Model) => item.type === "model"
     ) as Model[];
@@ -425,11 +423,11 @@ export class PrismaSchemaUtilsService {
    *****************************/
 
   /**
-   * Prepare an entity in a form of CreateBulkEntityFromSchemaImport
+   * Prepare an entity in a form of CreateBulkEntitiesInput
    * @param model the model to prepare
-   * @returns entity in a structure of CreateBulkEntityFromSchemaImport
+   * @returns entity in a structure of CreateBulkEntitiesInput
    */
-  private prepareEntity(model: Model): CreateBulkEntityFromSchemaImport {
+  private prepareEntity(model: Model): CreateBulkEntitiesInput {
     const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
       (prop) => prop.type === "attribute"
@@ -449,15 +447,15 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * Prepare the fields of an entity in a form of createOneEntityFieldCommonProperties[]
+   * Prepare the fields of an entity in a form of CreateBulkFieldsInput
    * @param field the current field to prepare
    * @param fieldDataType the field data type
-   * @returns the field in a structure of createOneEntityFieldCommonProperties[]
+   * @returns the field in a structure of CreateBulkFieldsInput
    */
   private createOneEntityFieldCommonProperties(
     field: Field,
     fieldDataType: EnumDataType
-  ): CreateEntityFieldCommonProperties {
+  ): CreateBulkFieldsInput {
     const fieldDisplayName = formatDisplayName(field.name);
     const isUniqueField = field.attributes?.some(
       (attr) => attr.name === "unique"
@@ -471,7 +469,6 @@ export class PrismaSchemaUtilsService {
       .join(" ");
 
     return {
-      permanentId: cuid(),
       name: field.name,
       displayName: fieldDisplayName,
       dataType: fieldDataType,
@@ -786,11 +783,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -811,11 +808,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -836,11 +833,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -861,11 +858,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -895,11 +892,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -930,11 +927,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -964,11 +961,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -997,11 +994,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -1022,11 +1019,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -1061,11 +1058,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -1115,11 +1112,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -1167,11 +1164,11 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntityFromSchemaImport[]
-  ): CreateBulkEntityFromSchemaImport {
+    preparedEntities: CreateBulkEntitiesInput[]
+  ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
@@ -1211,7 +1208,7 @@ export class PrismaSchemaUtilsService {
 
     const relatedEntity = preparedEntities.find(
       (entity) => entity.name === remoteModel.name
-    ) as CreateBulkEntityFromSchemaImport;
+    ) as CreateBulkEntitiesInput;
 
     const properties = <types.Lookup>{
       relatedEntityId: relatedEntity.id,
