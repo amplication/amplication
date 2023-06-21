@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-code-gen-types",
   coverageThreshold: {
     global: {
-      branches: 47.7,
-      lines: 70.4,
+      branches: 87,
+      lines: 81,
     },
   },
   collectCoverageFrom: [

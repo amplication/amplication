@@ -15,4 +15,5 @@ export const environment = {
   NX_REACT_APP_AMPLITUDE_API_KEY: "P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO",
   NX_REACT_APP_AUTH_LOGIN_URI: "https://server.amplication.com/auth/login",
   NX_REACT_APP_AUTH_LOGOUT_URI: "https://server.amplication.com/auth/logout",
+  NX_REACT_APP_PLUGIN_VERSION_USE_LATEST: "true",
 };

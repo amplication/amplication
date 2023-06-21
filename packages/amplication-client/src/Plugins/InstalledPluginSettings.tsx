@@ -46,6 +46,8 @@ const InstalledPluginSettings: React.FC<Props> = ({
     useContext(AppContext);
   const editorRef: React.MutableRefObject<string | null> = useRef();
   const [isValid, setIsValid] = useState<boolean>(true);
+  const [configurations, setConfiguration] = useState<string>();
+
   const [resetKey, setResetKey] = useState<string>();
 
   const {
@@ -64,6 +66,10 @@ const InstalledPluginSettings: React.FC<Props> = ({
       pluginInstallation?.PluginInstallation.settings
     );
   }, [pluginInstallation?.PluginInstallation.settings]);
+
+  useEffect(() => {
+    setConfiguration(pluginInstallation?.PluginInstallation.configurations);
+  }, [pluginInstallation?.PluginInstallation.configurations]);
 
   useEffect(() => {
     if (pluginInstallation && !selectedVersion) {
@@ -97,14 +103,14 @@ const InstalledPluginSettings: React.FC<Props> = ({
       pluginInstallation?.PluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
       editorRef.current = pluginVersion.settings;
+      setConfiguration(pluginVersion.configurations);
     },
-    [setSelectedVersion, setIsValid]
+    [setSelectedVersion, setIsValid, setConfiguration]
   );
 
   const handlePluginInstalledSave = useCallback(() => {
     if (!pluginInstallation) return;
-    const { enabled, id, configurations } =
-      pluginInstallation.PluginInstallation;
+    const { enabled, id } = pluginInstallation.PluginInstallation;
 
     updatePluginInstallation({
       variables: {
@@ -112,7 +118,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           enabled,
           version: selectedVersion,
           settings: editorRef.current || JSON.parse("{}"),
-          configurations: configurations,
+          configurations: configurations || JSON.parse("{}"),
         },
         where: {
           id: id,

@@ -193,8 +193,8 @@ export class ModuleMap {
    * Replace all modules paths using a function
    * @param fn A function that receives a module path and returns a new path
    */
-  async replaceModulesPath(fn: (path: string) => string): Promise<void> {
-    for await (const oldModule of Object.values(this.map)) {
+  replaceModulesPath(fn: (path: string) => string): void {
+    for (const oldModule of this.modules()) {
       const newModule: Module = {
         ...oldModule,
         path: fn(oldModule.path),
@@ -210,7 +210,7 @@ export class ModuleMap {
   async replaceModulesCode(fn: (code: string) => string): Promise<void> {
     for await (const module of Object.values(this.map)) {
       module.code = fn(module.code);
-      this[module.path] = module;
+      this.map[module.path] = module;
     }
   }
 
