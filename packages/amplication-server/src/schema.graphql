@@ -27,7 +27,7 @@ enum ErrorLevel {
   Warning
 }
 
-type CreateEntitiesFromSchemaResponse {
+type CreateEntitiesFromPrismaSchemaResponse {
   entities: [Entity!]!
   errors: [ErrorMessage!]
 }
@@ -1146,7 +1146,7 @@ type Mutation {
   updateResource(data: ResourceUpdateInput!, where: WhereUniqueInput!): Resource
   createOneEntity(data: EntityCreateInput!): Entity!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
-  createEntitiesFromSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): CreateEntitiesFromSchemaResponse!
+  createEntitiesFromPrismaSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): CreateEntitiesFromPrismaSchemaResponse!
   deleteEntity(where: WhereUniqueInput!): Entity
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   lockEntity(where: WhereUniqueInput!): Entity

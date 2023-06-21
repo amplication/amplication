@@ -290,7 +290,7 @@ export type CreateEntitiesFromPrismaSchemaInput = {
   resourceId: Scalars['String'];
 };
 
-export type CreateEntitiesFromSchemaResponse = {
+export type CreateEntitiesFromPrismaSchemaResponse = {
   entities: Array<Entity>;
   errors?: Maybe<Array<ErrorMessage>>;
 };
@@ -901,7 +901,7 @@ export type Mutation = {
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
-  createEntitiesFromSchema: CreateEntitiesFromSchemaResponse;
+  createEntitiesFromPrismaSchema: CreateEntitiesFromPrismaSchemaResponse;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
@@ -1024,7 +1024,7 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 };
 
 
-export type MutationCreateEntitiesFromSchemaArgs = {
+export type MutationCreateEntitiesFromPrismaSchemaArgs = {
   data: CreateEntitiesFromPrismaSchemaInput;
   file: Scalars['Upload'];
 };

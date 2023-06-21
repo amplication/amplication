@@ -2,7 +2,7 @@ import { ArgsType, Field } from "@nestjs/graphql";
 import { CreateEntitiesFromPrismaSchemaInput } from "./CreateEntitiesFromPrismaSchemaInput";
 
 @ArgsType()
-export class CreateEntitiesFromSchemaArgs {
+export class CreateEntitiesFromPrismaSchemaArgs {
   @Field(() => CreateEntitiesFromPrismaSchemaInput, { nullable: false })
   data!: CreateEntitiesFromPrismaSchemaInput;
 }
