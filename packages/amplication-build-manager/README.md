@@ -8,4 +8,4 @@ To use this package, follow the instructions at https://github.com/amplication/a
 
 ### Contributing
 
-We welcome contributions from the community. If you wish to contribute, please take a look at our contributing guidelines.
+We welcome contributions from the community. If you wish to contribute, please take a look at our [contributing guidelines](https://github.com/amplication/amplication/blob/master/CONTRIBUTING.md).
