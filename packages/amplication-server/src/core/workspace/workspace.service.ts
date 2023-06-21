@@ -27,6 +27,10 @@ import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
 import { BillingPlan } from "../billing/billing.types";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -38,7 +42,8 @@ export class WorkspaceService {
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
-    private readonly billingService: BillingService
+    private readonly billingService: BillingService,
+    private analytics: SegmentAnalyticsService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -263,6 +268,11 @@ export class WorkspaceService {
           },
         },
       },
+    });
+
+    await this.analytics.track({
+      userId: account.id,
+      event: EnumEventType.InvitationAcceptance,
     });
 
     return workspace;
