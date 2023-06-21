@@ -15,6 +15,11 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const SETTINGS_FILE = "package/.amplicationrc.json";
 
+interface PluginSettingsObject {
+  settings: { [key: string]: any };
+  systemSettings: { [key: string]: any };
+}
+
 @Injectable()
 export class PluginVersionService extends PluginVersionServiceBase {
   constructor(
@@ -86,6 +91,14 @@ export class PluginVersionService extends PluginVersionServiceBase {
     });
   }
 
+  parseSettingsString(pluginSettings: string) {
+    try {
+      return JSON.parse(pluginSettings);
+    } catch (e) {
+      return { settings: {}, systemSettings: {} };
+    }
+  }
+
   /**
    * main service function.upsert all plugins versions into DB
    * @returns Plugin[]
@@ -115,13 +128,15 @@ export class PluginVersionService extends PluginVersionServiceBase {
           tarballUrl,
           SETTINGS_FILE
         );
-        const pluginSettingsObject = JSON.parse(pluginSettings);
+
+        const pluginSettingsObject: PluginSettingsObject =
+          this.parseSettingsString(pluginSettings);
 
         pluginVersionArr.push({
           pluginId,
           pluginIdVersion,
-          settings: pluginSettingsObject?.settings,
-          configurations: pluginSettingsObject?.systemSettings,
+          settings: pluginSettingsObject?.settings || {},
+          configurations: pluginSettingsObject?.systemSettings || {},
           isLatest,
           deprecated,
           version,

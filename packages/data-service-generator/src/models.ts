@@ -302,7 +302,7 @@ export type CreateGitRepositoryInput = {
   groupName?: InputMaybe<Scalars['String']>;
   isPublic: Scalars['Boolean'];
   name: Scalars['String'];
-  resourceId: Scalars['String'];
+  resourceId?: InputMaybe<Scalars['String']>;
 };
 
 export type DateTimeFilter = {
@@ -861,6 +861,7 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
@@ -869,14 +870,13 @@ export type Mutation = {
   createDefaultRelatedField: EntityField;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
-  createGitRepository: Resource;
   createMessageBroker: Resource;
   createOneEntity: Entity;
   /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
-  createRemoteGitRepository: Scalars['Boolean'];
+  createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -952,6 +952,11 @@ export type MutationCompleteInvitationArgs = {
 };
 
 
+export type MutationConnectGitRepositoryArgs = {
+  data: CreateGitRepositoryInput;
+};
+
+
 export type MutationConnectResourceGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
 };
@@ -993,11 +998,6 @@ export type MutationCreateEntityFieldArgs = {
 
 export type MutationCreateEntityFieldByDisplayNameArgs = {
   data: EntityFieldCreateByDisplayNameInput;
-};
-
-
-export type MutationCreateGitRepositoryArgs = {
-  data: CreateGitRepositoryInput;
 };
 
 
