@@ -52,11 +52,11 @@ const PrismaSchemaUtils = ({ resourceId }: Props) => {
 export default PrismaSchemaUtils;
 
 const CREATE_ENTITIES_FORM_SCHEMA = gql`
-  mutation createEntitiesFromSchema(
+  mutation createEntitiesFromPrismaSchema(
     $data: CreateEntitiesFromPrismaSchemaInput!
     $file: Upload!
   ) {
-    createEntitiesFromSchema(data: $data, file: $file) {
+    createEntitiesFromPrismaSchema(data: $data, file: $file) {
       entities {
         name
         displayName
