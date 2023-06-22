@@ -303,7 +303,7 @@ export class PrismaSchemaUtilsService {
           builder
             .model(model.name)
             .field(field.name)
-            .attribute("map", [field.name]);
+            .attribute("map", [`"${field.name}"`]);
           builder
             .model(model.name)
             .field(field.name)
@@ -382,7 +382,7 @@ export class PrismaSchemaUtilsService {
           builder
             .model(model.name)
             .field(field.name)
-            .attribute("map", [field.name]);
+            .attribute("map", [`"${model.name}Id"`]);
           builder
             .model(model.name)
             .field(field.name)
@@ -393,7 +393,7 @@ export class PrismaSchemaUtilsService {
           builder
             .model(model.name)
             .field(field.name)
-            .attribute("map", [field.name]);
+            .attribute("map", [`"${field.name}"`]);
           builder
             .model(model.name)
             .field(field.name)
