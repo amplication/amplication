@@ -67,9 +67,11 @@ export class GitCli {
     await this.git.raw([
       "cherry-pick",
       "-m 1",
-      "--strategy=recursive",
+      "--strategy=ort",
       "-X",
       "theirs",
+      "-X",
+      "find-renames=1",
       sha,
     ]);
   }
