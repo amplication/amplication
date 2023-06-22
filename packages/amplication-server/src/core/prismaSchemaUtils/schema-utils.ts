@@ -9,6 +9,13 @@ export const idTypePropertyMap = {
   uuid: "UUID",
 };
 
+export const idTypePropertyMapByFieldType = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Int: "AUTO_INCREMENT",
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  String: "CUID",
+};
+
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
 }

@@ -19,6 +19,7 @@ import {
   formatFieldName,
   formatModelName,
   idTypePropertyMap,
+  idTypePropertyMapByFieldType,
   isCamelCaseWithIdSuffix,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -375,45 +376,32 @@ export class PrismaSchemaUtilsService {
         (property) => property.type === "field"
       ) as Field[];
 
-      const notIdFieldIsNamedId = modelFields.find((field: Field) => {
-        return (
-          field.name === "id" &&
-          !field.attributes?.some((attr) => attr.name === "id")
-        );
+      modelFields.forEach((field: Field) => {
+        const isIdField = field.attributes?.some((attr) => attr.name === "id");
+        if (!isIdField && field.name === "id") {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = `${model.name}Id`;
+            });
+        } else if (isIdField && field.name !== "id") {
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute("map", [field.name]);
+          builder
+            .model(model.name)
+            .field(field.name)
+            .then<Field>((field) => {
+              field.name = "id";
+            });
+        }
       });
-
-      if (notIdFieldIsNamedId) {
-        builder
-          .model(model.name)
-          .field(notIdFieldIsNamedId.name)
-          .attribute("map", [notIdFieldIsNamedId.name]);
-        builder
-          .model(model.name)
-          .field(notIdFieldIsNamedId.name)
-          .then<Field>((field) => {
-            field.name = `${model.name}Id`;
-          });
-      }
-
-      const idFieldIsNotNamedId = modelFields.find((field: Field) => {
-        return (
-          field.name !== "id" &&
-          field.attributes?.some((attr) => attr.name === "id")
-        );
-      });
-
-      if (idFieldIsNotNamedId) {
-        builder
-          .model(model.name)
-          .field(idFieldIsNotNamedId.name)
-          .attribute("map", [idFieldIsNotNamedId.name]);
-        builder
-          .model(model.name)
-          .field(idFieldIsNotNamedId.name)
-          .then<Field>((field) => {
-            field.name = "id";
-          });
-      }
     });
     return builder;
   }
@@ -1038,6 +1026,15 @@ export class PrismaSchemaUtilsService {
     const defaultIdAttribute = field.attributes?.find(
       (attr) => attr.name === "default"
     );
+
+    if (!defaultIdAttribute) {
+      const properties = <types.Id>{
+        idType: idTypePropertyMapByFieldType[field.fieldType as string],
+      };
+      entityField.properties = properties as unknown as {
+        [key: string]: JsonValue;
+      };
+    }
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
       const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
