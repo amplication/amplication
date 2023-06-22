@@ -8,7 +8,7 @@ export enum LogLevel {
 }
 
 export interface LoggerOptions {
-  serviceName: string;
+  component: string;
   logLevel?: LogLevel;
   isProduction: boolean;
   metadata?: Record<string, unknown>;

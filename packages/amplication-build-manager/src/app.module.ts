@@ -12,7 +12,7 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
       envFilePath: [".env.local", ".env"],
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: "amplication-build-manager",
+      component: "amplication-build-manager",
     }),
     HealthModule,
     BuildRunnerModule,
