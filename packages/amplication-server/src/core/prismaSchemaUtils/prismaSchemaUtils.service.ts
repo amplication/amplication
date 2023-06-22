@@ -1373,29 +1373,18 @@ export class PrismaSchemaUtilsService {
     }
 
     models.map((model: Model) => {
-      const invalidModelNameErrors = this.validateModelName(model.name);
-
-      if (invalidModelNameErrors) {
-        errors.push(...invalidModelNameErrors);
-      }
-
       const fields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       fields.map((field: Field) => {
-        const invalidFieldNameErrors = this.validateFieldName(field.name);
-        if (invalidFieldNameErrors) {
-          errors.push(...invalidFieldNameErrors);
+        const invalidFkFieldNameErrors = this.validateFKFieldName(
+          model.name,
+          field.name
+        );
+        if (invalidFkFieldNameErrors) {
+          errors.push(...invalidFkFieldNameErrors);
         }
-
-        // const invalidFkFieldNameErrors = this.validateFKFieldName(
-        //   model.name,
-        //   field.name
-        // );
-        // if (invalidFkFieldNameErrors) {
-        //   errors.push(...invalidFkFieldNameErrors);
-        // }
 
         const invalidModelNamesReservedWordsErrors =
           this.validateModelNamesReservedWords(model.name);
@@ -1414,44 +1403,7 @@ export class PrismaSchemaUtilsService {
     return errors.length > 0 ? errors : null;
   }
 
-  private validateModelName(modelName: string): ErrorMessage[] | null {
-    const errors: ErrorMessage[] = [];
-    const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
-    if (!modelNameRegex.test(modelName)) {
-      errors.push({
-        message: ErrorMessages.InvalidModelName,
-        level: ErrorLevel.Error,
-        details: `ModelName: "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
-      });
-      this.logger.error(
-        `Model name "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
-        null,
-        PrismaSchemaUtilsService.name
-      );
-
-      return errors.length > 0 ? errors : null;
-    }
-  }
-
-  private validateFieldName(modelName: string): ErrorMessage[] | null {
-    const errors: ErrorMessage[] = [];
-    const modelNameRegex = /^[A-Za-z][A-Za-z0-9_]*$/;
-    if (!modelNameRegex.test(modelName)) {
-      errors.push({
-        message: ErrorMessages.InvalidFieldName,
-        level: ErrorLevel.Error,
-        details: `modelName: "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
-      });
-      this.logger.error(
-        `Model name "${modelName}" must adhere to the following regular expression: [A-Za-z][A-Za-z0-9_]*`,
-        null,
-        PrismaSchemaUtilsService.name
-      );
-
-      return errors.length > 0 ? errors : null;
-    }
-  }
-
+  // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334
   private validateFKFieldName(
     modelName: string,
     fieldName: string
