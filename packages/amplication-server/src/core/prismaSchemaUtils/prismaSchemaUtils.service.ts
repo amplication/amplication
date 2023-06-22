@@ -36,6 +36,13 @@ import {
   CreateBulkEntitiesInput,
   CreateBulkFieldsInput,
 } from "../entity/entity.service";
+import {
+  ENUM_TYPE_NAME,
+  FIELD_TYPE_NAME,
+  ID_ATTRIBUTE_NAME,
+  ID_FIELD_NAME,
+  MODEL_TYPE_NAME,
+} from "./constants";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -95,7 +102,7 @@ export class PrismaSchemaUtilsService {
     schema: Schema
   ): CreateBulkEntitiesInput[] {
     const modelList = schema.list.filter(
-      (item: Model) => item.type === "model"
+      (item: Model) => item.type === MODEL_TYPE_NAME
     ) as Model[];
 
     const preparedEntities = modelList.map((model: Model) =>
@@ -104,7 +111,7 @@ export class PrismaSchemaUtilsService {
 
     for (const model of modelList) {
       const modelFields = model.properties.filter(
-        (property) => property.type === "field"
+        (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       for (const field of modelFields) {
@@ -253,7 +260,7 @@ export class PrismaSchemaUtilsService {
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
+    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
       const isInvalidModelName =
         pluralize.isPlural(model.name) ||
@@ -273,7 +280,8 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * Add "@map" attribute to field name if its name is in not in the correct format and it does not have "@id" attribute
+   * Add "@map" attribute to field name if its name is in not in the correct format and it does NOT have "@id" attribute
+   * because we handle id fields in a separated function.
    * Then, rename field name to the correct format
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
@@ -282,12 +290,12 @@ export class PrismaSchemaUtilsService {
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
+    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
       const fields = model.properties.filter(
         (property) =>
-          property.type === "field" &&
-          !property.attributes?.some((attr) => attr.name === "id")
+          property.type === FIELD_TYPE_NAME &&
+          !property.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
       ) as Field[];
       fields.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
@@ -326,10 +334,10 @@ export class PrismaSchemaUtilsService {
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
+    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
       const fields = model.properties.filter(
-        (property) => property.type === "field"
+        (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       return fields.map((field: Field) => {
@@ -369,16 +377,18 @@ export class PrismaSchemaUtilsService {
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === "model");
+    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
     models.forEach((model: Model) => {
       const modelFields = model.properties.filter(
-        (property) => property.type === "field"
+        (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       modelFields.forEach((field: Field) => {
-        const isIdField = field.attributes?.some((attr) => attr.name === "id");
-        if (!isIdField && field.name === "id") {
+        const isIdField = field.attributes?.some(
+          (attr) => attr.name === ID_ATTRIBUTE_NAME
+        );
+        if (!isIdField && field.name === ID_FIELD_NAME) {
           builder
             .model(model.name)
             .field(field.name)
@@ -389,7 +399,7 @@ export class PrismaSchemaUtilsService {
             .then<Field>((field) => {
               field.name = `${model.name}Id`;
             });
-        } else if (isIdField && field.name !== "id") {
+        } else if (isIdField && field.name !== ID_FIELD_NAME) {
           builder
             .model(model.name)
             .field(field.name)
@@ -398,7 +408,7 @@ export class PrismaSchemaUtilsService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = "id";
+              field.name = ID_FIELD_NAME;
             });
         }
       });
@@ -479,7 +489,7 @@ export class PrismaSchemaUtilsService {
   private resolveFieldDataType(schema: Schema, field: Field): EnumDataType {
     const idType = () => {
       const fieldIdType = field.attributes?.some(
-        (attribute) => attribute.name === "id"
+        (attribute) => attribute.name === ID_ATTRIBUTE_NAME
       );
       if (fieldIdType) {
         return EnumDataType.Id;
@@ -496,7 +506,9 @@ export class PrismaSchemaUtilsService {
     };
 
     const lookupModelType = () => {
-      const modelList = schema.list.filter((item) => item.type === "model");
+      const modelList = schema.list.filter(
+        (item) => item.type === MODEL_TYPE_NAME
+      );
       const fieldModelType = modelList.find((model: Model) => {
         return (
           formatModelName(model.name) ===
@@ -545,7 +557,9 @@ export class PrismaSchemaUtilsService {
     };
 
     const optionSetType = () => {
-      const enumList = schema.list.filter((item) => item.type === "enum");
+      const enumList = schema.list.filter(
+        (item) => item.type === ENUM_TYPE_NAME
+      );
       const fieldOptionSetType = enumList.find(
         (enumItem: Enum) => enumItem.name === field.fieldType
       );
@@ -555,7 +569,9 @@ export class PrismaSchemaUtilsService {
     };
 
     const multiSelectOptionSetType = () => {
-      const enumList = schema.list.filter((item) => item.type === "enum");
+      const enumList = schema.list.filter(
+        (item) => item.type === ENUM_TYPE_NAME
+      );
       const isMultiSelect = field.array || false;
       const fieldOptionSetType = enumList.find(
         (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
@@ -617,7 +633,7 @@ export class PrismaSchemaUtilsService {
     }
     return attributes.map((attribute) => {
       if (!attribute.args && !attribute.args?.length) {
-        return attribute.kind === "model"
+        return attribute.kind === MODEL_TYPE_NAME
           ? `@@${attribute.name}`
           : `@${attribute.name}`;
       }
@@ -633,7 +649,7 @@ export class PrismaSchemaUtilsService {
         }
       });
 
-      return `${attribute.kind === "model" ? "@@" : "@"}${
+      return `${attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"}${
         attribute.name
       }(${args.join(", ")})`;
     });
@@ -701,7 +717,9 @@ export class PrismaSchemaUtilsService {
   }
 
   private isNotAnnotatedRelationField(schema: Schema, field: Field): boolean {
-    const modelList = schema.list.filter((item) => item.type === "model");
+    const modelList = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    );
     const relationAttribute = field.attributes?.some(
       (attr) => attr.name === "relation"
     );
@@ -735,7 +753,7 @@ export class PrismaSchemaUtilsService {
     field: Field
   ): boolean {
     const modelFields = model.properties.filter(
-      (property) => property.type === "field"
+      (property) => property.type === FIELD_TYPE_NAME
     ) as Field[];
 
     const relationFiledWithReference = modelFields.filter((modelField: Field) =>
@@ -1071,7 +1089,7 @@ export class PrismaSchemaUtilsService {
       EnumDataType.OptionSet
     );
 
-    const enums = schema.list.filter((item) => item.type === "enum");
+    const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
       (item: Enum) =>
         formatModelName(item.name) ===
@@ -1125,7 +1143,7 @@ export class PrismaSchemaUtilsService {
       EnumDataType.MultiSelectOptionSet
     );
 
-    const enums = schema.list.filter((item) => item.type === "enum");
+    const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
       (item: Enum) => item.name === field.name
     ) as Enum;
@@ -1254,7 +1272,7 @@ export class PrismaSchemaUtilsService {
 
     const remoteModel = schema.list.find(
       (item) =>
-        item.type === "model" &&
+        item.type === MODEL_TYPE_NAME &&
         formatModelName(item.name) ===
           formatModelName(field.fieldType as string)
     ) as Model;
@@ -1269,7 +1287,7 @@ export class PrismaSchemaUtilsService {
     }
 
     const remoteModelFields = remoteModel.properties.filter(
-      (property) => property.type === "field"
+      (property) => property.type === FIELD_TYPE_NAME
     ) as Field[];
 
     if (relationAttributeName) {
@@ -1342,7 +1360,9 @@ export class PrismaSchemaUtilsService {
   validateSchemaProcessing(schema: string): ErrorMessage[] | null {
     const schemaObject = getSchema(schema);
     const errors: ErrorMessage[] = [];
-    const models = schemaObject.list.filter((item) => item.type === "model");
+    const models = schemaObject.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    );
 
     if (models.length === 0) {
       errors.push({
@@ -1360,7 +1380,7 @@ export class PrismaSchemaUtilsService {
       }
 
       const fields = model.properties.filter(
-        (property) => property.type === "field"
+        (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       fields.map((field: Field) => {

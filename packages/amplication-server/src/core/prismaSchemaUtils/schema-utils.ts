@@ -2,18 +2,19 @@ import { Func } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
+import { ID_TYPE_AUTOINCREMENT, ID_TYPE_CUID, ID_TYPE_UUID } from "./constants";
 
 export const idTypePropertyMap = {
-  autoincrement: "AUTO_INCREMENT",
-  cuid: "CUID",
-  uuid: "UUID",
+  autoincrement: ID_TYPE_AUTOINCREMENT,
+  cuid: ID_TYPE_CUID,
+  uuid: ID_TYPE_UUID,
 };
 
 export const idTypePropertyMapByFieldType = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: "AUTO_INCREMENT",
+  Int: ID_TYPE_AUTOINCREMENT,
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  String: "CUID",
+  String: ID_TYPE_CUID,
 };
 
 export function capitalizeFirstLetter(string): string {
