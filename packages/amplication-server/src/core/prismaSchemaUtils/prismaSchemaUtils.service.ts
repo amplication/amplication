@@ -47,10 +47,10 @@ import {
 @Injectable()
 export class PrismaSchemaUtilsService {
   private operations: Operation[] = [
-    this.handleModelNamesRenaming,
-    this.handleFieldNamesRenaming,
-    this.handleFieldTypesRenaming,
-    this.handleIdField,
+    this.prepareModelNamesRenaming,
+    this.prepareFieldNamesRenaming,
+    this.prepareFieldTypesRenaming,
+    this.prepareIdField,
   ];
 
   constructor(
@@ -64,7 +64,7 @@ export class PrismaSchemaUtilsService {
    * The functions have a name pattern: handle{OperationName}
    * @returns function that accepts the initial schema and returns the prepared schema
    */
-  processSchema(...operations: Operation[]): (inputSchema: string) => Schema {
+  prepareSchema(...operations: Operation[]): (inputSchema: string) => Schema {
     return (inputSchema: string): Schema => {
       let builder = createPrismaSchemaBuilder(inputSchema);
 
@@ -87,13 +87,13 @@ export class PrismaSchemaUtilsService {
   convertPrismaSchemaForImportObjects(
     schema: string
   ): CreateBulkEntitiesInput[] {
-    const preparedSchema = this.processSchema(...this.operations)(schema);
+    const preparedSchema = this.prepareSchema(...this.operations)(schema);
     return this.convertPreparedSchemaForImportObjects(preparedSchema);
   }
 
   /**
    * This functions handles the models and the fields of the schema and converts them into entities and fields object.
-   * First we create the entities by calling the prepareEntity function for each model.
+   * First we create the entities by calling the "convertModelToEntity" function for each model.
    * Then we create the fields by determining the type of the field and calling the convertPrisma{filedType}ToEntityField function
    * @param schema
    * @returns entities and fields object in a format that Amplication (entity service) can use to create the entities and fields
@@ -106,7 +106,7 @@ export class PrismaSchemaUtilsService {
     ) as Model[];
 
     const preparedEntities = modelList.map((model: Model) =>
-      this.prepareEntity(model)
+      this.convertModelToEntity(model)
     );
 
     for (const model of modelList) {
@@ -256,7 +256,7 @@ export class PrismaSchemaUtilsService {
    * @param builder prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private handleModelNamesRenaming(
+  private prepareModelNamesRenaming(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -286,7 +286,7 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private handleFieldNamesRenaming(
+  private prepareFieldNamesRenaming(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -330,7 +330,7 @@ export class PrismaSchemaUtilsService {
    * @param builder  prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private handleFieldTypesRenaming(
+  private prepareFieldTypesRenaming(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -373,7 +373,7 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private handleIdField(
+  private prepareIdField(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -425,7 +425,7 @@ export class PrismaSchemaUtilsService {
    * @param model the model to prepare
    * @returns entity in a structure of CreateBulkEntitiesInput
    */
-  private prepareEntity(model: Model): CreateBulkEntitiesInput {
+  private convertModelToEntity(model: Model): CreateBulkEntitiesInput {
     const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
       (prop) => prop.type === "attribute"
