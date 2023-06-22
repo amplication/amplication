@@ -1372,13 +1372,13 @@ export class PrismaSchemaUtilsService {
           errors.push(...invalidFieldNameErrors);
         }
 
-        const invalidFkFieldNameErrors = this.validateFKFieldName(
-          model.name,
-          field.name
-        );
-        if (invalidFkFieldNameErrors) {
-          errors.push(...invalidFkFieldNameErrors);
-        }
+        // const invalidFkFieldNameErrors = this.validateFKFieldName(
+        //   model.name,
+        //   field.name
+        // );
+        // if (invalidFkFieldNameErrors) {
+        //   errors.push(...invalidFkFieldNameErrors);
+        // }
 
         const invalidModelNamesReservedWordsErrors =
           this.validateModelNamesReservedWords(model.name);
