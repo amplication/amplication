@@ -24,7 +24,12 @@ import {
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
-import { ErrorLevel, ErrorMessages, Operation } from "./types";
+import {
+  ConvertPrismaSchemaForImportObjectsResponse,
+  ErrorLevel,
+  ErrorMessages,
+  Operation,
+} from "./types";
 import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -58,13 +63,36 @@ export class PrismaSchemaUtilsService {
   ) {}
 
   /**
+   * This function is the starting point for the schema processing after the schema is uploaded
+   * First we make all the operations on the schema
+   * Then we pass the prepared schema a function that converts the schema into entities and fields object
+   * in a format that Amplication (entity service) can use to create the entities and fields
+   * @param schema The schema to be processed
+   * @returns The processed schema
+   */
+  convertPrismaSchemaForImportObjects(
+    schema: string
+  ): ConvertPrismaSchemaForImportObjectsResponse {
+    this.validateSchemaUpload(schema);
+    const errors = this.validateSchemaProcessing(schema);
+    const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    return {
+      preparedEntitiesWithFields:
+        this.convertPreparedSchemaForImportObjects(preparedSchema),
+      errors,
+    };
+  }
+
+  /**
    * Prepare schema before passing it to entities and fields creation
    * @param operations functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
    * The functions are called one after the other and perform operations on the schema
    * The functions have a name pattern: handle{OperationName}
    * @returns function that accepts the initial schema and returns the prepared schema
    */
-  prepareSchema(...operations: Operation[]): (inputSchema: string) => Schema {
+  private prepareSchema(
+    ...operations: Operation[]
+  ): (inputSchema: string) => Schema {
     return (inputSchema: string): Schema => {
       let builder = createPrismaSchemaBuilder(inputSchema);
 
@@ -77,28 +105,13 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * This function is the starting point for the schema processing after the schema is uploaded
-   * First we make all the operations on the schema
-   * Then we pass the prepared schema a function that converts the schema into entities and fields object
-   * in a format that Amplication (entity service) can use to create the entities and fields
-   * @param schema The schema to be processed
-   * @returns The processed schema
-   */
-  convertPrismaSchemaForImportObjects(
-    schema: string
-  ): CreateBulkEntitiesInput[] {
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
-    return this.convertPreparedSchemaForImportObjects(preparedSchema);
-  }
-
-  /**
    * This functions handles the models and the fields of the schema and converts them into entities and fields object.
    * First we create the entities by calling the "convertModelToEntity" function for each model.
    * Then we create the fields by determining the type of the field and calling the convertPrisma{filedType}ToEntityField function
    * @param schema
    * @returns entities and fields object in a format that Amplication (entity service) can use to create the entities and fields
    */
-  convertPreparedSchemaForImportObjects(
+  private convertPreparedSchemaForImportObjects(
     schema: Schema
   ): CreateBulkEntitiesInput[] {
     const modelList = schema.list.filter(
@@ -610,7 +623,9 @@ export class PrismaSchemaUtilsService {
       scalarType,
       // must be last
       () => {
-        throw new Error(`Unsupported data type: ${field.fieldType}`);
+        throw new Error(
+          `Unsupported data type: ${field.fieldType} of field: ${field.name}`
+        );
       },
     ];
 
@@ -785,7 +800,7 @@ export class PrismaSchemaUtilsService {
   /********************
    * CONVERSION SECTION *
    ********************/
-  convertPrismaBooleanToEntityField(
+  private convertPrismaBooleanToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -810,7 +825,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaCreatedAtToEntityField(
+  private convertPrismaCreatedAtToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -835,7 +850,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaUpdatedAtToEntityField(
+  private convertPrismaUpdatedAtToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -860,7 +875,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaDateTimeToEntityField(
+  private convertPrismaDateTimeToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -894,7 +909,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaDecimalNumberToEntityField(
+  private convertPrismaDecimalNumberToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -929,7 +944,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaWholeNumberToEntityField(
+  private convertPrismaWholeNumberToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -963,7 +978,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaSingleLineTextToEntityField(
+  private convertPrismaSingleLineTextToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -996,7 +1011,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaJsonToEntityField(
+  private convertPrismaJsonToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -1021,7 +1036,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaIdToEntityField(
+  private convertPrismaIdToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -1069,7 +1084,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaOptionSetToEntityField(
+  private convertPrismaOptionSetToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -1123,7 +1138,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaMultiSelectOptionSetToEntityField(
+  private convertPrismaMultiSelectOptionSetToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -1175,7 +1190,7 @@ export class PrismaSchemaUtilsService {
     return entity;
   }
 
-  convertPrismaLookupToEntityField(
+  private convertPrismaLookupToEntityField(
     schema: Schema,
     model: Model,
     field: Field,
@@ -1341,7 +1356,7 @@ export class PrismaSchemaUtilsService {
    * @throws if the schema is invalid
    * @returns void
    **/
-  validateSchemaUpload(file: string): void {
+  private validateSchemaUpload(file: string): void {
     const schemaString = file.replace(/\\n/g, "\n");
     try {
       validate({ datamodel: schemaString });
@@ -1357,7 +1372,7 @@ export class PrismaSchemaUtilsService {
    * @param schema schema string
    * @returns array of errors if there are any or null if there are no errors
    */
-  validateSchemaProcessing(schema: string): ErrorMessage[] | null {
+  private validateSchemaProcessing(schema: string): ErrorMessage[] | null {
     const schemaObject = getSchema(schema);
     const errors: ErrorMessage[] = [];
     const models = schemaObject.list.filter(
