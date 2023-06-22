@@ -253,13 +253,9 @@ export class PrismaSchemaUtilsService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
-      const isInvalidModelName =
-        pluralize.isPlural(model.name) ||
-        model.name.includes("_") ||
-        !/^[A-Z]/.test(model.name) ||
-        isReservedName(model.name.toLowerCase().trim());
+      const formattedModelName = formatModelName(model.name);
 
-      if (isInvalidModelName) {
+      if (formattedModelName !== model.name) {
         builder.model(model.name).blockAttribute("map", model.name);
         builder.model(model.name).then<Model>((model) => {
           model.name = formatModelName(model.name);
@@ -290,15 +286,18 @@ export class PrismaSchemaUtilsService {
       ) as Field[];
       fields.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
-        const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
-        const isInvalidFieldName =
-          field.name.includes("_") ||
-          isReservedName(field.name.toLowerCase().trim());
-        const isEnumFieldType =
-          this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet ||
+        if (this.isFkFieldOfARelation(schema, model, field)) return builder;
+        if (this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet)
+          return builder;
+        if (
           this.resolveFieldDataType(schema, field) ===
-            EnumDataType.MultiSelectOptionSet;
-        if (isInvalidFieldName && !isEnumFieldType && !isFkHolder) {
+          EnumDataType.MultiSelectOptionSet
+        )
+          return builder;
+
+        const formattedFieldName = formatFieldName(field.name);
+
+        if (formattedFieldName !== field.name) {
           builder
             .model(model.name)
             .field(field.name)
@@ -332,19 +331,18 @@ export class PrismaSchemaUtilsService {
       ) as Field[];
 
       return fields.map((field: Field) => {
-        const isEnumFieldType =
-          this.isOptionSetField(schema, field) ||
-          this.isMultiSelectOptionSetField(schema, field);
+        if (this.isOptionSetField(schema, field)) return builder;
+        if (this.isMultiSelectOptionSetField(schema, field)) return builder;
+        if (this.isSingleLineTextField(schema, field)) return builder;
+        if (this.isWholeNumberField(schema, field)) return builder;
+        if (this.isDecimalNumberField(schema, field)) return builder;
+        if (this.isBooleanField(schema, field)) return builder;
+        if (this.isDateTimeField(schema, field)) return builder;
+        if (this.isJsonField(schema, field)) return builder;
 
-        const isScalarFieldType =
-          this.isSingleLineTextField(schema, field) ||
-          this.isWholeNumberField(schema, field) ||
-          this.isDecimalNumberField(schema, field) ||
-          this.isBooleanField(schema, field) ||
-          this.isDateTimeField(schema, field) ||
-          this.isJsonField(schema, field);
+        const formattedFieldType = formatModelName(field.fieldType as string);
 
-        if (!isEnumFieldType && !isScalarFieldType) {
+        if (formattedFieldType !== field.fieldType) {
           builder
             .model(model.name)
             .field(field.name)
