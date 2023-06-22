@@ -154,99 +154,77 @@ export class PrismaSchemaUtilsService {
             field,
             preparedEntities
           );
-        }
-
-        if (this.isCreatedAtField(schema, field)) {
+        } else if (this.isCreatedAtField(schema, field)) {
           this.convertPrismaCreatedAtToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isUpdatedAtField(schema, field)) {
+        } else if (this.isUpdatedAtField(schema, field)) {
           this.convertPrismaUpdatedAtToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isDateTimeField(schema, field)) {
+        } else if (this.isDateTimeField(schema, field)) {
           this.convertPrismaDateTimeToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isDecimalNumberField(schema, field)) {
+        } else if (this.isDecimalNumberField(schema, field)) {
           this.convertPrismaDecimalNumberToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isWholeNumberField(schema, field)) {
+        } else if (this.isWholeNumberField(schema, field)) {
           this.convertPrismaWholeNumberToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isSingleLineTextField(schema, field)) {
+        } else if (this.isSingleLineTextField(schema, field)) {
           this.convertPrismaSingleLineTextToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isJsonField(schema, field)) {
+        } else if (this.isJsonField(schema, field)) {
           this.convertPrismaJsonToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isIdField(schema, field)) {
+        } else if (this.isIdField(schema, field)) {
           this.convertPrismaIdToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isOptionSetField(schema, field)) {
+        } else if (this.isOptionSetField(schema, field)) {
           this.convertPrismaOptionSetToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isMultiSelectOptionSetField(schema, field)) {
+        } else if (this.isMultiSelectOptionSetField(schema, field)) {
           this.convertPrismaMultiSelectOptionSetToEntityField(
             schema,
             model,
             field,
             preparedEntities
           );
-        }
-
-        if (this.isLookupField(schema, field)) {
+        } else if (this.isLookupField(schema, field)) {
           this.convertPrismaLookupToEntityField(
             schema,
             model,
