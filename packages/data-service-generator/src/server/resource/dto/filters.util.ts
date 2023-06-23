@@ -13,6 +13,10 @@ export enum EnumScalarFiltersTypes {
   BooleanNullable = "BooleanNullable",
   DateTime = "DateTime",
   DateTimeNullable = "DateTimeNullable",
+  Decimal = "Decimal",
+  DecimalNullable = "DecimalNullable",
+  BigInt = "BigInt",
+  BigIntNullable = "BigIntNullable",
 }
 
 export const SCALAR_FILTER_TO_MODULE_AND_TYPE = Object.fromEntries(
