@@ -141,6 +141,7 @@
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
     "react-draggable": "^4.4.5",
+    "react-dropzone": "^14.2.3",
     "react-helmet": "^6.1.0",
     "react-hotkeys": "^2.0.0",
     "react-lazylog": "^4.5.3",

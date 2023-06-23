@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { match } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useContext } from "react";
+import { Link, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -23,8 +23,8 @@ import { pluralize } from "../util/pluralize";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
-import PrismaSchemaUtils from "./PrismaSchemaUtils";
 import usePlugins from "../Plugins/hooks/usePlugins";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   entities: models.Entity[];
@@ -45,7 +45,7 @@ type Props = AppRouteProps & {
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
 
-const POLL_INTERVAL = 2000;
+const POLL_INTERVAL = 0;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
@@ -55,6 +55,9 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
   const { pluginInstallations } = usePlugins(resource);
+
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
 
   const isUserEntityMandatory =
     pluginInstallations?.filter(
@@ -138,7 +141,17 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             onChange={handleSearchChange}
           />
           <div className={`${CLASS_NAME}__action-buttons`}>
-            <PrismaSchemaUtils resourceId={resource} />
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
+            >
+              <Button
+                className={`${CLASS_NAME}__install`}
+                buttonStyle={EnumButtonStyle.Secondary}
+                icon="upload1"
+              >
+                Upload Prisma Schema
+              </Button>
+            </Link>
             <Button
               className={`${CLASS_NAME}__add-button`}
               buttonStyle={EnumButtonStyle.Primary}

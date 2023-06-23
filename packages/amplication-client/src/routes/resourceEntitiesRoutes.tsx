@@ -20,6 +20,17 @@ const resourceEntitiesRoutes = [
     isAnalytics: true,
   },
   {
+    path: "/:workspace/:project/:resource/entities/import-schema",
+    Component: lazy(
+      () => import("../Entity/ImportPrismaSchema/EntitiesImport")
+    ),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: true,
+    routes: [],
+    isAnalytics: true,
+  },
+  {
     path: "/:workspace/:project/:resource/entities/fields",
     Component: lazy(() => import("../Entity/EntityFieldList")),
     moduleName: "",
