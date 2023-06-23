@@ -7,29 +7,9 @@ type Auth {
   token: String!
 }
 
-type ErrorMessage {
-  message: ErrorMessages!
-  level: ErrorLevel!
-  details: String
-}
-
-enum ErrorMessages {
-  InvalidSchema
-  InvalidModelName
-  InvalidFieldName
-  ReservedWord
-  NoModels
-  InvalidFKFieldName
-}
-
-enum ErrorLevel {
-  Error
-  Warning
-}
-
 type CreateEntitiesFromPrismaSchemaResponse {
   entities: [Entity!]!
-  errors: [ErrorMessage!]
+  log: [ActionLog!]!
 }
 
 type Entity {

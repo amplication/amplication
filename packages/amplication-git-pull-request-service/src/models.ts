@@ -292,7 +292,7 @@ export type CreateEntitiesFromPrismaSchemaInput = {
 
 export type CreateEntitiesFromPrismaSchemaResponse = {
   entities: Array<Entity>;
-  errors?: Maybe<Array<ErrorMessage>>;
+  log: Array<ActionLog>;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -761,26 +761,6 @@ export type Environment = {
   resourceId: Scalars['String'];
   updatedAt: Scalars['DateTime'];
 };
-
-export enum ErrorLevel {
-  Error = 'Error',
-  Warning = 'Warning'
-}
-
-export type ErrorMessage = {
-  details?: Maybe<Scalars['String']>;
-  level: ErrorLevel;
-  message: ErrorMessages;
-};
-
-export enum ErrorMessages {
-  InvalidFkFieldName = 'InvalidFKFieldName',
-  InvalidFieldName = 'InvalidFieldName',
-  InvalidModelName = 'InvalidModelName',
-  InvalidSchema = 'InvalidSchema',
-  NoModels = 'NoModels',
-  ReservedWord = 'ReservedWord'
-}
 
 export type GitGetInstallationUrlInput = {
   gitProvider: EnumGitProvider;
