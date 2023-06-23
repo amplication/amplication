@@ -369,7 +369,7 @@ export class EntityService {
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
     const { resourceId } = args.data;
 
-    const { preparedEntitiesWithFields, errors } =
+    const { preparedEntitiesWithFields, log } =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
     const entities = await this.createBulkEntitiesAndFields({
@@ -380,7 +380,7 @@ export class EntityService {
 
     return {
       entities,
-      errors,
+      log,
     };
   }
 
