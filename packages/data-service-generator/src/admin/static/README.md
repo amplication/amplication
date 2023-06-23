@@ -38,7 +38,7 @@ $ npm install
 ```
 
 ```sh
-# starts the application in development mode - available by default under http://localhost:3001 
+# starts the application in development mode - available by default under http://localhost:3001 with a pre-configured user with the username "admin" and password "admin"
 $ npm run start
 ```
 
