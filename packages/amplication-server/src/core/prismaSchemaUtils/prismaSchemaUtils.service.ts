@@ -1374,8 +1374,9 @@ export class PrismaSchemaUtilsService {
 
       fields.map((field: Field) => {
         const invalidFkFieldNameErrors = this.validateFKFieldName(
-          model.name,
-          field.name
+          schemaObject,
+          model,
+          field
         );
         if (invalidFkFieldNameErrors) {
           errors.push(...invalidFkFieldNameErrors);
@@ -1400,18 +1401,24 @@ export class PrismaSchemaUtilsService {
 
   // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334
   private validateFKFieldName(
-    modelName: string,
-    fieldName: string
+    schema: Schema,
+    model: Model,
+    field: Field
   ): ErrorMessage[] | null {
     const errors: ErrorMessage[] = [];
-    const isValidFkFieldName = isCamelCaseWithIdSuffix(fieldName);
+    const isValidFkFieldName = isCamelCaseWithIdSuffix(field);
+    const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
 
-    if (!isValidFkFieldName) {
+    if (!isValidFkFieldName && isFkHolder) {
       errors.push({
         message: ErrorMessages.InvalidFKFieldName,
         level: ErrorLevel.Error,
-        details: `Field name: "${fieldName}" in model: "${modelName}" must be in camelCase and end with "Id"`,
+        details: `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`,
       });
+
+      throw new Error(
+        `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`
+      );
     }
 
     return errors.length > 0 ? errors : null;
