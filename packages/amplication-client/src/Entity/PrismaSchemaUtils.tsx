@@ -68,9 +68,10 @@ const CREATE_ENTITIES_FORM_SCHEMA = gql`
           dataType
         }
       }
-      errors {
+      log {
         message
-        details
+        level
+        createdAt
       }
     }
   }
