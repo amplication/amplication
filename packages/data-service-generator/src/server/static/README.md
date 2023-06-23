@@ -57,6 +57,7 @@ $ npm run db:init
 # start the server component
 $ npm run install
 ```
+By default, your app comes with one user with the username "admin" and password "admin".
 
 ## Step 2.2: Scripts - container based development
 
