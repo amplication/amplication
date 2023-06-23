@@ -576,11 +576,7 @@ export class PrismaSchemaUtilsService {
           return EnumDataType.SingleLineText;
         case ScalarType.Int:
           return EnumDataType.WholeNumber;
-        case ScalarType.BigInt:
-          return EnumDataType.WholeNumber;
         case ScalarType.Float:
-          return EnumDataType.DecimalNumber;
-        case ScalarType.Decimal:
           return EnumDataType.DecimalNumber;
         case ScalarType.Boolean:
           return EnumDataType.Boolean;
