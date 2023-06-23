@@ -52,9 +52,9 @@ import {
 @Injectable()
 export class PrismaSchemaUtilsService {
   private operations: Operation[] = [
-    this.prepareModelNamesRenaming,
-    this.prepareFieldNamesRenaming,
-    this.prepareFieldTypesRenaming,
+    this.prepareModelNames,
+    this.prepareFieldNames,
+    this.prepareFieldTypes,
     this.prepareIdField,
   ];
 
@@ -247,7 +247,7 @@ export class PrismaSchemaUtilsService {
    * @param builder prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareModelNamesRenaming(
+  private prepareModelNames(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -273,7 +273,7 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareFieldNamesRenaming(
+  private prepareFieldNames(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
@@ -320,7 +320,7 @@ export class PrismaSchemaUtilsService {
    * @param builder  prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareFieldTypesRenaming(
+  private prepareFieldTypes(
     builder: ConcretePrismaSchemaBuilder
   ): ConcretePrismaSchemaBuilder {
     const schema = builder.getSchema();
