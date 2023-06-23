@@ -1,35 +1,28 @@
 import { ConcretePrismaSchemaBuilder } from "@mrleebo/prisma-ast";
-import { registerEnumType } from "@nestjs/graphql";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
-import { ErrorMessage } from "./ErrorMessages";
+import { ActionLog } from "../action/dto";
 
-export enum ErrorMessages {
-  InvalidSchema = "Invalid schema",
-  InvalidModelName = "Invalid model name",
-  InvalidFieldName = "Invalid field name",
-  ReservedWord = "Reserved word",
-  NoModels = "No models",
-  InvalidFKFieldName = "Invalid field name",
-}
+export type Operation = (operationInputOutput: OperationIO) => OperationIO;
 
-registerEnumType(ErrorMessages, {
-  name: "ErrorMessages",
-});
+export type OperationIO = {
+  builder: ConcretePrismaSchemaBuilder;
+  mapper: Mapper;
+  log: ActionLog[];
+};
 
-export enum ErrorLevel {
-  Error = "ERROR",
-  Warning = "WARNING",
-}
+export type Mapper = {
+  modelNames: Record<string, MapperItem>;
+  fieldNames: Record<string, MapperItem>;
+  fieldTypes: Record<string, MapperItem>;
+  idFields: Record<string, MapperItem>;
+};
 
-registerEnumType(ErrorLevel, {
-  name: "ErrorLevel",
-});
-
-export type Operation = (
-  builder: ConcretePrismaSchemaBuilder
-) => ConcretePrismaSchemaBuilder;
+export type MapperItem = {
+  oldName: string;
+  newName: string;
+};
 
 export type ConvertPrismaSchemaForImportObjectsResponse = {
   preparedEntitiesWithFields: CreateBulkEntitiesInput[];
-  errors: ErrorMessage[] | null;
+  log: ActionLog[] | null;
 };

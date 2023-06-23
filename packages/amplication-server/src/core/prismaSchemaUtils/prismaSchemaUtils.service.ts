@@ -5,13 +5,13 @@ import {
   Model,
   Field,
   createPrismaSchemaBuilder,
-  ConcretePrismaSchemaBuilder,
   Schema,
   Enum,
   KeyValue,
   RelationArray,
   Func,
   Enumerator,
+  ConcretePrismaSchemaBuilder,
 } from "@mrleebo/prisma-ast";
 import {
   filterOutAmplicationAttributes,
@@ -26,17 +26,15 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
   ConvertPrismaSchemaForImportObjectsResponse,
-  ErrorLevel,
-  ErrorMessages,
+  Mapper,
   Operation,
+  OperationIO,
 } from "./types";
-import { ErrorMessage } from "./ErrorMessages";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
 import { types } from "@amplication/code-gen-types";
 import { JsonValue } from "type-fest";
-import { isReservedName } from "../entity/reservedNames";
 import {
   CreateBulkEntitiesInput,
   CreateBulkFieldsInput,
@@ -48,6 +46,7 @@ import {
   ID_FIELD_NAME,
   MODEL_TYPE_NAME,
 } from "./constants";
+import { ActionLog } from "../action/dto";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -76,10 +75,11 @@ export class PrismaSchemaUtilsService {
     this.validateSchemaUpload(schema);
     const errors = this.validateSchemaProcessing(schema);
     const preparedSchema = this.prepareSchema(...this.operations)(schema);
+    const preparedSchemaObject = preparedSchema.builder.getSchema();
     return {
       preparedEntitiesWithFields:
-        this.convertPreparedSchemaForImportObjects(preparedSchema),
-      errors,
+        this.convertPreparedSchemaForImportObjects(preparedSchemaObject),
+      log: [...preparedSchema.log, ...errors],
     };
   }
 
@@ -92,15 +92,24 @@ export class PrismaSchemaUtilsService {
    */
   private prepareSchema(
     ...operations: Operation[]
-  ): (inputSchema: string) => Schema {
-    return (inputSchema: string): Schema => {
-      let builder = createPrismaSchemaBuilder(inputSchema);
+  ): (inputSchema: string) => OperationIO {
+    return (inputSchema: string): OperationIO => {
+      const builder = createPrismaSchemaBuilder(
+        inputSchema
+      ) as ConcretePrismaSchemaBuilder;
+      const mapper: Mapper = {
+        modelNames: {},
+        fieldNames: {},
+        fieldTypes: {},
+        idFields: {},
+      };
+      const log: ActionLog[] = [];
 
       operations.forEach((operation) => {
-        builder = operation.call(this, builder);
+        operation.call(this, { builder, mapper, log });
       });
 
-      return builder.getSchema();
+      return { builder, mapper, log };
     };
   }
 
@@ -247,23 +256,41 @@ export class PrismaSchemaUtilsService {
    * @param builder prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareModelNames(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
+  private prepareModelNames({
+    builder,
+    mapper,
+    log,
+  }: OperationIO): OperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
+        mapper.modelNames[model.name] = {
+          oldName: model.name,
+          newName: formattedModelName,
+        };
+
+        log.push({
+          id: cuid(),
+          message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
+          level: "Info",
+          createdAt: new Date(),
+          meta: {},
+        });
+
         builder.model(model.name).blockAttribute("map", model.name);
         builder.model(model.name).then<Model>((model) => {
           model.name = formatModelName(model.name);
         });
-        return builder;
       }
     });
-    return builder;
+    return {
+      builder,
+      mapper,
+      log,
+    };
   }
 
   /**
@@ -273,9 +300,11 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareFieldNames(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
+  private prepareFieldNames({
+    builder,
+    mapper,
+    log,
+  }: OperationIO): OperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
@@ -298,6 +327,18 @@ export class PrismaSchemaUtilsService {
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
+          mapper.fieldNames[field.name] = {
+            oldName: field.name,
+            newName: formattedFieldName,
+          };
+
+          log.push({
+            id: cuid(),
+            message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
+            level: "Info",
+            createdAt: new Date(),
+            meta: {},
+          });
           builder
             .model(model.name)
             .field(field.name)
@@ -308,11 +349,14 @@ export class PrismaSchemaUtilsService {
             .then<Field>((field) => {
               field.name = formatFieldName(field.name);
             });
-          return builder;
         }
       });
     });
-    return builder;
+    return {
+      builder,
+      mapper,
+      log,
+    };
   }
 
   /**
@@ -320,41 +364,50 @@ export class PrismaSchemaUtilsService {
    * @param builder  prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareFieldTypes(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
+  private prepareFieldTypes({
+    builder,
+    mapper,
+    log,
+  }: OperationIO): OperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-    models.map((model: Model) => {
-      const fields = model.properties.filter(
-        (property) => property.type === FIELD_TYPE_NAME
-      ) as Field[];
 
-      return fields.map((field: Field) => {
-        if (this.isOptionSetField(schema, field)) return builder;
-        if (this.isMultiSelectOptionSetField(schema, field)) return builder;
-        if (this.isSingleLineTextField(schema, field)) return builder;
-        if (this.isWholeNumberField(schema, field)) return builder;
-        if (this.isDecimalNumberField(schema, field)) return builder;
-        if (this.isBooleanField(schema, field)) return builder;
-        if (this.isDateTimeField(schema, field)) return builder;
-        if (this.isJsonField(schema, field)) return builder;
+    Object.entries(mapper.modelNames).map(([oldName, { newName }]) => {
+      models.map((model: Model) => {
+        const fields = model.properties.filter(
+          (property) => property.type === FIELD_TYPE_NAME
+        ) as Field[];
+        fields.map((field: Field) => {
+          if (field.fieldType === oldName) {
+            mapper.fieldTypes[field.fieldType] = {
+              oldName: field.fieldType,
+              newName,
+            };
 
-        const formattedFieldType = formatModelName(field.fieldType as string);
-
-        if (formattedFieldType !== field.fieldType) {
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.fieldType = formatModelName(field.fieldType as string);
+            log.push({
+              id: cuid(),
+              message: `field type "${field.fieldType}" on model name ${model.name} was changed to "${newName}"`,
+              level: "Info",
+              createdAt: new Date(),
+              meta: {},
             });
-          return builder;
-        }
-        return builder;
+
+            builder
+              .model(model.name)
+              .field(field.name)
+              .then<Field>((field) => {
+                field.fieldType = formatModelName(field.fieldType as string);
+              });
+          }
+        });
       });
     });
-    return builder;
+
+    return {
+      builder,
+      mapper,
+      log,
+    };
   }
 
   /**
@@ -362,9 +415,7 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareIdField(
-    builder: ConcretePrismaSchemaBuilder
-  ): ConcretePrismaSchemaBuilder {
+  private prepareIdField({ builder, mapper, log }: OperationIO): OperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
@@ -388,6 +439,19 @@ export class PrismaSchemaUtilsService {
             .then<Field>((field) => {
               field.name = `${model.name}Id`;
             });
+
+          mapper.idFields[field.name] = {
+            oldName: field.name,
+            newName: `${model.name}Id`,
+          };
+
+          log.push({
+            id: cuid(),
+            message: `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
+            level: "Info",
+            createdAt: new Date(),
+            meta: {},
+          });
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
           builder
             .model(model.name)
@@ -399,10 +463,27 @@ export class PrismaSchemaUtilsService {
             .then<Field>((field) => {
               field.name = ID_FIELD_NAME;
             });
+
+          mapper.idFields[field.name] = {
+            oldName: field.name,
+            newName: `id`,
+          };
+
+          log.push({
+            id: cuid(),
+            message: `field name "${field.name}" on model name ${model.name} was changed to "id"`,
+            level: "Info",
+            createdAt: new Date(),
+            meta: {},
+          });
         }
       });
     });
-    return builder;
+    return {
+      builder,
+      mapper,
+      log,
+    };
   }
 
   /*****************************
@@ -1348,51 +1429,73 @@ export class PrismaSchemaUtilsService {
    * @param schema schema string
    * @returns array of errors if there are any or null if there are no errors
    */
-  private validateSchemaProcessing(schema: string): ErrorMessage[] | null {
+  private validateSchemaProcessing(schema: string): ActionLog[] {
     const schemaObject = getSchema(schema);
-    const errors: ErrorMessage[] = [];
+    const errors: ActionLog[] = [];
     const models = schemaObject.list.filter(
       (item) => item.type === MODEL_TYPE_NAME
-    );
+    ) as Model[];
 
     if (models.length === 0) {
       errors.push({
-        message: ErrorMessages.NoModels,
-        level: ErrorLevel.Error,
-        details: "A schema must contain at least one model",
+        id: cuid(),
+        message: "A schema must contain at least one model",
+        level: "Error",
+        createdAt: new Date(),
+        meta: {},
       });
     }
 
     models.map((model: Model) => {
+      // const isModelAlreadyExists = this.validateModelExistence(
+      //   models,
+      //   model.name
+      // );
+
+      // if (isModelAlreadyExists) {
+      //   errors.push(isModelAlreadyExists);
+      //   throw new Error(`Model ${model.name} already exists`);
+      // }
+
       const fields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
       fields.map((field: Field) => {
-        const invalidFkFieldNameErrors = this.validateFKFieldName(
-          schemaObject,
-          model,
-          field
-        );
-        if (invalidFkFieldNameErrors) {
-          errors.push(...invalidFkFieldNameErrors);
-        }
-
-        const invalidModelNamesReservedWordsErrors =
-          this.validateModelNamesReservedWords(model.name);
-        if (invalidModelNamesReservedWordsErrors) {
-          errors.push(...invalidModelNamesReservedWordsErrors);
-        }
-
-        const invalidFieldNamesReservedWordsErrors =
-          this.validateFieldNamesReservedWords(field.name);
-        if (invalidFieldNamesReservedWordsErrors) {
-          errors.push(...invalidFieldNamesReservedWordsErrors);
-        }
+        // const invalidFkFieldNameErrors = this.validateFKFieldName(
+        //   schemaObject,
+        //   model,
+        //   field
+        // );
+        // if (invalidFkFieldNameErrors) {
+        //   errors.push(invalidFkFieldNameErrors);
+        //   throw new Error(
+        //     `Invalid foreign key field name ${field.name} in model ${model.name}. The Foreign key field name must be in camelCase and end with Id`
+        //   );
+        // }
       });
     });
 
-    return errors.length > 0 ? errors : null;
+    return errors.length > 0 ? errors : [];
+  }
+
+  private validateModelExistence(
+    models: Model[],
+    modelName: string
+  ): ActionLog {
+    const modelExists = models.some(
+      (model) => formatModelName(model.name) === formatModelName(modelName)
+    );
+
+    if (modelExists) {
+      return {
+        id: cuid(),
+        message: `Model ${modelName} already exists`,
+        level: "Error",
+        createdAt: new Date(),
+        meta: {},
+      };
+    }
   }
 
   // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334
@@ -1400,55 +1503,18 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field
-  ): ErrorMessage[] | null {
-    const errors: ErrorMessage[] = [];
+  ): ActionLog {
     const isValidFkFieldName = isCamelCaseWithIdSuffix(field);
     const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
 
     if (!isValidFkFieldName && isFkHolder) {
-      errors.push({
-        message: ErrorMessages.InvalidFKFieldName,
-        level: ErrorLevel.Error,
-        details: `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`,
-      });
-
-      throw new Error(
-        `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`
-      );
+      return {
+        id: cuid(),
+        message: `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`,
+        level: "Error",
+        createdAt: new Date(),
+        meta: {},
+      };
     }
-
-    return errors.length > 0 ? errors : null;
-  }
-
-  private validateModelNamesReservedWords(
-    modelName: string
-  ): ErrorMessage[] | null {
-    const errors: ErrorMessage[] = [];
-    const isReservedModelName = isReservedName(modelName.toLowerCase().trim());
-    if (isReservedModelName) {
-      errors.push({
-        message: ErrorMessages.ReservedWord,
-        level: ErrorLevel.Warning,
-        details: `Model name: "${modelName}" is a reserved word. Please be aware that we renamed it to "${modelName}Model"`,
-      });
-    }
-
-    return errors.length > 0 ? errors : null;
-  }
-
-  private validateFieldNamesReservedWords(
-    fieldName: string
-  ): ErrorMessage[] | null {
-    const errors: ErrorMessage[] = [];
-    const isReservedFieldName = isReservedName(fieldName.toLowerCase().trim());
-    if (isReservedFieldName) {
-      errors.push({
-        message: ErrorMessages.ReservedWord,
-        level: ErrorLevel.Warning,
-        details: `Field name: "${fieldName}" is a reserved word. Please be aware that we renamed it to "${fieldName}Field"`,
-      });
-    }
-
-    return errors.length > 0 ? errors : null;
   }
 }
