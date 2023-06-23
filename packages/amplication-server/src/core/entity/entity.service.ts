@@ -373,16 +373,16 @@ export class EntityService {
     const { preparedEntitiesWithFields, log } =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
-    const { existingEntitiesLog } = await this.validateExistingEntities(
+    const existingEntitiesValidation = await this.validateExistingEntities(
       preparedEntitiesWithFields,
       log,
       resourceId
     );
 
-    if (existingEntitiesLog.length > 0) {
+    if (existingEntitiesValidation?.existingEntitiesLog.length > 0) {
       return {
         entities: [],
-        log: existingEntitiesLog,
+        log: existingEntitiesValidation.existingEntitiesLog,
       };
     } else {
       const entities = await this.createBulkEntitiesAndFields({
