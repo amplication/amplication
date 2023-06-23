@@ -104,8 +104,8 @@ describe("StorageService", () => {
         name: "firstLevelDir",
         path: join(RELATIVE_PATH, "firstLevelDir"),
       },
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       "firstLevelDir/secondLevelDir": {
-        //  eslint-disable-line @typescript-eslint/naming-convention
         type: NodeTypeEnum.Folder,
         name: "firstLevelDir/secondLevelDir",
         path: join(RELATIVE_PATH, "firstLevelDir/secondLevelDir"),
