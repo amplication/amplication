@@ -26,5 +26,5 @@ export type MapperItem = {
 
 export type ConvertPrismaSchemaForImportObjectsResponse = {
   preparedEntitiesWithFields: CreateBulkEntitiesInput[];
-  log: ActionLog[] | null;
+  log: ActionLog[];
 };

@@ -286,7 +286,7 @@ export class PrismaSchemaUtilsService {
         };
 
         log.push({
-          id: cuid(),
+          id: model.name,
           message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
           level: "Info",
           createdAt: new Date(),
@@ -346,7 +346,7 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
             level: "Info",
             createdAt: new Date(),
@@ -398,7 +398,7 @@ export class PrismaSchemaUtilsService {
             };
 
             log.push({
-              id: cuid(),
+              id: field.fieldType,
               message: `field type "${field.fieldType}" on model name ${model.name} was changed to "${newName}"`,
               level: "Info",
               createdAt: new Date(),
@@ -463,7 +463,7 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
             level: "Info",
             createdAt: new Date(),
@@ -487,7 +487,7 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `field name "${field.name}" on model name ${model.name} was changed to "id"`,
             level: "Info",
             createdAt: new Date(),
