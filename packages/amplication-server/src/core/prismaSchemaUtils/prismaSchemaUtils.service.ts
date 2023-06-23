@@ -27,8 +27,8 @@ import pluralize from "pluralize";
 import {
   ConvertPrismaSchemaForImportObjectsResponse,
   Mapper,
-  Operation,
-  OperationIO,
+  PrepareOperation,
+  PrepareOperationIO,
 } from "./types";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -50,7 +50,7 @@ import { ActionLog } from "../action/dto";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
-  private operations: Operation[] = [
+  private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
     this.prepareFieldTypes,
@@ -73,13 +73,26 @@ export class PrismaSchemaUtilsService {
     schema: string
   ): ConvertPrismaSchemaForImportObjectsResponse {
     this.validateSchemaUpload(schema);
-    const errors = this.validateSchemaProcessing(schema);
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
-    const preparedSchemaObject = preparedSchema.builder.getSchema();
+    const validationLog = this.validateSchemaProcessing(schema);
+    const isErrorsValidationLog = validationLog.some(
+      (log) => log.level === "Error"
+    );
+
+    if (isErrorsValidationLog) {
+      return {
+        preparedEntitiesWithFields: [],
+        log: validationLog,
+      };
+    }
+
+    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
+      schema
+    );
+    const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
     return {
       preparedEntitiesWithFields:
         this.convertPreparedSchemaForImportObjects(preparedSchemaObject),
-      log: [...preparedSchema.log, ...errors],
+      log: [...preparedSchemaResult.log, ...validationLog],
     };
   }
 
@@ -91,9 +104,9 @@ export class PrismaSchemaUtilsService {
    * @returns function that accepts the initial schema and returns the prepared schema
    */
   private prepareSchema(
-    ...operations: Operation[]
-  ): (inputSchema: string) => OperationIO {
-    return (inputSchema: string): OperationIO => {
+    ...operations: PrepareOperation[]
+  ): (inputSchema: string) => PrepareOperationIO {
+    return (inputSchema: string): PrepareOperationIO => {
       const builder = createPrismaSchemaBuilder(
         inputSchema
       ) as ConcretePrismaSchemaBuilder;
@@ -260,7 +273,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
@@ -304,7 +317,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
@@ -368,7 +381,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
@@ -415,7 +428,11 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareIdField({ builder, mapper, log }: OperationIO): OperationIO {
+  private prepareIdField({
+    builder,
+    mapper,
+    log,
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
@@ -1447,16 +1464,6 @@ export class PrismaSchemaUtilsService {
     }
 
     models.map((model: Model) => {
-      // const isModelAlreadyExists = this.validateModelExistence(
-      //   models,
-      //   model.name
-      // );
-
-      // if (isModelAlreadyExists) {
-      //   errors.push(isModelAlreadyExists);
-      //   throw new Error(`Model ${model.name} already exists`);
-      // }
-
       const fields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
@@ -1477,25 +1484,6 @@ export class PrismaSchemaUtilsService {
     });
 
     return errors.length > 0 ? errors : [];
-  }
-
-  private validateModelExistence(
-    models: Model[],
-    modelName: string
-  ): ActionLog {
-    const modelExists = models.some(
-      (model) => formatModelName(model.name) === formatModelName(modelName)
-    );
-
-    if (modelExists) {
-      return {
-        id: cuid(),
-        message: `Model ${modelName} already exists`,
-        level: "Error",
-        createdAt: new Date(),
-        meta: {},
-      };
-    }
   }
 
   // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334
