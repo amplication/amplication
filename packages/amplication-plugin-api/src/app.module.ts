@@ -32,7 +32,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
       useClass: ServeStaticOptionsService,
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: "amplication-plugin-api",
+      component: "amplication-plugin-api",
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,

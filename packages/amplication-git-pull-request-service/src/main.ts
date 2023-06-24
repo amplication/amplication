@@ -17,7 +17,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  new Logger({ serviceName: Env.SERVICE_NAME, isProduction: true }).error(
+  new Logger({ component: Env.SERVICE_NAME, isProduction: true }).error(
     error.message,
     error
   );

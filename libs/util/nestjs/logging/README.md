@@ -19,7 +19,7 @@ import { AmplicationLoggerModule } from '@amplication/util/nestjs/logging';
   imports: [
     //...
     AmplicationLoggerModule.forRoot({
-      serviceName: SERVICE_NAME,
+      component: SERVICE_NAME,
     }),
     //...
   ],
