@@ -16,4 +16,5 @@ export enum BillingFeature {
   SmartGitSync = "feature-smart-git-sync",
   TeamMembers = "feature-team-members",
   Bitbucket = "feature-bitbucket",
+  ImportDBSchema = "feature-import-db-schema",
 }

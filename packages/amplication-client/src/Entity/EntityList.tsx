@@ -120,6 +120,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     featureId: BillingFeature.HideNotifications,
   });
 
+  const importDBSchema = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ImportDBSchema,
+  });
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -141,20 +145,22 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             onChange={handleSearchChange}
           />
           <div className={`${CLASS_NAME}__action-buttons`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-            >
-              <Button
-                className={`${CLASS_NAME}__install`}
-                buttonStyle={EnumButtonStyle.Secondary}
-                icon="upload1"
-                eventData={{
-                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                }}
+            {importDBSchema.hasAccess && (
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                Upload Prisma Schema
-              </Button>
-            </Link>
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="upload1"
+                  eventData={{
+                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  }}
+                >
+                  Upload Prisma Schema
+                </Button>
+              </Link>
+            )}
             <Button
               className={`${CLASS_NAME}__add-button`}
               buttonStyle={EnumButtonStyle.Primary}

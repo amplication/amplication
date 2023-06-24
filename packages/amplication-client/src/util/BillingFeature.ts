@@ -8,4 +8,5 @@ export enum BillingFeature {
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
   Bitbucket = "feature-bitbucket",
+  ImportDBSchema = "feature-import-db-schema",
 }

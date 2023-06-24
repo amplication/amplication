@@ -91,6 +91,8 @@ import {
   EnumActionLogLevel,
   EnumActionStepStatus,
 } from "../action/dto";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/billing.types";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -187,6 +189,7 @@ export class EntityService {
     private readonly jsonSchemaValidationService: JsonSchemaValidationService,
     private readonly diffService: DiffService,
     private readonly analytics: SegmentAnalyticsService,
+    private readonly billingService: BillingService,
     private readonly schemaUtilsService: PrismaSchemaUtilsService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
@@ -379,6 +382,26 @@ export class EntityService {
     user: User
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
     const { resourceId } = args.data;
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    const importDBSchema = await this.billingService.getBooleanEntitlement(
+      resourceWithProject.project.workspaceId,
+      BillingFeature.ImportDBSchema
+    );
+
+    this.logger.debug(`importDBSchema: ${importDBSchema.hasAccess}`);
+
+    if (!importDBSchema.hasAccess)
+      throw new AmplicationError(
+        "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
+      );
 
     const completeActionLog = (
       action: Action,
@@ -405,15 +428,6 @@ export class EntityService {
     actionLog.createdAt = currentDate;
     actionLog.steps[0].createdAt = currentDate;
     actionLog.steps[0].logs[0].createdAt = currentDate;
-
-    const resourceWithProject = await this.prisma.resource.findUnique({
-      where: {
-        id: resourceId,
-      },
-      include: {
-        project: true,
-      },
-    });
 
     await this.analytics.track({
       userId: user.account.id,
