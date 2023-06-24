@@ -41,6 +41,7 @@ import {
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   INITIAL_ID_TYPE_FIELDS,
+  PRISMA_IMPORT_ACTION_LOG,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -84,7 +85,12 @@ import {
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
 import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
 import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
-import { ActionLog } from "../action/dto";
+import {
+  Action,
+  ActionLog,
+  EnumActionLogLevel,
+  EnumActionStepStatus,
+} from "../action/dto";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -370,19 +376,39 @@ export class EntityService {
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
     const { resourceId } = args.data;
 
+    const actionLog = PRISMA_IMPORT_ACTION_LOG;
+    const currentDate = new Date();
+    actionLog.createdAt = currentDate;
+    actionLog.steps[0].createdAt = currentDate;
+    actionLog.steps[0].logs[0].createdAt = currentDate;
+
     const { preparedEntitiesWithFields, log } =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
-    const existingEntitiesValidation = await this.validateExistingEntities(
+    const valid = await this.validateBeforeCreateBulkEntitiesAndFields(
       preparedEntitiesWithFields,
       log,
       resourceId
     );
 
-    if (existingEntitiesValidation?.existingEntitiesLog.length > 0) {
+    const initialStepLog = actionLog.steps[0].logs[0];
+
+    actionLog.steps[0].logs = [initialStepLog, ...log];
+
+    if (!valid) {
+      actionLog.steps[0].logs.push({
+        id: "1",
+        level: EnumActionLogLevel.Error,
+        message: `Import operation aborted due to errors. See the log for more details.`,
+        createdAt: new Date(),
+        meta: {},
+      });
+      actionLog.steps[0].status = EnumActionStepStatus.Failed;
+      actionLog.steps[0].completedAt = new Date();
+
       return {
         entities: [],
-        log: existingEntitiesValidation.existingEntitiesLog,
+        actionLog,
       };
     } else {
       const entities = await this.createBulkEntitiesAndFields({
@@ -393,12 +419,12 @@ export class EntityService {
 
       return {
         entities,
-        log,
+        actionLog,
       };
     }
   }
 
-  async validateExistingEntities(
+  async validateBeforeCreateBulkEntitiesAndFields(
     preparedEntitiesWithFields: CreateBulkEntitiesInput[],
     log: ActionLog[],
     resourceId: string
@@ -430,9 +456,9 @@ export class EntityService {
             .join(", ")}`
         );
       });
-
-      return { existingEntitiesLog: log };
+      return false;
     }
+    return true;
   }
 
   async createBulkEntitiesAndFields({

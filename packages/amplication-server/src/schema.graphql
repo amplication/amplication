@@ -9,7 +9,7 @@ type Auth {
 
 type CreateEntitiesFromPrismaSchemaResponse {
   entities: [Entity!]!
-  log: [ActionLog!]!
+  actionLog: Action!
 }
 
 type Entity {

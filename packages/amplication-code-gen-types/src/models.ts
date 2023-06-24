@@ -291,8 +291,8 @@ export type CreateEntitiesFromPrismaSchemaInput = {
 };
 
 export type CreateEntitiesFromPrismaSchemaResponse = {
+  actionLog: Action;
   entities: Array<Entity>;
-  log: Array<ActionLog>;
 };
 
 export type CreateGitRepositoryBaseInput = {
