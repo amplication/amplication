@@ -14,23 +14,34 @@ import {
   ConcretePrismaSchemaBuilder,
 } from "@mrleebo/prisma-ast";
 import {
+  booleanField,
+  createAtField,
+  dateTimeField,
+  decimalNumberField,
   filterOutAmplicationAttributes,
   formatDisplayName,
   formatFieldName,
   formatModelName,
+  idField,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
   isCamelCaseWithIdSuffix,
+  jsonField,
+  lookupField,
+  multiSelectOptionSetField,
+  optionSetField,
+  singleLineTextField,
+  updateAtField,
+  wholeNumberField,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
   ConvertPrismaSchemaForImportObjectsResponse,
   Mapper,
-  Operation,
-  OperationIO,
+  PrepareOperation,
+  PrepareOperationIO,
 } from "./types";
-import { ScalarType } from "prisma-schema-dsl-types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
 import { types } from "@amplication/code-gen-types";
@@ -50,7 +61,7 @@ import { ActionLog } from "../action/dto";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
-  private operations: Operation[] = [
+  private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
     this.prepareFieldTypes,
@@ -73,13 +84,26 @@ export class PrismaSchemaUtilsService {
     schema: string
   ): ConvertPrismaSchemaForImportObjectsResponse {
     this.validateSchemaUpload(schema);
-    const errors = this.validateSchemaProcessing(schema);
-    const preparedSchema = this.prepareSchema(...this.operations)(schema);
-    const preparedSchemaObject = preparedSchema.builder.getSchema();
+    const validationLog = this.validateSchemaProcessing(schema);
+    const isErrorsValidationLog = validationLog.some(
+      (log) => log.level === "Error"
+    );
+
+    if (isErrorsValidationLog) {
+      return {
+        preparedEntitiesWithFields: [],
+        log: validationLog,
+      };
+    }
+
+    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
+      schema
+    );
+    const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
     return {
       preparedEntitiesWithFields:
         this.convertPreparedSchemaForImportObjects(preparedSchemaObject),
-      log: [...preparedSchema.log, ...errors],
+      log: [...preparedSchemaResult.log, ...validationLog],
     };
   }
 
@@ -91,9 +115,9 @@ export class PrismaSchemaUtilsService {
    * @returns function that accepts the initial schema and returns the prepared schema
    */
   private prepareSchema(
-    ...operations: Operation[]
-  ): (inputSchema: string) => OperationIO {
-    return (inputSchema: string): OperationIO => {
+    ...operations: PrepareOperation[]
+  ): (inputSchema: string) => PrepareOperationIO {
+    return (inputSchema: string): PrepareOperationIO => {
       const builder = createPrismaSchemaBuilder(
         inputSchema
       ) as ConcretePrismaSchemaBuilder;
@@ -260,7 +284,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
@@ -273,7 +297,7 @@ export class PrismaSchemaUtilsService {
         };
 
         log.push({
-          id: cuid(),
+          id: model.name,
           message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
           level: "Info",
           createdAt: new Date(),
@@ -304,7 +328,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
@@ -316,13 +340,8 @@ export class PrismaSchemaUtilsService {
       fields.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
-        if (this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet)
-          return builder;
-        if (
-          this.resolveFieldDataType(schema, field) ===
-          EnumDataType.MultiSelectOptionSet
-        )
-          return builder;
+        if (this.isOptionSetField(schema, field)) return builder;
+        if (this.isMultiSelectOptionSetField(schema, field)) return builder;
 
         const formattedFieldName = formatFieldName(field.name);
 
@@ -333,12 +352,13 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
             level: "Info",
             createdAt: new Date(),
             meta: {},
           });
+
           builder
             .model(model.name)
             .field(field.name)
@@ -368,7 +388,7 @@ export class PrismaSchemaUtilsService {
     builder,
     mapper,
     log,
-  }: OperationIO): OperationIO {
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
@@ -385,7 +405,7 @@ export class PrismaSchemaUtilsService {
             };
 
             log.push({
-              id: cuid(),
+              id: field.fieldType,
               message: `field type "${field.fieldType}" on model name ${model.name} was changed to "${newName}"`,
               level: "Info",
               createdAt: new Date(),
@@ -415,7 +435,11 @@ export class PrismaSchemaUtilsService {
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
-  private prepareIdField({ builder, mapper, log }: OperationIO): OperationIO {
+  private prepareIdField({
+    builder,
+    mapper,
+    log,
+  }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
@@ -446,7 +470,7 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
             level: "Info",
             createdAt: new Date(),
@@ -470,7 +494,7 @@ export class PrismaSchemaUtilsService {
           };
 
           log.push({
-            id: cuid(),
+            id: field.name,
             message: `field name "${field.name}" on model name ${model.name} was changed to "id"`,
             level: "Info",
             createdAt: new Date(),
@@ -550,151 +574,6 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
-   * Loop over fieldTypCases and return the first one that matches the field type, if none matches,
-   * it will get to the last one - which is an error, an return it
-   * @param schema the schema (string) to perform the operation on
-   * @param field the field to on which to determine the data type
-   * @returns the data type of the field
-   */
-  private resolveFieldDataType(schema: Schema, field: Field): EnumDataType {
-    const idType = () => {
-      const fieldIdType = field.attributes?.some(
-        (attribute) => attribute.name === ID_ATTRIBUTE_NAME
-      );
-      if (fieldIdType) {
-        return EnumDataType.Id;
-      }
-    };
-
-    const lookupRelationType = () => {
-      const fieldLookupType = field.attributes?.some(
-        (attribute) => attribute.name === "relation"
-      );
-      if (fieldLookupType) {
-        return EnumDataType.Lookup;
-      }
-    };
-
-    const lookupModelType = () => {
-      const modelList = schema.list.filter(
-        (item) => item.type === MODEL_TYPE_NAME
-      );
-      const fieldModelType = modelList.find((model: Model) => {
-        return (
-          formatModelName(model.name) ===
-          formatModelName(field.fieldType as string)
-        );
-      });
-
-      if (fieldModelType) {
-        return EnumDataType.Lookup;
-      }
-    };
-
-    const createAtType = () => {
-      const createdAtDefaultAttribute = field.attributes?.find(
-        (attribute) => attribute.name === "default"
-      );
-
-      const createdAtNowArg = createdAtDefaultAttribute?.args?.some(
-        (arg) => (arg.value as Func).name === "now"
-      );
-
-      if (createdAtDefaultAttribute && createdAtNowArg) {
-        return EnumDataType.CreatedAt;
-      }
-    };
-
-    const updatedAtType = () => {
-      const updatedAtAttribute = field.attributes?.some(
-        (attribute) => attribute.name === "updatedAt"
-      );
-
-      const updatedAtDefaultAttribute = field.attributes?.find(
-        (attribute) => attribute.name === "default"
-      );
-
-      const updatedAtNowArg = updatedAtDefaultAttribute?.args?.some(
-        (arg) => (arg.value as Func).name === "now"
-      );
-
-      if (
-        updatedAtAttribute ||
-        (updatedAtDefaultAttribute && updatedAtNowArg)
-      ) {
-        return EnumDataType.UpdatedAt;
-      }
-    };
-
-    const optionSetType = () => {
-      const enumList = schema.list.filter(
-        (item) => item.type === ENUM_TYPE_NAME
-      );
-      const fieldOptionSetType = enumList.find(
-        (enumItem: Enum) => enumItem.name === field.fieldType
-      );
-      if (fieldOptionSetType) {
-        return EnumDataType.OptionSet;
-      }
-    };
-
-    const multiSelectOptionSetType = () => {
-      const enumList = schema.list.filter(
-        (item) => item.type === ENUM_TYPE_NAME
-      );
-      const isMultiSelect = field.array || false;
-      const fieldOptionSetType = enumList.find(
-        (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
-      );
-      if (fieldOptionSetType) {
-        return EnumDataType.MultiSelectOptionSet;
-      }
-    };
-
-    const scalarType = () => {
-      switch (field.fieldType) {
-        case ScalarType.String:
-          return EnumDataType.SingleLineText;
-        case ScalarType.Int:
-          return EnumDataType.WholeNumber;
-        case ScalarType.Float:
-          return EnumDataType.DecimalNumber;
-        case ScalarType.Boolean:
-          return EnumDataType.Boolean;
-        case ScalarType.DateTime:
-          return EnumDataType.DateTime;
-        case ScalarType.Json:
-          return EnumDataType.Json;
-      }
-    };
-
-    const fieldDataTypCases: (() => EnumDataType | undefined)[] = [
-      idType,
-      lookupRelationType,
-      lookupModelType,
-      optionSetType,
-      multiSelectOptionSetType,
-      createAtType,
-      updatedAtType,
-      // must be the one before the last
-      scalarType,
-      // must be last
-      () => {
-        throw new Error(
-          `Unsupported data type: ${field.fieldType} of field: ${field.name}`
-        );
-      },
-    ];
-
-    for (const fieldDataTypCase of fieldDataTypCases) {
-      const result = fieldDataTypCase();
-      if (result) {
-        return result;
-      }
-    }
-  }
-
-  /**
    * Take the model or field attributes from the schema object and translate it to array of strings like Amplication expects
    * @param attributes the attributes to prepare and convert from the AST form to array of strings
    * @returns array of strings representing the attributes
@@ -732,58 +611,52 @@ export class PrismaSchemaUtilsService {
    ************************/
 
   private isSingleLineTextField(schema: Schema, field: Field): boolean {
-    return (
-      this.resolveFieldDataType(schema, field) === EnumDataType.SingleLineText
-    );
+    return singleLineTextField(field) === EnumDataType.SingleLineText;
   }
 
   private isWholeNumberField(schema: Schema, field: Field): boolean {
-    return (
-      this.resolveFieldDataType(schema, field) === EnumDataType.WholeNumber
-    );
+    return wholeNumberField(field) === EnumDataType.WholeNumber;
   }
 
   private isDecimalNumberField(schema: Schema, field: Field): boolean {
-    return (
-      this.resolveFieldDataType(schema, field) === EnumDataType.DecimalNumber
-    );
+    return decimalNumberField(field) === EnumDataType.DecimalNumber;
   }
 
   private isBooleanField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.Boolean;
+    return booleanField(field) === EnumDataType.Boolean;
   }
 
   private isCreatedAtField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.CreatedAt;
+    return createAtField(field) === EnumDataType.CreatedAt;
   }
 
   private isUpdatedAtField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.UpdatedAt;
+    return updateAtField(field) === EnumDataType.UpdatedAt;
   }
 
   private isDateTimeField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.DateTime;
+    return dateTimeField(field) === EnumDataType.DateTime;
   }
 
   private isJsonField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.Json;
+    return jsonField(field) === EnumDataType.Json;
   }
 
   private isIdField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.Id;
+    return idField(field) === EnumDataType.Id;
   }
 
   private isLookupField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.Lookup;
+    return lookupField(field) === EnumDataType.Lookup;
   }
 
   private isOptionSetField(schema: Schema, field: Field): boolean {
-    return this.resolveFieldDataType(schema, field) === EnumDataType.OptionSet;
+    return optionSetField(schema, field) === EnumDataType.OptionSet;
   }
 
   private isMultiSelectOptionSetField(schema: Schema, field: Field): boolean {
     return (
-      this.resolveFieldDataType(schema, field) ===
+      multiSelectOptionSetField(schema, field) ===
       EnumDataType.MultiSelectOptionSet
     );
   }
@@ -1447,16 +1320,6 @@ export class PrismaSchemaUtilsService {
     }
 
     models.map((model: Model) => {
-      // const isModelAlreadyExists = this.validateModelExistence(
-      //   models,
-      //   model.name
-      // );
-
-      // if (isModelAlreadyExists) {
-      //   errors.push(isModelAlreadyExists);
-      //   throw new Error(`Model ${model.name} already exists`);
-      // }
-
       const fields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
@@ -1477,25 +1340,6 @@ export class PrismaSchemaUtilsService {
     });
 
     return errors.length > 0 ? errors : [];
-  }
-
-  private validateModelExistence(
-    models: Model[],
-    modelName: string
-  ): ActionLog {
-    const modelExists = models.some(
-      (model) => formatModelName(model.name) === formatModelName(modelName)
-    );
-
-    if (modelExists) {
-      return {
-        id: cuid(),
-        message: `Model ${modelName} already exists`,
-        level: "Error",
-        createdAt: new Date(),
-        meta: {},
-      };
-    }
   }
 
   // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334

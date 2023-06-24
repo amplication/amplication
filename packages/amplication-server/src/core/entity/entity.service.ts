@@ -84,6 +84,7 @@ import {
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
 import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
 import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
+import { ActionLog } from "../action/dto";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -372,16 +373,66 @@ export class EntityService {
     const { preparedEntitiesWithFields, log } =
       this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
-    const entities = await this.createBulkEntitiesAndFields({
-      resourceId,
-      user,
+    const existingEntitiesValidation = await this.validateExistingEntities(
       preparedEntitiesWithFields,
+      log,
+      resourceId
+    );
+
+    if (existingEntitiesValidation?.existingEntitiesLog.length > 0) {
+      return {
+        entities: [],
+        log: existingEntitiesValidation.existingEntitiesLog,
+      };
+    } else {
+      const entities = await this.createBulkEntitiesAndFields({
+        resourceId,
+        user,
+        preparedEntitiesWithFields,
+      });
+
+      return {
+        entities,
+        log,
+      };
+    }
+  }
+
+  async validateExistingEntities(
+    preparedEntitiesWithFields: CreateBulkEntitiesInput[],
+    log: ActionLog[],
+    resourceId: string
+  ) {
+    const existingEntities = await this.entities({
+      where: {
+        name: {
+          in: preparedEntitiesWithFields.map((entity) => entity.name),
+        },
+        resource: {
+          id: resourceId,
+        },
+      },
     });
 
-    return {
-      entities,
-      log,
-    };
+    if (existingEntities.length > 0) {
+      existingEntities.forEach((entity) => {
+        log.push({
+          id: entity.name,
+          message: `Entity "${entity.name}" already exists`,
+          level: "Error",
+          createdAt: new Date(),
+          meta: {},
+        });
+
+        this.logger.error(
+          `The following entities already exist: ${existingEntities
+            .map((log) => log.id)
+            .join(", ")}`
+        );
+      });
+
+      return { existingEntitiesLog: log };
+    }
   }
 
   async createBulkEntitiesAndFields({

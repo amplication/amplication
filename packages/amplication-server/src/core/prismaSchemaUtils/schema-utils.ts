@@ -1,8 +1,19 @@
-import { Func } from "@mrleebo/prisma-ast";
+import { Enum, Field, Func, Schema } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
-import { ID_TYPE_AUTOINCREMENT, ID_TYPE_CUID, ID_TYPE_UUID } from "./constants";
+import {
+  DEFAULT_ATTRIBUTE_NAME,
+  ENUM_TYPE_NAME,
+  ID_ATTRIBUTE_NAME,
+  ID_TYPE_AUTOINCREMENT,
+  ID_TYPE_CUID,
+  ID_TYPE_UUID,
+  NOW_FUNCTION_NAME,
+  UPDATED_AT_ATTRIBUTE_NAME,
+} from "./constants";
+import { EnumDataType } from "../../prisma";
+import { ScalarType } from "prisma-schema-dsl-types";
 
 export const idTypePropertyMap = {
   autoincrement: ID_TYPE_AUTOINCREMENT,
@@ -87,4 +98,111 @@ export function formatFieldName(fieldName: string | Func): string {
 
 export function formatDisplayName(displayName: string): string {
   return capitalizeFirstLetterOfEachWord(sentenceCase(displayName));
+}
+
+export function idField(field: Field) {
+  const fieldIdType = field.attributes?.some(
+    (attribute) => attribute.name === ID_ATTRIBUTE_NAME
+  );
+  if (fieldIdType) {
+    return EnumDataType.Id;
+  }
+}
+
+export function lookupField(field: Field) {
+  const fieldLookupType = field.attributes?.some(
+    (attribute) => attribute.name === "relation"
+  );
+  if (fieldLookupType) {
+    return EnumDataType.Lookup;
+  }
+}
+
+export function createAtField(field: Field) {
+  const createdAtDefaultAttribute = field.attributes?.find(
+    (attribute) => attribute.name === "default"
+  );
+
+  const createdAtNowArg = createdAtDefaultAttribute?.args?.some(
+    (arg) => (arg.value as Func).name === "now"
+  );
+
+  if (createdAtDefaultAttribute && createdAtNowArg) {
+    return EnumDataType.CreatedAt;
+  }
+}
+
+export function updateAtField(field: Field) {
+  const updatedAtAttribute = field.attributes?.some(
+    (attribute) => attribute.name === UPDATED_AT_ATTRIBUTE_NAME
+  );
+
+  const updatedAtDefaultAttribute = field.attributes?.find(
+    (attribute) => attribute.name === DEFAULT_ATTRIBUTE_NAME
+  );
+
+  const updatedAtNowArg = updatedAtDefaultAttribute?.args?.some(
+    (arg) => (arg.value as Func).name === NOW_FUNCTION_NAME
+  );
+
+  if (updatedAtAttribute || (updatedAtDefaultAttribute && updatedAtNowArg)) {
+    return EnumDataType.UpdatedAt;
+  }
+}
+
+export function optionSetField(schema: Schema, field: Field) {
+  const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
+  const fieldOptionSetType = enumList.find(
+    (enumItem: Enum) => enumItem.name === field.fieldType
+  );
+  if (fieldOptionSetType) {
+    return EnumDataType.OptionSet;
+  }
+}
+
+export function multiSelectOptionSetField(schema: Schema, field: Field) {
+  const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
+  const isMultiSelect = field.array || false;
+  const fieldOptionSetType = enumList.find(
+    (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
+  );
+  if (fieldOptionSetType) {
+    return EnumDataType.MultiSelectOptionSet;
+  }
+}
+
+export function singleLineTextField(field: Field) {
+  if (field.fieldType === ScalarType.String) {
+    return EnumDataType.SingleLineText;
+  }
+}
+
+export function wholeNumberField(field: Field) {
+  if (field.fieldType === ScalarType.Int) {
+    return EnumDataType.WholeNumber;
+  }
+}
+
+export function decimalNumberField(field: Field) {
+  if (field.fieldType === ScalarType.Float) {
+    return EnumDataType.DecimalNumber;
+  }
+}
+
+export function booleanField(field: Field) {
+  if (field.fieldType === ScalarType.Boolean) {
+    return EnumDataType.Boolean;
+  }
+}
+
+export function dateTimeField(field: Field) {
+  if (field.fieldType === ScalarType.DateTime) {
+    return EnumDataType.DateTime;
+  }
+}
+
+export function jsonField(field: Field) {
+  if (field.fieldType === ScalarType.Json) {
+    return EnumDataType.Json;
+  }
 }
