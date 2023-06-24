@@ -65,13 +65,17 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
   gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider}`;
+  `Push changes to ${gitProvider === "Github" ? "GitHub" : gitProvider}`;
 export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Starting to push changes to ${gitProvider}`;
+  `Starting to push changes to ${
+    gitProvider === "Github" ? "GitHub" : gitProvider
+  }`; // added a conditional statement to check if 'gitProvider' is equal to 'Github'
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
-  `Successfully pushed changes to ${gitProvider}`;
+  `Successfully pushed changes to ${
+    gitProvider === "Github" ? "GitHub" : gitProvider
+  }`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider} failed`;
+  `Push changes to ${gitProvider === "Github" ? "GitHub" : gitProvider} failed`;
 
 export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
