@@ -37,6 +37,7 @@ import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -420,6 +421,14 @@ describe("EntityService", () => {
           useClass: jest.fn(() => ({
             track: jest.fn(() => {
               return;
+            }),
+          })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
             }),
           })),
         },

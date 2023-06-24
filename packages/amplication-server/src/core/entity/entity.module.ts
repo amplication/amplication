@@ -8,6 +8,7 @@ import { PermissionsModule } from "../permissions/permissions.module";
 import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
 import { PrismaSchemaImportModule } from "../prismaSchemaUtils/prismaSchemaUtils.module";
+import { BillingModule } from "../billing/billing.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { PrismaSchemaImportModule } from "../prismaSchemaUtils/prismaSchemaUtils
     JsonSchemaValidationModule,
     DiffModule,
     PrismaSchemaImportModule,
+    BillingModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
   exports: [EntityService, EntityResolver, EntityVersionResolver],
