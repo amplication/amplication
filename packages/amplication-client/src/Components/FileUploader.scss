@@ -15,6 +15,7 @@ $options-max-width: 1000px;
     @include body1;
     height: $dropzone-height;
     max-width: $options-max-width;
+    margin: auto;
 
     flex: 1;
     display: flex;

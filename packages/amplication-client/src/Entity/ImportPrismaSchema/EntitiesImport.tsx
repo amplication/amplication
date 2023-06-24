@@ -13,6 +13,7 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
+import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -57,11 +58,20 @@ const PAGE_TITLE = "Entities Import";
 const CLASS_NAME = "entities-import";
 
 const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
-  const { resource: resourceId } = match.params;
+  const { resource: resourceId, project: projectId } = match.params;
   const { trackEvent } = useTracking();
 
   const [createEntitiesFormSchema, { data, error, loading }] =
-    useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA);
+    useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA, {
+      refetchQueries: [
+        {
+          query: GET_PENDING_CHANGES_STATUS,
+          variables: {
+            projectId: projectId,
+          },
+        },
+      ],
+    });
 
   const actionLog: models.Action = useMemo(() => {
     if (!data?.createEntitiesFromPrismaSchema) {
