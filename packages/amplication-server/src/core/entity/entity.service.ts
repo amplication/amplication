@@ -254,7 +254,8 @@ export class EntityService {
     args: CreateOneEntityArgs,
     user: User,
     createInitialEntityFields = true,
-    enforceValidation = true
+    enforceValidation = true,
+    trackEvent = true
   ): Promise<Entity> {
     if (
       args.data?.name?.toLowerCase().trim() ===
@@ -346,25 +347,27 @@ export class EntityService {
         },
       });
     }
-    const resourceWithProject = await this.prisma.resource.findUnique({
-      where: {
-        id: args.data.resource.connect.id,
-      },
-      include: {
-        project: true,
-      },
-    });
+    if (trackEvent) {
+      const resourceWithProject = await this.prisma.resource.findUnique({
+        where: {
+          id: args.data.resource.connect.id,
+        },
+        include: {
+          project: true,
+        },
+      });
 
-    await this.analytics.track({
-      userId: user.account.id,
-      properties: {
-        resourceId: args.data.resource.connect.id,
-        projectId: resourceWithProject.projectId,
-        workspaceId: resourceWithProject.project.workspaceId,
-        entityName: args.data.displayName,
-      },
-      event: EnumEventType.EntityCreate,
-    });
+      await this.analytics.track({
+        userId: user.account.id,
+        properties: {
+          resourceId: args.data.resource.connect.id,
+          projectId: resourceWithProject.projectId,
+          workspaceId: resourceWithProject.project.workspaceId,
+          entityName: args.data.displayName,
+        },
+        event: EnumEventType.EntityCreate,
+      });
+    }
 
     return newEntity;
   }
@@ -484,8 +487,8 @@ export class EntityService {
             workspaceId: resourceWithProject.project.workspaceId,
             fileName: fileName,
             totalEntities: entities.length,
-            totalFields: entities.reduce(
-              (acc, entity) => acc + entity.fields.length,
+            totalFields: preparedEntitiesWithFields?.reduce(
+              (acc, entity) => acc + (entity.fields?.length || 0),
               0
             ),
           },
@@ -589,6 +592,7 @@ export class EntityService {
             },
           },
           user,
+          false,
           false,
           false
         );
@@ -1932,7 +1936,8 @@ export class EntityService {
   /** Validate name value conforms expected format */
   async createFieldByDisplayName(
     args: CreateOneEntityFieldByDisplayNameArgs,
-    user: User
+    user: User,
+    trackEvent = false
   ): Promise<EntityField> {
     const entity = await this.entity({
       where: args.data.entity.connect,
@@ -1974,7 +1979,7 @@ export class EntityService {
         : entity.displayName;
     }
 
-    return this.createField(createFieldArgs, user);
+    return this.createField(createFieldArgs, user, true, trackEvent);
   }
 
   /**
@@ -2184,7 +2189,8 @@ export class EntityService {
   async createField(
     args: CreateOneEntityFieldArgs,
     user: User,
-    enforceValidation = true
+    enforceValidation = true,
+    trackEvent = false
   ): Promise<EntityField> {
     if (
       enforceValidation &&
@@ -2232,26 +2238,28 @@ export class EntityService {
           );
         }
 
-        const resourceWithProject = await this.prisma.resource.findUnique({
-          where: {
-            id: entity.resourceId,
-          },
-          include: {
-            project: true,
-          },
-        });
+        if (trackEvent) {
+          const resourceWithProject = await this.prisma.resource.findUnique({
+            where: {
+              id: entity.resourceId,
+            },
+            include: {
+              project: true,
+            },
+          });
 
-        await this.analytics.track({
-          userId: user.account.id,
-          properties: {
-            resourceId: entity.resourceId,
-            projectId: resourceWithProject.projectId,
-            workspaceId: resourceWithProject.project.workspaceId,
-            entityFieldName: args.data.displayName,
-            dataType: args.data.dataType,
-          },
-          event: EnumEventType.EntityFieldCreate,
-        });
+          await this.analytics.track({
+            userId: user.account.id,
+            properties: {
+              resourceId: entity.resourceId,
+              projectId: resourceWithProject.projectId,
+              workspaceId: resourceWithProject.project.workspaceId,
+              entityFieldName: args.data.displayName,
+              dataType: args.data.dataType,
+            },
+            event: EnumEventType.EntityFieldCreate,
+          });
+        }
 
         // Create entity field
         return this.prisma.entityField.create({
