@@ -1,19 +1,18 @@
-import React, { useCallback, useMemo } from "react";
 import { gql, useMutation } from "@apollo/client";
+import React, { useCallback, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 
-import { FileUploader } from "../../Components/FileUploader";
-import { AppRouteProps } from "../../routes/routesUtil";
-import "./EntitiesImport.scss";
-import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import { Snackbar } from "@amplication/ui/design-system";
-import { useTracking } from "../../util/analytics";
-import { formatError } from "../../util/error";
-import * as models from "../../models";
-import { isEmpty } from "lodash";
-import ProgressBar from "../../Components/ProgressBar";
+import { FileUploader } from "../../Components/FileUploader";
+import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
 import ActionLog from "../../VersionControl/ActionLog";
+import * as models from "../../models";
+import { AppRouteProps } from "../../routes/routesUtil";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { formatError } from "../../util/error";
+import "./EntitiesImport.scss";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -61,8 +60,6 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource: resourceId } = match.params;
   const { trackEvent } = useTracking();
 
-  const [fileName, setFileName] = React.useState<string | null>(null);
-
   const [createEntitiesFormSchema, { data, error, loading }] =
     useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA);
 
@@ -82,39 +79,23 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
     return data.createEntitiesFromPrismaSchema.actionLog;
   }, [data, loading]);
 
-  const clearSelectedFile = useCallback(() => {
-    setFileName(null);
-  }, [setFileName]);
-
   const errorMessage = formatError(error);
 
   const onFilesSelected = useCallback(
     (selectedFiles: File[]) => {
-      // trackEvent({
-      //   eventName: "importPrismaSchema",
-      // });
-      setFileName(selectedFiles[0].name);
+      const file = selectedFiles[0];
 
-      // const reader = new FileReader();
-      // reader.onload = () => {
-      //   setFileName(selectedFiles[0].name);
-      // };
-
-      // read file contents
-      //selectedFiles.forEach((file) => reader.readAsBinaryString(file));
-
-      const currentTime = new Date().toISOString();
-
-      ACTION_LOG.createdAt = currentTime;
-      ACTION_LOG_STEP.createdAt = currentTime;
-      ACTION_LOG_STEP_START.createdAt = currentTime;
+      trackEvent({
+        eventName: AnalyticsEventNames.UploadSchemaSelectFile,
+        fileName: file.name,
+      });
 
       createEntitiesFormSchema({
         variables: {
           data: {
             resourceId,
           },
-          file: selectedFiles[0],
+          file,
         },
         context: {
           hasUpload: true,
@@ -132,7 +113,9 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
           <h2>Import Prisma schema file</h2>
           <div className={`${CLASS_NAME}__message`}>
             upload a Prisma schema file to import its content, and create
-            entities and relations
+            entities and relations.
+            <br />
+            Only '*.prisma' files are supported.
           </div>
         </div>
         <div className={`${CLASS_NAME}__content`}>
@@ -143,13 +126,8 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
                 title="Import Schema"
                 versionNumber=""
               />
-
-              {/* <div>Entities</div>
-              {data.createEntitiesFromPrismaSchema.entities?.map((entity) => (
-                <div>{entity.name}</div>
-              ))} */}
             </>
-          ) : isEmpty(fileName) ? (
+          ) : (
             <>
               <FileUploader
                 onFilesSelected={onFilesSelected}
@@ -157,21 +135,12 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
                 acceptedFileTypes={ACCEPTED_FILE_TYPES}
               />
             </>
-          ) : (
-            <>
-              <ProgressBar />
-
-              <div>file selected {fileName}</div>
-              {/* <Button onClick={clearSelectedFile}>clear</Button> */}
-            </>
           )}
         </div>
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </>
     </PageContent>
   );
-
-  /**@todo: move error message to hosting page  */
 };
 
 export default EntitiesImport;

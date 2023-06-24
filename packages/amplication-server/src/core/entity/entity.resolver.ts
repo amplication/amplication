@@ -117,6 +117,7 @@ export class EntityResolver {
 
     return this.entityService.createEntitiesFromPrismaSchema(
       fileContent,
+      file.filename,
       args,
       user
     );

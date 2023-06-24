@@ -371,10 +371,31 @@ export class EntityService {
 
   async createEntitiesFromPrismaSchema(
     file: string,
+    fileName: string,
     args: CreateEntitiesFromPrismaSchemaArgs,
     user: User
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
     const { resourceId } = args.data;
+
+    const completeActionLog = (
+      action: Action,
+      message: string,
+      status: EnumActionLogLevel
+    ) => {
+      const currentDate = new Date();
+      action.steps[0].logs.push({
+        id: "1",
+        level: status,
+        message: message,
+        createdAt: currentDate,
+        meta: {},
+      });
+      action.steps[0].status =
+        status === EnumActionLogLevel.Error
+          ? EnumActionStepStatus.Failed
+          : EnumActionStepStatus.Success;
+      action.steps[0].completedAt = currentDate;
+    };
 
     const actionLog = PRISMA_IMPORT_ACTION_LOG;
     const currentDate = new Date();
@@ -382,43 +403,116 @@ export class EntityService {
     actionLog.steps[0].createdAt = currentDate;
     actionLog.steps[0].logs[0].createdAt = currentDate;
 
-    const { preparedEntitiesWithFields, log } =
-      this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        project: true,
+      },
+    });
 
-    const valid = await this.validateBeforeCreateBulkEntitiesAndFields(
-      preparedEntitiesWithFields,
-      log,
-      resourceId
-    );
+    await this.analytics.track({
+      userId: user.account.id,
+      properties: {
+        resourceId: resourceId,
+        projectId: resourceWithProject.projectId,
+        workspaceId: resourceWithProject.project.workspaceId,
+        fileName: fileName,
+      },
+      event: EnumEventType.ImportPrismaSchemaStart,
+    });
 
-    const initialStepLog = actionLog.steps[0].logs[0];
+    try {
+      //Step 1: Convert Prisma schema to import objects
+      const { preparedEntitiesWithFields, log } =
+        this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
 
-    actionLog.steps[0].logs = [initialStepLog, ...log];
+      //Step 2: Validate entities and fields
+      const valid = await this.validateBeforeCreateBulkEntitiesAndFields(
+        preparedEntitiesWithFields,
+        log,
+        resourceId
+      );
 
-    if (!valid) {
-      actionLog.steps[0].logs.push({
-        id: "1",
-        level: EnumActionLogLevel.Error,
-        message: `Import operation aborted due to errors. See the log for more details.`,
-        createdAt: new Date(),
-        meta: {},
+      const initialStepLog = actionLog.steps[0].logs[0];
+
+      actionLog.steps[0].logs = [initialStepLog, ...log];
+
+      if (!valid) {
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            fileName: fileName,
+            error: "Duplicate entity names",
+          },
+          event: EnumEventType.ImportPrismaSchemaError,
+        });
+
+        completeActionLog(
+          actionLog,
+          `Import operation aborted due to errors. See the log for more details.`,
+          EnumActionLogLevel.Error
+        );
+
+        return {
+          entities: [],
+          actionLog,
+        };
+      } else {
+        //Step 3: Create entities and fields
+        const entities = await this.createBulkEntitiesAndFields({
+          resourceId,
+          user,
+          preparedEntitiesWithFields,
+        });
+
+        completeActionLog(
+          actionLog,
+          `Import operation Completed.`,
+          EnumActionLogLevel.Info
+        );
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            fileName: fileName,
+            totalEntities: entities.length,
+            totalFields: entities.reduce(
+              (acc, entity) => acc + entity.fields.length,
+              0
+            ),
+          },
+          event: EnumEventType.ImportPrismaSchemaCompleted,
+        });
+
+        return {
+          entities,
+          actionLog,
+        };
+      }
+    } catch (error) {
+      await this.analytics.track({
+        userId: user.account.id,
+        properties: {
+          resourceId: resourceId,
+          projectId: resourceWithProject.projectId,
+          workspaceId: resourceWithProject.project.workspaceId,
+          fileName: fileName,
+          error: error.message,
+        },
+        event: EnumEventType.ImportPrismaSchemaError,
       });
-      actionLog.steps[0].status = EnumActionStepStatus.Failed;
-      actionLog.steps[0].completedAt = new Date();
 
+      completeActionLog(actionLog, error.message, EnumActionLogLevel.Error);
       return {
         entities: [],
-        actionLog,
-      };
-    } else {
-      const entities = await this.createBulkEntitiesAndFields({
-        resourceId,
-        user,
-        preparedEntitiesWithFields,
-      });
-
-      return {
-        entities,
         actionLog,
       };
     }
