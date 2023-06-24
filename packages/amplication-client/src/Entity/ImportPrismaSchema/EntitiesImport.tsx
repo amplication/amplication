@@ -23,7 +23,7 @@ const ACTION_LOG: models.Action = {
 const ACTION_LOG_STEP: models.ActionStep = {
   id: "1",
   name: "PROCESSING",
-  message: "Processing Prisma schema file",
+  message: "Import Prisma schema file",
   status: models.EnumActionStepStatus.Running,
   createdAt: new Date().toISOString(),
   logs: [],
@@ -31,7 +31,7 @@ const ACTION_LOG_STEP: models.ActionStep = {
 
 const ACTION_LOG_STEP_START: models.ActionLog = {
   id: "1",
-  message: "Importing Prisma schema file",
+  message: "Processing Prisma schema file",
   level: models.EnumActionLogLevel.Info,
   createdAt: new Date().toISOString(),
   meta: {},
@@ -79,20 +79,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       };
     }
 
-    return {
-      ...ACTION_LOG,
-      steps: [
-        {
-          ...ACTION_LOG_STEP,
-          completedAt: new Date().toISOString(),
-          status: models.EnumActionStepStatus.Success,
-          logs: [
-            ACTION_LOG_STEP_START,
-            ...data.createEntitiesFromPrismaSchema.log,
-          ],
-        },
-      ],
-    };
+    return data.createEntitiesFromPrismaSchema.actionLog;
   }, [data, loading]);
 
   const clearSelectedFile = useCallback(() => {
@@ -206,10 +193,24 @@ const CREATE_ENTITIES_FORM_SCHEMA = gql`
           dataType
         }
       }
-      log {
-        message
-        level
+      actionLog {
+        id
         createdAt
+        steps {
+          id
+          name
+          createdAt
+          message
+          status
+          completedAt
+          logs {
+            id
+            createdAt
+            message
+            meta
+            level
+          }
+        }
       }
     }
   }
