@@ -95,6 +95,8 @@ jobs:
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
       - name: Test
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=text-summary $NX_FORCE_ALL
       
   nx:
