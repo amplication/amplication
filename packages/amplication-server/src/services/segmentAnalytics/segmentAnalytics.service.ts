@@ -21,6 +21,11 @@ export enum EnumEventType {
   PluginUpdate = "updatePlugin",
   DemoRepoCreate = "CreateDemoRepo",
   InvitationAcceptance = "invitationAcceptance",
+
+  //Import Prisma Schema
+  ImportPrismaSchemaStart = "importPrismaSchemaStart",
+  ImportPrismaSchemaError = "importPrismaSchemaError",
+  ImportPrismaSchemaCompleted = "importPrismaSchemaCompleted",
 }
 
 export type IdentifyData = {

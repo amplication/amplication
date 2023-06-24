@@ -41,6 +41,7 @@ import {
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   INITIAL_ID_TYPE_FIELDS,
+  PRISMA_IMPORT_ACTION_LOG,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -84,7 +85,12 @@ import {
 import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
 import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
 import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
-import { ActionLog } from "../action/dto";
+import {
+  Action,
+  ActionLog,
+  EnumActionLogLevel,
+  EnumActionStepStatus,
+} from "../action/dto";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -365,40 +371,154 @@ export class EntityService {
 
   async createEntitiesFromPrismaSchema(
     file: string,
+    fileName: string,
     args: CreateEntitiesFromPrismaSchemaArgs,
     user: User
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
     const { resourceId } = args.data;
 
-    const { preparedEntitiesWithFields, log } =
-      this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+    const completeActionLog = (
+      action: Action,
+      message: string,
+      status: EnumActionLogLevel
+    ) => {
+      const currentDate = new Date();
+      action.steps[0].logs.push({
+        id: "1",
+        level: status,
+        message: message,
+        createdAt: currentDate,
+        meta: {},
+      });
+      action.steps[0].status =
+        status === EnumActionLogLevel.Error
+          ? EnumActionStepStatus.Failed
+          : EnumActionStepStatus.Success;
+      action.steps[0].completedAt = currentDate;
+    };
 
-    const existingEntitiesValidation = await this.validateExistingEntities(
-      preparedEntitiesWithFields,
-      log,
-      resourceId
-    );
+    const actionLog = PRISMA_IMPORT_ACTION_LOG;
+    const currentDate = new Date();
+    actionLog.createdAt = currentDate;
+    actionLog.steps[0].createdAt = currentDate;
+    actionLog.steps[0].logs[0].createdAt = currentDate;
 
-    if (existingEntitiesValidation?.existingEntitiesLog.length > 0) {
-      return {
-        entities: [],
-        log: existingEntitiesValidation.existingEntitiesLog,
-      };
-    } else {
-      const entities = await this.createBulkEntitiesAndFields({
-        resourceId,
-        user,
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: resourceId,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    await this.analytics.track({
+      userId: user.account.id,
+      properties: {
+        resourceId: resourceId,
+        projectId: resourceWithProject.projectId,
+        workspaceId: resourceWithProject.project.workspaceId,
+        fileName: fileName,
+      },
+      event: EnumEventType.ImportPrismaSchemaStart,
+    });
+
+    try {
+      //Step 1: Convert Prisma schema to import objects
+      const { preparedEntitiesWithFields, log } =
+        this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+
+      //Step 2: Validate entities and fields
+      const valid = await this.validateBeforeCreateBulkEntitiesAndFields(
         preparedEntitiesWithFields,
+        log,
+        resourceId
+      );
+
+      const initialStepLog = actionLog.steps[0].logs[0];
+
+      actionLog.steps[0].logs = [initialStepLog, ...log];
+
+      if (!valid) {
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            fileName: fileName,
+            error: "Duplicate entity names",
+          },
+          event: EnumEventType.ImportPrismaSchemaError,
+        });
+
+        completeActionLog(
+          actionLog,
+          `Import operation aborted due to errors. See the log for more details.`,
+          EnumActionLogLevel.Error
+        );
+
+        return {
+          entities: [],
+          actionLog,
+        };
+      } else {
+        //Step 3: Create entities and fields
+        const entities = await this.createBulkEntitiesAndFields({
+          resourceId,
+          user,
+          preparedEntitiesWithFields,
+        });
+
+        completeActionLog(
+          actionLog,
+          `Import operation Completed.`,
+          EnumActionLogLevel.Info
+        );
+
+        await this.analytics.track({
+          userId: user.account.id,
+          properties: {
+            resourceId: resourceId,
+            projectId: resourceWithProject.projectId,
+            workspaceId: resourceWithProject.project.workspaceId,
+            fileName: fileName,
+            totalEntities: entities.length,
+            totalFields: entities.reduce(
+              (acc, entity) => acc + entity.fields.length,
+              0
+            ),
+          },
+          event: EnumEventType.ImportPrismaSchemaCompleted,
+        });
+
+        return {
+          entities,
+          actionLog,
+        };
+      }
+    } catch (error) {
+      await this.analytics.track({
+        userId: user.account.id,
+        properties: {
+          resourceId: resourceId,
+          projectId: resourceWithProject.projectId,
+          workspaceId: resourceWithProject.project.workspaceId,
+          fileName: fileName,
+          error: error.message,
+        },
+        event: EnumEventType.ImportPrismaSchemaError,
       });
 
+      completeActionLog(actionLog, error.message, EnumActionLogLevel.Error);
       return {
-        entities,
-        log,
+        entities: [],
+        actionLog,
       };
     }
   }
 
-  async validateExistingEntities(
+  async validateBeforeCreateBulkEntitiesAndFields(
     preparedEntitiesWithFields: CreateBulkEntitiesInput[],
     log: ActionLog[],
     resourceId: string
@@ -430,9 +550,9 @@ export class EntityService {
             .join(", ")}`
         );
       });
-
-      return { existingEntitiesLog: log };
+      return false;
     }
+    return true;
   }
 
   async createBulkEntitiesAndFields({
