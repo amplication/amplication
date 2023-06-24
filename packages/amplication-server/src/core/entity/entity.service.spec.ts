@@ -36,6 +36,7 @@ import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -418,6 +419,17 @@ describe("EntityService", () => {
           provide: SegmentAnalyticsService,
           useClass: jest.fn(() => ({
             track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
+        {
+          provide: PrismaSchemaUtilsService,
+          useClass: jest.fn(() => ({
+            prepareEntities: jest.fn(() => {
+              return;
+            }),
+            validateSchemaProcessing: jest.fn(() => {
               return;
             }),
           })),
