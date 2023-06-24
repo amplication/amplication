@@ -148,6 +148,9 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 className={`${CLASS_NAME}__install`}
                 buttonStyle={EnumButtonStyle.Secondary}
                 icon="upload1"
+                eventData={{
+                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                }}
               >
                 Upload Prisma Schema
               </Button>

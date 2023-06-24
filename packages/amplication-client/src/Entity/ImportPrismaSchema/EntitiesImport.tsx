@@ -96,7 +96,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       const file = selectedFiles[0];
 
       trackEvent({
-        eventName: AnalyticsEventNames.UploadSchemaSelectFile,
+        eventName: AnalyticsEventNames.ImportPrismaSchemaSelectFile,
         fileName: file.name,
       });
 
