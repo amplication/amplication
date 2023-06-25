@@ -110,7 +110,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
         context: {
           hasUpload: true,
         },
-      });
+      }).catch(console.error);
     },
     [createEntitiesFormSchema, resourceId]
   );
@@ -119,7 +119,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <>
         <div className={`${CLASS_NAME}__header`}>
-          <SvgThemeImage image={EnumImages.ImportExcel} />
+          <SvgThemeImage image={EnumImages.ImportPrisma} />
           <h2>Import Prisma schema file</h2>
           <div className={`${CLASS_NAME}__message`}>
             upload a Prisma schema file to import its content, and create
