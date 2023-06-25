@@ -20,9 +20,8 @@ export default function GitHubBanner() {
   const isBannerShowing = JSON.parse(showBanner);
 
   const handleBannerClick = (
-    eventName:
-      | AnalyticsEventNames.StarUsBannerCTAClick
-      | AnalyticsEventNames.StarUsBannerClose
+    eventName: // | AnalyticsEventNames.StarUsBannerCTAClick
+    AnalyticsEventNames.StarUsBannerClose
   ) => {
     setShowBanner("false");
     trackEvent({
@@ -39,9 +38,9 @@ export default function GitHubBanner() {
         target="_blank"
         rel="noreferrer"
         className={`${CLASS_NAME}__banner__cta`}
-        onClick={() => {
-          handleBannerClick(AnalyticsEventNames.StarUsBannerCTAClick);
-        }}
+        // onClick={() => {
+        //   handleBannerClick(AnalyticsEventNames.StarUsBannerCTAClick);
+        // }}
       >
         <Icon icon="github" />
         Star us on GitHub{" "}
