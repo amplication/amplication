@@ -396,9 +396,11 @@ export class EntityService {
       BillingFeature.ImportDBSchema
     );
 
-    this.logger.debug(`importDBSchema: ${importDBSchema.hasAccess}`);
+    this.logger.debug(
+      `importDBSchemaEntitlement: ${importDBSchema?.hasAccess}`
+    );
 
-    if (!importDBSchema.hasAccess)
+    if (importDBSchema && !importDBSchema.hasAccess)
       throw new AmplicationError(
         "Feature Unavailable. Your current user permissions doesn't include importing Prisma schemas"
       );
@@ -481,11 +483,14 @@ export class EntityService {
         };
       } else {
         //Step 3: Create entities and fields
-        const entities = await this.createBulkEntitiesAndFields({
-          resourceId,
-          user,
-          preparedEntitiesWithFields,
-        });
+        const entities = await this.createBulkEntitiesAndFields(
+          {
+            resourceId,
+            user,
+            preparedEntitiesWithFields,
+          },
+          actionLog.steps[0].logs
+        );
 
         completeActionLog(
           actionLog,
@@ -556,7 +561,7 @@ export class EntityService {
         log.push({
           id: entity.name,
           message: `Entity "${entity.name}" already exists`,
-          level: "Error",
+          level: EnumActionLogLevel.Error,
           createdAt: new Date(),
           meta: {},
         });
@@ -572,11 +577,14 @@ export class EntityService {
     return true;
   }
 
-  async createBulkEntitiesAndFields({
-    resourceId,
-    user,
-    preparedEntitiesWithFields,
-  }: CreateBulkEntitiesAndFieldsArgs): Promise<Entity[]> {
+  async createBulkEntitiesAndFields(
+    {
+      resourceId,
+      user,
+      preparedEntitiesWithFields,
+    }: CreateBulkEntitiesAndFieldsArgs,
+    log: ActionLog[]
+  ): Promise<Entity[]> {
     const entities: Entity[] = [];
     for (const entity of preparedEntitiesWithFields) {
       const {
@@ -611,8 +619,22 @@ export class EntityService {
           false
         );
         entities.push(newEntity);
+        log.push({
+          id: newEntity.name,
+          message: `Entity "${newEntity.name}" created successfully`,
+          level: EnumActionLogLevel.Info,
+          createdAt: new Date(),
+          meta: {},
+        });
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
+        log.push({
+          id: entity.name,
+          message: `Failed to create entity "${entity.name}". ${error.message}`,
+          level: EnumActionLogLevel.Error,
+          createdAt: new Date(),
+          meta: {},
+        });
       }
     }
 
