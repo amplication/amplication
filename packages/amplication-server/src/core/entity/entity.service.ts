@@ -411,13 +411,12 @@ export class EntityService {
       status: EnumActionLogLevel
     ) => {
       const currentDate = new Date();
-      action.steps[0].logs.push({
-        id: "1",
-        level: status,
-        message: message,
-        createdAt: currentDate,
-        meta: {},
-      });
+      action.steps[0].logs.push(
+        new ActionLog({
+          message,
+          level: status,
+        })
+      );
       action.steps[0].status =
         status === EnumActionLogLevel.Error
           ? EnumActionStepStatus.Failed
@@ -558,13 +557,12 @@ export class EntityService {
 
     if (existingEntities.length > 0) {
       existingEntities.forEach((entity) => {
-        log.push({
-          id: entity.name,
-          message: `Entity "${entity.name}" already exists`,
-          level: EnumActionLogLevel.Error,
-          createdAt: new Date(),
-          meta: {},
-        });
+        log.push(
+          new ActionLog({
+            message: `Entity "${entity.name}" already exists`,
+            level: EnumActionLogLevel.Error,
+          })
+        );
 
         this.logger.error(
           `The following entities already exist: ${existingEntities
@@ -619,22 +617,20 @@ export class EntityService {
           false
         );
         entities.push(newEntity);
-        log.push({
-          id: newEntity.name,
-          message: `Entity "${newEntity.name}" created successfully`,
-          level: EnumActionLogLevel.Info,
-          createdAt: new Date(),
-          meta: {},
-        });
+        log.push(
+          new ActionLog({
+            message: `Entity "${newEntity.name}" created successfully`,
+            level: EnumActionLogLevel.Info,
+          })
+        );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
-        log.push({
-          id: entity.name,
-          message: `Failed to create entity "${entity.name}". ${error.message}`,
-          level: EnumActionLogLevel.Error,
-          createdAt: new Date(),
-          meta: {},
-        });
+        log.push(
+          new ActionLog({
+            message: `Failed to create entity "${entity.name}". ${error.message}`,
+            level: EnumActionLogLevel.Error,
+          })
+        );
       }
     }
 

@@ -57,7 +57,7 @@ import {
   ID_FIELD_NAME,
   MODEL_TYPE_NAME,
 } from "./constants";
-import { ActionLog } from "../action/dto";
+import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -83,27 +83,82 @@ export class PrismaSchemaUtilsService {
   convertPrismaSchemaForImportObjects(
     schema: string
   ): ConvertPrismaSchemaForImportObjectsResponse {
+    const log: ActionLog[] = [];
+
+    log.push(
+      new ActionLog({
+        message: `Starting Prisma Schema Validation`,
+        level: EnumActionLogLevel.Info,
+      })
+    );
+
     this.validateSchemaUpload(schema);
+
     const validationLog = this.validateSchemaProcessing(schema);
     const isErrorsValidationLog = validationLog.some(
-      (log) => log.level === "Error"
+      (log) => log.level === EnumActionLogLevel.Error
     );
+
+    log.push(...validationLog);
 
     if (isErrorsValidationLog) {
+      log.push(
+        new ActionLog({
+          message: `Prisma Schema Validation Failed`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
+
       return {
         preparedEntitiesWithFields: [],
-        log: validationLog,
+        log,
       };
+    } else {
+      log.push(
+        new ActionLog({
+          message: `Prisma Schema Validation Completed`,
+          level: EnumActionLogLevel.Info,
+        })
+      );
     }
-
-    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
-      schema
+    log.push(
+      new ActionLog({
+        message: `Prepare Prisma Schema for import`,
+        level: EnumActionLogLevel.Info,
+      })
     );
+    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
+      schema,
+      log
+    );
+
+    log.push(
+      new ActionLog({
+        message: `Prepare Prisma Schema for import completed`,
+        level: EnumActionLogLevel.Info,
+      })
+    );
+
+    log.push(
+      new ActionLog({
+        message: `Create import objects from Prisma Schema`,
+        level: EnumActionLogLevel.Info,
+      })
+    );
+
     const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
+    const importObjects =
+      this.convertPreparedSchemaForImportObjects(preparedSchemaObject);
+
+    log.push(
+      new ActionLog({
+        message: `Create import objects from Prisma Schema completed`,
+        level: EnumActionLogLevel.Info,
+      })
+    );
     return {
-      preparedEntitiesWithFields:
-        this.convertPreparedSchemaForImportObjects(preparedSchemaObject),
-      log: [...preparedSchemaResult.log, ...validationLog],
+      preparedEntitiesWithFields: importObjects,
+      log,
     };
   }
 
@@ -116,8 +171,8 @@ export class PrismaSchemaUtilsService {
    */
   private prepareSchema(
     ...operations: PrepareOperation[]
-  ): (inputSchema: string) => PrepareOperationIO {
-    return (inputSchema: string): PrepareOperationIO => {
+  ): (inputSchema: string, log: ActionLog[]) => PrepareOperationIO {
+    return (inputSchema: string, log: ActionLog[]): PrepareOperationIO => {
       const builder = createPrismaSchemaBuilder(
         inputSchema
       ) as ConcretePrismaSchemaBuilder;
@@ -127,7 +182,6 @@ export class PrismaSchemaUtilsService {
         fieldTypes: {},
         idFields: {},
       };
-      const log: ActionLog[] = [];
 
       operations.forEach((operation) => {
         operation.call(this, { builder, mapper, log });
@@ -296,13 +350,12 @@ export class PrismaSchemaUtilsService {
           newName: formattedModelName,
         };
 
-        log.push({
-          id: model.name,
-          message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
-          level: "Info",
-          createdAt: new Date(),
-          meta: {},
-        });
+        log.push(
+          new ActionLog({
+            message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
+            level: EnumActionLogLevel.Info,
+          })
+        );
 
         builder.model(model.name).blockAttribute("map", model.name);
         builder.model(model.name).then<Model>((model) => {
@@ -351,13 +404,12 @@ export class PrismaSchemaUtilsService {
             newName: formattedFieldName,
           };
 
-          log.push({
-            id: field.name,
-            message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
-            level: "Info",
-            createdAt: new Date(),
-            meta: {},
-          });
+          log.push(
+            new ActionLog({
+              message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
+              level: EnumActionLogLevel.Info,
+            })
+          );
 
           builder
             .model(model.name)
@@ -404,13 +456,12 @@ export class PrismaSchemaUtilsService {
               newName,
             };
 
-            log.push({
-              id: field.fieldType,
-              message: `field type "${field.fieldType}" on model name ${model.name} was changed to "${newName}"`,
-              level: "Info",
-              createdAt: new Date(),
-              meta: {},
-            });
+            log.push(
+              new ActionLog({
+                message: `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
+                level: EnumActionLogLevel.Info,
+              })
+            );
 
             builder
               .model(model.name)
@@ -469,13 +520,12 @@ export class PrismaSchemaUtilsService {
             newName: `${model.name}Id`,
           };
 
-          log.push({
-            id: field.name,
-            message: `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
-            level: "Info",
-            createdAt: new Date(),
-            meta: {},
-          });
+          log.push(
+            new ActionLog({
+              message: `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
+              level: EnumActionLogLevel.Info,
+            })
+          );
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
           builder
             .model(model.name)
@@ -493,13 +543,12 @@ export class PrismaSchemaUtilsService {
             newName: `id`,
           };
 
-          log.push({
-            id: field.name,
-            message: `field name "${field.name}" on model name ${model.name} was changed to "id"`,
-            level: "Info",
-            createdAt: new Date(),
-            meta: {},
-          });
+          log.push(
+            new ActionLog({
+              message: `field name "${field.name}" on model name ${model.name} was changed to "id"`,
+              level: EnumActionLogLevel.Info,
+            })
+          );
         }
       });
     });
@@ -1310,13 +1359,12 @@ export class PrismaSchemaUtilsService {
     ) as Model[];
 
     if (models.length === 0) {
-      errors.push({
-        id: cuid(),
-        message: "A schema must contain at least one model",
-        level: "Error",
-        createdAt: new Date(),
-        meta: {},
-      });
+      errors.push(
+        new ActionLog({
+          message: "A schema must contain at least one model",
+          level: EnumActionLogLevel.Error,
+        })
+      );
     }
 
     models.map((model: Model) => {
