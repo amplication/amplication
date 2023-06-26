@@ -1,5 +1,6 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
 import resourceRoutes from "./resourceRoutes";
+import NotFoundPage from "../404/NotFoundPage";
 
 export interface RouteDef {
   path: string;
@@ -178,5 +179,12 @@ export const Routes: RouteDef[] = [
     routeTrackType: "signup",
     exactPath: true,
     isAnalytics: true,
+  },
+      // Fallback route for wrong paths
+  {
+    path: "*",
+    Component: NotFoundPage,
+    exactPath: false,
+    isAnalytics: false,
   },
 ];
