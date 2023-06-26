@@ -1,4 +1,11 @@
-import { Enum, Field, Func, Schema } from "@mrleebo/prisma-ast";
+import {
+  Enum,
+  Field,
+  Func,
+  KeyValue,
+  RelationArray,
+  Schema,
+} from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
@@ -30,10 +37,6 @@ export const idTypePropertyMapByFieldType = {
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
-}
-
-export function isCamelCaseWithIdSuffix(string) {
-  return /^[a-z]+([A-Z][a-z]*)*Id$/.test(string);
 }
 
 export function capitalizeFirstLetterOfEachWord(str: string): string {
@@ -205,4 +208,36 @@ export function jsonField(field: Field) {
   if (field.fieldType === ScalarType.Json) {
     return EnumDataType.Json;
   }
+}
+
+export function findFkFieldNameOnAnnotatedField(field: Field): string {
+  const relationAttribute = field.attributes?.find(
+    (attr) => attr.name === "relation"
+  );
+
+  if (!relationAttribute) {
+    throw new Error(`Missing relation attribute on field ${field.name}`);
+  }
+
+  const fieldsArgs = relationAttribute.args.find(
+    (arg) => (arg.value as KeyValue).key === "fields"
+  );
+
+  if (!fieldsArgs) {
+    throw new Error(
+      `Missing fields attribute on relation attribute on field ${field.name}`
+    );
+  }
+
+  const fieldsArgsValues = (
+    (fieldsArgs.value as KeyValue).value as RelationArray
+  ).args;
+
+  if (fieldsArgsValues.length > 1) {
+    throw new Error(
+      `Relation attribute on field ${field.name} has more than one field`
+    );
+  }
+
+  return fieldsArgsValues[0];
 }
