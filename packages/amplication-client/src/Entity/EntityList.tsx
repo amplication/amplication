@@ -122,14 +122,13 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   return match.isExact ? (
     <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <>
-        <Dialog
-          className="new-entity-dialog"
-          isOpen={newEntity}
-          onDismiss={handleNewEntityClick}
-          title="New Entity"
-        >
-          <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
-        </Dialog>
+        {newEntity && (
+          <NewEntity
+            resourceId={resource}
+            onSuccess={handleNewEntityClick}
+            isOpen={newEntity}
+          />
+        )}
         <div className={`${CLASS_NAME}__header`}>
           <SearchField
             label="search"

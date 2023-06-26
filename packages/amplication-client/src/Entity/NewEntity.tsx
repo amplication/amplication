@@ -44,6 +44,7 @@ type TEntities = {
 type Props = {
   resourceId: string;
   onSuccess: () => void;
+  isOpen: boolean;
 };
 
 const INITIAL_VALUES: CreateEntityType = {
@@ -68,12 +69,14 @@ const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
 };
 
-const NewEntity = ({ resourceId, onSuccess }: Props) => {
+const NewEntity = ({ resourceId, onSuccess, isOpen }: Props) => {
   const history = useHistory();
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
+
+  const [closeNewEntity, setCloseNewEntity] = useState<boolean>(true);
 
   const [currentNewEntity, setCurrentNewEntity] =
     useState<CreateEntityType>(null);
@@ -218,6 +221,12 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     }).catch(console.error);
   }, [setConfirmInstall, createEntity, resourceId, currentNewEntity]);
 
+  const handleNewEntityPopUp = useCallback(() => {
+    setTimeout(() => {
+      setCloseNewEntity(false);
+    }, 1);
+  }, [setCloseNewEntity]);
+
   useEffect(() => {
     if (data) {
       history.push(
@@ -246,17 +255,66 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const errorMessage = formatError(error);
 
   return (
-    <div className={CLASS_NAME}>
-      <SvgThemeImage image={EnumImages.Entities} />
-      <div className={`${CLASS_NAME}__instructions`}>
-        Give your new entity a descriptive name. <br />
-        For example: Customer, Support Ticket, Purchase Order...
-      </div>
+    <div>
+      {closeNewEntity && (
+        <Dialog
+          className="new-entity-dialog"
+          title="New Entity"
+          isOpen={isOpen}
+          onDismiss={onSuccess}
+        >
+          <div className={CLASS_NAME}>
+            <SvgThemeImage image={EnumImages.Entities} />
+            <div className={`${CLASS_NAME}__instructions`}>
+              Give your new entity a descriptive name. <br />
+              For example: Customer, Support Ticket, Purchase Order...
+            </div>
+
+            <Formik
+              initialValues={INITIAL_VALUES}
+              validate={(values: CreateEntityType) =>
+                validate(values, FORM_SCHEMA)
+              }
+              onSubmit={handleSubmit}
+              validateOnMount
+            >
+              {(formik) => {
+                const handlers = {
+                  SUBMIT: formik.submitForm,
+                };
+                return (
+                  <Form>
+                    <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+                    <TextField
+                      name="displayName"
+                      label="New Entity Name"
+                      disabled={loading}
+                      autoFocus
+                      hideLabel
+                      placeholder="Type New Entity Name"
+                      autoComplete="off"
+                    />
+                    <Button
+                      type="submit"
+                      buttonStyle={EnumButtonStyle.Primary}
+                      disabled={!formik.isValid || loading}
+                      onClick={handleNewEntityPopUp}
+                    >
+                      Create Entity
+                    </Button>
+                  </Form>
+                );
+              }}
+            </Formik>
+            <Snackbar open={Boolean(error)} message={errorMessage} />
+          </div>
+        </Dialog>
+      )}
       <Dialog
         title="Restore 'User' Entity?"
         className={DIALOG_CLASS_NAME}
         isOpen={confirmInstall}
-        onDismiss={handleDismissConfirmationInstall}
+        onDismiss={onSuccess}
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
           We've noticed you're creating a new 'User' entity. This entity is used
@@ -292,40 +350,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           </Button> */}
         </div>
       </Dialog>
-      <Formik
-        initialValues={INITIAL_VALUES}
-        validate={(values: CreateEntityType) => validate(values, FORM_SCHEMA)}
-        onSubmit={handleSubmit}
-        validateOnMount
-      >
-        {(formik) => {
-          const handlers = {
-            SUBMIT: formik.submitForm,
-          };
-          return (
-            <Form>
-              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
-              <TextField
-                name="displayName"
-                label="New Entity Name"
-                disabled={loading}
-                autoFocus
-                hideLabel
-                placeholder="Type New Entity Name"
-                autoComplete="off"
-              />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
-              >
-                Create Entity
-              </Button>
-            </Form>
-          );
-        }}
-      </Formik>
-      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };
