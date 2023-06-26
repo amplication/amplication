@@ -70,7 +70,7 @@ export async function createOrderByInput(
     if (field.dataType === EnumDataType.Lookup) {
       const fieldProperties = field.properties as types.Lookup;
       if (!fieldProperties.allowMultipleSelection) {
-        propertyName = `${field.name}Id`;
+        propertyName = `${field.properties.fkFieldName}`;
       } else {
         return [];
       }
