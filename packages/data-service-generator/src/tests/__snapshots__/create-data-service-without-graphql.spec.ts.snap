@@ -1685,7 +1685,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
         </ReferenceField>
         <ReferenceManyField
           reference=\\"Order\\"
-          target=\\"CustomerId\\"
+          target=\\"customerId\\"
           label=\\"Orders\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2156,7 +2156,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <TextField label=\\"Name\\" source=\\"name\\" />
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"organizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2204,7 +2204,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         </ReferenceManyField>
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"vipOrganizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -3051,7 +3051,7 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
-  name               String              @unique @db.VarChar(200)
+  name               String              @unique @map(\\"name\\")
   bio                String
   email              String
   age                Int
@@ -3069,8 +3069,8 @@ model User {
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
 
-  @@unique([name(sort: Desc), displayName])
-  @@index([name, displayName])
+  @@unique([name(sort: Desc), email])
+  @@index([name, email])
   @@map(\\"users\\")
 }
 
