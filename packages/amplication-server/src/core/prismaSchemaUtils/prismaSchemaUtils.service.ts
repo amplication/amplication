@@ -19,6 +19,7 @@ import {
   dateTimeField,
   decimalNumberField,
   filterOutAmplicationAttributes,
+  findFkFieldNameOnAnnotatedField,
   formatDisplayName,
   formatFieldName,
   formatModelName,
@@ -233,7 +234,14 @@ export class PrismaSchemaUtilsService {
           continue;
         }
 
-        if (this.isBooleanField(schema, field)) {
+        if (this.isIdField(schema, field)) {
+          this.convertPrismaIdToEntityField(
+            schema,
+            model,
+            field,
+            preparedEntities
+          );
+        } else if (this.isBooleanField(schema, field)) {
           this.convertPrismaBooleanToEntityField(
             schema,
             model,
@@ -284,13 +292,6 @@ export class PrismaSchemaUtilsService {
           );
         } else if (this.isJsonField(schema, field)) {
           this.convertPrismaJsonToEntityField(
-            schema,
-            model,
-            field,
-            preparedEntities
-          );
-        } else if (this.isIdField(schema, field)) {
-          this.convertPrismaIdToEntityField(
             schema,
             model,
             field,
