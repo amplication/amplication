@@ -25,7 +25,6 @@ import {
   idField,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
-  isCamelCaseWithIdSuffix,
   jsonField,
   lookupField,
   multiSelectOptionSetField,
@@ -1367,46 +1366,6 @@ export class PrismaSchemaUtilsService {
       );
     }
 
-    models.map((model: Model) => {
-      const fields = model.properties.filter(
-        (property) => property.type === FIELD_TYPE_NAME
-      ) as Field[];
-
-      fields.map((field: Field) => {
-        // const invalidFkFieldNameErrors = this.validateFKFieldName(
-        //   schemaObject,
-        //   model,
-        //   field
-        // );
-        // if (invalidFkFieldNameErrors) {
-        //   errors.push(invalidFkFieldNameErrors);
-        //   throw new Error(
-        //     `Invalid foreign key field name ${field.name} in model ${model.name}. The Foreign key field name must be in camelCase and end with Id`
-        //   );
-        // }
-      });
-    });
-
     return errors.length > 0 ? errors : [];
-  }
-
-  // TODO: handle this case. Issue opened: https://github.com/amplication/amplication/issues/6334
-  private validateFKFieldName(
-    schema: Schema,
-    model: Model,
-    field: Field
-  ): ActionLog {
-    const isValidFkFieldName = isCamelCaseWithIdSuffix(field);
-    const isFkHolder = this.isFkFieldOfARelation(schema, model, field);
-
-    if (!isValidFkFieldName && isFkHolder) {
-      return {
-        id: cuid(),
-        message: `Field name: "${field.name}" in model: "${model.name}" must be in camelCase and end with "Id"`,
-        level: "Error",
-        createdAt: new Date(),
-        meta: {},
-      };
-    }
   }
 }
