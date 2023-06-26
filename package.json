@@ -110,7 +110,7 @@
     "lottie-react": "^2.3.1",
     "minimatch": "^9.0.0",
     "nest-access-control": "^2.2.0",
-    "nest-morgan": "^1.0.1",
+    "nest-morgan": "^2.0.0",
     "nest-winston": "^1.7.0",
     "nestjs-paginate": "^4.13.0",
     "node-fetch": "^2.6.7",
