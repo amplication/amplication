@@ -1218,10 +1218,13 @@ export class PrismaSchemaUtilsService {
       (entity) => entity.name === remoteModel.name
     ) as CreateBulkEntitiesInput;
 
+    const fkFieldName = findFkFieldNameOnAnnotatedField(field);
+
     const properties = <types.Lookup>{
       relatedEntityId: relatedEntity.id,
       allowMultipleSelection: field.array || false,
       fkHolder: null,
+      fkFieldName: fkFieldName,
     };
 
     entityField.properties = properties as unknown as {
