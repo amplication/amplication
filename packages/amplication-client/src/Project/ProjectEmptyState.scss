@@ -3,10 +3,12 @@
 .project-empty-state {
   display: flex;
   height: 100%;
+
   flex: 1 auto;
 
   &__sidebar {
     padding: var(--large-spacing);
+    min-width: 266px;
   }
 
   &__sidebar-content {
