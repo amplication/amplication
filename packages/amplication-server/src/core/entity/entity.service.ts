@@ -2426,7 +2426,7 @@ export class EntityService {
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            fkHolder,
+            fkHolder: relatedFieldId || fkHolder,
           },
         },
       });
