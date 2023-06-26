@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { Icon } from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import useFetchGithubStars from "../hooks/useFetchGithubStars";
@@ -19,15 +19,18 @@ export default function GitHubBanner() {
   const { trackEvent } = useTracking();
   const isBannerShowing = JSON.parse(showBanner);
 
-  const handleBannerClick = (
-    eventName: // | AnalyticsEventNames.StarUsBannerCTAClick
-    AnalyticsEventNames.StarUsBannerClose
-  ) => {
+  const handleStarUsClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.StarUsBannerCTAClick,
+    });
+  }, []);
+
+  const handleCloseStarUsClick = useCallback(() => {
     setShowBanner("false");
     trackEvent({
-      eventName,
+      eventName: AnalyticsEventNames.StarUsBannerClose,
     });
-  };
+  }, [setShowBanner]);
 
   if (!isBannerShowing) return null;
 
@@ -38,9 +41,7 @@ export default function GitHubBanner() {
         target="_blank"
         rel="noreferrer"
         className={`${CLASS_NAME}__banner__cta`}
-        // onClick={() => {
-        //   handleBannerClick(AnalyticsEventNames.StarUsBannerCTAClick);
-        // }}
+        onClick={handleStarUsClick}
       >
         <Icon icon="github" />
         Star us on GitHub{" "}
@@ -50,9 +51,7 @@ export default function GitHubBanner() {
       </a>
       <div
         className={`${CLASS_NAME}__banner__close`}
-        onClick={() => {
-          handleBannerClick(AnalyticsEventNames.StarUsBannerClose);
-        }}
+        onClick={handleCloseStarUsClick}
       >
         <Icon icon="close" size="xsmall" />
       </div>
