@@ -14,13 +14,13 @@ const CLASS_NAME = "question";
 export const Question = ({ question, answer }: Props) => {
   const [open, setOpen] = useState(false);
 
-  const handleOnCLick = () => {
+  const handleOnClick = () => {
     setOpen(!open);
   };
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__header`} onClick={handleOnCLick}>
+    <div className={CLASS_NAME} onClick={handleOnClick}>
+      <div className={`${CLASS_NAME}__header`}>
         <div className={`${CLASS_NAME}__header__text`}>{question}</div>
         <Icon icon={open ? "chevron_up" : "chevron_down"} />
       </div>

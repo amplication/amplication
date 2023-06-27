@@ -3,6 +3,7 @@
 .question {
   border: 1px solid var(--black10);
   border-radius: 8px;
+  cursor: pointer;
 
   &__header {
     display: flex;
