@@ -235,7 +235,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
 
   if (fieldsArgsValues.length > 1) {
     throw new Error(
-      `Relation attribute on field ${field.name} has more than one field`
+      `Relation attribute on field ${field.name} has more than one field, which is not supported`
     );
   }
 
