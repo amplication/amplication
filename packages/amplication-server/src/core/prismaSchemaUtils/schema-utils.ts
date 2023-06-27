@@ -181,13 +181,17 @@ export function singleLineTextField(field: Field) {
 }
 
 export function wholeNumberField(field: Field) {
-  if (field.fieldType === ScalarType.Int) {
+  const isIntField = field.fieldType === ScalarType.Int;
+  const isBigIntField = field.fieldType === ScalarType.BigInt;
+  if (isIntField || isBigIntField) {
     return EnumDataType.WholeNumber;
   }
 }
 
 export function decimalNumberField(field: Field) {
-  if (field.fieldType === ScalarType.Float) {
+  const isFloatField = field.fieldType === ScalarType.Float;
+  const isDecimalField = field.fieldType === ScalarType.Decimal;
+  if (isFloatField || isDecimalField) {
     return EnumDataType.DecimalNumber;
   }
 }
