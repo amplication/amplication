@@ -364,7 +364,9 @@ export class PrismaSchemaUtilsService {
     log,
   }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
     models.map((model: Model) => {
       const modelAttributes = model.properties.filter(
         (prop) => prop.type === ATTRIBUTE_TYPE_NAME
@@ -377,14 +379,21 @@ export class PrismaSchemaUtilsService {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
+        const isFormattedModelNameAlreadyTaken = models.some(
+          (model) => model.name === formattedModelName
+        );
+        const newModelName = isFormattedModelNameAlreadyTaken
+          ? `${formattedModelName}Model`
+          : formattedModelName;
+
         mapper.modelNames[model.name] = {
           oldName: model.name,
-          newName: formattedModelName,
+          newName: newModelName,
         };
 
         log.push(
           new ActionLog({
-            message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
+            message: `Model name "${model.name}" was changed to "${newModelName}"`,
             level: EnumActionLogLevel.Info,
           })
         );
@@ -395,7 +404,7 @@ export class PrismaSchemaUtilsService {
             .blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
 
         builder.model(model.name).then<Model>((model) => {
-          model.name = formatModelName(model.name);
+          model.name = newModelName;
         });
       }
     });
@@ -421,12 +430,12 @@ export class PrismaSchemaUtilsService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
-      const fields = model.properties.filter(
+      const modelFields = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
           !property.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
       ) as Field[];
-      fields.map((field: Field) => {
+      modelFields.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
         if (this.isOptionSetField(schema, field)) return builder;
@@ -443,14 +452,21 @@ export class PrismaSchemaUtilsService {
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
+          const isFormattedFieldNameAlreadyTaken = modelFields.some(
+            (field) => field.name === formattedFieldName
+          );
+          const newFieldName = isFormattedFieldNameAlreadyTaken
+            ? `${formattedFieldName}Field`
+            : formattedFieldName;
+
           mapper.fieldNames[field.name] = {
             oldName: field.name,
-            newName: formattedFieldName,
+            newName: newFieldName,
           };
 
           log.push(
             new ActionLog({
-              message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
+              message: `Field name "${field.name}" was changed to "${newFieldName}"`,
               level: EnumActionLogLevel.Info,
             })
           );
@@ -465,7 +481,7 @@ export class PrismaSchemaUtilsService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = formatFieldName(field.name);
+              field.name = newFieldName;
             });
         }
       });
