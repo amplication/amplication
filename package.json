@@ -73,6 +73,7 @@
     "@overbit/opentelemetry-nestjs": "^4.1.0",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.6.1",
+    "@prisma/instrumentation": "^4.16.1",
     "@sendgrid/mail": "^7.7.0",
     "@stigg/node-server-sdk": "v0.80.1",
     "@stigg/react-sdk": "^2.0.0",
