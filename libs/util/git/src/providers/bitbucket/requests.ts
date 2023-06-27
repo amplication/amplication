@@ -1,5 +1,4 @@
 import fetch from "node-fetch";
-import { CustomError } from "../../utils/custom-error";
 import {
   Account,
   OAuth2,

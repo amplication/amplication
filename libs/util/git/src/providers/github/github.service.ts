@@ -39,7 +39,7 @@ import {
 } from "../../types";
 import { ConverterUtil } from "../../utils/convert-to-number";
 import { NotImplementedError } from "../../utils/custom-error";
-import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../git.constants";
+import { UNSUPPORTED_GIT_ORGANIZATION_TYPE } from "../../git.constants";
 
 const GITHUB_FILE_TYPE = "file";
 
