@@ -183,7 +183,7 @@ export const Routes: RouteDef[] = [
       // Fallback route for wrong paths
   {
     path: "*",
-    Component: NotFoundPage,
+    Component: lazy(() => import("../404/NotFoundPage")),
     exactPath: false,
     isAnalytics: false,
   },
