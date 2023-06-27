@@ -16,6 +16,7 @@ import { AWSXRayIdGenerator } from "@opentelemetry/id-generator-aws-xray";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
 import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
 import { CompositePropagator } from "@opentelemetry/core";
+import { PrismaInstrumentation } from "@prisma/instrumentation";
 
 @Module({
   imports: [],
@@ -77,7 +78,10 @@ export class TracingModule extends OpenTelemetryModule {
     );
 
     configuration.instrumentations = configuration.instrumentations || [];
-    configuration.instrumentations.push(new KafkaJsInstrumentation({}));
+    configuration.instrumentations.push(
+      new KafkaJsInstrumentation({}),
+      new PrismaInstrumentation({})
+    );
     return configuration;
   }
 
