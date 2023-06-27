@@ -1,6 +1,5 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
 import resourceRoutes from "./resourceRoutes";
-import NotFoundPage from "../404/NotFoundPage";
 
 export interface RouteDef {
   path: string;
