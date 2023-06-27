@@ -1,5 +1,0 @@
-describe("", () => {
-  it("", () => {
-    expect(true);
-  });
-});
