@@ -1,5 +1,4 @@
 import { lazy } from "react";
-import NotFoundPage from "../404/NotFoundPage";
 
 const resourceEntitiesRoutes = [
   {
@@ -41,7 +40,7 @@ const resourceEntitiesRoutes = [
       // Fallback route for wrong paths
   {
     path: "*",
-    Component: NotFoundPage,
+    Component: lazy(() => import("../404/NotFoundPage")),
     exactPath: false,
     isAnalytics: false,
   },
