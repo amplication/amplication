@@ -1,14 +1,14 @@
-# amplication-git-utils
+# @amplication/util/git
 
 This library was generated with [Nx](https://nx.dev).
 
 ## Running unit tests
 
-Run `nx test amplication-git-utils` to execute the unit tests via [Jest](https://jestjs.io).
+Run `nx test util-git` to execute the unit tests via [Jest](https://jestjs.io).
 
 ## Running lint
 
-Run `nx lint amplication-git-utils` to execute the lint via [ESLint](https://eslint.org/).
+Run `nx lint util-git` to execute the lint via [ESLint](https://eslint.org/).
 
 ### How to
 
@@ -17,7 +17,7 @@ Just instantiate a new GitClientService and call the `create` method.
 ```typescript
 import {
   GitClientService,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 
 const gitProviderArgs = {
     provider: EnumGitProvider.GitHub;

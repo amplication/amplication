@@ -1,5 +1,5 @@
 import { registerEnumType } from "@nestjs/graphql";
-import { EnumGitProvider } from "@amplication/git-utils";
+import { EnumGitProvider } from "@amplication/util/git";
 
 registerEnumType(EnumGitProvider, {
   name: "EnumGitProvider",

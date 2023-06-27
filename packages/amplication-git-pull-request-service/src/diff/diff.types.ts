@@ -1,4 +1,4 @@
-import { File } from "@amplication/git-utils";
+import { File } from "@amplication/util/git";
 import { Difference } from "dir-compare";
 
 export type DiffVisitorFn = (diff: Difference) => File | null;

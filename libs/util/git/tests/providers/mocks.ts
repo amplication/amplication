@@ -1,5 +1,5 @@
 import { EnumGitProvider } from "../../src/types";
-import { GitFactory } from "../../src/providers/git-factory";
+import { GitFactory } from "../../src/git-factory";
 import { mock } from "jest-mock-extended";
 
 import {
