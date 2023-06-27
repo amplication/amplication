@@ -1,15 +1,15 @@
 import { ILogger } from "@amplication/util/logging";
-import { GitProvider } from "../git-provider.interface";
+import { GitProvider } from "./git-provider.interface";
 import {
   EnumGitProvider,
   GitProviderArgs,
   GitProvidersConfiguration,
   isGitHubProviderOrganizationProperties,
   isOAuthProviderOrganizationProperties,
-} from "../types";
+} from "./types";
 import { INVALID_SOURCE_CONTROL_ERROR_MESSAGE } from "./git.constants";
-import { GithubService } from "./github/github.service";
-import { BitBucketService } from "./bitbucket/bitbucket.service";
+import { GithubService } from "./providers/github/github.service";
+import { BitBucketService } from "./providers/bitbucket/bitbucket.service";
 
 export class GitFactory {
   public static async getProvider(

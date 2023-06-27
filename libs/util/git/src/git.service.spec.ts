@@ -1,10 +1,10 @@
 import { GitClientService } from "./git.service";
 import { ILogger } from "@amplication/util/logging";
-import { GitCli } from "./git-cli";
+import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
-import { GitProvider } from "../git-provider.interface";
+import { GitProvider } from "./git-provider.interface";
 
-jest.mock("./git-cli");
+jest.mock("./providers/git-cli");
 jest.mock("simple-git");
 jest.mock("./git-factory");
 

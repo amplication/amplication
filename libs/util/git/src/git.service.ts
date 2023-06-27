@@ -6,10 +6,10 @@ import {
   accumulativePullRequestBody,
   accumulativePullRequestTitle,
   getDefaultREADMEFile,
-} from "../constants";
-import { InvalidPullRequestMode } from "../errors/InvalidPullRequestMode";
-import { NoCommitOnBranch } from "../errors/NoCommitOnBranch";
-import { GitProvider } from "../git-provider.interface";
+} from "./constants";
+import { InvalidPullRequestMode } from "./errors/InvalidPullRequestMode";
+import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
+import { GitProvider } from "./git-provider.interface";
 import {
   Branch,
   Commit,
@@ -31,11 +31,11 @@ import {
   CurrentUser,
   OAuthTokens,
   UpdateFile,
-} from "../types";
-import { AmplicationIgnoreManger } from "../utils/amplication-ignore-manger";
-import { isFolderEmpty } from "../utils/is-folder-empty";
-import { prepareFilesForPullRequest } from "../utils/prepare-files-for-pull-request";
-import { GitCli } from "./git-cli";
+} from "./types";
+import { AmplicationIgnoreManger } from "./utils/amplication-ignore-manger";
+import { isFolderEmpty } from "./utils/is-folder-empty";
+import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-request";
+import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { LogResult } from "simple-git";
 
