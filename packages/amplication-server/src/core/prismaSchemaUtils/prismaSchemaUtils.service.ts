@@ -166,10 +166,11 @@ export class PrismaSchemaUtilsService {
 
   /**
    * Prepare schema before passing it to entities and fields creation
-   * @param operations functions with a declared interface (builder: ConcretePrismaSchemaBuilder) => ConcretePrismaSchemaBuilder
+   * @param operations functions with a declared interface: (prepareOperationIO: PrepareOperationIO) => PrepareOperationIO;
    * The functions are called one after the other and perform operations on the schema
-   * The functions have a name pattern: handle{OperationName}
-   * @returns function that accepts the initial schema and returns the prepared schema
+   * The functions holds the state of the schema, the log and the mapper
+   * The functions have a name pattern: prepare{OperationName}
+   * @returns function that accepts the initial schema, the log and returns the prepared schema, the log and the mapper
    */
   private prepareSchema(
     ...operations: PrepareOperation[]
