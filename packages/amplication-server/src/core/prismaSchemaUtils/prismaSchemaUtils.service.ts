@@ -121,12 +121,14 @@ export class PrismaSchemaUtilsService {
         })
       );
     }
+
     log.push(
       new ActionLog({
         message: `Prepare Prisma Schema for import`,
         level: EnumActionLogLevel.Info,
       })
     );
+
     const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
       schema,
       log
@@ -147,7 +149,7 @@ export class PrismaSchemaUtilsService {
     );
 
     const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
-    const importObjects =
+    const { importObjects, log: importObjectsLog } =
       this.convertPreparedSchemaForImportObjects(preparedSchemaObject);
 
     log.push(
@@ -158,7 +160,7 @@ export class PrismaSchemaUtilsService {
     );
     return {
       preparedEntitiesWithFields: importObjects,
-      log,
+      log: [...log, ...importObjectsLog],
     };
   }
 
@@ -198,9 +200,11 @@ export class PrismaSchemaUtilsService {
    * @param schema
    * @returns entities and fields object in a format that Amplication (entity service) can use to create the entities and fields
    */
-  private convertPreparedSchemaForImportObjects(
-    schema: Schema
-  ): CreateBulkEntitiesInput[] {
+  private convertPreparedSchemaForImportObjects(schema: Schema): {
+    importObjects: CreateBulkEntitiesInput[];
+    log: ActionLog[];
+  } {
+    const log: ActionLog[] = [];
     const modelList = schema.list.filter(
       (item: Model) => item.type === MODEL_TYPE_NAME
     ) as Model[];
@@ -239,90 +243,105 @@ export class PrismaSchemaUtilsService {
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isBooleanField(schema, field)) {
           this.convertPrismaBooleanToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isCreatedAtField(schema, field)) {
           this.convertPrismaCreatedAtToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isUpdatedAtField(schema, field)) {
           this.convertPrismaUpdatedAtToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isDateTimeField(schema, field)) {
           this.convertPrismaDateTimeToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isDecimalNumberField(schema, field)) {
           this.convertPrismaDecimalNumberToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isWholeNumberField(schema, field)) {
           this.convertPrismaWholeNumberToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isSingleLineTextField(schema, field)) {
           this.convertPrismaSingleLineTextToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isJsonField(schema, field)) {
           this.convertPrismaJsonToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isOptionSetField(schema, field)) {
           this.convertPrismaOptionSetToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isMultiSelectOptionSetField(schema, field)) {
           this.convertPrismaMultiSelectOptionSetToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         } else if (this.isLookupField(schema, field)) {
           this.convertPrismaLookupToEntityField(
             schema,
             model,
             field,
-            preparedEntities
+            preparedEntities,
+            log
           );
         }
       }
     }
 
-    return preparedEntities;
+    return {
+      importObjects: preparedEntities,
+      log,
+    };
   }
 
   /**********************
@@ -783,7 +802,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -791,6 +811,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -808,7 +834,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -816,6 +843,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -833,7 +866,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -841,6 +875,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -858,7 +898,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -866,6 +907,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -892,7 +939,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -900,6 +948,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -927,7 +981,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -935,6 +990,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -961,7 +1022,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -969,6 +1031,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -994,7 +1062,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1002,6 +1071,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -1019,7 +1094,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1027,6 +1103,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -1067,7 +1149,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1075,6 +1158,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -1121,7 +1210,8 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
     const entity = preparedEntities.find(
       (entity) => entity.name === model.name
@@ -1129,6 +1219,12 @@ export class PrismaSchemaUtilsService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
+      log.push(
+        new ActionLog({
+          message: `Entity ${model.name} not found`,
+          level: EnumActionLogLevel.Error,
+        })
+      );
       throw new Error(`Entity ${model.name} not found`);
     }
 
@@ -1173,68 +1269,90 @@ export class PrismaSchemaUtilsService {
     schema: Schema,
     model: Model,
     field: Field,
-    preparedEntities: CreateBulkEntitiesInput[]
+    preparedEntities: CreateBulkEntitiesInput[],
+    log: ActionLog[]
   ): CreateBulkEntitiesInput {
-    const entity = preparedEntities.find(
-      (entity) => entity.name === model.name
-    ) as CreateBulkEntitiesInput;
+    try {
+      const entity = preparedEntities.find(
+        (entity) => entity.name === model.name
+      ) as CreateBulkEntitiesInput;
 
-    if (!entity) {
-      this.logger.error(`Entity ${model.name} not found`);
-      throw new Error(`Entity ${model.name} not found`);
-    }
-    // create the relation filed on the main side of the relation
-    const entityField = this.createOneEntityFieldCommonProperties(
-      field,
-      EnumDataType.Lookup
-    );
+      if (!entity) {
+        this.logger.error(`Entity ${model.name} not found`);
+        log.push(
+          new ActionLog({
+            message: `Entity ${model.name} not found`,
+            level: EnumActionLogLevel.Error,
+          })
+        );
+        throw new Error(`Entity ${model.name} not found`);
+      }
+      // create the relation filed on the main side of the relation
+      const entityField = this.createOneEntityFieldCommonProperties(
+        field,
+        EnumDataType.Lookup
+      );
 
-    const remoteModelAndField = this.findRemoteRelatedModelAndField(
-      schema,
-      model,
-      field
-    );
+      const remoteModelAndField = this.findRemoteRelatedModelAndField(
+        schema,
+        model,
+        field
+      );
 
-    if (!remoteModelAndField) {
+      if (!remoteModelAndField) {
+        this.logger.error(
+          `Remote model and field not found for ${model.name}.${field.name}`
+        );
+        throw new Error(
+          `Remote model and field not found for ${model.name}.${field.name}`
+        );
+      }
+
+      const { remoteModel, remoteField } = remoteModelAndField;
+
+      const relatedField = this.createOneEntityFieldCommonProperties(
+        remoteField,
+        EnumDataType.Lookup
+      );
+
+      entityField.relatedFieldName = relatedField.name;
+      entityField.relatedFieldDisplayName = relatedField.displayName;
+      entityField.relatedFieldAllowMultipleSelection =
+        remoteField.array || false;
+
+      const relatedEntity = preparedEntities.find(
+        (entity) => entity.name === remoteModel.name
+      ) as CreateBulkEntitiesInput;
+
+      const fkFieldName = findFkFieldNameOnAnnotatedField(field);
+
+      const properties = <types.Lookup>{
+        relatedEntityId: relatedEntity.id,
+        allowMultipleSelection: field.array || false,
+        fkHolder: null,
+        fkFieldName: fkFieldName,
+      };
+
+      entityField.properties = properties as unknown as {
+        [key: string]: JsonValue;
+      };
+
+      entity.fields.push(entityField);
+
+      return entity;
+    } catch (error) {
       this.logger.error(
-        `Remote model and field not found for ${model.name}.${field.name}`
+        error.message,
+        error.stack,
+        "convertPrismaLookupToEntityField"
       );
-      throw new Error(
-        `Remote model and field not found for ${model.name}.${field.name}`
+      log.push(
+        new ActionLog({
+          message: error.message,
+          level: EnumActionLogLevel.Error,
+        })
       );
     }
-
-    const { remoteModel, remoteField } = remoteModelAndField;
-
-    const relatedField = this.createOneEntityFieldCommonProperties(
-      remoteField,
-      EnumDataType.Lookup
-    );
-
-    entityField.relatedFieldName = relatedField.name;
-    entityField.relatedFieldDisplayName = relatedField.displayName;
-    entityField.relatedFieldAllowMultipleSelection = remoteField.array || false;
-
-    const relatedEntity = preparedEntities.find(
-      (entity) => entity.name === remoteModel.name
-    ) as CreateBulkEntitiesInput;
-
-    const fkFieldName = findFkFieldNameOnAnnotatedField(field);
-
-    const properties = <types.Lookup>{
-      relatedEntityId: relatedEntity.id,
-      allowMultipleSelection: field.array || false,
-      fkHolder: null,
-      fkFieldName: fkFieldName,
-    };
-
-    entityField.properties = properties as unknown as {
-      [key: string]: JsonValue;
-    };
-
-    entity.fields.push(entityField);
-
-    return entity;
   }
 
   /******************
