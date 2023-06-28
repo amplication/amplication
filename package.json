@@ -29,6 +29,7 @@
     ]
   },
   "dependencies": {
+    "@amplication/opentelemetry-nestjs": "^1.0.1",
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
@@ -70,7 +71,6 @@
     "@opentelemetry/instrumentation-aws-sdk": "^0.34.3",
     "@opentelemetry/propagator-aws-xray": "^1.2.1",
     "@opentelemetry/sdk-trace-base": "^1.14.0",
-    "@overbit/opentelemetry-nestjs": "^4.1.0",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.6.1",
     "@prisma/instrumentation": "^4.16.1",

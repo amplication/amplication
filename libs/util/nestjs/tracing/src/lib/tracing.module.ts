@@ -7,10 +7,10 @@ import {
   GuardInjector,
   PipeInjector,
   ScheduleInjector,
-} from "@overbit/opentelemetry-nestjs";
+} from "@amplication/opentelemetry-nestjs";
 import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
-import type { OpenTelemetryModuleConfig } from "@overbit/opentelemetry-nestjs/dist/OpenTelemetryModuleConfig.interface";
+import type { OpenTelemetryModuleConfig } from "@amplication/opentelemetry-nestjs/dist/OpenTelemetryModuleConfig.interface";
 import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
 import { AWSXRayIdGenerator } from "@opentelemetry/id-generator-aws-xray";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";

@@ -10,7 +10,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
 import { CreatePrRequest } from "@amplication/schema-registry";
-import { TraceWrapper, Traceable } from "@overbit/opentelemetry-nestjs";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
 @Traceable()
 @Injectable()
