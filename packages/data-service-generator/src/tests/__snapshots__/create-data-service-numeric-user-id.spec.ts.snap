@@ -38,7 +38,7 @@ yarn-error.log*
     \\"graphql\\": \\"15.6.1\\",
     \\"lodash\\": \\"4.17.21\\",
     \\"pluralize\\": \\"8.0.0\\",
-    \\"ra-data-graphql-amplication\\": \\"0.0.13\\",
+    \\"ra-data-graphql-amplication\\": \\"0.0.14\\",
     \\"react\\": \\"16.14.0\\",
     \\"react-admin\\": \\"3.19.11\\",
     \\"react-dom\\": \\"16.14.0\\",
@@ -3051,7 +3051,7 @@ generator client {
 
 model User {
   id                 Int                 @id @default(autoincrement())
-  name               String              @unique @db.VarChar(200)
+  name               String              @unique @map(\\"name\\")
   bio                String
   email              String
   age                Int
@@ -3069,8 +3069,8 @@ model User {
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
 
-  @@unique([name(sort: Desc), displayName])
-  @@index([name, displayName])
+  @@unique([name(sort: Desc), email])
+  @@index([name, email])
   @@map(\\"users\\")
 }
 
@@ -6917,6 +6917,7 @@ async function main() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      forbidUnknownValues: false,
     })
   );
 

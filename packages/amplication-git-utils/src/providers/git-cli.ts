@@ -29,10 +29,18 @@ export class GitCli {
     });
   }
 
+  /**
+   * Clones the repository if not already cloned and sets the working directory to the repository directory.
+   * It performs a clone with the following options:
+   * --no-checkout - Do not checkout the HEAD after cloning is complete
+   * --filter=blob:none - Do not checkout blobs during clone
+   * @see https://git-scm.com/docs/git-clone
+   */
   async clone(): Promise<void> {
     if (!this.isCloned) {
       await this.git.clone(this.options.originUrl, this.options.repositoryDir, [
         "--no-checkout",
+        "--filter=blob:none",
       ]);
       this.isCloned = true;
     }
@@ -81,11 +89,7 @@ export class GitCli {
   }
 
   async resetState() {
-    await this.git
-      .fetch(["--all"])
-      .pull()
-      .reset(ResetMode.HARD)
-      .clean(CleanOptions.FORCE);
+    await this.git.reset(ResetMode.HARD).clean(CleanOptions.FORCE);
   }
 
   /**
@@ -127,12 +131,12 @@ export class GitCli {
       })
     );
 
-    await this.git.add(["."]);
+    await this.add(["."]);
 
     const status = await this.git.status();
     if (status.staged.length !== 0) {
       const { commit: commitSha } = await this.git.commit(message);
-      await this.git.push();
+      await this.push();
       return commitSha;
     } else {
       this.logger.warn(`Trying to commit empty changeset`, { status });
@@ -150,12 +154,23 @@ export class GitCli {
 
   async applyPatch(patches: string[], options?: string[]) {
     options = options ?? ["--index", "--3way", "--whitespace=nowarn"];
-    await this.git
-      .applyPatch(patches, options)
-      .commit("Amplication merge conflicts auto-resolution", undefined, {
+
+    this.logger.debug(`Applying patches`, { patches, options });
+    await this.git.applyPatch(patches, options);
+    this.logger.debug(`Committing Amplication merge conflicts auto-resolution`);
+    await this.git.commit(
+      "Amplication merge conflicts auto-resolution",
+      undefined,
+      {
         "--author": this.gitConflictsResolverAuthor,
-      })
-      .push();
+      }
+    );
+    this.logger.debug(`Pushing Amplication merge conflicts auto-resolution`);
+    await this.push();
+  }
+
+  private async add(files?: string | string[]) {
+    return this.git.add(files ?? ["."]);
   }
 
   /**

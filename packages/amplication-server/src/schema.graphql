@@ -1149,6 +1149,7 @@ type Mutation {
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
+  updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
   createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
@@ -1504,7 +1505,7 @@ input CreateGitRepositoryInput {
   gitOrganizationId: String!
   gitProvider: EnumGitProvider!
   gitOrganizationType: EnumGitOrganizationType!
-  resourceId: String!
+  resourceId: String
 }
 
 input CreateGitRepositoryBaseInput {
