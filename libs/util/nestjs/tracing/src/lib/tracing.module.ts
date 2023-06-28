@@ -26,9 +26,13 @@ import { PrismaInstrumentation } from "@prisma/instrumentation";
 })
 export class TracingModule extends OpenTelemetryModule {
   private static addAwsXRayConfiguration(
-    configuration?: Partial<OpenTelemetryModuleConfig>
+    configuration: Partial<OpenTelemetryModuleConfig>
   ): Partial<OpenTelemetryModuleConfig> {
-    configuration.instrumentations = configuration.instrumentations || [];
+    configuration = {
+      ...configuration,
+      instrumentations: configuration?.instrumentations || [],
+    };
+
     configuration.instrumentations.push(
       new AwsInstrumentation({
         suppressInternalInstrumentation: true,
@@ -50,7 +54,7 @@ export class TracingModule extends OpenTelemetryModule {
   }
 
   private static addLocalConfiguration(
-    configuration?: Partial<OpenTelemetryModuleConfig>
+    configuration: Partial<OpenTelemetryModuleConfig>
   ): Partial<OpenTelemetryModuleConfig> {
     const collectorOptions = {
       // url is optional and can be omitted - default is http://localhost:4318/v1/traces,
@@ -66,9 +70,14 @@ export class TracingModule extends OpenTelemetryModule {
   }
 
   private static createDefaultConfiguration(
-    configuration?: Partial<OpenTelemetryModuleConfig>
+    configuration: Partial<OpenTelemetryModuleConfig>
   ): Partial<OpenTelemetryModuleConfig> {
-    configuration.traceAutoInjectors = configuration.traceAutoInjectors || [];
+    configuration = {
+      ...configuration,
+      instrumentations: configuration?.instrumentations || [],
+      traceAutoInjectors: configuration?.traceAutoInjectors || [],
+    };
+
     configuration.traceAutoInjectors.push(
       ControllerInjector,
       GuardInjector,
@@ -77,7 +86,6 @@ export class TracingModule extends OpenTelemetryModule {
       PipeInjector
     );
 
-    configuration.instrumentations = configuration.instrumentations || [];
     configuration.instrumentations.push(
       new KafkaJsInstrumentation({}),
       new PrismaInstrumentation({})
@@ -88,7 +96,9 @@ export class TracingModule extends OpenTelemetryModule {
   static forRoot(
     configuration?: Partial<OpenTelemetryModuleConfig>
   ): Promise<DynamicModule> {
-    const commonConfiguration = this.createDefaultConfiguration(configuration);
+    const commonConfiguration = this.createDefaultConfiguration(
+      configuration ?? {}
+    );
     return OpenTelemetryModule.forRoot(
       process.env.NODE_ENV === "production"
         ? this.addAwsXRayConfiguration(commonConfiguration)
