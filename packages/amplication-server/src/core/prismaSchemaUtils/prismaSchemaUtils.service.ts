@@ -25,6 +25,7 @@ import {
   formatDisplayName,
   formatFieldName,
   formatModelName,
+  handleModelNamesCollision,
   idField,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
@@ -40,9 +41,11 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
   ConvertPrismaSchemaForImportObjectsResponse,
+  ExistingEntitySelect,
   Mapper,
   PrepareOperation,
   PrepareOperationIO,
+  PrepareOperationInput,
 } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
@@ -85,7 +88,8 @@ export class PrismaSchemaUtilsService {
    * @returns The processed schema
    */
   convertPrismaSchemaForImportObjects(
-    schema: string
+    schema: string,
+    existingEntities: ExistingEntitySelect[]
   ): ConvertPrismaSchemaForImportObjectsResponse {
     const log: ActionLog[] = [];
 
@@ -133,10 +137,11 @@ export class PrismaSchemaUtilsService {
       })
     );
 
-    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
-      schema,
-      log
-    );
+    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)({
+      inputSchema: schema,
+      existingEntities,
+      log,
+    });
 
     log.push(
       new ActionLog({
@@ -178,8 +183,16 @@ export class PrismaSchemaUtilsService {
    */
   private prepareSchema(
     ...operations: PrepareOperation[]
-  ): (inputSchema: string, log: ActionLog[]) => PrepareOperationIO {
-    return (inputSchema: string, log: ActionLog[]): PrepareOperationIO => {
+  ): ({
+    inputSchema,
+    existingEntities,
+    log,
+  }: PrepareOperationInput) => PrepareOperationIO {
+    return ({
+      inputSchema,
+      existingEntities,
+      log,
+    }: PrepareOperationInput): PrepareOperationIO => {
       const builder = createPrismaSchemaBuilder(
         inputSchema
       ) as ConcretePrismaSchemaBuilder;
@@ -191,10 +204,10 @@ export class PrismaSchemaUtilsService {
       };
 
       operations.forEach((operation) => {
-        operation.call(this, { builder, mapper, log });
+        operation.call(this, { builder, existingEntities, mapper, log });
       });
 
-      return { builder, mapper, log };
+      return { builder, existingEntities, mapper, log };
     };
   }
 
@@ -360,12 +373,15 @@ export class PrismaSchemaUtilsService {
    */
   private prepareModelNames({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-    models.map((model: Model) => {
+    const modelList = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+    modelList.map((model: Model) => {
       const modelAttributes = model.properties.filter(
         (prop) => prop.type === ATTRIBUTE_TYPE_NAME
       ) as ModelAttribute[];
@@ -377,14 +393,21 @@ export class PrismaSchemaUtilsService {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
+        const newModelName = handleModelNamesCollision(
+          modelList,
+          existingEntities,
+          mapper,
+          formattedModelName
+        );
+
         mapper.modelNames[model.name] = {
           oldName: model.name,
-          newName: formattedModelName,
+          newName: newModelName,
         };
 
         log.push(
           new ActionLog({
-            message: `Model name "${model.name}" was changed to "${formattedModelName}"`,
+            message: `Model name "${model.name}" was changed to "${newModelName}"`,
             level: EnumActionLogLevel.Info,
           })
         );
@@ -395,12 +418,13 @@ export class PrismaSchemaUtilsService {
             .blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
 
         builder.model(model.name).then<Model>((model) => {
-          model.name = formatModelName(model.name);
+          model.name = newModelName;
         });
       }
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -415,18 +439,19 @@ export class PrismaSchemaUtilsService {
    */
   private prepareFieldNames({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
-      const fields = model.properties.filter(
+      const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
           !property.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
       ) as Field[];
-      fields.map((field: Field) => {
+      modelFieldList.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
         if (this.isOptionSetField(schema, field)) return builder;
@@ -443,14 +468,23 @@ export class PrismaSchemaUtilsService {
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
+          const isFormattedFieldNameAlreadyTaken = modelFieldList.some(
+            (fieldFromModelFieldList) =>
+              fieldFromModelFieldList.name === formattedFieldName
+          );
+
+          const newFieldName = isFormattedFieldNameAlreadyTaken
+            ? `${formattedFieldName}Field`
+            : formattedFieldName;
+
           mapper.fieldNames[field.name] = {
             oldName: field.name,
-            newName: formattedFieldName,
+            newName: newFieldName,
           };
 
           log.push(
             new ActionLog({
-              message: `Field name "${field.name}" was changed to "${formattedFieldName}"`,
+              message: `Field name "${field.name}" was changed to "${newFieldName}"`,
               level: EnumActionLogLevel.Info,
             })
           );
@@ -465,13 +499,14 @@ export class PrismaSchemaUtilsService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = formatFieldName(field.name);
+              field.name = newFieldName;
             });
         }
       });
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -484,6 +519,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareFieldTypes({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -522,6 +558,7 @@ export class PrismaSchemaUtilsService {
 
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -534,6 +571,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareIdField({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -600,6 +638,7 @@ export class PrismaSchemaUtilsService {
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };

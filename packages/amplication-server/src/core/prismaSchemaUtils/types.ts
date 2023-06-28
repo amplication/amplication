@@ -6,8 +6,15 @@ export type PrepareOperation = (
   prepareOperationIO: PrepareOperationIO
 ) => PrepareOperationIO;
 
+export type PrepareOperationInput = {
+  inputSchema: string;
+  existingEntities: ExistingEntitySelect[];
+  log: ActionLog[];
+};
+
 export type PrepareOperationIO = {
   builder: ConcretePrismaSchemaBuilder;
+  existingEntities: ExistingEntitySelect[];
   mapper: Mapper;
   log: ActionLog[];
 };
@@ -27,4 +34,8 @@ export type MapperItem = {
 export type ConvertPrismaSchemaForImportObjectsResponse = {
   preparedEntitiesWithFields: CreateBulkEntitiesInput[];
   log: ActionLog[];
+};
+
+export type ExistingEntitySelect = {
+  name: string;
 };
