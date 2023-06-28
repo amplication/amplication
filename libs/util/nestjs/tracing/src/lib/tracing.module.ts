@@ -140,7 +140,7 @@ export class TracingModule extends OpenTelemetryModule {
     configuration?: OpenTelemetryModuleAsyncOption
   ): Promise<DynamicModule> {
     return OpenTelemetryModule.forRootAsync({
-      ...configuration,
+      ...(configuration ?? {}),
       useFactory: async (args) => {
         const config = await configuration?.useFactory(args);
 
