@@ -12,6 +12,8 @@ import {
   Func,
   Enumerator,
   ConcretePrismaSchemaBuilder,
+  Attribute,
+  ModelAttribute,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -51,10 +53,12 @@ import {
   CreateBulkFieldsInput,
 } from "../entity/entity.service";
 import {
+  ATTRIBUTE_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
+  MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
 } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
@@ -362,6 +366,14 @@ export class PrismaSchemaUtilsService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
+      const modelAttributes = model.properties.filter(
+        (prop) => prop.type === ATTRIBUTE_TYPE_NAME
+      ) as ModelAttribute[];
+
+      const hasMapAttribute = modelAttributes?.some(
+        (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+      );
+
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
@@ -377,7 +389,11 @@ export class PrismaSchemaUtilsService {
           })
         );
 
-        builder.model(model.name).blockAttribute("map", model.name);
+        !hasMapAttribute &&
+          builder
+            .model(model.name)
+            .blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
+
         builder.model(model.name).then<Model>((model) => {
           model.name = formatModelName(model.name);
         });
@@ -416,6 +432,14 @@ export class PrismaSchemaUtilsService {
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
 
+        const fieldAttributes = field.attributes?.filter(
+          (attr) => attr.type === ATTRIBUTE_TYPE_NAME
+        ) as Attribute[];
+
+        const hasMapAttribute = fieldAttributes?.find(
+          (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+        );
+
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
@@ -431,10 +455,12 @@ export class PrismaSchemaUtilsService {
             })
           );
 
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [`"${field.name}"`]);
+          !hasMapAttribute &&
+            builder
+              .model(model.name)
+              .field(field.name)
+              .attribute(MAP_ATTRIBUTE_NAME, [`"${field.name}"`]);
+
           builder
             .model(model.name)
             .field(field.name)
@@ -591,7 +617,7 @@ export class PrismaSchemaUtilsService {
   private convertModelToEntity(model: Model): CreateBulkEntitiesInput {
     const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
-      (prop) => prop.type === "attribute"
+      (prop) => prop.type === ATTRIBUTE_TYPE_NAME
     );
     const entityPluralDisplayName = pluralize(model.name);
     const entityAttributes = this.prepareAttributes(modelAttributes).join(" ");
