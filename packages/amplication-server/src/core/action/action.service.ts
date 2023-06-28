@@ -186,7 +186,7 @@ export class ActionService {
   }
 
   /**
-   * Logs given message with given meta with Error level for given step
+   * Logs given message with given meta with Info level for given step
    * @param step the step to add log for
    * @param message the log message to add to step
    * @param meta metadata to add for the log
@@ -196,6 +196,6 @@ export class ActionService {
     message: string,
     meta: JsonValue = {}
   ): Promise<void> {
-    await this.log(step, EnumActionLogLevel.Error, message, meta);
+    await this.log(step, EnumActionLogLevel.Info, message, meta);
   }
 }

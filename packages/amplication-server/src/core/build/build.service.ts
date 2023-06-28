@@ -639,7 +639,7 @@ export class BuildService {
     const level = ACTION_LOG_LEVEL[info[LEVEL]];
     const meta = omit(metaInfo, META_KEYS_TO_OMIT);
 
-    await this.actionService.log(step, level, message, meta);
+    await this.actionService.log(step, EnumActionLogLevel.Error, message, meta);
   }
 
   /**
