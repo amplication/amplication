@@ -364,10 +364,10 @@ export class PrismaSchemaUtilsService {
     log,
   }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
-    const models = schema.list.filter(
+    const modelList = schema.list.filter(
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
-    models.map((model: Model) => {
+    modelList.map((model: Model) => {
       const modelAttributes = model.properties.filter(
         (prop) => prop.type === ATTRIBUTE_TYPE_NAME
       ) as ModelAttribute[];
@@ -379,9 +379,10 @@ export class PrismaSchemaUtilsService {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
-        const isFormattedModelNameAlreadyTaken = models.some(
-          (model) => model.name === formattedModelName
+        const isFormattedModelNameAlreadyTaken = modelList.some(
+          (modelFromList) => modelFromList.name === formattedModelName
         );
+
         const newModelName = isFormattedModelNameAlreadyTaken
           ? `${formattedModelName}Model`
           : formattedModelName;
@@ -430,12 +431,12 @@ export class PrismaSchemaUtilsService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
-      const modelFields = model.properties.filter(
+      const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
           !property.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME)
       ) as Field[];
-      modelFields.map((field: Field) => {
+      modelFieldList.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
         if (this.isOptionSetField(schema, field)) return builder;
@@ -452,9 +453,11 @@ export class PrismaSchemaUtilsService {
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
-          const isFormattedFieldNameAlreadyTaken = modelFields.some(
-            (field) => field.name === formattedFieldName
+          const isFormattedFieldNameAlreadyTaken = modelFieldList.some(
+            (fieldFromModelFieldList) =>
+              fieldFromModelFieldList.name === formattedFieldName
           );
+
           const newFieldName = isFormattedFieldNameAlreadyTaken
             ? `${formattedFieldName}Field`
             : formattedFieldName;
