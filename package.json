@@ -282,7 +282,7 @@
     "react-refresh": "^0.10.0",
     "react-test-renderer": "18.2.0",
     "react-transition-group": "^4.4.2",
-    "semver": "^7.5.0",
+    "semver": "^7.5.2",
     "sleep-promise": "^9.1.0",
     "source-map-support": "^0.5.21",
     "style-loader": "^3.3.1",
