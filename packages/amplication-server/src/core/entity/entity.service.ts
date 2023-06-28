@@ -442,9 +442,21 @@ export class EntityService {
     });
 
     try {
+      const existingEntities = await this.prisma.entity.findMany({
+        where: {
+          resourceId: resourceId,
+        },
+        select: {
+          name: true,
+        },
+      });
+
       //Step 1: Convert Prisma schema to import objects
       const { preparedEntitiesWithFields, log } =
-        this.schemaUtilsService.convertPrismaSchemaForImportObjects(file);
+        this.schemaUtilsService.convertPrismaSchemaForImportObjects(
+          file,
+          existingEntities
+        );
 
       //Step 2: Validate entities and fields
       const valid = await this.validateBeforeCreateBulkEntitiesAndFields(

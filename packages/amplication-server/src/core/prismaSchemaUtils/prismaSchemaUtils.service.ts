@@ -25,6 +25,7 @@ import {
   formatDisplayName,
   formatFieldName,
   formatModelName,
+  handleModelNamesCollision,
   idField,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
@@ -40,9 +41,11 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
 import {
   ConvertPrismaSchemaForImportObjectsResponse,
+  ExistingEntitySelect,
   Mapper,
   PrepareOperation,
   PrepareOperationIO,
+  PrepareOperationInput,
 } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import cuid from "cuid";
@@ -85,7 +88,8 @@ export class PrismaSchemaUtilsService {
    * @returns The processed schema
    */
   convertPrismaSchemaForImportObjects(
-    schema: string
+    schema: string,
+    existingEntities: ExistingEntitySelect[]
   ): ConvertPrismaSchemaForImportObjectsResponse {
     const log: ActionLog[] = [];
 
@@ -133,10 +137,11 @@ export class PrismaSchemaUtilsService {
       })
     );
 
-    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)(
-      schema,
-      log
-    );
+    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)({
+      inputSchema: schema,
+      existingEntities,
+      log,
+    });
 
     log.push(
       new ActionLog({
@@ -178,8 +183,16 @@ export class PrismaSchemaUtilsService {
    */
   private prepareSchema(
     ...operations: PrepareOperation[]
-  ): (inputSchema: string, log: ActionLog[]) => PrepareOperationIO {
-    return (inputSchema: string, log: ActionLog[]): PrepareOperationIO => {
+  ): ({
+    inputSchema,
+    existingEntities,
+    log,
+  }: PrepareOperationInput) => PrepareOperationIO {
+    return ({
+      inputSchema,
+      existingEntities,
+      log,
+    }: PrepareOperationInput): PrepareOperationIO => {
       const builder = createPrismaSchemaBuilder(
         inputSchema
       ) as ConcretePrismaSchemaBuilder;
@@ -191,10 +204,10 @@ export class PrismaSchemaUtilsService {
       };
 
       operations.forEach((operation) => {
-        operation.call(this, { builder, mapper, log });
+        operation.call(this, { builder, existingEntities, mapper, log });
       });
 
-      return { builder, mapper, log };
+      return { builder, existingEntities, mapper, log };
     };
   }
 
@@ -360,6 +373,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareModelNames({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -379,13 +393,12 @@ export class PrismaSchemaUtilsService {
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
-        const isFormattedModelNameAlreadyTaken = modelList.some(
-          (modelFromList) => modelFromList.name === formattedModelName
+        const newModelName = handleModelNamesCollision(
+          modelList,
+          existingEntities,
+          mapper,
+          formattedModelName
         );
-
-        const newModelName = isFormattedModelNameAlreadyTaken
-          ? `${formattedModelName}Model`
-          : formattedModelName;
 
         mapper.modelNames[model.name] = {
           oldName: model.name,
@@ -411,6 +424,7 @@ export class PrismaSchemaUtilsService {
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -425,6 +439,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareFieldNames({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -491,6 +506,7 @@ export class PrismaSchemaUtilsService {
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -503,6 +519,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareFieldTypes({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -541,6 +558,7 @@ export class PrismaSchemaUtilsService {
 
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };
@@ -553,6 +571,7 @@ export class PrismaSchemaUtilsService {
    */
   private prepareIdField({
     builder,
+    existingEntities,
     mapper,
     log,
   }: PrepareOperationIO): PrepareOperationIO {
@@ -619,6 +638,7 @@ export class PrismaSchemaUtilsService {
     });
     return {
       builder,
+      existingEntities,
       mapper,
       log,
     };

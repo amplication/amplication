@@ -3,6 +3,7 @@ import {
   Field,
   Func,
   KeyValue,
+  Model,
   RelationArray,
   Schema,
 } from "@mrleebo/prisma-ast";
@@ -21,6 +22,7 @@ import {
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
+import { ExistingEntitySelect, Mapper } from "./types";
 
 export const idTypePropertyMap = {
   autoincrement: ID_TYPE_AUTOINCREMENT,
@@ -244,4 +246,37 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
   }
 
   return fieldsArgsValues[0];
+}
+
+export function handleModelNamesCollision(
+  modelList: Model[],
+  existingEntities: ExistingEntitySelect[],
+  mapper: Mapper,
+  formattedModelName: string
+): string {
+  const modelSuffix = "Model";
+  let isFormattedModelNameAlreadyTaken = false;
+  let newName = formattedModelName;
+  let counter = 0;
+
+  do {
+    isFormattedModelNameAlreadyTaken = modelList.some(
+      (modelFromList) => modelFromList.name === newName
+    );
+
+    isFormattedModelNameAlreadyTaken ||= existingEntities.some(
+      (existingEntity) => existingEntity.name === newName
+    );
+
+    isFormattedModelNameAlreadyTaken ||= Object.values(mapper.modelNames).some(
+      (model) => model.newName === newName
+    );
+
+    if (isFormattedModelNameAlreadyTaken) {
+      newName = `${formattedModelName}${modelSuffix}${counter ? counter : ""}`;
+      counter++;
+    }
+  } while (isFormattedModelNameAlreadyTaken);
+
+  return newName;
 }
