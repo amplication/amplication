@@ -136,7 +136,7 @@ export class GitCli {
     await this.add(["."]);
 
     const status = await this.git.status();
-    if (status.staged.length !== 0) {
+    if (status.staged.length + status.renamed.length > 0) {
       const { commit: commitSha } = await this.git.commit(message);
       await this.push();
       return commitSha;

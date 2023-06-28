@@ -3,7 +3,7 @@ import {
   GitClientService,
   File,
   GitProvidersConfiguration,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";

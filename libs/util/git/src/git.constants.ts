@@ -11,4 +11,3 @@ export const UNSUPPORTED_GIT_ORGANIZATION_TYPE =
   "Creation of repositories in a personal account is not supported";
 export const AMPLICATION_FOLDER = ".amplication";
 export const AMPLICATION_IGNORED_FOLDER = join(AMPLICATION_FOLDER, "ignored");
-export const SERVICE_NAME = "amplication-git-service";
