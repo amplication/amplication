@@ -38,6 +38,7 @@ import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-reque
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { LogResult } from "simple-git";
+import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -139,10 +140,13 @@ export class GitClientService {
       repositoryGroupName,
     });
 
-    const gitCli = new GitCli(this.logger, {
-      originUrl: cloneUrl,
-      repositoryDir: gitRepoDir,
-    });
+    const gitCli = TraceWrapper.trace(
+      new GitCli(this.logger, {
+        originUrl: cloneUrl,
+        repositoryDir: gitRepoDir,
+      }),
+      { logger: this.logger }
+    );
 
     try {
       const { defaultBranch } = await this.provider.getRepository({

@@ -3,6 +3,8 @@ import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { DiffModule } from "./diff/diff.module";
 import { PullRequestModule } from "./pull-request/pull-request.module";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { Env } from "./env";
 
 @Module({
   imports: [
@@ -13,7 +15,10 @@ import { PullRequestModule } from "./pull-request/pull-request.module";
       envFilePath: [".env.local", ".env"],
     }),
     AmplicationLoggerModule.forRoot({
-      component: "amplication-git-pull-request-service",
+      component: Env.SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: Env.SERVICE_NAME,
     }),
   ],
 })
