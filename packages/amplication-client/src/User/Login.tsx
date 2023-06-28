@@ -24,6 +24,7 @@ import { formatError } from "../util/error";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
+import { useTracking } from "../util/analytics";
 
 type Values = {
   email: string;
@@ -46,6 +47,7 @@ const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
+  const { trackEvent } = useTracking();
 
   const content = useMemo(() => {
     const s: LocationStateInterface | undefined | null = location.state;
@@ -66,6 +68,12 @@ const Login = () => {
     },
     [login]
   );
+
+  const handleContinueWithSsoClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ContinueWithSSOClick,
+    });
+  }, [trackEvent]);
 
   const urlError = useMemo(() => {
     const params = queryString.parse(location.search);
@@ -109,6 +117,7 @@ const Login = () => {
               <a
                 href={NX_REACT_APP_AUTH_LOGIN_URI}
                 className={`${CLASS_NAME}__sso`}
+                onClick={handleContinueWithSsoClick}
               >
                 Continue with SSO
               </a>

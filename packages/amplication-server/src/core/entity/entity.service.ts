@@ -89,27 +89,6 @@ type EntityInclude = Omit<
   permissions?: boolean | Prisma.EntityPermissionFindManyArgs;
 };
 
-export type BulkEntityFieldData = Omit<
-  EntityField,
-  | "id"
-  | "createdAt"
-  | "updatedAt"
-  | "permanentId"
-  | "properties"
-  | "entityVersionId"
-> & {
-  permanentId?: string;
-  properties: JsonObject;
-};
-
-export type BulkEntityData = Omit<
-  Entity,
-  "id" | "createdAt" | "updatedAt" | "resourceId" | "resource" | "fields"
-> & {
-  id?: string;
-  fields: BulkEntityFieldData[];
-};
-
 export type EntityPendingChange = {
   /** The id of the changed entity */
   originId: string;
@@ -356,22 +335,8 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
-    return this.bulkCreateEntities(resourceId, user, DEFAULT_ENTITIES);
-  }
-
-  /**
-   * Bulk creates entities
-   * @param resourceId the resource to bulk create entities for
-   * @param user the user to associate with the entities creation
-   * @param entities the entities to create
-   */
-  async bulkCreateEntities(
-    resourceId: string,
-    user: User,
-    entities: BulkEntityData[]
-  ): Promise<Entity[]> {
     return await Promise.all(
-      entities.map((entity) => {
+      DEFAULT_ENTITIES.map((entity) => {
         const names = pick(entity, [
           "name",
           "displayName",
@@ -381,7 +346,6 @@ export class EntityService {
         ]);
         return this.prisma.entity.create({
           data: {
-            id: entity.id, //when id is provided (not undefined) we use it, otherwise prisma will generate an ID
             ...names,
             resource: { connect: { id: resourceId } },
             lockedAt: new Date(),
@@ -408,39 +372,6 @@ export class EntityService {
         });
       })
     );
-  }
-
-  /**
-   * Bulk creates fields on existing entities
-   * @param user the user to associate with the entities creation
-   * @param entityId the entity to bulk create fields for
-   * @param fields the fields to create. id must be provided
-   */
-  async bulkCreateFields(
-    user: User,
-    entityId: string,
-    fields: (BulkEntityFieldData & { permanentId: string })[]
-  ): Promise<void> {
-    return await this.useLocking(entityId, user, async () => {
-      await Promise.all(
-        fields.map((field) => {
-          return this.prisma.entityField.create({
-            data: {
-              ...field,
-              entityVersion: {
-                connect: {
-                  // eslint-disable-next-line @typescript-eslint/naming-convention
-                  entityId_versionNumber: {
-                    entityId: entityId,
-                    versionNumber: CURRENT_VERSION_NUMBER,
-                  },
-                },
-              },
-            },
-          });
-        })
-      );
-    });
   }
 
   /**

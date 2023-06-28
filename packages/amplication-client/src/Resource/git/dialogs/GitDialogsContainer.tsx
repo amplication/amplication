@@ -10,6 +10,7 @@ import GitRepos, {
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
 import "./GitDialogsContainer.scss";
 import { useCallback } from "react";
+import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -52,12 +53,14 @@ export default function GitDialogsContainer({
     openCreateNewRepo();
   }, [closeSelectRepoDialog, openCreateNewRepo]);
 
+  const providerDisplayName = PROVIDERS_DISPLAY_NAME[gitProvider];
+
   return (
     <div>
       <Dialog
         className="select-repo-dialog"
         isOpen={isSelectRepositoryOpen}
-        title={`Select ${gitProvider} repository`}
+        title={`Select ${providerDisplayName} repository`}
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos

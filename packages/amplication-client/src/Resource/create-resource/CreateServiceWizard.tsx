@@ -218,7 +218,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const authCoreVersion = pluginUseLatest
-    ? authCorePlugin?.versions[authCorePlugin?.versions.length - 1]
+    ? authCorePlugin?.versions.find((x) => x.isLatest)
     : authCorePlugin?.versions[0];
 
   const authJwtPlugin = pluginsVersionData?.plugins.find(
@@ -226,7 +226,7 @@ const CreateServiceWizard: React.FC<Props> = ({
   );
 
   const authJwtVersion = pluginUseLatest
-    ? authJwtPlugin?.versions[authJwtPlugin?.versions.length - 1]
+    ? authJwtPlugin?.versions.find((x) => x.isLatest)
     : authJwtPlugin?.versions[0];
 
   const AUTH_PLUGINS = [
@@ -314,7 +314,7 @@ const CreateServiceWizard: React.FC<Props> = ({
       );
 
       const dbLastVersion = pluginUseLatest
-        ? dbPlugin?.versions[dbPlugin?.versions.length - 1]
+        ? dbPlugin?.versions.find((x) => x.isLatest)
         : dbPlugin?.versions[0];
 
       const authCorePlugins = authType === "core" && AUTH_PLUGINS;
