@@ -14,6 +14,7 @@ import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
+import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -68,6 +69,12 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
           query: GET_PENDING_CHANGES_STATUS,
           variables: {
             projectId: projectId,
+          },
+        },
+        {
+          query: GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
+          variables: {
+            resourceId,
           },
         },
       ],

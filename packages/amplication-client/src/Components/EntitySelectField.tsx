@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 
@@ -11,42 +11,35 @@ type TEntities = {
   ];
 };
 
-type RelatedEntityOption = {
-  value: string;
-  label: string;
-};
-
 type Props = Omit<SelectFieldProps, "options"> & {
   resourceId: string;
 };
 
 const EntitySelectField = ({ resourceId, ...props }: Props) => {
-  const [relatedEntityListOptions, setRelatedEntityListOptions] =
-    React.useState<RelatedEntityOption[]>([]);
-  const { data: entityList } = useQuery<TEntities>(GET_ENTITIES, {
-    variables: {
-      resourceId: resourceId,
-    },
-    fetchPolicy: "no-cache",
-  });
+  const { data: entityList } = useQuery<TEntities>(
+    GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
+    {
+      variables: {
+        resourceId: resourceId,
+      },
+    }
+  );
 
-  useEffect(() => {
-    if (!entityList) return;
-
-    const relatedEntityOptions = entityList.entities.map((entity) => ({
-      value: entity.id,
-      label: entity.displayName,
-    }));
-
-    setRelatedEntityListOptions(relatedEntityOptions);
+  const entityListOptions = useMemo(() => {
+    return entityList
+      ? entityList.entities.map((entity) => ({
+          value: entity.id,
+          label: entity.displayName,
+        }))
+      : [];
   }, [entityList]);
 
-  return <SelectField {...props} options={relatedEntityListOptions} />;
+  return <SelectField {...props} options={entityListOptions} />;
 };
 
 export default EntitySelectField;
 
-export const GET_ENTITIES = gql`
+export const GET_ENTITIES_FOR_ENTITY_SELECT_FIELD = gql`
   query getEntities($resourceId: String!) {
     entities(where: { resource: { id: $resourceId } }) {
       id
