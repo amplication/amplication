@@ -104,7 +104,7 @@ export class AuthService {
         data: {
           email: profile.email,
           firstName: profile.given_name || profile.nickname || profile.email,
-          lastName: profile.family_name,
+          lastName: profile.family_name || "",
           password: "",
           githubId: profile.sub,
         },
