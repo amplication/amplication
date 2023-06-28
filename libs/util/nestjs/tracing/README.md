@@ -9,11 +9,10 @@ This library contains the common tracing configuration for amplication services.
 In your microservices, import the logger module and consume it in your root module.
 By importing the `TracingModule` the controllers and any provider decorated with the `@Traceable()` decorator will be instrumented. 
 
+
 ```ts
 // app.module.ts
-
 import { TracingModule } from '@amplication/util/nestjs/logging';
-
 @Module({
   imports: [
     //...
@@ -25,6 +24,26 @@ import { TracingModule } from '@amplication/util/nestjs/logging';
 })
 export class AppModule implements // ....
 ```
+
+Or async:
+```ts
+// app.module.ts
+import { TracingModule } from '@amplication/util/nestjs/logging';
+@Module({
+  imports: [
+    //...
+    TracingModule.forRootAsync({
+      inject: [ConfigService],
+      useFactory: (configService: ConfigService) => ({
+        serviceName: SERVICE_NAME,
+      }),
+    })
+    //...
+  ],
+})
+export class AppModule implements // ....
+```
+
 
 ### Trace a service / provider
 
@@ -87,6 +106,13 @@ const tracedInstance = TraceWrapper.trace(instance);
 
 // ....
 ```
+
+## Run in production
+
+In order to send the collected tracing data, the application will need to pass the OTEL collector exporter URL i.e. `http://localhost:4318`
+As this library rely on the official OTEL SDK library, the exporter URL configuration can be defined as `OTEL_EXPORTER_OTLP_ENDPOINT` enviroment variable as described here
+https://opentelemetry.io/docs/concepts/sdk-configuration/otlp-exporter-configuration/
+
 
 ## Running unit tests
 
