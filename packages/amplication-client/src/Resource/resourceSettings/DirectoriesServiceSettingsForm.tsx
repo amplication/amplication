@@ -4,7 +4,7 @@ import {
   EnumPanelStyle,
   TextField,
 } from "@amplication/ui/design-system";
-import { useMutation, useQuery } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";
 import * as models from "../../models";
@@ -14,11 +14,9 @@ import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
-import {
-  GET_RESOURCE_SETTINGS,
-  UPDATE_SERVICE_SETTINGS,
-} from "./GenerationSettingsForm";
+import { UPDATE_SERVICE_SETTINGS } from "./GenerationSettingsForm";
 import { AppContext } from "../../context/appContext";
+import { useResource } from "./useResources";
 
 type TData = {
   updateServiceSettings: models.ServiceSettings;
@@ -29,13 +27,7 @@ const CLASS_NAME = "generation-settings-form";
 // eslint-disable-next-line @typescript-eslint/ban-types
 const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
   const { currentResource, addBlock } = useContext(AppContext);
-  const { data, error, refetch } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: currentResource?.id,
-    },
-  });
+  const { data, error, refetch } = useResource(currentResource?.id);
   const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
@@ -56,9 +48,9 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
 
   return (
     <div className={CLASS_NAME}>
-      {data?.serviceSettings && (
+      {data && (
         <Formik
-          initialValues={data.serviceSettings}
+          initialValues={data}
           validate={(values: models.ServiceSettings) =>
             validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
@@ -79,14 +71,12 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                     name="serverSettings[serverPath]"
                     placeholder="packages/[SERVICE-NAME]"
                     label="Server base directory"
-                    value={
-                      data?.serviceSettings.serverSettings.serverPath || ""
-                    }
-                    helpText={data?.serviceSettings.serverSettings.serverPath}
+                    value={data.serverSettings.serverPath || ""}
+                    helpText={data.serverSettings.serverPath}
                     labelType="normal"
                   />
                 </Panel>
-                {data.serviceSettings.adminUISettings.generateAdminUI && (
+                {data.adminUISettings.generateAdminUI && (
                   <Panel panelStyle={EnumPanelStyle.Transparent}>
                     <h2>Admin UI</h2>
                     <TextField
@@ -94,15 +84,9 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                       name="adminUISettings[adminUIPath]"
                       placeholder="packages/[SERVICE-NAME]"
                       label="Admin UI base directory"
-                      disabled={
-                        !data?.serviceSettings.serverSettings.generateGraphQL
-                      }
-                      value={
-                        data?.serviceSettings.adminUISettings.adminUIPath || ""
-                      }
-                      helpText={
-                        data?.serviceSettings.adminUISettings.adminUIPath
-                      }
+                      disabled={!data?.serverSettings.generateGraphQL}
+                      value={data?.adminUISettings.adminUIPath || ""}
+                      helpText={data.adminUISettings.adminUIPath}
                       labelType="normal"
                     />
                   </Panel>

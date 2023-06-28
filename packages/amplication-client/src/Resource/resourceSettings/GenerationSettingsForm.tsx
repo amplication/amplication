@@ -1,5 +1,5 @@
 import { Snackbar, ToggleField } from "@amplication/ui/design-system";
-import { gql, useMutation, useQuery } from "@apollo/client";
+import { gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";
 import * as models from "../../models";
@@ -11,6 +11,7 @@ import { match } from "react-router-dom";
 import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import { AppContext } from "../../context/appContext";
+import { useResource } from "./useResources";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -25,13 +26,7 @@ const CLASS_NAME = "generation-settings-form";
 function GenerationSettingsForm({ match }: Props) {
   const resourceId = match.params.resource;
 
-  const { data, error, refetch } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resourceId,
-    },
-  });
+  const { data, error, refetch } = useResource(resourceId);
   const { addBlock } = useContext(AppContext);
   const { trackEvent } = useTracking();
 
@@ -53,9 +48,9 @@ function GenerationSettingsForm({ match }: Props) {
 
   return (
     <div className={CLASS_NAME}>
-      {data?.serviceSettings && (
+      {data && (
         <Formik
-          initialValues={data.serviceSettings}
+          initialValues={data}
           validate={(values: models.ServiceSettings) =>
             validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
@@ -85,9 +80,7 @@ function GenerationSettingsForm({ match }: Props) {
                     label="REST API & Swagger UI"
                   />
                   <ToggleField
-                    disabled={
-                      !data?.serviceSettings.serverSettings.generateGraphQL
-                    }
+                    disabled={!data.serverSettings.generateGraphQL}
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"
                   />
