@@ -22,7 +22,7 @@ function PurchaseButton() {
 
   return (
     (!currentWorkspace?.subscription ||
-      currentWorkspace?.subscription?.subscriptionPlan !==
+      currentWorkspace?.subscription?.subscriptionPlan ===
         models.EnumSubscriptionPlan.Free) && (
       <Popover
         className={`${CLASS_NAME}__popover`}
