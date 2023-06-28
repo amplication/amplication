@@ -10,6 +10,7 @@ import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
 import {
+  ARG_KEY_FIELD_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
@@ -17,6 +18,7 @@ import {
   ID_TYPE_CUID,
   ID_TYPE_UUID,
   NOW_FUNCTION_NAME,
+  RELATION_ATTRIBUTE_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
@@ -216,7 +218,7 @@ export function jsonField(field: Field) {
 
 export function findFkFieldNameOnAnnotatedField(field: Field): string {
   const relationAttribute = field.attributes?.find(
-    (attr) => attr.name === "relation"
+    (attr) => attr.name === RELATION_ATTRIBUTE_NAME
   );
 
   if (!relationAttribute) {
@@ -224,7 +226,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
   }
 
   const fieldsArgs = relationAttribute.args.find(
-    (arg) => (arg.value as KeyValue).key === "fields"
+    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
   if (!fieldsArgs) {
