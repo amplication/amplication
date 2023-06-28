@@ -1,14 +1,12 @@
 import { DynamicModule, Module } from "@nestjs/common";
 import {
+  OpenTelemetryModuleDefaultConfig,
   OpenTelemetryModule,
   OpenTelemetryModuleAsyncOption,
-  ControllerInjector,
-  EventEmitterInjector,
-  GuardInjector,
-  PipeInjector,
-  ScheduleInjector,
 } from "@amplication/opentelemetry-nestjs";
-import { BatchSpanProcessor } from "@opentelemetry/sdk-trace-base";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { ExpressLayerType } from "@opentelemetry/instrumentation-express";
+import { BatchSpanProcessor, Span } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
 import type { OpenTelemetryModuleConfig } from "@amplication/opentelemetry-nestjs/dist/OpenTelemetryModuleConfig.interface";
 import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
@@ -17,6 +15,7 @@ import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
 import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
 import { CompositePropagator } from "@opentelemetry/core";
 import { PrismaInstrumentation } from "@prisma/instrumentation";
+import { ClientRequest } from "node:http";
 
 @Module({
   imports: [],
@@ -72,24 +71,55 @@ export class TracingModule extends OpenTelemetryModule {
   private static createDefaultConfiguration(
     configuration: Partial<OpenTelemetryModuleConfig>
   ): Partial<OpenTelemetryModuleConfig> {
+    const autoInstrumentations = getNodeAutoInstrumentations({
+      "@opentelemetry/instrumentation-fs": {
+        requireParentSpan: true,
+        enabled: true,
+        createHook: (funtionName, { args }) => {
+          return !args[0].toString().indexOf("node_modules");
+        },
+        endHook: (funtionName, { args, span }) => {
+          span.setAttribute("file", args[0].toString());
+        },
+      },
+      "@opentelemetry/instrumentation-http": {
+        requireParentforOutgoingSpans: true,
+        requestHook: (span: Span, request: ClientRequest) => {
+          span.updateName(`${request.method} ${request.path}`);
+        },
+        enabled: true,
+        ignoreIncomingPaths: ["/health", "/_health", "/healthz", "healthcheck"],
+      },
+      "@opentelemetry/instrumentation-net": {
+        enabled: false,
+      },
+      "@opentelemetry/instrumentation-dns": {
+        enabled: false,
+      },
+      "@opentelemetry/instrumentation-graphql": {
+        enabled: true,
+        mergeItems: true,
+        ignoreTrivialResolveSpans: true,
+        depth: 2,
+      },
+      "@opentelemetry/instrumentation-express": {
+        enabled: true,
+        ignoreLayersType: [ExpressLayerType.MIDDLEWARE],
+      },
+    });
+
     configuration = {
       ...configuration,
-      instrumentations: configuration?.instrumentations || [],
-      traceAutoInjectors: configuration?.traceAutoInjectors || [],
+      instrumentations: [
+        autoInstrumentations,
+        new KafkaJsInstrumentation({}),
+        new PrismaInstrumentation({}),
+      ],
+      traceAutoInjectors:
+        configuration?.traceAutoInjectors ||
+        OpenTelemetryModuleDefaultConfig.traceAutoInjectors,
     };
 
-    configuration.traceAutoInjectors.push(
-      ControllerInjector,
-      GuardInjector,
-      EventEmitterInjector,
-      ScheduleInjector,
-      PipeInjector
-    );
-
-    configuration.instrumentations.push(
-      new KafkaJsInstrumentation({}),
-      new PrismaInstrumentation({})
-    );
     return configuration;
   }
 
