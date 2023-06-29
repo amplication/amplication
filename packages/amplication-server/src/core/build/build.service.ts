@@ -47,6 +47,10 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -192,7 +196,8 @@ export class BuildService {
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private analytics: SegmentAnalyticsService
   ) {
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
@@ -434,7 +439,16 @@ export class BuildService {
   public async onCreatePRFailure(
     response: CreatePrFailure.Value
   ): Promise<void> {
-    const build = await this.findOne({ where: { id: response.buildId } });
+    const build = await this.prisma.build.findUnique({
+      where: { id: response.buildId },
+      include: {
+        createdBy: { include: { account: true } },
+        resource: {
+          include: { project: true },
+        },
+      },
+    });
+
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find(
       (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
@@ -451,6 +465,17 @@ export class BuildService {
     );
     await this.actionService.logInfo(step, response.errorMessage);
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+
+    await this.analytics.track({
+      userId: build.createdBy.account.id,
+      properties: {
+        resourceId: build.resource.id,
+        projectId: build.resource.project.id,
+        workspaceId: build.resource.project.workspaceId,
+        message: response.errorMessage,
+      },
+      event: EnumEventType.GitSyncError,
+    });
   }
 
   public async saveToGitProvider(buildId: string): Promise<void> {
