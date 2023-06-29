@@ -15,6 +15,8 @@ import { GraphQLModule } from "@nestjs/graphql";
 import { PrismaModule } from "./prisma/prisma.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { SERVICE_NAME } from "./constants";
 @Module({
   controllers: [],
   imports: [
@@ -32,7 +34,10 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
       useClass: ServeStaticOptionsService,
     }),
     AmplicationLoggerModule.forRoot({
-      serviceName: "amplication-plugin-api",
+      component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: SERVICE_NAME,
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,

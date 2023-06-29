@@ -64,7 +64,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  new Logger({ serviceName: SERVICE_NAME, isProduction: true }).error(
+  new Logger({ component: SERVICE_NAME, isProduction: true }).error(
     error.message,
     error
   );

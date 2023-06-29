@@ -7,7 +7,7 @@ import { Logger } from "@amplication/util/logging";
 const SCHEMA_PATH = path.join(__dirname, "..", "src", "schema.graphql");
 const logger = new Logger({
   isProduction: false,
-  serviceName: "check-graphql-schema",
+  component: "check-graphql-schema",
 });
 function readGraphQLSchema(): Promise<string> {
   return fs.promises.readFile(SCHEMA_PATH, "utf-8");

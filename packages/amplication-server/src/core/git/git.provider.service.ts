@@ -25,7 +25,7 @@ import {
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   RemoteGitRepository,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import {
   INVALID_RESOURCE_ID,
   ResourceService,

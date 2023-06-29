@@ -4,7 +4,7 @@ const { LOG_LEVEL, NODE_ENV } = process.env;
 
 export const logger = new Logger({
   isProduction: NODE_ENV !== "Development",
-  serviceName: "data-service-generator",
+  component: "data-service-generator",
   logLevel: LogLevel[LOG_LEVEL],
   metadata: {
     resourceId: process.env.RESOURCE_ID,
