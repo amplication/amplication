@@ -134,7 +134,8 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
         if (field.dataType === EnumDataType.Lookup) {
           const fieldProperties = field.properties as types.Lookup;
 
-          const { relatedEntityId, relatedFieldId } = fieldProperties;
+          const { relatedEntityId, relatedFieldId, fkFieldName } =
+            fieldProperties;
           if (!relatedEntityId) {
             throw new Error(
               `Lookup entity field ${field.name} must have a relatedEntityId property with a valid entity ID`
@@ -180,6 +181,7 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             relatedEntity,
             relatedField,
             isOneToOneWithoutForeignKey,
+            fkFieldName: fkFieldName || `${field.name}Id`,
           };
           return {
             ...field,

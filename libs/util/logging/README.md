@@ -43,7 +43,7 @@ import { Logger } from '@amplication/util/logging';
 
 const logger = new Logger ({
   isProduction: true,
-  serviceName: "component-name",
+  component: "component-name",
   logLevel: LogLevel.Warn
 })
 

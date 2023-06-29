@@ -22,6 +22,7 @@ import {
   REACT_ADMIN_MODULE,
   REACT_ADMIN_COMPONENTS_ID,
 } from "../react-admin.util";
+import DsgContext from "../../../dsg-context";
 
 const IMPORTABLE_IDS = {
   "../user/RolesOptions": [builders.identifier("ROLES_OPTIONS")],
@@ -129,10 +130,25 @@ function createToManyReferenceField(
         (field.properties as LookupResolvedProperties).relatedEntity.name
     );
 
+  const context = DsgContext.getInstance;
+
+  const relatedEntityWithFields = context.entities.find(
+    (entity) => entity.name === relatedEntity.name
+  );
+
+  const relatedFieldWithProperties = relatedEntityWithFields.fields.find(
+    (fieldWithProperties) =>
+      fieldWithProperties.name === field.properties.relatedField.name
+  );
+
+  const fkFieldName = (
+    relatedFieldWithProperties.properties as LookupResolvedProperties
+  ).fkFieldName;
+
   const element = jsxElement` 
   <ReferenceManyField
     reference="${field.properties.relatedEntity.name}"
-    target="${entity.name}Id"
+    target="${fkFieldName}"
     label="${field.properties.relatedEntity.pluralDisplayName}"
   >
     <Datagrid rowClick="show">

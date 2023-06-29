@@ -18,6 +18,7 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Logger } from "@amplication/util/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   imports: [
@@ -47,6 +48,9 @@ import { Logger } from "@amplication/util/logging";
       inject: [ConfigService],
     }),
     AmplicationLoggerModule.forRoot({
+      component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
       serviceName: SERVICE_NAME,
     }),
     MorganModule,
@@ -66,7 +70,7 @@ import { Logger } from "@amplication/util/logging";
 })
 export class AppModule implements OnApplicationShutdown {
   onApplicationShutdown(signal: string): void {
-    new Logger({ serviceName: SERVICE_NAME, isProduction: true }).debug(
+    new Logger({ component: SERVICE_NAME, isProduction: true }).debug(
       `Application shut down (signal: ${signal})`
     );
   }
