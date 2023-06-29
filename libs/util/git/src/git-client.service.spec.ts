@@ -1,4 +1,4 @@
-import { GitClientService } from "./git.service";
+import { GitClientService } from "./git-client.service";
 import { ILogger } from "@amplication/util/logging";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
