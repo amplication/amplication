@@ -13,6 +13,7 @@ import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
 import { AWSXRayIdGenerator } from "@opentelemetry/id-generator-aws-xray";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
 import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
+import { AwsEksDetector } from "@opentelemetry/resource-detector-aws";
 import { CompositePropagator } from "@opentelemetry/core";
 import { PrismaInstrumentation } from "@prisma/instrumentation";
 import { ClientRequest } from "node:http";
@@ -27,22 +28,21 @@ export class TracingModule extends OpenTelemetryModule {
   private static addAwsXRayConfiguration(
     configuration: Partial<OpenTelemetryModuleConfig>
   ): Partial<OpenTelemetryModuleConfig> {
-    configuration = {
-      ...configuration,
-      instrumentations: configuration?.instrumentations || [],
-    };
-
-    configuration.instrumentations.push(
-      new AwsInstrumentation({
-        suppressInternalInstrumentation: true,
-        sqsExtractContextPropagationFromPayload: true,
-      })
-    );
-
     const traceExporter = new OTLPTraceExporter();
 
     return {
       ...configuration,
+      instrumentations: [
+        ...(configuration.instrumentations || []),
+        new AwsInstrumentation({
+          suppressInternalInstrumentation: true,
+          sqsExtractContextPropagationFromPayload: true,
+        }),
+      ],
+      resourceDetectors: [
+        ...(configuration.resourceDetectors || []),
+        new AwsEksDetector(),
+      ],
       textMapPropagator: new CompositePropagator({
         propagators: [new AWSXRayPropagator()],
       }),
