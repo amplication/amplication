@@ -467,7 +467,11 @@ export class BuildService {
       step,
       PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
     );
-    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.log(
+      step,
+      EnumActionLogLevel.Error,
+      response.errorMessage
+    );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
     await this.analytics.track({
@@ -690,17 +694,6 @@ export class BuildService {
       },
       true
     );
-  }
-
-  private async createLog(
-    step: ActionStep,
-    info: { message: string }
-  ): Promise<void> {
-    const { message, ...metaInfo } = info;
-    const level = ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
-
-    await this.actionService.log(step, EnumActionLogLevel.Error, message, meta);
   }
 
   /**
