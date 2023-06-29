@@ -273,6 +273,9 @@ export class WorkspaceService {
     await this.analytics.track({
       userId: account.id,
       event: EnumEventType.InvitationAcceptance,
+      properties: {
+        workspaceId: invitation.workspaceId,
+      },
     });
 
     return workspace;
