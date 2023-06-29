@@ -40,6 +40,7 @@ import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
+  CodeGenerationLog,
   CodeGenerationRequest,
   CreatePrFailure,
   CreatePrRequest,
@@ -476,6 +477,38 @@ export class BuildService {
       },
       event: EnumEventType.GitSyncError,
     });
+  }
+
+  public async onDsgLog(logEntry: CodeGenerationLog.Value): Promise<void> {
+    const step = await this.getGenerateCodeStep(logEntry.buildId);
+    await this.actionService.logByStepId(
+      step.id,
+      ACTION_LOG_LEVEL[logEntry.level],
+      logEntry.message
+    );
+
+    if (ACTION_LOG_LEVEL[logEntry.level] === EnumActionLogLevel.Error) {
+      const build = await this.prisma.build.findUnique({
+        where: { id: logEntry.buildId },
+        include: {
+          createdBy: { include: { account: true } },
+          resource: {
+            include: { project: true },
+          },
+        },
+      });
+
+      await this.analytics.track({
+        userId: build.createdBy.account.id,
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          workspaceId: build.resource.project.workspaceId,
+          message: logEntry.message,
+        },
+        event: EnumEventType.CodeGenerationError,
+      });
+    }
   }
 
   public async saveToGitProvider(buildId: string): Promise<void> {

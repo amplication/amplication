@@ -21,6 +21,7 @@ export enum EnumEventType {
   DemoRepoCreate = "CreateDemoRepo",
   InvitationAcceptance = "invitationAcceptance",
   GitSyncError = "gitSyncError",
+  CodeGenerationError = "codeGenerationError",
 }
 
 export type IdentifyData = {
