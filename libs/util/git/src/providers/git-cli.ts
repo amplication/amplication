@@ -67,6 +67,9 @@ export class GitCli {
     await this.git.raw([
       "cherry-pick",
       "-m 1",
+      // --ff --allow-empty will allow cherry-pick to succeed even if the commit is empty (e.g. only metadata changes)
+      "--allow-empty",
+      "--ff",
       "--strategy=ort",
       "-X",
       "theirs",
