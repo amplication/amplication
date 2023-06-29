@@ -35,7 +35,7 @@ import {
   EnumPullRequestMode,
   GitHubProviderOrganizationProperties,
   OAuthProviderOrganizationProperties,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
 import {

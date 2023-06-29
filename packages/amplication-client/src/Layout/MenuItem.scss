@@ -57,15 +57,18 @@ $inverted-border-radius: 6px;
     }
   }
 
-  &--active:before,
-  &:hover:before {
+  &:before {
     width: $select-item-width;
     height: $select-item-width;
     border-radius: var(--default-border-radius);
-    background-color: var(--menu-item-active-background);
     content: "";
     position: absolute;
     left: calc(50% - #{$select-item-width * 0.5});
+  }
+
+  &--active:before,
+  &:hover:before {
+    background-color: var(--menu-item-active-background);
   }
 
   &--no-hover:before {

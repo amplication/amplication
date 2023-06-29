@@ -127,6 +127,7 @@ const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
 const UPDATED_AT = "updatedAt";
 const CREATED_AT = "createdAt";
 const PROPERTIES = "properties";
+const CUSTOM_ATTRIBUTES = "customAttributes";
 
 const BASE_FIELD: Pick<
   EntityField,
@@ -2377,11 +2378,13 @@ function isBasePropertyIdFieldPayloadChanged(
     PROPERTIES,
     CREATED_AT,
     UPDATED_AT,
+    CUSTOM_ATTRIBUTES,
   ]);
   const dataWithoutProperties = omit(data, [
     PROPERTIES,
     CREATED_AT,
     UPDATED_AT,
+    CUSTOM_ATTRIBUTES,
   ]);
 
   return !isEqual(dataWithoutProperties, idTypeDataWithoutProperties);

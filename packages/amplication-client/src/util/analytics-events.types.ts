@@ -119,6 +119,7 @@ export enum AnalyticsEventNames {
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
   ContactUsButtonClick = "ContactUsButtonClick",
+  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",

@@ -9,7 +9,7 @@ import { WebhookModule } from './webhook/webhook.module';
 @Module({
   imports: [
     AmplicationLoggerModule.forRoot({
-      serviceName: 'amplication-git-pull-service',
+      component: 'amplication-git-pull-service',
     }),
     ConfigModule.forRoot({
       isGlobal: true,
