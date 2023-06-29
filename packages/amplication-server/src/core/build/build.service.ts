@@ -47,7 +47,11 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
-import { PROVIDERS_DISPLAY_NAME } from "../../../../amplication-client/src/Resource/constants";
+
+const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
+  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+};
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
