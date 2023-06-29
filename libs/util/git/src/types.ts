@@ -33,6 +33,10 @@ export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
   bitBucketConfiguration: BitBucketConfiguration;
 }
+export type GitProviderProperties =
+  | GitHubProviderOrganizationProperties
+  | OAuthProviderOrganizationProperties
+  | AwsCodeCommitProviderOrganizationProperties;
 
 export interface OAuthProviderOrganizationProperties
   extends OAuthTokens,
@@ -80,10 +84,7 @@ export const isGitHubProviderOrganizationProperties = (
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerOrganizationProperties:
-    | GitHubProviderOrganizationProperties
-    | OAuthProviderOrganizationProperties
-    | AwsCodeCommitProviderOrganizationProperties;
+  providerOrganizationProperties: GitProviderProperties;
 }
 
 export interface AwsCodeCommitProviderOrganizationProperties {
