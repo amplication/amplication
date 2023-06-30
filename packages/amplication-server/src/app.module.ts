@@ -1,7 +1,8 @@
 import { Module, OnApplicationShutdown } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigModule, ConfigService } from "@nestjs/config";
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
+import { GraphQLModule } from "@nestjs/graphql";
 import { MorganModule } from "nest-morgan";
 import { Request } from "express";
 import { CoreModule } from "./core/core.module";
@@ -16,7 +17,6 @@ import { HealthModule } from "./core/health/health.module";
 import { join } from "path";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
-import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Logger } from "@amplication/util/logging";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
 import { AnalyticsSessionIdInterceptor } from "./interceptors/analytics-session-id.interceptor";

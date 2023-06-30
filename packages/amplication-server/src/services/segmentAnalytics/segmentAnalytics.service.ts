@@ -17,10 +17,17 @@ export enum EnumEventType {
   EntityUpdate = "updateEntity",
   EntityFieldCreate = "createEntityField",
   EntityFieldUpdate = "updateEntityField",
+  EntityFieldFromImportPrismaSchemaCreate = "EntityFieldFromImportPrismaSchemaCreate",
   PluginInstall = "installPlugin",
   PluginUpdate = "updatePlugin",
   DemoRepoCreate = "CreateDemoRepo",
   InvitationAcceptance = "invitationAcceptance",
+
+  //Import Prisma Schema
+  ImportPrismaSchemaStart = "importPrismaSchemaStart",
+  ImportPrismaSchemaError = "importPrismaSchemaError",
+  ImportPrismaSchemaCompleted = "importPrismaSchemaCompleted",
+
   GitSyncError = "gitSyncError",
   CodeGenerationError = "codeGenerationError",
 }
