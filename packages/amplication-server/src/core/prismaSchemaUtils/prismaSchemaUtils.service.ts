@@ -723,6 +723,7 @@ export class PrismaSchemaUtilsService {
       return [];
     }
     return attributes.map((attribute) => {
+      const attributeGroup = attribute.group;
       if (!attribute.args && !attribute.args?.length) {
         return attribute.kind === MODEL_TYPE_NAME
           ? `@@${attribute.name}`
@@ -740,9 +741,15 @@ export class PrismaSchemaUtilsService {
         }
       });
 
-      return `${attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"}${
-        attribute.name
-      }(${args.join(", ")})`;
+      if (attributeGroup) {
+        return `${
+          attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"
+        }${attributeGroup}.${attribute.name}(${args.join(", ")})`;
+      } else {
+        return `${attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"}${
+          attribute.name
+        }(${args.join(", ")})`;
+      }
     });
   }
 

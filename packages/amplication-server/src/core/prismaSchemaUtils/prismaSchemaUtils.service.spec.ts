@@ -95,7 +95,7 @@ describe("prismaSchema", () => {
               properties: {
                 maxLength: 256,
               },
-              customAttributes: "@VarChar(256)",
+              customAttributes: "@db.VarChar(256)",
             },
             {
               name: "roles",
