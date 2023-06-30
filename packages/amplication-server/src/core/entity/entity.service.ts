@@ -662,15 +662,7 @@ export class EntityService {
           await this.createField(
             {
               data: {
-                name: rest.name,
-                displayName: rest.displayName,
-                dataType: rest.dataType,
-                required: rest.required,
-                unique: rest.unique,
-                searchable: rest.searchable,
-                description: rest.description,
-                properties: rest.properties,
-                customAttributes: rest.customAttributes,
+                ...rest,
                 entity: {
                   connect: {
                     id: entity.id,
@@ -2438,7 +2430,7 @@ export class EntityService {
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            fkHolder: relatedFieldId || fkHolder,
+            fkHolder: fkHolder || relatedFieldId,
           },
         },
       });
