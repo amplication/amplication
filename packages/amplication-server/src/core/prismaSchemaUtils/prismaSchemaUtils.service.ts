@@ -686,19 +686,14 @@ export class PrismaSchemaUtilsService {
     const fieldDisplayName = formatDisplayName(field.name);
     const isUniqueField =
       field.attributes?.some((attr) => attr.name === "unique") ?? false;
-    let fieldAttributes: string | null;
 
     // eslint-disable-next-line prefer-const
-    fieldAttributes = filterOutAmplicationAttributes(
+    const fieldAttributes = filterOutAmplicationAttributes(
       this.prepareAttributes(field.attributes)
     )
       // in some case we get "@default()" as an attribute, we want to filter it out
       .filter((attr) => attr !== "@default()")
       .join(" ");
-
-    if (fieldAttributes === "") {
-      fieldAttributes = null;
-    }
 
     return {
       name: field.name,
@@ -706,7 +701,7 @@ export class PrismaSchemaUtilsService {
       dataType: fieldDataType,
       required: !field.optional || false,
       unique: isUniqueField,
-      searchable: false,
+      searchable: fieldDataType === EnumDataType.Lookup ? true : false,
       description: "",
       properties: {},
       customAttributes: fieldAttributes,

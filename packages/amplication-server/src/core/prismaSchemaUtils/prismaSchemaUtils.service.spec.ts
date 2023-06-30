@@ -55,6 +55,7 @@ describe("prismaSchema", () => {
         ],
       });
     });
+
     it("should return a validation error if the schema is not a valid Prisma schema", () => {
       expect.assertions(1);
       const prismaSchema = `datasource db {
@@ -129,7 +130,7 @@ describe("prismaSchema", () => {
               properties: {
                 idType: "AUTO_INCREMENT",
               },
-              customAttributes: null,
+              customAttributes: "",
             },
             {
               name: "createdAt",
@@ -140,7 +141,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: null,
+              customAttributes: "",
             },
             {
               name: "username",
@@ -164,7 +165,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: null,
+              customAttributes: "",
             },
           ],
         },
@@ -219,7 +220,7 @@ describe("prismaSchema", () => {
               properties: {
                 idType: "AUTO_INCREMENT",
               },
-              customAttributes: null,
+              customAttributes: "",
             },
             {
               name: "createdAt",
@@ -230,7 +231,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: null,
+              customAttributes: "",
             },
             {
               name: "username",
@@ -254,7 +255,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: null,
+              customAttributes: "",
             },
           ],
         },
@@ -288,6 +289,150 @@ describe("prismaSchema", () => {
             createdAt: expect.any(Date),
             meta: {},
             message: `Model name "admin" was changed to "Admin"`,
+            level: EnumActionLogLevel.Info,
+          },
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Prepare Prisma Schema for import completed`,
+            level: EnumActionLogLevel.Info,
+          },
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Create import objects from Prisma Schema`,
+            level: EnumActionLogLevel.Info,
+          },
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Create import objects from Prisma Schema completed`,
+            level: EnumActionLogLevel.Info,
+          },
+        ],
+      });
+    });
+
+    it("should return object with entities and fields with the right relations and a log", () => {
+      // arrange
+      const prismaSchema = `datasource db {
+        provider = "postgresql"
+        url      = env("DB_URL")
+      }
+      
+      generator client {
+        provider = "prisma-client-js"
+      }
+      
+      model Order {
+        id         String    @id @default(cuid())
+        customer   Customer? @relation(fields: [customerId], references: [id])
+        customerId String?
+      }
+      
+      model Customer {
+        id          String     @id @default(cuid())
+        orders      Order[]
+      }`;
+      const existingEntities: ExistingEntitySelect[] = [];
+      // act
+      const result = service.convertPrismaSchemaForImportObjects(
+        prismaSchema,
+        existingEntities
+      );
+      // assert
+      const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+        {
+          id: expect.any(String),
+          name: "Order",
+          displayName: "Order",
+          pluralDisplayName: "Orders",
+          description: "",
+          customAttributes: "",
+          fields: [
+            {
+              name: "id",
+              displayName: "Id",
+              dataType: EnumDataType.Id,
+              required: true,
+              unique: false,
+              searchable: false,
+              description: "",
+              properties: {
+                idType: "CUID",
+              },
+              customAttributes: "",
+            },
+            {
+              name: "customer",
+              displayName: "Customer",
+              dataType: EnumDataType.Lookup,
+              required: false,
+              unique: false,
+              searchable: true,
+              description: "",
+              properties: {
+                relatedEntityId: expect.any(String),
+                allowMultipleSelection: false,
+                fkHolder: null,
+                fkFieldName: "customerId",
+              },
+              customAttributes: "",
+              relatedFieldAllowMultipleSelection: true,
+              relatedFieldDisplayName: "Orders",
+              relatedFieldName: "orders",
+            },
+          ],
+        },
+        {
+          id: expect.any(String),
+          name: "Customer",
+          displayName: "Customer",
+          pluralDisplayName: "Customers",
+          description: "",
+          customAttributes: "",
+          fields: [
+            {
+              name: "id",
+              displayName: "Id",
+              dataType: EnumDataType.Id,
+              required: true,
+              unique: false,
+              searchable: false,
+              description: "",
+              properties: {
+                idType: "CUID",
+              },
+              customAttributes: "",
+            },
+          ],
+        },
+      ];
+      expect(result).toEqual({
+        preparedEntitiesWithFields: expectedEntitiesWithFields,
+        log: [
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Starting Prisma Schema Validation`,
+            level: EnumActionLogLevel.Info,
+          },
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Prisma Schema Validation Completed`,
+            level: EnumActionLogLevel.Info,
+          },
+          {
+            id: expect.any(String),
+            createdAt: expect.any(Date),
+            meta: {},
+            message: `Prepare Prisma Schema for import`,
             level: EnumActionLogLevel.Info,
           },
           {
