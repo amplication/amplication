@@ -683,9 +683,8 @@ export class PrismaSchemaUtilsService {
     fieldDataType: EnumDataType
   ): CreateBulkFieldsInput {
     const fieldDisplayName = formatDisplayName(field.name);
-    const isUniqueField = field.attributes?.some(
-      (attr) => attr.name === "unique"
-    );
+    const isUniqueField =
+      field.attributes?.some((attr) => attr.name === "unique") ?? false;
 
     const fieldAttributes = filterOutAmplicationAttributes(
       this.prepareAttributes(field.attributes)
@@ -698,7 +697,7 @@ export class PrismaSchemaUtilsService {
       name: field.name,
       displayName: fieldDisplayName,
       dataType: fieldDataType,
-      required: field.optional || false,
+      required: !field.optional || false,
       unique: isUniqueField,
       searchable: false,
       description: "",
@@ -1529,7 +1528,7 @@ export class PrismaSchemaUtilsService {
       this.logger.info("Valid schema");
     } catch (error) {
       this.logger.error("Invalid schema", error);
-      throw new Error("Invalid schema");
+      throw error;
     }
   }
 
