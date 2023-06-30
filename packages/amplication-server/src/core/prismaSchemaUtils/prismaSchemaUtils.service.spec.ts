@@ -29,7 +29,7 @@ describe("prismaSchema", () => {
 
     it("should return an object with entities and fields and a log", () => {
       // arrange
-      const prismaSchema = `datasource postgres {
+      const prismaSchema = `datasource db {
         provider = "postgresql"
         url      = env("DB_URL")
       }
@@ -41,7 +41,7 @@ describe("prismaSchema", () => {
       model Admin {
         id         Int   @id @default(autoincrement())
         createdAt  DateTime @default(now())
-        username   String   @unique
+        username   String   @unique @db.VarChar(256)
         roles      Json?
       }`;
       const existingEntities: ExistingEntitySelect[] = [];
@@ -71,7 +71,7 @@ describe("prismaSchema", () => {
               properties: {
                 idType: "AUTO_INCREMENT",
               },
-              customAttributes: "",
+              customAttributes: null,
             },
             {
               name: "createdAt",
@@ -82,7 +82,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: "",
+              customAttributes: null,
             },
             {
               name: "username",
@@ -95,7 +95,7 @@ describe("prismaSchema", () => {
               properties: {
                 maxLength: 256,
               },
-              customAttributes: "@unique",
+              customAttributes: "@VarChar(256)",
             },
             {
               name: "roles",
@@ -106,7 +106,7 @@ describe("prismaSchema", () => {
               searchable: false,
               description: "",
               properties: {},
-              customAttributes: "",
+              customAttributes: null,
             },
           ],
         },

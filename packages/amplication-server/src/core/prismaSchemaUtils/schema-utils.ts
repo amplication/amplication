@@ -60,7 +60,7 @@ export function filterOutAmplicationAttributes(attributes): string[] {
       !attribute.startsWith("@default(autoincrement())") &&
       !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
-      !attribute.startsWith("unique") &&
+      !attribute.startsWith("@unique") &&
       !attribute.startsWith("@relation")
   );
 }
