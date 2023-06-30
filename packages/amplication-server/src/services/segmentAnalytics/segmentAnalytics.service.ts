@@ -3,8 +3,6 @@ import Analytics from "analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
 import { RequestContext } from "nestjs-request-context";
 
-import { AuthUser } from "../../core/auth/auth.service";
-
 export enum EnumEventType {
   Signup = "Signup",
   WorkspacePlanUpgradeRequest = "WorkspacePlanUpgradeRequest",
