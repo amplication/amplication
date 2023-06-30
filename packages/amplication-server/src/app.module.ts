@@ -19,6 +19,8 @@ import { SERVICE_NAME } from "./constants";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { Logger } from "@amplication/util/logging";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { AnalyticsSessionIdInterceptor } from "./interceptors/analytics-session-id.interceptor";
+import { RequestContextModule } from "nestjs-request-context";
 
 @Module({
   imports: [
@@ -59,12 +61,17 @@ import { TracingModule } from "@amplication/util/nestjs/tracing";
     }),
     HealthModule,
     CoreModule,
+    RequestContextModule,
   ],
   controllers: [],
   providers: [
     {
       provide: APP_INTERCEPTOR,
       useClass: InjectContextInterceptor,
+    },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AnalyticsSessionIdInterceptor,
     },
   ],
 })

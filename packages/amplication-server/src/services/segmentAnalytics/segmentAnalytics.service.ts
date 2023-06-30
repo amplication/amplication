@@ -1,6 +1,9 @@
 import { Injectable, Inject } from "@nestjs/common";
 import Analytics from "analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
+import { RequestContext } from "nestjs-request-context";
+
+import { AuthUser } from "../../core/auth/auth.service";
 
 export enum EnumEventType {
   Signup = "Signup",
@@ -40,6 +43,9 @@ export type TrackData = {
     | undefined;
   context?: {
     traits?: IdentifyData;
+    amplication?: {
+      analyticsSessionId?: string;
+    };
   };
 };
 
@@ -69,12 +75,21 @@ export class SegmentAnalyticsService {
 
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
+
+    const req = RequestContext.currentContext.req;
+    const analyticsSessionId = req.analyticsSessionId;
+
     this.analytics.track({
       ...data,
       properties: {
         ...data.properties,
         source: "amplication-server",
       },
-    });
+      context: {
+        amplication: {
+          analyticsSessionId: analyticsSessionId,
+        },
+      },
+    } as TrackData);
   }
 }

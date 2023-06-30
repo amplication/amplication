@@ -8,6 +8,9 @@ export interface Event {
   [key: string]: unknown;
 }
 
+const ANALYTICS_SESSION_ID_KEY = "analytics_session_id";
+export const ANALYTICS_SESSION_ID_HEADER_KEY = "analytics-session-id";
+
 const MISSING_EVENT_NAME = "MISSING_EVENT_NAME";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 //@ts-ignore
@@ -74,4 +77,8 @@ export function page(name?: string, props?: EventProps) {
     const analytics = window.analytics;
     analytics.page(name, props);
   }
+}
+
+export function getSessionId(): string | null {
+  return localStorage.getItem(ANALYTICS_SESSION_ID_KEY);
 }
