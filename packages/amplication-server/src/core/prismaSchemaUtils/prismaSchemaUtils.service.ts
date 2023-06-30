@@ -1532,7 +1532,9 @@ export class PrismaSchemaUtilsService {
       validate({ datamodel: schemaString });
       this.logger.info("Valid schema");
     } catch (error) {
-      this.logger.error("Invalid schema", error);
+      this.logger.error(error.message, error, {
+        functionName: "validateSchemaUpload",
+      });
       throw error;
     }
   }
