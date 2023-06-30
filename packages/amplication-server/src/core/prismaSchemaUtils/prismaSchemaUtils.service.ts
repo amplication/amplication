@@ -14,6 +14,7 @@ import {
   ConcretePrismaSchemaBuilder,
   Attribute,
   ModelAttribute,
+  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -802,11 +803,12 @@ export class PrismaSchemaUtilsService {
       (attr) => attr.name === "relation"
     );
 
-    const hasRelationAttributeWithRelationName = field.attributes?.some(
-      (attr) =>
-        attr.name === "relation" &&
-        attr.args.some((arg) => typeof arg.value === "string")
-    );
+    const hasRelationAttributeWithRelationName =
+      field.attributes?.some(
+        (attr) =>
+          attr.name === "relation" &&
+          attr.args?.some((arg) => typeof arg.value === "string")
+      ) ?? false;
 
     const fieldModelType = modelList.find(
       (modelItem: Model) =>
@@ -838,7 +840,7 @@ export class PrismaSchemaUtilsService {
       modelField.attributes?.some(
         (attr) =>
           attr.name === "relation" &&
-          attr.args.some(
+          attr.args?.some(
             (arg) =>
               (arg.value as KeyValue).key === "fields" &&
               ((arg.value as KeyValue).value as RelationArray).args.find(
@@ -1406,17 +1408,16 @@ export class PrismaSchemaUtilsService {
 
       return entity;
     } catch (error) {
-      this.logger.error(
-        error.message,
-        error.stack,
-        "convertPrismaLookupToEntityField"
-      );
+      this.logger.error(error.message, error, {
+        functionName: "convertPrismaLookupToEntityField",
+      });
       log.push(
         new ActionLog({
           message: error.message,
           level: EnumActionLogLevel.Error,
         })
       );
+      throw error;
     }
   }
 
@@ -1437,13 +1438,17 @@ export class PrismaSchemaUtilsService {
   ): { remoteModel: Model; remoteField: Field } | undefined {
     let relationAttributeName: string | undefined;
     let remoteField: Field | undefined;
+    let relationAttributeStringArgument: AttributeArgument | undefined;
 
     // in the main relation, check if the relation annotation has a name
     field.attributes?.find((attr) => {
       const relationAttribute = attr.name === "relation";
-      const relationAttributeStringArgument =
-        relationAttribute &&
-        attr.args.find((arg) => typeof arg.value === "string");
+
+      if (relationAttribute) {
+        relationAttributeStringArgument = attr.args?.find(
+          (arg) => typeof arg.value === "string"
+        );
+      }
 
       relationAttributeName =
         relationAttributeStringArgument &&
@@ -1476,7 +1481,7 @@ export class PrismaSchemaUtilsService {
         return field.attributes?.some(
           (attr) =>
             attr.name === "relation" &&
-            attr.args.find((arg) => arg.value === relationAttributeName)
+            attr.args?.find((arg) => arg.value === relationAttributeName)
         );
       });
     } else {
@@ -1500,12 +1505,12 @@ export class PrismaSchemaUtilsService {
       if (remoteFields.length === 1) {
         remoteField = remoteFields[0];
       }
+    }
 
-      if (!remoteField) {
-        throw new Error(
-          `No field found in model ${remoteModel.name} that reference ${model.name}`
-        );
-      }
+    if (!remoteField) {
+      throw new Error(
+        `No field found in model ${remoteModel.name} that reference ${model.name}`
+      );
     }
 
     return { remoteModel, remoteField };

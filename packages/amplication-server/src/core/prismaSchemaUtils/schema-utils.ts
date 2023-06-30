@@ -227,7 +227,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
     throw new Error(`Missing relation attribute on field ${field.name}`);
   }
 
-  const fieldsArgs = relationAttribute.args.find(
+  const fieldsArgs = relationAttribute.args?.find(
     (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
