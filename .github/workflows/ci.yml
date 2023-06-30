@@ -35,6 +35,8 @@ jobs:
   ci:
     name: Continuous Integration
     runs-on: ubuntu-20.04
+    env:
+      NODE_OPTIONS: --max_old_space_size=4096
     steps:
       - uses: actions/checkout@v3
         with:
