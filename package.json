@@ -124,6 +124,7 @@
     "nest-morgan": "^2.0.0",
     "nest-winston": "^1.7.0",
     "nestjs-paginate": "^4.13.0",
+    "nestjs-request-context": "^2.1.0",
     "node-fetch": "^2.6.7",
     "node-jose": "^2.2.0",
     "octokit": "^1.8.1",

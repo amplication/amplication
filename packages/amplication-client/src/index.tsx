@@ -17,6 +17,10 @@ import App from "./App";
 import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createUploadLink } from "apollo-upload-client";
+import {
+  getSessionId,
+  ANALYTICS_SESSION_ID_HEADER_KEY,
+} from "./util/analytics";
 
 const queryClient = new QueryClient();
 
@@ -42,6 +46,7 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
+      [ANALYTICS_SESSION_ID_HEADER_KEY]: getSessionId(),
     },
   };
 });
