@@ -1,3 +1,5 @@
+import { gql } from '@apollo/client';
+import * as Apollo from '@apollo/client';
 export type Maybe<T> = T | null;
 export type InputMaybe<T> = Maybe<T>;
 export type Exact<T extends { [key: string]: unknown }> = { [K in keyof T]: T[K] };
@@ -5,6 +7,7 @@ export type MakeOptional<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]?: 
 export type MakeMaybe<T, K extends keyof T> = Omit<T, K> & { [SubKey in K]: Maybe<T[SubKey]> };
 export type MakeEmpty<T extends { [key: string]: unknown }, K extends keyof T> = { [_ in K]?: never };
 export type Incremental<T> = T | { [P in keyof T]?: P extends ' $fragmentName' | '__typename' ? T[P] : never };
+const defaultOptions = {} as const;
 /** All built-in and custom scalars, mapped to their actual values */
 export type Scalars = {
   ID: { input: string; output: string; }
@@ -798,7 +801,25 @@ export type GitOrganization = {
 };
 
 export type GitOrganizationCreateInput = {
+  awsCodeCommitInput?: InputMaybe<GitOrganizationCreateInputAwsCodeCommit>;
   gitProvider: EnumGitProvider;
+  githubInput?: InputMaybe<GitOrganizationCreateInputGitHub>;
+};
+
+export type GitOrganizationCreateInputAwsCodeCommit = {
+  /** AWS access key ID */
+  accessKeyId: Scalars['String']['input'];
+  /** AWS secret access key */
+  accessKeySecret: Scalars['String']['input'];
+  /** HTTPS Git credentials for AWS CodeCommit. Password */
+  gitPassword: Scalars['String']['input'];
+  /** HTTPS Git credentials for AWS CodeCommit. Username */
+  gitUsername: Scalars['String']['input'];
+  /** AWS region. Defaults to us-east-1 */
+  region?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GitOrganizationCreateInputGitHub = {
   installationId: Scalars['String']['input'];
 };
 
@@ -889,7 +910,6 @@ export type Mutation = {
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
   createOneEntity: Entity;
-  /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
@@ -2174,3 +2194,146 @@ export type WorkspaceMemberType = Invitation | User;
 export type WorkspaceUpdateInput = {
   name?: InputMaybe<Scalars['String']['input']>;
 };
+
+export type CreateOrganizationGitHubMutationVariables = Exact<{
+  installationId: Scalars['String']['input'];
+  gitProvider: EnumGitProvider;
+}>;
+
+
+export type CreateOrganizationGitHubMutation = { createOrganization: { id: string, name: string } };
+
+export type CreateOrganizationAwsCodeCommitMutationVariables = Exact<{
+  gitProvider: EnumGitProvider;
+  accessKeyId: Scalars['String']['input'];
+  accessKeySecret: Scalars['String']['input'];
+  gitPassword: Scalars['String']['input'];
+  region: Scalars['String']['input'];
+  gitUsername: Scalars['String']['input'];
+}>;
+
+
+export type CreateOrganizationAwsCodeCommitMutation = { createOrganization: { id: string, name: string } };
+
+export type CompleteGitOAuth2FlowMutationVariables = Exact<{
+  code: Scalars['String']['input'];
+  gitProvider: EnumGitProvider;
+}>;
+
+
+export type CompleteGitOAuth2FlowMutation = { completeGitOAuth2Flow: { id: string, name: string } };
+
+
+export const CreateOrganizationGitHubDocument = gql`
+    mutation createOrganizationGitHub($installationId: String!, $gitProvider: EnumGitProvider!) {
+  createOrganization(
+    data: {gitProvider: $gitProvider, githubInput: {installationId: $installationId}}
+  ) {
+    id
+    name
+  }
+}
+    `;
+export type CreateOrganizationGitHubMutationFn = Apollo.MutationFunction<CreateOrganizationGitHubMutation, CreateOrganizationGitHubMutationVariables>;
+
+/**
+ * __useCreateOrganizationGitHubMutation__
+ *
+ * To run a mutation, you first call `useCreateOrganizationGitHubMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrganizationGitHubMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrganizationGitHubMutation, { data, loading, error }] = useCreateOrganizationGitHubMutation({
+ *   variables: {
+ *      installationId: // value for 'installationId'
+ *      gitProvider: // value for 'gitProvider'
+ *   },
+ * });
+ */
+export function useCreateOrganizationGitHubMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrganizationGitHubMutation, CreateOrganizationGitHubMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrganizationGitHubMutation, CreateOrganizationGitHubMutationVariables>(CreateOrganizationGitHubDocument, options);
+      }
+export type CreateOrganizationGitHubMutationHookResult = ReturnType<typeof useCreateOrganizationGitHubMutation>;
+export type CreateOrganizationGitHubMutationResult = Apollo.MutationResult<CreateOrganizationGitHubMutation>;
+export type CreateOrganizationGitHubMutationOptions = Apollo.BaseMutationOptions<CreateOrganizationGitHubMutation, CreateOrganizationGitHubMutationVariables>;
+export const CreateOrganizationAwsCodeCommitDocument = gql`
+    mutation createOrganizationAwsCodeCommit($gitProvider: EnumGitProvider!, $accessKeyId: String!, $accessKeySecret: String!, $gitPassword: String!, $region: String!, $gitUsername: String!) {
+  createOrganization(
+    data: {gitProvider: $gitProvider, awsCodeCommitInput: {accessKeyId: $accessKeyId, accessKeySecret: $accessKeySecret, gitPassword: $gitPassword, region: $region, gitUsername: $gitUsername}}
+  ) {
+    id
+    name
+  }
+}
+    `;
+export type CreateOrganizationAwsCodeCommitMutationFn = Apollo.MutationFunction<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>;
+
+/**
+ * __useCreateOrganizationAwsCodeCommitMutation__
+ *
+ * To run a mutation, you first call `useCreateOrganizationAwsCodeCommitMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateOrganizationAwsCodeCommitMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createOrganizationAwsCodeCommitMutation, { data, loading, error }] = useCreateOrganizationAwsCodeCommitMutation({
+ *   variables: {
+ *      gitProvider: // value for 'gitProvider'
+ *      accessKeyId: // value for 'accessKeyId'
+ *      accessKeySecret: // value for 'accessKeySecret'
+ *      gitPassword: // value for 'gitPassword'
+ *      region: // value for 'region'
+ *      gitUsername: // value for 'gitUsername'
+ *   },
+ * });
+ */
+export function useCreateOrganizationAwsCodeCommitMutation(baseOptions?: Apollo.MutationHookOptions<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>(CreateOrganizationAwsCodeCommitDocument, options);
+      }
+export type CreateOrganizationAwsCodeCommitMutationHookResult = ReturnType<typeof useCreateOrganizationAwsCodeCommitMutation>;
+export type CreateOrganizationAwsCodeCommitMutationResult = Apollo.MutationResult<CreateOrganizationAwsCodeCommitMutation>;
+export type CreateOrganizationAwsCodeCommitMutationOptions = Apollo.BaseMutationOptions<CreateOrganizationAwsCodeCommitMutation, CreateOrganizationAwsCodeCommitMutationVariables>;
+export const CompleteGitOAuth2FlowDocument = gql`
+    mutation completeGitOAuth2Flow($code: String!, $gitProvider: EnumGitProvider!) {
+  completeGitOAuth2Flow(data: {code: $code, gitProvider: $gitProvider}) {
+    id
+    name
+  }
+}
+    `;
+export type CompleteGitOAuth2FlowMutationFn = Apollo.MutationFunction<CompleteGitOAuth2FlowMutation, CompleteGitOAuth2FlowMutationVariables>;
+
+/**
+ * __useCompleteGitOAuth2FlowMutation__
+ *
+ * To run a mutation, you first call `useCompleteGitOAuth2FlowMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCompleteGitOAuth2FlowMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [completeGitOAuth2FlowMutation, { data, loading, error }] = useCompleteGitOAuth2FlowMutation({
+ *   variables: {
+ *      code: // value for 'code'
+ *      gitProvider: // value for 'gitProvider'
+ *   },
+ * });
+ */
+export function useCompleteGitOAuth2FlowMutation(baseOptions?: Apollo.MutationHookOptions<CompleteGitOAuth2FlowMutation, CompleteGitOAuth2FlowMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CompleteGitOAuth2FlowMutation, CompleteGitOAuth2FlowMutationVariables>(CompleteGitOAuth2FlowDocument, options);
+      }
+export type CompleteGitOAuth2FlowMutationHookResult = ReturnType<typeof useCompleteGitOAuth2FlowMutation>;
+export type CompleteGitOAuth2FlowMutationResult = Apollo.MutationResult<CompleteGitOAuth2FlowMutation>;
+export type CompleteGitOAuth2FlowMutationOptions = Apollo.BaseMutationOptions<CompleteGitOAuth2FlowMutation, CompleteGitOAuth2FlowMutationVariables>;

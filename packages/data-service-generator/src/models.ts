@@ -798,7 +798,25 @@ export type GitOrganization = {
 };
 
 export type GitOrganizationCreateInput = {
+  awsCodeCommitInput?: InputMaybe<GitOrganizationCreateInputAwsCodeCommit>;
   gitProvider: EnumGitProvider;
+  githubInput?: InputMaybe<GitOrganizationCreateInputGitHub>;
+};
+
+export type GitOrganizationCreateInputAwsCodeCommit = {
+  /** AWS access key ID */
+  accessKeyId: Scalars['String']['input'];
+  /** AWS secret access key */
+  accessKeySecret: Scalars['String']['input'];
+  /** HTTPS Git credentials for AWS CodeCommit. Password */
+  gitPassword: Scalars['String']['input'];
+  /** HTTPS Git credentials for AWS CodeCommit. Username */
+  gitUsername: Scalars['String']['input'];
+  /** AWS region. Defaults to us-east-1 */
+  region?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type GitOrganizationCreateInputGitHub = {
   installationId: Scalars['String']['input'];
 };
 
@@ -889,7 +907,6 @@ export type Mutation = {
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
   createOneEntity: Entity;
-  /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;

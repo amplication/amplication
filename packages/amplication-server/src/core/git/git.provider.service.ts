@@ -26,6 +26,8 @@ import {
   CreateRepositoryArgs,
   RemoteGitRepository,
   GitProviderProperties,
+  RemoteGitOrganization,
+  AwsCodeCommitProviderOrganizationProperties,
 } from "@amplication/util/git";
 import {
   INVALID_RESOURCE_ID,
@@ -52,7 +54,9 @@ import { User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ProjectService } from "../project/project.service";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class GitProviderService {
   private gitProvidersConfiguration: GitProvidersConfiguration;
@@ -385,25 +389,57 @@ export class GitProviderService {
     return resource;
   }
 
-  // installation id flow (GitHub ONLY!)
   async createGitOrganization(
     args: CreateGitOrganizationArgs,
     currentUser: User
   ): Promise<GitOrganization> {
-    if (args.data.gitProvider !== EnumGitProvider.Github) {
-      throw new AmplicationError("Unsupported provider");
-    }
+    let installationId: string;
+    let gitProviderArgs: GitProviderArgs;
+    const { gitProvider, workspaceId, awsCodeCommitInput, githubInput } =
+      args.data;
 
-    const { gitProvider, installationId } = args.data;
-    // get the provider properties of the installationId flow (GitHub)
-    const providerOrganizationProperties: GitHubProviderOrganizationProperties =
-      {
-        installationId,
+    if (gitProvider === EnumGitProvider.Github) {
+      const { installationId } = githubInput;
+      // get the provider properties of the installationId flow (GitHub)
+      const providerOrganizationProperties: GitHubProviderOrganizationProperties =
+        {
+          installationId,
+        };
+
+      gitProviderArgs = {
+        provider: gitProvider,
+        providerOrganizationProperties,
       };
-    const gitProviderArgs = {
-      provider: gitProvider,
-      providerOrganizationProperties,
-    };
+    } else if (gitProvider === EnumGitProvider.AwsCodeCommit) {
+      const {
+        gitUsername: username,
+        gitPassword: password,
+        accessKeyId,
+        accessKeySecret,
+        region,
+      } = awsCodeCommitInput;
+
+      // get the provider properties of the installationId flow (AWS CodeCommit)
+      const providerOrganizationProperties: AwsCodeCommitProviderOrganizationProperties =
+        {
+          gitCredentials: {
+            username,
+            password,
+          },
+          sdkCredentials: {
+            accessKeyId,
+            accessKeySecret,
+            region,
+          },
+        };
+
+      gitProviderArgs = {
+        provider: gitProvider,
+        providerOrganizationProperties,
+      };
+    } else {
+      throw new ValidationError("Unsupported git provider");
+    }
 
     // instantiate the git client service with the provider and the provider properties
     const gitClientService = await new GitClientService().create(
@@ -432,7 +468,8 @@ export class GitProviderService {
           installationId: installationId,
           name: gitRemoteOrganization.name,
           type: gitRemoteOrganization.type,
-          providerProperties: providerOrganizationProperties as any,
+          providerProperties:
+            gitProviderArgs.providerOrganizationProperties as any,
         },
       });
     }
@@ -440,21 +477,20 @@ export class GitProviderService {
     await this.analytics.track({
       userId: currentUser.account.id,
       properties: {
-        workspaceId: args.data.workspaceId,
+        workspaceId: workspaceId,
         provider: gitProvider,
       },
       event: EnumEventType.GitHubAuthResourceComplete,
     });
 
     await this.projectService.disableDemoRepoForAllWorkspaceProjects(
-      args.data.workspaceId
+      workspaceId
     );
-
     return await this.prisma.gitOrganization.create({
       data: {
         workspace: {
           connect: {
-            id: args.data.workspaceId,
+            id: workspaceId,
           },
         },
         installationId,
@@ -463,7 +499,8 @@ export class GitProviderService {
         type: gitRemoteOrganization.type,
         useGroupingForRepositories:
           gitRemoteOrganization.useGroupingForRepositories,
-        providerProperties: providerOrganizationProperties as any,
+        providerProperties:
+          gitProviderArgs.providerOrganizationProperties as any,
       },
     });
   }
@@ -513,60 +550,6 @@ export class GitProviderService {
         provider: EnumGitProvider[provider],
         providerOrganizationProperties: providerProperties,
       };
-    }
-
-    if (isOAuthProviderOrganizationProperties(providerProperties)) {
-      const timeInMsLeft = providerProperties.expiresAt - Date.now();
-
-      this.logger.debug("Time left before token expires:", {
-        value: `${timeInMsLeft / 60000} minutes`,
-      });
-
-      if (timeInMsLeft > 5 * 60 * 1000) {
-        this.logger.debug("Token is still valid");
-        return {
-          provider: EnumGitProvider[provider],
-          providerOrganizationProperties: providerProperties,
-        };
-      }
-
-      const gitClientService = await new GitClientService().create(
-        {
-          provider: EnumGitProvider[provider],
-          providerOrganizationProperties: providerProperties,
-        },
-        this.gitProvidersConfiguration,
-        this.logger
-      );
-
-      this.logger.info("Token is going to be expired, refreshing...");
-      const newOAuthTokens = await gitClientService.refreshAccessToken();
-
-      const newProviderProperties = {
-        ...(providerProperties as object),
-        ...newOAuthTokens,
-      };
-
-      const updatedGitOrganization = await this.prisma.gitOrganization.update({
-        where: {
-          id,
-        },
-        data: {
-          providerProperties: newProviderProperties,
-        },
-      });
-
-      if (
-        isOAuthProviderOrganizationProperties(
-          updatedGitOrganization.providerProperties
-        )
-      ) {
-        return {
-          provider: EnumGitProvider[updatedGitOrganization.provider],
-          providerOrganizationProperties:
-            updatedGitOrganization.providerProperties,
-        };
-      }
     }
 
     this.logger.error(
