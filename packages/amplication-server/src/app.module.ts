@@ -18,6 +18,7 @@ import { join } from "path";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   imports: [
@@ -48,6 +49,9 @@ import { Logger } from "@amplication/util/logging";
     }),
     AmplicationLoggerModule.forRoot({
       component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: SERVICE_NAME,
     }),
     MorganModule,
     SegmentAnalyticsModule.registerAsync({

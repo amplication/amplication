@@ -19,16 +19,11 @@ on:
         default: false
   pull_request:
     types: [opened, reopened, synchronize]
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
   push:
     branches:
       - master
       - next
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.head_ref || github.ref_name }}
