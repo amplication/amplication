@@ -100,7 +100,7 @@ export function formatFieldName(fieldName: string | Func): string {
     return fieldName;
   }
 
-  return fieldName.name.replace(/_([a-z])/g, (g) => g[1].toUpperCase());
+  return fieldName.name;
 }
 
 export function formatDisplayName(displayName: string): string {
