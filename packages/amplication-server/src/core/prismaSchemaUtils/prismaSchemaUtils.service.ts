@@ -550,7 +550,7 @@ export class PrismaSchemaUtilsService {
               .model(model.name)
               .field(field.name)
               .then<Field>((field) => {
-                field.fieldType = formatModelName(field.fieldType as string);
+                field.fieldType = newName;
               });
           }
         });
