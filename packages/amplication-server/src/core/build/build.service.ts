@@ -53,6 +53,11 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
+const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
+  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+};
+
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
 export const GENERATE_STEP_MESSAGE = "Generating Application";
@@ -70,13 +75,13 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
   gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider}`;
+  `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Starting to push changes to ${gitProvider}`;
+  `Starting to push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
-  `Successfully pushed changes to ${gitProvider}`;
+  `Successfully pushed changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider} failed`;
+  `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]} failed`;
 
 export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
