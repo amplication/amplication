@@ -10,7 +10,7 @@ import { StorageModule } from "../storage/storage.module";
     QueueModule,
     StorageModule,
     AmplicationLoggerModule.forRoot({
-      serviceName: "storage-gateway-service",
+      component: "storage-gateway-service",
     }),
   ],
   controllers: [HealthController],

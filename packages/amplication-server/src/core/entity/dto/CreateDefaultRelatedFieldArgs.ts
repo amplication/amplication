@@ -11,4 +11,7 @@ export class CreateDefaultRelatedFieldArgs {
 
   @Field(() => String, { nullable: true })
   relatedFieldDisplayName?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  relatedFieldAllowMultipleSelection?: boolean;
 }

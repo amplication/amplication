@@ -35,19 +35,13 @@ After configuration of the client the next step would be to run the application.
 ```sh
 # installation of the dependencies
 $ npm install
-```
 
-```sh
 # starts the application in development mode - available by default under http://localhost:3001 
 $ npm run start
-```
 
-```sh
 # builds the application in production mode - available under 'build'
 $ npm run build
-```
 
-```sh
 # removes the single build dependency from the project
 $ npm run eject
 ```

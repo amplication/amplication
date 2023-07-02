@@ -38,7 +38,7 @@ yarn-error.log*
     \\"graphql\\": \\"15.6.1\\",
     \\"lodash\\": \\"4.17.21\\",
     \\"pluralize\\": \\"8.0.0\\",
-    \\"ra-data-graphql-amplication\\": \\"0.0.13\\",
+    \\"ra-data-graphql-amplication\\": \\"0.0.14\\",
     \\"react\\": \\"16.14.0\\",
     \\"react-admin\\": \\"3.19.11\\",
     \\"react-dom\\": \\"16.14.0\\",
@@ -1685,7 +1685,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
         </ReferenceField>
         <ReferenceManyField
           reference=\\"Order\\"
-          target=\\"CustomerId\\"
+          target=\\"customerId\\"
           label=\\"Orders\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2156,7 +2156,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <TextField label=\\"Name\\" source=\\"name\\" />
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"organizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2204,7 +2204,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         </ReferenceManyField>
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"vipOrganizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -3006,6 +3006,7 @@ services:
     \\"bcrypt\\": \\"5.0.1\\",
     \\"class-transformer\\": \\"0.5.1\\",
     \\"class-validator\\": \\"0.14.0\\",
+    \\"dotenv\\": \\"^16.1.4\\",
     \\"graphql\\": \\"15.7.2\\",
     \\"graphql-type-json\\": \\"0.3.2\\",
     \\"nest-access-control\\": \\"2.0.3\\",
@@ -3014,6 +3015,7 @@ services:
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"10.9.1\\",
+    \\"type-fest\\": \\"0.13.1\\",
     \\"validator\\": \\"^13.9.0\\"
   },
   \\"devDependencies\\": {
@@ -3030,7 +3032,6 @@ services:
     \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
-    \\"type-fest\\": \\"0.11.0\\",
     \\"typescript\\": \\"4.2.3\\"
   },
   \\"jest\\": {
@@ -3051,7 +3052,7 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
-  name               String              @unique @db.VarChar(200)
+  name               String              @unique @map(\\"name\\")
   bio                String
   email              String
   age                Int
@@ -3069,8 +3070,8 @@ model User {
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
 
-  @@unique([name(sort: Desc), displayName])
-  @@index([name, displayName])
+  @@unique([name(sort: Desc), email])
+  @@index([name, email])
   @@map(\\"users\\")
 }
 
@@ -6917,6 +6918,7 @@ async function main() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      forbidUnknownValues: false,
     })
   );
 

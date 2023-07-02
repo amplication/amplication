@@ -1,4 +1,4 @@
-import { EnumGitProvider } from "@amplication/git-utils";
+import { EnumGitProvider } from "@amplication/util/git";
 import { IsString, IsUrl, IsOptional, IsEnum } from "class-validator";
 
 export class Value {
