@@ -20,10 +20,11 @@ export class AmplicationLogger implements LoggerService, ILogger {
     options: AmplicationLoggerModulesOptions
   ) {
     this.loggerOptions = {
-      serviceName: options.serviceName,
-      logLevel: options.logLevel ?? LogLevel[process.env.LOG_LEVEL],
+      component: options.component,
+      logLevel: options.logLevel,
       isProduction:
         options.isProduction ?? process.env.NODE_ENV === "production",
+      metadata: options.metadata,
     };
 
     this.logger = new Logger(this.loggerOptions);

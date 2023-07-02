@@ -23,6 +23,8 @@ export class ActionResolver {
 
   @ResolveField(() => [ActionStep])
   async steps(@Parent() action: Action) {
+    //in case the action already has steps, return them instead of fetching from the db
+    if (action.steps?.length > 0) return action.steps;
     return this.service.getSteps(action.id);
   }
 }

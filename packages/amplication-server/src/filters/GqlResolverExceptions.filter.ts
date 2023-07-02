@@ -21,6 +21,10 @@ export type RequestData = {
   userId: string;
 };
 
+interface RequestWithUser extends Request {
+  user: { id: string } | null;
+}
+
 export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = "P2002";
 
 export class UniqueKeyException extends ApolloError {
@@ -37,8 +41,8 @@ export class InternalServerError extends ApolloError {
   }
 }
 
-export function createRequestData(req: Request): RequestData {
-  const user = req.user as { id: string } | null;
+export function createRequestData(req: RequestWithUser): RequestData {
+  const user = req.user;
   return {
     query: req.body?.query,
     hostname: req.hostname,

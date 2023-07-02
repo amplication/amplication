@@ -2,29 +2,16 @@ import React from "react";
 import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
 import "./OverviewTile.scss";
 import { gql, useQuery } from "@apollo/client";
-import { ServiceSettings, Resource } from "../../models";
+import { ServiceSettings, EnumAuthProviderType, Resource } from "../../models";
 import { GET_RESOURCE_SETTINGS } from "../resourceSettings/GenerationSettingsForm";
-import usePlugins from "../../Plugins/hooks/usePlugins";
 
 type Props = {
   resourceId: string;
 };
 
-const AuthProviderLabels = {
-  http: "HTTP",
-  jwt: "Passport JWT",
-};
-
-export enum EnumDbType {
-  mongo = "mongo",
-  postgres = "postgres",
-  mysql = "mysql",
-}
-
-const DbTypeLabels: { [k in EnumDbType]: string } = {
-  [EnumDbType.mongo]: "MongoDB",
-  [EnumDbType.mysql]: "MySQL",
-  [EnumDbType.postgres]: "PostgresSQL",
+const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
+  [EnumAuthProviderType.Http]: "HTTP",
+  [EnumAuthProviderType.Jwt]: "Passport JWT",
 };
 
 const CLASS_NAME = "overview-tile";
@@ -50,25 +37,6 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
   const connectedGitProvider =
     resourceGitRepository?.resource.gitRepository?.gitOrganization.provider ||
     `git provider`;
-  const generateGraphQL = data?.serviceSettings.serverSettings.generateGraphQL;
-  const generateAdminUI = data?.serviceSettings.adminUISettings.generateAdminUI;
-  const generateRestApi = data?.serviceSettings.serverSettings.generateRestApi;
-
-  const { pluginInstallations } = usePlugins(resourceId);
-  const dbPluginInstallation = pluginInstallations?.filter(
-    (pluginInstallation) => pluginInstallation.pluginId.split("-")[0] === "db"
-  );
-  const dbTypeDisplayName = dbPluginInstallation?.[0]?.displayName;
-  const dbType = dbTypeDisplayName
-    ? DbTypeLabels[dbTypeDisplayName]
-    : "PostgresSQL";
-  const authTypePluginInstallation = pluginInstallations?.filter(
-    (pluginInstallation) =>
-      pluginInstallation.pluginId.split("-")[0] === "auth" &&
-      pluginInstallation.pluginId !== "auth-core"
-  );
-
-  const authType = authTypePluginInstallation?.[0]?.pluginId.split("-")[1];
 
   return (
     <Panel
@@ -106,21 +74,9 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
             </div>
           </div>
           <div className={`${CLASS_NAME}__content__item`}>
-            {generateGraphQL ? (
-              <div className={`${CLASS_NAME}__content__item__text`}>
-                GraphQL
-              </div>
-            ) : null}
-            {generateRestApi ? (
-              <div className={`${CLASS_NAME}__content__item__text`}>
-                REST API
-              </div>
-            ) : null}
-            {generateAdminUI ? (
-              <div className={`${CLASS_NAME}__content__item__text`}>
-                Admin UI
-              </div>
-            ) : null}
+            <div className={`${CLASS_NAME}__content__item__text`}>GraphQL</div>
+            <div className={`${CLASS_NAME}__content__item__text`}>REST API</div>
+            <div className={`${CLASS_NAME}__content__item__text`}>Admin UI</div>
           </div>
           <div className={`${CLASS_NAME}__content__item`}>
             <div className={`${CLASS_NAME}__content__item__text`}>
@@ -130,7 +86,7 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>
-              {dbType || "PostgresSQL"}
+              PostgresSQL
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Docker</div>
           </div>
@@ -138,7 +94,12 @@ const OverviewTile: React.FC<Props> = ({ resourceId }: Props) => {
             <div className={`${CLASS_NAME}__content__item__text`}>
               Authentication
               <span className={`${CLASS_NAME}__content__item__text--blue`}>
-                {AuthProviderLabels[authType] || "Disabled"}
+                {
+                  AuthProviderLabels[
+                    data?.serviceSettings.authProvider ||
+                      EnumAuthProviderType.Jwt
+                  ]
+                }
               </span>
             </div>
             <div className={`${CLASS_NAME}__content__item__text`}>Jest</div>

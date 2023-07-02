@@ -1,4 +1,4 @@
-import { File } from "@amplication/git-utils";
+import { File } from "@amplication/util/git";
 import { DiffSet } from "dir-compare";
 import { DiffVisitorFn } from "./diff.types";
 
