@@ -4,6 +4,7 @@ import {
   CreatePullRequestCommentArgs,
   CreatePullRequestFromFilesArgs,
   CreateRepositoryArgs,
+  EnumGitOrganizationType,
   GetBranchArgs,
   GetFileArgs,
   GetRepositoriesArgs,
@@ -336,10 +337,16 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling getOrganization()", async () => {
-    await expect(gitProvider.getOrganization()).rejects.toThrowError(
-      "Method not implemented."
-    );
+  describe("getOrganization", () => {
+    it("should return an hardcoded aws codecommit organisation", async () => {
+      const result = await gitProvider.getOrganization();
+
+      expect(result).toEqual({
+        name: "AWS CodeCommit",
+        type: EnumGitOrganizationType.User,
+        useGroupingForRepositories: false,
+      });
+    });
   });
 
   it("should throw an error when calling getFile()", async () => {

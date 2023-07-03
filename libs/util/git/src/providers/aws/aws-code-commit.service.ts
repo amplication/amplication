@@ -25,6 +25,7 @@ import {
   CreatePullRequestCommentArgs,
   Bot,
   AwsCodeCommitProviderOrganizationProperties,
+  EnumGitOrganizationType,
 } from "../../types";
 import {
   BatchGetRepositoriesCommand,
@@ -200,9 +201,15 @@ export class AwsCodeCommitService implements GitProvider {
   async deleteGitOrganization(): Promise<boolean> {
     throw NotImplementedError;
   }
+
   async getOrganization(): Promise<RemoteGitOrganization> {
-    throw NotImplementedError;
+    return {
+      name: "AWS CodeCommit",
+      type: EnumGitOrganizationType.User,
+      useGroupingForRepositories: false,
+    };
   }
+
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
     throw NotImplementedError;
   }
