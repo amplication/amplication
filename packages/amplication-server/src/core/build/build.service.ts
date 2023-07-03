@@ -53,8 +53,9 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
-  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
+  [EnumGitProvider.Github]: "GitHub",
 };
 
 export const HOST_VAR = "HOST";
