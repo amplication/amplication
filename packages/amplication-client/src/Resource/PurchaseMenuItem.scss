@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+.purchase-menu-item {
+  .amp-menu-item {
+    i {
+      color: var(--black100);
+    }
+
+    &:before {
+      background-color: var(--primary);
+    }
+  }
+}
+
+.purchase-menu-item__popover {
+  .amp-popover {
+    &__content {
+      background: var(--white) !important;
+
+      padding: var(--default-spacing) !important;
+      border: $border-black100;
+    }
+
+    &__arrow {
+      color: var(--black100) !important;
+    }
+  }
+
+  &__highlight {
+    color: var(--dark-secondary-turquoise);
+  }
+}

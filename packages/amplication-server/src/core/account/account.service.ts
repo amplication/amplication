@@ -14,7 +14,10 @@ export class AccountService {
     private analytics: SegmentAnalyticsService
   ) {}
 
-  async createAccount(args: Prisma.AccountCreateArgs): Promise<Account> {
+  async createAccount(
+    args: Prisma.AccountCreateArgs,
+    identityProvider: string
+  ): Promise<Account> {
     const account = await this.prisma.account.create(args);
 
     const userData: IdentifyData = {
@@ -30,6 +33,9 @@ export class AccountService {
     await this.analytics.track({
       userId: account.id,
       event: EnumEventType.Signup,
+      properties: {
+        identityProvider,
+      },
       context: {
         traits: userData,
       },

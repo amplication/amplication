@@ -4,7 +4,7 @@ import {
   GitHubProviderOrganizationProperties,
   GitResourceMeta,
   OAuthProviderOrganizationProperties,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import {
   IsEnum,
   IsNumber,

@@ -26,6 +26,7 @@ const EXAMPLE_OTHER_ENTITY_NAME = "ExampleEntityName";
 const EXAMPLE_ENTITY_FIELD_NAME = "ExampleEntityFieldName";
 const EXAMPLE_LOOKUP_ENTITY_NAME = "ExampleLookupEntity";
 const EXAMPLE_LOOKUP_FIELD_NAME = "exampleLookupField";
+const EXAMPLE_FK_FIELD_NAME = "ExampleFkFieldName";
 
 const EXAMPLE_SERVER_DIRECTORIES: serverDirectories = {
   baseDirectory: "ExampleBaseDirectory",
@@ -310,6 +311,7 @@ describe("createPrismaFields", () => {
         relatedEntityId: EXAMPLE_ENTITY.id,
         relatedEntity: EXAMPLE_ENTITY,
         relatedField: EXAMPLE_FIELD,
+        fkFieldName: `${EXAMPLE_ENTITY_FIELD_NAME}Id`,
       },
       PrismaSchemaDSL.createObjectField(
         EXAMPLE_ENTITY_FIELD_NAME,
@@ -318,6 +320,25 @@ describe("createPrismaFields", () => {
         true,
         null,
         [`${EXAMPLE_ENTITY_FIELD_NAME}Id`],
+        [`id`]
+      ),
+    ],
+    [
+      "Lookup With Custom Foreign Key Field Name",
+      EnumDataType.Lookup,
+      {
+        relatedEntityId: EXAMPLE_ENTITY.id,
+        relatedEntity: EXAMPLE_ENTITY,
+        relatedField: EXAMPLE_FIELD,
+        fkFieldName: EXAMPLE_FK_FIELD_NAME,
+      },
+      PrismaSchemaDSL.createObjectField(
+        EXAMPLE_ENTITY_FIELD_NAME,
+        EXAMPLE_ENTITY_NAME,
+        false,
+        true,
+        null,
+        [EXAMPLE_FK_FIELD_NAME],
         [`id`]
       ),
     ],

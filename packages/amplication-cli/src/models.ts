@@ -14,6 +14,8 @@ export type Scalars = {
   DateTime: any;
   /** The `JSONObject` scalar type represents JSON objects as specified by [ECMA-404](http://www.ecma-international.org/publications/files/ECMA-ST/ECMA-404.pdf). */
   JSONObject: any;
+  /** The `Upload` scalar type represents a file upload. */
+  Upload: any;
 };
 
 export type Account = {
@@ -284,6 +286,15 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String'];
 };
 
+export type CreateEntitiesFromPrismaSchemaInput = {
+  resourceId: Scalars['String'];
+};
+
+export type CreateEntitiesFromPrismaSchemaResponse = {
+  actionLog: Action;
+  entities: Array<Entity>;
+};
+
 export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -302,7 +313,7 @@ export type CreateGitRepositoryInput = {
   groupName?: InputMaybe<Scalars['String']>;
   isPublic: Scalars['Boolean'];
   name: Scalars['String'];
-  resourceId: Scalars['String'];
+  resourceId?: InputMaybe<Scalars['String']>;
 };
 
 export type DateTimeFilter = {
@@ -365,6 +376,8 @@ export type EntityCreateInput = {
   customAttributes?: InputMaybe<Scalars['String']>;
   description?: InputMaybe<Scalars['String']>;
   displayName: Scalars['String'];
+  /** allow creating the id for the entity when using import prisma schema because we need it for the relation */
+  id?: InputMaybe<Scalars['String']>;
   name: Scalars['String'];
   pluralDisplayName: Scalars['String'];
   resource: WhereParentIdInput;
@@ -861,22 +874,23 @@ export type Mutation = {
   commit?: Maybe<Commit>;
   completeGitOAuth2Flow: GitOrganization;
   completeInvitation: Auth;
+  connectGitRepository: Resource;
   connectResourceGitRepository: Resource;
   connectResourceToProjectRepository: Resource;
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
+  createEntitiesFromPrismaSchema: CreateEntitiesFromPrismaSchemaResponse;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
-  createGitRepository: Resource;
   createMessageBroker: Resource;
   createOneEntity: Entity;
   /** Only for GitHub integrations */
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
   createProject: Project;
-  createRemoteGitRepository: Scalars['Boolean'];
+  createRemoteGitRepository: RemoteGitRepository;
   createResourceRole: ResourceRole;
   createService: Resource;
   createServiceTopics: ServiceTopics;
@@ -952,6 +966,11 @@ export type MutationCompleteInvitationArgs = {
 };
 
 
+export type MutationConnectGitRepositoryArgs = {
+  data: CreateGitRepositoryInput;
+};
+
+
 export type MutationConnectResourceGitRepositoryArgs = {
   data: ConnectGitRepositoryInput;
 };
@@ -978,14 +997,22 @@ export type MutationCreateDefaultEntitiesArgs = {
 
 
 export type MutationCreateDefaultRelatedFieldArgs = {
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;
 };
 
 
+export type MutationCreateEntitiesFromPrismaSchemaArgs = {
+  data: CreateEntitiesFromPrismaSchemaInput;
+  file: Scalars['Upload'];
+};
+
+
 export type MutationCreateEntityFieldArgs = {
   data: EntityFieldCreateInput;
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
 };
@@ -993,11 +1020,6 @@ export type MutationCreateEntityFieldArgs = {
 
 export type MutationCreateEntityFieldByDisplayNameArgs = {
   data: EntityFieldCreateByDisplayNameInput;
-};
-
-
-export type MutationCreateGitRepositoryArgs = {
-  data: CreateGitRepositoryInput;
 };
 
 
@@ -1206,6 +1228,7 @@ export type MutationUpdateEntityArgs = {
 
 export type MutationUpdateEntityFieldArgs = {
   data: EntityFieldUpdateInput;
+  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']>;
   relatedFieldDisplayName?: InputMaybe<Scalars['String']>;
   relatedFieldName?: InputMaybe<Scalars['String']>;
   where: WhereUniqueInput;

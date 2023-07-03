@@ -3,6 +3,7 @@ import * as models from "../models";
 import { EnumAuthProviderType } from "../models";
 import { DefineUser } from "./create-resource/CreateServiceWizard";
 import { TemplateSettings } from "./create-resource/wizardResourceSchema";
+import { EnumGitProvider } from "../models";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
@@ -188,4 +189,11 @@ export const resourceThemeMap: {
     icon: "queue",
     color: "#8DD9B9",
   },
+};
+
+export const PROVIDERS_DISPLAY_NAME: {
+  [key in EnumGitProvider]: string;
+} = {
+  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
 };

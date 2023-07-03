@@ -56,6 +56,8 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Json]: builders.tsTypeReference(
     builders.identifier(INPUT_JSON_VALUE_KEY)
   ),
+  [ScalarType.Decimal]: builders.tsNumberKeyword(),
+  [ScalarType.BigInt]: builders.tsNumberKeyword(),
 };
 
 const PRISMA_SCALAR_TO_QUERY_TYPE: {
@@ -73,6 +75,10 @@ const PRISMA_SCALAR_TO_QUERY_TYPE: {
     SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.String].type,
   [ScalarType.Json]:
     SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Json].type,
+  [ScalarType.Decimal]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.Decimal].type,
+  [ScalarType.BigInt]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.BigInt].type,
 };
 
 const PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE: {
@@ -93,6 +99,12 @@ const PRISMA_SCALAR_TO_NULLABLE_QUERY_TYPE: {
       .type,
   [ScalarType.Json]:
     SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.JsonNullable].type,
+  [ScalarType.Decimal]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.DecimalNullable]
+      .type,
+  [ScalarType.BigInt]:
+    SCALAR_FILTER_TO_MODULE_AND_TYPE[EnumScalarFiltersTypes.BigIntNullable]
+      .type,
 };
 
 const PRISMA_SCALAR_TO_DECORATOR_ID: {
@@ -104,6 +116,8 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Int]: IS_INT_ID,
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: IS_JSON_VALUE_ID,
+  [ScalarType.Decimal]: IS_NUMBER_ID,
+  [ScalarType.BigInt]: IS_NUMBER_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
@@ -118,6 +132,8 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [ScalarType.Int]: NUMBER_ID,
   [ScalarType.String]: STRING_ID,
   [ScalarType.Json]: null,
+  [ScalarType.Decimal]: NUMBER_ID,
+  [ScalarType.BigInt]: NUMBER_ID,
 };
 export const EACH_ID = builders.identifier("each");
 export const TRUE_LITERAL = builders.booleanLiteral(true);
