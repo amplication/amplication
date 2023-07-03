@@ -3,11 +3,9 @@ import {
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
   CreatePullRequestFromFilesArgs,
-  CreateRepositoryArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
   GetFileArgs,
-  GetRepositoriesArgs,
   GitProviderCreatePullRequestArgs,
   GitProviderGetPullRequestArgs,
 } from "../../types";
@@ -20,6 +18,8 @@ import {
   ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
 import { mockClient } from "aws-sdk-client-mock";
+
+const awsClientMock = mockClient(CodeCommitClient);
 
 describe("AwsCodeCommit", () => {
   let gitProvider: AwsCodeCommitService;
@@ -39,6 +39,8 @@ describe("AwsCodeCommit", () => {
       },
       MockedLogger
     );
+
+    awsClientMock.reset();
   });
 
   it("should throw an error when calling init()", async () => {
@@ -78,7 +80,6 @@ describe("AwsCodeCommit", () => {
   });
 
   describe("getRepository", () => {
-    const awsClientMock = mockClient(CodeCommitClient);
     let getRepositoryArgs;
 
     beforeEach(() => {
@@ -97,9 +98,10 @@ describe("AwsCodeCommit", () => {
         repositoryName: "example-repo",
         cloneUrlHttp: "https://github.com/example/example-repo.git",
       };
+
       awsClientMock
         .on(GetRepositoryCommand, {
-          repositoryName: "example-repo",
+          repositoryName: getRepositoryArgs.repositoryName,
         })
         .resolves({
           repositoryMetadata,
@@ -124,7 +126,7 @@ describe("AwsCodeCommit", () => {
       const repositoryMetadata = {};
       awsClientMock
         .on(GetRepositoryCommand, {
-          repositoryName: "example-repo",
+          repositoryName: getRepositoryArgs.repositoryName,
         })
         .resolves({
           repositoryMetadata,
@@ -137,7 +139,6 @@ describe("AwsCodeCommit", () => {
   });
 
   describe("getRepositories", () => {
-    const awsClientMock = mockClient(CodeCommitClient);
     let getRepositoriesArgs;
 
     beforeEach(() => {
@@ -273,7 +274,6 @@ describe("AwsCodeCommit", () => {
   });
 
   describe("createRepository", () => {
-    const awsClientMock = mockClient(CodeCommitClient);
     let createRepositoryArgs;
 
     beforeEach(() => {
