@@ -3,7 +3,10 @@
   "files": [],
   "include": [],
   "compilerOptions": {
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@app/custom-validators": ["src/validators"]
+    }
   },
   "references": [
     { "path": "./tsconfig.app.json" },
