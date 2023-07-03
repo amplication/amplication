@@ -1,0 +1,218 @@
+@import "../style/index.scss";
+
+$menu-icon-font-size: 16px;
+$logo-font-size: 24px;
+$expand-button-padding: 4px;
+
+.main-layout {
+  height: calc(100%);
+  display: flex;
+  flex-direction: column;
+  background-color: var(--surface);
+  color: var(--black100);
+
+  &__wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  &__footer {
+    max-height: var(--app-footer-height);
+    background-color: var(--black5);
+    border-top: $border-black10;
+  }
+
+  &__content {
+    position: relative;
+    padding: 0;
+    flex: 1;
+    height: 100%;
+    overflow: hidden;
+    box-sizing: border-box;
+  }
+  &__menu {
+    height: 100%;
+    width: auto;
+    background-color: var(--menu-background-color);
+    border-right: $border-black10;
+    transition: width var(--menu-expand-animation-duration) ease-in;
+    overflow: visible;
+
+    &__popover {
+      --mdc-theme-on-surface: var(--menu-background-color);
+      .rmwc-tooltip-inner {
+        background-color: var(--menu-background-color);
+      }
+    }
+
+    &__wrapper {
+      height: 100%;
+      overflow: visible;
+      display: flex;
+      flex-direction: row;
+
+      &__menu-fixed-panel {
+        @include scrollbars($default-scroll-width, var(--black60), transparent);
+        background-color: var(--menu-fixed-panel-background);
+        height: 100%;
+        width: var(--fixed-menu-panel-width);
+        max-width: var(--fixed-menu-panel-max-width);
+        overflow: auto;
+        transition: width var(--menu-expand-animation-duration) ease-in;
+
+        &:empty {
+          width: 0;
+        }
+      }
+
+      &__main-menu {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        overflow: visible;
+        width: var(--menu-width);
+      }
+
+      .logo-container {
+        height: calc(var(--menu-width) + (var(--default-spacing)));
+        width: 100%;
+        overflow: hidden;
+        transition: all var(--menu-expand-animation-duration) ease-in;
+
+        // background-color: var(--white);
+        position: relative;
+        padding: var(--default-spacing);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+
+        &:before {
+          content: "";
+          position: absolute;
+          bottom: 0;
+          left: var(--default-spacing);
+          right: var(--default-spacing);
+          border-bottom: $border-white-transparent;
+        }
+
+        &__logo {
+          height: calc(var(--menu-width) - var(--default-spacing) * 2);
+          background-size: cover;
+          width: 100%;
+          display: inline-flex;
+          align-items: baseline;
+          justify-content: flex-start;
+          i {
+            font-size: $logo-font-size;
+            margin-right: var(--default-spacing);
+            color: var(--static-white);
+            font-size: 28px;
+          }
+          svg {
+            opacity: 0;
+            min-width: 101px;
+            transition: all var(--menu-expand-animation-duration) ease-out;
+          }
+        }
+      }
+      .menu-collapse {
+        padding: 0 var(--default-spacing);
+        padding-top: var(--default-spacing);
+        box-sizing: border-box;
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-end;
+        align-items: center;
+        button {
+          color: var(--black30);
+          padding: 0 $expand-button-padding;
+          border: none;
+          background: transparent;
+          cursor: pointer;
+
+          &:hover,
+          &:active,
+          &:focus {
+            border: none;
+            outline: none;
+          }
+
+          &:hover,
+          &:active {
+            color: var(--primary);
+          }
+
+          i {
+            transform: rotate(0deg);
+            transition: all var(--menu-expand-animation-duration) ease-in;
+            font-size: $menu-icon-font-size;
+          }
+        }
+      }
+      .menu-container {
+        flex: 1;
+        @include scrollbars(5px, var(--black60), transparent);
+        overflow-y: auto;
+        overflow-x: hidden;
+        overflow: visible;
+        padding: var(--default-spacing) 0;
+      }
+      .bottom-menu-container {
+        padding-bottom: var(--default-spacing);
+        overflow: hidden;
+        overflow: visible;
+      }
+    }
+  }
+
+  &__aside {
+    &--position-right {
+      border-left: $border-black10;
+    }
+
+    &--position-left {
+      border-right: $border-black10;
+    }
+
+    &__expandable {
+      @include scrollbars($default-scroll-width, var(--black60), transparent);
+      background-color: var(--menu-fixed-panel-background);
+      height: 100%;
+      width: var(--fixed-menu-panel-width);
+      max-width: var(--fixed-menu-panel-max-width);
+      overflow: auto;
+      transition: width var(--menu-expand-animation-duration) ease-in;
+
+      &:empty {
+        width: 0;
+      }
+    }
+  }
+
+  &--mobile {
+    .main-layout__menu {
+      &.mdc-drawer {
+        background-color: transparent;
+        box-shadow: none;
+        border-right: none;
+        position: absolute;
+
+        .logo-container {
+          &:before {
+            display: none;
+          }
+        }
+
+        .menu-collapse,
+        .menu-container,
+        .bottom-menu-container {
+          display: none;
+        }
+      }
+    }
+  }
+}

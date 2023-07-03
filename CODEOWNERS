@@ -1,0 +1,8 @@
+# this file is used to assure specific people can sign-off on parts of the code base
+
+# as the snapshot files are required to be updated when changes to the data-service-generator
+# are made, as this impacts the generated code it is important that changes are validated before
+# merging them to the default branch.
+
+packages/data-service-generator/src/tests/__snapshots__/ @amplication/data-service-generator
+

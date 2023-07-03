@@ -1,0 +1,8 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/boolean.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "boolean",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {}
+}

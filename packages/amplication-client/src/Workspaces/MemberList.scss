@@ -1,0 +1,37 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.member-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--large-spacing);
+
+    .search-field {
+      width: var(--form-field-long);
+    }
+  }
+  &__separator {
+    margin: var(--default-spacing-small) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+  &__title {
+    @include body2;
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__empty-state {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+
+    &__title {
+      @include pageTitle;
+      color: var(--black60);
+      text-align: center;
+      margin-bottom: var(--large-spacing);
+    }
+  }
+}

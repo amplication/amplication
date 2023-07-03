@@ -1,0 +1,48 @@
+.resource-namefield {
+  &__input__container {
+    z-index: 10;
+  }
+  &__form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  &__input {
+    text-align: center;
+    outline: none;
+    border: none;
+    background: none;
+    font-size: inherit;
+    font-family: inherit;
+  }
+
+  &__saved {
+    color: var(--positive-default);
+  }
+  &__invalid {
+    color: var(--negative-light);
+    cursor: pointer;
+  }
+  &__tooltip_invalid::after {
+    border: 1px solid var(--negative);
+    background-color: var(--white);
+    color: var(--black100);
+  }
+  &__edit {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  &__edit_icon {
+    cursor: pointer;
+    position: relative;
+    top: 2px;
+    left: 5px;
+  }
+}
+
+.amplication-label__error {
+  font-size: 12px;
+  line-height: 20px;
+}

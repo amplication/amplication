@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.profile-form {
+  @include modalForm;
+  padding-top: 0;
+
+  &__divider {
+    width: 100%;
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
+    margin-bottom: var(--large-spacing);
+    margin-top: 0;
+  }
+
+  .text-input {
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__submitButton {
+    display: flex;
+    justify-content: flex-end;
+    .amp-button {
+      width: auto;
+    }
+  }
+}

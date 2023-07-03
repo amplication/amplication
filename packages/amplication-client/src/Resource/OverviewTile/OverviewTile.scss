@@ -1,0 +1,50 @@
+@import "../../style/index.scss";
+
+$overview-tile-min-height: 231px;
+$overview-tile-item-min-width: 170px;
+$item-info-spacing: 6px;
+$item-text-spacing: 10px;
+
+.overview-tile {
+  padding: var(--large-spacing);
+  position: relative;
+  min-height: $overview-tile-min-height;
+  background-color: var(--black2);
+  margin: 0;
+
+  &__header {
+    @include flexVerticalCenter;
+    margin-bottom: var(--default-spacing);
+
+    &__title {
+      @include body4;
+      margin-bottom: 0;
+      margin-left: var(--default-spacing-small);
+    }
+  }
+
+  &__message {
+    @include body3;
+    margin-bottom: var(--double-spacing);
+  }
+
+  &__content {
+    display: flex;
+    flex-wrap: wrap;
+
+    &__item {
+      flex: 1;
+      min-width: $overview-tile-item-min-width;
+
+      &__text {
+        @include body3;
+        margin-bottom: $item-text-spacing;
+
+        &--blue {
+          color: var(--dark-secondary-turquoise);
+          margin-left: $item-info-spacing;
+        }
+      }
+    }
+  }
+}

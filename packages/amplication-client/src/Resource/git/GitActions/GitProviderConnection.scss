@@ -1,0 +1,60 @@
+@import "../../../style/index.scss";
+
+.git-provider-connection {
+  display: flex;
+  align-items: center;
+
+  padding: var(--default-spacing);
+  gap: var(--default-spacing-small);
+
+  border: 1px solid var(--black10);
+  border-radius: var(--default-spacing-small);
+
+  &.enabled {
+    background-color: var(--white);
+  }
+
+  &__name {
+    @include title-14;
+  }
+
+  &__controls {
+    display: flex;
+    align-items: center;
+    gap: var(--default-spacing-small);
+    margin-left: auto;
+  }
+
+  &__lock {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
+  &__tooltip__window {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .amp-icon {
+      color: #f85b6e;
+    }
+
+    &__info {
+      .upgrade-link,
+      .contact-us-link {
+        font-weight: 600;
+      }
+    }
+  }
+
+  &__connect {
+    min-width: auto;
+    height: 28px;
+  }
+
+  &__coming_soon {
+    font-size: 10px;
+    color: (var(--black40));
+  }
+}

@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+RED='\033[0;31;1m'
+CLEAR='\033[0m'
+
+. "$(dirname -- "$0")/_/husky.sh"
+
+branch="$(git rev-parse --abbrev-ref HEAD)"
+
+if [ "$branch" = "master" ] | [ "$branch" = "main" ] | [ "$branch" = "next" ]; then  
+  echo;
+  echo "${RED}========== You cannot pass! 🧙 ==========${CLEAR}";
+  echo "${RED}You can't commit directly to master branch${CLEAR}"; echo;
+  exit 1;
+fi
+
+npm run precommit

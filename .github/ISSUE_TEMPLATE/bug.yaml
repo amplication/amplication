@@ -1,0 +1,85 @@
+name: Bug Report
+description: Problems and issues with code of Amplication
+title: "🐛 Bug Report: "
+labels: ["type: bug"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
+        Thank you for finding the time to report the problem!
+
+        We appreciate the community's efforts to improve Amplication.
+
+        Note, that after you create an issue, if you have a change ready to submit!
+
+        You can open a [Pull Request](https://github.com/amplication/amplication/pulls)  immediately after.
+        <br clear='left'/>"
+  - type: textarea
+    attributes:
+      label: What happened?
+      description: Please provide as much info as possible. If this matter is security related, please disclose it privately via [Amplication Security]
+      placeholder: >
+        Please provide the context in which the problem occurred and explain what happened
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: What you expected to happen
+      description: What do you think went wrong?
+      placeholder: >
+        Please explain why you think the behaviour is erroneous. It is extremely helpful if you copy&paste
+        the fragment of logs showing the exact error messages or wrong behaviour and screenshots for
+        UI problems or a video of you demonstrating the problem. You can include files by
+        dragging and dropping them here.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: How to reproduce
+      description: >
+        What should we do to reproduce the problem? If you are not able to provide a reproducible case,
+        please open a [Discussion](https://github.com/amplication/amplication/discussions) instead.
+      placeholder: >
+        Please make sure you provide a reproducible step-by-step case of how to reproduce the problem
+        as minimally and precisely as possible. Keep in mind we do not have access to your local environment.
+        Remember that non-reproducible issues will be closed! Opening a discussion is recommended as a
+        first step.
+    validations:
+      required: true
+  - type: input
+    attributes:
+      label: Amplication version
+      description: >
+        What Amplication version are you using?
+
+  - type: textarea
+    attributes:
+      label: Environment
+      description: In which environment does the problem occur?
+      placeholder: "
+        Node version: [node -v] \n
+        NPM version: [npm -v] \n
+        Docker version: [docker -v] \n
+        Cloud Provider: [AWS, GCP, Azure, Heroku, ...] \n
+        OS Details (Linux): [cat /etc/os-release && uname -a]\n
+        OS Details (Windows): [wmic os get Caption, Version, BuildNumber, OSArchitecture]
+        "
+
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: >
+        This is absolutely not required, but we are happy to guide you in the contribution process
+        especially if you already have a good understanding of how to implement the fix.
+        Amplication is a community-managed project and we love to bring new contributors in.
+        Find us in #support on [Discord](https://amplication.com/discord)!
+      multiple: true
+      options:
+        - "Yes I am willing to submit a PR!"
+  - type: markdown
+    attributes:
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)
