@@ -2,16 +2,21 @@
 export default {
   displayName: "@amplication/util/git",
   preset: "../../../jest.preset.js",
+  globals: {
+    "ts-jest": {
+      tsconfig: "<rootDir>/tsconfig.spec.json",
+    },
+  },
   testEnvironment: "node",
   transform: {
-    "^.+\\.[tj]sx?$": "babel-jest",
+    "^.+\\.[tj]s$": "ts-jest",
   },
-  moduleFileExtensions: ["ts", "tsx", "js", "jsx"],
+  moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../../coverage/libs/util/git",
   coverageThreshold: {
     global: {
-      branches: 31.25,
-      lines: 25,
+      branches: 80,
+      lines: 40,
     },
   },
 };

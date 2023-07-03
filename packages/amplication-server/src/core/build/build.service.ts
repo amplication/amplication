@@ -33,8 +33,7 @@ import { BillingService } from "../billing/billing.service";
 import {
   EnumGitProvider,
   EnumPullRequestMode,
-  GitHubProviderOrganizationProperties,
-  OAuthProviderOrganizationProperties,
+  GitProviderProperties,
 } from "@amplication/util/git";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
@@ -54,8 +53,9 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
-  [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
+  [EnumGitProvider.Github]: "GitHub",
 };
 
 export const HOST_VAR = "HOST";
@@ -88,9 +88,7 @@ export interface CreatePullRequestGitSettings {
   gitRepositoryName: string;
   repositoryGroupName?: string;
   gitProvider: EnumGitProvider;
-  gitProviderProperties:
-    | GitHubProviderOrganizationProperties
-    | OAuthProviderOrganizationProperties;
+  gitProviderProperties: GitProviderProperties;
   commit: {
     title: string;
     body: string;
