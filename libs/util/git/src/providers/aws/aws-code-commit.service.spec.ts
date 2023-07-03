@@ -11,7 +11,9 @@ import { AwsCodeCommitService } from "./aws-code-commit.service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
   BranchDoesNotExistException,
+  BranchNameExistsException,
   CodeCommitClient,
+  CreateBranchCommand,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
   GetBranchCommand,
@@ -686,15 +688,57 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling createBranch()", async () => {
-    const args = <CreateBranchArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.createBranch(args)).rejects.toThrowError(
-      "Method not implemented."
-    );
-  });
+  describe("createBranch", () => {
+    let createBranchArgs;
 
+    beforeEach(() => {
+      createBranchArgs = {
+        repositoryName: "example-repo",
+        branchName: "newBranch",
+        pointingSha: "123",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return the Branch when creating the branch successfully", async () => {
+      const expectedBranch = {
+        name: "newBranch",
+        sha: "123",
+      };
+
+      awsClientMock
+        .on(CreateBranchCommand, {
+          repositoryName: createBranchArgs.repositoryName,
+          branchName: createBranchArgs.branchName,
+        })
+        .resolves({});
+
+      const result = await gitProvider.createBranch(createBranchArgs);
+
+      expect(result).toEqual(expectedBranch);
+    });
+
+    it("should throw an error when failing to create the branch", async () => {
+      awsClientMock
+        .on(CreateBranchCommand, {
+          repositoryName: createBranchArgs.repositoryName,
+          branchName: createBranchArgs.branchName,
+        })
+        .rejects(
+          new BranchNameExistsException({
+            message: "Branch name already exists",
+            $metadata: {},
+          })
+        );
+
+      await expect(gitProvider.createBranch(createBranchArgs)).rejects.toThrow(
+        `Branch name already exists`
+      );
+    });
+  });
   it("should throw an error when calling getFirstCommitOnBranch()", async () => {
     const args = <GetBranchArgs>{
       /* provide appropriate arguments */

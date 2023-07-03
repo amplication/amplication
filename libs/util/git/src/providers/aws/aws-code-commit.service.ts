@@ -31,6 +31,7 @@ import {
   BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
+  CreateBranchCommand,
   CreateRepositoryCommand,
   GetBranchCommand,
   GetFileCommand,
@@ -376,7 +377,23 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
-    throw NotImplementedError;
+    const command = new CreateBranchCommand({
+      branchName: args.branchName,
+      commitId: args.pointingSha,
+      repositoryName: args.repositoryName,
+    });
+    try {
+      await this.awsClient.send(command);
+
+      return {
+        name: args.branchName,
+        sha: args.pointingSha,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error, { args });
+
+      throw error;
+    }
   }
 
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
