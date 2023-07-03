@@ -37,7 +37,7 @@ import { isFolderEmpty } from "./utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-request";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
-import { LogResult } from "simple-git";
+import { GitError, LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
 
 export class GitClientService {
@@ -485,7 +485,19 @@ export class GitClientService {
       if (firstCommitOnDefaultBranch.sha === commit.hash) {
         continue;
       }
-      await gitCli.cherryPick(commit.hash);
+      try {
+        await gitCli.cherryPick(commit.hash);
+      } catch (error) {
+        if (error instanceof GitError) {
+          this.logger.error(
+            `Failed to cherry pick commit ${commit.hash} on branch ${branchName}`,
+            error
+          );
+          await gitCli.resetState();
+          await gitCli.cherryPickAbort();
+          continue;
+        }
+      }
     }
 
     await gitCli.push();

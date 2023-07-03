@@ -76,6 +76,10 @@ export class GitCli {
     ]);
   }
 
+  async cherryPickAbort() {
+    await this.git.raw(["cherry-pick", "--abort"]);
+  }
+
   /**
    * Checkout to branch if exists, otherwise create new branch
    * @param branchName name of the branch to checkout
