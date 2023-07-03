@@ -331,10 +331,9 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling deleteGitOrganization()", async () => {
-    await expect(gitProvider.deleteGitOrganization()).rejects.toThrowError(
-      "Method not implemented."
-    );
+  it("should return always true when calling deleteGitOrganization() since there is nothing to uninstall/delete when an organisation is deleted in AWS CodeCommit.", async () => {
+    const result = await gitProvider.deleteGitOrganization();
+    expect(result).toBe(true);
   });
 
   describe("getOrganization", () => {

@@ -199,7 +199,8 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async deleteGitOrganization(): Promise<boolean> {
-    throw NotImplementedError;
+    // There is nothing to uninstall/delete when an organisation is deleted in AWS CodeCommit.
+    return true;
   }
 
   async getOrganization(): Promise<RemoteGitOrganization> {
