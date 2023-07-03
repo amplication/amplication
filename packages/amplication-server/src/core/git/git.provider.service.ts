@@ -21,12 +21,10 @@ import {
   GitProviderArgs,
   GitProvidersConfiguration,
   isGitHubProviderOrganizationProperties,
-  isOAuthProviderOrganizationProperties,
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   RemoteGitRepository,
   GitProviderProperties,
-  RemoteGitOrganization,
   AwsCodeCommitProviderOrganizationProperties,
 } from "@amplication/util/git";
 import {
@@ -398,8 +396,10 @@ export class GitProviderService {
     const { gitProvider, workspaceId, awsCodeCommitInput, githubInput } =
       args.data;
 
+    let gitOrganization: GitOrganization;
+
     if (gitProvider === EnumGitProvider.Github) {
-      const { installationId } = githubInput;
+      installationId = githubInput.installationId;
       // get the provider properties of the installationId flow (GitHub)
       const providerOrganizationProperties: GitHubProviderOrganizationProperties =
         {
@@ -410,6 +410,13 @@ export class GitProviderService {
         provider: gitProvider,
         providerOrganizationProperties,
       };
+
+      gitOrganization = await this.prisma.gitOrganization.findFirst({
+        where: {
+          installationId: installationId,
+          provider: gitProvider,
+        },
+      });
     } else if (gitProvider === EnumGitProvider.AwsCodeCommit) {
       const {
         gitUsername: username,
@@ -418,6 +425,8 @@ export class GitProviderService {
         accessKeySecret,
         region,
       } = awsCodeCommitInput;
+
+      installationId = accessKeyId;
 
       // get the provider properties of the installationId flow (AWS CodeCommit)
       const providerOrganizationProperties: AwsCodeCommitProviderOrganizationProperties =
@@ -449,13 +458,6 @@ export class GitProviderService {
     );
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
-
-    const gitOrganization = await this.prisma.gitOrganization.findFirst({
-      where: {
-        installationId: installationId,
-        provider: gitProvider,
-      },
-    });
 
     // save or update the git organization with its provider and provider properties
     if (gitOrganization) {
@@ -540,7 +542,7 @@ export class GitProviderService {
   async getGitProviderProperties(
     gitOrganization: GitOrganization
   ): Promise<GitProviderArgs> {
-    const { id, provider, providerProperties } = gitOrganization;
+    const { provider, providerProperties } = gitOrganization;
 
     if (
       provider === EnumGitProvider.Github &&
