@@ -35,7 +35,6 @@ model Plugin {
 }
 
 model PluginVersion {
-  configurations  Json?
   createdAt       DateTime @default(now())
   deprecated      String?
   id              String   @id @default(cuid())
