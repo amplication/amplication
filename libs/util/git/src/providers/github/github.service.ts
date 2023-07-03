@@ -335,7 +335,6 @@ export class GithubService implements GitProvider {
 
         const file: GitFile = {
           content: buff.toString("utf-8"),
-          htmlUrl: item.html_url,
           name: item.name,
           path: item.path,
         };
