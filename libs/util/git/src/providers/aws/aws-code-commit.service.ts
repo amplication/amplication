@@ -26,7 +26,10 @@ import {
   Bot,
   AwsCodeCommitProviderOrganizationProperties,
 } from "../../types";
-import { CodeCommitClient } from "@aws-sdk/client-codecommit";
+import {
+  CodeCommitClient,
+  GetRepositoryCommand,
+} from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
 
 export class AwsCodeCommitService implements GitProvider {
@@ -61,6 +64,24 @@ export class AwsCodeCommitService implements GitProvider {
     });
   }
 
+  private isRequiredValid<T>(
+    value: T | null | undefined
+  ): value is Required<T> {
+    if (value === null || value === undefined) {
+      return false;
+    }
+
+    const props = Object.getOwnPropertyNames(value);
+
+    if (props.length > 0) {
+      return props.every((prop) => {
+        const propValue = value[prop];
+        return propValue !== null && propValue !== undefined;
+      });
+    }
+    return false;
+  }
+
   async init(): Promise<void> {
     throw NotImplementedError;
   }
@@ -79,11 +100,32 @@ export class AwsCodeCommitService implements GitProvider {
   async getGitGroups(): Promise<PaginatedGitGroup> {
     throw NotImplementedError;
   }
+
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw NotImplementedError;
+    const command = new GetRepositoryCommand({
+      repositoryName: getRepositoryArgs.repositoryName,
+    });
+    const { repositoryMetadata } = await this.awsClient.send(command);
+
+    if (this.isRequiredValid(repositoryMetadata)) {
+      return {
+        admin: false,
+        defaultBranch: repositoryMetadata.defaultBranch,
+        fullName: repositoryMetadata.repositoryName,
+        name: repositoryMetadata.repositoryName,
+        private: true,
+        url: repositoryMetadata.cloneUrlHttp,
+        groupName: null,
+      };
+    } else {
+      throw new Error(
+        `Repository ${getRepositoryArgs.repositoryName} not found`
+      );
+    }
   }
+
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {

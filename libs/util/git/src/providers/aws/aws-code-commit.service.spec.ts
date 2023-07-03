@@ -7,12 +7,16 @@ import {
   GetBranchArgs,
   GetFileArgs,
   GetRepositoriesArgs,
-  GetRepositoryArgs,
   GitProviderCreatePullRequestArgs,
   GitProviderGetPullRequestArgs,
 } from "../../types";
 import { AwsCodeCommitService } from "./aws-code-commit.service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import {
+  CodeCommitClient,
+  GetRepositoryCommand,
+} from "@aws-sdk/client-codecommit";
+import { mockClient } from "aws-sdk-client-mock";
 
 describe("AwsCodeCommit", () => {
   let gitProvider: AwsCodeCommitService;
@@ -70,13 +74,63 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling getRepository()", async () => {
-    const getRepositoryArgs = <GetRepositoryArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.getRepository(getRepositoryArgs)
-    ).rejects.toThrowError("Method not implemented.");
+  describe("getRepository", () => {
+    const awsClientMock = mockClient(CodeCommitClient);
+    let getRepositoryArgs;
+
+    beforeEach(() => {
+      getRepositoryArgs = {
+        repositoryName: "example-repo",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a RemoteGitRepository when repositoryMetadata is valid", async () => {
+      const repositoryMetadata = {
+        defaultBranch: "main",
+        repositoryName: "example-repo",
+        cloneUrlHttp: "https://github.com/example/example-repo.git",
+      };
+      awsClientMock
+        .on(GetRepositoryCommand, {
+          repositoryName: "example-repo",
+        })
+        .resolves({
+          repositoryMetadata,
+        });
+
+      const expectedRepository = {
+        admin: false,
+        defaultBranch: "main",
+        fullName: "example-repo",
+        name: "example-repo",
+        private: true,
+        url: "https://github.com/example/example-repo.git",
+        groupName: null,
+      };
+
+      const result = await gitProvider.getRepository(getRepositoryArgs);
+
+      expect(result).toStrictEqual(expectedRepository);
+    });
+
+    it("should throw an error when repositoryMetadata is not valid", async () => {
+      const repositoryMetadata = {};
+      awsClientMock
+        .on(GetRepositoryCommand, {
+          repositoryName: "example-repo",
+        })
+        .resolves({
+          repositoryMetadata,
+        });
+
+      await expect(
+        gitProvider.getRepository(getRepositoryArgs)
+      ).rejects.toThrow("Repository example-repo not found");
+    });
   });
 
   it("should throw an error when calling getRepositories()", async () => {
