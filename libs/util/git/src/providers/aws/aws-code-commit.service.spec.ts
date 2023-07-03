@@ -15,6 +15,7 @@ import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
   CodeCommitClient,
   GetRepositoryCommand,
+  ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
 import { mockClient } from "aws-sdk-client-mock";
 
@@ -130,6 +131,142 @@ describe("AwsCodeCommit", () => {
       await expect(
         gitProvider.getRepository(getRepositoryArgs)
       ).rejects.toThrow("Repository example-repo not found");
+    });
+  });
+
+  describe("getRepositories", () => {
+    const awsClientMock = mockClient(CodeCommitClient);
+    let getRepositoriesArgs;
+
+    beforeEach(() => {
+      getRepositoriesArgs = {
+        pagination: {
+          page: 1,
+          perPage: 10,
+        },
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return paginated repositories when repositories exist", async () => {
+      const repositories = [
+        { repositoryName: "repo1" },
+        { repositoryName: "repo2" },
+        { repositoryName: "repo3" },
+      ];
+
+      awsClientMock
+        .on(ListRepositoriesCommand, {
+          sortBy: "repositoryName",
+          order: "ascending",
+        })
+        .resolves({ repositories });
+
+      const expectedRepositories = [
+        {
+          admin: false,
+          defaultBranch: "",
+          fullName: "repo1",
+          name: "repo1",
+          private: true,
+          url: "",
+          groupName: null,
+        },
+        {
+          admin: false,
+          defaultBranch: "",
+          fullName: "repo2",
+          name: "repo2",
+          private: true,
+          url: "",
+          groupName: null,
+        },
+        {
+          admin: false,
+          defaultBranch: "",
+          fullName: "repo3",
+          name: "repo3",
+          private: true,
+          url: "",
+          groupName: null,
+        },
+      ];
+
+      const result = await gitProvider.getRepositories(getRepositoriesArgs);
+
+      expect(result.pagination).toEqual(getRepositoriesArgs.pagination);
+      expect(result.repos).toStrictEqual(expectedRepositories);
+      expect(result.total).toBe(repositories.length);
+    });
+
+    it("should return paginated repositories based on pagination settings", async () => {
+      const repositories = [
+        { repositoryName: "repo1", repositoryId: "repo1" },
+        { repositoryName: "repo2", repositoryId: "repo2" },
+        { repositoryName: "repo3", repositoryId: "repo3" },
+        { repositoryName: "repo4", repositoryId: "repo4" },
+        { repositoryName: "repo5", repositoryId: "repo5" },
+      ];
+
+      awsClientMock
+        .on(ListRepositoriesCommand, {
+          sortBy: "repositoryName",
+          order: "ascending",
+        })
+        .resolves({ repositories });
+
+      const paginationSettings = {
+        page: 2,
+        perPage: 2,
+      };
+
+      const expectedRepositories = [
+        {
+          admin: false,
+          defaultBranch: "",
+          fullName: "repo3",
+          name: "repo3",
+          private: true,
+          url: "",
+          groupName: null,
+        },
+        {
+          admin: false,
+          defaultBranch: "",
+          fullName: "repo4",
+          name: "repo4",
+          private: true,
+          url: "",
+          groupName: null,
+        },
+      ];
+
+      const result = await gitProvider.getRepositories({
+        pagination: paginationSettings,
+      });
+
+      expect(result.pagination).toEqual(paginationSettings);
+      expect(result.repos).toStrictEqual(expectedRepositories);
+      expect(result.total).toBe(repositories.length);
+    });
+
+    it("should return no repositories when no repositories exist", async () => {
+      awsClientMock
+        .on(ListRepositoriesCommand, {
+          sortBy: "repositoryName",
+          order: "ascending",
+        })
+        .resolves({ repositories: [] });
+
+      const repos = await gitProvider.getRepositories(getRepositoriesArgs);
+      expect(repos).toStrictEqual({
+        pagination: getRepositoriesArgs.pagination,
+        repos: [],
+        total: 0,
+      });
     });
   });
 

@@ -27,8 +27,10 @@ import {
   AwsCodeCommitProviderOrganizationProperties,
 } from "../../types";
 import {
+  BatchGetRepositoriesCommand,
   CodeCommitClient,
   GetRepositoryCommand,
+  ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
 
@@ -129,7 +131,43 @@ export class AwsCodeCommitService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    throw NotImplementedError;
+    const { pagination } = getRepositoriesArgs;
+    const command = new ListRepositoriesCommand({
+      sortBy: "repositoryName",
+      order: "ascending",
+    });
+
+    // TODO improve pagination
+    const { repositories } = await this.awsClient.send(command);
+    let paginatedRepositories: RemoteGitRepository[] = [];
+    if (repositories && repositories.length > 0) {
+      const skip = (pagination.page - 1) * pagination.perPage;
+      const take = skip + pagination.perPage;
+      paginatedRepositories = repositories
+        .slice(skip, take)
+        .map((repository) => {
+          if (this.isRequiredValid(repository)) {
+            return {
+              admin: false,
+              defaultBranch: "",
+              fullName: repository.repositoryName,
+              name: repository.repositoryName,
+              private: true,
+              url: "",
+              groupName: null,
+            };
+          } else {
+            throw new Error(
+              `Repository ${repository.repositoryName} not found`
+            );
+          }
+        });
+    }
+    return {
+      pagination,
+      repos: paginatedRepositories,
+      total: repositories?.length || 0,
+    };
   }
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
