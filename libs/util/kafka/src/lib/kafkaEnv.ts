@@ -68,4 +68,8 @@ export class KafkaEnvironmentVariables {
     const rebalanceTimeout = this.getConsumerSessionTimeout();
     return rebalanceTimeout * 2;
   }
+
+  getConsumerMaxBytesPerPartition(): number {
+    return 10485760;
+  }
 }
