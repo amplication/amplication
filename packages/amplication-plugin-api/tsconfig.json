@@ -4,6 +4,7 @@
   "include": [],
   "compilerOptions": {
     "resolveJsonModule": true,
+    "baseUrl": "./",
     "paths": {
       "@app/custom-validators": ["src/validators"]
     }
