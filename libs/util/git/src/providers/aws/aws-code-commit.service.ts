@@ -28,7 +28,6 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
-  BatchGetRepositoriesCommand,
   CodeCommitClient,
   CreateRepositoryCommand,
   GetRepositoryCommand,
@@ -238,9 +237,34 @@ export class AwsCodeCommitService implements GitProvider {
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
     throw NotImplementedError;
   }
+
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
-    throw NotImplementedError;
+    const { repositoryName } = args;
+    const command = new GetRepositoryCommand({
+      repositoryName,
+    });
+
+    const { repositoryMetadata } = await this.awsClient.send(command);
+
+    if (this.isRequiredValid(repositoryMetadata)) {
+      const { cloneUrlHttp } = repositoryMetadata;
+      const encodedUsername = encodeURIComponent(this.gitCrentials.username);
+      const encodedPassword = encodeURIComponent(this.gitCrentials.password);
+
+      if (!this.gitCrentials.username || !this.gitCrentials.password) {
+        return cloneUrlHttp;
+      }
+
+      const authenticatedCloneUrlHttp = cloneUrlHttp.replace(
+        "https://",
+        `https://${encodedUsername}:${encodedPassword}@`
+      );
+      return authenticatedCloneUrlHttp;
+    } else {
+      throw new Error(`Repository ${repositoryName} not found`);
+    }
   }
+
   async createPullRequestComment(
     args: CreatePullRequestCommentArgs
   ): Promise<void> {
