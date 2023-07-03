@@ -28,9 +28,11 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
+  BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
+  GetBranchCommand,
   GetFileCommand,
   GetRepositoryCommand,
   ListPullRequestsCommand,
@@ -350,11 +352,33 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
-    throw NotImplementedError;
+    const command = new GetBranchCommand({
+      repositoryName: args.repositoryName,
+      branchName: args.branchName,
+    });
+
+    try {
+      const { branch } = await this.awsClient.send(command);
+
+      if (this.isRequiredValid(branch)) {
+        return {
+          name: branch.branchName,
+          sha: branch.commitId,
+        };
+      }
+    } catch (error) {
+      if (error instanceof BranchDoesNotExistException) {
+        throw new Error(`Branch ${args.branchName} not found`);
+      }
+      throw error;
+    }
+    return null;
   }
+
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
     throw NotImplementedError;
   }
+
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
     throw NotImplementedError;
   }

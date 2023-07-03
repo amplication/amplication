@@ -10,9 +10,11 @@ import {
 import { AwsCodeCommitService } from "./aws-code-commit.service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
+  BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
+  GetBranchCommand,
   GetFileCommand,
   GetPullRequestCommand,
   GetRepositoryCommand,
@@ -631,13 +633,57 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling getBranch()", async () => {
-    const args = <GetBranchArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getBranch(args)).rejects.toThrowError(
-      "Method not implemented."
-    );
+  describe("getBranch", () => {
+    let getBranchArgs;
+
+    beforeEach(() => {
+      getBranchArgs = {
+        repositoryName: "example-repo",
+        branchName: "main",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return the Branch when branch exists", async () => {
+      const expectedBranch = {
+        name: "main",
+        sha: "abcdefg",
+      };
+
+      awsClientMock
+        .on(GetBranchCommand, {
+          repositoryName: getBranchArgs.repositoryName,
+          branchName: getBranchArgs.branchName,
+        })
+        .resolves({
+          branch: { branchName: "main", commitId: "abcdefg" },
+        });
+
+      const result = await gitProvider.getBranch(getBranchArgs);
+
+      expect(result).toEqual(expectedBranch);
+    });
+
+    it("should throw an error when branch does not exist", async () => {
+      awsClientMock
+        .on(GetBranchCommand, {
+          repositoryName: getBranchArgs.repositoryName,
+          branchName: getBranchArgs.branchName,
+        })
+        .rejects(
+          new BranchDoesNotExistException({
+            message: "Branch not found",
+            $metadata: {},
+          })
+        );
+
+      await expect(gitProvider.getBranch(getBranchArgs)).rejects.toThrow(
+        `Branch ${getBranchArgs.branchName} not found`
+      );
+    });
   });
 
   it("should throw an error when calling createBranch()", async () => {
