@@ -27,6 +27,7 @@ import {
   AwsCodeCommitProviderOrganizationProperties,
 } from "../../types";
 import { CodeCommitClient } from "@aws-sdk/client-codecommit";
+import { NotImplementedError } from "../../utils/custom-error";
 
 export class AwsCodeCommitService implements GitProvider {
   public readonly name = EnumGitProvider.AwsCodeCommit;
@@ -61,80 +62,80 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async init(): Promise<void> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async refreshAccessToken(): Promise<OAuthTokens> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getGitGroups(): Promise<PaginatedGitGroup> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async deleteGitOrganization(): Promise<boolean> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getOrganization(): Promise<RemoteGitOrganization> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async createPullRequestFromFiles(
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<PullRequest | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async createPullRequest(
     createPullRequestArgs: GitProviderCreatePullRequestArgs
   ): Promise<PullRequest> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async createPullRequestComment(
     args: CreatePullRequestCommentArgs
   ): Promise<void> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
   async getAmplicationBotIdentity(): Promise<Bot | null> {
-    throw new Error("Method not implemented.");
+    throw NotImplementedError;
   }
 }
