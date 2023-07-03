@@ -5,12 +5,26 @@ import { WizardStepProps } from "./interfaces";
 import { AppContext } from "../../../context/appContext";
 import { useHistory } from "react-router-dom";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { DefineUser } from "../CreateServiceWizard";
 
 const className = "create-service-next-steps";
 
-export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
+export const CreateServiceNextSteps: React.FC<
+  WizardStepProps & {
+    defineUser: DefineUser;
+    description: string[];
+    icon: string;
+    iconBackgroundColor: string;
+    eventActionName: string;
+  }
+> = ({
   moduleClass,
   trackWizardPageEvent,
+  description,
+  defineUser,
+  icon,
+  iconBackgroundColor,
+  eventActionName,
 }) => {
   const history = useHistory();
   const {
@@ -29,13 +43,18 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
     );
   }, [currentWorkspace, currentProject, serviceResults?.resource]);
 
-  const handleClickCreateNewService = useCallback(() => {
+  const handleClickRoute = useCallback(() => {
+    const routeUrl =
+      defineUser === "Onboarding"
+        ? `/${currentWorkspace.id}/members`
+        : `/${currentWorkspace.id}/${currentProject.id}/${serviceResults?.resource?.id}/plugins/catalog`;
+
     trackWizardPageEvent(
       AnalyticsEventNames.ServiceWizardStep_Finish_CTAClicked,
-      { action: "Create Another Service" }
+      { action: eventActionName }
     );
-    window.location.reload();
-  }, []);
+    history.push(routeUrl);
+  }, [currentWorkspace.id, currentProject.id, serviceResults?.resource?.id]);
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
@@ -70,16 +89,14 @@ export const CreateServiceNextSteps: React.FC<WizardStepProps> = ({
             <div>for my service</div>
           </div>
         </div>
-        <div
-          className={`${className}__link_box`}
-          onClick={handleClickCreateNewService}
-        >
-          <CircleBadge color="#A787FF" size="medium">
-            <Icon icon="services" size="small" />
+        <div className={`${className}__link_box`} onClick={handleClickRoute}>
+          <CircleBadge color={iconBackgroundColor} size="medium">
+            <Icon icon={icon} size="small" />
           </CircleBadge>
           <div className={`${className}__link_box__description`}>
-            <div>Create</div>
-            <div>another service</div>
+            {description.map((c) => (
+              <div>{c}</div>
+            ))}
           </div>
         </div>
         <div className={`${className}__link_box`} onClick={handleDone}>
