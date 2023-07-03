@@ -36,7 +36,7 @@ After configuration of the client the next step would be to run the application.
 # installation of the dependencies
 $ npm install
 
-# starts the application in development mode - available by default under http://localhost:3001 
+# starts the application in development mode - available by default under http://localhost:3001 with a pre-configured user with the username "admin" and password "admin"
 $ npm run start
 
 # builds the application in production mode - available under 'build'
