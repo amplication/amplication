@@ -15,4 +15,7 @@ export class UpdateOneEntityFieldArgs {
 
   @Field(() => String, { nullable: true })
   relatedFieldDisplayName?: string;
+
+  @Field(() => Boolean, { nullable: true })
+  relatedFieldAllowMultipleSelection?: boolean;
 }

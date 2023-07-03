@@ -45,6 +45,10 @@ import {
   CreateDefaultEntitiesArgs,
 } from "./dto";
 import { EntityService } from "./entity.service";
+import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
+import { FileUpload, GraphQLUpload } from "graphql-upload";
+import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
+import { graphqlUpload } from "../../util/graphqlUpload";
 
 @Resolver(() => Entity)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -95,6 +99,26 @@ export class EntityResolver {
   ): Promise<Entity[]> {
     return await this.entityService.createDefaultEntities(
       args.data.resourceId,
+      user
+    );
+  }
+
+  @Mutation(() => CreateEntitiesFromPrismaSchemaResponse, {
+    nullable: false,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "data.resourceId")
+  async createEntitiesFromPrismaSchema(
+    @UserEntity() user: User,
+    @Args() args: CreateEntitiesFromPrismaSchemaArgs,
+    @Args({ name: "file", type: () => GraphQLUpload })
+    file: FileUpload
+  ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
+    const fileContent = await graphqlUpload(file);
+
+    return this.entityService.createEntitiesFromPrismaSchema(
+      fileContent,
+      file.filename,
+      args,
       user
     );
   }
@@ -238,7 +262,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    return this.entityService.createField(args, user);
+    return this.entityService.createField(args, user, true, true);
   }
 
   @Mutation(() => EntityField, { nullable: false })
@@ -250,7 +274,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldByDisplayNameArgs
   ): Promise<EntityField> {
-    return this.entityService.createFieldByDisplayName(args, user);
+    return this.entityService.createFieldByDisplayName(args, user, true);
   }
 
   @Mutation(() => EntityField, { nullable: false })
