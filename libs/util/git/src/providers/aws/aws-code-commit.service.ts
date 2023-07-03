@@ -31,10 +31,12 @@ import {
   BatchGetRepositoriesCommand,
   CodeCommitClient,
   CreateRepositoryCommand,
+  GetFileCommand,
   GetRepositoryCommand,
   ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
+import { parse } from "node:path";
 
 export class AwsCodeCommitService implements GitProvider {
   public readonly name = EnumGitProvider.AwsCodeCommit;
@@ -212,8 +214,27 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    throw NotImplementedError;
+    const command = new GetFileCommand({
+      filePath: file.path,
+      repositoryName: file.repositoryName,
+      commitSpecifier: file.ref,
+    });
+    try {
+      const { fileContent, filePath } = await this.awsClient.send(command);
+
+      if (fileContent && filePath) {
+        return {
+          content: fileContent.toString(),
+          path: filePath,
+          name: parse(filePath).name,
+        };
+      }
+    } catch {
+      return null;
+    }
+    return null;
   }
+
   async createPullRequestFromFiles(
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
