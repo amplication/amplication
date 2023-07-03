@@ -29,6 +29,7 @@ import {
 import {
   BatchGetRepositoriesCommand,
   CodeCommitClient,
+  CreateRepositoryCommand,
   GetRepositoryCommand,
   ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
@@ -106,8 +107,9 @@ export class AwsCodeCommitService implements GitProvider {
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
+    const { repositoryName } = getRepositoryArgs;
     const command = new GetRepositoryCommand({
-      repositoryName: getRepositoryArgs.repositoryName,
+      repositoryName,
     });
     const { repositoryMetadata } = await this.awsClient.send(command);
 
@@ -122,9 +124,7 @@ export class AwsCodeCommitService implements GitProvider {
         groupName: null,
       };
     } else {
-      throw new Error(
-        `Repository ${getRepositoryArgs.repositoryName} not found`
-      );
+      throw new Error(`Repository ${repositoryName} not found`);
     }
   }
 
@@ -169,11 +169,34 @@ export class AwsCodeCommitService implements GitProvider {
       total: repositories?.length || 0,
     };
   }
+
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    throw NotImplementedError;
+    const { repositoryName } = createRepositoryArgs;
+    const command = new CreateRepositoryCommand({
+      repositoryName,
+      repositoryDescription: "Created by Amplication",
+      tags: { system: "Amplication" },
+    });
+
+    const { repositoryMetadata } = await this.awsClient.send(command);
+
+    if (this.isRequiredValid(repositoryMetadata)) {
+      return {
+        admin: false,
+        defaultBranch: repositoryMetadata.defaultBranch,
+        fullName: repositoryMetadata.repositoryName,
+        name: repositoryMetadata.repositoryName,
+        private: true,
+        url: repositoryMetadata.cloneUrlHttp,
+        groupName: null,
+      };
+    } else {
+      throw new Error(`Repository ${repositoryName} not found`);
+    }
   }
+
   async deleteGitOrganization(): Promise<boolean> {
     throw NotImplementedError;
   }
