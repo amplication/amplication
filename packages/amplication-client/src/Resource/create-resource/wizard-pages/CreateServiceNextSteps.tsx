@@ -54,7 +54,7 @@ export const CreateServiceNextSteps: React.FC<
       { action: eventActionName }
     );
     history.push(routeUrl);
-  }, [currentWorkspace, currentProject, serviceResults?.resource]);
+  }, [currentWorkspace.id, currentProject.id, serviceResults?.resource?.id]);
 
   const handleDone = useCallback(() => {
     trackWizardPageEvent(
