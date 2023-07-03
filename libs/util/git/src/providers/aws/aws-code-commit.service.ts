@@ -387,6 +387,6 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getAmplicationBotIdentity(): Promise<Bot | null> {
-    throw NotImplementedError;
+    return null;
   }
 }

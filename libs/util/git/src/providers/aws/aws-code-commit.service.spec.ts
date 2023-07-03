@@ -765,9 +765,9 @@ describe("AwsCodeCommit", () => {
       );
     });
   });
-  it("should throw an error when calling getAmplicationBotIdentity()", async () => {
-    await expect(gitProvider.getAmplicationBotIdentity()).rejects.toThrowError(
-      "Method not implemented."
-    );
+
+  it("should return null getAmplicationBotIdentity()", async () => {
+    const res = await gitProvider.getAmplicationBotIdentity();
+    expect(res).toBeNull();
   });
 });
