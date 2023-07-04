@@ -430,7 +430,7 @@ describe("AwsCodeCommit", () => {
       ${"username"}   | ${"password"}    | ${"https://username:password@example.com/repo.git"}
       ${"user/name?"} | ${"/:pass?word"} | ${"https://user%2Fname%3F:%2F%3Apass%3Fword@example.com/repo.git"}
     `(
-      "should return the authenticated clone URL when repository exists",
+      "should return the authenticated clone URL when repository exists for username '$username' and password '$password'",
       async ({ username, password, expectedCloneUrl }) => {
         awsClientMock
           .on(GetRepositoryCommand, {
