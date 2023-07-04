@@ -44,8 +44,17 @@ describe("schema-utils", () => {
   describe("formatFieldName", () => {
     it("should format the field name in camelCase", () => {
       (isReservedName as jest.Mock).mockReturnValueOnce(false);
-      const result = formatFieldName("test_field");
-      expect(result).toEqual("testField");
+      expect(formatFieldName("Test_5_Rank_X_out_of_Y")).toEqual(
+        "test5RankXOutOfY"
+      );
+      expect(formatFieldName("ABC_Review_Form_num7_Comments")).toEqual(
+        "abcReviewFormNum7Comments"
+      );
+      expect(formatFieldName("Another_test_string")).toEqual(
+        "anotherTestString"
+      );
+      expect(formatFieldName("test")).toEqual("test");
+      expect(formatFieldName("TEST_CASE")).toEqual("testCase");
     });
 
     it("should add 'Field' suffix if the field name is a reserved name", () => {
@@ -63,7 +72,9 @@ describe("schema-utils", () => {
       });
       expect(result).toEqual("test_function");
     });
+  });
 
+  describe("formatDisplayName", () => {
     it("should return a formatted display name", () => {
       const result = formatDisplayName("test_display_name");
       expect(result).toEqual("Test Display Name");
