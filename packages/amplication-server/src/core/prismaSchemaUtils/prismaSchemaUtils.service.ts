@@ -1264,16 +1264,19 @@ export class PrismaSchemaUtilsService {
     const enumerators = enumOfTheField.enumerators as Enumerator[];
     let optionSetObj;
 
-    for (let i = 0; i < enumerators.length - 1; i++) {
+    for (let i = 0; i < enumerators.length; i++) {
       // if the current item is a map attribute, skip it and don't add it to the enumOptions array
       if (
         (enumerators[i] as unknown as Attribute).type === ATTRIBUTE_TYPE_NAME &&
         enumerators[i].name === MAP_ATTRIBUTE_NAME
       ) {
-        break;
-        // if the current item is an enumerator and the next item is a map attribute, add the enumerator to the enumOptions array
-      } else if (
+        continue;
+      }
+
+      // if the current item is an enumerator and the next item is exists and it is a map attribute, add the enumerator to the enumOptions array
+      if (
         enumerators[i].type === ENUMERATOR_TYPE_NAME &&
+        enumerators[i + 1] &&
         (enumerators[i + 1] as unknown as Attribute).type ===
           ATTRIBUTE_TYPE_NAME &&
         enumerators[i + 1].name === MAP_ATTRIBUTE_NAME
