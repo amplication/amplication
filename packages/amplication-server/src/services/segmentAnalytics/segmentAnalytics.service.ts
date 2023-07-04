@@ -84,7 +84,7 @@ export class SegmentAnalyticsService {
     if (!this.analytics) return;
 
     const req = RequestContext.currentContext.req;
-    const analyticsSessionId = req.analyticsSessionId;
+    const analyticsSessionId = req?.analyticsSessionId;
 
     this.analytics.track({
       ...data,
