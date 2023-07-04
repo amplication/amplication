@@ -58,6 +58,7 @@ import {
 } from "../entity/entity.service";
 import {
   ATTRIBUTE_TYPE_NAME,
+  ENUMERATOR_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
@@ -1259,14 +1260,14 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Enum ${field.name} not found`);
     }
 
-    const enumOptions = enumOfTheField.enumerators.map(
-      (enumerator: Enumerator) => {
+    const enumOptions = enumOfTheField.enumerators
+      .filter((item) => item.type === ENUMERATOR_TYPE_NAME)
+      .map((enumerator: Enumerator) => {
         return {
           label: enumerator.name,
           value: enumerator.name,
         };
-      }
-    );
+      });
 
     const properties = <types.OptionSet>{
       options: enumOptions,
