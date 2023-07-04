@@ -99,7 +99,7 @@ export function formatFieldName(fieldName: string | Func): string {
       throw new Error("Field name cannot be empty");
     }
 
-    const isCamelCase = /^([a-z]+[A-Z]*[0-9]*)+$/.test(fieldName);
+    const isCamelCase = /^[a-z][A-Za-z0-9]*$/.test(fieldName);
 
     if (!isCamelCase) {
       // first, convert the entire string to lowercase
