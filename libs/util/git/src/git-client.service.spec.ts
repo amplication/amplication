@@ -115,33 +115,25 @@ describe("GitClientService", () => {
 
   describe("when there are no commits from amplication <bot@amplication.com> and there are commits for amplication[bot] (or amplication provider integration)", () => {
     beforeEach(() => {
-      gitLogMock.mockImplementation((author, maxCount) => {
-        if (author === amplicationGitUserAuthor)
-          return {
-            all: [],
-            total: 0,
-            latest: null,
-          };
-        return {
-          all: [
-            {
-              hash: "sghfsjfdsfd34234",
-              author_name: amplicationBotOrIntegrationApp.login,
-              author_email: "monster@spagetti.com",
-            },
-            {
-              hash: "hhfdfdgdf34234gd",
-              author_name: amplicationBotOrIntegrationApp.login,
-              author_email: "monster@spagetti.com",
-            },
-          ],
-          total: 2,
-          latest: {
+      gitLogMock.mockResolvedValue({
+        all: [
+          {
             hash: "sghfsjfdsfd34234",
             author_name: amplicationBotOrIntegrationApp.login,
             author_email: "monster@spagetti.com",
           },
-        };
+          {
+            hash: "hhfdfdgdf34234gd",
+            author_name: amplicationBotOrIntegrationApp.login,
+            author_email: "monster@spagetti.com",
+          },
+        ],
+        total: 2,
+        latest: {
+          hash: "sghfsjfdsfd34234",
+          author_name: amplicationBotOrIntegrationApp.login,
+          author_email: "monster@spagetti.com",
+        },
       });
     });
 
@@ -151,7 +143,7 @@ describe("GitClientService", () => {
         gitCli: gitCliMock,
       });
 
-      expect(gitLogMock).toBeCalledTimes(2);
+      expect(gitLogMock).toBeCalledTimes(1);
       expect(gitDiffMock).toBeCalledWith("sghfsjfdsfd34234");
     });
   });
@@ -199,8 +191,7 @@ describe("GitClientService", () => {
       });
 
       expect(gitLogMock).toHaveBeenCalledTimes(1);
-
-      expect(gitLogMock).toBeCalledWith(amplicationGitUserAuthor, 1);
+      expect(gitLogMock).toBeCalledWith([amplicationGitUserAuthor], 1);
     });
   });
 
@@ -230,21 +221,14 @@ describe("GitClientService", () => {
 
         createBranchMock.mockResolvedValueOnce({ name: "new-branch" });
 
-        gitLogMock.mockImplementation(async (author) => {
-          if (author === amplicationBotOrIntegrationApp.gitAuthor) {
-            return {
-              total: 2,
-              all: [{ hash: "commit-1" }, { hash: "commit-2" }],
-              latest: { hash: "commit-2" },
-            };
-          }
-          if (author === amplicationGitUserAuthor) {
-            return {
-              total: 1,
-              all: [{ hash: "commit-3" }],
-              latest: { hash: "commit-3" },
-            };
-          }
+        gitLogMock.mockResolvedValue({
+          total: 3,
+          all: [
+            { hash: "commit-3" },
+            { hash: "commit-2" },
+            { hash: "commit-1" },
+          ],
+          latest: { hash: "commit-3" },
         });
 
         cherryPickMock.mockResolvedValue(undefined);
@@ -268,14 +252,8 @@ describe("GitClientService", () => {
           repositoryGroupName: "group",
           pointingSha: "first-commit-sha",
         });
-        expect(gitLogMock).toHaveBeenNthCalledWith(
-          1,
-          amplicationBotOrIntegrationApp.gitAuthor,
-          -1
-        );
-        expect(gitLogMock).toHaveBeenNthCalledWith(
-          2,
-          amplicationGitUserAuthor,
+        expect(gitLogMock).toHaveBeenCalledWith(
+          [amplicationBotOrIntegrationApp.gitAuthor, amplicationGitUserAuthor],
           -1
         );
         expect(cherryPickMock).toHaveBeenCalledTimes(3);
@@ -302,21 +280,14 @@ describe("GitClientService", () => {
 
         createBranchMock.mockResolvedValueOnce({ name: "new-branch" });
 
-        gitLogMock.mockImplementation(async (author) => {
-          if (author === amplicationBotOrIntegrationApp.gitAuthor) {
-            return {
-              total: 2,
-              all: [{ hash: emptyCommitSha }, { hash: "commit-1" }],
-              latest: { hash: emptyCommitSha },
-            };
-          }
-          if (author === amplicationGitUserAuthor) {
-            return {
-              total: 1,
-              all: [{ hash: "commit-3" }],
-              latest: { hash: "commit-3" },
-            };
-          }
+        gitLogMock.mockResolvedValue({
+          total: 3,
+          all: [
+            { hash: "commit-3" },
+            { hash: emptyCommitSha },
+            { hash: "commit-1" },
+          ],
+          latest: { hash: "commit-3" },
         });
 
         cherryPickMock.mockImplementation(async (sha) => {
@@ -335,7 +306,7 @@ describe("GitClientService", () => {
         expect(gitProviderMock.getBranch).toHaveBeenCalledWith(args);
         expect(gitProviderMock.getFirstCommitOnBranch).toHaveBeenCalledTimes(1);
         expect(gitProviderMock.createBranch).toHaveBeenCalledTimes(1);
-        expect(gitLogMock).toHaveBeenCalledTimes(2);
+        expect(gitLogMock).toHaveBeenCalledTimes(1);
         expect(cherryPickMock).toHaveBeenCalledTimes(3);
         expect(cherryPickAbortMock).toHaveBeenCalledTimes(1);
         expect(successfullCommitShas).toEqual(["commit-1", "commit-3"]);

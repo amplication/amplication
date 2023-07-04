@@ -327,33 +327,16 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLog(
-    gitCli: GitCli,
-    maxCount = -1
-  ): Promise<{
-    amplicationGitUser: LogResult;
-    amplicationBot: LogResult | null;
-  }> {
+  private async gitLog(gitCli: GitCli, maxCount = -1): Promise<LogResult> {
     const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
-    let lastAmplicationBotCommitOnBranch: LogResult | null = null;
-
+    const authors: string[] = [];
     if (amplicationBot) {
-      lastAmplicationBotCommitOnBranch = await gitCli.log(
-        amplicationBot.gitAuthor,
-        maxCount
-      );
+      authors.push(amplicationBot.gitAuthor);
     }
+    authors.push(gitCli.gitAuthorUser);
 
-    const lastAmplicationGitUserCommitOnBranch = await gitCli.log(
-      gitCli.gitAuthorUser,
-      maxCount
-    );
-
-    return {
-      amplicationGitUser: lastAmplicationGitUserCommitOnBranch,
-      amplicationBot: lastAmplicationBotCommitOnBranch,
-    };
+    return gitCli.log(authors, maxCount);
   }
 
   /**
@@ -368,35 +351,27 @@ export class GitClientService {
     await gitCli.checkout(branchName);
 
     const gitLogs = await this.gitLog(gitCli, 1);
-    if (
-      (!gitLogs.amplicationGitUser || !gitLogs.amplicationGitUser.latest) &&
-      (!gitLogs.amplicationBot || !gitLogs.amplicationBot.latest)
-    ) {
+
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      const { hash } = gitLogs.latest;
+
+      const diff = await gitCli.diff(hash);
+      if (!diff) {
+        this.logger.warn("Diff returned empty");
+        return { diff: null };
+      }
+
+      // Reset the branch to the latest commit of the user / bot
+      await gitCli.reset([hash]);
+      await gitCli.push(["--force"]);
+      this.logger.info("Diff returned");
+      return { diff };
+    } else {
       this.logger.info(
         "Didn't find a commit that has been created by Amplication"
       );
       return { diff: null };
     }
-
-    const hash =
-      gitLogs.amplicationGitUser.latest?.hash ||
-      gitLogs.amplicationBot?.latest?.hash;
-    if (!hash) {
-      this.logger.warn("Didn't find a commit hash");
-      return { diff: null };
-    }
-
-    const diff = await gitCli.diff(hash);
-    if (!diff) {
-      this.logger.warn("Diff returned empty");
-      return { diff: null };
-    }
-
-    // Reset the branch to the latest commit of the user / bot
-    await gitCli.reset([hash]);
-    await gitCli.push(["--force"]);
-    this.logger.info("Diff returned");
-    return { diff };
   }
 
   /**
@@ -425,7 +400,7 @@ export class GitClientService {
     await rm(diffPatchAbsolutePath);
   }
 
-  private async restoreAmplicationBranchIfNotExists(
+  public async restoreAmplicationBranchIfNotExists(
     args: CreateBranchIfNotExistsArgs
   ): Promise<Branch> {
     const {
@@ -463,7 +438,7 @@ export class GitClientService {
     const gitLogs = await this.gitLog(gitCli);
 
     await this.cherryPickCommits(
-      { ...gitLogs.amplicationBot, ...gitLogs.amplicationGitUser },
+      gitLogs,
       gitCli,
       branchName,
       firstCommitOnDefaultBranch
