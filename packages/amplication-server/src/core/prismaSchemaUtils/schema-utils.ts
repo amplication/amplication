@@ -91,11 +91,15 @@ export function formatModelName(modelName: string): string {
 
 export function formatFieldName(fieldName: string | Func): string {
   if (typeof fieldName === "string") {
-    // first, convert the entire string to lowercase
-    fieldName = fieldName.toLowerCase();
+    const isCamelCase = /^([a-z]+[A-Z]*[0-9]*)+$/.test(fieldName);
 
-    // then, convert any character (letter or digit) that follows an underscore to uppercase in order to get camel case
-    fieldName = fieldName.replace(/_([a-z0-9])/g, (g) => g[1].toUpperCase());
+    if (!isCamelCase) {
+      // first, convert the entire string to lowercase
+      fieldName = fieldName.toLowerCase();
+
+      // then, convert any character (letter or digit) that follows an underscore to uppercase in order to get camel case
+      fieldName = fieldName.replace(/_([a-z0-9])/g, (g) => g[1].toUpperCase());
+    }
 
     // ensure the first letter is always lowercased (in case it was made uppercase by the previous step)
     fieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);

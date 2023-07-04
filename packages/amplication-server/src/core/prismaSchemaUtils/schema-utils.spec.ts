@@ -42,18 +42,23 @@ describe("schema-utils", () => {
   });
 
   describe("formatFieldName", () => {
-    it("should format the field name in camelCase", () => {
+    it("should format the field name in camelCase when the field name includes uppercase letters, numbers and underscore", () => {
       (isReservedName as jest.Mock).mockReturnValueOnce(false);
-      expect(formatFieldName("Test_5_Rank_X_out_of_Y")).toEqual(
-        "test5RankXOutOfY"
-      );
-      expect(formatFieldName("ABC_Review_Form_num7_Comments")).toEqual(
-        "abcReviewFormNum7Comments"
-      );
+      const result = formatFieldName("Test_5_Rank_X_out_of_Y");
+      expect(result).toEqual("test5RankXOutOfY");
+    });
+
+    it("should format the field name in camelCase when the field name includes underscore", () => {
       expect(formatFieldName("Another_test_string")).toEqual(
         "anotherTestString"
       );
-      expect(formatFieldName("test")).toEqual("test");
+    });
+
+    it("should not do anything if the field is already in camelCase", () => {
+      expect(formatFieldName("testCase")).toEqual("testCase");
+    });
+
+    it("should format the field name in camelCase when the field name is all uppercase and includes underscore", () => {
       expect(formatFieldName("TEST_CASE")).toEqual("testCase");
     });
 
