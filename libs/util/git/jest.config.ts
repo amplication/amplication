@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../../coverage/libs/util/git",
   coverageThreshold: {
     global: {
-      branches: 80,
-      lines: 40,
+      branches: 81,
+      lines: 43,
     },
   },
 };
