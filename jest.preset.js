@@ -20,6 +20,10 @@ module.exports = {
     "!**/index.ts",
     "!**/*.mock.ts",
     "!**/*.module.ts",
+    "!**/*.interface.ts",
+    "!**/*.enum.ts",
+    "!**/*.constants.ts",
+    "!**/(*.|^)types.ts",
   ],
   coverageThreshold: {
     global: {
