@@ -90,6 +90,10 @@ export function formatModelName(modelName: string): string {
 }
 
 export function formatFieldName(fieldName: string | Func): string {
+  if (!fieldName) {
+    throw new Error("Field name is required");
+  }
+
   if (typeof fieldName === "string") {
     const isCamelCase = /^([a-z]+[A-Z]*[0-9]*)+$/.test(fieldName);
 
