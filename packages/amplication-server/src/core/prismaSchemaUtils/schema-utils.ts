@@ -95,6 +95,10 @@ export function formatFieldName(fieldName: string | Func): string {
   }
 
   if (typeof fieldName === "string") {
+    if (fieldName.trim().length === 0) {
+      throw new Error("Field name cannot be empty");
+    }
+
     const isCamelCase = /^([a-z]+[A-Z]*[0-9]*)+$/.test(fieldName);
 
     if (!isCamelCase) {

@@ -42,9 +42,14 @@ describe("schema-utils", () => {
   });
 
   describe("formatFieldName", () => {
-    it("should throw an error if fieldName is not provided", () => {
-      expect(() => formatFieldName("")).toThrow("Field name is required");
+    it("should throw an error if fieldName is and empty string", () => {
+      expect(() => formatFieldName(" ")).toThrow("Field name cannot be empty");
     });
+
+    it("should throw an error if fieldName is not provided", () => {
+      expect(() => formatFieldName(null)).toThrow("Field name is required");
+    });
+
     it("should format the field name in camelCase when the field name includes uppercase letters, numbers and underscore", () => {
       (isReservedName as jest.Mock).mockReturnValueOnce(false);
       const result = formatFieldName("Test_5_Rank_X_out_of_Y");
