@@ -30,9 +30,13 @@ import {
 import {
   BatchGetRepositoriesCommand,
   CodeCommitClient,
+  CreatePullRequestCommand,
   CreateRepositoryCommand,
+  GetPullRequestCommand,
   GetRepositoryCommand,
+  ListPullRequestsCommand,
   ListRepositoriesCommand,
+  PostCommentForPullRequestCommand,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
 
@@ -44,6 +48,7 @@ export class AwsCodeCommitService implements GitProvider {
     password: string;
   };
   private readonly awsClient: CodeCommitClient;
+  private readonly awsRegion: string;
 
   constructor(
     readonly providerOrganizationProperties: AwsCodeCommitProviderOrganizationProperties,
@@ -58,12 +63,13 @@ export class AwsCodeCommitService implements GitProvider {
     const { gitCredentials, sdkCredentials } = providerOrganizationProperties;
     this.gitCrentials = gitCredentials;
 
+    this.awsRegion = sdkCredentials.region || "us-east-1";
     this.awsClient = new CodeCommitClient({
       credentials: {
         accessKeyId: sdkCredentials.accessKeyId,
         secretAccessKey: sdkCredentials.accessKeySecret,
       },
-      region: sdkCredentials.region || "us-east-1",
+      region: this.awsRegion,
       logger: this.logger,
     });
   }
@@ -214,21 +220,86 @@ export class AwsCodeCommitService implements GitProvider {
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
     throw NotImplementedError;
   }
+
   async createPullRequestFromFiles(
     createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
   ): Promise<string> {
     throw NotImplementedError;
   }
+
   async getPullRequest(
     getPullRequestArgs: GitProviderGetPullRequestArgs
   ): Promise<PullRequest | null> {
-    throw NotImplementedError;
+    const { branchName, repositoryName } = getPullRequestArgs;
+    const command = new ListPullRequestsCommand({
+      repositoryName,
+      pullRequestStatus: "OPEN",
+    });
+
+    const { pullRequestIds } = await this.awsClient.send(command);
+
+    if (pullRequestIds && pullRequestIds.length > 0) {
+      for (const prId of pullRequestIds) {
+        const command = new GetPullRequestCommand({
+          pullRequestId: prId,
+        });
+        const { pullRequest } = await this.awsClient.send(command);
+        if (pullRequest?.pullRequestTargets) {
+          const { repositoryName: prRepositoryName, sourceReference } =
+            pullRequest.pullRequestTargets[0];
+
+          const prSourceBranch = sourceReference?.split("/").pop();
+
+          if (
+            prRepositoryName === repositoryName &&
+            prSourceBranch === branchName
+          ) {
+            return {
+              number: Number(pullRequest.pullRequestId),
+              url: `https://${this.awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${branchName}/pull-requests/${pullRequest.pullRequestId}/details`,
+            };
+          }
+        }
+      }
+    }
+
+    return null;
   }
+
   async createPullRequest(
     createPullRequestArgs: GitProviderCreatePullRequestArgs
   ): Promise<PullRequest> {
-    throw NotImplementedError;
+    const {
+      repositoryName,
+      branchName,
+      defaultBranchName,
+      pullRequestTitle,
+      pullRequestBody,
+    } = createPullRequestArgs;
+
+    const command = new CreatePullRequestCommand({
+      title: pullRequestTitle,
+      description: pullRequestBody,
+      targets: [
+        {
+          repositoryName,
+          sourceReference: branchName,
+          destinationReference: defaultBranchName,
+        },
+      ],
+    });
+
+    const { pullRequest } = await this.awsClient.send(command);
+    if (this.isRequiredValid(pullRequest)) {
+      return {
+        number: Number(pullRequest.pullRequestId),
+        url: `https://${this.awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${branchName}/pull-requests/${pullRequest.pullRequestId}/details`,
+      };
+    }
+
+    throw new Error("Failed to create pull request");
   }
+
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
     throw NotImplementedError;
   }
@@ -246,6 +317,7 @@ export class AwsCodeCommitService implements GitProvider {
   ): Promise<void> {
     throw NotImplementedError;
   }
+
   async getAmplicationBotIdentity(): Promise<Bot | null> {
     throw NotImplementedError;
   }
