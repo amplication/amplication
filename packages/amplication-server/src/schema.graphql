@@ -91,6 +91,7 @@ type GitOrganization {
 enum EnumGitProvider {
   Github
   Bitbucket
+  AwsCodeCommit
 }
 
 enum EnumGitOrganizationType {

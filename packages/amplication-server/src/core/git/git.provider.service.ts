@@ -25,6 +25,7 @@ import {
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   RemoteGitRepository,
+  GitProviderProperties,
 } from "@amplication/util/git";
 import {
   INVALID_RESOURCE_ID,
@@ -124,16 +125,18 @@ export class GitProviderService {
   async createGitClientWithoutProperties(
     provider: EnumGitProvider
   ): Promise<GitClientService> {
-    let providerOrganizationProperties:
-      | GitHubProviderOrganizationProperties
-      | OAuthProviderOrganizationProperties;
+    let providerOrganizationProperties: GitProviderProperties;
 
-    if (provider === EnumGitProvider.Github) {
-      providerOrganizationProperties = {
+    if (provider === EnumGitProvider.AwsCodeCommit) {
+      throw new AmplicationError(
+        "AWS CodeCommit is not supported without provider properties"
+      );
+    } else if (provider === EnumGitProvider.Github) {
+      providerOrganizationProperties = <GitHubProviderOrganizationProperties>{
         installationId: null,
       };
     } else if (provider === EnumGitProvider.Bitbucket) {
-      providerOrganizationProperties = {
+      providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
         links: null,
         username: null,
         useGroupingForRepositories: null,

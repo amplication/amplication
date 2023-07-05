@@ -13,7 +13,10 @@ import {
 } from "../../Workspaces/queries/resourcesQueries";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import AuthWithGitProvider from "./AuthWithGitProvider";
-import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import {
+  GitRepositoryCreatedData,
+  GitRepositorySelected,
+} from "./dialogs/GitRepos/GithubRepos";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
@@ -21,6 +24,7 @@ type Props = {
   resource: models.Resource;
   onDone: () => void;
   gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
+  gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
 };
 
 type TData = {
@@ -31,6 +35,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   resource,
   onDone,
   gitRepositorySelectedCb,
+  gitRepositoryCreatedCb,
 }) => {
   const [isOverride, setIsOverride] = useState<boolean>(
     resource.gitRepositoryOverride
@@ -123,6 +128,7 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
                 resource={resource}
                 onDone={onDone}
                 gitRepositorySelectedCb={gitRepositorySelectedCb}
+                gitRepositoryCreatedCb={gitRepositoryCreatedCb}
               />
             </div>
           )}

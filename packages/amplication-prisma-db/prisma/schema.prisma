@@ -550,6 +550,7 @@ enum EnumResourceType {
 enum EnumGitProvider {
   Github
   Bitbucket
+  AwsCodeCommit
 }
 
 enum EnumGitOrganizationType {

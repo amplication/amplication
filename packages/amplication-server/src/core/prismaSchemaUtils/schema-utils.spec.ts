@@ -42,10 +42,32 @@ describe("schema-utils", () => {
   });
 
   describe("formatFieldName", () => {
-    it("should format the field name in camelCase", () => {
+    it("should throw an error if fieldName is and empty string", () => {
+      expect(() => formatFieldName(" ")).toThrow("Field name cannot be empty");
+    });
+
+    it("should throw an error if fieldName is not provided", () => {
+      expect(() => formatFieldName(null)).toThrow("Field name is required");
+    });
+
+    it("should format the field name in camelCase when the field name includes uppercase letters, numbers and underscore", () => {
       (isReservedName as jest.Mock).mockReturnValueOnce(false);
-      const result = formatFieldName("test_field");
-      expect(result).toEqual("testField");
+      const result = formatFieldName("Test_5_Rank_X_out_of_Y");
+      expect(result).toEqual("test5RankXOutOfY");
+    });
+
+    it("should format the field name in camelCase when the field name includes underscore", () => {
+      expect(formatFieldName("Another_test_string")).toEqual(
+        "anotherTestString"
+      );
+    });
+
+    it("should not do anything if the field is already in camelCase", () => {
+      expect(formatFieldName("testCase")).toEqual("testCase");
+    });
+
+    it("should format the field name in camelCase when the field name is all uppercase and includes underscore", () => {
+      expect(formatFieldName("TEST_CASE")).toEqual("testCase");
     });
 
     it("should add 'Field' suffix if the field name is a reserved name", () => {
@@ -63,7 +85,9 @@ describe("schema-utils", () => {
       });
       expect(result).toEqual("test_function");
     });
+  });
 
+  describe("formatDisplayName", () => {
     it("should return a formatted display name", () => {
       const result = formatDisplayName("test_display_name");
       expect(result).toEqual("Test Display Name");

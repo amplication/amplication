@@ -1,4 +1,10 @@
-import { CleanOptions, ResetMode, simpleGit, SimpleGit } from "simple-git";
+import {
+  CleanOptions,
+  LogResult,
+  ResetMode,
+  simpleGit,
+  SimpleGit,
+} from "simple-git";
 import { UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
@@ -74,6 +80,10 @@ export class GitCli {
       "find-renames=1",
       sha,
     ]);
+  }
+
+  async cherryPickAbort() {
+    await this.git.raw(["cherry-pick", "--abort"]);
   }
 
   /**
@@ -180,13 +190,20 @@ export class GitCli {
    * @param author Author of commits returned by the log
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  async log(author: string, maxCount?: number) {
-    const authorEscaped = author.replaceAll("[", "\\[").replaceAll("]", "\\]");
+  async log(authors: string[], maxCount?: number): Promise<LogResult> {
+    const author = authors.join("|");
+    const authorEscaped = author
+      .replaceAll("[", "\\[")
+      .replaceAll("]", "\\]")
+      .replaceAll("+", "\\+");
+
+    const authorsRegex = `^(${authorEscaped})$`;
 
     maxCount = maxCount ?? -1;
-    return this.git.log({
-      "--author": authorEscaped,
-      "--max-count": maxCount,
-    });
+    return this.git.log([
+      "--perl-regexp",
+      `--author=${authorsRegex}`,
+      `--max-count=${maxCount}`,
+    ]);
   }
 }

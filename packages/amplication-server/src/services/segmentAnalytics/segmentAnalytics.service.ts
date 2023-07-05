@@ -83,8 +83,8 @@ export class SegmentAnalyticsService {
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
 
-    const req = RequestContext.currentContext.req;
-    const analyticsSessionId = req.analyticsSessionId;
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = req?.analyticsSessionId;
 
     this.analytics.track({
       ...data,

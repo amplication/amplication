@@ -1,6 +1,7 @@
 export const MODEL_TYPE_NAME = "model";
 export const FIELD_TYPE_NAME = "field";
 export const ENUM_TYPE_NAME = "enum";
+export const ENUMERATOR_TYPE_NAME = "enumerator";
 export const ATTRIBUTE_TYPE_NAME = "attribute";
 export const MAP_ATTRIBUTE_NAME = "map";
 
