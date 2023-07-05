@@ -469,8 +469,8 @@ export class GitClientService {
             `Failed to cherry pick commit ${commit.hash} on branch ${branchName}`,
             error
           );
-          await gitCli.resetState();
           await gitCli.cherryPickAbort();
+          await gitCli.resetState();
           continue;
         }
       }
