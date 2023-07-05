@@ -28,7 +28,6 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
-  BatchGetRepositoriesCommand,
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
@@ -38,6 +37,7 @@ import {
   ListPullRequestsCommand,
   ListRepositoriesCommand,
   PostCommentForPullRequestCommand,
+  PullRequest as AwsPullRequest,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
 
@@ -291,7 +291,7 @@ export class AwsCodeCommitService implements GitProvider {
     });
 
     const { pullRequest } = await this.awsClient.send(command);
-    if (this.isRequiredValid(pullRequest)) {
+    if (this.isRequiredValid<AwsPullRequest>(pullRequest)) {
       return {
         number: Number(pullRequest.pullRequestId),
         url: `https://${this.awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${branchName}/pull-requests/${pullRequest.pullRequestId}/details`,

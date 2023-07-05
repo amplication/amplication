@@ -432,6 +432,28 @@ describe("AwsCodeCommit", () => {
         gitProvider.createPullRequest(createPullRequestArgs)
       ).rejects.toThrowError("error");
     });
+
+    it("should throw an error when CreatePullRequestCommand returns partial data", async () => {
+      awsClientMock
+        .on(CreatePullRequestCommand, {
+          title: createPullRequestArgs.pullRequestTitle,
+          description: createPullRequestArgs.pullRequestBody,
+          targets: [
+            {
+              repositoryName: createPullRequestArgs.repositoryName,
+              sourceReference: createPullRequestArgs.branchName,
+              destinationReference: createPullRequestArgs.defaultBranchName,
+            },
+          ],
+        })
+        .resolves({
+          pullRequest: {},
+        });
+
+      await expect(
+        gitProvider.createPullRequest(createPullRequestArgs)
+      ).rejects.toThrowError("Failed to create pull request");
+    });
   });
 
   describe("getPullRequest", () => {
