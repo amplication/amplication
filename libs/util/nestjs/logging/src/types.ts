@@ -8,7 +8,8 @@ export const AMPLICATION_LOGGER_MODULE_OPTIONS =
   "AMPLICATION_LOGGER_MODULE_OPTIONS";
 
 export interface AmplicationLoggerModulesOptions {
-  serviceName: string;
+  component: string;
   logLevel?: LogLevel;
   isProduction?: boolean;
+  metadata?: Record<string, unknown>;
 }

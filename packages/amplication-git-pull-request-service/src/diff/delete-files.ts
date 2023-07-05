@@ -1,4 +1,4 @@
-import { File } from "@amplication/git-utils";
+import { File } from "@amplication/util/git";
 import { Difference } from "dir-compare";
 import { join } from "path";
 

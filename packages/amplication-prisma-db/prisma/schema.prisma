@@ -1,13 +1,15 @@
 generator serverClient {
-  provider      = "prisma-client-js"
-  output        = "../../amplication-server/prisma/generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "../../amplication-server/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
 }
 
 generator pushWebhookServiceClient {
-  provider      = "prisma-client-js"
-  output        = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
