@@ -197,13 +197,13 @@ export class GitCli {
       .replaceAll("]", "\\]")
       .replaceAll("+", "\\+");
 
-    const authorsRegex = `'^(${authorEscaped})$'`;
+    const authorsRegex = `^(${authorEscaped})$`;
 
     maxCount = maxCount ?? -1;
-    return this.git.log({
-      "--perl-regexp": "",
-      "--author": authorsRegex,
-      "--max-count": maxCount,
-    });
+    return this.git.log([
+      "--perl-regexp",
+      `--author=${authorsRegex}`,
+      `--max-count=${maxCount}`,
+    ]);
   }
 }
