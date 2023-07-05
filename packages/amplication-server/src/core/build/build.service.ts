@@ -130,8 +130,6 @@ export const ACTION_LOG_LEVEL: {
   debug: EnumActionLogLevel.Debug,
 };
 
-const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
-
 const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
 We encourage you to continue exploring the many ways Amplication can supercharge your development. 
  
