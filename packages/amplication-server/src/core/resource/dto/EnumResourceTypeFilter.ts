@@ -8,20 +8,20 @@ export class EnumResourceTypeFilter {
   @Field(() => EnumResourceType, {
     nullable: true,
   })
-  equals?: typeof EnumResourceType[keyof typeof EnumResourceType] | null;
+  equals?: (typeof EnumResourceType)[keyof typeof EnumResourceType] | null;
 
   @Field(() => EnumResourceType, {
     nullable: true,
   })
-  not?: typeof EnumResourceType[keyof typeof EnumResourceType] | null;
+  not?: (typeof EnumResourceType)[keyof typeof EnumResourceType] | null;
 
   @Field(() => [EnumResourceType], {
     nullable: true,
   })
-  in?: typeof EnumResourceType[keyof typeof EnumResourceType][] | null;
+  in?: (typeof EnumResourceType)[keyof typeof EnumResourceType][] | null;
 
   @Field(() => [EnumResourceType], {
     nullable: true,
   })
-  notIn?: typeof EnumResourceType[keyof typeof EnumResourceType][] | null;
+  notIn?: (typeof EnumResourceType)[keyof typeof EnumResourceType][] | null;
 }

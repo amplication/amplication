@@ -1,7 +1,9 @@
 import { PrismaService } from "../../prisma/prisma.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ProjectService } from "./project.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import {
+  Account,
   Block,
   BlockVersion,
   Commit,
@@ -9,6 +11,7 @@ import {
   EntityVersion,
   Project,
   Resource,
+  User,
   Workspace,
 } from "../../models";
 import { Environment } from "../environment/dto";
@@ -27,6 +30,8 @@ import { CURRENT_VERSION_NUMBER } from "../entity/constants";
 import { BlockService } from "../block/block.service";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
+import { prepareDeletedItemName } from "../../util/softDelete";
+import { GitProviderService } from "../git/git.provider.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -40,6 +45,7 @@ const EXAMPLE_NAME = "exampleName";
 const EXAMPLE_DESCRIPTION = "exampleDescription";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
 const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "exampleCustomAttributes";
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_VERSION = "exampleVersion";
 const EXAMPLE_ACTION_ID = "exampleActionId";
@@ -60,6 +66,30 @@ const EXAMPLE_COMMIT: Commit = {
   createdAt: new Date(),
   userId: EXAMPLE_USER_ID,
   message: EXAMPLE_MESSAGE,
+};
+
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
+const EXAMPLE_USER: User = {
+  id: EXAMPLE_USER_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  account: EXAMPLE_ACCOUNT,
+  isOwner: true,
 };
 
 const EXAMPLE_ENVIRONMENT: Environment = {
@@ -89,6 +119,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -143,6 +174,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
@@ -158,6 +190,8 @@ const EXAMPLE_PROJECT_2: Project = {
   name: EXAMPLE_PROJECT_NAME,
   createdAt: new Date(),
   updatedAt: new Date(),
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -175,11 +209,22 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: new Date(),
   workspace: EXAMPLE_WORKSPACE,
   resources: [EXAMPLE_RESOURCE],
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION = {};
 
 /** methods mock */
+const prismaProjectUpdateMock = jest.fn(() => {
+  return EXAMPLE_PROJECT;
+});
+const prismaProjectFindFirstMock = jest.fn(() => {
+  return EXAMPLE_PROJECT;
+});
+const prismaProjectFindManyMock = jest.fn(() => {
+  return [EXAMPLE_PROJECT];
+});
 const prismaResourceCreateMock = jest.fn(() => {
   return EXAMPLE_RESOURCE;
 });
@@ -232,6 +277,9 @@ describe("ProjectService", () => {
             getNumericEntitlement: jest.fn(() => {
               return {};
             }),
+            reportUsage: jest.fn(() => {
+              return {};
+            }),
           },
         },
         {
@@ -248,9 +296,9 @@ describe("ProjectService", () => {
               create: prismaCommitCreateMock,
             },
             project: {
-              findMany: jest.fn(() => {
-                return [EXAMPLE_PROJECT];
-              }),
+              findMany: prismaProjectFindManyMock,
+              findFirst: prismaProjectFindFirstMock,
+              update: prismaProjectUpdateMock,
             },
           })),
         },
@@ -280,7 +328,20 @@ describe("ProjectService", () => {
           provide: ResourceService,
           useClass: jest.fn(() => ({
             createProjectConfiguration: createProjectConfigurationMock,
+            archiveProjectResources: jest.fn(() => Promise.resolve([])),
           })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
+        {
+          provide: GitProviderService,
+          useClass: jest.fn(() => ({})),
         },
       ],
     }).compile();
@@ -302,6 +363,9 @@ describe("ProjectService", () => {
     const findManyArgs = {
       where: {
         deletedAt: null,
+        archived: {
+          not: true,
+        },
         projectId: EXAMPLE_PROJECT_ID,
         project: {
           workspace: {
@@ -367,7 +431,7 @@ describe("ProjectService", () => {
         message: args.data.message,
       },
     };
-    expect(await service.commit(args, false)).toEqual(EXAMPLE_COMMIT);
+    expect(await service.commit(args, EXAMPLE_USER)).toEqual(EXAMPLE_COMMIT);
     expect(prismaResourceFindManyMock).toBeCalledTimes(1);
     expect(prismaResourceFindManyMock).toBeCalledWith(findManyArgs);
 
@@ -396,6 +460,20 @@ describe("ProjectService", () => {
       changesArgs.userId
     );
     expect(buildServiceCreateMock).toBeCalledTimes(1);
-    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs, false);
+    expect(buildServiceCreateMock).toBeCalledWith(buildCreateArgs);
+  });
+
+  it("should delete a project", async () => {
+    const args = { where: { id: EXAMPLE_PROJECT_ID } };
+    const dateSpy = jest.spyOn(global, "Date");
+    expect(await service.deleteProject(args)).toEqual(EXAMPLE_PROJECT);
+    expect(prismaProjectUpdateMock).toBeCalledTimes(1);
+    expect(prismaProjectUpdateMock).toBeCalledWith({
+      ...args,
+      data: {
+        deletedAt: dateSpy.mock.instances[0],
+        name: prepareDeletedItemName(EXAMPLE_PROJECT.name, EXAMPLE_PROJECT.id),
+      },
+    });
   });
 });

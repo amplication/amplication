@@ -12,7 +12,7 @@ import {
   RequestData,
   UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
@@ -23,8 +23,7 @@ const EXAMPLE_ERROR_MESSAGE = "Example Error Message";
 const EXAMPLE_FIELDS = ["exampleField", "exampleOtherField"];
 const EXAMPLE_PRISMA_UNKNOWN_ERROR = new Prisma.PrismaClientKnownRequestError(
   "Example Prisma unknown error message",
-  "UNKNOWN_CODE",
-  Prisma.prismaVersion.client
+  { code: "UNKNOWN_CODE", clientVersion: Prisma.prismaVersion.client }
 );
 const EXAMPLE_ERROR = new Error(EXAMPLE_ERROR_MESSAGE);
 const EXAMPLE_QUERY = "EXAMPLE_QUERY";
@@ -54,7 +53,7 @@ describe("GqlResolverExceptionsFilter", () => {
           },
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useValue: {
             error: errorMock,
             info: infoMock,
@@ -78,18 +77,19 @@ describe("GqlResolverExceptionsFilter", () => {
       string,
       Error,
       Error,
-      [string, { requestData: RequestData | null }] | [Error] | null,
+      [string, { requestData: RequestData | null }] | [string, Error] | null,
       [string, { requestData: RequestData | null }] | null
     ]
   > = [
     [
       "PrismaClientKnownRequestError unique key",
-      new Prisma.PrismaClientKnownRequestError(
-        EXAMPLE_ERROR_MESSAGE,
-        PRISMA_CODE_UNIQUE_KEY_VIOLATION,
-        Prisma.prismaVersion.client,
-        { target: EXAMPLE_FIELDS }
-      ),
+      new Prisma.PrismaClientKnownRequestError(EXAMPLE_ERROR_MESSAGE, {
+        code: PRISMA_CODE_UNIQUE_KEY_VIOLATION,
+        clientVersion: Prisma.prismaVersion.client,
+        meta: {
+          target: EXAMPLE_FIELDS,
+        },
+      }),
       new UniqueKeyException(EXAMPLE_FIELDS),
       null,
       [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
@@ -98,7 +98,7 @@ describe("GqlResolverExceptionsFilter", () => {
       "PrismaClientKnownRequestError unknown",
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
       new InternalServerError(),
-      [EXAMPLE_PRISMA_UNKNOWN_ERROR],
+      [EXAMPLE_PRISMA_UNKNOWN_ERROR.message, EXAMPLE_PRISMA_UNKNOWN_ERROR],
       null,
     ],
     [
@@ -115,7 +115,13 @@ describe("GqlResolverExceptionsFilter", () => {
       null,
       [EXAMPLE_ERROR_MESSAGE, { requestData: null }],
     ],
-    ["Error", EXAMPLE_ERROR, new InternalServerError(), [EXAMPLE_ERROR], null],
+    [
+      "Error",
+      EXAMPLE_ERROR,
+      new InternalServerError(),
+      [EXAMPLE_ERROR.message, EXAMPLE_ERROR],
+      null,
+    ],
   ];
   test.each(cases)("%s", (name, exception, expected, errorArgs, infoArgs) => {
     const host = {} as ArgumentsHost;

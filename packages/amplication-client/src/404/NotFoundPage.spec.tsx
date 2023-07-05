@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import NotFound from "./NotFoundPage";
-import App from "../App";
-import { MemoryRouter } from "react-router-dom";
+// import App from "../App";
+// import { MemoryRouter } from "react-router-dom";
 
 const TEST_ID__WARNING = "warning";
 

@@ -25,18 +25,19 @@ import {
   CreateSwaggerParams,
   CreateSeedParams,
   CreateEntityControllerSpecParams,
-  CreateUserInfoParams,
-  CreateTokenPayloadInterfaceParams,
   CreateAdminUIPackageJsonParams,
+  CreateEntityControllerToManyRelationMethodsParams,
+  CreateEntityResolverToManyRelationMethodsParams,
+  CreateEntityResolverToOneRelationMethodsParams,
   CreateServerGitIgnoreParams,
   CreateAdminGitIgnoreParams,
+  CreateDTOsParams,
+  LoadStaticFilesParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
 export type Events = {
   [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
-  [EventNames.CreateUserInfo]?: PluginEventType<CreateUserInfoParams>;
-  [EventNames.CreateTokenPayloadInterface]?: PluginEventType<CreateTokenPayloadInterfaceParams>;
   [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
@@ -65,4 +66,9 @@ export type Events = {
   [EventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
+  [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
+  [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
+  [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
+  [EventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
+  [EventNames.LoadStaticFiles]?: PluginEventType<LoadStaticFilesParams>;
 };

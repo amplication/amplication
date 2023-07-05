@@ -2,22 +2,21 @@ import {
   LimitationDialog,
   Snackbar,
   TextField,
-} from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+} from "@amplication/ui/design-system";
+import { ApolloError, gql, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
 import { useCallback, useContext, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
 import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
-import { SortOrder, type Commit as CommitType } from "../models";
+import { type Commit as CommitType } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
-import { GET_COMMITS, GET_LAST_COMMIT } from "./hooks/commitQueries";
 
 const LIMITATION_ERROR_PREFIX = "LimitationError: ";
 
@@ -61,9 +60,9 @@ const Commit = ({ projectId, noChanges }: Props) => {
     setCommitRunning,
     resetPendingChanges,
     setPendingChangesError,
-    addChange,
     currentWorkspace,
     currentProject,
+    commitUtils,
   } = useContext(AppContext);
 
   const redirectToPurchase = () => {
@@ -72,21 +71,19 @@ const Commit = ({ projectId, noChanges }: Props) => {
   };
 
   const [commit, { error, loading }] = useMutation<TData>(COMMIT_CHANGES, {
-    onError: () => {
+    onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
-      setOpenLimitationDialog(true);
-      trackEvent({
-        eventName: AnalyticsEventNames.PassedLimitsNotificationView,
-        reason: limitationErrorMessage,
-      });
-      resetPendingChanges();
+      const errorMessage = formatError(error);
+      const isLimitationError =
+        errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+      setOpenLimitationDialog(isLimitationError);
     },
     onCompleted: (response) => {
       setCommitRunning(false);
       setPendingChangesError(false);
       resetPendingChanges();
-      addChange(response.commit.id);
+      commitUtils.refetchCommitsData(true);
       const path = commitPath(
         currentWorkspace?.id,
         currentProject?.id,
@@ -94,23 +91,6 @@ const Commit = ({ projectId, noChanges }: Props) => {
       );
       return history.push(path);
     },
-    refetchQueries: [
-      {
-        query: GET_LAST_COMMIT,
-        variables: {
-          projectId,
-        },
-      },
-      {
-        query: GET_COMMITS,
-        variables: {
-          projectId,
-          orderBy: {
-            createdAt: SortOrder.Desc,
-          },
-        },
-      },
-    ],
   });
 
   const errorMessage = formatError(error);
@@ -129,16 +109,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
         },
       }).catch(console.error);
       resetForm(INITIAL_VALUES);
-      setPendingChangesError(false);
-      resetPendingChanges();
     },
-    [
-      setCommitRunning,
-      commit,
-      projectId,
-      setPendingChangesError,
-      resetPendingChanges,
-    ]
+    [setCommitRunning, commit, projectId]
   );
 
   return (
@@ -173,7 +145,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 eventData={{
-                  eventName: AnalyticsEventNames.CommitCreate,
+                  eventName: AnalyticsEventNames.CommitClicked,
                 }}
                 disabled={loading}
               >
@@ -213,12 +185,17 @@ const Commit = ({ projectId, noChanges }: Props) => {
 
 export default Commit;
 
-const COMMIT_CHANGES = gql`
+export const COMMIT_CHANGES = gql`
   mutation commit($message: String!, $projectId: String!) {
     commit(
       data: { message: $message, project: { connect: { id: $projectId } } }
     ) {
       id
+      builds {
+        id
+        resourceId
+        status
+      }
     }
   }
 `;

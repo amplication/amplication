@@ -13,12 +13,13 @@ import {
   Icon,
   Panel,
   UserAndTime,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
-import EllipsisText from "../Components/EllipsisText";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import useTextOffsetHeight from "../util/useTextOffsetHeight";
+import EllipsisText from "../Components/EllipsisText";
 
 type Props = {
   resource: models.Resource;
@@ -33,7 +34,7 @@ const LINE_HEIGHT = 35;
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
-  const { id, name, description, gitRepository } = resource;
+  const { id, name, description, gitRepository, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
   const headerRowRef = useRef(null);
   const isTitleOverflow = useTextOffsetHeight(headerRowRef, LINE_HEIGHT);
@@ -63,18 +64,29 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const lastBuild = resource.builds[0];
 
-  const gitHubRepo = gitRepository
-    ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
-    : undefined;
+  const provider = gitRepository?.gitOrganization?.provider;
+
+  const gitRepo =
+    gitRepository && provider === models.EnumGitProvider.Github
+      ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
+      : provider === models.EnumGitProvider.Bitbucket
+      ? `${gitRepository.groupName}/${gitRepository.name}`
+      : undefined;
 
   return (
     <>
       <ConfirmationDialog
         isOpen={confirmDelete}
-        title={`Delete '${resource.name}' ?`}
+        title={`Delete '${name}' ?`}
         confirmButton={CONFIRM_BUTTON}
         dismissButton={DISMISS_BUTTON}
-        message="This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "
+        message={
+          <span>
+            {resourceType === models.EnumResourceType.ProjectConfiguration
+              ? "This will permanently delete the entire project and all its resources. Are you sure you want to continue?"
+              : "This action cannot be undone. This will permanently delete the resource and its content. Are you sure you want to continue? "}
+          </span>
+        }
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
@@ -112,20 +124,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__github`}>
+            <div className={`${CLASS_NAME}__git-sync`}>
               <span
-                className={classNames(`${CLASS_NAME}__github-repo`, {
-                  [`${CLASS_NAME}__github-repo--not-connected`]: !gitHubRepo,
+                className={classNames(`${CLASS_NAME}__git-sync-repo`, {
+                  [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
                 })}
               >
                 <Icon
-                  icon="github"
+                  icon={gitProviderIconMap[provider]}
                   size="small"
-                  className={`${CLASS_NAME}__github-repo__icon${
-                    !gitHubRepo ? "-not-connected" : ""
+                  className={`${CLASS_NAME}__git-sync-repo__icon${
+                    !gitRepo ? "-not-connected" : ""
                   }`}
                 />
-                <span>{gitHubRepo ? gitHubRepo : "Not connected"}</span>
+                <span>{gitRepo ? gitRepo : "Not connected"}</span>
               </span>
             </div>
             <span className="spacer" />

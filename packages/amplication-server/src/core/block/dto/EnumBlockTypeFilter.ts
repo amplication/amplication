@@ -8,20 +8,20 @@ export class EnumBlockTypeFilter {
   @Field(() => EnumBlockType, {
     nullable: true,
   })
-  equals?: typeof EnumBlockType[keyof typeof EnumBlockType] | null;
+  equals?: (typeof EnumBlockType)[keyof typeof EnumBlockType] | null;
 
   @Field(() => EnumBlockType, {
     nullable: true,
   })
-  not?: typeof EnumBlockType[keyof typeof EnumBlockType] | null;
+  not?: (typeof EnumBlockType)[keyof typeof EnumBlockType] | null;
 
   @Field(() => [EnumBlockType], {
     nullable: true,
   })
-  in?: typeof EnumBlockType[keyof typeof EnumBlockType][] | null;
+  in?: (typeof EnumBlockType)[keyof typeof EnumBlockType][] | null;
 
   @Field(() => [EnumBlockType], {
     nullable: true,
   })
-  notIn?: typeof EnumBlockType[keyof typeof EnumBlockType][] | null;
+  notIn?: (typeof EnumBlockType)[keyof typeof EnumBlockType][] | null;
 }

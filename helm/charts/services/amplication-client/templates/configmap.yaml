@@ -1,3 +1,0 @@
-{{ include "base.configmap" (list . "amplication-client.configmap") -}}
-{{- define "amplication-client.configmap" -}}
-{{- end }}

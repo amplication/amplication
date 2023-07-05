@@ -2,6 +2,7 @@ import { PrismaService, EnumResourceType } from "../../prisma";
 import { Injectable } from "@nestjs/common";
 import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
+import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
 import { BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
@@ -16,30 +17,30 @@ import { ProjectFindFirstArgs } from "./dto/ProjectFindFirstArgs";
 import { ProjectFindManyArgs } from "./dto/ProjectFindManyArgs";
 import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
-import { Env } from "../../env";
-import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/BillingFeature";
-import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "./FeatureUsageReport";
+import { BillingFeature } from "../billing/billing.types";
+import { GitProviderService } from "../git/git.provider.service";
+
+export const INVALID_PROJECT_ID = "Invalid projectId";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import dockerNames from "docker-names";
 
 @Injectable()
 export class ProjectService {
-  private readonly isBillingEnabled: boolean;
-
   constructor(
     private readonly prisma: PrismaService,
     private readonly resourceService: ResourceService,
     private readonly blockService: BlockService,
     private readonly buildService: BuildService,
     private readonly entityService: EntityService,
-    private readonly configService: ConfigService,
-    private readonly billingService: BillingService
-  ) {
-    this.isBillingEnabled = this.configService.get<boolean>(
-      Env.BILLING_ENABLED
-    );
-  }
+    private readonly billingService: BillingService,
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly gitProviderService: GitProviderService
+  ) {}
 
   async findProjects(args: ProjectFindManyArgs): Promise<Project[]> {
     return this.prisma.project.findMany({
@@ -82,6 +83,37 @@ export class ProjectService {
     return project;
   }
 
+  async deleteProject(args: FindOneArgs): Promise<Project> {
+    const project = await this.findFirst({
+      where: { id: args.where.id, deletedAt: null },
+      include: { workspace: true },
+    } as ProjectFindFirstArgs);
+
+    if (isEmpty(project)) {
+      throw new Error(INVALID_PROJECT_ID);
+    }
+
+    const archivedResources =
+      await this.resourceService.archiveProjectResources(project.id);
+    const archivedServiceCount = archivedResources.filter(
+      (r) => r.resourceType === EnumResourceType.Service
+    ).length;
+
+    await this.billingService.reportUsage(
+      project.workspace.id,
+      BillingFeature.Services,
+      -archivedServiceCount
+    );
+
+    return this.prisma.project.update({
+      where: args.where,
+      data: {
+        name: prepareDeletedItemName(project.name, project.id),
+        deletedAt: new Date(),
+      },
+    });
+  }
+
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
     return this.prisma.project.update({
       where: { ...args.where },
@@ -104,6 +136,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -128,10 +161,17 @@ export class ProjectService {
     return [...changedEntities, ...changedBlocks];
   }
 
-  async calculateUsage(
-    workspaceId: string,
-    entitiesPerService: number
+  async calculateMeteredUsage(
+    workspaceId: string
   ): Promise<FeatureUsageReport> {
+    const entitiesPerServiceEntitlement =
+      await this.billingService.getNumericEntitlement(
+        workspaceId,
+        BillingFeature.EntitiesPerService
+      );
+
+    const entitiesPerService = entitiesPerServiceEntitlement.value;
+
     const workspace = await this.prisma.workspace.findUnique({
       where: {
         id: workspaceId,
@@ -151,8 +191,12 @@ export class ProjectService {
               where: {
                 resourceType: EnumResourceType.Service,
                 deletedAt: null,
+                archived: { not: true },
               },
             },
+          },
+          where: {
+            deletedAt: null,
           },
         },
       },
@@ -178,55 +222,9 @@ export class ProjectService {
     };
   }
 
-  async resetUsage(workspaceId: string, entitiesPerServiceLimit: number) {
-    const usageReport = await this.calculateUsage(
-      workspaceId,
-      entitiesPerServiceLimit
-    );
-
-    await this.billingService.setUsage(
-      workspaceId,
-      BillingFeature.Services,
-      usageReport.services
-    );
-
-    await this.billingService.setUsage(
-      workspaceId,
-      BillingFeature.ServicesAboveEntitiesPerServiceLimit,
-      usageReport.servicesAboveEntityPerServiceLimit
-    );
-  }
-
-  async validateSubscriptionPlanLimitationsForProject(
-    workspaceId: string
-  ): Promise<void> {
-    const servicesEntitlement = await this.billingService.getMeteredEntitlement(
-      workspaceId,
-      BillingFeature.Services
-    );
-
-    if (!servicesEntitlement.hasAccess) {
-      throw new ValidationError(
-        `LimitationError: Allowed services per workspace: ${servicesEntitlement.usageLimit}`
-      );
-    }
-
-    const servicesAboveEntitiesPerServiceLimitEntitlement =
-      await this.billingService.getMeteredEntitlement(
-        workspaceId,
-        BillingFeature.ServicesAboveEntitiesPerServiceLimit
-      );
-
-    if (!servicesAboveEntitiesPerServiceLimitEntitlement.hasAccess) {
-      throw new ValidationError(
-        `LimitationError: Allowed entities per service: ${servicesAboveEntitiesPerServiceLimitEntitlement.usageLimit}`
-      );
-    }
-  }
-
   async commit(
     args: CreateCommitArgs,
-    skipPublish?: boolean
+    currentUser: User
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -235,6 +233,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -246,32 +245,17 @@ export class ProjectService {
         },
       },
     });
+    const project = await this.findFirst({ where: { id: projectId } });
 
-    if (this.isBillingEnabled) {
-      const project = await this.findFirst({ where: { id: projectId } });
+    //check if billing enabled first to skip calculation
+    if (this.billingService.isBillingEnabled) {
+      const usageReport = await this.calculateMeteredUsage(project.workspaceId);
+      await this.billingService.resetUsage(project.workspaceId, usageReport);
 
-      const entitiesPerServiceEntitlement =
-        await this.billingService.getNumericEntitlement(
-          project.workspaceId,
-          BillingFeature.EntitiesPerService
-        );
-
-      await this.resetUsage(
+      await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
         project.workspaceId,
-        entitiesPerServiceEntitlement.value
+        currentUser
       );
-
-      const isIgnoreValidationCodeGeneration =
-        await this.billingService.getBooleanEntitlement(
-          project.workspaceId,
-          BillingFeature.IgnoreValidationCodeGeneration
-        );
-
-      if (!isIgnoreValidationCodeGeneration.hasAccess) {
-        await this.validateSubscriptionPlanLimitationsForProject(
-          project.workspaceId
-        );
-      }
     }
 
     if (isEmpty(resources)) {
@@ -287,13 +271,10 @@ export class ProjectService {
 
     const commit = await this.prisma.commit.create(args);
 
-    if (this.isBillingEnabled) {
-      const project = await this.findUnique({ where: { id: projectId } });
-      await this.billingService.reportUsage(
-        project.workspaceId,
-        BillingFeature.CodeGenerationBuilds
-      );
-    }
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.CodeGenerationBuilds
+    );
 
     await Promise.all(
       changedEntities.flatMap((change) => {
@@ -350,33 +331,41 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    resources
+    const promises = resources
       .filter(
         (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
       )
-      .forEach((resource: Resource) =>
-        this.buildService.create(
-          {
-            data: {
-              resource: {
-                connect: { id: resource.id },
-              },
-              commit: {
-                connect: {
-                  id: commit.id,
-                },
-              },
-              createdBy: {
-                connect: {
-                  id: userId,
-                },
-              },
-              message: args.data.message,
+      .map((resource: Resource) => {
+        return this.buildService.create({
+          data: {
+            resource: {
+              connect: { id: resource.id },
             },
+            commit: {
+              connect: {
+                id: commit.id,
+              },
+            },
+            createdBy: {
+              connect: {
+                id: userId,
+              },
+            },
+            message: args.data.message,
           },
-          skipPublish
-        )
-      );
+        });
+      });
+
+    await Promise.all(promises);
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: project.workspaceId,
+        projectId: project.id,
+      },
+      event: EnumEventType.CommitCreate,
+    });
 
     return commit;
   }
@@ -391,6 +380,7 @@ export class ProjectService {
       where: {
         projectId: projectId,
         deletedAt: null,
+        archived: { not: true },
         project: {
           workspace: {
             users: {
@@ -418,11 +408,18 @@ export class ProjectService {
       );
     }
 
-    const entityPromises = changedEntities.map((change) => {
-      return this.entityService.discardPendingChanges(change.originId, userId);
+    const currentUser = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
     });
+
+    const entityPromises = changedEntities.map((change) => {
+      return this.entityService.discardPendingChanges(change, currentUser);
+    });
+
     const blockPromises = changedBlocks.map((change) => {
-      return this.blockService.discardPendingChanges(change.originId, userId);
+      return this.blockService.discardPendingChanges(change, currentUser);
     });
 
     await Promise.all(blockPromises);
@@ -432,5 +429,82 @@ export class ProjectService {
     //await this.prisma.$transaction(allPromises);
 
     return true;
+  }
+
+  /**
+   * Creates a demo repository for a project
+   */
+  async createDemoRepo(projectId: string) {
+    const project = await this.prisma.project.findUnique({
+      where: {
+        id: projectId,
+      },
+    });
+
+    if (project.useDemoRepo) {
+      throw Error("Demo repo already created for this project");
+    }
+
+    const projectResources = await this.prisma.resource.findMany({
+      where: {
+        projectId: projectId,
+      },
+    });
+
+    if (projectResources.length > 1) {
+      //single resource of type project configuration is expected
+      throw Error("Cannot use demo repo on existing project");
+    }
+
+    const demoRepoName = await this.getUniqueNameForDemoRepo(projectId);
+
+    await this.gitProviderService.createDemoRepository(demoRepoName);
+
+    await this.prisma.project.update({
+      where: {
+        id: projectId,
+      },
+      data: {
+        useDemoRepo: true,
+        demoRepoName: demoRepoName,
+      },
+    });
+  }
+
+  /**
+   * Find a unique name for a demo repo.
+   * In case of no unique name was find after 3 retires, returns the default name
+   * @param defaultUniqueName
+   * @returns
+   */
+  async getUniqueNameForDemoRepo(defaultUniqueName: string): Promise<string> {
+    let i = 0;
+    let repoNameAvailable = false;
+    let demoRepoName = "";
+    while (i < 3 && !repoNameAvailable) {
+      demoRepoName = dockerNames.getRandomName(true);
+
+      repoNameAvailable =
+        (await this.prisma.project.count({
+          where: { demoRepoName: demoRepoName },
+        })) === 0;
+
+      i++;
+    }
+    if (!repoNameAvailable) {
+      return defaultUniqueName;
+    }
+    return demoRepoName;
+  }
+
+  async disableDemoRepoForAllWorkspaceProjects(workspaceId: string) {
+    await this.prisma.project.updateMany({
+      where: {
+        workspaceId: workspaceId,
+      },
+      data: {
+        useDemoRepo: false,
+      },
+    });
   }
 }

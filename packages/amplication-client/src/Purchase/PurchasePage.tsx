@@ -1,74 +1,163 @@
-import { Paywall, BillingPeriod } from "@stigg/react-sdk";
+import { Paywall, BillingPeriod, Price } from "@stigg/react-sdk";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { useHistory } from "react-router-dom";
+import { Helmet } from "react-helmet";
+import * as models from "../models";
 import {
   Button,
   EnumButtonStyle,
   EnumIconPosition,
   Modal,
-} from "@amplication/design-system";
-import axios from "axios";
-import { REACT_APP_SERVER_URI } from "../env";
+} from "@amplication/ui/design-system";
 import "./PurchasePage.scss";
-import { useContext } from "react";
+import { useCallback, useContext, useState } from "react";
+
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
+import { ApolloError, useMutation } from "@apollo/client";
+import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
+import { PurchaseLoader } from "./PurchaseLoader";
+import { FAQ } from "./FAQ";
 
-const selectedPlanAction = {
-  "plan-amplication-enterprise": (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType
-  ) => {
-    window.open(
-      "mailto:sales@amplication.com?subject=Enterprise Plan Inquiry",
-      "_blank",
-      "noreferrer"
-    );
-  },
-  "plan-amplication-pro": async (
-    props,
-    purchaseWorkspace,
-    selectedBillingPeriod,
-    intentionType
-  ) => {
-    const resp = await axios.post(
-      `${REACT_APP_SERVER_URI}/billing/provisionSubscription`,
-      {
-        workspaceId: purchaseWorkspace.id,
-        planId: "plan-amplication-pro",
-        billingPeriod: selectedBillingPeriod,
-        intentionType,
-        successUrl: props.location.state.from.pathname,
-        cancelUrl: props.location.state.from.pathname,
+export type DType = {
+  provisionSubscription: models.ProvisionSubscriptionResult;
+};
+
+type PriceParam = { price: number; currency: string };
+
+const UNKNOWN = "unknown";
+
+const getPlanPrice = (
+  selectedBillingPeriod: BillingPeriod,
+  pricePoints: Price[]
+): PriceParam => {
+  const unknownPrice: PriceParam = { currency: UNKNOWN, price: 0 };
+
+  // If there are no price points, return the unknown price
+  if (!pricePoints.length) return unknownPrice;
+
+  // Return the price point with the selected billing period
+  return pricePoints.reduce(
+    (price: PriceParam, pricePoint: Price): PriceParam => {
+      if (pricePoint.billingPeriod === selectedBillingPeriod) {
+        price = { currency: pricePoint.currency, price: pricePoint.amount };
       }
-    );
-
-    const checkoutResult = resp.data;
-    if (checkoutResult.provisionStatus === "PaymentRequired") {
-      window.location.href = checkoutResult.checkoutUrl;
-    }
-  },
+      return price;
+    },
+    unknownPrice
+  );
 };
 
 const CLASS_NAME = "purchase-page";
 
 const PurchasePage = (props) => {
+  const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
+
   const { trackEvent } = useTracking();
+
   const history = useHistory();
-  const backUrl = () => {
+  const backUrl = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.PricingPageClose,
+    });
     if (history.location.state && history.location.state.source)
       return history.push("/");
 
     history.action !== "POP" ? history.goBack() : history.push("/");
-  };
-  const { currentWorkspace } = useContext(AppContext);
+  }, [history]);
+
+  const [provisionSubscription, { loading: provisionSubscriptionLoading }] =
+    useMutation<DType>(PROVISION_SUBSCRIPTION, {
+      onCompleted: (data) => {
+        const { provisionStatus, checkoutUrl } = data.provisionSubscription;
+        if (provisionStatus === "PaymentRequired")
+          window.location.href = checkoutUrl;
+      },
+      onError: (error: ApolloError) => {
+        console.log(error);
+      },
+    });
+
+  const handleContactUsClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the main flow
+    history.push("?contact-us=true");
+    openHubSpotChat();
+    trackEvent({
+      eventName: AnalyticsEventNames.ContactUsButtonClick,
+      Action: "Contact Us",
+      workspaceId: currentWorkspace.id,
+    });
+  }, [openHubSpotChat, currentWorkspace.id]);
+
+  const handleDowngradeClick = useCallback(() => {
+    // This query param is used to open HubSpot chat with the downgrade flow
+    history.push("?downgrade=true");
+    openHubSpotChat();
+  }, [openHubSpotChat]);
+
+  const [isLoading, setLoading] = useState(false);
+
+  const upgradeToPro = useCallback(
+    async (selectedBillingPeriod, intentionType) => {
+      await provisionSubscription({
+        variables: {
+          data: {
+            workspaceId: currentWorkspace.id,
+            planId: "plan-amplication-pro",
+            billingPeriod: selectedBillingPeriod,
+            intentionType,
+            successUrl: props.location.state?.from?.pathname,
+            cancelUrl: props.location.state?.from?.pathname,
+          },
+        },
+      });
+    },
+    [props.location.state, provisionSubscription, currentWorkspace.id]
+  );
+
+  const onPlanSelected = useCallback(
+    async ({ plan, intentionType, selectedBillingPeriod }) => {
+      const { currency, price } = getPlanPrice(
+        selectedBillingPeriod,
+        plan.pricePoints
+      );
+
+      trackEvent({
+        eventName: AnalyticsEventNames.PricingPageCTAClick,
+        currentPlan:
+          currentWorkspace.subscription || models.EnumSubscriptionPlan.Free,
+        price,
+        type: plan.displayName,
+        action: intentionType,
+        Billing: selectedBillingPeriod,
+        currency,
+      });
+      switch (plan.id) {
+        case "plan-amplication-enterprise":
+          handleContactUsClick();
+          break;
+        case "plan-amplication-pro":
+          setLoading(true);
+          await upgradeToPro(selectedBillingPeriod, intentionType);
+          break;
+        case "plan-amplication-free":
+          handleDowngradeClick();
+          break;
+      }
+    },
+    [upgradeToPro, handleContactUsClick]
+  );
+
+  const pageTitle = "Pricing & Plans";
 
   return (
     <Modal open fullScreen>
+      <Helmet>
+        <title>{`Amplication | ${pageTitle} : `}</title>
+      </Helmet>
       <div className={CLASS_NAME}>
+        {isLoading && <PurchaseLoader />}
         <div className={`${CLASS_NAME}__layout`}>
           <Button
             className={`${CLASS_NAME}__layout__btn`}
@@ -92,8 +181,12 @@ const PurchasePage = (props) => {
                 : `All core backend functionality:`;
             },
             planCTAButton: {
-              startNew: "Upgrade now",
-              upgrade: "Upgrade now",
+              startNew: provisionSubscriptionLoading
+                ? "...Loading"
+                : "Upgrade now",
+              upgrade: provisionSubscriptionLoading
+                ? "...Loading"
+                : "Upgrade now",
               custom: "Contact us",
             },
             price: {
@@ -105,52 +198,51 @@ const PurchasePage = (props) => {
               priceNotSet: "Price not set",
             },
           }}
+          preferredBillingPeriod={BillingPeriod.Monthly}
           onBillingPeriodChange={(billingPeriod: BillingPeriod) => {
             trackEvent({
               eventName: AnalyticsEventNames.PricingPageChangeBillingCycle,
               action: billingPeriod,
             });
           }}
-          onPlanSelected={async ({
-            plan,
-            intentionType,
-            selectedBillingPeriod,
-          }) => {
-            trackEvent({
-              eventName: AnalyticsEventNames.PricingPageCTAClick,
-              currentPlan: plan.basePlan.displayName,
-              type: plan.displayName,
-              action: intentionType,
-              Billing: selectedBillingPeriod,
-            });
-            selectedPlanAction[plan.id](
-              props,
-              currentWorkspace,
-              selectedBillingPeriod,
-              intentionType
-            );
-          }}
+          onPlanSelected={onPlanSelected}
         />
-      </div>
-      <div className={`${CLASS_NAME}__contact`}>
-        <div className={`${CLASS_NAME}__contact_content`}>
-          <p>Building an open-source project?</p>
-          <label>
-            Let us know if there is anything we can support you with. We will do
-            our best to help you improve your project for the community!
-          </label>
-        </div>
-        <div className={`${CLASS_NAME}__contact_btn`}>
-          <Button buttonStyle={EnumButtonStyle.Primary}>
-            <a
-              target="_blank"
-              rel="noreferrer"
-              className={`${CLASS_NAME}__contact_pro_btn`}
-              href="mailto:sales@amplication.com?subject=Pro plan for Open Source project"
-            >
-              Contact us
-            </a>
+        <div className={`${CLASS_NAME}__contact`}>
+          <div className={`${CLASS_NAME}__contact__content`}>
+            <div className={`${CLASS_NAME}__contact__content__header`}>
+              Building an open-source project?
+            </div>
+            <div className={`${CLASS_NAME}__contact__content__description`}>
+              Let us know if there is anything we can support you with. We will
+              do our best to help you improve your project for the community!
+            </div>
+          </div>
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleContactUsClick}
+          >
+            Contact Us
           </Button>
+        </div>
+        <FAQ />
+        <div className={`${CLASS_NAME}__footer`}>
+          <div className={`${CLASS_NAME}__footer__copyright`}>
+            ©2022 amplication
+          </div>
+          <div className={`${CLASS_NAME}__footer__links`}>
+            <a
+              href="https://amplication.com/privacy-policy"
+              className={`${CLASS_NAME}__footer__links__privacy`}
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="https://amplication.com/terms"
+              className={`${CLASS_NAME}__footer__links__terms`}
+            >
+              Terms & Conditions
+            </a>
+          </div>
         </div>
       </div>
     </Modal>

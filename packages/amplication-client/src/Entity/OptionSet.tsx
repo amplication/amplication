@@ -4,7 +4,7 @@ import { pascalCase } from "pascal-case";
 import { get } from "lodash";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { TextField, Icon } from "@amplication/design-system";
+import { TextField, Icon } from "@amplication/ui/design-system";
 import "./OptionSet.scss";
 
 type OptionItem = {
@@ -141,6 +141,7 @@ const OptionSetOption = ({
 
       <div className="option-set__option__action">
         <Button
+          type="button"
           buttonStyle={EnumButtonStyle.Text}
           icon="trash_2"
           onClick={handleRemoveOption}

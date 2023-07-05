@@ -1,8 +1,12 @@
 @import "../../../../style/index.scss";
-@import "../GitDialogsIndex.scss";
 
 .git-create-repo {
-  overflow: auto;
+  flex-direction: column;
+  &__header {
+    font-size: 14px;
+    margin-bottom: var(--large-spacing);
+    color: var(--black100);
+  }
 
   &__button {
     @include flexFullRowWithSpacing;
@@ -10,26 +14,32 @@
     justify-content: center;
   }
 
-  &__table {
-    width: 100%;
-    margin-bottom: var(--default-spacing);
+  .git-select-menu {
+    display: flex;
+    margin-bottom: var(--large-spacing);
 
-    .input-label {
-      margin-bottom: 0;
-    }
+    .select-menu__summary {
+      flex: 1;
+      display: flex;
 
-    ~ .amplication-label {
-      display: block;
+      .item-content {
+        flex: 1;
+        display: flex;
+      }
     }
+  }
+
+  .text-input input {
+    max-width: unset;
   }
 
   &__progress {
     color: var(--white) !important;
   }
-}
-th {
-  font-weight: normal;
-  color: var(--black60);
-  font-size: var(--text-field-label-font-size);
-  text-align: inherit;
+
+  &__label {
+    color: var(--black80);
+    margin-bottom: var(--icon-spacing);
+    font-size: 10px;
+  }
 }

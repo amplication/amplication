@@ -29,7 +29,7 @@
         "outputPath": "dist/ee/packages/amplication-git-pull-service",
         "main": "ee/packages/amplication-git-pull-service/src/main.ts",
         "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json",
-        "webpackConfig": "ee/packages/amplication-git-pull-service/webpack.config.js",
+        "generatePackageJson": true,
         "assets": [
           {
             "glob": "prisma",
@@ -51,7 +51,7 @@
       "options": {
         "buildTarget": "amplication-git-pull-service:build",
         "inspect": true,
-        "port": 9229
+        "port": 7020
       },
       "configurations": {
         "production": {
@@ -121,11 +121,17 @@
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service"]
+        "tags": ["amplication/git-pull-service"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
     }
   },

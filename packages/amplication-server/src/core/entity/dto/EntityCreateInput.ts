@@ -6,6 +6,13 @@ import { WhereParentIdInput } from "../../../dto";
 })
 export class EntityCreateInput {
   @Field(() => String, {
+    nullable: true,
+    description:
+      "allow creating the id for the entity when using import prisma schema because we need it for the relation",
+  })
+  id?: string;
+
+  @Field(() => String, {
     nullable: false,
   })
   name!: string;
@@ -19,6 +26,11 @@ export class EntityCreateInput {
     nullable: false,
   })
   pluralDisplayName!: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  customAttributes?: string;
 
   @Field(() => String, {
     nullable: true,

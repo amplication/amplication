@@ -8,9 +8,21 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import { Loader, PlanUpgradeConfirmation } from "@amplication/design-system";
+import {
+  AnimationType,
+  FullScreenLoader,
+  PlanUpgradeConfirmation,
+} from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
+
+declare global {
+  interface Window {
+    HubSpotConversations: any;
+    hsConversationsOnReady: any;
+    hsConversationsSettings: any;
+  }
+}
 
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
@@ -33,7 +45,6 @@ export const enhance = track<keyof typeof context>(
 function App() {
   const authenticated = useAuthenticated();
   const location = useLocation();
-
   const { currentWorkspaceLoading } = useCurrentWorkspace(authenticated);
   const [keepLoadingAnimation, setKeepLoadingAnimation] =
     useState<boolean>(true);
@@ -86,8 +97,8 @@ function App() {
   return (
     <ThemeProvider>
       {showLoadingAnimation && (
-        <Loader
-          fullScreen
+        <FullScreenLoader
+          animationType={AnimationType.Full}
           minimumLoadTimeMS={MIN_ANIMATION_TIME}
           onTimeout={handleTimeout}
         />

@@ -1,3 +1,4 @@
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
@@ -11,7 +12,11 @@ import {
 const { PORT = 3000 } = process.env;
 
 async function main() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule, {
+    cors: true,
+    bufferLogs: true,
+  });
+  app.useLogger(app.get(AmplicationLogger));
 
   app.useGlobalPipes(
     new ValidationPipe({

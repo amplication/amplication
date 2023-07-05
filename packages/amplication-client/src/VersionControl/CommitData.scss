@@ -1,20 +1,24 @@
 @import "../style/index.scss";
-$metadata-width: 180px;
 
 .commit-data {
   display: flex;
-  justify-content: space-between;
+  flex: 1;
+  min-width: 0;
   align-items: center;
 
   &__metadata {
     display: flex;
     flex-direction: column;
-    width: $metadata-width;
-    margin: 0 var(--user-badge-spacing);
+    flex: 1;
+    min-width: 0;
+    margin: 0 var(--default-spacing-small);
 
     &__message {
       @include regular-12;
       color: var(--black100);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
     }
 
     &__created {

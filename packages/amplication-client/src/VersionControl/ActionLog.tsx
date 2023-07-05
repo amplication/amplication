@@ -12,7 +12,7 @@ import {
   EnumCircleIconSize,
   Icon,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
 type Props = {
@@ -62,6 +62,8 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
       };
     });
   }, [action]);
+
+  //need to return even if actionStatus === Failed/Success
 
   const actionStatus = useMemo(() => {
     if (
@@ -146,6 +148,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
                   extraLines={0}
                   enableSearch={false}
                   text={stepData.messages}
+                  overscanRowCount={1000} //use a large default until we fix the limitation in the UI - see https://github.com/amplication/amplication/issues/6365
                   selectableLines={true}
                   height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
                 />

@@ -1,10 +1,9 @@
 import type { Promisable } from "type-fest";
-import winston from "winston";
+import { BuildLogger } from "./build-logger";
 import {
   clientDirectories,
   DTOs,
-  EntityField,
-  Module,
+  ModuleMap,
   serverDirectories,
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
@@ -20,8 +19,8 @@ export type PluginBeforeEvent<T extends EventParams> = (
 export type PluginAfterEvent<T extends EventParams> = (
   dsgContext: DsgContext,
   eventParams: T,
-  modules: Module[]
-) => Promisable<Module[]>;
+  modules: ModuleMap
+) => Promisable<ModuleMap>;
 
 export interface PluginEventType<T extends EventParams> {
   before?: PluginBeforeEvent<T>;
@@ -39,13 +38,20 @@ export interface ContextUtil {
   abortGeneration: (msg: string) => void;
   abortMessage?: string;
   abort: boolean;
-  importStaticModules: (source: string, basePath: string) => Promise<Module[]>;
+  importStaticModules: (source: string, basePath: string) => Promise<ModuleMap>;
 }
+
 export interface DsgContext extends DSGResourceData {
-  modules: Module[];
+  /**
+   * List of generated files.
+   */
+  modules: ModuleMap;
   DTOs: DTOs;
   plugins: PluginMap;
-  logger: winston.Logger;
+  /**
+   * Logger for user facing logs. Logs will be visible in the build log.
+   */
+  logger: BuildLogger;
   utils: ContextUtil;
   clientDirectories: clientDirectories;
   serverDirectories: serverDirectories;
@@ -68,8 +74,6 @@ export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
-  CreateUserInfo = "CreateUserInfo",
-  CreateTokenPayloadInterface = "CreateTokenPayloadInterface",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminUI = "CreateAdminUI",
   CreateServer = "CreateServer",
@@ -96,6 +100,11 @@ export enum EventNames {
   CreateEntityResolverBase = "CreateEntityResolverBase",
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
+  CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
+  CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
+  CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
+  CreateDTOs = "CreateDTOs",
+  LoadStaticFiles = "LoadStaticFiles",
 }
 
 export interface AmplicationPlugin {

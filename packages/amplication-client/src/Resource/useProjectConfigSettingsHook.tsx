@@ -20,9 +20,8 @@ const PROJECT_CONFIG_FORM_SCHEMA = {
 
 const useProjectConfigSettingsHook = () => {
   const { trackEvent } = useTracking();
-  const { currentResource, addBlock } = useContext(AppContext);
-  const resourceId = currentResource?.id;
-
+  const { addBlock, projectConfigurationResource } = useContext(AppContext);
+  const projectConfigurationResourceId = projectConfigurationResource?.id;
   const {
     data: projectConfigurationData,
     error: projectConfigurationError,
@@ -31,9 +30,9 @@ const useProjectConfigSettingsHook = () => {
     projectConfigurationSettings: models.ProjectConfigurationSettings;
   }>(GET_PROJECT_CONFIG_SETTINGS, {
     variables: {
-      id: currentResource?.id,
+      id: projectConfigurationResourceId,
     },
-    skip: !currentResource?.id,
+    skip: !projectConfigurationResourceId,
   });
 
   const [updateResourceSettings, { error: ProjectConfigurationUpdateError }] =
@@ -55,11 +54,11 @@ const useProjectConfigSettingsHook = () => {
           data: {
             baseDirectory,
           },
-          resourceId,
+          resourceId: projectConfigurationResourceId,
         },
       }).catch(console.error);
     },
-    [updateResourceSettings, resourceId, trackEvent]
+    [updateResourceSettings, projectConfigurationResourceId, trackEvent]
   );
 
   return {

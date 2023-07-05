@@ -3,6 +3,7 @@ import React from "react";
 import * as models from "../models";
 import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
+import { CommitUtils } from "../VersionControl/hooks/useCommits";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -31,7 +32,7 @@ export interface AppContextInterface {
   pendingChanges: PendingChangeItem[];
   commitRunning: boolean;
   pendingChangesIsError: boolean;
-  addEntity: (entityId: string) => void;
+  addEntity: (entityId?: string) => void;
   addBlock: (blockId: string) => void;
   addChange: (originId: string) => void;
   resetPendingChanges: () => void;
@@ -42,12 +43,18 @@ export interface AppContextInterface {
   workspacesList: models.Workspace[];
   gitRepositoryFullName: string;
   gitRepositoryUrl: string;
+  gitRepositoryOrganizationProvider: models.EnumGitProvider | undefined;
   createMessageBroker: (
     data: models.ResourceCreateInput,
     eventName: string
   ) => void;
   loadingCreateMessageBroker: boolean;
   errorCreateMessageBroker: Error | undefined;
+  resetPendingChangesIndicator: boolean;
+  setResetPendingChangesIndicator: (reset: boolean) => void;
+  openHubSpotChat: () => void;
+  createServiceWithEntitiesResult: models.ResourceCreateWithEntitiesResult;
+  commitUtils: CommitUtils;
 }
 
 const initialContext: AppContextInterface = {
@@ -85,9 +92,29 @@ const initialContext: AppContextInterface = {
   workspacesList: [],
   gitRepositoryFullName: "",
   gitRepositoryUrl: "",
+  gitRepositoryOrganizationProvider: undefined,
   createMessageBroker: () => {},
   loadingCreateMessageBroker: false,
   errorCreateMessageBroker: undefined,
+  resetPendingChangesIndicator: false,
+  setResetPendingChangesIndicator: () => {},
+  openHubSpotChat: () => {},
+  createServiceWithEntitiesResult: undefined,
+  commitUtils: {
+    commits: [],
+    lastCommit: null,
+    commitsError: null,
+    commitsLoading: false,
+    commitChangesByResource: (commitId: string) => [
+      {
+        resourceId: "",
+        changes: [],
+      },
+    ],
+    refetchCommitsData: () => {},
+    refetchLastCommit: () => {},
+    disableLoadMore: false,
+  },
 };
 
 export const AppContext =

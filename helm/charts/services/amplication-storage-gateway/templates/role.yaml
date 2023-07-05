@@ -1,3 +1,0 @@
-{{ include "base.role" (list . "amplication-storage-gateway.role") -}}
-{{- define "amplication-storage-gateway.role" -}}
-{{- end }}

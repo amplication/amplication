@@ -1,7 +1,7 @@
 import React from "react";
 import { isEmpty } from "lodash";
 import "./PageContent.scss";
-import { Panel } from "@amplication/design-system";
+import { Panel } from "@amplication/ui/design-system";
 import { ReactComponent as DiscordButton } from "../assets/images/discord-button.svg";
 import "./WelcomePage.scss";
 
@@ -86,7 +86,7 @@ function WelcomePage({
           </div>
         </div>
         <a
-          href="https://discord.gg/Z2CG3rUFnu"
+          href="https://amplication.com/discord"
           target="discord"
           className="discord-button"
         >
@@ -100,7 +100,7 @@ function WelcomePage({
         <div className={`${CLASS_NAME}__form__open-source-message`}>
           {openSourceMessage}
           <a
-            href="https://discord.gg/Z2CG3rUFnu"
+            href="https://amplication.com/discord"
             target="discord"
             className="discord-button"
           >

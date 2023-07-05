@@ -1,3 +1,0 @@
-{{ include "base.service" (list . "amplication-git-push-webhook-service.service") -}}
-{{- define "amplication-git-push-webhook-service.service" -}}
-{{- end }}

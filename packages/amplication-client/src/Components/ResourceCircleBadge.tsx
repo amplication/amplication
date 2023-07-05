@@ -1,4 +1,4 @@
-import { CircleBadge, Icon } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import React from "react";
 import * as models from "../models";
 import { resourceThemeMap } from "../Resource/constants";

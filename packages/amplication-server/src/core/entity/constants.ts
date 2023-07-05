@@ -4,6 +4,11 @@ import { EntityField, Entity } from "../../models";
 import { EnumEntityAction } from "../../enums/EnumEntityAction";
 import { EnumEntityPermissionType } from "../../enums/EnumEntityPermissionType";
 import { Prisma } from "../../prisma";
+import {
+  Action,
+  EnumActionLogLevel,
+  EnumActionStepStatus,
+} from "../action/dto";
 
 /**
  * This const is represent the newest version of the entity
@@ -106,6 +111,7 @@ export const DEFAULT_ENTITIES: EntityData[] = [
     name: USER_ENTITY_NAME,
     displayName: "User",
     pluralDisplayName: "Users",
+    customAttributes: "",
     description:
       "An automatically created entity to manage users in the service",
     fields: [
@@ -219,4 +225,27 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   [EnumDataType.Username]: {},
   [EnumDataType.Password]: {},
   [EnumDataType.Roles]: {},
+};
+
+export const PRISMA_IMPORT_ACTION_LOG: Action = {
+  id: "1",
+  createdAt: new Date(),
+  steps: [
+    {
+      id: "1",
+      name: "PROCESSING",
+      message: "Import Prisma schema file",
+      status: EnumActionStepStatus.Running,
+      createdAt: new Date(),
+      logs: [
+        {
+          id: "1",
+          message: "Processing Prisma schema file",
+          level: EnumActionLogLevel.Info,
+          createdAt: new Date(),
+          meta: {},
+        },
+      ],
+    },
+  ],
 };

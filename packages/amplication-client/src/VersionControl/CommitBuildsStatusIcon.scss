@@ -5,13 +5,13 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: var(--large-spacing);
+
     .amp-icon {
       color: var(--black80);
-      margin-left: var(--default-spacing);
       font-size: var(--icon-font-size);
     }
   }
+
   &--completed {
     i {
       color: var(--positive-default) !important;
@@ -23,6 +23,7 @@
       color: var(--negative) !important;
     }
   }
+
   &--running {
     i {
       color: var(--black20) !important;

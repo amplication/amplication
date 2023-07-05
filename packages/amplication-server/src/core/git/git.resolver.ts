@@ -18,10 +18,19 @@ import { DeleteGitRepositoryArgs } from "./dto/args/DeleteGitRepositoryArgs";
 import { GetGitInstallationUrlArgs } from "./dto/args/GetGitInstallationUrlArgs";
 import { RemoteGitRepositoriesFindManyArgs } from "./dto/args/RemoteGitRepositoriesFindManyArgs";
 import { GitOrganizationFindManyArgs } from "./dto/args/GitOrganizationFindManyArgs";
-import { RemoteGitRepos } from "./dto/objects/RemoteGitRepository";
+import {
+  RemoteGitRepos,
+  RemoteGitRepository,
+} from "./dto/objects/RemoteGitRepository";
 import { GitProviderService } from "./git.provider.service";
 import { DisconnectGitRepositoryArgs } from "./dto/args/DisconnectGitRepositoryArgs";
 import { ConnectToProjectGitRepositoryArgs } from "./dto/args/ConnectToProjectGitRepositoryArgs";
+import { CompleteGitOAuth2FlowArgs } from "./dto/args/CompleteGitOAuth2FlowArgs";
+import { CreateGitRepositoryBaseArgs } from "./dto/args/CreateGitRepositoryBaseArgs";
+import { GitGroupArgs } from "./dto/args/GitGroupArgs";
+import { PaginatedGitGroup } from "./dto/objects/PaginatedGitGroup";
+import { User } from "../../models";
+import { UserEntity } from "../../decorators/user.decorator";
 
 @UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
@@ -32,9 +41,20 @@ export class GitResolver {
     AuthorizableOriginParameter.GitOrganizationId,
     "data.gitOrganizationId"
   )
-  async createGitRepository(
+  async connectGitRepository(
     @Args() args: CreateGitRepositoryArgs
-  ): Promise<Resource> {
+  ): Promise<Resource | boolean> {
+    return this.gitService.connectGitRepository(args.data);
+  }
+
+  @Mutation(() => RemoteGitRepository)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "data.gitOrganizationId"
+  )
+  async createRemoteGitRepository(
+    @Args() args: CreateGitRepositoryBaseArgs
+  ): Promise<RemoteGitRepository> {
     return this.gitService.createRemoteGitRepository(args.data);
   }
 
@@ -64,12 +84,15 @@ export class GitResolver {
     );
   }
 
-  @Mutation(() => GitOrganization)
+  @Mutation(() => GitOrganization, {
+    description: "Only for GitHub integrations",
+  })
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
+    @UserEntity() currentUser: User,
     @Args() args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
-    return await this.gitService.createGitOrganization(args);
+    return await this.gitService.createGitOrganization(args, currentUser);
   }
 
   @Mutation(() => Resource)
@@ -110,6 +133,24 @@ export class GitResolver {
     return {
       url: await this.gitService.getGitInstallationUrl(args),
     };
+  }
+
+  @Mutation(() => GitOrganization)
+  @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
+  async completeGitOAuth2Flow(
+    @UserEntity() currentUser: User,
+    @Args() args: CompleteGitOAuth2FlowArgs
+  ): Promise<GitOrganization> {
+    return await this.gitService.completeOAuth2Flow(args, currentUser);
+  }
+
+  @Query(() => PaginatedGitGroup)
+  @AuthorizeContext(
+    AuthorizableOriginParameter.GitOrganizationId,
+    "where.organizationId"
+  )
+  gitGroups(@Args() args: GitGroupArgs): Promise<PaginatedGitGroup> {
+    return this.gitService.getGitGroups(args);
   }
 
   @Query(() => RemoteGitRepos)

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Formik } from "formik";
 
 import * as models from "../models";
-import { TextField } from "@amplication/design-system";
+import { TextField } from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";
@@ -119,6 +119,14 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                   rows={3}
                   name="description"
                   label="Description"
+                />
+                <TextField
+                  autoComplete="off"
+                  placeholder='Add custom attributes to model using the format @@attribute([parameters]) or @@attribute(). For example: @@index([field_1, field_2])  @@map("modelName")'
+                  textarea
+                  rows={3}
+                  name="customAttributes"
+                  label="Custom Attributes"
                 />
               </>
             </Form>

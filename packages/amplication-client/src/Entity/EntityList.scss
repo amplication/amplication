@@ -20,6 +20,10 @@
     }
   }
 
+  &__action-buttons {
+    @include flexFullRowWithSpacing;
+  }
+
   &__title {
     @include body2;
     margin-bottom: var(--default-spacing-small);

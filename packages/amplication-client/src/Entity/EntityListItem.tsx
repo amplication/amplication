@@ -6,7 +6,7 @@ import {
   UserAndTime,
   Panel,
   EnumPanelStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
@@ -28,6 +28,7 @@ type Props = {
   onDelete?: () => void;
   onError: (error: Error) => void;
   relatedEntities: models.Entity[];
+  isUserEntityMandatory: boolean;
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -38,6 +39,7 @@ export const EntityListItem = ({
   onDelete,
   onError,
   relatedEntities,
+  isUserEntityMandatory,
 }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
@@ -99,6 +101,18 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
+  const isUserEntity = entity.name === USER_ENTITY;
+
+  const isDeleteButtonDisable = isUserEntity && isUserEntityMandatory;
+
+  const deleteMessage = isUserEntity
+    ? "Deleting this entity may impact the authentication functionality of your service"
+    : "you want to delete this entity?";
+
+  const deleteMessageConfirmation = isUserEntity ? "Notice:" : "Are you sure";
+
+  const deleteClassName = isUserEntity ? "__alert-bold-notice" : "__alert-bold";
+
   return (
     <>
       <ConfirmationDialog
@@ -108,8 +122,10 @@ export const EntityListItem = ({
         dismissButton={DISMISS_BUTTON}
         message={
           <span>
-            <span className={`${CLASS_NAME}__alert-bold`}>Are you sure</span>{" "}
-            you want to delete this entity?
+            <span className={`${CLASS_NAME}${deleteClassName}`}>
+              {deleteMessageConfirmation}
+            </span>{" "}
+            {deleteMessage}
             <br />
             {relatedEntities.length > 0 && (
               <ConfirmationDialogFieldList relatedEntities={relatedEntities} />
@@ -138,11 +154,12 @@ export const EntityListItem = ({
           )}
 
           <span className="spacer" />
-          {!deleteLoading && entity.name !== USER_ENTITY && (
+          {!deleteLoading && (
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
+              disabled={isDeleteButtonDisable}
             />
           )}
         </div>

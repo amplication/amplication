@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 import { RemoteGitRepository } from "../../../../../models";
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import "./GitRepoItem.scss";
 import { Button } from "../../../../../Components/Button";
 import { AnalyticsEventNames } from "../../../../../util/analytics-events.types";

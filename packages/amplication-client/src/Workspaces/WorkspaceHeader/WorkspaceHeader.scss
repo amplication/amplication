@@ -14,6 +14,18 @@ $select-menu-max-width: 300px;
   background: var(--black2);
   border-bottom: $border-black5;
 
+  &__highlight {
+    background-color: var(--warning-default);
+    text-align: center;
+    color: var(--white);
+    padding: var(--default-spacing-small);
+
+    a {
+      @include bold;
+      color: var(--white);
+      text-decoration: underline;
+    }
+  }
   &__version {
     color: var(--dark-secondary-turquoise) !important;
     margin-left: var(--user-badge-spacing);
@@ -32,6 +44,7 @@ $select-menu-max-width: 300px;
     border-right: $border-black70;
     width: var(--menu-width);
   }
+
   &__breadcrumbs {
     flex-grow: 1;
     display: flex;
@@ -49,6 +62,7 @@ $select-menu-max-width: 300px;
         }
       }
     }
+
     &__resource {
       display: flex;
       justify-content: center;
@@ -64,6 +78,7 @@ $select-menu-max-width: 300px;
 
       .select-menu__summary.amp-button.amp-button--text {
         color: var(--black80);
+
         &.highlight,
         &:hover,
         &:focus,
@@ -75,23 +90,26 @@ $select-menu-max-width: 300px;
       .select-menu {
         position: relative;
       }
+
       .select-menu__modal {
         width: $modal-menu-width;
         background-color: var(--black2);
-        border: $border-black30;
         box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
         border-radius: var(--default-border-radius);
       }
+
       .select-menu__modal > div {
         width: $modal-menu-width;
         border: none;
         margin: 0;
         border-radius: var(--default-border-radius);
       }
+
       .select-menu__list {
         width: $modal-menu-width;
         @include scrollbars($default-scroll-width, var(--black60), transparent);
       }
+
       .select-menu__item {
         padding: var(--default-spacing);
       }
@@ -102,13 +120,16 @@ $select-menu-max-width: 300px;
         justify-content: center;
         align-items: center;
       }
+
       &__icon {
         color: var(--black100);
       }
+
       &__text {
         margin-left: var(--default-spacing-small);
         @include regular-12();
         color: var(--black100);
+
         &__name {
           overflow: hidden;
           text-overflow: ellipsis;
@@ -125,6 +146,75 @@ $select-menu-max-width: 300px;
           width: 130px;
         }
       }
+    }
+  }
+
+  &__help_popover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .select-menu__summary.amp-button.amp-button--text {
+      color: var(--black80);
+
+      &.highlight,
+      &:hover,
+      &:focus,
+      &:active {
+        color: var(--black100);
+      }
+    }
+
+    .select-menu {
+      position: relative;
+    }
+
+    .select-menu__modal {
+      width: auto;
+      background-color: var(--black2);
+      border: $border-black30;
+      box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+      border-radius: var(--default-border-radius);
+    }
+
+    .select-menu__modal > div {
+      width: auto;
+      border: none;
+      margin: 0;
+    }
+
+    .select-menu__list {
+      width: auto;
+    }
+
+    .select-menu__item {
+      width: auto;
+      flex-direction: row;
+      padding: 0;
+
+      &:hover {
+        .workspace-header__help_popover__name {
+          color: var(--black100);
+        }
+      }
+
+      &:first-child {
+        margin-top: var(--default-spacing-small);
+      }
+
+      margin-bottom: var(--default-spacing-small);
+
+      svg {
+        display: none !important;
+      }
+    }
+
+    &__name {
+      @include regular-12();
+      width: 100%;
+      color: var(--black80);
+      white-space: nowrap;
+      padding: 2px var(--default-spacing-small);
     }
   }
 
@@ -145,13 +235,6 @@ $select-menu-max-width: 300px;
 
   &__links {
     @include flexFullRowWithSpacingBothSides;
-    &__link {
-      @include regular-12();
-      color: var(--black80);
-      &:hover {
-        color: var(--black100);
-      }
-    }
   }
 
   &__upgrade__btn {
@@ -174,5 +257,6 @@ $select-menu-max-width: 300px;
 
   &__user_badge_wrapper {
     padding: var(--user-badge-spacing);
+    cursor: pointer;
   }
 }

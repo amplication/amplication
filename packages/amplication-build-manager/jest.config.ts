@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-build-manager",
+  coverageThreshold: {
+    global: {
+      branches: 70,
+      lines: 80,
+    },
+  },
 };

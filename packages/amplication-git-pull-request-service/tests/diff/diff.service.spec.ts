@@ -1,4 +1,4 @@
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { DiffService } from "../../src/diff/diff.service";
 import { MOCK_BUILD_PATH_FACTORY } from "./mocks";
 

@@ -1,6 +1,6 @@
 import React from "react";
 import { useQuery } from "@apollo/client";
-import { HorizontalRule } from "@amplication/design-system";
+import { HorizontalRule } from "@amplication/ui/design-system";
 import { EnumResourceType, Resource } from "../models";
 import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
 import PageContent from "../Layout/PageContent";

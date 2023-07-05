@@ -1,8 +1,8 @@
-import { CircleBadge, Icon } from "@amplication/design-system";
+import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import * as models from "../models";
-import { WORKSPACE_COLOR } from "./WorkspaceSelector";
+import { FREE_WORKSPACE_COLOR, getWorkspaceColor } from "./WorkspaceSelector";
 
 const CLASS_NAME = "workspaces-selector__list__item";
 
@@ -28,11 +28,21 @@ function WorkspaceSelectorListItem({
       })}
       onClick={handleClick}
     >
-      <CircleBadge name={workspace.name} color={WORKSPACE_COLOR} />
+      <CircleBadge
+        name={workspace.name}
+        color={getWorkspaceColor(workspace.subscription?.subscriptionPlan)}
+      />
       <div className={`${CLASS_NAME}__details`}>
         <span className={`${CLASS_NAME}__name`}>{workspace.name}</span>
-        <span className={`${CLASS_NAME}__plan`}>
-          {workspace.subscription?.subscriptionPlan || "Free"} Plan
+        <span
+          className={classNames(
+            `${CLASS_NAME}__plan`,
+            workspace.subscription?.subscriptionPlan?.toLocaleLowerCase()
+          )}
+        >
+          {workspace.subscription?.subscriptionPlan ||
+            models.EnumSubscriptionPlan.Free}{" "}
+          Plan
         </span>
       </div>
       {selected && (

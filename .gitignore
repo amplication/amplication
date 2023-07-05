@@ -3,6 +3,7 @@ lerna-debug.log
 .DS_Store
 .idea/
 helm/**/secrets/
+.amplication
 
 *.tgz
 values-secret*
@@ -42,7 +43,7 @@ node_modules
 # misc
 /.sass-cache
 /connect.lock
-/coverage
+coverage/
 /libpeerconnection.log
 npm-debug.log
 yarn-error.log
@@ -53,8 +54,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-infra/tilt/.temp/**
-!infra/tilt/.temp/.gitkeep
 .temp
 
 # Next.js
@@ -62,6 +61,9 @@ infra/tilt/.temp/**
 .env.local
 
 src/schema.graphql
-packages/amplication-data-service-generator/.tsbuildinfo
 **/prisma/generated-prisma-client
-libs/data-service-generator/.tsbuildinfo
+.tsbuildinfo
+
+.nx-container/
+
+**/prisma/migrations/dev/

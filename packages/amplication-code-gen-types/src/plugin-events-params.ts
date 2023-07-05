@@ -1,13 +1,15 @@
-import { namedTypes } from "ast-types";
+import type { namedTypes } from "ast-types";
 import {
+  DTOs,
   Entity,
   EntityField,
+  EntityLookupField,
   EnumDataType,
-  Module,
+  ModuleMap,
   NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import {
+import type {
   Generator,
   DataSource,
   ScalarField,
@@ -51,6 +53,38 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
+
+export interface CreateEntityControllerToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entity: Entity;
+  entityType: string;
+  whereUniqueInput: NamedClassDeclaration;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entityType: string;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
+}
+
+export interface CreateEntityResolverToOneRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entityType: string;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toOneFile: namedTypes.File;
+  toOneMapping: { [key: string]: any };
+}
 export interface CreateEntityControllerSpecParams extends EventParams {
   entity: Entity;
   entityType: string;
@@ -63,19 +97,7 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 
-export interface CreateUserInfoParams extends EventParams {
-  template: namedTypes.File;
-  templateMapping: { [key: string]: any };
-  filePath: string;
-}
-export interface CreateTokenPayloadInterfaceParams extends EventParams {
-  template: namedTypes.File;
-  templateMapping: { [key: string]: any };
-  filePath: string;
-}
-export interface CreateServerAuthParams extends EventParams {
-  srcDir: string;
-}
+export interface CreateServerAuthParams extends EventParams {}
 
 export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}
@@ -144,7 +166,9 @@ export interface CreateAdminUIPackageJsonParams extends EventParams {
 }
 
 export interface CreateServerAppModuleParams extends EventParams {
-  modulesFiles: Module[];
+  modulesFiles: ModuleMap;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
 }
 
 export interface CreateEntityModuleParams extends EventParams {
@@ -203,4 +227,13 @@ export interface CreateSeedParams extends EventParams {
   templateMapping: { [key: string]: any };
   fileDir: string;
   outputFileName: string;
+}
+
+export interface CreateDTOsParams extends EventParams {
+  dtos: DTOs;
+}
+
+export interface LoadStaticFilesParams extends EventParams {
+  source: string;
+  basePath: string;
 }

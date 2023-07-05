@@ -9,12 +9,14 @@ import {
   HorizontalRule,
   Panel,
   Toggle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { Plugin, PluginVersion } from "./hooks/usePlugins";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
+import { LATEST_VERSION_TAG } from "./constant";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
 
 type Props = {
   plugin: Plugin;
@@ -26,6 +28,7 @@ type Props = {
   isDraggable?: boolean;
 };
 
+const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
 const CLASS_NAME = "plugins-catalog-item";
 
 function PluginsCatalogItem({
@@ -56,7 +59,16 @@ function PluginsCatalogItem({
   }, [onOrderChange, order, pluginInstallation]);
 
   const handleInstall = useCallback(() => {
-    onInstall && onInstall(plugin, plugin.versions[0]);
+    // Get the "latest" version or the first one by the env variable flag
+    const hardcodedLatestVersion = pluginUseLatest
+      ? plugin.versions.find(
+          (version) => version.version === LATEST_VERSION_TAG
+        )
+      : plugin.versions.find(
+          (version) => version.version !== LATEST_VERSION_TAG
+        );
+
+    onInstall && onInstall(plugin, hardcodedLatestVersion);
   }, [onInstall, plugin]);
 
   const handleEnableStateChange = useCallback(() => {
@@ -96,7 +108,6 @@ function PluginsCatalogItem({
               <Button
                 className={`${CLASS_NAME}__install`}
                 buttonStyle={EnumButtonStyle.Secondary}
-                disabled
               >
                 Settings
               </Button>
@@ -126,7 +137,7 @@ function PluginsCatalogItem({
       <div className={`${CLASS_NAME}__row `}>
         <span className="spacer" />
         <span className={`${CLASS_NAME}__repo`}>
-          <a href={plugin?.repo} target="github_plugin">
+          <a href={plugin.github} target="github_plugin">
             View on GitHub
           </a>
         </span>

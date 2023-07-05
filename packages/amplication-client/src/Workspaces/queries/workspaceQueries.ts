@@ -21,6 +21,8 @@ export const GET_CURRENT_WORKSPACE = gql`
         name
         installationId
         type
+        provider
+        useGroupingForRepositories
       }
     }
   }
@@ -59,6 +61,15 @@ export const GET_WORKSPACES = gql`
         id
         subscriptionPlan
       }
+    }
+  }
+`;
+
+export const PROVISION_SUBSCRIPTION = gql`
+  mutation provisionSubscription($data: ProvisionSubscriptionInput!) {
+    provisionSubscription(data: $data) {
+      provisionStatus
+      checkoutUrl
     }
   }
 `;

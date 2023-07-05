@@ -12,7 +12,11 @@ import { Role } from "../../enums/Role";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
-import { AuthService, AuthUser } from "./auth.service";
+import {
+  AuthService,
+  AuthUser,
+  IDENTITY_PROVIDER_MANUAL,
+} from "./auth.service";
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { ProjectService } from "../project/project.service";
@@ -37,6 +41,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   deletedAt: undefined,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_HASHED_PASSWORD = "HASHED PASSWORD";
@@ -244,14 +250,17 @@ describe("AuthService", () => {
     });
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(createAccountMock).toHaveBeenCalledTimes(1);
-    expect(createAccountMock).toHaveBeenCalledWith({
-      data: {
-        email: EXAMPLE_ACCOUNT.email,
-        password: EXAMPLE_HASHED_PASSWORD,
-        firstName: EXAMPLE_ACCOUNT.firstName,
-        lastName: EXAMPLE_ACCOUNT.lastName,
+    expect(createAccountMock).toHaveBeenCalledWith(
+      {
+        data: {
+          email: EXAMPLE_ACCOUNT.email,
+          password: EXAMPLE_HASHED_PASSWORD,
+          firstName: EXAMPLE_ACCOUNT.firstName,
+          lastName: EXAMPLE_ACCOUNT.lastName,
+        },
       },
-    });
+      IDENTITY_PROVIDER_MANUAL
+    );
     expect(setCurrentUserMock).toHaveBeenCalledTimes(1);
     expect(setCurrentUserMock).toHaveBeenCalledWith(
       EXAMPLE_ACCOUNT.id,

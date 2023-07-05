@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
-import { SelectField, SelectFieldProps } from "@amplication/design-system";
+import { SelectField, SelectFieldProps } from "@amplication/ui/design-system";
 
 type TEntities = {
   entities: [
@@ -16,11 +16,14 @@ type Props = Omit<SelectFieldProps, "options"> & {
 };
 
 const EntitySelectField = ({ resourceId, ...props }: Props) => {
-  const { data: entityList } = useQuery<TEntities>(GET_ENTITIES, {
-    variables: {
-      resourceId: resourceId,
-    },
-  });
+  const { data: entityList } = useQuery<TEntities>(
+    GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
+    {
+      variables: {
+        resourceId: resourceId,
+      },
+    }
+  );
 
   const entityListOptions = useMemo(() => {
     return entityList
@@ -36,7 +39,7 @@ const EntitySelectField = ({ resourceId, ...props }: Props) => {
 
 export default EntitySelectField;
 
-export const GET_ENTITIES = gql`
+export const GET_ENTITIES_FOR_ENTITY_SELECT_FIELD = gql`
   query getEntities($resourceId: String!) {
     entities(where: { resource: { id: $resourceId } }) {
       id

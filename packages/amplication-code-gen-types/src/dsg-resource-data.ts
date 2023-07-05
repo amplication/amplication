@@ -11,7 +11,7 @@ import { EnumResourceType } from "./models";
 export class DSGResourceData {
   resourceType!: keyof typeof EnumResourceType;
   resourceInfo?: AppInfo;
-
+  buildId: string;
   entities?: Entity[];
   roles?: Role[];
 

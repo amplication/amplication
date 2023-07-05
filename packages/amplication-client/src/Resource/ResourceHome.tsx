@@ -1,5 +1,5 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
-import { CircleBadge } from "@amplication/design-system";
+import { CircleBadge } from "@amplication/ui/design-system";
 import { gql } from "@apollo/client";
 import React, { useContext } from "react";
 import { match } from "react-router-dom";
@@ -10,7 +10,6 @@ import { resourceThemeMap } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
-import NewVersionTile from "./NewVersionTile";
 import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
@@ -20,6 +19,7 @@ import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
 import EllipsisText from "../Components/EllipsisText";
+import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -63,9 +63,21 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 "transparent"
               }
             />
+            <ResourceNameField
+              currentResource={currentResource}
+              resourceId={resourceId}
+            />
+            <div className="circle-badge-container">
+              <CircleBadge
+                name={currentResource?.name || ""}
+                color={
+                  resourceThemeMap[currentResource?.resourceType].color ||
+                  "transparent"
+                }
+              />
+            </div>
           </div>
           <div className={`${CLASS_NAME}__tiles`}>
-            <NewVersionTile resourceId={resourceId} />
             {currentResource?.resourceType === EnumResourceType.Service && (
               <OverviewTile resourceId={resourceId} />
             )}

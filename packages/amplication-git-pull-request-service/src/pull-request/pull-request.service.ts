@@ -1,42 +1,80 @@
 import {
-  Branch,
   EnumPullRequestMode,
-  GitService,
-} from "@amplication/git-utils";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+  GitClientService,
+  File,
+  GitProvidersConfiguration,
+} from "@amplication/util/git";
+import { Env } from "../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
-import { EnumGitProvider } from "../models";
-import { PrModule } from "../types";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { CreatePrRequest } from "@amplication/schema-registry";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class PullRequestService {
+  gitProvidersConfiguration: GitProvidersConfiguration;
+
   constructor(
     private readonly diffService: DiffService,
-    protected readonly gitService: GitService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    private readonly configService: ConfigService,
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    const bitbucketClientId = this.configService.get<string>(
+      Env.BITBUCKET_CLIENT_ID
+    );
+    const bitbucketClientSecret = this.configService.get<string>(
+      Env.BITBUCKET_CLIENT_SECRET
+    );
+    const githubClientId = this.configService.get<string>(
+      Env.GITHUB_APP_CLIENT_ID
+    );
+    const githubClientSecret = this.configService.get<string>(
+      Env.GITHUB_APP_CLIENT_SECRET
+    );
+    const githubAppId = this.configService.get<string>(Env.GITHUB_APP_APP_ID);
+    const githubAppPrivateKey = this.configService.get<string>(
+      Env.GITHUB_APP_PRIVATE_KEY
+    );
+    const githubAppInstallationUrl = this.configService.get<string>(
+      Env.GITHUB_APP_INSTALLATION_URL
+    );
+
+    this.gitProvidersConfiguration = {
+      gitHubConfiguration: {
+        clientId: githubClientId,
+        clientSecret: githubClientSecret,
+        appId: githubAppId,
+        privateKey: githubAppPrivateKey,
+        installationUrl: githubAppInstallationUrl,
+      },
+      bitBucketConfiguration: {
+        clientId: bitbucketClientId,
+        clientSecret: bitbucketClientSecret,
+      },
+    };
+  }
 
   async createPullRequest({
     resourceId,
     oldBuildId,
     newBuildId,
+    gitProvider,
+    gitProviderProperties,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
-    installationId,
     commit,
-    gitProvider,
     gitResourceMeta,
     pullRequestMode,
-  }: CreatePullRequestArgs): Promise<string> {
-    const { base, body, title } = commit;
+    repositoryGroupName,
+  }: CreatePrRequest.Value): Promise<string> {
+    const logger = this.logger.child({ resourceId, buildId: newBuildId });
+    const { body, title } = commit;
     const head =
-      commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
+      pullRequestMode === EnumPullRequestMode.Accumulative
         ? "amplication"
         : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -45,84 +83,49 @@ export class PullRequestService {
       newBuildId
     );
 
-    this.logger.info(
+    logger.info(
       "The changed files have returned from the diff service listOfChangedFiles are",
-      { lengthOfFile: changedFiles.length }
+      {
+        lengthOfFile: changedFiles.length,
+      }
     );
 
-    await this.validateOrCreateBranch(
-      gitProvider,
-      installationId,
+    const gitClientService = TraceWrapper.trace(
+      await new GitClientService().create(
+        {
+          provider: gitProvider,
+          providerOrganizationProperties: gitProviderProperties,
+        },
+        this.gitProvidersConfiguration,
+        logger
+      ),
+      { logger }
+    );
+    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
+
+    const prUrl = await gitClientService.createPullRequest({
       owner,
-      repo,
-      head
-    );
-
-    const prUrl = await this.gitService.createPullRequest(
+      cloneDirPath,
+      repositoryName: repo,
+      repositoryGroupName,
+      branchName: head,
+      commitMessage: body,
+      pullRequestTitle: title,
+      pullRequestBody: body,
       pullRequestMode,
-      gitProvider,
-      owner,
-      repo,
-      PullRequestService.removeFirstSlashFromPath(changedFiles),
-      head,
-      title,
-      body,
-      installationId,
-      head,
       gitResourceMeta,
-      base
-    );
-    this.logger.info("Opened a new pull request", { prUrl });
+      files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      resourceId,
+      buildId: newBuildId,
+    });
+
+    logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 
-  private static removeFirstSlashFromPath(
-    changedFiles: PrModule[]
-  ): PrModule[] {
+  private static removeFirstSlashFromPath(changedFiles: File[]): File[] {
     return changedFiles.map((module) => {
       return { ...module, path: module.path.replace(new RegExp("^/"), "") };
     });
-  }
-
-  async validateOrCreateBranch(
-    gitProvider: EnumGitProvider,
-    installationId: string,
-    owner: string,
-    repo: string,
-    branch: string
-  ): Promise<Branch> {
-    const { defaultBranch } = await await this.gitService.getRepository(
-      gitProvider,
-      installationId,
-      owner,
-      repo
-    );
-
-    const isBranchExist = await this.gitService.isBranchExist(
-      gitProvider,
-      installationId,
-      owner,
-      repo,
-      branch
-    );
-
-    if (!isBranchExist) {
-      return this.gitService.createBranch(
-        gitProvider,
-        installationId,
-        owner,
-        repo,
-        branch,
-        defaultBranch
-      );
-    }
-
-    return this.gitService.getBranch(
-      gitProvider,
-      installationId,
-      owner,
-      repo,
-      branch
-    );
   }
 }

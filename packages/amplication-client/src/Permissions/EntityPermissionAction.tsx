@@ -1,7 +1,6 @@
 import React, { useCallback, useMemo, useContext } from "react";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { isEmpty, cloneDeep } from "lodash";
-import difference from "@extra-set/difference";
 
 import "./EntityPermissionAction.scss";
 import * as models from "../models";
@@ -11,7 +10,7 @@ import {
   PanelCollapsible,
   Toggle,
   Icon,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
@@ -95,8 +94,12 @@ export const EntityPermissionAction = ({
 
   const handleRoleSelectionChange = useCallback(
     (newSelectedRoleIds: Set<string>) => {
-      const addedRoleIds = difference(newSelectedRoleIds, selectedRoleIds);
-      const removedRoleIds = difference(selectedRoleIds, newSelectedRoleIds);
+      const addedRoleIds = new Set(
+        [...newSelectedRoleIds].filter((x) => !selectedRoleIds.has(x))
+      );
+      const removedRoleIds = new Set(
+        [...selectedRoleIds].filter((x) => !newSelectedRoleIds.has(x))
+      );
 
       const addRoles = Array.from(addedRoleIds, (id) => ({
         id,

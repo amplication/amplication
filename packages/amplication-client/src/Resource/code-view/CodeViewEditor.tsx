@@ -1,4 +1,4 @@
-import { CodeEditor } from "@amplication/design-system";
+import { CodeEditor } from "@amplication/ui/design-system";
 import React, { useLayoutEffect, useMemo, useState } from "react";
 import { StorageBaseAxios } from "./StorageBaseAxios";
 

@@ -1,4 +1,4 @@
-import { TextField, Snackbar } from "@amplication/design-system";
+import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { isEmpty } from "lodash";
 import { Form, Formik } from "formik";

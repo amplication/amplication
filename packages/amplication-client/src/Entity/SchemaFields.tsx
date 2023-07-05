@@ -1,18 +1,15 @@
 import { SchemaField } from "./SchemaField";
 import { Schema } from "@amplication/code-gen-types";
+import * as models from "../models";
 
 type Props = {
   schema: Schema;
-  entityDisplayName: string;
+  entity: models.Entity;
   resourceId: string;
   isDisabled?: boolean;
 };
 
-export const SchemaFields = ({
-  schema,
-  resourceId,
-  entityDisplayName,
-}: Props) => {
+export const SchemaFields = ({ schema, resourceId, entity }: Props) => {
   if (schema === null) {
     return null;
   }
@@ -33,7 +30,7 @@ export const SchemaFields = ({
               propertyName={name}
               propertySchema={property as Schema}
               resourceId={resourceId}
-              entityDisplayName={entityDisplayName}
+              entity={entity}
             />
           </div>
         );

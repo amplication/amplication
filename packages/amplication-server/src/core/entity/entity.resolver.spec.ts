@@ -1,30 +1,32 @@
-import { Test, TestingModule } from "@nestjs/testing";
-import { gql } from "apollo-server-express";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import {
-  ApolloServerTestClient,
-  createTestClient,
-} from "apollo-server-testing";
-import { GqlAuthGuard } from "../../guards/gql-auth.guard";
-import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
-import { EntityResolver } from "./entity.resolver";
-import { EntityService } from "./entity.service";
+  ApolloDriver,
+  ApolloDriverConfig,
+  getApolloServer,
+} from "@nestjs/apollo";
 import { INestApplication } from "@nestjs/common";
-import { UserService } from "../user/user.service";
-import { GraphQLModule } from "@nestjs/graphql";
 import { ConfigService } from "@nestjs/config";
+import { GraphQLModule } from "@nestjs/graphql";
+import { Test, TestingModule } from "@nestjs/testing";
+import { ApolloServerBase } from "apollo-server-core";
+import { gql } from "apollo-server-express";
+import { mockGqlAuthGuardCanActivate } from "../../../test/gql-auth-mock";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { Commit, EntityPermissionField } from "../../models";
 import { Entity } from "../../models/Entity";
-import { User } from "../../models/User";
 import { EntityField } from "../../models/EntityField";
+import { EntityPermission } from "../../models/EntityPermission";
+import { EntityVersion } from "../../models/EntityVersion";
+import { User } from "../../models/User";
 import {
   EnumDataType,
   EnumEntityAction,
   EnumEntityPermissionType,
 } from "../../prisma";
-import { EntityPermission } from "../../models/EntityPermission";
-import { EntityVersion } from "../../models/EntityVersion";
-import { Commit, EntityPermissionField } from "../../models";
+import { UserService } from "../user/user.service";
+import { EntityResolver } from "./entity.resolver";
+import { EntityService } from "./entity.service";
 import { EntityVersionResolver } from "./entityVersion.resolver";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
 
 const EXAMPLE_ID = "exampleId";
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -35,6 +37,7 @@ const EXAMPLE_VERSION_NUMBER = 1;
 const EXAMPLE_NAME = "exampleName";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
 const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "exampleCustomAttributes";
 
 const EXAMPLE_UNLOCKED_ID = "exampleUnlockedId";
 
@@ -52,6 +55,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
   lockedByUserId: EXAMPLE_USER_ID,
 };
 
@@ -73,6 +77,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   unique: false,
   searchable: true,
   description: "exampleDescription",
+  customAttributes: "ExampleCustomAttributes",
   properties: {},
 };
 
@@ -121,6 +126,7 @@ const EXAMPLE_VERSION: EntityVersion = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
   commit: EXAMPLE_COMMIT,
 };
 
@@ -134,6 +140,7 @@ const FIND_ONE_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -149,6 +156,7 @@ const FIND_MANY_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -159,6 +167,7 @@ const CREATE_ONE_QUERY = gql`
     $name: String!
     $displayName: String!
     $pluralDisplayName: String!
+    $customAttributes: String
     $id: String!
   ) {
     createOneEntity(
@@ -166,6 +175,7 @@ const CREATE_ONE_QUERY = gql`
         name: $name
         displayName: $displayName
         pluralDisplayName: $pluralDisplayName
+        customAttributes: $customAttributes
         resource: { connect: { id: $id } }
       }
     ) {
@@ -176,6 +186,7 @@ const CREATE_ONE_QUERY = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -195,6 +206,7 @@ const FIND_MANY_FIELDS_QUERY = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -237,6 +249,7 @@ const LOCK_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -252,6 +265,7 @@ const UPDATE_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -267,6 +281,7 @@ const DELETE_ENTITY_MUTATION = gql`
       name
       displayName
       pluralDisplayName
+      customAttributes
       lockedByUserId
     }
   }
@@ -331,6 +346,7 @@ const ADD_ENTITY_PERM_FIELD_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -366,6 +382,7 @@ const DELETE_ENTITY_PERM_FIELD_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -393,6 +410,7 @@ const UPDATE_ENTITY_PERM_FIELD_ROLES_MUTATION = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }
@@ -409,6 +427,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
     $required: Boolean!
     $unique: Boolean!
     $searchable: Boolean!
+    $customAttributes: String
     $description: String!
     $entity: String!
   ) {
@@ -421,6 +440,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
         required: $required
         unique: $unique
         searchable: $searchable
+        customAttributes: $customAttributes
         description: $description
         entity: { connect: { id: $entity } }
       }
@@ -435,6 +455,7 @@ const CREATE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -459,6 +480,7 @@ const CREATE_ENTITY_FIELD_BY_DISPLAY_NAME_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -478,6 +500,7 @@ const DELETE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -497,6 +520,7 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -516,6 +540,7 @@ const CREATE_DEFAULT_RELATED_FIELD_MUTATION = gql`
       required
       unique
       searchable
+      customAttributes
       description
       properties
     }
@@ -552,6 +577,7 @@ const GET_VERSION_FIELDS_QUERY = gql`
           required
           unique
           searchable
+          customAttributes
           description
           properties
         }
@@ -610,7 +636,7 @@ const mockCanActivate = jest.fn(mockGqlAuthGuardCanActivate(EXAMPLE_USER));
 
 describe("EntityResolver", () => {
   let app: INestApplication;
-  let apolloClient: ApolloServerTestClient;
+  let apolloClient: ApolloServerBase;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -654,7 +680,7 @@ describe("EntityResolver", () => {
           })),
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),
@@ -666,7 +692,12 @@ describe("EntityResolver", () => {
           })),
         },
       ],
-      imports: [GraphQLModule.forRoot({ autoSchemaFile: true })],
+      imports: [
+        GraphQLModule.forRoot<ApolloDriverConfig>({
+          autoSchemaFile: true,
+          driver: ApolloDriver,
+        }),
+      ],
     })
       .overrideGuard(GqlAuthGuard)
       .useValue({ canActivate: mockCanActivate })
@@ -674,12 +705,11 @@ describe("EntityResolver", () => {
 
     app = moduleFixture.createNestApplication();
     await app.init();
-    const graphqlModule = moduleFixture.get(GraphQLModule) as any;
-    apolloClient = createTestClient(graphqlModule.apolloServer);
+    apolloClient = getApolloServer(app);
   });
 
   it("should find one entity", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_ONE_QUERY,
       variables: { id: EXAMPLE_ID },
     });
@@ -696,7 +726,7 @@ describe("EntityResolver", () => {
   });
 
   it("should find many entities", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_QUERY,
       variables: { id: EXAMPLE_ID },
     });
@@ -717,12 +747,13 @@ describe("EntityResolver", () => {
   });
 
   it("should create one entity", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_ONE_QUERY,
       variables: {
         name: EXAMPLE_ENTITY.name,
         displayName: EXAMPLE_ENTITY.displayName,
         pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        customAttributes: EXAMPLE_ENTITY.customAttributes,
         id: EXAMPLE_ID,
       },
     });
@@ -741,6 +772,7 @@ describe("EntityResolver", () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ID } },
         },
       },
@@ -749,7 +781,7 @@ describe("EntityResolver", () => {
   });
 
   it("should get entity fields", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_FIELDS_QUERY,
       variables: { entityId: EXAMPLE_ID, fieldId: EXAMPLE_ENTITY_FIELD_ID },
     });
@@ -772,7 +804,7 @@ describe("EntityResolver", () => {
   });
 
   it("should get entity permissions", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: FIND_MANY_PERMISSIONS_QUERY,
       variables: { entityId: EXAMPLE_ID },
     });
@@ -791,7 +823,7 @@ describe("EntityResolver", () => {
   });
 
   it("should return locking user", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: LOCKED_BY_USER_QUERY,
       variables: { id: EXAMPLE_ID },
     });
@@ -813,7 +845,7 @@ describe("EntityResolver", () => {
   it("should return null when no locking user", async () => {
     entityMock.mockImplementationOnce(() => EXAMPLE_UNLOCKED_ENTITY);
 
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: LOCKED_BY_USER_QUERY,
       variables: { id: EXAMPLE_UNLOCKED_ID },
     });
@@ -827,7 +859,7 @@ describe("EntityResolver", () => {
   });
 
   it("should lock an entity", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: LOCK_ENTITY_MUTATION,
       variables: { id: EXAMPLE_ID },
     });
@@ -847,7 +879,7 @@ describe("EntityResolver", () => {
   });
 
   it("should update one entity", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ENTITY_MUTATION,
       variables: { id: EXAMPLE_ID },
     });
@@ -870,7 +902,7 @@ describe("EntityResolver", () => {
   });
 
   it("should delete one entity", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: DELETE_ENTITY_MUTATION,
       variables: { id: EXAMPLE_ID },
     });
@@ -890,7 +922,7 @@ describe("EntityResolver", () => {
   });
 
   it("should update an entity permission", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ENTITY_PERM_MUTATUION,
       variables: {
         action: EXAMPLE_PERMISSION.action,
@@ -918,7 +950,7 @@ describe("EntityResolver", () => {
   });
 
   it("should update entity permission roles", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ENTITY_PERM_ROLES_MUTATION,
       variables: { action: EXAMPLE_PERMISSION.action, entityId: EXAMPLE_ID },
     });
@@ -941,7 +973,7 @@ describe("EntityResolver", () => {
   });
 
   it("should add an entity permission field", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: ADD_ENTITY_PERM_FIELD_MUTATION,
       variables: {
         action: EXAMPLE_PERMISSION.action,
@@ -974,7 +1006,7 @@ describe("EntityResolver", () => {
   });
 
   it("should delete an entity permission field", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: DELETE_ENTITY_PERM_FIELD_MUTATION,
       variables: {
         action: EXAMPLE_PERMISSION.action,
@@ -1007,7 +1039,7 @@ describe("EntityResolver", () => {
   });
 
   it("should update entity permission field roles", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ENTITY_PERM_FIELD_ROLES_MUTATION,
       variables: { permissionFieldId: EXAMPLE_PERMISSION_FIELD_ID },
     });
@@ -1042,10 +1074,11 @@ describe("EntityResolver", () => {
       required: EXAMPLE_ENTITY_FIELD.required,
       unique: EXAMPLE_ENTITY_FIELD.unique,
       searchable: EXAMPLE_ENTITY_FIELD.searchable,
+      customAttributes: EXAMPLE_ENTITY_FIELD.customAttributes,
       description: EXAMPLE_ENTITY_FIELD.description,
       entity: EXAMPLE_ID,
     };
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_ENTITY_FIELD_MUTATION,
       variables: variables,
     });
@@ -1060,12 +1093,14 @@ describe("EntityResolver", () => {
     expect(createFieldMock).toBeCalledTimes(1);
     expect(createFieldMock).toBeCalledWith(
       { data: { ...variables, entity: { connect: { id: EXAMPLE_ID } } } },
-      EXAMPLE_USER
+      EXAMPLE_USER,
+      true,
+      true
     );
   });
 
   it("should create entity field by display name", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_ENTITY_FIELD_BY_DISPLAY_NAME_MUTATION,
       variables: { displayName: EXAMPLE_DISPLAY_NAME, entityId: EXAMPLE_ID },
     });
@@ -1085,12 +1120,13 @@ describe("EntityResolver", () => {
           entity: { connect: { id: EXAMPLE_ID } },
         },
       },
-      EXAMPLE_USER
+      EXAMPLE_USER,
+      true
     );
   });
 
   it("should delete an entity field", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: DELETE_ENTITY_FIELD_MUTATION,
       variables: { fieldId: EXAMPLE_ENTITY_FIELD_ID },
     });
@@ -1110,7 +1146,7 @@ describe("EntityResolver", () => {
   });
 
   it("should update an entity field", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: UPDATE_ENTITY_FIELD_MUTATION,
       variables: { fieldId: EXAMPLE_ENTITY_FIELD_ID },
     });
@@ -1130,7 +1166,7 @@ describe("EntityResolver", () => {
   });
 
   it("should create a default related field", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: CREATE_DEFAULT_RELATED_FIELD_MUTATION,
       variables: { fieldId: EXAMPLE_ENTITY_FIELD_ID },
     });
@@ -1152,7 +1188,7 @@ describe("EntityResolver", () => {
   //EntityVersion Resolver tests:
 
   it("should get a versions commit", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_VERSION_COMMIT_QUERY,
       variables: { entityId: EXAMPLE_ID },
     });
@@ -1176,7 +1212,7 @@ describe("EntityResolver", () => {
   });
 
   it("should get entity version fields", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_VERSION_FIELDS_QUERY,
       variables: { entityId: EXAMPLE_ID },
     });
@@ -1205,7 +1241,7 @@ describe("EntityResolver", () => {
   });
 
   it("should get entity version permissions", async () => {
-    const res = await apolloClient.query({
+    const res = await apolloClient.executeOperation({
       query: GET_VERSION_PERMISSIONS_QUERY,
       variables: { entityId: EXAMPLE_ID },
     });

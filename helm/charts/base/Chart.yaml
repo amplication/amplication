@@ -1,6 +1,0 @@
-apiVersion: v2
-name: base
-description: A Helm library to deploy Amplication microservices
-type: library
-
-version: 0.1.0

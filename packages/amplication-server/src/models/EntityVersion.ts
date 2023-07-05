@@ -56,6 +56,11 @@ export class EntityVersion {
   @Field(() => String, {
     nullable: true,
   })
+  customAttributes?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
   description?: string;
 
   commitId?: string | null;

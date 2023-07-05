@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { Icon } from "@amplication/design-system";
+import { Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import "./InnerTabLink.scss";
 
