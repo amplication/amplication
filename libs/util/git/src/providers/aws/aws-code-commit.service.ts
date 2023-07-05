@@ -33,6 +33,7 @@ import {
   CreatePullRequestCommand,
   CreateRepositoryCommand,
   GetPullRequestCommand,
+  GetPullRequestCommandOutput,
   GetRepositoryCommand,
   ListPullRequestsCommand,
   ListRepositoriesCommand,
@@ -300,6 +301,34 @@ export class AwsCodeCommitService implements GitProvider {
     throw new Error("Failed to create pull request");
   }
 
+  private async getPullRequestById(
+    pullRequestId: string
+  ): Promise<GetPullRequestCommandOutput> {
+    const command = new GetPullRequestCommand({
+      pullRequestId,
+    });
+
+    return this.awsClient.send(command);
+  }
+
+  async createPullRequestComment(
+    args: CreatePullRequestCommentArgs
+  ): Promise<void> {
+    const { pullRequest } = await this.getPullRequestById(
+      args.where.issueNumber.toString()
+    );
+
+    const command = new PostCommentForPullRequestCommand({
+      pullRequestId: args.where.issueNumber.toString(),
+      repositoryName: args.where.repositoryName,
+      content: args.data.body,
+      afterCommitId: pullRequest?.pullRequestTargets?.[0].destinationCommit,
+      beforeCommitId: pullRequest?.pullRequestTargets?.[0].sourceCommit,
+    });
+
+    await this.awsClient.send(command);
+  }
+
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
     throw NotImplementedError;
   }
@@ -310,11 +339,6 @@ export class AwsCodeCommitService implements GitProvider {
     throw NotImplementedError;
   }
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
-    throw NotImplementedError;
-  }
-  async createPullRequestComment(
-    args: CreatePullRequestCommentArgs
-  ): Promise<void> {
     throw NotImplementedError;
   }
 

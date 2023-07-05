@@ -20,6 +20,7 @@ import {
   GetRepositoryCommand,
   ListPullRequestsCommand,
   ListRepositoriesCommand,
+  PostCommentForPullRequestCommand,
 } from "@aws-sdk/client-codecommit";
 import { mockClient } from "aws-sdk-client-mock";
 
@@ -589,15 +590,47 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling createPullRequestComment()", async () => {
-    const args = <CreatePullRequestCommentArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.createPullRequestComment(args)
-    ).rejects.toThrowError("Method not implemented.");
-  });
+  describe("createPullRequestComment", () => {
+    it("should create a pr comment", async () => {
+      awsClientMock
+        .on(GetPullRequestCommand, {
+          pullRequestId: "5",
+        })
+        .resolves({
+          pullRequest: {
+            pullRequestId: "5",
+            pullRequestTargets: [
+              {
+                repositoryName: "repositoryName",
+                sourceReference: "branchA",
+                sourceCommit: "lastCommit",
+                destinationCommit: "branchCommit-123",
+              },
+            ],
+          },
+        })
+        .on(PostCommentForPullRequestCommand, {
+          pullRequestId: "5",
+          repositoryName: "repositoryName",
+          beforeCommitId: "branchCommit-123",
+          afterCommitId: "lastCommit",
+          content: "beautiful comment",
+        });
 
+      await expect(
+        gitProvider.createPullRequestComment({
+          where: {
+            issueNumber: 5,
+            repositoryName: "repositoryName",
+            owner: "user",
+          },
+          data: {
+            body: "beautiful comment",
+          },
+        })
+      );
+    });
+  });
   it("should throw an error when calling getAmplicationBotIdentity()", async () => {
     await expect(gitProvider.getAmplicationBotIdentity()).rejects.toThrowError(
       "Method not implemented."
