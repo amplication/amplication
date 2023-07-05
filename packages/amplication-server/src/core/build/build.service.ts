@@ -2,7 +2,7 @@ import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Prisma, PrismaService } from "../../prisma";
 import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
-import { omit, orderBy } from "lodash";
+import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
