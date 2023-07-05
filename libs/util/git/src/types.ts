@@ -13,6 +13,7 @@ export enum EnumGitOrganizationType {
 export enum EnumGitProvider {
   Github = "Github",
   Bitbucket = "Bitbucket",
+  AwsCodeCommit = "AwsCodeCommit",
 }
 
 export interface BitBucketConfiguration {
@@ -32,6 +33,10 @@ export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
   bitBucketConfiguration: BitBucketConfiguration;
 }
+export type GitProviderProperties =
+  | GitHubProviderOrganizationProperties
+  | OAuthProviderOrganizationProperties
+  | AwsCodeCommitProviderOrganizationProperties;
 
 export interface OAuthProviderOrganizationProperties
   extends OAuthTokens,
@@ -79,10 +84,40 @@ export const isGitHubProviderOrganizationProperties = (
 
 export interface GitProviderArgs {
   provider: EnumGitProvider;
-  providerOrganizationProperties:
-    | GitHubProviderOrganizationProperties
-    | OAuthProviderOrganizationProperties;
+  providerOrganizationProperties: GitProviderProperties;
 }
+
+export interface AwsCodeCommitProviderOrganizationProperties {
+  gitCredentials: {
+    username: string;
+    password: string;
+  };
+  sdkCredentials: {
+    accessKeyId: string;
+    accessKeySecret: string;
+    region?: string;
+  };
+}
+
+export const isAwsCodeCommitProviderOrganizationProperties = (
+  properties: unknown
+): properties is AwsCodeCommitProviderOrganizationProperties => {
+  const castedProperties =
+    properties as AwsCodeCommitProviderOrganizationProperties;
+  if (
+    !(
+      castedProperties.gitCredentials.username !== undefined &&
+      castedProperties.gitCredentials.password !== undefined &&
+      castedProperties.sdkCredentials.accessKeyId !== undefined &&
+      castedProperties.sdkCredentials.accessKeySecret !== undefined
+    )
+  ) {
+    throw new Error(
+      "Missing mandatory param. AWS CodeCommit provider requires HTTPS Git credentials and Access Keys"
+    );
+  }
+  return true;
+};
 
 export interface GitProviderConstructorArgs {
   installationId: string;

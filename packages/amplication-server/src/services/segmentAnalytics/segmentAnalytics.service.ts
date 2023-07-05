@@ -1,6 +1,7 @@
 import { Injectable, Inject } from "@nestjs/common";
 import Analytics from "analytics-node";
 import { SegmentAnalyticsOptions } from "./segmentAnalytics.interfaces";
+import { RequestContext } from "nestjs-request-context";
 
 export enum EnumEventType {
   Signup = "Signup",
@@ -16,10 +17,19 @@ export enum EnumEventType {
   EntityUpdate = "updateEntity",
   EntityFieldCreate = "createEntityField",
   EntityFieldUpdate = "updateEntityField",
+  EntityFieldFromImportPrismaSchemaCreate = "EntityFieldFromImportPrismaSchemaCreate",
   PluginInstall = "installPlugin",
   PluginUpdate = "updatePlugin",
   DemoRepoCreate = "CreateDemoRepo",
   InvitationAcceptance = "invitationAcceptance",
+
+  //Import Prisma Schema
+  ImportPrismaSchemaStart = "importPrismaSchemaStart",
+  ImportPrismaSchemaError = "importPrismaSchemaError",
+  ImportPrismaSchemaCompleted = "importPrismaSchemaCompleted",
+
+  GitSyncError = "gitSyncError",
+  CodeGenerationError = "codeGenerationError",
 }
 
 export type IdentifyData = {
@@ -40,6 +50,9 @@ export type TrackData = {
     | undefined;
   context?: {
     traits?: IdentifyData;
+    amplication?: {
+      analyticsSessionId?: string;
+    };
   };
 };
 
@@ -69,12 +82,21 @@ export class SegmentAnalyticsService {
 
   public async track(data: TrackData): Promise<void> {
     if (!this.analytics) return;
+
+    const req = RequestContext?.currentContext?.req;
+    const analyticsSessionId = req?.analyticsSessionId;
+
     this.analytics.track({
       ...data,
       properties: {
         ...data.properties,
         source: "amplication-server",
       },
-    });
+      context: {
+        amplication: {
+          analyticsSessionId: analyticsSessionId,
+        },
+      },
+    } as TrackData);
   }
 }

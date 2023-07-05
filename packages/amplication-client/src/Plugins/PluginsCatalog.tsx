@@ -35,7 +35,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   });
 
   const userEntity = useMemo(() => {
-    return entities.entities?.find(
+    return entities?.entities?.find(
       (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
     );
   }, [entities]);

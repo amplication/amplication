@@ -12,6 +12,7 @@ import classNames from "classnames";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -40,13 +41,6 @@ type Props = {
 };
 
 const CLASS_NAME = "git-provider-connection";
-
-const PROVIDERS_DISPLAY_NAME: {
-  [key in EnumGitProvider]: string;
-} = {
-  [EnumGitProvider.Github]: "GitHub",
-  [EnumGitProvider.Bitbucket]: "Bitbucket",
-};
 
 export default function GitProviderConnection({
   onSyncNewGitOrganizationClick,

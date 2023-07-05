@@ -252,8 +252,11 @@ const CreateServiceWizard: React.FC<Props> = ({
     },
   ];
 
-  const defineUser: DefineUser =
-    signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
+  const isSignupUser = signupCookie === "1";
+
+  const defineUser: DefineUser = isSignupUser
+    ? FLOW_ONBOARDING
+    : FLOW_CREATE_SERVICE;
 
   const wizardSteps =
     defineUser === FLOW_CREATE_SERVICE
@@ -264,6 +267,16 @@ const CreateServiceWizard: React.FC<Props> = ({
     defineUser === FLOW_CREATE_SERVICE
       ? CREATE_SERVICE_PATTERN
       : ONBOARDING_PATTERN;
+
+  const serviceNextStepStatus = {
+    description: isSignupUser
+      ? ["Invite", "my team"]
+      : ["Add plugins", "to my service"],
+    defineUser,
+    icon: isSignupUser ? "users" : "plugins",
+    iconBackgroundColor: isSignupUser ? "#8DD9B9" : "#f85b6e",
+    eventActionName: isSignupUser ? "Invite Team" : "Add Plugins",
+  };
 
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
@@ -508,6 +521,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceNextSteps
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          {...serviceNextStepStatus}
         />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />

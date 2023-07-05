@@ -1,4 +1,9 @@
-import { EnumGitProvider } from "../../src/types";
+import {
+  BitBucketConfiguration,
+  EnumGitProvider,
+  GitHubConfiguration,
+  GitHubProviderOrganizationProperties,
+} from "../../src/types";
 import { GithubService } from "../../src/providers/github/github.service";
 import { GitFactory } from "../../src/git-factory";
 import { mock } from "jest-mock-extended";
@@ -20,7 +25,15 @@ describe.skip("GitFactory", () => {
         GitFactory.getProvider(
           {
             provider: EnumGitProvider.Github,
-            installationId: "123",
+            providerOrganizationProperties: <
+              GitHubProviderOrganizationProperties
+            >{
+              installationId: "123",
+            },
+          },
+          {
+            bitBucketConfiguration: {} as unknown as BitBucketConfiguration,
+            gitHubConfiguration: {} as unknown as GitHubConfiguration,
           },
           logger
         )
