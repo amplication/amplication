@@ -15,6 +15,7 @@ export function createNestjsKafkaConfig(envSuffix = ""): KafkaOptions {
       sessionTimeout: kafkaEnv.getConsumerSessionTimeout(),
       rebalanceTimeout: kafkaEnv.getConsumerRebalanceTimeout(),
       heartbeatInterval: kafkaEnv.getConsumerHeartbeat(),
+      maxBytesPerPartition: kafkaEnv.getConsumerMaxBytesPerPartition(),
     };
   }
 
