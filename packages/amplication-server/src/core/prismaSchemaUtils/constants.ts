@@ -6,6 +6,7 @@ export const ATTRIBUTE_TYPE_NAME = "attribute";
 export const MAP_ATTRIBUTE_NAME = "map";
 
 export const DEFAULT_ATTRIBUTE_NAME = "default";
+export const UNIQUE_ATTRIBUTE_NAME = "unique";
 export const UPDATED_AT_ATTRIBUTE_NAME = "updatedAt";
 export const ID_ATTRIBUTE_NAME = "id";
 export const RELATION_ATTRIBUTE_NAME = "relation";
