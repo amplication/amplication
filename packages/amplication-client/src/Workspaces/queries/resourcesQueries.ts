@@ -69,6 +69,23 @@ export const GET_RESOURCES = gql`
   }
 `;
 
+export const GET_RESOURCE_SETTINGS = gql`
+  query serviceSettings($id: String!) {
+    serviceSettings(where: { id: $id }) {
+      authProvider
+      serverSettings {
+        generateGraphQL
+        generateRestApi
+        serverPath
+      }
+      adminUISettings {
+        generateAdminUI
+        adminUIPath
+      }
+    }
+  }
+`;
+
 export const CREATE_SERVICE_WITH_ENTITIES = gql`
   mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
     createServiceWithEntities(data: $data) {

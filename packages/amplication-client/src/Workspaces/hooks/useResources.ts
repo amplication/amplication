@@ -9,6 +9,7 @@ import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
+  GET_RESOURCE_SETTINGS,
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
@@ -110,6 +111,22 @@ const useResources = (
     },
     skip: !currentProject?.id,
   });
+
+  const useResourceSettings = (resourceId: string) => {
+    const { data, error, refetch } = useQuery<{
+      serviceSettings: models.ServiceSettings;
+    }>(GET_RESOURCE_SETTINGS, {
+      variables: {
+        id: resourceId,
+      },
+    });
+
+    return {
+      data: data?.serviceSettings,
+      error: error,
+      refetch: refetch,
+    };
+  };
 
   const resourceRedirect = useCallback(
     (resourceId: string) => {
@@ -291,6 +308,7 @@ const useResources = (
     gitRepositoryUrl,
     gitRepositoryOrganizationProvider,
     createServiceWithEntitiesResult,
+    useResourceSettings,
   };
 };
 

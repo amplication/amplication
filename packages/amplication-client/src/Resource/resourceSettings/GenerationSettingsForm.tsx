@@ -11,7 +11,7 @@ import { match } from "react-router-dom";
 import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import { AppContext } from "../../context/appContext";
-import { useResource } from "./useResources";
+import useResources from "../../Workspaces/hooks/useResources";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -26,8 +26,18 @@ const CLASS_NAME = "generation-settings-form";
 function GenerationSettingsForm({ match }: Props) {
   const resourceId = match.params.resource;
 
-  const { data, error, refetch } = useResource(resourceId);
-  const { addBlock } = useContext(AppContext);
+  const { addBlock, addEntity, currentProject, currentWorkspace } =
+    useContext(AppContext);
+
+  const { useResourceSettings } = useResources(
+    currentWorkspace,
+    currentProject,
+    addBlock,
+    addEntity
+  );
+  const { data, error, refetch } = useResourceSettings(resourceId);
+
+  // const { data, error, refetch } = useResource(resourceId);
   const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
@@ -90,8 +100,9 @@ function GenerationSettingsForm({ match }: Props) {
           }}
         </Formik>
       )}
+
       <Snackbar
-        open={Boolean(error)}
+        open={Boolean(Error)}
         message={formatError(error || updateError)}
       />
     </div>

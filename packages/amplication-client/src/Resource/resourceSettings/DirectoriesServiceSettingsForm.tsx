@@ -16,7 +16,7 @@ import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import { UPDATE_SERVICE_SETTINGS } from "./GenerationSettingsForm";
 import { AppContext } from "../../context/appContext";
-import { useResource } from "./useResources";
+import useResources from "../../Workspaces/hooks/useResources";
 
 type TData = {
   updateServiceSettings: models.ServiceSettings;
@@ -26,8 +26,21 @@ const CLASS_NAME = "generation-settings-form";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
-  const { currentResource, addBlock } = useContext(AppContext);
-  const { data, error, refetch } = useResource(currentResource?.id);
+  const {
+    currentResource,
+    addBlock,
+    addEntity,
+    currentProject,
+    currentWorkspace,
+  } = useContext(AppContext);
+  const { useResourceSettings } = useResources(
+    currentWorkspace,
+    currentProject,
+    addBlock,
+    addEntity
+  );
+  const { data, error, refetch } = useResourceSettings(currentResource?.id);
+
   const { trackEvent } = useTracking();
 
   const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
