@@ -28,9 +28,12 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
+  BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
+  CreateBranchCommand,
   CreateRepositoryCommand,
+  GetBranchCommand,
   GetFileCommand,
   GetRepositoryCommand,
   ListPullRequestsCommand,
@@ -350,11 +353,49 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getBranch(args: GetBranchArgs): Promise<Branch | null> {
-    throw NotImplementedError;
+    const command = new GetBranchCommand({
+      repositoryName: args.repositoryName,
+      branchName: args.branchName,
+    });
+
+    try {
+      const { branch } = await this.awsClient.send(command);
+
+      if (this.isRequiredValid(branch)) {
+        return {
+          name: branch.branchName,
+          sha: branch.commitId,
+        };
+      }
+    } catch (error) {
+      if (error instanceof BranchDoesNotExistException) {
+        throw new Error(`Branch ${args.branchName} not found`);
+      }
+      throw error;
+    }
+    return null;
   }
+
   async createBranch(args: CreateBranchArgs): Promise<Branch> {
-    throw NotImplementedError;
+    const command = new CreateBranchCommand({
+      branchName: args.branchName,
+      commitId: args.pointingSha,
+      repositoryName: args.repositoryName,
+    });
+    try {
+      await this.awsClient.send(command);
+
+      return {
+        name: args.branchName,
+        sha: args.pointingSha,
+      };
+    } catch (error) {
+      this.logger.error(error.message, error, { args });
+
+      throw error;
+    }
   }
+
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
     throw NotImplementedError;
   }
@@ -387,6 +428,6 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getAmplicationBotIdentity(): Promise<Bot | null> {
-    throw NotImplementedError;
+    return null;
   }
 }

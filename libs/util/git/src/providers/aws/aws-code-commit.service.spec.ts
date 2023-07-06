@@ -1,5 +1,4 @@
 import {
-  CreateBranchArgs,
   CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
@@ -10,9 +9,13 @@ import {
 import { AwsCodeCommitService } from "./aws-code-commit.service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
+  BranchDoesNotExistException,
+  BranchNameExistsException,
   CodeCommitClient,
+  CreateBranchCommand,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
+  GetBranchCommand,
   GetFileCommand,
   GetPullRequestCommand,
   GetRepositoryCommand,
@@ -631,24 +634,110 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling getBranch()", async () => {
-    const args = <GetBranchArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getBranch(args)).rejects.toThrowError(
-      "Method not implemented."
-    );
+  describe("getBranch", () => {
+    let getBranchArgs;
+
+    beforeEach(() => {
+      getBranchArgs = {
+        repositoryName: "example-repo",
+        branchName: "main",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return the Branch when branch exists", async () => {
+      const expectedBranch = {
+        name: "main",
+        sha: "abcdefg",
+      };
+
+      awsClientMock
+        .on(GetBranchCommand, {
+          repositoryName: getBranchArgs.repositoryName,
+          branchName: getBranchArgs.branchName,
+        })
+        .resolves({
+          branch: { branchName: "main", commitId: "abcdefg" },
+        });
+
+      const result = await gitProvider.getBranch(getBranchArgs);
+
+      expect(result).toEqual(expectedBranch);
+    });
+
+    it("should throw an error when branch does not exist", async () => {
+      awsClientMock
+        .on(GetBranchCommand, {
+          repositoryName: getBranchArgs.repositoryName,
+          branchName: getBranchArgs.branchName,
+        })
+        .rejects(
+          new BranchDoesNotExistException({
+            message: "Branch not found",
+            $metadata: {},
+          })
+        );
+
+      await expect(gitProvider.getBranch(getBranchArgs)).rejects.toThrow(
+        `Branch ${getBranchArgs.branchName} not found`
+      );
+    });
   });
 
-  it("should throw an error when calling createBranch()", async () => {
-    const args = <CreateBranchArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.createBranch(args)).rejects.toThrowError(
-      "Method not implemented."
-    );
-  });
+  describe("createBranch", () => {
+    let createBranchArgs;
 
+    beforeEach(() => {
+      createBranchArgs = {
+        repositoryName: "example-repo",
+        branchName: "newBranch",
+        pointingSha: "123",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return the Branch when creating the branch successfully", async () => {
+      const expectedBranch = {
+        name: "newBranch",
+        sha: "123",
+      };
+
+      awsClientMock
+        .on(CreateBranchCommand, {
+          repositoryName: createBranchArgs.repositoryName,
+          branchName: createBranchArgs.branchName,
+        })
+        .resolves({});
+
+      const result = await gitProvider.createBranch(createBranchArgs);
+
+      expect(result).toEqual(expectedBranch);
+    });
+
+    it("should throw an error when failing to create the branch", async () => {
+      awsClientMock
+        .on(CreateBranchCommand, {
+          repositoryName: createBranchArgs.repositoryName,
+          branchName: createBranchArgs.branchName,
+        })
+        .rejects(
+          new BranchNameExistsException({
+            message: "Branch name already exists",
+            $metadata: {},
+          })
+        );
+
+      await expect(gitProvider.createBranch(createBranchArgs)).rejects.toThrow(
+        `Branch name already exists`
+      );
+    });
+  });
   it("should throw an error when calling getFirstCommitOnBranch()", async () => {
     const args = <GetBranchArgs>{
       /* provide appropriate arguments */
@@ -765,9 +854,9 @@ describe("AwsCodeCommit", () => {
       );
     });
   });
-  it("should throw an error when calling getAmplicationBotIdentity()", async () => {
-    await expect(gitProvider.getAmplicationBotIdentity()).rejects.toThrowError(
-      "Method not implemented."
-    );
+
+  it("should return null getAmplicationBotIdentity()", async () => {
+    const res = await gitProvider.getAmplicationBotIdentity();
+    expect(res).toBeNull();
   });
 });
