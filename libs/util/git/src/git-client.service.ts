@@ -435,7 +435,11 @@ export class GitClientService {
       pointingSha: firstCommitOnDefaultBranch.sha,
     });
 
+    // Cherry pick all amplication authored commits from the default branch to the new branch
+    await gitCli.checkout(defaultBranch);
     const gitLogs = await this.gitLog(gitCli);
+    await gitCli.resetState();
+    await gitCli.checkout(newBranch.name);
 
     await this.cherryPickCommits(
       gitLogs,
@@ -452,9 +456,6 @@ export class GitClientService {
     branchName: string,
     firstCommitOnDefaultBranch: Commit
   ) {
-    await gitCli.resetState();
-    await gitCli.checkout(branchName);
-
     for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
       const commit = commitsFromLatest.all[index];
       if (firstCommitOnDefaultBranch.sha === commit.hash) {
@@ -468,8 +469,8 @@ export class GitClientService {
             `Failed to cherry pick commit ${commit.hash} on branch ${branchName}`,
             error
           );
-          await gitCli.resetState();
           await gitCli.cherryPickAbort();
+          await gitCli.resetState();
           continue;
         }
       }
@@ -497,8 +498,8 @@ export class GitClientService {
         if (!file) {
           return "";
         }
-        const { content, htmlUrl, name } = file;
-        this.logger.info(`Got ${name} file ${htmlUrl}`);
+        const { content, path, name } = file;
+        this.logger.info(`Got ${name} file ${path}`);
         return content;
       } catch (error) {
         this.logger.warn(

@@ -91,6 +91,7 @@ export class GitCli {
    * @param branchName name of the branch to checkout
    */
   async checkout(branchName: string): Promise<void> {
+    await this.git.fetch();
     const remoteBranches = await this.git.branch(["--remotes"]);
     const remoteOriginBranchName = `origin/${branchName}`;
     if (!remoteBranches.all.includes(remoteOriginBranchName)) {
@@ -197,13 +198,13 @@ export class GitCli {
       .replaceAll("]", "\\]")
       .replaceAll("+", "\\+");
 
-    const authorsRegex = `'^(${authorEscaped})$'`;
+    const authorsRegex = `^(${authorEscaped})$`;
 
     maxCount = maxCount ?? -1;
-    return this.git.log({
-      "--perl-regexp": "",
-      "--author": authorsRegex,
-      "--max-count": maxCount,
-    });
+    return this.git.log([
+      "--perl-regexp",
+      `--author=${authorsRegex}`,
+      `--max-count=${maxCount}`,
+    ]);
   }
 }

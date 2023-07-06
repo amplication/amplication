@@ -31,15 +31,17 @@ import {
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
-  GetPullRequestCommand,
-  GetPullRequestCommandOutput,
+  GetFileCommand,
   GetRepositoryCommand,
   ListPullRequestsCommand,
   ListRepositoriesCommand,
   PostCommentForPullRequestCommand,
   PullRequest as AwsPullRequest,
+  GetPullRequestCommandOutput,
+  GetPullRequestCommand,
 } from "@aws-sdk/client-codecommit";
 import { NotImplementedError } from "../../utils/custom-error";
+import { parse } from "node:path";
 
 export class AwsCodeCommitService implements GitProvider {
   public readonly name = EnumGitProvider.AwsCodeCommit;
@@ -219,7 +221,25 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async getFile(file: GetFileArgs): Promise<GitFile | null> {
-    throw NotImplementedError;
+    const command = new GetFileCommand({
+      filePath: file.path,
+      repositoryName: file.repositoryName,
+      commitSpecifier: file.ref,
+    });
+    try {
+      const { fileContent, filePath } = await this.awsClient.send(command);
+
+      if (fileContent && filePath) {
+        return {
+          content: fileContent.toString(),
+          path: filePath,
+          name: parse(filePath).name,
+        };
+      }
+    } catch {
+      return null;
+    }
+    return null;
   }
 
   async createPullRequestFromFiles(
@@ -338,8 +358,32 @@ export class AwsCodeCommitService implements GitProvider {
   async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
     throw NotImplementedError;
   }
+
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
-    throw NotImplementedError;
+    const { repositoryName } = args;
+    const command = new GetRepositoryCommand({
+      repositoryName,
+    });
+
+    const { repositoryMetadata } = await this.awsClient.send(command);
+
+    if (this.isRequiredValid(repositoryMetadata)) {
+      const { cloneUrlHttp } = repositoryMetadata;
+      const encodedUsername = encodeURIComponent(this.gitCrentials.username);
+      const encodedPassword = encodeURIComponent(this.gitCrentials.password);
+
+      if (!this.gitCrentials.username || !this.gitCrentials.password) {
+        return cloneUrlHttp;
+      }
+
+      const authenticatedCloneUrlHttp = cloneUrlHttp.replace(
+        "https://",
+        `https://${encodedUsername}:${encodedPassword}@`
+      );
+      return authenticatedCloneUrlHttp;
+    } else {
+      throw new Error(`Repository ${repositoryName} not found`);
+    }
   }
 
   async getAmplicationBotIdentity(): Promise<Bot | null> {

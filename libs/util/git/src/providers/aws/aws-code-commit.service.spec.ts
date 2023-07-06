@@ -1,10 +1,8 @@
 import {
-  CloneUrlArgs,
   CreateBranchArgs,
   CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
-  GetFileArgs,
   GitProviderCreatePullRequestArgs,
   GitProviderGetPullRequestArgs,
   PullRequest,
@@ -15,6 +13,7 @@ import {
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateRepositoryCommand,
+  GetFileCommand,
   GetPullRequestCommand,
   GetRepositoryCommand,
   ListPullRequestsCommand,
@@ -353,13 +352,70 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling getFile()", async () => {
-    const getFileArgs = <GetFileArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getFile(getFileArgs)).rejects.toThrowError(
-      "Method not implemented."
-    );
+  describe("getFile", () => {
+    let getFileArgs;
+
+    beforeEach(() => {
+      getFileArgs = {
+        path: "/path/to/file.txt",
+        repositoryName: "example-repo",
+        ref: "main",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a GitFile when file content and file path exist", async () => {
+      const expectedGitFile = {
+        content: "file content",
+        path: "/path/to/file.txt",
+        name: "file",
+      };
+
+      awsClientMock
+        .on(GetFileCommand, {
+          repositoryName: getFileArgs.repositoryName,
+          filePath: getFileArgs.path,
+          commitSpecifier: getFileArgs.ref,
+        })
+        .resolves({
+          fileContent: Buffer.from("file content"),
+          filePath: "/path/to/file.txt",
+        });
+
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toEqual(expectedGitFile);
+    });
+
+    it("should return null when file content or file path do not exist", async () => {
+      awsClientMock
+        .on(GetFileCommand, {
+          commitSpecifier: getFileArgs.ref,
+          filePath: getFileArgs.path,
+          repositoryName: getFileArgs.repositoryName,
+        })
+        .resolves({});
+
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null when an error occurs", async () => {
+      awsClientMock
+        .on(GetFileCommand, {
+          commitSpecifier: getFileArgs.ref,
+          filePath: getFileArgs.path,
+          repositoryName: getFileArgs.repositoryName,
+        })
+        .rejects(new Error("error"));
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toBeNull();
+    });
   });
 
   it("should throw an error when calling createPullRequestFromFiles()", async () => {
@@ -602,13 +658,70 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling getCloneUrl()", async () => {
-    const args = <CloneUrlArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getCloneUrl(args)).rejects.toThrowError(
-      "Method not implemented."
+  describe("getCloneUrl", () => {
+    let getCloneUrlArgs;
+
+    beforeEach(() => {
+      getCloneUrlArgs = {
+        repositoryName: "example-repo",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it.each`
+      username        | password         | expectedCloneUrl
+      ${null}         | ${null}          | ${"https://example.com/repo.git"}
+      ${""}           | ${""}            | ${"https://example.com/repo.git"}
+      ${"username"}   | ${"password"}    | ${"https://username:password@example.com/repo.git"}
+      ${"user/name?"} | ${"/:pass?word"} | ${"https://user%2Fname%3F:%2F%3Apass%3Fword@example.com/repo.git"}
+    `(
+      "should return the authenticated clone URL when repository exists for username '$username' and password '$password'",
+      async ({ username, password, expectedCloneUrl }) => {
+        awsClientMock
+          .on(GetRepositoryCommand, {
+            repositoryName: getCloneUrlArgs.repositoryName,
+          })
+          .resolves({
+            repositoryMetadata: {
+              cloneUrlHttp: "https://example.com/repo.git",
+            },
+          });
+
+        gitProvider = new AwsCodeCommitService(
+          {
+            gitCredentials: {
+              username,
+              password,
+            },
+            sdkCredentials: {
+              accessKeyId: "accessKeyId",
+              accessKeySecret: "accessKeySecret",
+              region: "region",
+            },
+          },
+          MockedLogger
+        );
+
+        const result = await gitProvider.getCloneUrl(getCloneUrlArgs);
+
+        expect(result).toBe(expectedCloneUrl);
+      }
     );
+
+    it("should throw an error when repository does not exist", async () => {
+      awsClientMock
+        .on(GetRepositoryCommand, {
+          repositoryName: getCloneUrlArgs.repositoryName,
+        })
+        .resolves({});
+
+      await expect(gitProvider.getCloneUrl(getCloneUrlArgs)).rejects.toThrow(
+        `Repository ${getCloneUrlArgs.repositoryName} not found`
+      );
+    });
   });
 
   describe("createPullRequestComment", () => {

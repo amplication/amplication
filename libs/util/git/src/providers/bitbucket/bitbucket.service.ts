@@ -351,7 +351,6 @@ export class BitBucketService implements GitProvider {
 
     return {
       content: fileBufferResponse.toString("utf-8"),
-      htmlUrl: gitFileResponse.commit.links.html.href,
       name: parse(gitFileResponse.path).name,
       path: gitFileResponse.path,
     };

@@ -65,6 +65,7 @@ import {
   ID_FIELD_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
+  UNIQUE_ATTRIBUTE_NAME,
 } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
@@ -74,6 +75,7 @@ export class PrismaSchemaUtilsService {
     this.prepareModelNames,
     this.prepareFieldNames,
     this.prepareFieldTypes,
+    this.prepareModelIdAttribute,
     this.prepareIdField,
   ];
 
@@ -567,6 +569,65 @@ export class PrismaSchemaUtilsService {
   }
 
   /**
+   * This function handle cases where the model doesn't have any field that has "@id" attribute, but it has `@@id` attribute,
+   * meaning that the model has a composite key.
+   * In this cases, we rename the `@@id` attribute to `@@unique` and add id filed with `@id` attribute to the model
+   */
+  private prepareModelIdAttribute({
+    builder,
+    existingEntities,
+    mapper,
+    log,
+  }: PrepareOperationIO): PrepareOperationIO {
+    const schema = builder.getSchema();
+    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
+
+    models.forEach((model: Model) => {
+      const modelAttributes = model.properties.filter(
+        (item) => item.type === ATTRIBUTE_TYPE_NAME
+      ) as ModelAttribute[];
+
+      const modelIdAttribute = modelAttributes.find(
+        (attribute) => attribute.name === ID_ATTRIBUTE_NAME
+      );
+
+      if (!modelIdAttribute) return builder;
+
+      // rename the @@id attribute to @@unique
+      builder.model(model.name).then<Model>((model) => {
+        modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
+      });
+
+      log.push(
+        new ActionLog({
+          message: `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
+          level: EnumActionLogLevel.Warning,
+        })
+      );
+
+      // add an id field with id attribute to the model
+      builder
+        .model(model.name)
+        .field(ID_FIELD_NAME, "String")
+        .attribute(ID_ATTRIBUTE_NAME);
+
+      log.push(
+        new ActionLog({
+          message: `id field was added to model "${model.name}"`,
+          level: EnumActionLogLevel.Warning,
+        })
+      );
+    });
+
+    return {
+      builder,
+      existingEntities,
+      mapper,
+      log,
+    };
+  }
+
+  /**
    * Search for the id of the table (decorated with @id) and if it is not named "id" rename it to "id" and add "@map" attribute
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
@@ -589,6 +650,7 @@ export class PrismaSchemaUtilsService {
         const isIdField = field.attributes?.some(
           (attr) => attr.name === ID_ATTRIBUTE_NAME
         );
+
         if (!isIdField && field.name === ID_FIELD_NAME) {
           builder
             .model(model.name)

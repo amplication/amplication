@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.7.7",
+  "version": "1.7.8",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@amplication/opentelemetry-nestjs": "^4.2.0",
+    "@amplication/opentelemetry-nestjs": "^4.2.1",
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
@@ -37,8 +37,8 @@
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.11.0",
-    "@google-cloud/cloudbuild": "^2.6.0",
-    "@google-cloud/secret-manager": "^3.12.0",
+    "@google-cloud/cloudbuild": "^3.8.0",
+    "@google-cloud/secret-manager": "^4.2.2",
     "@google-cloud/storage": "^5.20.5",
     "@google-cloud/trace-agent": "^5.1.6",
     "@monaco-editor/react": "^4.5.1",
@@ -187,7 +187,7 @@
     "@babel/preset-react": "^7.14.5",
     "@babel/preset-typescript": "7.12.13",
     "@graphql-codegen/cli": "3.2.2",
-    "@graphql-codegen/typescript": "3.0.2",
+    "@graphql-codegen/typescript": "4.0.1",
     "@lcov-viewer/cli": "^1.3.0",
     "@nestjs/cli": "^9.5.0",
     "@nestjs/schematics": "^9.1.0",
@@ -210,7 +210,7 @@
     "@nx-tools/nx-container": "^4.0.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@storybook/addon-essentials": "^7.0.2",
-    "@storybook/builder-vite": "^0.2.6",
+    "@storybook/builder-vite": "^7.0.23",
     "@storybook/builder-webpack5": "^6.5.15",
     "@storybook/core-server": "^6.5.15",
     "@storybook/manager-webpack5": "^6.5.15",

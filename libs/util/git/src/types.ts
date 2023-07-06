@@ -173,7 +173,6 @@ export interface GitFile {
   name: string | null;
   path: string | null;
   content: string;
-  htmlUrl: string | null;
 }
 
 export interface GitResourceMeta {
