@@ -14,6 +14,7 @@ import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
   CodeCommitClient,
   CreateRepositoryCommand,
+  GetFileCommand,
   GetRepositoryCommand,
   ListRepositoriesCommand,
 } from "@aws-sdk/client-codecommit";
@@ -348,13 +349,70 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling getFile()", async () => {
-    const getFileArgs = <GetFileArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getFile(getFileArgs)).rejects.toThrowError(
-      "Method not implemented."
-    );
+  describe("getFile", () => {
+    let getFileArgs;
+
+    beforeEach(() => {
+      getFileArgs = {
+        path: "/path/to/file.txt",
+        repositoryName: "example-repo",
+        ref: "main",
+      };
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should return a GitFile when file content and file path exist", async () => {
+      const expectedGitFile = {
+        content: "file content",
+        path: "/path/to/file.txt",
+        name: "file",
+      };
+
+      awsClientMock
+        .on(GetFileCommand, {
+          repositoryName: getFileArgs.repositoryName,
+          filePath: getFileArgs.path,
+          commitSpecifier: getFileArgs.ref,
+        })
+        .resolves({
+          fileContent: Buffer.from("file content"),
+          filePath: "/path/to/file.txt",
+        });
+
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toEqual(expectedGitFile);
+    });
+
+    it("should return null when file content or file path do not exist", async () => {
+      awsClientMock
+        .on(GetFileCommand, {
+          commitSpecifier: getFileArgs.ref,
+          filePath: getFileArgs.path,
+          repositoryName: getFileArgs.repositoryName,
+        })
+        .resolves({});
+
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toBeNull();
+    });
+
+    it("should return null when an error occurs", async () => {
+      awsClientMock
+        .on(GetFileCommand, {
+          commitSpecifier: getFileArgs.ref,
+          filePath: getFileArgs.path,
+          repositoryName: getFileArgs.repositoryName,
+        })
+        .rejects(new Error("error"));
+      const result = await gitProvider.getFile(getFileArgs);
+
+      expect(result).toBeNull();
+    });
   });
 
   it("should throw an error when calling createPullRequestFromFiles()", async () => {

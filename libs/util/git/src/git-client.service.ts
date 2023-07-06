@@ -498,8 +498,8 @@ export class GitClientService {
         if (!file) {
           return "";
         }
-        const { content, htmlUrl, name } = file;
-        this.logger.info(`Got ${name} file ${htmlUrl}`);
+        const { content, path, name } = file;
+        this.logger.info(`Got ${name} file ${path}`);
         return content;
       } catch (error) {
         this.logger.warn(

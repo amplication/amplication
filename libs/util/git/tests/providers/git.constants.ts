@@ -14,7 +14,6 @@ export const GIT_HUB_FILE: GitFile = {
   name: "exampleGithubFileName",
   path: "examplePath",
   content: "exampleContent",
-  htmlUrl: "exampleHtmlUrl",
 };
 
 export const TEST_GIT_REMOTE_ORGANIZATION: RemoteGitOrganization = {
