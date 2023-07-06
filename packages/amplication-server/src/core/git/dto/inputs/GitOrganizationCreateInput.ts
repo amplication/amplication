@@ -1,16 +1,3 @@
-// import { GitOrganizationCreateInputAwsCodeCommit } from "./GitOrganizationCreateInputAwsCodeCommit";
-// import { GitOrganizationCreateInputGitHub } from "./GitOrganizationCreateInputGitHub";
-// import { createUnionType } from "@nestjs/graphql";
-
-// // eslint-disable-next-line @typescript-eslint/naming-convention
-// export const GitOrganizationCreateInput = createUnionType({
-//   types: () =>
-//     [
-//       GitOrganizationCreateInputAwsCodeCommit,
-//       GitOrganizationCreateInputGitHub,
-//     ] as const,
-// });
-
 import { Field, InputType } from "@nestjs/graphql";
 import { EnumGitProvider } from "../enums/EnumGitProvider";
 import { GitOrganizationCreateInputGitHub } from "./GitOrganizationCreateInputGitHub";

@@ -418,6 +418,18 @@ export class GitProviderService {
         },
       });
     } else if (gitProvider === EnumGitProvider.AwsCodeCommit) {
+      const awsCodeCommitEntitlement = this.billingService.isBillingEnabled
+        ? await this.billingService.getBooleanEntitlement(
+            workspaceId,
+            BillingFeature.AwsCodeCommit
+          )
+        : false;
+      if (!awsCodeCommitEntitlement) {
+        throw new AmplicationError(
+          "In order to connect AWS CodeCommit service should upgrade its plan"
+        );
+      }
+
       const {
         gitUsername: username,
         gitPassword: password,
