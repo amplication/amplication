@@ -1,7 +1,6 @@
 import {
   CloneUrlArgs,
   CreateBranchArgs,
-  CreatePullRequestCommentArgs,
   CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
