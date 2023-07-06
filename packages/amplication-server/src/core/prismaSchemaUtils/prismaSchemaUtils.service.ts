@@ -13,8 +13,9 @@ import {
   Enumerator,
   ConcretePrismaSchemaBuilder,
   Attribute,
-  ModelAttribute,
+  BlockAttribute,
   AttributeArgument,
+  Value,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -57,14 +58,17 @@ import {
   CreateBulkFieldsInput,
 } from "../entity/entity.service";
 import {
+  ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
   ENUMERATOR_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
+  KEY_VALUE_ARG_TYPE_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
+  OBJECT_KIND_NAME,
   UNIQUE_ATTRIBUTE_NAME,
 } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
@@ -387,8 +391,9 @@ export class PrismaSchemaUtilsService {
     ) as Model[];
     modelList.map((model: Model) => {
       const modelAttributes = model.properties.filter(
-        (prop) => prop.type === ATTRIBUTE_TYPE_NAME
-      ) as ModelAttribute[];
+        (prop) =>
+          prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+      ) as BlockAttribute[];
 
       const hasMapAttribute = modelAttributes?.some(
         (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
@@ -584,8 +589,9 @@ export class PrismaSchemaUtilsService {
 
     models.forEach((model: Model) => {
       const modelAttributes = model.properties.filter(
-        (item) => item.type === ATTRIBUTE_TYPE_NAME
-      ) as ModelAttribute[];
+        (prop) =>
+          prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+      ) as BlockAttribute[];
 
       const modelIdAttribute = modelAttributes.find(
         (attribute) => attribute.name === ID_ATTRIBUTE_NAME
@@ -720,10 +726,12 @@ export class PrismaSchemaUtilsService {
   private convertModelToEntity(model: Model): CreateBulkEntitiesInput {
     const modelDisplayName = formatDisplayName(model.name);
     const modelAttributes = model.properties.filter(
-      (prop) => prop.type === ATTRIBUTE_TYPE_NAME
-    );
+      (prop) =>
+        prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+    ) as BlockAttribute[];
     const entityPluralDisplayName = pluralize(model.name);
-    const entityAttributes = this.prepareAttributes(modelAttributes).join(" ");
+    const entityAttributes =
+      this.prepareModelAttributes(modelAttributes).join(" ");
 
     return {
       id: cuid(), // creating here the entity id because we need it for the relation
@@ -748,11 +756,11 @@ export class PrismaSchemaUtilsService {
   ): CreateBulkFieldsInput {
     const fieldDisplayName = formatDisplayName(field.name);
     const isUniqueField =
-      field.attributes?.some((attr) => attr.name === "unique") ?? false;
+      field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
+      false;
 
-    // eslint-disable-next-line prefer-const
     const fieldAttributes = filterOutAmplicationAttributes(
-      this.prepareAttributes(field.attributes)
+      this.prepareFieldAttributes(field.attributes)
     )
       // in some case we get "@default()" as an attribute, we want to filter it out
       .filter((attr) => attr !== "@default()")
@@ -776,23 +784,24 @@ export class PrismaSchemaUtilsService {
    * @param attributes the attributes to prepare and convert from the AST form to array of strings
    * @returns array of strings representing the attributes
    */
-  private prepareAttributes(attributes): string[] {
+  private prepareModelAttributes(attributes: BlockAttribute[]): string[] {
+    const modelAttrPrefix = "@@";
     if (!attributes && !attributes?.length) {
       return [];
     }
-    return attributes.map((attribute) => {
+    return attributes.map((attribute: BlockAttribute) => {
       const attributeGroup = attribute.group;
       if (!attribute.args && !attribute.args?.length) {
-        return attribute.kind === MODEL_TYPE_NAME
-          ? `@@${attribute.name}`
-          : `@${attribute.name}`;
+        return `${modelAttrPrefix}${attribute.name}`;
       }
-      const args = attribute.args.map((arg) => {
+      const args = attribute.args.map((arg: AttributeArgument) => {
         if (typeof arg.value === "object" && arg.value !== null) {
-          if (arg.value.type === "array") {
-            return `[${arg.value.args.join(", ")}]`;
-          } else if (arg.value.type === "keyValue") {
-            return `${arg.value.key}: ${arg.value.value}`;
+          const argValueArray = arg.value as Value as RelationArray;
+          const argKeyValue = arg.value as KeyValue;
+          if (argValueArray.type === ARRAY_ARG_TYPE_NAME) {
+            return `[${argValueArray.args.join(", ")}]`;
+          } else if (argKeyValue.type === KEY_VALUE_ARG_TYPE_NAME) {
+            return `${argKeyValue.key}: ${argKeyValue.value}`;
           }
         } else {
           return arg.value;
@@ -800,13 +809,45 @@ export class PrismaSchemaUtilsService {
       });
 
       if (attributeGroup) {
-        return `${
-          attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"
-        }${attributeGroup}.${attribute.name}(${args.join(", ")})`;
-      } else {
-        return `${attribute.kind === MODEL_TYPE_NAME ? "@@" : "@"}${
+        return `${modelAttrPrefix}${attributeGroup}.${
           attribute.name
         }(${args.join(", ")})`;
+      } else {
+        return `${modelAttrPrefix}${attribute.name}(${args.join(", ")})`;
+      }
+    });
+  }
+
+  private prepareFieldAttributes(attributes: Attribute[]): string[] {
+    const fieldAttrPrefix = "@";
+    if (!attributes && !attributes?.length) {
+      return [];
+    }
+    return attributes.map((attribute: Attribute) => {
+      const attributeGroup = attribute.group;
+      if (!attribute.args && !attribute.args?.length) {
+        return `${fieldAttrPrefix}${attribute.name}`;
+      }
+      const args = attribute.args.map((arg: AttributeArgument) => {
+        if (typeof arg.value === "object" && arg.value !== null) {
+          const argArray = arg.value as RelationArray;
+          const argKeyValue = arg.value as KeyValue;
+          if (argArray.type === ARRAY_ARG_TYPE_NAME) {
+            return `[${argArray.args.join(", ")}]`;
+          } else if (argKeyValue.type === KEY_VALUE_ARG_TYPE_NAME) {
+            return `${argKeyValue.key}: ${argKeyValue.value}`;
+          }
+        } else {
+          return arg.value;
+        }
+      });
+
+      if (attributeGroup) {
+        return `${fieldAttrPrefix}${attributeGroup}.${
+          attribute.name
+        }(${args.join(", ")})`;
+      } else {
+        return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
       }
     });
   }
