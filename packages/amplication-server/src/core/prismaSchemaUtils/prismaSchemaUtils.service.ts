@@ -789,7 +789,7 @@ export class PrismaSchemaUtilsService {
     if (!attributes && !attributes?.length) {
       return [];
     }
-    return attributes.map((attribute) => {
+    return attributes.map((attribute: BlockAttribute) => {
       const attributeGroup = attribute.group;
       if (!attribute.args && !attribute.args?.length) {
         return `${modelAttrPrefix}${attribute.name}`;
@@ -823,7 +823,7 @@ export class PrismaSchemaUtilsService {
     if (!attributes && !attributes?.length) {
       return [];
     }
-    return attributes.map((attribute: Attribute | BlockAttribute) => {
+    return attributes.map((attribute: Attribute) => {
       const attributeGroup = attribute.group;
       if (!attribute.args && !attribute.args?.length) {
         return `${fieldAttrPrefix}${attribute.name}`;
