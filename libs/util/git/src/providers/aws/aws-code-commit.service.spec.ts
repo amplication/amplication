@@ -1,21 +1,24 @@
 import {
   CreateBranchArgs,
-  CreatePullRequestCommentArgs,
   CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
-  GetFileArgs,
   GitProviderCreatePullRequestArgs,
   GitProviderGetPullRequestArgs,
+  PullRequest,
 } from "../../types";
 import { AwsCodeCommitService } from "./aws-code-commit.service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import {
   CodeCommitClient,
+  CreatePullRequestCommand,
   CreateRepositoryCommand,
   GetFileCommand,
+  GetPullRequestCommand,
   GetRepositoryCommand,
+  ListPullRequestsCommand,
   ListRepositoriesCommand,
+  PostCommentForPullRequestCommand,
 } from "@aws-sdk/client-codecommit";
 import { mockClient } from "aws-sdk-client-mock";
 
@@ -23,6 +26,7 @@ const awsClientMock = mockClient(CodeCommitClient);
 
 describe("AwsCodeCommit", () => {
   let gitProvider: AwsCodeCommitService;
+  const awsRegion = "region";
 
   beforeEach(() => {
     gitProvider = new AwsCodeCommitService(
@@ -34,7 +38,7 @@ describe("AwsCodeCommit", () => {
         sdkCredentials: {
           accessKeyId: "accessKeyId",
           accessKeySecret: "accessKeySecret",
-          region: "region",
+          region: awsRegion,
         },
       },
       MockedLogger
@@ -423,22 +427,208 @@ describe("AwsCodeCommit", () => {
     ).rejects.toThrowError("Method not implemented.");
   });
 
-  it("should throw an error when calling getPullRequest()", async () => {
-    const getPullRequestArgs = <GitProviderGetPullRequestArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.getPullRequest(getPullRequestArgs)
-    ).rejects.toThrowError("Method not implemented.");
+  describe("createPullRequest", () => {
+    let createPullRequestArgs: GitProviderCreatePullRequestArgs;
+    beforeEach(() => {
+      createPullRequestArgs = {
+        branchName: "branchName",
+        defaultBranchName: "defaultBranchName",
+        pullRequestTitle: "pullRequestTitle",
+        pullRequestBody: "pullRequestBody",
+        repositoryName: "repositoryName",
+        owner: "user",
+      };
+    });
+
+    it("should return a new pull request id and url", async () => {
+      awsClientMock
+        .on(CreatePullRequestCommand, {
+          title: createPullRequestArgs.pullRequestTitle,
+          description: createPullRequestArgs.pullRequestBody,
+          targets: [
+            {
+              repositoryName: createPullRequestArgs.repositoryName,
+              sourceReference: createPullRequestArgs.branchName,
+              destinationReference: createPullRequestArgs.defaultBranchName,
+            },
+          ],
+        })
+        .resolves({
+          pullRequest: {
+            pullRequestId: "10",
+          },
+        });
+
+      const result = await gitProvider.createPullRequest(createPullRequestArgs);
+
+      expect(result).toEqual(<PullRequest>{
+        number: 10,
+        url: `https://${awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${
+          createPullRequestArgs.branchName
+        }/pull-requests/${10}/details`,
+      });
+    });
+
+    it("should throw an error when failing in the aws sdk", async () => {
+      awsClientMock
+        .on(CreatePullRequestCommand, {
+          title: createPullRequestArgs.pullRequestTitle,
+          description: createPullRequestArgs.pullRequestBody,
+          targets: [
+            {
+              repositoryName: createPullRequestArgs.repositoryName,
+              sourceReference: createPullRequestArgs.branchName,
+              destinationReference: createPullRequestArgs.defaultBranchName,
+            },
+          ],
+        })
+        .rejects(new Error("error"));
+      await expect(
+        gitProvider.createPullRequest(createPullRequestArgs)
+      ).rejects.toThrowError("error");
+    });
+
+    it("should throw an error when CreatePullRequestCommand returns partial data", async () => {
+      awsClientMock
+        .on(CreatePullRequestCommand, {
+          title: createPullRequestArgs.pullRequestTitle,
+          description: createPullRequestArgs.pullRequestBody,
+          targets: [
+            {
+              repositoryName: createPullRequestArgs.repositoryName,
+              sourceReference: createPullRequestArgs.branchName,
+              destinationReference: createPullRequestArgs.defaultBranchName,
+            },
+          ],
+        })
+        .resolves({
+          pullRequest: {},
+        });
+
+      await expect(
+        gitProvider.createPullRequest(createPullRequestArgs)
+      ).rejects.toThrowError("Failed to create pull request");
+    });
   });
 
-  it("should throw an error when calling createPullRequest()", async () => {
-    const createPullRequestArgs = <GitProviderCreatePullRequestArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.createPullRequest(createPullRequestArgs)
-    ).rejects.toThrowError("Method not implemented.");
+  describe("getPullRequest", () => {
+    let getPullRequestArgs: GitProviderGetPullRequestArgs;
+    beforeEach(() => {
+      getPullRequestArgs = {
+        branchName: "branchName",
+        repositoryName: "repositoryName",
+        owner: "user",
+      };
+    });
+
+    describe("when there are not open pr for selected branch and repository", () => {
+      it("should return null", async () => {
+        awsClientMock
+          .on(ListPullRequestsCommand, {
+            repositoryName: getPullRequestArgs.repositoryName,
+            pullRequestStatus: "OPEN",
+          })
+          .resolves({
+            pullRequestIds: ["5", "11"],
+          })
+          .on(GetPullRequestCommand, {
+            pullRequestId: "5",
+          })
+          .resolves({
+            pullRequest: {
+              pullRequestId: "5",
+              pullRequestTargets: [
+                {
+                  repositoryName: getPullRequestArgs.repositoryName,
+                  sourceReference: "branchA",
+                },
+              ],
+            },
+          })
+
+          .on(GetPullRequestCommand, {
+            pullRequestId: "11",
+          })
+          .resolves({
+            pullRequest: {
+              pullRequestId: "11",
+              pullRequestTargets: [
+                {
+                  repositoryName: getPullRequestArgs.repositoryName,
+                  sourceReference: "branchB",
+                },
+              ],
+            },
+          });
+
+        const result = await gitProvider.getPullRequest(getPullRequestArgs);
+        expect(result).toBeNull();
+      });
+    });
+
+    describe("when there is an open pr for selected branch and repository", () => {
+      it("should return the open pull request id and url", async () => {
+        awsClientMock
+          .on(ListPullRequestsCommand, {
+            repositoryName: getPullRequestArgs.repositoryName,
+            pullRequestStatus: "OPEN",
+          })
+          .resolves({
+            pullRequestIds: ["5", "10", "11"],
+          })
+          .on(GetPullRequestCommand, {
+            pullRequestId: "5",
+          })
+          .resolves({
+            pullRequest: {
+              pullRequestId: "5",
+              pullRequestTargets: [
+                {
+                  repositoryName: getPullRequestArgs.repositoryName,
+                  sourceReference: "branchA",
+                },
+              ],
+            },
+          })
+          .on(GetPullRequestCommand, {
+            pullRequestId: "10",
+          })
+          .resolves({
+            pullRequest: {
+              pullRequestId: "10",
+              pullRequestTargets: [
+                {
+                  repositoryName: getPullRequestArgs.repositoryName,
+                  sourceReference: `refs/heads/${getPullRequestArgs.branchName}`,
+                },
+              ],
+            },
+          })
+          .on(GetPullRequestCommand, {
+            pullRequestId: "11",
+          })
+          .resolves({
+            pullRequest: {
+              pullRequestId: "11",
+              pullRequestTargets: [
+                {
+                  repositoryName: getPullRequestArgs.repositoryName,
+                  sourceReference: "branchB",
+                },
+              ],
+            },
+          });
+
+        const result = await gitProvider.getPullRequest(getPullRequestArgs);
+
+        expect(result).toEqual(<PullRequest>{
+          number: 10,
+          url: `https://${awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${
+            getPullRequestArgs.branchName
+          }/pull-requests/${10}/details`,
+        });
+      });
+    });
   });
 
   it("should throw an error when calling getBranch()", async () => {
@@ -534,15 +724,47 @@ describe("AwsCodeCommit", () => {
     });
   });
 
-  it("should throw an error when calling createPullRequestComment()", async () => {
-    const args = <CreatePullRequestCommentArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.createPullRequestComment(args)
-    ).rejects.toThrowError("Method not implemented.");
-  });
+  describe("createPullRequestComment", () => {
+    it("should create a pr comment", async () => {
+      awsClientMock
+        .on(GetPullRequestCommand, {
+          pullRequestId: "5",
+        })
+        .resolves({
+          pullRequest: {
+            pullRequestId: "5",
+            pullRequestTargets: [
+              {
+                repositoryName: "repositoryName",
+                sourceReference: "branchA",
+                sourceCommit: "lastCommit",
+                destinationCommit: "branchCommit-123",
+              },
+            ],
+          },
+        })
+        .on(PostCommentForPullRequestCommand, {
+          pullRequestId: "5",
+          repositoryName: "repositoryName",
+          beforeCommitId: "branchCommit-123",
+          afterCommitId: "lastCommit",
+          content: "beautiful comment",
+        });
 
+      await expect(
+        gitProvider.createPullRequestComment({
+          where: {
+            issueNumber: 5,
+            repositoryName: "repositoryName",
+            owner: "user",
+          },
+          data: {
+            body: "beautiful comment",
+          },
+        })
+      );
+    });
+  });
   it("should throw an error when calling getAmplicationBotIdentity()", async () => {
     await expect(gitProvider.getAmplicationBotIdentity()).rejects.toThrowError(
       "Method not implemented."
