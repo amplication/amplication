@@ -20,12 +20,12 @@ import {
   GitHubProviderOrganizationProperties,
   GitProviderArgs,
   GitProvidersConfiguration,
-  isGitHubProviderOrganizationProperties,
   GetRepositoriesArgs,
   CreateRepositoryArgs,
   RemoteGitRepository,
   GitProviderProperties,
   AwsCodeCommitProviderOrganizationProperties,
+  isValidGitProviderProperties,
 } from "@amplication/util/git";
 import {
   INVALID_RESOURCE_ID,
@@ -544,10 +544,7 @@ export class GitProviderService {
   ): Promise<GitProviderArgs> {
     const { provider, providerProperties } = gitOrganization;
 
-    if (
-      provider === EnumGitProvider.Github &&
-      isGitHubProviderOrganizationProperties(providerProperties)
-    ) {
+    if (isValidGitProviderProperties[provider](providerProperties)) {
       return {
         provider: EnumGitProvider[provider],
         providerOrganizationProperties: providerProperties,
