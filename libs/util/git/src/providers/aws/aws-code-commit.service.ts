@@ -99,7 +99,7 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async init(): Promise<void> {
-    throw NotImplementedError;
+    return;
   }
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     throw NotImplementedError;
