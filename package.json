@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@amplication/opentelemetry-nestjs": "^4.2.0",
+    "@amplication/opentelemetry-nestjs": "^4.2.1",
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
@@ -259,6 +259,7 @@
     "@types/yargs": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.39.0",
+    "aws-sdk-client-mock": "^3.0.0",
     "babel-jest": "^28.1.0",
     "base-64": "^1.0.0",
     "copy-webpack-plugin": "^11.0.0",
