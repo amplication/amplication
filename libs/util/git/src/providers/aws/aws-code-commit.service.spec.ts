@@ -1,5 +1,4 @@
 import {
-  CreateBranchArgs,
   CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
   GetBranchArgs,
