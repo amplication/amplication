@@ -210,7 +210,7 @@
     "@nx-tools/nx-container": "^4.0.3",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
     "@storybook/addon-essentials": "^7.0.2",
-    "@storybook/builder-vite": "^0.2.6",
+    "@storybook/builder-vite": "^7.0.23",
     "@storybook/builder-webpack5": "^6.5.15",
     "@storybook/core-server": "^6.5.15",
     "@storybook/manager-webpack5": "^6.5.15",
