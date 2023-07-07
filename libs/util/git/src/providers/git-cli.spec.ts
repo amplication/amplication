@@ -249,6 +249,22 @@ describe("GitCli", () => {
       expect(result).toBeNull();
     });
 
+    it("should return null if there aren't commits on the branch (simple-git error)", async () => {
+      gitCheckoutMock.mockResolvedValue(undefined);
+      gitLogMock.mockRejectedValueOnce(
+        new Error(
+          "fatal: your current branch 'main' does not have any commits yet"
+        )
+      );
+
+      // Act
+      const result = await gitCli.getFirstCommitSha("main");
+
+      expect(gitCheckoutMock).toHaveBeenCalledTimes(2);
+      expect(gitLogMock).toHaveBeenCalledWith(["--reverse"]);
+      expect(result).toBeNull();
+    });
+
     it("should leave the repository status as before the invocation", async () => {
       let currentBranch = "";
       const expectedBranch = "a-specific-branch";

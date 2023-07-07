@@ -156,10 +156,12 @@ export class GitClientService {
       });
 
       await gitCli.clone();
-      const haveFirstCommitInDefaultBranch =
-        (await gitCli.getFirstCommitSha(defaultBranch))?.sha !== null;
 
-      if (haveFirstCommitInDefaultBranch === false) {
+      const firstCommitOnDefaultBranch = await gitCli.getFirstCommitSha(
+        defaultBranch
+      );
+
+      if (!firstCommitOnDefaultBranch) {
         await this.createInitialCommit({
           gitRepoDir,
           gitCli,

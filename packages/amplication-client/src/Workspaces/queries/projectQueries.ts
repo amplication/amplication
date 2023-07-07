@@ -40,7 +40,7 @@ export const GET_PROJECTS = gql`
 `;
 
 export const CREATE_PROJECT = gql`
-  mutation createProject($data: ProjectCreateInput) {
+  mutation createProject($data: ProjectCreateInput!) {
     createProject(data: $data) {
       id
       name

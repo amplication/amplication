@@ -13,14 +13,12 @@ import {
   RemoteGitOrganization,
   GetFileArgs,
   GitFile,
-  CreatePullRequestFromFilesArgs,
   GitProviderGetPullRequestArgs,
   PullRequest,
   GitProviderCreatePullRequestArgs,
   GetBranchArgs,
   Branch,
   CreateBranchArgs,
-  Commit,
   CloneUrlArgs,
   CreatePullRequestCommentArgs,
   Bot,
@@ -28,7 +26,6 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
-  BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateBranchCommand,
@@ -99,15 +96,15 @@ export class AwsCodeCommitService implements GitProvider {
   }
 
   async init(): Promise<void> {
+    return;
+  }
+  async getGitInstallationUrl(): Promise<string> {
     throw NotImplementedError;
   }
-  async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
+  async getCurrentOAuthUser(): Promise<CurrentUser> {
     throw NotImplementedError;
   }
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    throw NotImplementedError;
-  }
-  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
+  async getOAuthTokens(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
   async refreshAccessToken(): Promise<OAuthTokens> {
@@ -129,7 +126,7 @@ export class AwsCodeCommitService implements GitProvider {
     if (this.isRequiredValid(repositoryMetadata)) {
       return {
         admin: false,
-        defaultBranch: repositoryMetadata.defaultBranch,
+        defaultBranch: repositoryMetadata.defaultBranch ?? "main",
         fullName: repositoryMetadata.repositoryName,
         name: repositoryMetadata.repositoryName,
         private: true,
@@ -218,7 +215,7 @@ export class AwsCodeCommitService implements GitProvider {
   async getOrganization(): Promise<RemoteGitOrganization> {
     return {
       name: "AWS CodeCommit",
-      type: EnumGitOrganizationType.User,
+      type: EnumGitOrganizationType.Organization,
       useGroupingForRepositories: false,
     };
   }
@@ -245,9 +242,7 @@ export class AwsCodeCommitService implements GitProvider {
     return null;
   }
 
-  async createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
+  async createPullRequestFromFiles(): Promise<string> {
     throw NotImplementedError;
   }
 
@@ -368,10 +363,7 @@ export class AwsCodeCommitService implements GitProvider {
         };
       }
     } catch (error) {
-      if (error instanceof BranchDoesNotExistException) {
-        throw new Error(`Branch ${args.branchName} not found`);
-      }
-      throw error;
+      return null;
     }
     return null;
   }
@@ -394,10 +386,6 @@ export class AwsCodeCommitService implements GitProvider {
 
       throw error;
     }
-  }
-
-  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
-    throw NotImplementedError;
   }
 
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {

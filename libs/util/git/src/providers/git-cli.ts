@@ -178,11 +178,22 @@ export class GitCli {
     const originalStatus = await this.git.status();
 
     await this.checkout(branchName);
-    const log = await this.git.log(["--reverse"]);
-    const commit = log.latest?.hash;
+    let commit: string | undefined;
+    try {
+      const log = await this.git.log(["--reverse"]);
+      commit = log.latest?.hash;
+    } catch (error) {
+      // If there are no commits in the branch, the log command will fail
+    }
 
-    if (originalStatus.current) {
-      await this.git.checkout(originalStatus.current);
+    try {
+      if (originalStatus.current) {
+        await this.git.checkout(originalStatus.current);
+      }
+    } catch (error) {
+      this.logger.error(`Failed to checkout original branch`, error, {
+        originalBranch: originalStatus.current,
+      });
     }
     return commit ? { sha: commit } : null;
   }

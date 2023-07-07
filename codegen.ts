@@ -6,7 +6,17 @@ const generates = serverProject.targets[
   "graphql:models:generate"
 ].outputs.reduce(
   (acc, curr) => {
-    acc[curr] = { plugins: ["typescript"] };
+    if (curr === "packages/amplication-client/src/models.ts") {
+      acc[curr] = {
+        documents: ["packages/amplication-client/src/**/*.query.ts"],
+        plugins: [
+          "typescript",
+          "typescript-operations",
+          "typescript-react-apollo",
+        ],
+        config: { withHooks: true },
+      };
+    } else acc[curr] = { plugins: ["typescript"] };
     return acc;
   },
   {} as {
@@ -15,6 +25,7 @@ const generates = serverProject.targets[
 );
 
 const config: CodegenConfig = {
+  overwrite: true,
   schema: "packages/amplication-server/src/schema.graphql",
   config: {
     skipTypename: true,

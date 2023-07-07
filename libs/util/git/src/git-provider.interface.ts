@@ -1,7 +1,6 @@
 import {
   Branch,
   CloneUrlArgs,
-  Commit,
   CreateBranchArgs,
   CreatePullRequestCommentArgs,
   GitProviderCreatePullRequestArgs,
