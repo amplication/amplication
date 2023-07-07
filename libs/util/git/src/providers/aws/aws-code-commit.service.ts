@@ -26,7 +26,6 @@ import {
   EnumGitOrganizationType,
 } from "../../types";
 import {
-  BranchDoesNotExistException,
   CodeCommitClient,
   CreatePullRequestCommand,
   CreateBranchCommand,
