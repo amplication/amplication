@@ -11,6 +11,7 @@ const gitCheckoutMock = jest.fn();
 const gitStatusMock = jest.fn();
 const gitCommitMock = jest.fn();
 const gitPushMock = jest.fn();
+const gitLogMock = jest.fn();
 
 jest.mock("simple-git");
 jest.mock("node:fs/promises");
@@ -21,7 +22,7 @@ describe("GitCli", () => {
   let gitCli: GitCli;
 
   beforeEach(() => {
-    simpleGitMocked.simpleGit.mockReturnValue({
+    simpleGitMocked.simpleGit.mockReturnValue((<Partial<simpleGit.SimpleGit>>{
       fetch: gitFetchMock,
       branch: gitBranchMock,
       checkoutLocalBranch: gitCheckoutLocalBranchMock,
@@ -30,7 +31,8 @@ describe("GitCli", () => {
       commit: gitCommitMock,
       push: gitPushMock,
       add: jest.fn(),
-    } as unknown as simpleGit.SimpleGit);
+      log: gitLogMock,
+    }) as unknown as simpleGit.SimpleGit);
 
     gitCli = new GitCli(MockedLogger, {
       originUrl: "http://example.com",
@@ -194,6 +196,73 @@ describe("GitCli", () => {
       expect(gitCommitMock).toHaveBeenCalledWith(message);
       expect(gitPushMock).toHaveBeenCalled();
       expect(result).toBe("abcd1234");
+    });
+  });
+
+  describe("getFirstCommitSha", () => {
+    beforeEach(() => {
+      gitFetchMock.mockResolvedValue(undefined);
+      gitBranchMock.mockResolvedValue({
+        all: ["origin/main", "original/a-specific-branch"],
+      });
+    });
+
+    it("should return the first commit on the branch", async () => {
+      gitCheckoutMock.mockResolvedValue(undefined);
+      gitLogMock.mockResolvedValueOnce({
+        all: [
+          {
+            hash: "first-commit",
+          },
+          {
+            hash: "last-commit",
+          },
+        ],
+        latest: {
+          hash: "first-commit",
+        },
+      });
+
+      // Act
+      const result = await gitCli.getFirstCommitSha("main");
+
+      expect(gitCheckoutMock).toHaveBeenCalledTimes(2);
+      expect(gitLogMock).toHaveBeenCalledWith(["--reverse"]);
+      expect(result).toStrictEqual({ sha: "first-commit" });
+    });
+
+    it("should return null if there aren't commits on the branch", async () => {
+      gitCheckoutMock.mockResolvedValue(undefined);
+      gitLogMock.mockResolvedValueOnce({
+        all: [],
+        latest: {},
+      });
+
+      // Act
+      const result = await gitCli.getFirstCommitSha("main");
+
+      expect(gitCheckoutMock).toHaveBeenCalledTimes(2);
+      expect(gitLogMock).toHaveBeenCalledWith(["--reverse"]);
+      expect(result).toBeNull();
+    });
+
+    it("should leave the repository status as before the invocation", async () => {
+      let currentBranch = "";
+      const expectedBranch = "a-specific-branch";
+
+      gitCheckoutMock.mockImplementation((branchName) => {
+        if (branchName === "-") currentBranch = expectedBranch;
+        else currentBranch = branchName;
+      });
+      gitLogMock.mockResolvedValueOnce({});
+
+      // Set current status
+      gitCli.checkout(expectedBranch);
+
+      // Act
+      await gitCli.getFirstCommitSha("main");
+
+      expect(currentBranch).toBe(expectedBranch);
     });
   });
 });
