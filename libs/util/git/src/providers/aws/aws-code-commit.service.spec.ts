@@ -345,7 +345,7 @@ describe("AwsCodeCommit", () => {
 
       expect(result).toEqual({
         name: "AWS CodeCommit",
-        type: EnumGitOrganizationType.User,
+        type: EnumGitOrganizationType.Organization,
         useGroupingForRepositories: false,
       });
     });

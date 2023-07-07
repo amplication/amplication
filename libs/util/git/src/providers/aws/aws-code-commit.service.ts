@@ -216,7 +216,7 @@ export class AwsCodeCommitService implements GitProvider {
   async getOrganization(): Promise<RemoteGitOrganization> {
     return {
       name: "AWS CodeCommit",
-      type: EnumGitOrganizationType.User,
+      type: EnumGitOrganizationType.Organization,
       useGroupingForRepositories: false,
     };
   }
