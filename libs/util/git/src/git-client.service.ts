@@ -155,16 +155,11 @@ export class GitClientService {
         groupName: repositoryGroupName,
       });
 
+      await gitCli.clone();
       const haveFirstCommitInDefaultBranch =
-        await this.isHaveFirstCommitInDefaultBranch({
-          owner,
-          repositoryName,
-          repositoryGroupName,
-          defaultBranch,
-        });
+        (await gitCli.getFirstCommitSha(defaultBranch))?.sha !== null;
 
       if (haveFirstCommitInDefaultBranch === false) {
-        await gitCli.clone();
         await this.createInitialCommit({
           gitRepoDir,
           gitCli,
@@ -415,13 +410,10 @@ export class GitClientService {
     if (branch) {
       return branch;
     }
-    const firstCommitOnDefaultBranch =
-      await this.provider.getFirstCommitOnBranch({
-        owner,
-        repositoryName,
-        branchName: defaultBranch,
-        repositoryGroupName,
-      });
+
+    const firstCommitOnDefaultBranch = await gitCli.getFirstCommitSha(
+      defaultBranch
+    );
 
     if (firstCommitOnDefaultBranch === null) {
       throw new NoCommitOnBranch(defaultBranch);
@@ -534,24 +526,5 @@ export class GitClientService {
         deleted: false,
       },
     ]);
-  }
-
-  private async isHaveFirstCommitInDefaultBranch(args: {
-    owner: string;
-    repositoryName: string;
-    repositoryGroupName?: string;
-    defaultBranch: string;
-  }): Promise<boolean> {
-    const { owner, repositoryName, repositoryGroupName, defaultBranch } = args;
-    const defaultBranchFirstCommit = await this.provider.getFirstCommitOnBranch(
-      {
-        branchName: defaultBranch,
-        owner,
-        repositoryName,
-        repositoryGroupName,
-      }
-    );
-
-    return Boolean(defaultBranchFirstCommit);
   }
 }
