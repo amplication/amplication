@@ -364,10 +364,7 @@ export class AwsCodeCommitService implements GitProvider {
         };
       }
     } catch (error) {
-      if (error instanceof BranchDoesNotExistException) {
-        throw new Error(`Branch ${args.branchName} not found`);
-      }
-      throw error;
+      return null;
     }
     return null;
   }

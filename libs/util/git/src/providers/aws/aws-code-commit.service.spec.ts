@@ -661,7 +661,7 @@ describe("AwsCodeCommit", () => {
       expect(result).toEqual(expectedBranch);
     });
 
-    it("should throw an error when branch does not exist", async () => {
+    it("should return null when branch does not exist", async () => {
       awsClientMock
         .on(GetBranchCommand, {
           repositoryName: getBranchArgs.repositoryName,
@@ -674,9 +674,9 @@ describe("AwsCodeCommit", () => {
           })
         );
 
-      await expect(gitProvider.getBranch(getBranchArgs)).rejects.toThrow(
-        `Branch ${getBranchArgs.branchName} not found`
-      );
+      const result = await gitProvider.getBranch(getBranchArgs);
+
+      expect(result).toBeNull();
     });
   });
 
