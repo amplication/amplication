@@ -203,7 +203,7 @@ describe("GitCli", () => {
     beforeEach(() => {
       gitFetchMock.mockResolvedValue(undefined);
       gitBranchMock.mockResolvedValue({
-        all: ["origin/main", "original/a-specific-branch"],
+        all: ["origin/main", "origin/a-specific-branch"],
       });
     });
 
@@ -250,14 +250,18 @@ describe("GitCli", () => {
       let currentBranch = "";
       const expectedBranch = "a-specific-branch";
 
+      gitStatusMock.mockImplementation(() => {
+        return <simpleGit.StatusResult>{
+          current: currentBranch,
+        };
+      });
       gitCheckoutMock.mockImplementation((branchName) => {
-        if (branchName === "-") currentBranch = expectedBranch;
-        else currentBranch = branchName;
+        currentBranch = branchName;
       });
       gitLogMock.mockResolvedValueOnce({});
 
       // Set current status
-      gitCli.checkout(expectedBranch);
+      await gitCli.checkout(expectedBranch);
 
       // Act
       await gitCli.getFirstCommitSha("main");

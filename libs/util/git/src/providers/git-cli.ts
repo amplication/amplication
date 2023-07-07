@@ -175,10 +175,15 @@ export class GitCli {
   }
 
   async getFirstCommitSha(branchName: string): Promise<Commit | null> {
+    const originalStatus = await this.git.status();
+
     await this.checkout(branchName);
     const log = await this.git.log(["--reverse"]);
-    await this.git.checkout("-");
     const commit = log.latest?.hash;
+
+    if (originalStatus.current) {
+      await this.git.checkout(originalStatus.current);
+    }
     return commit ? { sha: commit } : null;
   }
 
