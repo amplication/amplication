@@ -205,6 +205,9 @@ describe("GitCli", () => {
       gitBranchMock.mockResolvedValue({
         all: ["origin/main", "origin/a-specific-branch"],
       });
+      gitStatusMock.mockResolvedValue(<simpleGit.StatusResult>{
+        current: "main",
+      });
     });
 
     it("should return the first commit on the branch", async () => {
