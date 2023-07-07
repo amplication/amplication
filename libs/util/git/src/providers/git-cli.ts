@@ -5,7 +5,7 @@ import {
   simpleGit,
   SimpleGit,
 } from "simple-git";
-import { UpdateFile } from "../types";
+import { Commit, UpdateFile } from "../types";
 import { mkdir, writeFile, rm } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { existsSync } from "node:fs";
@@ -172,6 +172,19 @@ export class GitCli {
    */
   async diff(ref: string) {
     return this.git.diff(["--full-index", ref]);
+  }
+
+  async getFirstCommitSha(branchName: string): Promise<Commit | null> {
+    const originalStatus = await this.git.status();
+
+    await this.checkout(branchName);
+    const log = await this.git.log(["--reverse"]);
+    const commit = log.latest?.hash;
+
+    if (originalStatus.current) {
+      await this.git.checkout(originalStatus.current);
+    }
+    return commit ? { sha: commit } : null;
   }
 
   /**

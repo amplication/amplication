@@ -36,6 +36,7 @@ describe("GitClientService", () => {
   let service: GitClientService;
   const gitDiffMock = jest.fn();
   const gitLogMock = jest.fn();
+  const gitGetFirstCommitShaMock = jest.fn();
   const cherryPickMock = jest.fn();
   const cherryPickAbortMock = jest.fn();
 
@@ -49,6 +50,7 @@ describe("GitClientService", () => {
     diff: gitDiffMock,
     cherryPick: cherryPickMock,
     cherryPickAbort: cherryPickAbortMock,
+    getFirstCommitSha: gitGetFirstCommitShaMock,
   } as unknown as GitCli;
 
   const amplicationBotIdentityMock = jest.fn();
@@ -69,7 +71,6 @@ describe("GitClientService", () => {
   const createPullRequestMock = jest.fn();
   const getBranchMock = jest.fn();
   const createBranchMock = jest.fn();
-  const getFirstCommitOnBranchMock = jest.fn();
   const getCloneUrlMock = jest.fn();
   const createPullRequestCommentMock = jest.fn();
   const gitProviderMock: GitProvider = {
@@ -91,7 +92,6 @@ describe("GitClientService", () => {
     createPullRequest: createPullRequestMock,
     getBranch: getBranchMock,
     createBranch: createBranchMock,
-    getFirstCommitOnBranch: getFirstCommitOnBranchMock,
     getCloneUrl: getCloneUrlMock,
     createPullRequestComment: createPullRequestCommentMock,
     name: EnumGitProvider.Github,
@@ -215,7 +215,7 @@ describe("GitClientService", () => {
         };
         getBranchMock.mockResolvedValueOnce(null);
 
-        getFirstCommitOnBranchMock.mockResolvedValueOnce({
+        gitGetFirstCommitShaMock.mockResolvedValueOnce({
           sha: "first-commit-sha",
         });
 
@@ -239,12 +239,7 @@ describe("GitClientService", () => {
         // Assert the result
         expect(result).toEqual({ name: "new-branch" });
         expect(gitProviderMock.getBranch).toHaveBeenCalledWith(args);
-        expect(gitProviderMock.getFirstCommitOnBranch).toHaveBeenCalledWith({
-          owner: "owner",
-          repositoryName: "repository",
-          branchName: "default",
-          repositoryGroupName: "group",
-        });
+        expect(gitGetFirstCommitShaMock).toHaveBeenCalledWith("default");
         expect(gitProviderMock.createBranch).toHaveBeenCalledWith({
           owner: "owner",
           branchName: "new-branch",
@@ -274,7 +269,7 @@ describe("GitClientService", () => {
 
         getBranchMock.mockResolvedValueOnce(null);
 
-        getFirstCommitOnBranchMock.mockResolvedValueOnce({
+        gitGetFirstCommitShaMock.mockResolvedValueOnce({
           sha: "first-commit-sha",
         });
 
@@ -304,7 +299,7 @@ describe("GitClientService", () => {
         // Assert the result
         expect(result).toEqual({ name: "new-branch" });
         expect(gitProviderMock.getBranch).toHaveBeenCalledWith(args);
-        expect(gitProviderMock.getFirstCommitOnBranch).toHaveBeenCalledTimes(1);
+        expect(gitGetFirstCommitShaMock).toHaveBeenCalledTimes(1);
         expect(gitProviderMock.createBranch).toHaveBeenCalledTimes(1);
         expect(gitLogMock).toHaveBeenCalledTimes(1);
         expect(cherryPickMock).toHaveBeenCalledTimes(3);
@@ -331,7 +326,7 @@ describe("GitClientService", () => {
 
       expect(result).toEqual({ name: "existing-branch" });
       expect(gitProviderMock.getBranch).toHaveBeenCalledWith(args);
-      expect(gitProviderMock.getFirstCommitOnBranch).not.toHaveBeenCalled();
+      expect(gitGetFirstCommitShaMock).not.toHaveBeenCalled();
       expect(gitProviderMock.createBranch).not.toHaveBeenCalled();
       expect(gitLogMock).not.toHaveBeenCalled();
     });
