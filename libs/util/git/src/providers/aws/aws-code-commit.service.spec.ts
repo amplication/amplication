@@ -1,7 +1,5 @@
 import {
-  CreatePullRequestFromFilesArgs,
   EnumGitOrganizationType,
-  GetBranchArgs,
   GitProviderCreatePullRequestArgs,
   GitProviderGetPullRequestArgs,
   PullRequest,
@@ -50,28 +48,26 @@ describe("AwsCodeCommit", () => {
     awsClientMock.reset();
   });
 
-  it("should throw an error when calling init()", async () => {
-    await expect(gitProvider.init()).rejects.toThrowError(
+  it("should not fail on init()", async () => {
+    await gitProvider.init();
+  });
+
+  it("should throw an error when calling getGitInstallationUrl()", async () => {
+    await expect(gitProvider.getGitInstallationUrl()).rejects.toThrowError(
       "Method not implemented."
     );
   });
 
-  it("should throw an error when calling getGitInstallationUrl()", async () => {
-    await expect(
-      gitProvider.getGitInstallationUrl("workspaceId")
-    ).rejects.toThrowError("Method not implemented.");
-  });
-
   it("should throw an error when calling getCurrentOAuthUser()", async () => {
-    await expect(
-      gitProvider.getCurrentOAuthUser("accessToken")
-    ).rejects.toThrowError("Method not implemented.");
+    await expect(gitProvider.getCurrentOAuthUser()).rejects.toThrowError(
+      "Method not implemented."
+    );
   });
 
   it("should throw an error when calling getOAuthTokens()", async () => {
-    await expect(
-      gitProvider.getOAuthTokens("authorizationCode")
-    ).rejects.toThrowError("Method not implemented.");
+    await expect(gitProvider.getOAuthTokens()).rejects.toThrowError(
+      "Method not implemented."
+    );
   });
 
   it("should throw an error when calling refreshAccessToken()", async () => {
@@ -422,12 +418,9 @@ describe("AwsCodeCommit", () => {
   });
 
   it("should throw an error when calling createPullRequestFromFiles()", async () => {
-    const createPullRequestFromFilesArgs = <CreatePullRequestFromFilesArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(
-      gitProvider.createPullRequestFromFiles(createPullRequestFromFilesArgs)
-    ).rejects.toThrowError("Method not implemented.");
+    await expect(gitProvider.createPullRequestFromFiles()).rejects.toThrowError(
+      "Method not implemented."
+    );
   });
 
   describe("createPullRequest", () => {
@@ -737,14 +730,6 @@ describe("AwsCodeCommit", () => {
         `Branch name already exists`
       );
     });
-  });
-  it("should throw an error when calling getFirstCommitOnBranch()", async () => {
-    const args = <GetBranchArgs>{
-      /* provide appropriate arguments */
-    };
-    await expect(gitProvider.getFirstCommitOnBranch(args)).rejects.toThrowError(
-      "Method not implemented."
-    );
   });
 
   describe("getCloneUrl", () => {

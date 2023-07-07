@@ -13,14 +13,12 @@ import {
   RemoteGitOrganization,
   GetFileArgs,
   GitFile,
-  CreatePullRequestFromFilesArgs,
   GitProviderGetPullRequestArgs,
   PullRequest,
   GitProviderCreatePullRequestArgs,
   GetBranchArgs,
   Branch,
   CreateBranchArgs,
-  Commit,
   CloneUrlArgs,
   CreatePullRequestCommentArgs,
   Bot,
@@ -101,13 +99,13 @@ export class AwsCodeCommitService implements GitProvider {
   async init(): Promise<void> {
     return;
   }
-  async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
+  async getGitInstallationUrl(): Promise<string> {
     throw NotImplementedError;
   }
-  async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
+  async getCurrentOAuthUser(): Promise<CurrentUser> {
     throw NotImplementedError;
   }
-  async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
+  async getOAuthTokens(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
   async refreshAccessToken(): Promise<OAuthTokens> {
@@ -245,9 +243,7 @@ export class AwsCodeCommitService implements GitProvider {
     return null;
   }
 
-  async createPullRequestFromFiles(
-    createPullRequestFromFilesArgs: CreatePullRequestFromFilesArgs
-  ): Promise<string> {
+  async createPullRequestFromFiles(): Promise<string> {
     throw NotImplementedError;
   }
 
@@ -394,10 +390,6 @@ export class AwsCodeCommitService implements GitProvider {
 
       throw error;
     }
-  }
-
-  async getFirstCommitOnBranch(args: GetBranchArgs): Promise<Commit | null> {
-    throw NotImplementedError;
   }
 
   async getCloneUrl(args: CloneUrlArgs): Promise<string> {
