@@ -127,7 +127,7 @@ export class AwsCodeCommitService implements GitProvider {
     if (this.isRequiredValid(repositoryMetadata)) {
       return {
         admin: false,
-        defaultBranch: repositoryMetadata.defaultBranch,
+        defaultBranch: repositoryMetadata.defaultBranch ?? "main",
         fullName: repositoryMetadata.repositoryName,
         name: repositoryMetadata.repositoryName,
         private: true,
