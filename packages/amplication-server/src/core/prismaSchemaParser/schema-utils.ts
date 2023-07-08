@@ -333,6 +333,7 @@ export function handleEnumKyeMapAttribute(
     // if the current item is a map attribute, skip it and don't add it to the enumOptions array
     if (
       (enumerators[i] as unknown as Attribute).type === ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i] as unknown as Attribute).kind === FIELD_TYPE_NAME &&
       enumerators[i].name === MAP_ATTRIBUTE_NAME
     ) {
       continue;
@@ -344,6 +345,7 @@ export function handleEnumKyeMapAttribute(
       enumerators[i + 1] &&
       (enumerators[i + 1] as unknown as Attribute).type ===
         ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i + 1] as unknown as Attribute).kind === FIELD_TYPE_NAME &&
       enumerators[i + 1].name === MAP_ATTRIBUTE_NAME
     ) {
       optionSetObj = {
@@ -359,7 +361,6 @@ export function handleEnumKyeMapAttribute(
       );
 
       enumOptions.push(optionSetObj);
-      return enumOptions;
       // the regular case, when the current item is an enumerator and the next item is not a map attribute
     } else if (enumerators[i].type === ENUMERATOR_TYPE_NAME) {
       optionSetObj = {
@@ -375,7 +376,7 @@ export function handleEnumKyeMapAttribute(
       );
 
       enumOptions.push(optionSetObj);
-      return enumOptions;
     }
   }
+  return enumOptions;
 }
