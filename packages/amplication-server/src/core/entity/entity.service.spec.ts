@@ -36,7 +36,7 @@ import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
+import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
@@ -433,7 +433,7 @@ describe("EntityService", () => {
           })),
         },
         {
-          provide: PrismaSchemaUtilsService,
+          provide: PrismaSchemaParserService,
           useClass: jest.fn(() => ({
             prepareEntities: jest.fn(() => {
               return;
