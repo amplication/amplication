@@ -1,6 +1,254 @@
-import { Field, KeyValue, Model, RelationArray } from "@mrleebo/prisma-ast";
-import { ARG_KEY_FIELD_NAME, RELATION_ATTRIBUTE_NAME } from "./constants";
+import {
+  Field,
+  KeyValue,
+  Model,
+  RelationArray,
+  AttributeArgument,
+  BlockAttribute,
+  Attribute,
+  Schema,
+  Func,
+} from "@mrleebo/prisma-ast";
+import {
+  ARG_KEY_FIELD_NAME,
+  RELATION_ATTRIBUTE_NAME,
+  ARRAY_ARG_TYPE_NAME,
+  KEY_VALUE_ARG_TYPE_NAME,
+  UNIQUE_ATTRIBUTE_NAME,
+  MODEL_TYPE_NAME,
+  FIELD_TYPE_NAME,
+} from "./constants";
+import {
+  filterOutAmplicationAttributes,
+  formatDisplayName,
+  formatModelName,
+} from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
+import { CreateBulkFieldsInput } from "../entity/entity.service";
+import { EnumDataType } from "../../enums/EnumDataType";
+
+/**
+ * create the common properties of one entity field from model field
+ * @param field the current field to prepare
+ * @param fieldDataType the field data type
+ * @returns the field in a structure of CreateBulkFieldsInput
+ */
+export function createOneEntityFieldCommonProperties(
+  field: Field,
+  fieldDataType: EnumDataType
+): CreateBulkFieldsInput {
+  const fieldDisplayName = formatDisplayName(field.name);
+  const isUniqueField =
+    field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
+    false;
+
+  const fieldAttributes = filterOutAmplicationAttributes(
+    prepareFieldAttributes(field.attributes)
+  )
+    // in some case we get "@default()" as an attribute, we want to filter it out
+    .filter((attr) => attr !== "@default()")
+    .join(" ");
+
+  return {
+    name: field.name,
+    displayName: fieldDisplayName,
+    dataType: fieldDataType,
+    required: !field.optional || false,
+    unique: isUniqueField,
+    searchable: fieldDataType === EnumDataType.Lookup ? true : false,
+    description: "",
+    properties: {},
+    customAttributes: fieldAttributes,
+  };
+}
+
+/******************************************************************************************
+ * type guards to check if the argument is a keyvalue argument / relation array / function
+ ******************************************************************************************/
+function isKeyValue(argValue: any): argValue is KeyValue {
+  return argValue && argValue.type === KEY_VALUE_ARG_TYPE_NAME;
+}
+
+function isRelationArray(argValue: any): argValue is RelationArray {
+  return argValue && argValue.type === ARRAY_ARG_TYPE_NAME;
+}
+
+function isFunction(argValue: any): argValue is Func {
+  return argValue && argValue.type === "function";
+}
+
+/**
+ * Take the model attributes from the schema object and translate it to array of strings with the "@@" prefix
+ * @param attributes the attributes to prepare and convert from the AST form to array of strings
+ * @returns array of strings representing the attributes
+ */
+export function prepareModelAttributes(attributes: BlockAttribute[]): string[] {
+  const modelAttrPrefix = "@@";
+  if (!attributes || !attributes.length) {
+    return [];
+  }
+
+  return attributes.map((attribute: BlockAttribute) => {
+    const attributeGroup = attribute.group;
+    let args = [];
+    if (attribute.args && attribute.args.length) {
+      args = attribute.args.map((arg: AttributeArgument) => {
+        if (isKeyValue(arg.value)) {
+          if (isRelationArray(arg.value.value)) {
+            return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else {
+            return `${arg.value.key}: ${arg.value.value}`;
+          }
+        } else if (isRelationArray(arg.value)) {
+          return `[${arg.value.args.join(", ")}]`;
+        } else if (isFunction(arg.value)) {
+          return arg.value.name;
+        } else if (typeof arg.value === "string") {
+          return arg.value;
+        } else {
+          return `"${arg}"`;
+        }
+      });
+    }
+
+    if (attributeGroup) {
+      return `${modelAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
+        ", "
+      )})`;
+    } else {
+      return `${modelAttrPrefix}${attribute.name}(${args.join(", ")})`;
+    }
+  });
+}
+
+/**
+ * Take the field attributes from the schema object and translate it to array of strings with the "@" prefix
+ * @param attributes the attributes to prepare and convert from the AST form to array of strings
+ * @returns array of strings representing the attributes
+ */
+export function prepareFieldAttributes(attributes: Attribute[]): string[] {
+  const fieldAttrPrefix = "@";
+  if (!attributes || !attributes.length) {
+    return [];
+  }
+
+  return attributes.map((attribute: Attribute) => {
+    const attributeGroup = attribute.group;
+    let args = [];
+    if (attribute.args && attribute.args.length) {
+      args = attribute.args.map((arg: AttributeArgument) => {
+        if (isKeyValue(arg.value)) {
+          if (isRelationArray(arg.value.value)) {
+            return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else {
+            return `${arg.value.key}: ${arg.value.value}`;
+          }
+        } else if (isFunction(arg.value)) {
+          return `${arg.value.name}()`;
+        } else if (typeof arg.value === "string") {
+          return arg.value;
+        } else {
+          return `"${arg}"`;
+        }
+      });
+    }
+
+    if (attributeGroup) {
+      return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
+        ", "
+      )})`;
+    } else {
+      return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
+    }
+  });
+}
+
+/**
+ * Find the related field in the remote model and return it
+ * @param schema the whole processed schema
+ * @param model the current model we are working on
+ * @param field the current field we are working on
+ */
+export function findRemoteRelatedModelAndField(
+  schema: Schema,
+  model: Model,
+  field: Field
+): { remoteModel: Model; remoteField: Field } | undefined {
+  let relationAttributeName: string | undefined;
+  let remoteField: Field | undefined;
+  let relationAttributeStringArgument: AttributeArgument | undefined;
+
+  // in the main relation, check if the relation annotation has a name
+  field.attributes?.find((attr) => {
+    const relationAttribute = attr.name === "relation";
+
+    if (relationAttribute) {
+      relationAttributeStringArgument = attr.args?.find(
+        (arg) => typeof arg.value === "string"
+      );
+    }
+
+    relationAttributeName =
+      relationAttributeStringArgument &&
+      (relationAttributeStringArgument.value as string);
+  });
+
+  const remoteModel = schema.list.find(
+    (item) =>
+      item.type === MODEL_TYPE_NAME &&
+      formatModelName(item.name) === formatModelName(field.fieldType as string)
+  ) as Model;
+
+  if (!remoteModel) {
+    throw new Error(
+      `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
+    );
+  }
+
+  const remoteModelFields = remoteModel.properties.filter(
+    (property) => property.type === FIELD_TYPE_NAME
+  ) as Field[];
+
+  if (relationAttributeName) {
+    // find the remote field in the remote model that has the relation attribute with the name we found
+    remoteField = remoteModelFields.find((field: Field) => {
+      return field.attributes?.some(
+        (attr) =>
+          attr.name === "relation" &&
+          attr.args?.find((arg) => arg.value === relationAttributeName)
+      );
+    });
+  } else {
+    const remoteFields = remoteModelFields.filter((remoteField: Field) => {
+      const hasRelationAttribute = remoteField.attributes?.some(
+        (attr) => attr.name === "relation"
+      );
+
+      return (
+        formatModelName(remoteField.fieldType as string) ===
+          formatModelName(model.name) && !hasRelationAttribute
+      );
+    });
+
+    if (remoteFields.length > 1) {
+      throw new Error(
+        `Multiple fields found in model ${remoteModel.name} that reference ${model.name}`
+      );
+    }
+
+    if (remoteFields.length === 1) {
+      remoteField = remoteFields[0];
+    }
+  }
+
+  if (!remoteField) {
+    throw new Error(
+      `No field found in model ${remoteModel.name} that reference ${model.name}`
+    );
+  }
+
+  return { remoteModel, remoteField };
+}
 
 export function findFkFieldNameOnAnnotatedField(field: Field): string {
   const relationAttribute = field.attributes?.find(
