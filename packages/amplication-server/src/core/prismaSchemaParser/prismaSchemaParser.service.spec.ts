@@ -1,5 +1,5 @@
 import { Test } from "@nestjs/testing";
-import { PrismaSchemaUtilsService } from "./prismaSchemaUtils.service";
+import { PrismaSchemaParserService } from "./prismaSchemaParser.service";
 import { ExistingEntitySelect } from "./types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
@@ -7,17 +7,19 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 
 describe("prismaSchema", () => {
-  let service: PrismaSchemaUtilsService;
+  let service: PrismaSchemaParserService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
 
     const moduleRef = await Test.createTestingModule({
       controllers: [],
-      providers: [PrismaSchemaUtilsService, MockedAmplicationLoggerProvider],
+      providers: [PrismaSchemaParserService, MockedAmplicationLoggerProvider],
     }).compile();
 
-    service = moduleRef.get<PrismaSchemaUtilsService>(PrismaSchemaUtilsService);
+    service = moduleRef.get<PrismaSchemaParserService>(
+      PrismaSchemaParserService
+    );
   });
 
   describe("convertPrismaSchemaForImportObjects", () => {

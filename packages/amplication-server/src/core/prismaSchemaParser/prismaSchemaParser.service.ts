@@ -70,7 +70,7 @@ import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 @Injectable()
-export class PrismaSchemaUtilsService {
+export class PrismaSchemaParserService {
   private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
