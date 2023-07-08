@@ -13,11 +13,8 @@ export function validateSchemaUpload(file: string): void {
   const schemaString = file.replace(/\\n/g, "\n");
   try {
     validate({ datamodel: schemaString });
-    this.logger.info("Valid schema");
   } catch (error) {
-    this.logger.error(error.message, error, {
-      functionName: "validateSchemaUpload",
-    });
+    console.error(error);
     throw error;
   }
 }
