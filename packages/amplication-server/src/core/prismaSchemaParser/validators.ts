@@ -14,6 +14,7 @@ export function validateSchemaUpload(file: string): void {
   try {
     validate({ datamodel: schemaString });
   } catch (error) {
+    // eslint-disable-next-line no-console
     console.error(error);
     throw error;
   }
