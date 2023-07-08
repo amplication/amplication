@@ -15,9 +15,6 @@ import {
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
-  ID_TYPE_AUTOINCREMENT,
-  ID_TYPE_CUID,
-  ID_TYPE_UUID,
   NOW_FUNCTION_NAME,
   RELATION_ATTRIBUTE_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
@@ -25,19 +22,6 @@ import {
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { ExistingEntitySelect, Mapper } from "./types";
-
-export const idTypePropertyMap = {
-  autoincrement: ID_TYPE_AUTOINCREMENT,
-  cuid: ID_TYPE_CUID,
-  uuid: ID_TYPE_UUID,
-};
-
-export const idTypePropertyMapByFieldType = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: ID_TYPE_AUTOINCREMENT,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  String: ID_TYPE_CUID,
-};
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
