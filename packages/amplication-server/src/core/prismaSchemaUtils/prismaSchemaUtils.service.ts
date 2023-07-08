@@ -1,4 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
+import cuid from "cuid";
+import { types } from "@amplication/code-gen-types";
+import { JsonValue } from "type-fest";
 import {
   Model,
   Field,
@@ -12,15 +15,12 @@ import {
   ConcretePrismaSchemaBuilder,
   Attribute,
   BlockAttribute,
-  AttributeArgument,
-  Value,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
   createAtField,
   dateTimeField,
   decimalNumberField,
-  filterOutAmplicationAttributes,
   formatDisplayName,
   formatFieldName,
   formatModelName,
@@ -36,6 +36,9 @@ import {
 import {
   handleModelNamesCollision,
   findFkFieldNameOnAnnotatedField,
+  prepareModelAttributes,
+  createOneEntityFieldCommonProperties,
+  findRemoteRelatedModelAndField,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -47,23 +50,13 @@ import {
   PrepareOperationIO,
   PrepareOperationInput,
 } from "./types";
-import { EnumDataType } from "../../enums/EnumDataType";
-import cuid from "cuid";
-import { types } from "@amplication/code-gen-types";
-import { JsonValue } from "type-fest";
 import {
-  CreateBulkEntitiesInput,
-  CreateBulkFieldsInput,
-} from "../entity/entity.service";
-import {
-  ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
   ENUMERATOR_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
-  KEY_VALUE_ARG_TYPE_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
@@ -71,8 +64,10 @@ import {
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
 } from "./constants";
-import { ActionLog, EnumActionLogLevel } from "../action/dto";
 import { validateSchemaProcessing, validateSchemaUpload } from "./validators";
+import { EnumDataType } from "../../enums/EnumDataType";
+import { CreateBulkEntitiesInput } from "../entity/entity.service";
+import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 @Injectable()
 export class PrismaSchemaUtilsService {
@@ -864,8 +859,7 @@ export class PrismaSchemaUtilsService {
         prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
     ) as BlockAttribute[];
     const entityPluralDisplayName = pluralize(model.name);
-    const entityAttributes =
-      this.prepareModelAttributes(modelAttributes).join(" ");
+    const entityAttributes = prepareModelAttributes(modelAttributes).join(" ");
 
     return {
       id: cuid(), // creating here the entity id because we need it for the relation
@@ -900,7 +894,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Boolean
     );
@@ -932,7 +926,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.CreatedAt
     );
@@ -964,7 +958,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.UpdatedAt
     );
@@ -996,7 +990,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.DateTime
     );
@@ -1037,7 +1031,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.DecimalNumber
     );
@@ -1079,7 +1073,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.WholeNumber
     );
@@ -1120,7 +1114,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.SingleLineText
     );
@@ -1160,7 +1154,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Json
     );
@@ -1192,7 +1186,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.Id
     );
@@ -1247,7 +1241,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.OptionSet
     );
@@ -1351,7 +1345,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Entity ${model.name} not found`);
     }
 
-    const entityField = this.createOneEntityFieldCommonProperties(
+    const entityField = createOneEntityFieldCommonProperties(
       field,
       EnumDataType.MultiSelectOptionSet
     );
@@ -1411,12 +1405,12 @@ export class PrismaSchemaUtilsService {
         throw new Error(`Entity ${model.name} not found`);
       }
       // create the relation filed on the main side of the relation
-      const entityField = this.createOneEntityFieldCommonProperties(
+      const entityField = createOneEntityFieldCommonProperties(
         field,
         EnumDataType.Lookup
       );
 
-      const remoteModelAndField = this.findRemoteRelatedModelAndField(
+      const remoteModelAndField = findRemoteRelatedModelAndField(
         schema,
         model,
         field
@@ -1433,7 +1427,7 @@ export class PrismaSchemaUtilsService {
 
       const { remoteModel, remoteField } = remoteModelAndField;
 
-      const relatedField = this.createOneEntityFieldCommonProperties(
+      const relatedField = createOneEntityFieldCommonProperties(
         remoteField,
         EnumDataType.Lookup
       );
@@ -1475,213 +1469,5 @@ export class PrismaSchemaUtilsService {
       );
       throw error;
     }
-  }
-
-  /******************
-   * HELPERS SECTION *
-   ******************/
-
-  /**
-   * create the common properties of one entity field from model field
-   * @param field the current field to prepare
-   * @param fieldDataType the field data type
-   * @returns the field in a structure of CreateBulkFieldsInput
-   */
-  private createOneEntityFieldCommonProperties(
-    field: Field,
-    fieldDataType: EnumDataType
-  ): CreateBulkFieldsInput {
-    const fieldDisplayName = formatDisplayName(field.name);
-    const isUniqueField =
-      field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
-      false;
-
-    const fieldAttributes = filterOutAmplicationAttributes(
-      this.prepareFieldAttributes(field.attributes)
-    )
-      // in some case we get "@default()" as an attribute, we want to filter it out
-      .filter((attr) => attr !== "@default()")
-      .join(" ");
-
-    return {
-      name: field.name,
-      displayName: fieldDisplayName,
-      dataType: fieldDataType,
-      required: !field.optional || false,
-      unique: isUniqueField,
-      searchable: fieldDataType === EnumDataType.Lookup ? true : false,
-      description: "",
-      properties: {},
-      customAttributes: fieldAttributes,
-    };
-  }
-
-  /**
-   * Take the model attributes from the schema object and translate it to array of strings with the "@@" prefix
-   * @param attributes the attributes to prepare and convert from the AST form to array of strings
-   * @returns array of strings representing the attributes
-   */
-  private prepareModelAttributes(attributes: BlockAttribute[]): string[] {
-    const modelAttrPrefix = "@@";
-    if (!attributes && !attributes?.length) {
-      return [];
-    }
-    return attributes.map((attribute: BlockAttribute) => {
-      const attributeGroup = attribute.group;
-      if (!attribute.args && !attribute.args?.length) {
-        return `${modelAttrPrefix}${attribute.name}`;
-      }
-      const args = attribute.args.map((arg: AttributeArgument) => {
-        if (typeof arg.value === "object" && arg.value !== null) {
-          const argValueArray = arg.value as Value as RelationArray;
-          const argKeyValue = arg.value as KeyValue;
-          if (argValueArray.type === ARRAY_ARG_TYPE_NAME) {
-            return `[${argValueArray.args.join(", ")}]`;
-          } else if (argKeyValue.type === KEY_VALUE_ARG_TYPE_NAME) {
-            return `${argKeyValue.key}: ${argKeyValue.value}`;
-          }
-        } else {
-          return arg.value;
-        }
-      });
-
-      if (attributeGroup) {
-        return `${modelAttrPrefix}${attributeGroup}.${
-          attribute.name
-        }(${args.join(", ")})`;
-      } else {
-        return `${modelAttrPrefix}${attribute.name}(${args.join(", ")})`;
-      }
-    });
-  }
-
-  /**
-   * Take the field attributes from the schema object and translate it to array of strings with the "@" prefix
-   * @param attributes the attributes to prepare and convert from the AST form to array of strings
-   * @returns array of strings representing the attributes
-   */
-  private prepareFieldAttributes(attributes: Attribute[]): string[] {
-    const fieldAttrPrefix = "@";
-    if (!attributes && !attributes?.length) {
-      return [];
-    }
-    return attributes.map((attribute: Attribute) => {
-      const attributeGroup = attribute.group;
-      if (!attribute.args && !attribute.args?.length) {
-        return `${fieldAttrPrefix}${attribute.name}`;
-      }
-      const args = attribute.args.map((arg: AttributeArgument) => {
-        if (typeof arg.value === "object" && arg.value !== null) {
-          const argArray = arg.value as RelationArray;
-          const argKeyValue = arg.value as KeyValue;
-          if (argArray.type === ARRAY_ARG_TYPE_NAME) {
-            return `[${argArray.args.join(", ")}]`;
-          } else if (argKeyValue.type === KEY_VALUE_ARG_TYPE_NAME) {
-            return `${argKeyValue.key}: ${argKeyValue.value}`;
-          }
-        } else {
-          return arg.value;
-        }
-      });
-
-      if (attributeGroup) {
-        return `${fieldAttrPrefix}${attributeGroup}.${
-          attribute.name
-        }(${args.join(", ")})`;
-      } else {
-        return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
-      }
-    });
-  }
-
-  /**
-   * Find the related field in the remote model and return it
-   * @param schema the whole processed schema
-   * @param model the current model we are working on
-   * @param field the current field we are working on
-   */
-  private findRemoteRelatedModelAndField(
-    schema: Schema,
-    model: Model,
-    field: Field
-  ): { remoteModel: Model; remoteField: Field } | undefined {
-    let relationAttributeName: string | undefined;
-    let remoteField: Field | undefined;
-    let relationAttributeStringArgument: AttributeArgument | undefined;
-
-    // in the main relation, check if the relation annotation has a name
-    field.attributes?.find((attr) => {
-      const relationAttribute = attr.name === "relation";
-
-      if (relationAttribute) {
-        relationAttributeStringArgument = attr.args?.find(
-          (arg) => typeof arg.value === "string"
-        );
-      }
-
-      relationAttributeName =
-        relationAttributeStringArgument &&
-        (relationAttributeStringArgument.value as string);
-    });
-
-    const remoteModel = schema.list.find(
-      (item) =>
-        item.type === MODEL_TYPE_NAME &&
-        formatModelName(item.name) ===
-          formatModelName(field.fieldType as string)
-    ) as Model;
-
-    if (!remoteModel) {
-      this.logger.error(
-        `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
-      );
-      throw new Error(
-        `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
-      );
-    }
-
-    const remoteModelFields = remoteModel.properties.filter(
-      (property) => property.type === FIELD_TYPE_NAME
-    ) as Field[];
-
-    if (relationAttributeName) {
-      // find the remote field in the remote model that has the relation attribute with the name we found
-      remoteField = remoteModelFields.find((field: Field) => {
-        return field.attributes?.some(
-          (attr) =>
-            attr.name === "relation" &&
-            attr.args?.find((arg) => arg.value === relationAttributeName)
-        );
-      });
-    } else {
-      const remoteFields = remoteModelFields.filter((remoteField: Field) => {
-        const hasRelationAttribute = remoteField.attributes?.some(
-          (attr) => attr.name === "relation"
-        );
-
-        return (
-          formatModelName(remoteField.fieldType as string) ===
-            formatModelName(model.name) && !hasRelationAttribute
-        );
-      });
-
-      if (remoteFields.length > 1) {
-        throw new Error(
-          `Multiple fields found in model ${remoteModel.name} that reference ${model.name}`
-        );
-      }
-
-      if (remoteFields.length === 1) {
-        remoteField = remoteFields[0];
-      }
-    }
-
-    if (!remoteField) {
-      throw new Error(
-        `No field found in model ${remoteModel.name} that reference ${model.name}`
-      );
-    }
-
-    return { remoteModel, remoteField };
   }
 }
