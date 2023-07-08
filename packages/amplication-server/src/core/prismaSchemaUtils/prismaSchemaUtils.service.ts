@@ -21,11 +21,9 @@ import {
   dateTimeField,
   decimalNumberField,
   filterOutAmplicationAttributes,
-  findFkFieldNameOnAnnotatedField,
   formatDisplayName,
   formatFieldName,
   formatModelName,
-  handleModelNamesCollision,
   idField,
   jsonField,
   lookupField,
@@ -34,6 +32,10 @@ import {
   singleLineTextField,
   updateAtField,
   wholeNumberField,
+} from "./helpers";
+import {
+  handleModelNamesCollision,
+  findFkFieldNameOnAnnotatedField,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
