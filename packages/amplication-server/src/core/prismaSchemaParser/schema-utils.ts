@@ -22,6 +22,7 @@ import {
   ATTRIBUTE_TYPE_NAME,
   MAP_ATTRIBUTE_NAME,
   ENUMERATOR_TYPE_NAME,
+  OBJECT_KIND_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -321,7 +322,7 @@ export function handleModelNamesCollision(
   return newName;
 }
 
-export function handleEnumKyeMapAttribute(
+export function handleEnumMapAttribute(
   enumOfTheField: Enum,
   log: ActionLog[]
 ): { label: string; value: string }[] {
@@ -330,7 +331,23 @@ export function handleEnumKyeMapAttribute(
   let optionSetObj;
 
   for (let i = 0; i < enumerators.length; i++) {
-    // if the current item is a map attribute, skip it and don't add it to the enumOptions array
+    // if the current item is a map attribute on the enum, skip it and don't add it to the enumOptions array
+    if (
+      (enumerators[i] as unknown as BlockAttribute).type ===
+        ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i] as unknown as BlockAttribute).kind === OBJECT_KIND_NAME &&
+      enumerators[i].name === MAP_ATTRIBUTE_NAME
+    ) {
+      log.push(
+        new ActionLog({
+          level: EnumActionLogLevel.Warning,
+          message: `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`,
+        })
+      );
+      continue;
+    }
+
+    // if the current item is a map attribute on the key of the enum, skip it and don't add it to the enumOptions array
     if (
       (enumerators[i] as unknown as Attribute).type === ATTRIBUTE_TYPE_NAME &&
       (enumerators[i] as unknown as Attribute).kind === FIELD_TYPE_NAME &&

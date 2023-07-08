@@ -38,7 +38,7 @@ import {
   prepareModelAttributes,
   createOneEntityFieldCommonProperties,
   findRemoteRelatedModelAndField,
-  handleEnumKyeMapAttribute,
+  handleEnumMapAttribute,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -1255,7 +1255,7 @@ export class PrismaSchemaParserService {
       throw new Error(`Enum ${field.name} not found`);
     }
 
-    const enumOptions = handleEnumKyeMapAttribute(enumOfTheField, log);
+    const enumOptions = handleEnumMapAttribute(enumOfTheField, log);
 
     const properties = <types.OptionSet>{
       options: enumOptions,
@@ -1307,7 +1307,7 @@ export class PrismaSchemaParserService {
       throw new Error(`Enum ${field.name} not found`);
     }
 
-    const enumOptions = handleEnumKyeMapAttribute(enumOfTheField, log);
+    const enumOptions = handleEnumMapAttribute(enumOfTheField, log);
 
     const properties = <types.MultiSelectOptionSet>{
       options: enumOptions,
