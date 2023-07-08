@@ -151,10 +151,11 @@ export function updateAtField(field: Field) {
 
 export function optionSetField(schema: Schema, field: Field) {
   const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
+  const isMultiSelect = field.array || false;
   const fieldOptionSetType = enumList.find(
     (enumItem: Enum) => enumItem.name === field.fieldType
   );
-  if (fieldOptionSetType) {
+  if (fieldOptionSetType && !isMultiSelect) {
     return EnumDataType.OptionSet;
   }
 }
@@ -163,9 +164,9 @@ export function multiSelectOptionSetField(schema: Schema, field: Field) {
   const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
   const isMultiSelect = field.array || false;
   const fieldOptionSetType = enumList.find(
-    (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
+    (enumItem: Enum) => enumItem.name === field.fieldType
   );
-  if (fieldOptionSetType) {
+  if (fieldOptionSetType && isMultiSelect) {
     return EnumDataType.MultiSelectOptionSet;
   }
 }

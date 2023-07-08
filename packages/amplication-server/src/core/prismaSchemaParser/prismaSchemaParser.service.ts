@@ -1248,9 +1248,7 @@ export class PrismaSchemaParserService {
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
-      (item: Enum) =>
-        formatModelName(item.name) ===
-        formatModelName(field.fieldType as string)
+      (item: Enum) => item.name === field.fieldType
     ) as Enum;
 
     if (!enumOfTheField) {
@@ -1352,7 +1350,7 @@ export class PrismaSchemaParserService {
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
-      (item: Enum) => item.name === field.name
+      (item: Enum) => item.name === field.fieldType
     ) as Enum;
 
     if (!enumOfTheField) {
