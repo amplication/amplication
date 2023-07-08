@@ -1,14 +1,213 @@
 import {
   findFkFieldNameOnAnnotatedField,
   handleModelNamesCollision,
+  createOneEntityFieldCommonProperties,
+  prepareModelAttributes,
+  prepareFieldAttributes,
 } from "./schema-utils";
 import { ARG_KEY_FIELD_NAME, RELATION_ATTRIBUTE_NAME } from "./constants";
-import { Field, Model } from "@mrleebo/prisma-ast";
+import { Attribute, BlockAttribute, Field, Model } from "@mrleebo/prisma-ast";
 import { Mapper } from "./types";
+import { EnumDataType } from "../../enums/EnumDataType";
 
 describe("schema-utils", () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe("createOneEntityFieldCommonProperties", () => {
+    it("should return common properties of an entity field", () => {
+      const mockField = {
+        name: "mockField",
+        optional: false,
+        attributes: [{ name: "unique" }],
+      } as unknown as Field;
+
+      const result = createOneEntityFieldCommonProperties(
+        mockField,
+        EnumDataType.SingleLineText
+      );
+
+      expect(result).toEqual({
+        name: "mockField",
+        displayName: "Mock Field",
+        dataType: EnumDataType.SingleLineText,
+        required: true,
+        unique: true,
+        searchable: false,
+        description: "",
+        properties: {},
+        customAttributes: "",
+      });
+    });
+  });
+
+  describe("prepareModelAttributes", () => {
+    it("should return an array of model attributes as strings", () => {
+      const mockAttributes = [
+        { name: "mockModelAttribute1", args: [] },
+        { name: "mockModelAttribute2", args: [] },
+      ] as unknown as BlockAttribute[];
+
+      const result = prepareModelAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        "@@mockModelAttribute1()",
+        "@@mockModelAttribute2()",
+      ]);
+    });
+
+    it("should return an array of model attributes as strings with args", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "mockModelAttribute1",
+          kind: "object",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "array",
+                args: ["mockArg"],
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "map",
+                value: '"mockArg"',
+              },
+            },
+          ],
+        },
+        { name: "mockModelAttribute2", args: [] },
+      ] as unknown as BlockAttribute[];
+
+      const result = prepareModelAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        '@@mockModelAttribute1([mockArg], map: "mockArg")',
+        "@@mockModelAttribute2()",
+      ]);
+    });
+  });
+
+  describe("prepareFieldAttributes", () => {
+    it("should return an array of field attributes as strings", () => {
+      const mockAttributes = [
+        { name: "mockFieldAttribute1", args: [] },
+        { name: "mockFieldAttribute2", args: [] },
+      ] as unknown as Attribute[];
+
+      const result = prepareFieldAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        "@mockFieldAttribute1()",
+        "@mockFieldAttribute2()",
+      ]);
+    });
+
+    it("should return a proper default field attribute with a default value as a function", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "default",
+          kind: "field",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "function",
+                name: "now",
+              },
+            },
+          ],
+        },
+      ] as unknown as Attribute[];
+
+      const result = prepareFieldAttributes(mockAttributes);
+
+      expect(result).toEqual(["@default(now())"]);
+    });
+
+    it("should return a proper default field attribute with a default value", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "default",
+          kind: "field",
+          args: [
+            {
+              type: "attributeArgument",
+              value: "false",
+            },
+          ],
+        },
+      ] as unknown as Attribute[];
+
+      const result = prepareFieldAttributes(mockAttributes);
+
+      expect(result).toEqual(["@default(false)"]);
+    });
+
+    it("should return an array of relation field attribute", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "relation",
+          kind: "field",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "fields",
+                value: {
+                  type: "array",
+                  args: ["user_id"],
+                },
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "references",
+                value: {
+                  type: "array",
+                  args: ["id"],
+                },
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "onDelete",
+                value: "Cascade",
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "map",
+                value: '"mockRelationValue"',
+              },
+            },
+          ],
+        },
+        { name: "mockFieldAttribute2", args: [] },
+      ] as unknown as Attribute[];
+
+      const result = prepareFieldAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        '@relation(fields: [user_id], references: [id], onDelete: Cascade, map: "mockRelationValue")',
+        "@mockFieldAttribute2()",
+      ]);
+    });
   });
 
   describe("findFkFieldNameOnAnnotatedField", () => {
