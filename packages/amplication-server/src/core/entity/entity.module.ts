@@ -7,7 +7,7 @@ import { EntityVersionResolver } from "./entityVersion.resolver";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
-import { PrismaSchemaImportModule } from "../prismaSchemaUtils/prismaSchemaUtils.module";
+import { PrismaSchemaParserModule } from "../prismaSchemaParser/prismaSchemaParser.module";
 import { BillingModule } from "../billing/billing.module";
 
 @Module({
@@ -17,7 +17,7 @@ import { BillingModule } from "../billing/billing.module";
     UserModule,
     JsonSchemaValidationModule,
     DiffModule,
-    PrismaSchemaImportModule,
+    PrismaSchemaParserModule,
     BillingModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],

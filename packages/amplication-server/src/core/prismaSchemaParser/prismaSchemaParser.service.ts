@@ -11,7 +11,6 @@ import {
   KeyValue,
   RelationArray,
   Func,
-  Enumerator,
   ConcretePrismaSchemaBuilder,
   Attribute,
   BlockAttribute,
@@ -39,6 +38,7 @@ import {
   prepareModelAttributes,
   createOneEntityFieldCommonProperties,
   findRemoteRelatedModelAndField,
+  handleEnumMapAttribute,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -52,7 +52,6 @@ import {
 } from "./types";
 import {
   ATTRIBUTE_TYPE_NAME,
-  ENUMERATOR_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
@@ -70,7 +69,7 @@ import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 @Injectable()
-export class PrismaSchemaUtilsService {
+export class PrismaSchemaParserService {
   private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
@@ -1248,9 +1247,7 @@ export class PrismaSchemaUtilsService {
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
-      (item: Enum) =>
-        formatModelName(item.name) ===
-        formatModelName(field.fieldType as string)
+      (item: Enum) => item.name === field.fieldType
     ) as Enum;
 
     if (!enumOfTheField) {
@@ -1258,57 +1255,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Enum ${field.name} not found`);
     }
 
-    const enumOptions = [];
-    const enumerators = enumOfTheField.enumerators as Enumerator[];
-    let optionSetObj;
-
-    for (let i = 0; i < enumerators.length; i++) {
-      // if the current item is a map attribute, skip it and don't add it to the enumOptions array
-      if (
-        (enumerators[i] as unknown as Attribute).type === ATTRIBUTE_TYPE_NAME &&
-        enumerators[i].name === MAP_ATTRIBUTE_NAME
-      ) {
-        continue;
-      }
-
-      // if the current item is an enumerator and the next item is exists and it is a map attribute, add the enumerator to the enumOptions array
-      if (
-        enumerators[i].type === ENUMERATOR_TYPE_NAME &&
-        enumerators[i + 1] &&
-        (enumerators[i + 1] as unknown as Attribute).type ===
-          ATTRIBUTE_TYPE_NAME &&
-        enumerators[i + 1].name === MAP_ATTRIBUTE_NAME
-      ) {
-        optionSetObj = {
-          label: enumerators[i].name,
-          value: enumerators[i].name,
-        };
-
-        log.push(
-          new ActionLog({
-            level: EnumActionLogLevel.Warning,
-            message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`,
-          })
-        );
-
-        enumOptions.push(optionSetObj);
-        // the regular case, when the current item is an enumerator and the next item is not a map attribute
-      } else if (enumerators[i].type === ENUMERATOR_TYPE_NAME) {
-        optionSetObj = {
-          label: enumerators[i].name,
-          value: enumerators[i].name,
-        };
-
-        log.push(
-          new ActionLog({
-            level: EnumActionLogLevel.Info,
-            message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`,
-          })
-        );
-
-        enumOptions.push(optionSetObj);
-      }
-    }
+    const enumOptions = handleEnumMapAttribute(enumOfTheField, log);
 
     const properties = <types.OptionSet>{
       options: enumOptions,
@@ -1352,7 +1299,7 @@ export class PrismaSchemaUtilsService {
 
     const enums = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
     const enumOfTheField = enums.find(
-      (item: Enum) => item.name === field.name
+      (item: Enum) => item.name === field.fieldType
     ) as Enum;
 
     if (!enumOfTheField) {
@@ -1360,14 +1307,7 @@ export class PrismaSchemaUtilsService {
       throw new Error(`Enum ${field.name} not found`);
     }
 
-    const enumOptions = enumOfTheField.enumerators.map(
-      (enumerator: Enumerator) => {
-        return {
-          label: enumerator.name,
-          value: enumerator.name,
-        };
-      }
-    );
+    const enumOptions = handleEnumMapAttribute(enumOfTheField, log);
 
     const properties = <types.MultiSelectOptionSet>{
       options: enumOptions,

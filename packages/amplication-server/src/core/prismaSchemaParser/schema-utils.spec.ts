@@ -4,11 +4,19 @@ import {
   createOneEntityFieldCommonProperties,
   prepareModelAttributes,
   prepareFieldAttributes,
+  handleEnumMapAttribute,
 } from "./schema-utils";
 import { ARG_KEY_FIELD_NAME, RELATION_ATTRIBUTE_NAME } from "./constants";
-import { Attribute, BlockAttribute, Field, Model } from "@mrleebo/prisma-ast";
+import {
+  Attribute,
+  BlockAttribute,
+  Enum,
+  Field,
+  Model,
+} from "@mrleebo/prisma-ast";
 import { Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
+import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 describe("schema-utils", () => {
   beforeEach(() => {
@@ -347,6 +355,98 @@ describe("schema-utils", () => {
         "NewName1"
       );
       expect(result).toBe("NewName1Model");
+    });
+  });
+
+  describe("handleEnumMapAttribute", () => {
+    it("should return array of options and log info message when only enumerators are present", () => {
+      const enumOfTheField = {
+        name: "TestEnum",
+        enumerators: [
+          {
+            type: "enumerator",
+            name: "enumerator1",
+          },
+          {
+            type: "enumerator",
+            name: "enumerator2",
+          },
+        ],
+      } as unknown as Enum;
+
+      const log: ActionLog[] = [];
+
+      const result = handleEnumMapAttribute(enumOfTheField, log);
+
+      expect(result).toEqual([
+        { label: "enumerator1", value: "enumerator1" },
+        { label: "enumerator2", value: "enumerator2" },
+      ]);
+
+      expect(log).toHaveLength(2);
+      expect(log[0]).toEqual(
+        expect.objectContaining({
+          level: EnumActionLogLevel.Info,
+          message:
+            "The option 'enumerator1' has been created in the enum 'TestEnum'",
+        })
+      );
+      expect(log[1]).toEqual(
+        expect.objectContaining({
+          level: EnumActionLogLevel.Info,
+          message:
+            "The option 'enumerator2' has been created in the enum 'TestEnum'",
+        })
+      );
+    });
+
+    it("should log a warning and skip when the enumerator is an attribute name map and kind object", () => {
+      const enumOfTheField = {
+        name: "TestEnum",
+        enumerators: [
+          {
+            type: "attribute",
+            name: "map",
+            kind: "object",
+          },
+        ],
+      } as unknown as Enum;
+
+      const log: ActionLog[] = [];
+
+      const result = handleEnumMapAttribute(enumOfTheField, log);
+
+      expect(result).toEqual([]);
+
+      expect(log).toHaveLength(1);
+      expect(log[0]).toEqual(
+        expect.objectContaining({
+          level: EnumActionLogLevel.Warning,
+          message:
+            "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
+        })
+      );
+    });
+
+    it("should NOT log a warning, and skip when the enumerator is an attribute name map and kind field", () => {
+      const enumOfTheField = {
+        name: "TestEnum",
+        enumerators: [
+          {
+            type: "attribute",
+            name: "map",
+            kind: "field",
+          },
+        ],
+      } as unknown as Enum;
+
+      const log: ActionLog[] = [];
+
+      const result = handleEnumMapAttribute(enumOfTheField, log);
+
+      expect(result).toEqual([]);
+
+      expect(log).toHaveLength(0);
     });
   });
 });
