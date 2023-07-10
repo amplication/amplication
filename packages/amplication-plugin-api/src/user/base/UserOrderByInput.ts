@@ -11,6 +11,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsOptional, IsEnum } from "class-validator";
 import { SortOrder } from "../../util/SortOrder";
 
 @InputType({
@@ -22,6 +23,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -31,6 +34,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -40,6 +45,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -49,6 +56,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -58,6 +67,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -67,6 +78,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -76,6 +89,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -85,6 +100,8 @@ class UserOrderByInput {
     required: false,
     enum: ["asc", "desc"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
