@@ -8,6 +8,8 @@ import {
   Attribute,
   Schema,
   Func,
+  Enum,
+  Enumerator,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
@@ -17,6 +19,10 @@ import {
   UNIQUE_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   FIELD_TYPE_NAME,
+  ATTRIBUTE_TYPE_NAME,
+  MAP_ATTRIBUTE_NAME,
+  ENUMERATOR_TYPE_NAME,
+  OBJECT_KIND_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -26,6 +32,7 @@ import {
 import { ExistingEntitySelect, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
+import { ActionLog, EnumActionLogLevel } from "../action/dto";
 
 /**
  * create the common properties of one entity field from model field
@@ -313,4 +320,80 @@ export function handleModelNamesCollision(
   } while (isFormattedModelNameAlreadyTaken);
 
   return newName;
+}
+
+export function handleEnumMapAttribute(
+  enumOfTheField: Enum,
+  log: ActionLog[]
+): { label: string; value: string }[] {
+  const enumOptions = [];
+  const enumerators = enumOfTheField.enumerators as Enumerator[];
+  let optionSetObj;
+
+  for (let i = 0; i < enumerators.length; i++) {
+    // if the current item is a map attribute on the enum, skip it and don't add it to the enumOptions array
+    if (
+      (enumerators[i] as unknown as BlockAttribute).type ===
+        ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i] as unknown as BlockAttribute).kind === OBJECT_KIND_NAME &&
+      enumerators[i].name === MAP_ATTRIBUTE_NAME
+    ) {
+      log.push(
+        new ActionLog({
+          level: EnumActionLogLevel.Warning,
+          message: `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`,
+        })
+      );
+      continue;
+    }
+
+    // if the current item is a map attribute on the key of the enum, skip it and don't add it to the enumOptions array
+    if (
+      (enumerators[i] as unknown as Attribute).type === ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i] as unknown as Attribute).kind === FIELD_TYPE_NAME &&
+      enumerators[i].name === MAP_ATTRIBUTE_NAME
+    ) {
+      continue;
+    }
+
+    // if the current item is an enumerator and the next item is exists and it is a map attribute, add the enumerator to the enumOptions array
+    if (
+      enumerators[i].type === ENUMERATOR_TYPE_NAME &&
+      enumerators[i + 1] &&
+      (enumerators[i + 1] as unknown as Attribute).type ===
+        ATTRIBUTE_TYPE_NAME &&
+      (enumerators[i + 1] as unknown as Attribute).kind === FIELD_TYPE_NAME &&
+      enumerators[i + 1].name === MAP_ATTRIBUTE_NAME
+    ) {
+      optionSetObj = {
+        label: enumerators[i].name,
+        value: enumerators[i].name,
+      };
+
+      log.push(
+        new ActionLog({
+          level: EnumActionLogLevel.Warning,
+          message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`,
+        })
+      );
+
+      enumOptions.push(optionSetObj);
+      // the regular case, when the current item is an enumerator and the next item is not a map attribute
+    } else if (enumerators[i].type === ENUMERATOR_TYPE_NAME) {
+      optionSetObj = {
+        label: enumerators[i].name,
+        value: enumerators[i].name,
+      };
+
+      log.push(
+        new ActionLog({
+          level: EnumActionLogLevel.Info,
+          message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`,
+        })
+      );
+
+      enumOptions.push(optionSetObj);
+    }
+  }
+  return enumOptions;
 }
