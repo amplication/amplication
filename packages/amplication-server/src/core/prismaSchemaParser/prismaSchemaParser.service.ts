@@ -103,7 +103,7 @@ export class PrismaSchemaParserService {
       })
     );
 
-    validateSchemaUpload(schema);
+    validateSchemaUpload(schema, log);
 
     const validationLog = validateSchemaProcessing(schema);
     const isErrorsValidationLog = validationLog.some(

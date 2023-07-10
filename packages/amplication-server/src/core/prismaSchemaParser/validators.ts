@@ -2,6 +2,7 @@ import { validate } from "@prisma/internals";
 import { Model, getSchema } from "@mrleebo/prisma-ast";
 import { MODEL_TYPE_NAME } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
+import { Logger } from "@nestjs/common";
 
 /**
  * Validate schema by Prisma
@@ -9,13 +10,18 @@ import { ActionLog, EnumActionLogLevel } from "../action/dto";
  * @throws if the schema is invalid
  * @returns void
  **/
-export function validateSchemaUpload(file: string): void {
+export function validateSchemaUpload(file: string, log: ActionLog[]): void {
   const schemaString = file.replace(/\\n/g, "\n");
   try {
     validate({ datamodel: schemaString });
   } catch (error) {
-    // eslint-disable-next-line no-console
-    console.error(error);
+    Logger.error(error, "PrismaSchemaParser.validateSchemaUpload");
+    log.push(
+      new ActionLog({
+        level: EnumActionLogLevel.Error,
+        message: error,
+      })
+    );
     throw error;
   }
 }
