@@ -10,18 +10,12 @@ import { Logger } from "@nestjs/common";
  * @throws if the schema is invalid
  * @returns void
  **/
-export function validateSchemaUpload(file: string, log: ActionLog[]): void {
+export function validateSchemaUpload(file: string): void {
   const schemaString = file.replace(/\\n/g, "\n");
   try {
     validate({ datamodel: schemaString });
   } catch (error) {
     Logger.error(error, "PrismaSchemaParser.validateSchemaUpload");
-    log.push(
-      new ActionLog({
-        level: EnumActionLogLevel.Error,
-        message: error,
-      })
-    );
     throw error;
   }
 }
