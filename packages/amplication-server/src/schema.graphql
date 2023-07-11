@@ -1159,7 +1159,7 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
   connectGitRepository(data: CreateGitRepositoryInput!): Resource!
-  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): Boolean!
+  createRemoteGitRepository(data: CreateGitRepositoryBaseInput!): RemoteGitRepository!
   connectResourceGitRepository(data: ConnectGitRepositoryInput!): Resource!
   connectResourceToProjectRepository(resourceId: String!): Resource!
 
