@@ -37,6 +37,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { AccountService } from "../account/account.service";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -47,7 +48,8 @@ export class WorkspaceResolver {
     private readonly projectService: ProjectService,
     private readonly billingService: BillingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly accountService: AccountService
   ) {}
 
   @Query(() => Workspace, {
@@ -71,6 +73,7 @@ export class WorkspaceResolver {
       },
       event: EnumEventType.WorkspaceSelected,
     });
+    await this.accountService.setLastActive(currentUser.account.id, new Date());
 
     return currentUser.workspace;
   }

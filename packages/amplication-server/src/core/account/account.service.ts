@@ -87,4 +87,13 @@ export class AccountService {
       where: { id: accountId },
     });
   }
+
+  setLastActive(accountId: string, lastActive: Date): Promise<Account> {
+    return this.prisma.account.update({
+      data: {
+        lastActive,
+      },
+      where: { id: accountId },
+    });
+  }
 }
