@@ -11,8 +11,9 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { USER_ENTITY } from "./constants";
 import { isEqual } from "../util/customValidations";
+import { useQuery } from "@apollo/client";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -81,6 +82,14 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
     return sanitizedDefaultValues as EntityInput;
   }, [entity]);
 
+  const { data: resourceSettings } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resourceId,
+    },
+  });
+
   return (
     <div className={CLASS_NAME}>
       <Formik
@@ -106,7 +115,10 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
 
                 <NameField
                   name="name"
-                  disabled={USER_ENTITY === entity?.name}
+                  disabled={
+                    resourceSettings.serviceSettings.authEntityName ===
+                    entity?.name
+                  }
                   capitalized
                 />
                 <TextField

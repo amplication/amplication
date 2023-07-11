@@ -5,6 +5,7 @@ import React, { useCallback, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { GET_ENTITIES } from "../Entity/EntityList";
 import * as models from "../models";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import usePlugins, { Plugin, PluginVersion } from "./hooks/usePlugins";
@@ -21,7 +22,6 @@ type TData = {
   entities: models.Entity[];
 };
 export const DIALOG_CLASS_NAME = "limitation-dialog";
-export const USER_ENTITY_NAME = "user";
 export const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
@@ -34,9 +34,19 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     },
   });
 
+  const { data: resourceSettings } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resource,
+    },
+  });
+
   const userEntity = useMemo(() => {
     return entities?.entities?.find(
-      (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
+      (entity) =>
+        entity.name.toLowerCase() ===
+        resourceSettings.serviceSettings.authEntityName.toLowerCase()
     );
   }, [entities]);
 

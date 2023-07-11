@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql, useMutation, Reference } from "@apollo/client";
+import { gql, useMutation, Reference, useQuery } from "@apollo/client";
 import * as models from "../models";
 import {
   ConfirmationDialog,
@@ -10,10 +10,10 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -101,7 +101,16 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isUserEntity = entity.name === USER_ENTITY;
+  const { data: resourceSettings } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resourceId,
+    },
+  });
+
+  const isUserEntity =
+    entity.name === resourceSettings.serviceSettings.authEntityName;
 
   const isDeleteButtonDisable = isUserEntity && isUserEntityMandatory;
 

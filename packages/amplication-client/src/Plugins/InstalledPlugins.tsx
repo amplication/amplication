@@ -10,10 +10,11 @@ import * as models from "../models";
 import PluginsCatalogItem from "./PluginsCatalogItem";
 import { EnumImages } from "../Components/SvgThemeImage";
 import { EmptyState } from "../Components/EmptyState";
-import { REQUIRE_AUTH_ENTITY, USER_ENTITY_NAME } from "./PluginsCatalog";
+import { REQUIRE_AUTH_ENTITY } from "./PluginsCatalog";
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import { useQuery } from "@apollo/client";
 import { GET_ENTITIES } from "../Entity/EntityList";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -52,9 +53,19 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     },
   });
 
+  const { data: resourceSettings } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resource,
+    },
+  });
+
   const userEntity = useMemo(() => {
     return entities?.entities?.find(
-      (entity) => entity.name.toLowerCase() === USER_ENTITY_NAME
+      (entity) =>
+        entity.name.toLowerCase() ===
+        resourceSettings.serviceSettings.authEntityName.toLowerCase()
     );
   }, [entities]);
 
