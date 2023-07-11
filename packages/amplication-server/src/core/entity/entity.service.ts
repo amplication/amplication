@@ -82,8 +82,8 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { PrismaSchemaUtilsService } from "../prismaSchemaUtils/prismaSchemaUtils.service";
-import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
+import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
+import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaParser/CreateEntitiesFromPrismaSchemaResponse";
 import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
 import {
   Action,
@@ -191,7 +191,7 @@ export class EntityService {
     private readonly diffService: DiffService,
     private readonly analytics: SegmentAnalyticsService,
     private readonly billingService: BillingService,
-    private readonly schemaUtilsService: PrismaSchemaUtilsService,
+    private readonly prismaSchemaParserService: PrismaSchemaParserService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -454,7 +454,7 @@ export class EntityService {
 
       //Step 1: Convert Prisma schema to import objects
       const { preparedEntitiesWithFields, log } =
-        this.schemaUtilsService.convertPrismaSchemaForImportObjects(
+        this.prismaSchemaParserService.convertPrismaSchemaForImportObjects(
           file,
           existingEntities
         );

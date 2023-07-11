@@ -1,5 +1,5 @@
 const DEFAULT_CUSTOM_ERROR = "Custom Error";
-const NOT_IMPLEMENTED_ERROR = "Not Implemented";
+const NOT_IMPLEMENTED_ERROR = "Method not implemented.";
 
 export class CustomError extends Error {
   constructor(message: string, private options: Record<string, unknown> = {}) {

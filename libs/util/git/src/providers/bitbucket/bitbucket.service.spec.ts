@@ -147,7 +147,6 @@ describe("bitbucket.service", () => {
         content: await (
           await spyOnGetFileRequest.mock.results[0].value
         ).toString("utf-8"),
-        htmlUrl: mockedGetFileResponse.commit.links.html.href,
         name: parse(mockedGetFileResponse.path).name,
         path: mockedGetFileResponse.path,
       };

@@ -40,6 +40,9 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   const showBitbucketConnect = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Bitbucket,
   });
+  const showAwsCodeCommitConnect = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.AwsCodeCommit,
+  });
 
   const [authWithGit, { error }] = useMutation<DType>(
     START_AUTH_APP_WITH_GITHUB,
@@ -86,6 +89,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
         disabled={!showBitbucketConnect.hasAccess}
+      />
+      <GitProviderConnection
+        provider={EnumGitProvider.AwsCodeCommit}
+        onSyncNewGitOrganizationClick={() => {}}
+        disabled={!showAwsCodeCommitConnect.hasAccess}
       />
     </div>
   );

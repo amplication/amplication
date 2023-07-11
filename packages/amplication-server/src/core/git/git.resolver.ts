@@ -84,13 +84,12 @@ export class GitResolver {
     );
   }
 
-  @Mutation(() => GitOrganization, {
-    description: "Only for GitHub integrations",
-  })
+  @Mutation(() => GitOrganization, {})
   @InjectContextValue(InjectableOriginParameter.WorkspaceId, "data.workspaceId")
   async createOrganization(
     @UserEntity() currentUser: User,
-    @Args() args: CreateGitOrganizationArgs
+    @Args()
+    args: CreateGitOrganizationArgs
   ): Promise<GitOrganization> {
     return await this.gitService.createGitOrganization(args, currentUser);
   }
