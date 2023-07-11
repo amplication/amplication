@@ -84,7 +84,6 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaParser/CreateEntitiesFromPrismaSchemaResponse";
-import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
 import {
   Action,
   ActionLog,
@@ -377,12 +376,12 @@ export class EntityService {
   }
 
   async createEntitiesFromPrismaSchema(
+    actionId: string,
     file: string,
     fileName: string,
-    args: CreateEntitiesFromPrismaSchemaArgs,
+    resourceId: string,
     user: User
   ): Promise<CreateEntitiesFromPrismaSchemaResponse> {
-    const { resourceId } = args.data;
     const resourceWithProject = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
