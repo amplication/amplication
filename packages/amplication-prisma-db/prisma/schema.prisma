@@ -107,6 +107,7 @@ model User {
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   deletedAt             DateTime?
+  UserAction            UserAction[]
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -151,6 +152,7 @@ model Resource {
   roles                 ResourceRole[]
   blocks                Block[]
   builds                Build[]
+  UserAction            UserAction[]
   entities              Entity[]
   environments          Environment[]
   gitRepository         GitRepository?   @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
@@ -341,6 +343,7 @@ model Action {
   steps       ActionStep[]
   builds      Build[]
   deployments Deployment[]
+  UserAction  UserAction[]
 }
 
 model ActionStep {
@@ -390,6 +393,20 @@ model Build {
   entityVersions           EntityVersion[]
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
+}
+
+model UserAction {
+  id             String             @id @default(cuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  userActionType EnumUserActionType
+  metadata       Json               @default("{}")
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionId       String
+  action         Action             @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  resourceId     String
+  resource       Resource?          @relation(fields: [resourceId], references: [id], onDelete: Cascade)
 }
 
 model Release {
@@ -556,4 +573,8 @@ enum EnumGitProvider {
 enum EnumGitOrganizationType {
   User
   Organization
+}
+
+enum EnumUserActionType {
+  DBSchemaImport
 }
