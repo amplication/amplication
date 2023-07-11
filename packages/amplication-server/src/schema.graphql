@@ -8,6 +8,7 @@ type Account {
   firstName: String!
   githubId: String
   id: String!
+  lastActive: DateTime
   lastName: String!
   password: String!
   updatedAt: DateTime!

@@ -29,6 +29,7 @@ export type Account = {
   firstName: Scalars['String']['output'];
   githubId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
+  lastActive?: Maybe<Scalars['DateTime']['output']>;
   lastName: Scalars['String']['output'];
   password: Scalars['String']['output'];
   updatedAt: Scalars['DateTime']['output'];

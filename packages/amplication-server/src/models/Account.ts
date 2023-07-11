@@ -48,4 +48,9 @@ export class Account {
     nullable: true,
   })
   githubId?: string | null;
+
+  @Field(() => Date, {
+    nullable: true,
+  })
+  lastActive?: Date | null;
 }
