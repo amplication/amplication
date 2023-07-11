@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import React, { useCallback, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
@@ -15,6 +15,7 @@ import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
 import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
+import { CREATE_ENTITIES_FORM_SCHEMA } from "./queries";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -47,7 +48,7 @@ type Props = AppRouteProps & {
 };
 
 type TData = {
-  createEntitiesFromPrismaSchema: models.CreateEntitiesFromPrismaSchemaResponse;
+  createEntitiesFromPrismaSchema: models.UserAction;
 };
 
 const MAX_FILES = 1;
@@ -93,7 +94,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       };
     }
 
-    return data.createEntitiesFromPrismaSchema.actionLog;
+    return data.createEntitiesFromPrismaSchema.action;
   }, [data, loading]);
 
   const errorMessage = formatError(error);
@@ -161,43 +162,3 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
 };
 
 export default EntitiesImport;
-
-const CREATE_ENTITIES_FORM_SCHEMA = gql`
-  mutation createEntitiesFromPrismaSchema(
-    $data: CreateEntitiesFromPrismaSchemaInput!
-    $file: Upload!
-  ) {
-    createEntitiesFromPrismaSchema(data: $data, file: $file) {
-      entities {
-        name
-        displayName
-        pluralDisplayName
-        description
-        fields {
-          name
-          displayName
-          dataType
-        }
-      }
-      actionLog {
-        id
-        createdAt
-        steps {
-          id
-          name
-          createdAt
-          message
-          status
-          completedAt
-          logs {
-            id
-            createdAt
-            message
-            meta
-            level
-          }
-        }
-      }
-    }
-  }
-`;
