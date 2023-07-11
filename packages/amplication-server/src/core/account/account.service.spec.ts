@@ -21,7 +21,7 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
-  lastActive: new Date(),
+  lastActive: null,
 };
 
 const segmentAnalyticsIdentifyMock = jest.fn(() => {
@@ -166,6 +166,24 @@ describe("AccountService", () => {
     expect(await service.setPassword(args.accountId, args.password)).toEqual(
       EXAMPLE_ACCOUNT
     );
+    expect(prismaAccountUpdateMock).toBeCalledTimes(1);
+    expect(prismaAccountUpdateMock).toBeCalledWith(returnArgs);
+  });
+
+  it("should set lastActive", async () => {
+    const args = {
+      accountId: EXAMPLE_ACCOUNT_ID,
+      lastActive: new Date(),
+    };
+    const returnArgs = {
+      data: {
+        lastActive: args.lastActive,
+      },
+      where: { id: args.accountId },
+    };
+    expect(
+      await service.setLastActive(args.accountId, args.lastActive)
+    ).toEqual(EXAMPLE_ACCOUNT);
     expect(prismaAccountUpdateMock).toBeCalledTimes(1);
     expect(prismaAccountUpdateMock).toBeCalledWith(returnArgs);
   });
