@@ -15,7 +15,7 @@ export class UserActionResolver {
   constructor(private readonly userActionService: UserActionService) {}
 
   @Query(() => UserAction)
-  @AuthorizeContext(AuthorizableOriginParameter.BuildId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.UserActionId, "where.id")
   async userAction(@Args() args: FindOneUserActionArgs): Promise<UserAction> {
     return this.userActionService.findOne(args);
   }
