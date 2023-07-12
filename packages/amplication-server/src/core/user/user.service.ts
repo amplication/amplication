@@ -95,11 +95,11 @@ export class UserService {
     });
   }
 
-  async getAccount(id: string): Promise<Account> {
+  async getAccount(userId: string): Promise<Account> {
     return this.prisma.user
       .findUnique({
         where: {
-          id,
+          id: userId,
         },
       })
       .account();
