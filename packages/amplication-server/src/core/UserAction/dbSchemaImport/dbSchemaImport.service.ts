@@ -5,7 +5,7 @@ import { User } from "../../../models";
 import { Prisma, PrismaService } from "../../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../../env";
-import { EntityService } from "../..";
+import { EntityService, UserService } from "../..";
 import { EnumUserActionType } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
@@ -17,7 +17,8 @@ export class DBSchemaImportService {
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly kafkaProducerService: KafkaProducerService,
-    private readonly entityService: EntityService
+    private readonly entityService: EntityService,
+    private readonly userService: UserService
   ) {}
 
   async startProcessingPrismaSchema(
@@ -88,10 +89,9 @@ export class DBSchemaImportService {
       );
     }
 
-    const user = await this.prisma.user.findFirst({
-      where: {
-        id: prismaSchemaUpload.userId,
-      },
+    const user = await this.userService.findUser({
+      where: { id: prismaSchemaUpload.userId },
+      include: { account: true },
     });
 
     if (!user) {

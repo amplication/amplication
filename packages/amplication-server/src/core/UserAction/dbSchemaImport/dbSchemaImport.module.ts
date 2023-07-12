@@ -7,6 +7,7 @@ import { DBSchemaImportResolver } from "./dbSchemaImport.resolver";
 import { PrismaModule } from "../../../prisma";
 import { EntityModule } from "../../entity/entity.module";
 import { PermissionsModule } from "../../permissions/permissions.module";
+import { UserModule } from "../../user/user.module";
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PermissionsModule } from "../../permissions/permissions.module";
     KafkaModule,
     PrismaModule,
     EntityModule,
+    UserModule,
   ],
   controllers: [DBSchemaImportController],
   providers: [DBSchemaImportService, DBSchemaImportResolver],
