@@ -111,7 +111,12 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       createEntitiesFormSchema({
         variables: {
           data: {
-            resourceId,
+            userActionType: models.EnumUserActionType.DbSchemaImport,
+            resource: {
+              connect: {
+                id: resourceId,
+              },
+            },
           },
           file,
         },
