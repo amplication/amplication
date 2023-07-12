@@ -51,6 +51,7 @@ import {
   PrepareOperationInput,
 } from "./types";
 import {
+  ARG_KEY_FIELD_NAME,
   ATTRIBUTE_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
@@ -59,6 +60,7 @@ import {
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
+  RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
@@ -779,32 +781,31 @@ export class PrismaSchemaParserService {
     const modelList = schema.list.filter(
       (item) => item.type === MODEL_TYPE_NAME
     );
-    const relationAttribute = field.attributes?.some(
-      (attr) => attr.name === "relation"
-    );
+    const relationAttribute =
+      field.attributes?.some((attr) => attr.name === RELATION_ATTRIBUTE_NAME) ??
+      false;
 
-    const hasRelationAttributeWithRelationName =
+    const hasRelationAttributeWithRelationNameAndWithoutReferenceField =
       field.attributes?.some(
         (attr) =>
-          attr.name === "relation" &&
-          attr.args?.some((arg) => typeof arg.value === "string")
+          attr.name === RELATION_ATTRIBUTE_NAME &&
+          attr.args?.some((arg) => typeof arg.value === "string") &&
+          !attr.args?.find(
+            (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+          )
       ) ?? false;
 
     const fieldModelType = modelList.find(
-      (modelItem: Model) =>
-        formatModelName(modelItem.name) === formatFieldName(field.fieldType)
+      (modelItem: Model) => modelItem.name === field.fieldType
     );
 
     // check if the field is a relation field but it doesn't have the @relation attribute, like order[] on Customer model,
     // or it has the @relation attribute but without reference field
-    if (
-      (!relationAttribute && fieldModelType) ||
-      (fieldModelType && hasRelationAttributeWithRelationName)
-    ) {
-      return true;
-    } else {
-      return false;
-    }
+    return (
+      (fieldModelType && !relationAttribute) ||
+      (fieldModelType &&
+        hasRelationAttributeWithRelationNameAndWithoutReferenceField)
+    );
   }
 
   private isFkFieldOfARelation(
