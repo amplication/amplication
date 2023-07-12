@@ -107,7 +107,7 @@ model User {
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   deletedAt             DateTime?
-  lastActive            DateTime?
+  lastActive            DateTime?    @default(now())
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
