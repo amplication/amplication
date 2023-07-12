@@ -125,4 +125,18 @@ export class UserService {
       },
     });
   }
+
+  async setLastActivity(
+    userId: string,
+    lastActive: Date = new Date()
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastActive,
+      },
+    });
+  }
 }

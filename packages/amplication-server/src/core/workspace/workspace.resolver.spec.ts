@@ -22,6 +22,7 @@ import { BillingService } from "../billing/billing.service";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ApolloServerBase } from "apollo-server-core";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { UserService } from "../user/user.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
@@ -209,6 +210,12 @@ describe("WorkspaceResolver", () => {
             track: jest.fn(() => {
               return;
             }),
+          })),
+        },
+        {
+          provide: UserService,
+          useClass: jest.fn(() => ({
+            setLastActivity: jest.fn(),
           })),
         },
       ],
