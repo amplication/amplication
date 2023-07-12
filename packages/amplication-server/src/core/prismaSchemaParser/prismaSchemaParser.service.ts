@@ -788,7 +788,7 @@ export class PrismaSchemaParserService {
     const hasRelationAttributeWithRelationNameAndWithoutReferenceField =
       field.attributes?.some(
         (attr) =>
-          attr.name === "relation" &&
+          attr.name === RELATION_ATTRIBUTE_NAME &&
           attr.args?.some((arg) => typeof arg.value === "string") &&
           !attr.args?.find(
             (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
