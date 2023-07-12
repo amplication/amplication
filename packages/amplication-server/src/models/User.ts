@@ -41,4 +41,9 @@ export class User {
     nullable: false,
   })
   isOwner: boolean;
+
+  @Field(() => Date, {
+    nullable: true,
+  })
+  lastActive?: Date | null;
 }
