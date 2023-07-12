@@ -17,9 +17,6 @@ export class UserActionCreateInput {
   @Field(() => GraphQLJSONObject, { nullable: true })
   metadata?: JsonValue;
 
-  @Field(() => WhereParentIdInput, { nullable: false })
-  action!: WhereParentIdInput;
-
   @Field(() => WhereParentIdInput, { nullable: true })
   resource?: WhereParentIdInput;
 }

@@ -9,8 +9,7 @@ import { EntityService } from "../..";
 import { EnumUserActionType } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
-import { DBSchemaImportArgs } from "./dto";
-import { UserAction } from "../dto";
+import { CreateUserActionArgs, UserAction } from "../dto";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -24,7 +23,7 @@ export class DBSchemaImportService {
   async startProcessingPrismaSchema(
     file: string,
     fileName: string,
-    args: DBSchemaImportArgs,
+    args: CreateUserActionArgs,
     user: User
   ): Promise<UserAction> {
     // create action record

@@ -8,9 +8,8 @@ import { AuthorizableOriginParameter } from "../../../enums/AuthorizableOriginPa
 import { User } from "../../../models";
 import { UserEntity } from "../../../decorators/user.decorator";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
-import { DBSchemaImportArgs } from "./dto";
 import { graphqlUpload } from "../utils/graphql-upload";
-import { UserAction } from "../dto";
+import { CreateUserActionArgs, UserAction } from "../dto";
 
 @Resolver(() => UserAction)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -23,11 +22,11 @@ export class DBSchemaImportResolver {
   })
   @AuthorizeContext(
     AuthorizableOriginParameter.ResourceId,
-    "resource.connect.id"
+    "data.resource.connect.id"
   )
   async createEntitiesFromPrismaSchema(
     @UserEntity() user: User,
-    @Args() args: DBSchemaImportArgs,
+    @Args() args: CreateUserActionArgs,
     @Args({ name: "file", type: () => GraphQLUpload })
     file: FileUpload
   ): Promise<UserAction> {
