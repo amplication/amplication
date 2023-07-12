@@ -2178,7 +2178,6 @@ export type UserAction = {
 };
 
 export type UserActionCreateInput = {
-  action: WhereParentIdInput;
   metadata?: InputMaybe<Scalars['JSONObject']['input']>;
   resource?: InputMaybe<WhereParentIdInput>;
   userActionType: EnumUserActionType;

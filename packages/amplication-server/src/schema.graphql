@@ -1579,7 +1579,6 @@ type UserAction {
 }
 
 input UserActionCreateInput {
-  action: WhereParentIdInput!
   metadata: JSONObject
   resource: WhereParentIdInput
   userActionType: EnumUserActionType!
