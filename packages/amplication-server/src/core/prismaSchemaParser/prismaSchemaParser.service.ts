@@ -92,10 +92,10 @@ export class PrismaSchemaParserService {
    * @param schema The schema to be processed
    * @returns The processed schema
    */
-  convertPrismaSchemaForImportObjects(
+  async convertPrismaSchemaForImportObjects(
     schema: string,
     existingEntities: ExistingEntitySelect[]
-  ): ConvertPrismaSchemaForImportObjectsResponse {
+  ): Promise<ConvertPrismaSchemaForImportObjectsResponse> {
     const log: ActionLog[] = [];
 
     log.push(

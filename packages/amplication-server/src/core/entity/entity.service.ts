@@ -453,7 +453,7 @@ export class EntityService {
 
       //Step 1: Convert Prisma schema to import objects
       const { preparedEntitiesWithFields, log } =
-        this.prismaSchemaParserService.convertPrismaSchemaForImportObjects(
+        await this.prismaSchemaParserService.convertPrismaSchemaForImportObjects(
           file,
           existingEntities
         );
