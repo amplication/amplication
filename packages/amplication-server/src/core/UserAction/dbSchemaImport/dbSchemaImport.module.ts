@@ -8,6 +8,7 @@ import { PrismaModule } from "../../../prisma";
 import { EntityModule } from "../../entity/entity.module";
 import { PermissionsModule } from "../../permissions/permissions.module";
 import { UserModule } from "../../user/user.module";
+import { ActionModule } from "../../action/action.module";
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { UserModule } from "../../user/user.module";
     PrismaModule,
     EntityModule,
     UserModule,
+    ActionModule,
   ],
   controllers: [DBSchemaImportController],
   providers: [DBSchemaImportService, DBSchemaImportResolver],

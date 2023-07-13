@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { DBSchemaImportRequest } from "@amplication/schema-registry";
 import { User } from "../../../models";
-import { Prisma, PrismaService } from "../../../prisma";
+import { PrismaService } from "../../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../../env";
 import { EntityService, UserService } from "../..";
@@ -10,6 +10,14 @@ import { EnumUserActionType } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
 import { CreateUserActionArgs, UserAction } from "../dto";
+import { PROCESSING_PRISMA_SCHEMA, initialStepData } from "./constants";
+import {
+  ActionStep,
+  EnumActionLogLevel,
+  EnumActionStepStatus,
+} from "../../action/dto";
+import { ActionService } from "../../action/action.service";
+import { ActionContext } from "../types";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -18,7 +26,8 @@ export class DBSchemaImportService {
     private readonly prisma: PrismaService,
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly entityService: EntityService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly actionService: ActionService
   ) {}
 
   async startProcessingPrismaSchema(
@@ -47,7 +56,7 @@ export class DBSchemaImportService {
         action: {
           create: {
             steps: {
-              create: this.createInitialStepData(),
+              create: initialStepData,
             },
           },
         },
@@ -105,12 +114,27 @@ export class DBSchemaImportService {
       );
     }
 
-    if (isDBImportMetadata(prismaSchemaUpload.metadata)) {
+    if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
+      const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
+      const logByStep = async (level: EnumActionLogLevel, message: string) =>
+        await this.actionService.logByStepId(step.id, level, message);
+
+      const actionContext: ActionContext = {
+        logByStep,
+        onComplete: async (
+          status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+        ) =>
+          await this.completeDBSchemaImportStep(
+            dbSchemaImportAction.id,
+            status
+          ),
+      };
+
       await this.entityService.createEntitiesFromPrismaSchema(
-        actionId,
+        actionContext,
         file,
-        prismaSchemaUpload.metadata.fileName,
-        prismaSchemaUpload.resourceId,
+        dbSchemaImportAction.metadata.fileName,
+        dbSchemaImportAction.resourceId,
         user
       );
     } else {
@@ -120,21 +144,37 @@ export class DBSchemaImportService {
     }
   }
 
-  private createInitialStepData(): Prisma.ActionStepCreateWithoutActionInput {
-    return {
-      name: "Upload Prisma Schema",
-      message: "Starting to create entities from Prisma schema",
-      status: "Running",
-      completedAt: new Date(),
-      logs: {
-        create: [
-          {
-            message: "Starting to create entities from Prisma schema",
-            level: "Info",
-            meta: {},
-          },
-        ],
-      },
-    };
+  async getDBSchemaImportStep(
+    actionId: string
+  ): Promise<ActionStep | undefined> {
+    const [dbSchemaImportStep] = await this.prisma.userAction
+      .findUnique({
+        where: {
+          id: actionId,
+        },
+      })
+      .action()
+      .steps({
+        where: {
+          name: PROCESSING_PRISMA_SCHEMA,
+        },
+      });
+
+    return dbSchemaImportStep;
+  }
+
+  async completeDBSchemaImportStep(
+    actionId: string,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  ): Promise<void> {
+    const step = await this.getDBSchemaImportStep(actionId);
+
+    if (!step) {
+      throw new AmplicationError(
+        `Step ${PROCESSING_PRISMA_SCHEMA} not found for action with id ${actionId}`
+      );
+    }
+
+    await this.actionService.complete(step, status);
   }
 }
