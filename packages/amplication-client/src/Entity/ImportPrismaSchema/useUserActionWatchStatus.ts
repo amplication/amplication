@@ -15,7 +15,7 @@ const useUserActionWatchStatus = (
     userAction: models.UserAction;
   }>(GET_USER_ACTION, {
     variables: {
-      userACtion: userAction?.id,
+      userActionId: userAction?.id,
     },
     skip: !userAction?.id || !shouldReload(userAction),
   });
