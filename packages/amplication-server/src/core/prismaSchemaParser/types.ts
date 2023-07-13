@@ -1,6 +1,7 @@
 import { ConcretePrismaSchemaBuilder } from "@mrleebo/prisma-ast";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionLog } from "../action/dto";
+import { ActionContext } from "../UserAction/types";
 
 export type PrepareOperation = (
   prepareOperationIO: PrepareOperationIO
@@ -9,14 +10,14 @@ export type PrepareOperation = (
 export type PrepareOperationInput = {
   inputSchema: string;
   existingEntities: ExistingEntitySelect[];
-  log: ActionLog[];
+  actionContext: ActionContext;
 };
 
 export type PrepareOperationIO = {
   builder: ConcretePrismaSchemaBuilder;
   existingEntities: ExistingEntitySelect[];
   mapper: Mapper;
-  log: ActionLog[];
+  actionContext: ActionContext;
 };
 
 export type Mapper = {
