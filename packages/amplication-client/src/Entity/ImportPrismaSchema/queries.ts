@@ -38,6 +38,7 @@ export const GET_USER_ACTION = gql`
       id
       createdAt
       actionId
+      status
       action {
         id
         createdAt
