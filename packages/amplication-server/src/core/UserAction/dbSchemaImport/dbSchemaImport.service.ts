@@ -27,8 +27,7 @@ export class DBSchemaImportService {
     args: CreateUserActionArgs,
     user: User
   ): Promise<UserAction> {
-    // create action record
-    const dbSchemaUploadAction = await this.prisma.userAction.create({
+    const dbSchemaImportAction = await this.prisma.userAction.create({
       data: {
         userActionType: EnumUserActionType.DBSchemaImport,
         metadata: {
@@ -59,7 +58,7 @@ export class DBSchemaImportService {
     const prismaSchemaUploadEvent: DBSchemaImportRequest.KafkaEvent = {
       key: null,
       value: {
-        actionId: dbSchemaUploadAction.actionId,
+        actionId: dbSchemaImportAction.actionId,
         file,
       },
     };
@@ -69,38 +68,38 @@ export class DBSchemaImportService {
       prismaSchemaUploadEvent
     );
 
-    return dbSchemaUploadAction;
+    return dbSchemaImportAction;
   }
 
   async onPrismaSchemaUploadEventProcessed(
     response: DBSchemaImportRequest.Value
   ) {
-    // call the entity service create entities from prisma schema (action run)
     const { actionId, file } = response;
-    const prismaSchemaUpload = await this.prisma.userAction.findFirst({
+    const dbSchemaImportAction = await this.prisma.userAction.findFirst({
       where: {
         actionId,
+        userActionType: EnumUserActionType.DBSchemaImport,
       },
     });
 
-    if (!prismaSchemaUpload) {
+    if (!dbSchemaImportAction) {
       throw new AmplicationError(
         `Prisma schema upload action with id ${actionId} not found`
       );
     }
 
     const user = await this.userService.findUser({
-      where: { id: prismaSchemaUpload.userId },
+      where: { id: dbSchemaImportAction.userId },
       include: { account: true },
     });
 
     if (!user) {
       throw new AmplicationError(
-        `User with id ${prismaSchemaUpload.userId} not found`
+        `User with id ${dbSchemaImportAction.userId} not found`
       );
     }
 
-    if (!prismaSchemaUpload.resourceId) {
+    if (!dbSchemaImportAction.resourceId) {
       throw new AmplicationError(
         `Resource id is missing for action with id ${actionId}`
       );
