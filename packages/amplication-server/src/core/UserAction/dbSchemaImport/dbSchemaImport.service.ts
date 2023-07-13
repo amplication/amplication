@@ -145,12 +145,12 @@ export class DBSchemaImportService {
   }
 
   async getDBSchemaImportStep(
-    actionId: string
+    userActionId: string
   ): Promise<ActionStep | undefined> {
     const [dbSchemaImportStep] = await this.prisma.userAction
       .findUnique({
         where: {
-          id: actionId,
+          id: userActionId,
         },
       })
       .action()
@@ -164,14 +164,14 @@ export class DBSchemaImportService {
   }
 
   async completeDBSchemaImportStep(
-    actionId: string,
+    userActionId: string,
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
   ): Promise<void> {
-    const step = await this.getDBSchemaImportStep(actionId);
+    const step = await this.getDBSchemaImportStep(userActionId);
 
     if (!step) {
       throw new AmplicationError(
-        `Step ${PROCESSING_PRISMA_SCHEMA} not found for action with id ${actionId}`
+        `Step ${PROCESSING_PRISMA_SCHEMA} not found for action with id ${userActionId}`
       );
     }
 
