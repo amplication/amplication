@@ -65,7 +65,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     return entities?.entities?.find(
       (entity) =>
         entity.name.toLowerCase() ===
-        resourceSettings.serviceSettings.authEntityName.toLowerCase()
+        resourceSettings.serviceSettings.authEntityName?.toLowerCase()
     );
   }, [entities]);
 
