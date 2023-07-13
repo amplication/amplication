@@ -9,6 +9,7 @@ export const CREATE_ENTITIES_FORM_SCHEMA = gql`
       id
       createdAt
       actionId
+      status
       action {
         id
         createdAt
