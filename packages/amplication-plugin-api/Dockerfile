@@ -20,7 +20,8 @@ RUN npm install --production
 COPY ./dist/packages/${component} .
 
 # [temporary] work around to be able to run prisma
-RUN apt-get update -y && apt-get install -y openssl
+RUN apt-get update -y \
+    && apt-get install -y openssl
 
 # change ownership of the workspace directory
 RUN groupadd --gid ${gid} ${user} \
