@@ -118,16 +118,14 @@ export class DBSchemaImportService {
       const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
       const logByStep = async (level: EnumActionLogLevel, message: string) =>
         await this.actionService.logByStepId(step.id, level, message);
+      const onComplete = async (
+        status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+      ) =>
+        await this.completeDBSchemaImportStep(dbSchemaImportAction.id, status);
 
       const actionContext: ActionContext = {
         logByStep,
-        onComplete: async (
-          status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-        ) =>
-          await this.completeDBSchemaImportStep(
-            dbSchemaImportAction.id,
-            status
-          ),
+        onComplete,
       };
 
       await this.entityService.createEntitiesFromPrismaSchema(
