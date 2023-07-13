@@ -95,11 +95,11 @@ export class UserService {
     });
   }
 
-  async getAccount(id: string): Promise<Account> {
+  async getAccount(userId: string): Promise<Account> {
     return this.prisma.user
       .findUnique({
         where: {
-          id,
+          id: userId,
         },
       })
       .account();
@@ -122,6 +122,20 @@ export class UserService {
       },
       data: {
         deletedAt: new Date(),
+      },
+    });
+  }
+
+  async setLastActivity(
+    userId: string,
+    lastActive: Date = new Date()
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastActive,
       },
     });
   }

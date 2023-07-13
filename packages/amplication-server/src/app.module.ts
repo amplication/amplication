@@ -40,6 +40,7 @@ import { RequestContextModule } from "nestjs-request-context";
           autoSchemaFile:
             configService.get("GRAPHQL_SCHEMA_DEST") ||
             join(process.cwd(), "src", "schema.graphql"),
+          sortSchema: true,
           debug: configService.get("GRAPHQL_DEBUG") === "1",
           playground: configService.get("PLAYGROUND_ENABLE") === "1",
           context: ({ req }: { req: Request }) => ({

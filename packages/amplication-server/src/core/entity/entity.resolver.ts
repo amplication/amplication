@@ -47,7 +47,7 @@ import {
 import { EntityService } from "./entity.service";
 import { CreateEntitiesFromPrismaSchemaArgs } from "./dto/CreateEntitiesFromPrismaSchemaArgs";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaUtils/CreateEntitiesFromPrismaSchemaResponse";
+import { CreateEntitiesFromPrismaSchemaResponse } from "../prismaSchemaParser/CreateEntitiesFromPrismaSchemaResponse";
 import { graphqlUpload } from "../../util/graphqlUpload";
 
 @Resolver(() => Entity)
