@@ -2,6 +2,8 @@ import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma";
 import { FindOneUserActionArgs } from "./dto/FindOneUserActionArgs";
 import { UserAction } from "./dto";
+import { EnumUserActionStatus } from "./types";
+import { EnumActionStepStatus } from "../action/dto";
 
 @Injectable()
 export class UserActionService {
@@ -9,5 +11,32 @@ export class UserActionService {
 
   async findOne(args: FindOneUserActionArgs): Promise<UserAction | null> {
     return this.prisma.userAction.findUnique(args);
+  }
+
+  async calcUserActionStatus(userActionId) {
+    const userAction = await this.prisma.userAction.findUnique({
+      where: {
+        id: userActionId,
+      },
+      include: {
+        action: {
+          include: {
+            steps: true,
+          },
+        },
+      },
+    });
+
+    if (!userAction.action?.steps?.length) return EnumUserActionStatus.Invalid;
+
+    const steps = userAction.action.steps;
+
+    if (steps.every((step) => step.status === EnumActionStepStatus.Success))
+      return EnumUserActionStatus.Completed;
+
+    if (steps.some((step) => step.status === EnumActionStepStatus.Failed))
+      return EnumUserActionStatus.Failed;
+
+    return EnumUserActionStatus.Running;
   }
 }
