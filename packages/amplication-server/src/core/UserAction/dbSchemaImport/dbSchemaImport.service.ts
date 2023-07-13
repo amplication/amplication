@@ -119,14 +119,23 @@ export class DBSchemaImportService {
 
       if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
         const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
-        const logByStep = async (level: EnumActionLogLevel, message: string) =>
-          await this.actionService.logByStepId(step.id, level, message);
-        const onComplete = async (
+        const logByStep = (level: EnumActionLogLevel, message: string) =>
+          this.actionService
+            .logByStepId(step.id, level, message)
+            .catch((error) =>
+              this.logger.error(`Failed to log action step ${step.id}`, error)
+            );
+        const onComplete = (
           status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
         ) =>
-          await this.completeDBSchemaImportStep(
+          this.completeDBSchemaImportStep(
             dbSchemaImportAction.id,
             status
+          ).catch((error) =>
+            this.logger.error(
+              `Failed to complete action step ${step.id}`,
+              error
+            )
           );
 
         const actionContext: ActionContext = {

@@ -448,11 +448,11 @@ export class EntityService {
           event: EnumEventType.ImportPrismaSchemaError,
         });
 
-        await actionContext.logByStep(
+        void actionContext.logByStep(
           EnumActionLogLevel.Error,
           `Import operation aborted due to errors. See the log for more details.`
         );
-        await actionContext.onComplete(EnumActionStepStatus.Failed);
+        void actionContext.onComplete(EnumActionStepStatus.Failed);
 
         return [];
       } else {
@@ -466,11 +466,11 @@ export class EntityService {
           actionContext
         );
 
-        await actionContext.logByStep(
+        void actionContext.logByStep(
           EnumActionLogLevel.Info,
           `Import operation Completed.`
         );
-        await actionContext.onComplete(EnumActionStepStatus.Success);
+        void actionContext.onComplete(EnumActionStepStatus.Success);
 
         await this.analytics.track({
           userId: user.account.id,
@@ -503,8 +503,8 @@ export class EntityService {
         event: EnumEventType.ImportPrismaSchemaError,
       });
 
-      await actionContext.logByStep(EnumActionLogLevel.Error, error.message);
-      await actionContext.onComplete(EnumActionStepStatus.Failed);
+      void actionContext.logByStep(EnumActionLogLevel.Error, error.message);
+      void actionContext.onComplete(EnumActionStepStatus.Failed);
       return [];
     }
   }
@@ -528,7 +528,7 @@ export class EntityService {
     if (existingEntities.length > 0) {
       await Promise.all(
         existingEntities.map(async (entity) => {
-          await actionContext.logByStep(
+          void actionContext.logByStep(
             EnumActionLogLevel.Error,
             `Entity "${entity.name}" already exists`
           );
@@ -587,13 +587,13 @@ export class EntityService {
           false
         );
         entities.push(newEntity);
-        await actionContext.logByStep(
+        void actionContext.logByStep(
           EnumActionLogLevel.Info,
           `Entity "${newEntity.name}" created successfully`
         );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
-        await actionContext.logByStep(
+        void actionContext.logByStep(
           EnumActionLogLevel.Error,
           `Failed to create entity "${entity.name}". ${error.message}`
         );
