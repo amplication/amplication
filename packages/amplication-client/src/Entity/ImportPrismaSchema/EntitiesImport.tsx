@@ -1,5 +1,5 @@
 import { useMutation } from "@apollo/client";
-import React, { useCallback, useMemo } from "react";
+import React, { useCallback, useEffect, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
 
@@ -16,6 +16,9 @@ import "./EntitiesImport.scss";
 import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
 import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
 import { CREATE_ENTITIES_FORM_SCHEMA } from "./queries";
+import useUserActionWatchStatus from "./useUserActionWatchStatus";
+
+const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -24,7 +27,7 @@ const ACTION_LOG: models.Action = {
 
 const ACTION_LOG_STEP: models.ActionStep = {
   id: "1",
-  name: "PROCESSING",
+  name: PROCESSING_PRISMA_SCHEMA,
   message: "Import Prisma schema file",
   status: models.EnumActionStepStatus.Running,
   createdAt: new Date().toISOString(),
@@ -60,11 +63,17 @@ const PAGE_TITLE = "Entities Import";
 const CLASS_NAME = "entities-import";
 
 const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
+  const [userAction, setUserAction] = React.useState<models.UserAction>(null);
+  const { data: userActionData } = useUserActionWatchStatus(userAction);
+
   const { resource: resourceId, project: projectId } = match.params;
   const { trackEvent } = useTracking();
 
   const [createEntitiesFormSchema, { data, error, loading }] =
     useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA, {
+      onCompleted: (data) => {
+        setUserAction(data.createEntitiesFromPrismaSchema);
+      },
       refetchQueries: [
         {
           query: GET_PENDING_CHANGES_STATUS,
@@ -94,8 +103,11 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       };
     }
 
-    return data.createEntitiesFromPrismaSchema.action;
-  }, [data, loading]);
+    return {
+      ...data.createEntitiesFromPrismaSchema.action,
+      ...userActionData?.userAction?.action,
+    };
+  }, [data, loading, userActionData]);
 
   const errorMessage = formatError(error);
 
