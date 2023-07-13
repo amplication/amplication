@@ -8,7 +8,7 @@ const POLL_INTERVAL = 5000;
 /**
  * Pulls updates of the userAction from the server as long as the user action is still in progress
  */
-const useBuildWatchStatus = (
+const useUserActionWatchStatus = (
   userAction?: models.UserAction
 ): { data: { userAction?: models.UserAction } } => {
   const { data, startPolling, stopPolling, refetch } = useQuery<{
@@ -17,7 +17,7 @@ const useBuildWatchStatus = (
     variables: {
       userACtion: userAction?.id,
     },
-    skip: !shouldReload(userAction),
+    skip: !userAction?.id || !shouldReload(userAction),
   });
 
   //stop polling when build process completed
@@ -43,7 +43,7 @@ const useBuildWatchStatus = (
   return { data: data || { userAction } };
 };
 
-export default useBuildWatchStatus;
+export default useUserActionWatchStatus;
 
 function shouldReload(userAction: models.UserAction | undefined): boolean {
   return (
