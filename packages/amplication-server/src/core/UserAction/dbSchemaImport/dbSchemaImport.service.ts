@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { DBSchemaImportRequest } from "@amplication/schema-registry";
 import { User } from "../../../models";
@@ -18,10 +18,12 @@ import {
 } from "../../action/dto";
 import { ActionService } from "../../action/action.service";
 import { ActionContext } from "../types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class DBSchemaImportService {
   constructor(
+    @Inject(AmplicationLogger) private readonly logger: AmplicationLogger,
     private readonly configService: ConfigService,
     private readonly prisma: PrismaService,
     private readonly kafkaProducerService: KafkaProducerService,
@@ -83,62 +85,69 @@ export class DBSchemaImportService {
   async onPrismaSchemaUploadEventProcessed(
     response: DBSchemaImportRequest.Value
   ) {
-    const { actionId, file } = response;
-    const dbSchemaImportAction = await this.prisma.userAction.findFirst({
-      where: {
-        actionId,
-        userActionType: EnumUserActionType.DBSchemaImport,
-      },
-    });
+    try {
+      const { actionId, file } = response;
+      const dbSchemaImportAction = await this.prisma.userAction.findFirst({
+        where: {
+          actionId,
+          userActionType: EnumUserActionType.DBSchemaImport,
+        },
+      });
 
-    if (!dbSchemaImportAction) {
-      throw new AmplicationError(
-        `Prisma schema upload action with id ${actionId} not found`
-      );
-    }
+      if (!dbSchemaImportAction) {
+        throw new AmplicationError(
+          `Prisma schema upload action with id ${actionId} not found`
+        );
+      }
 
-    const user = await this.userService.findUser({
-      where: { id: dbSchemaImportAction.userId },
-      include: { account: true },
-    });
+      const user = await this.userService.findUser({
+        where: { id: dbSchemaImportAction.userId },
+        include: { account: true },
+      });
 
-    if (!user) {
-      throw new AmplicationError(
-        `User with id ${dbSchemaImportAction.userId} not found`
-      );
-    }
+      if (!user) {
+        throw new AmplicationError(
+          `User with id ${dbSchemaImportAction.userId} not found`
+        );
+      }
 
-    if (!dbSchemaImportAction.resourceId) {
-      throw new AmplicationError(
-        `Resource id is missing for action with id ${actionId}`
-      );
-    }
+      if (!dbSchemaImportAction.resourceId) {
+        throw new AmplicationError(
+          `Resource id is missing for action with id ${actionId}`
+        );
+      }
 
-    if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
-      const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
-      const logByStep = async (level: EnumActionLogLevel, message: string) =>
-        await this.actionService.logByStepId(step.id, level, message);
-      const onComplete = async (
-        status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-      ) =>
-        await this.completeDBSchemaImportStep(dbSchemaImportAction.id, status);
+      if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
+        const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
+        const logByStep = async (level: EnumActionLogLevel, message: string) =>
+          await this.actionService.logByStepId(step.id, level, message);
+        const onComplete = async (
+          status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+        ) =>
+          await this.completeDBSchemaImportStep(
+            dbSchemaImportAction.id,
+            status
+          );
 
-      const actionContext: ActionContext = {
-        logByStep,
-        onComplete,
-      };
+        const actionContext: ActionContext = {
+          logByStep,
+          onComplete,
+        };
 
-      await this.entityService.createEntitiesFromPrismaSchema(
-        actionContext,
-        file,
-        dbSchemaImportAction.metadata.fileName,
-        dbSchemaImportAction.resourceId,
-        user
-      );
-    } else {
-      throw new AmplicationError(
-        `Metadata is not in the expected format for action with id ${actionId}`
-      );
+        await this.entityService.createEntitiesFromPrismaSchema(
+          actionContext,
+          file,
+          dbSchemaImportAction.metadata.fileName,
+          dbSchemaImportAction.resourceId,
+          user
+        );
+      } else {
+        throw new AmplicationError(
+          `Metadata is not in the expected format for action with id ${actionId}`
+        );
+      }
+    } catch (error) {
+      this.logger.error(error.message, error);
     }
   }
 
