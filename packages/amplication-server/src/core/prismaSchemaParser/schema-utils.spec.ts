@@ -360,6 +360,17 @@ describe("schema-utils", () => {
   });
 
   describe("handleEnumMapAttribute", () => {
+    jest.clearAllMocks();
+
+    let actionContext: ActionContext;
+
+    beforeEach(() => {
+      actionContext = {
+        logByStep: jest.fn(),
+        onComplete: jest.fn(),
+      };
+    });
+
     it("should return array of options and log info message when only enumerators are present", () => {
       const enumOfTheField = {
         name: "TestEnum",
@@ -374,11 +385,6 @@ describe("schema-utils", () => {
           },
         ],
       } as unknown as Enum;
-
-      const actionContext: ActionContext = {
-        logByStep: jest.fn(),
-        onComplete: jest.fn(),
-      };
 
       const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
@@ -412,11 +418,6 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const actionContext: ActionContext = {
-        logByStep: jest.fn(),
-        onComplete: jest.fn(),
-      };
-
       const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
@@ -440,11 +441,6 @@ describe("schema-utils", () => {
           },
         ],
       } as unknown as Enum;
-
-      const actionContext: ActionContext = {
-        logByStep: jest.fn(),
-        onComplete: jest.fn(),
-      };
 
       const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
