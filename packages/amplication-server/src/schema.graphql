@@ -285,6 +285,11 @@ input CreateGitRepositoryInput {
   resourceId: String
 }
 
+input DBSchemaImportCreateInput {
+  resource: WhereParentIdInput!
+  userActionType: EnumUserActionType!
+}
+
 """
 A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
 """
@@ -874,7 +879,7 @@ type Mutation {
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createDefaultRelatedField(relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
-  createEntitiesFromPrismaSchema(data: UserActionCreateInput!, file: Upload!): UserAction!
+  createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   createMessageBroker(data: ResourceCreateInput!): Resource!
@@ -1576,12 +1581,6 @@ type UserAction {
   user: User!
   userActionType: EnumUserActionType!
   userId: String!
-}
-
-input UserActionCreateInput {
-  metadata: JSONObject
-  resource: WhereParentIdInput
-  userActionType: EnumUserActionType!
 }
 
 type UserRole {

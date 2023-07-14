@@ -309,6 +309,11 @@ export type CreateGitRepositoryInput = {
   resourceId?: InputMaybe<Scalars['String']['input']>;
 };
 
+export type DbSchemaImportCreateInput = {
+  resource: WhereParentIdInput;
+  userActionType: EnumUserActionType;
+};
+
 export type DateTimeFilter = {
   equals?: InputMaybe<Scalars['DateTime']['input']>;
   gt?: InputMaybe<Scalars['DateTime']['input']>;
@@ -1027,7 +1032,7 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 
 
 export type MutationCreateEntitiesFromPrismaSchemaArgs = {
-  data: UserActionCreateInput;
+  data: DbSchemaImportCreateInput;
   file: Scalars['Upload']['input'];
 };
 
@@ -2172,12 +2177,6 @@ export type UserAction = {
   user: User;
   userActionType: EnumUserActionType;
   userId: Scalars['String']['output'];
-};
-
-export type UserActionCreateInput = {
-  metadata?: InputMaybe<Scalars['JSONObject']['input']>;
-  resource?: InputMaybe<WhereParentIdInput>;
-  userActionType: EnumUserActionType;
 };
 
 export type UserRole = {
