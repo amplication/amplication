@@ -57,5 +57,5 @@ export class UserAction {
   status?: keyof typeof EnumUserActionStatus;
 
   @Field(() => GraphQLJSONObject, { nullable: true })
-  metadata: JsonValue;
+  metadata?: JsonValue;
 }
