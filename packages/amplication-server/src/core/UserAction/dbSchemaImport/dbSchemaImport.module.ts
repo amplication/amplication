@@ -9,6 +9,7 @@ import { EntityModule } from "../../entity/entity.module";
 import { PermissionsModule } from "../../permissions/permissions.module";
 import { UserModule } from "../../user/user.module";
 import { ActionModule } from "../../action/action.module";
+import { UserActionModule } from "../userActionModule";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { ActionModule } from "../../action/action.module";
     EntityModule,
     UserModule,
     ActionModule,
+    UserActionModule,
   ],
   controllers: [DBSchemaImportController],
   providers: [DBSchemaImportService, DBSchemaImportResolver],

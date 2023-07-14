@@ -1,9 +1,9 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService } from "../../prisma";
+import { Prisma, PrismaService } from "../../prisma";
 import { FindOneUserActionArgs } from "./dto/FindOneUserActionArgs";
 import { UserAction } from "./dto";
 import { EnumActionStepStatus } from "../action/dto";
-import { EnumUserActionStatus } from "./types";
+import { EnumUserActionStatus, EnumUserActionType } from "./types";
 
 @Injectable()
 export class UserActionService {
@@ -11,6 +11,43 @@ export class UserActionService {
 
   async findOne(args: FindOneUserActionArgs): Promise<UserAction | null> {
     return this.prisma.userAction.findUnique(args);
+  }
+
+  async createUserActionByTypeWithInitialStep(
+    userActionType: EnumUserActionType,
+    metadata: Record<string, any>, // provide the exact type when calling this method
+    initialStepData: Prisma.ActionStepCreateWithoutActionInput,
+    userId: string,
+    resourceId?: string
+  ): Promise<UserAction> {
+    const data: Prisma.UserActionCreateInput = {
+      userActionType,
+      metadata,
+      user: {
+        connect: {
+          id: userId,
+        },
+      },
+      action: {
+        create: {
+          steps: {
+            create: initialStepData,
+          },
+        },
+      },
+    };
+
+    if (resourceId) {
+      data.resource = {
+        connect: {
+          id: resourceId,
+        },
+      };
+    }
+
+    return await this.prisma.userAction.create({
+      data,
+    });
   }
 
   async calcUserActionStatus(userActionId) {

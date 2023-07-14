@@ -18,6 +18,7 @@ import {
 } from "../../action/dto";
 import { ActionService } from "../../action/action.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { UserActionService } from "../userAction.service";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -28,7 +29,8 @@ export class DBSchemaImportService {
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly entityService: EntityService,
     private readonly userService: UserService,
-    private readonly actionService: ActionService
+    private readonly actionService: ActionService,
+    private readonly userActionService: UserActionService
   ) {}
 
   async startProcessingPrismaSchema(
@@ -37,32 +39,14 @@ export class DBSchemaImportService {
     args: CreateUserActionArgs,
     user: User
   ): Promise<UserAction> {
-    const dbSchemaImportAction = await this.prisma.userAction.create({
-      data: {
-        userActionType: EnumUserActionType.DBSchemaImport,
-        metadata: {
-          schema: file,
-          fileName,
-        },
-        user: {
-          connect: {
-            id: user.id,
-          },
-        },
-        resource: {
-          connect: {
-            id: args.data.resource.connect.id,
-          },
-        },
-        action: {
-          create: {
-            steps: {
-              create: initialStepData,
-            },
-          },
-        },
-      },
-    });
+    const dbSchemaImportAction =
+      await this.userActionService.createUserActionByTypeWithInitialStep(
+        EnumUserActionType.DBSchemaImport,
+        metadata,
+        initialStepData,
+        user.id,
+        args.data.resource.connect.id
+      );
 
     // push to kafka: actionId and file
     const prismaSchemaUploadEvent: DBSchemaImportRequest.KafkaEvent = {
