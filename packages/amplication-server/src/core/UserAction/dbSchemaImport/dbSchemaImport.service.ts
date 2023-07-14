@@ -19,7 +19,7 @@ import {
 import { ActionService } from "../../action/action.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserActionService } from "../userAction.service";
-import { DBImportMetadata } from "./types";
+import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 
 @Injectable()
@@ -37,7 +37,7 @@ export class DBSchemaImportService {
 
   async startProcessingDBSchema(
     args: CreateDBSchemaImportArgs,
-    metadata: DBImportMetadata,
+    metadata: DBSchemaImportMetadata,
     user: User
   ): Promise<UserAction> {
     const dbSchemaImportAction =

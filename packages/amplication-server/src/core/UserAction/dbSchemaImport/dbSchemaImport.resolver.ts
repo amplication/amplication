@@ -10,7 +10,7 @@ import { UserEntity } from "../../../decorators/user.decorator";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
 import { graphqlUpload } from "../utils/graphql-upload";
 import { UserAction } from "../dto";
-import { DBImportMetadata } from "./types";
+import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 
 @Resolver(() => UserAction)
@@ -33,7 +33,7 @@ export class DBSchemaImportResolver {
     file: FileUpload
   ): Promise<UserAction> {
     const fileContent = await graphqlUpload(file);
-    const metadata: DBImportMetadata = {
+    const metadata: DBSchemaImportMetadata = {
       fileName: file.filename,
       schema: fileContent,
     };
