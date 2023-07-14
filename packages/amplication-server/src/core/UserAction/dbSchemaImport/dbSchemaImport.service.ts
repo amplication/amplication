@@ -6,7 +6,7 @@ import { PrismaService } from "../../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../../env";
 import { EntityService, UserService } from "../..";
-import { EnumUserActionType } from "../types";
+import { EnumUserActionType, ActionContext } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
 import { CreateUserActionArgs, UserAction } from "../dto";
@@ -17,7 +17,6 @@ import {
   EnumActionStepStatus,
 } from "../../action/dto";
 import { ActionService } from "../../action/action.service";
-import { ActionContext } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()

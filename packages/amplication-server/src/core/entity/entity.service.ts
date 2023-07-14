@@ -85,7 +85,7 @@ import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaPar
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
-import { ActionContext } from "../UserAction/types";
+import { ActionContext } from "../userAction/types";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,

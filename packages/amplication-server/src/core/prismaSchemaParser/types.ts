@@ -1,7 +1,7 @@
 import { ConcretePrismaSchemaBuilder } from "@mrleebo/prisma-ast";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionLog } from "../action/dto";
-import { ActionContext } from "../UserAction/types";
+import { ActionContext } from "../userAction/types";
 
 export type PrepareOperation = (
   prepareOperationIO: PrepareOperationIO

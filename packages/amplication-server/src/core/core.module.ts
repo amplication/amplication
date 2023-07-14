@@ -21,7 +21,7 @@ import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
-import { UserActionModule } from "./UserAction/userActionModule";
+import { UserActionModule } from "./userAction/userActionModule";
 
 @Module({
   imports: [
