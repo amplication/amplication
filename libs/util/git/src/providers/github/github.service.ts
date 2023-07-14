@@ -441,7 +441,7 @@ export class GithubService implements GitProvider {
     branchName,
     pullRequestTitle,
     pullRequestBody,
-    defaultBranchName,
+    baseBranchName,
   }: GitProviderCreatePullRequestArgs): Promise<PullRequest> {
     const { data: pullRequest } = await this.octokit.rest.pulls.create({
       owner,
@@ -449,7 +449,7 @@ export class GithubService implements GitProvider {
       title: pullRequestTitle,
       body: pullRequestBody,
       head: branchName,
-      base: defaultBranchName,
+      base: baseBranchName,
     });
     return { url: pullRequest.html_url, number: pullRequest.number };
   }
@@ -480,19 +480,14 @@ export class GithubService implements GitProvider {
     repositoryName,
     branchName,
     pointingSha,
+    baseBranchName,
   }: CreateBranchArgs): Promise<Branch> {
     let baseSha = pointingSha;
     if (!baseSha) {
-      const repository = await this.getRepository({
-        owner,
-        repositoryName,
-      });
-      const { defaultBranch } = repository;
-
       const refs = await this.octokit.rest.git.getRef({
         owner,
         repo: repositoryName,
-        ref: `heads/${defaultBranch}`,
+        ref: `heads/${baseBranchName}`,
       });
       baseSha = refs.data.object.sha;
     }
