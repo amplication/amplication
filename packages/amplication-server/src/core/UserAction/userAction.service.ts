@@ -50,7 +50,9 @@ export class UserActionService {
     });
   }
 
-  async calcUserActionStatus(userActionId) {
+  async calcUserActionStatus(
+    userActionId: string
+  ): Promise<EnumUserActionStatus> {
     const userAction = await this.prisma.userAction.findUnique({
       where: {
         id: userActionId,
