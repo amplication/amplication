@@ -2,7 +2,7 @@ import { gql } from "@apollo/client";
 
 export const CREATE_ENTITIES_FORM_SCHEMA = gql`
   mutation createEntitiesFromPrismaSchema(
-    $data: UserActionCreateInput!
+    $data: DBSchemaImportCreateInput!
     $file: Upload!
   ) {
     createEntitiesFromPrismaSchema(data: $data, file: $file) {
