@@ -118,29 +118,11 @@ export class DBSchemaImportService {
 
       if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
         const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
-        const logByStep = (level: EnumActionLogLevel, message: string) =>
-          this.actionService
-            .logByStepId(step.id, level, message)
-            .catch((error) =>
-              this.logger.error(`Failed to log action step ${step.id}`, error)
-            );
-        const onComplete = (
-          status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-        ) =>
-          this.completeDBSchemaImportStep(
-            dbSchemaImportAction.id,
-            status
-          ).catch((error) =>
-            this.logger.error(
-              `Failed to complete action step ${step.id}`,
-              error
-            )
-          );
 
-        const actionContext: ActionContext = {
-          logByStep,
-          onComplete,
-        };
+        const actionContext = this.createActionContext(
+          step,
+          dbSchemaImportAction.id
+        );
 
         await this.entityService.createEntitiesFromPrismaSchema(
           actionContext,
@@ -191,5 +173,36 @@ export class DBSchemaImportService {
     }
 
     await this.actionService.complete(step, status);
+  }
+
+  /**
+   * Creates an ActionContext for logByStepId and complete functions that can be invoked synchronously.
+   * These functions are invoked as Promises and potential errors are immediately caught and logged.
+   * This provides a means to fire-and-forget these actions without the need to await their completion.
+   * The client of this ActionContext is expected to use 'void' operator while invoking these functions,
+   * indicating we're not interested in their resolved value, thus handling uncaught Promise rejections.
+   */
+  private createActionContext(
+    step: ActionStep,
+    userActionId: string
+  ): ActionContext {
+    const logByStep = (level: EnumActionLogLevel, message: string) =>
+      this.actionService
+        .logByStepId(step.id, level, message)
+        .catch((error) =>
+          this.logger.error(`Failed to log action step ${step.id}`, error)
+        );
+
+    const onComplete = (
+      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    ) =>
+      this.completeDBSchemaImportStep(userActionId, status).catch((error) =>
+        this.logger.error(`Failed to complete action step ${step.id}`, error)
+      );
+
+    return {
+      logByStep,
+      onComplete,
+    };
   }
 }
