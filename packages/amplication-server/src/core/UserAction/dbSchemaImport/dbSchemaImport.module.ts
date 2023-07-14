@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
 import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { DBSchemaImportController } from "./dbSchemaImport.controller";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
@@ -13,7 +12,6 @@ import { UserActionModule } from "../userActionModule";
 
 @Module({
   imports: [
-    ConfigModule,
     PermissionsModule,
     KafkaModule,
     PrismaModule,
