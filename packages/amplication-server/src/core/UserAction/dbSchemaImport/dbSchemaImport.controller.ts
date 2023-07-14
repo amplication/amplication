@@ -18,12 +18,12 @@ export class DBSchemaImportController {
   @EventPattern(
     EnvironmentVariables.instance.get(Env.DB_SCHEMA_IMPORT_TOPIC, true)
   )
-  async onPrismaSchemaUploadEvent(
+  async onDBSchemaImportRequest(
     @Payload() message: DBSchemaImportRequest.KafkaEvent
   ): Promise<void> {
     try {
       const args = plainToInstance(DBSchemaImportRequest.Value, message);
-      await this.dbSchemaImportService.onPrismaSchemaUploadEventProcessed(args);
+      await this.dbSchemaImportService.createEntitiesFromPrismaSchema(args);
     } catch (error) {
       this.logger.error(error.message, error);
     }

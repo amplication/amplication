@@ -9,7 +9,9 @@ import { User } from "../../../models";
 import { UserEntity } from "../../../decorators/user.decorator";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
 import { graphqlUpload } from "../utils/graphql-upload";
-import { CreateUserActionArgs, UserAction } from "../dto";
+import { UserAction } from "../dto";
+import { DBImportMetadata } from "./types";
+import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 
 @Resolver(() => UserAction)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -26,16 +28,19 @@ export class DBSchemaImportResolver {
   )
   async createEntitiesFromPrismaSchema(
     @UserEntity() user: User,
-    @Args() args: CreateUserActionArgs,
+    @Args() args: CreateDBSchemaImportArgs,
     @Args({ name: "file", type: () => GraphQLUpload })
     file: FileUpload
   ): Promise<UserAction> {
     const fileContent = await graphqlUpload(file);
+    const metadata: DBImportMetadata = {
+      fileName: file.filename,
+      schema: fileContent,
+    };
 
-    return this.dbSchemaImportService.startProcessingPrismaSchema(
-      fileContent,
-      file.filename,
+    return this.dbSchemaImportService.startProcessingDBSchema(
       args,
+      metadata,
       user
     );
   }

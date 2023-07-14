@@ -9,7 +9,7 @@ import { EntityService, UserService } from "../..";
 import { EnumUserActionType, ActionContext } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
-import { CreateUserActionArgs, UserAction } from "../dto";
+import { UserAction } from "../dto";
 import { PROCESSING_PRISMA_SCHEMA, initialStepData } from "./constants";
 import {
   ActionStep,
@@ -19,6 +19,8 @@ import {
 import { ActionService } from "../../action/action.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserActionService } from "../userAction.service";
+import { DBImportMetadata } from "./types";
+import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 
 @Injectable()
 export class DBSchemaImportService {
@@ -33,10 +35,9 @@ export class DBSchemaImportService {
     private readonly userActionService: UserActionService
   ) {}
 
-  async startProcessingPrismaSchema(
-    file: string,
-    fileName: string,
-    args: CreateUserActionArgs,
+  async startProcessingDBSchema(
+    args: CreateDBSchemaImportArgs,
+    metadata: DBImportMetadata,
     user: User
   ): Promise<UserAction> {
     const dbSchemaImportAction =
@@ -53,7 +54,7 @@ export class DBSchemaImportService {
       key: null,
       value: {
         actionId: dbSchemaImportAction.actionId,
-        file,
+        file: metadata.schema,
       },
     };
 
@@ -65,9 +66,7 @@ export class DBSchemaImportService {
     return dbSchemaImportAction;
   }
 
-  async onPrismaSchemaUploadEventProcessed(
-    response: DBSchemaImportRequest.Value
-  ) {
+  async createEntitiesFromPrismaSchema(response: DBSchemaImportRequest.Value) {
     try {
       const { actionId, file } = response;
       const dbSchemaImportAction = await this.prisma.userAction.findFirst({
@@ -79,7 +78,7 @@ export class DBSchemaImportService {
 
       if (!dbSchemaImportAction) {
         throw new AmplicationError(
-          `Prisma schema upload action with id ${actionId} not found`
+          `Prisma schema import action with action id ${actionId} not found`
         );
       }
 
@@ -96,7 +95,7 @@ export class DBSchemaImportService {
 
       if (!dbSchemaImportAction.resourceId) {
         throw new AmplicationError(
-          `Resource id is missing for action with id ${actionId}`
+          `Resource id is missing for userAction action: ${dbSchemaImportAction.id}`
         );
       }
 
