@@ -5,9 +5,11 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
+import { ActionContext } from "../UserAction/types";
 
 describe("prismaSchema", () => {
   let service: PrismaSchemaParserService;
+  let actionContext: ActionContext;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -20,6 +22,11 @@ describe("prismaSchema", () => {
     service = moduleRef.get<PrismaSchemaParserService>(
       PrismaSchemaParserService
     );
+
+    actionContext = {
+      logByStep: jest.fn(),
+      onComplete: jest.fn(),
+    };
   });
 
   describe("convertPrismaSchemaForImportObjects", () => {
@@ -28,34 +35,14 @@ describe("prismaSchema", () => {
       const existingEntities: ExistingEntitySelect[] = [];
       const result = service.convertPrismaSchemaForImportObjects(
         prismaSchema,
-        existingEntities
+        existingEntities,
+        actionContext
       );
-      expect(result).toEqual({
-        preparedEntitiesWithFields: [],
-        log: [
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            level: EnumActionLogLevel.Info,
-            message: "Starting Prisma Schema Validation",
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            level: EnumActionLogLevel.Error,
-            message: "A schema must contain at least one model",
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            level: EnumActionLogLevel.Error,
-            message: "Prisma Schema Validation Failed",
-          },
-        ],
-      });
+      expect(result).toEqual([]);
+      expect(actionContext.logByStep).toBeCalledWith(
+        EnumActionLogLevel.Error,
+        "Prisma Schema Validation Failed"
+      );
     });
 
     it("should return a validation error if the schema is not a valid Prisma schema", () => {
@@ -75,11 +62,13 @@ describe("prismaSchema", () => {
         username   String   @unique @db.VarChar(256)
         roles      Json?
       }`;
+
       const existingEntities: ExistingEntitySelect[] = [];
       try {
         service.convertPrismaSchemaForImportObjects(
           prismaSchema,
-          existingEntities
+          existingEntities,
+          actionContext
         );
         fail("convertPrismaSchemaForImportObjects should have thrown an error");
       } catch (error) {
@@ -109,7 +98,8 @@ describe("prismaSchema", () => {
       // act
       const result = service.convertPrismaSchemaForImportObjects(
         prismaSchema,
-        existingEntities
+        existingEntities,
+        actionContext
       );
       // assert
       const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
@@ -172,10 +162,7 @@ describe("prismaSchema", () => {
           ],
         },
       ];
-      expect(result).toEqual({
-        preparedEntitiesWithFields: expectedEntitiesWithFields,
-        log: expect.anything(),
-      });
+      expect(result).toEqual(expectedEntitiesWithFields);
     });
 
     it("should rename models starting in lower case to upper case, add a `@@map` attribute to the model with the original model name and a log informing what happened", () => {
@@ -199,7 +186,8 @@ describe("prismaSchema", () => {
       // act
       const result = service.convertPrismaSchemaForImportObjects(
         prismaSchema,
-        existingEntities
+        existingEntities,
+        actionContext
       );
       // assert
       const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
@@ -262,60 +250,43 @@ describe("prismaSchema", () => {
           ],
         },
       ];
-      expect(result).toEqual({
-        preparedEntitiesWithFields: expectedEntitiesWithFields,
-        log: [
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Starting Prisma Schema Validation`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prisma Schema Validation Completed`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prepare Prisma Schema for import`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Model name "admin" was changed to "Admin"`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prepare Prisma Schema for import completed`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Create import objects from Prisma Schema`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Create import objects from Prisma Schema completed`,
-            level: EnumActionLogLevel.Info,
-          },
-        ],
-      });
+      expect(result).toEqual(expectedEntitiesWithFields);
+      expect(actionContext.logByStep).toBeCalledTimes(7);
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        1,
+        EnumActionLogLevel.Info,
+        "Starting Prisma Schema Validation"
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        2,
+        EnumActionLogLevel.Info,
+        `Prisma Schema Validation Completed`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        3,
+        EnumActionLogLevel.Info,
+        `Prepare Prisma Schema for import`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        4,
+        EnumActionLogLevel.Info,
+        `Model name "admin" was changed to "Admin"`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        5,
+        EnumActionLogLevel.Info,
+        `Prepare Prisma Schema for import completed`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        6,
+        EnumActionLogLevel.Info,
+        `Create import objects from Prisma Schema`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        7,
+        EnumActionLogLevel.Info,
+        `Create import objects from Prisma Schema completed`
+      );
     });
 
     it("should return object with entities and fields with the right relations and a log", () => {
@@ -343,7 +314,8 @@ describe("prismaSchema", () => {
       // act
       const result = service.convertPrismaSchemaForImportObjects(
         prismaSchema,
-        existingEntities
+        existingEntities,
+        actionContext
       );
       // assert
       const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
@@ -413,53 +385,38 @@ describe("prismaSchema", () => {
           ],
         },
       ];
-      expect(result).toEqual({
-        preparedEntitiesWithFields: expectedEntitiesWithFields,
-        log: [
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Starting Prisma Schema Validation`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prisma Schema Validation Completed`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prepare Prisma Schema for import`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Prepare Prisma Schema for import completed`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Create import objects from Prisma Schema`,
-            level: EnumActionLogLevel.Info,
-          },
-          {
-            id: expect.any(String),
-            createdAt: expect.any(Date),
-            meta: {},
-            message: `Create import objects from Prisma Schema completed`,
-            level: EnumActionLogLevel.Info,
-          },
-        ],
-      });
+      expect(result).toEqual(expectedEntitiesWithFields);
+      expect(actionContext.logByStep).toBeCalledTimes(6);
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        1,
+        EnumActionLogLevel.Info,
+        "Starting Prisma Schema Validation"
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        2,
+        EnumActionLogLevel.Info,
+        `Prisma Schema Validation Completed`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        3,
+        EnumActionLogLevel.Info,
+        `Prepare Prisma Schema for import`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        4,
+        EnumActionLogLevel.Info,
+        `Prepare Prisma Schema for import completed`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        5,
+        EnumActionLogLevel.Info,
+        `Create import objects from Prisma Schema`
+      );
+      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+        6,
+        EnumActionLogLevel.Info,
+        `Create import objects from Prisma Schema completed`
+      );
     });
   });
 });
