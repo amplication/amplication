@@ -80,6 +80,7 @@ model GitRepository {
   id                String          @id @default(cuid())
   name              String
   groupName         String?
+  baseBranchName    String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String

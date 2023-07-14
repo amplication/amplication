@@ -87,6 +87,7 @@ export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
   gitRepositoryName: string;
   repositoryGroupName?: string;
+  baseBranchName: string;
   gitProvider: EnumGitProvider;
   gitProviderProperties: GitProviderProperties;
   commit: {
@@ -581,6 +582,7 @@ export class BuildService {
         gitOrganizationName: organizationName,
         gitRepositoryName: project.demoRepoName,
         repositoryGroupName: "",
+        baseBranchName: "", //leave empty to use default branch
         gitProvider: EnumGitProvider.Github,
         gitProviderProperties: {
           installationId: installationId,
@@ -631,6 +633,7 @@ export class BuildService {
       gitSettings = {
         gitOrganizationName: gitOrganization.name,
         gitRepositoryName: resourceRepository.name,
+        baseBranchName: resourceRepository.baseBranchName,
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
