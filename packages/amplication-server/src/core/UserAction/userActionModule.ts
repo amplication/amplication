@@ -1,5 +1,4 @@
 import { Module } from "@nestjs/common";
-import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 import { UserActionResolver } from "./userAction.resolver";
 import { UserActionService } from "./userAction.service";
 import { PrismaModule } from "../../prisma";
@@ -12,7 +11,6 @@ import { UserModule } from "../user/user.module";
   imports: [
     PrismaModule,
     PermissionsModule,
-    DBSchemaImportModule,
     ActionModule,
     ResourceModule,
     UserModule,

@@ -22,6 +22,7 @@ import { PluginInstallationModule } from "./pluginInstallation/pluginInstallatio
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 import { UserActionModule } from "./userAction/userActionModule";
+import { DBSchemaImportModule } from "./userAction/dbSchemaImport/dbSchemaImport.module";
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { UserActionModule } from "./userAction/userActionModule";
     TopicModule,
     ServiceTopicsModule,
     UserActionModule,
+    DBSchemaImportModule,
   ],
   exports: [
     AccountModule,
@@ -73,6 +75,7 @@ import { UserActionModule } from "./userAction/userActionModule";
     TopicModule,
     ServiceTopicsModule,
     UserActionModule,
+    DBSchemaImportModule,
   ],
 })
 export class CoreModule {}
