@@ -7,7 +7,7 @@ import { plainToInstance } from "class-transformer";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
 
-@Controller("prisma-schema-upload")
+@Controller("db-schema-import")
 export class DBSchemaImportController {
   constructor(
     private readonly dbSchemaImportService: DBSchemaImportService,

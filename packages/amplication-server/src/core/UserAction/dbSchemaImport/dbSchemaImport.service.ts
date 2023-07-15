@@ -49,8 +49,7 @@ export class DBSchemaImportService {
         args.data.resource.connect.id
       );
 
-    // push to kafka: actionId and file
-    const prismaSchemaUploadEvent: DBSchemaImportRequest.KafkaEvent = {
+    const dbSchemaImportEvent: DBSchemaImportRequest.KafkaEvent = {
       key: null,
       value: {
         actionId: dbSchemaImportAction.actionId,
@@ -60,7 +59,7 @@ export class DBSchemaImportService {
 
     await this.kafkaProducerService.emitMessage(
       this.configService.get(Env.DB_SCHEMA_IMPORT_TOPIC),
-      prismaSchemaUploadEvent
+      dbSchemaImportEvent
     );
 
     return dbSchemaImportAction;
