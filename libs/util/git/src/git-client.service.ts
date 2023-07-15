@@ -40,6 +40,7 @@ import { GitFactory } from "./git-factory";
 import { GitError, LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
 import { isEmpty } from "lodash";
+import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -163,6 +164,17 @@ export class GitClientService {
         baseBranch = repo.defaultBranch;
       } else {
         baseBranch = baseBranchName;
+
+        const branch = await this.provider.getBranch({
+          owner,
+          repositoryName,
+          branchName: baseBranch,
+          repositoryGroupName,
+        });
+
+        if (!branch) {
+          throw new InvalidBaseBranch(baseBranch);
+        }
       }
 
       await gitCli.clone();
