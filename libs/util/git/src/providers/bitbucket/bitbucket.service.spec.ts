@@ -560,6 +560,7 @@ describe("bitbucket.service", () => {
         branchName: "amit-test",
         pointingSha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
         repositoryGroupName: "my-group",
+        baseBranchName: "master",
       });
 
       const expectedResult = {
