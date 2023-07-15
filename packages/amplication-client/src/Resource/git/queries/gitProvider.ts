@@ -110,3 +110,16 @@ export const GET_GROUPS = gql`
     }
   }
 `;
+
+export const UPDATE_GIT_REPOSITORY = gql`
+  mutation updateGitRepository(
+    $data: GitRepositoryUpdateInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateGitRepository(data: $data, where: $where) {
+      id
+      groupName
+      baseBranchName
+    }
+  }
+`;

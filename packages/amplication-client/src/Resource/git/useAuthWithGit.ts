@@ -9,7 +9,15 @@ import {
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { ApolloError, useMutation } from "@apollo/client";
-import { CONNECT_GIT_PROVIDER_REPOSITORY } from "./queries/gitProvider";
+import {
+  CONNECT_GIT_PROVIDER_REPOSITORY,
+  UPDATE_GIT_REPOSITORY,
+} from "./queries/gitProvider";
+import * as models from "../../models";
+
+type UpdateGitRepositoryData = {
+  updateGitRepository: models.GitRepository;
+};
 
 type UseGitHook = (obj: {
   resource: Resource;
@@ -40,6 +48,12 @@ type UseGitHook = (obj: {
   closeSelectRepoDialog: () => void;
   openCreateNewRepo: () => void;
   closeCreateNewRepo: () => void;
+  updateGitRepository: (
+    gitRepositoryId: string,
+    data: models.GitRepositoryUpdateInput
+  ) => void;
+  updateGitRepositoryError: ApolloError;
+  updateGitRepositoryLoading: boolean;
 };
 
 interface setGitOrganizationCompose {
@@ -94,6 +108,27 @@ const useGitHook: UseGitHook = ({
 
     setGitRepositorySelectedData(gitRepositorySelected);
   }, [gitRepositorySelected?.gitOrganizationId]);
+
+  const [
+    updateGitRepositoryMutation,
+    { error: updateGitRepositoryError, loading: updateGitRepositoryLoading },
+  ] = useMutation<UpdateGitRepositoryData>(UPDATE_GIT_REPOSITORY, {
+    onCompleted: (data) => {
+      //update the state - but it uses some unique type so need to convert first
+    },
+  });
+
+  const updateGitRepository = useCallback(
+    (gitRepositoryId: string, data: models.GitRepositoryUpdateInput) => {
+      updateGitRepositoryMutation({
+        variables: {
+          where: { id: gitRepositoryId },
+          data,
+        },
+      }).catch(console.error);
+    },
+    [updateGitRepositoryMutation]
+  );
 
   const handleRepoSelected = useCallback(
     (data: GitRepositorySelected) => {
@@ -209,6 +244,9 @@ const useGitHook: UseGitHook = ({
     closeSelectRepoDialog,
     openCreateNewRepo,
     closeCreateNewRepo,
+    updateGitRepository,
+    updateGitRepositoryLoading,
+    updateGitRepositoryError,
   };
 };
 
