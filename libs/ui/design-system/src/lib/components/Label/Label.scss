@@ -5,6 +5,13 @@
   &__error {
     color: var(--negative);
   }
+
+  &__inner {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+
   &__normal {
     color: #53dbee;
     font-size: 8px;
