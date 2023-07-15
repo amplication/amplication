@@ -106,7 +106,7 @@ export class GitResolver {
     return this.gitService.deleteGitRepository(args);
   }
 
-  @Mutation(() => Resource)
+  @Mutation(() => GitRepository)
   @AuthorizeContext(AuthorizableOriginParameter.GitRepositoryId, "where.id")
   async updateGitRepository(
     @Args() args: UpdateGitRepositoryArgs

@@ -838,6 +838,10 @@ export type GitRepository = {
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
 };
 
+export type GitRepositoryUpdateInput = {
+  baseBranchName?: InputMaybe<Scalars['String']['input']>;
+};
+
 export type IBlock = {
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -953,6 +957,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateGitRepository: Resource;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1272,6 +1277,12 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
+};
+
+
+export type MutationUpdateGitRepositoryArgs = {
+  data: GitRepositoryUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
