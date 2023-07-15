@@ -31,6 +31,7 @@ export const CONNECT_GIT_PROVIDER_REPOSITORY = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }
@@ -55,6 +56,7 @@ export const CONNECT_GIT_REPOSITORY = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }
