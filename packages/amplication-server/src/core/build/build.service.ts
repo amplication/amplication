@@ -628,12 +628,20 @@ export class BuildService {
 
       const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
 
+      const canUseCustomBaseBranch =
+        await this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+
       const gitProviderArgs =
         await this.gitProviderService.getGitProviderProperties(gitOrganization);
       gitSettings = {
         gitOrganizationName: gitOrganization.name,
         gitRepositoryName: resourceRepository.name,
-        baseBranchName: resourceRepository.baseBranchName,
+        baseBranchName: canUseCustomBaseBranch
+          ? resourceRepository.baseBranchName
+          : "",
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
