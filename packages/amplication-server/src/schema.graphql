@@ -790,6 +790,7 @@ input GitOrganizationWhereInput {
 }
 
 type GitRepository {
+  baseBranchName: String
   createdAt: DateTime
   gitOrganization: GitOrganization!
   gitOrganizationId: String!

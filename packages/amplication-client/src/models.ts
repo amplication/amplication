@@ -828,6 +828,7 @@ export type GitOrganizationWhereInput = {
 };
 
 export type GitRepository = {
+  baseBranchName?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String']['output'];
