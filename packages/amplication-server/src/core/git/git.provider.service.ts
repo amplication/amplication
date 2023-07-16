@@ -471,6 +471,20 @@ export class GitProviderService {
 
     const gitRemoteOrganization = await gitClientService.getOrganization();
 
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: workspaceId,
+        provider: gitProvider,
+        gitOrgType: gitRemoteOrganization.type,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
+
+    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
+      workspaceId
+    );
+
     // save or update the git organization with its provider and provider properties
     if (gitOrganization) {
       return await this.prisma.gitOrganization.update({
@@ -488,18 +502,6 @@ export class GitProviderService {
       });
     }
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: workspaceId,
-        provider: gitProvider,
-      },
-      event: EnumEventType.GitHubAuthResourceComplete,
-    });
-
-    await this.projectService.disableDemoRepoForAllWorkspaceProjects(
-      workspaceId
-    );
     return await this.prisma.gitOrganization.create({
       data: {
         workspace: {
@@ -607,22 +609,13 @@ export class GitProviderService {
     const providerOrganizationProperties: OAuthProviderOrganizationProperties =
       { ...oAuthTokens, ...currentUserData };
 
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: workspaceId,
-        provider: gitProvider,
-      },
-      event: EnumEventType.GitHubAuthResourceComplete,
-    });
-
     this.logger.info("server: completeOAuth2Flow");
 
     await this.projectService.disableDemoRepoForAllWorkspaceProjects(
       workspaceId
     );
 
-    return this.prisma.gitOrganization.upsert({
+    const gitOrganization = await this.prisma.gitOrganization.upsert({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
         provider_installationId: {
@@ -648,6 +641,18 @@ export class GitProviderService {
         providerProperties: providerOrganizationProperties as any,
       },
     });
+
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: workspaceId,
+        provider: gitProvider,
+        gitOrgType: gitOrganization?.type,
+      },
+      event: EnumEventType.GitHubAuthResourceComplete,
+    });
+
+    return gitOrganization;
   }
 
   async getGitGroups(args: GitGroupArgs): Promise<PaginatedGitGroup> {
