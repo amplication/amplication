@@ -5,7 +5,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../user-action/types";
+import { ActionContext } from "../userAction/types";
 
 describe("prismaSchema", () => {
   let service: PrismaSchemaParserService;

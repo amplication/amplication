@@ -17,7 +17,7 @@ import {
 import { Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../user-action/types";
+import { ActionContext } from "../userAction/types";
 
 describe("schema-utils", () => {
   beforeEach(() => {
