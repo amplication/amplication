@@ -93,6 +93,7 @@ export class SegmentAnalyticsService {
         source: "amplication-server",
       },
       context: {
+        ...data.context,
         amplication: {
           analyticsSessionId: analyticsSessionId,
         },

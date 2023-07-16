@@ -2162,6 +2162,7 @@ export type User = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
   isOwner: Scalars['Boolean']['output'];
+  lastActive?: Maybe<Scalars['DateTime']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   userRoles?: Maybe<Array<UserRole>>;
   workspace?: Maybe<Workspace>;

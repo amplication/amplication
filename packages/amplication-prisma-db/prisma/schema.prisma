@@ -108,6 +108,8 @@ model User {
   createdFromInvitation Invitation?
   deletedAt             DateTime?
   userAction            UserAction[]
+  lastActive            DateTime?    @default(now())
+
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }

@@ -1563,6 +1563,7 @@ type User {
   createdAt: DateTime!
   id: String!
   isOwner: Boolean!
+  lastActive: DateTime
   updatedAt: DateTime!
   userRoles: [UserRole!]
   workspace: Workspace
