@@ -538,7 +538,6 @@ model Subscription {
   workspace                 Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   subscriptionPlan          EnumSubscriptionPlan
   status                    EnumSubscriptionStatus
-  subscriptionData          Json
   cancellationEffectiveDate DateTime?
 }
 
