@@ -526,20 +526,18 @@ export class EntityService {
     });
 
     if (existingEntities.length > 0) {
-      await Promise.all(
-        existingEntities.map(async (entity) => {
-          void actionContext.logByStep(
-            EnumActionLogLevel.Error,
-            `Entity "${entity.name}" already exists`
-          );
+      existingEntities.forEach((entity) => {
+        void actionContext.logByStep(
+          EnumActionLogLevel.Error,
+          `Entity "${entity.name}" already exists`
+        );
 
-          this.logger.error(
-            `The following entities already exist: ${existingEntities
-              .map((log) => log.id)
-              .join(", ")}`
-          );
-        })
-      );
+        this.logger.error(
+          `The following entities already exist: ${existingEntities
+            .map((log) => log.id)
+            .join(", ")}`
+        );
+      });
       return false;
     }
     return true;
