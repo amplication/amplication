@@ -528,6 +528,11 @@ export class ResourceService {
           })
         ).provider;
 
+    const totalEntities = data.entities.length;
+    const totalFields = data.entities.reduce((acc, entity) => {
+      return acc + entity.fields.length;
+    }, 0);
+
     await this.analytics.track({
       userId: user.account.id,
       event: EnumEventType.ServiceWizardServiceGenerated,
@@ -546,6 +551,8 @@ export class ResourceService {
         auth: data.authType,
         projectId: project.id,
         workspaceId: project.workspaceId,
+        totalEntities,
+        totalFields,
       },
     });
 
