@@ -15,7 +15,7 @@ import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
 import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
-import { CREATE_ENTITIES_FORM_SCHEMA } from "./queries";
+import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
 
 const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
@@ -70,7 +70,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
   const { trackEvent } = useTracking();
 
   const [createEntitiesFormSchema, { data, error, loading }] =
-    useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA, {
+    useMutation<TData>(CREATE_ENTITIES_FROM_SCHEMA, {
       onCompleted: (data) => {
         setUserAction(data.createEntitiesFromPrismaSchema);
       },
