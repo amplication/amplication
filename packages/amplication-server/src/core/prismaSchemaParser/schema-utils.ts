@@ -32,7 +32,8 @@ import {
 import { ExistingEntitySelect, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { ActionLog, EnumActionLogLevel } from "../action/dto";
+import { EnumActionLogLevel } from "../action/dto";
+import { ActionContext } from "../userAction/types";
 
 /**
  * create the common properties of one entity field from model field
@@ -324,7 +325,7 @@ export function handleModelNamesCollision(
 
 export function handleEnumMapAttribute(
   enumOfTheField: Enum,
-  log: ActionLog[]
+  actionContext: ActionContext
 ): { label: string; value: string }[] {
   const enumOptions = [];
   const enumerators = enumOfTheField.enumerators as Enumerator[];
@@ -338,11 +339,9 @@ export function handleEnumMapAttribute(
       (enumerators[i] as unknown as BlockAttribute).kind === OBJECT_KIND_NAME &&
       enumerators[i].name === MAP_ATTRIBUTE_NAME
     ) {
-      log.push(
-        new ActionLog({
-          level: EnumActionLogLevel.Warning,
-          message: `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`,
-        })
+      void actionContext.logByStep(
+        EnumActionLogLevel.Warning,
+        `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`
       );
       continue;
     }
@@ -370,11 +369,9 @@ export function handleEnumMapAttribute(
         value: enumerators[i].name,
       };
 
-      log.push(
-        new ActionLog({
-          level: EnumActionLogLevel.Warning,
-          message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`,
-        })
+      void actionContext.logByStep(
+        EnumActionLogLevel.Warning,
+        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`
       );
 
       enumOptions.push(optionSetObj);
@@ -385,11 +382,9 @@ export function handleEnumMapAttribute(
         value: enumerators[i].name,
       };
 
-      log.push(
-        new ActionLog({
-          level: EnumActionLogLevel.Info,
-          message: `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`,
-        })
+      void actionContext.logByStep(
+        EnumActionLogLevel.Info,
+        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`
       );
 
       enumOptions.push(optionSetObj);
