@@ -6,7 +6,6 @@ import {
   PrismaService,
   Prisma,
   EnumSubscriptionStatus as PrismaEnumSubscriptionStatus,
-  Subscription as PrismaSubscription,
 } from "../../prisma";
 import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
