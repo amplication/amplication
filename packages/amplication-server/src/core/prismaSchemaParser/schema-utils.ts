@@ -33,7 +33,7 @@ import { ExistingEntitySelect, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../userAction/types";
+import { ActionContext } from "../user-action/types";
 
 /**
  * create the common properties of one entity field from model field

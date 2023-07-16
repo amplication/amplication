@@ -68,7 +68,7 @@ import { validateSchemaProcessing, validateSchemaUpload } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumActionLogLevel } from "../action/dto";
-import { ActionContext } from "../userAction/types";
+import { ActionContext } from "../user-action/types";
 
 @Injectable()
 export class PrismaSchemaParserService {
