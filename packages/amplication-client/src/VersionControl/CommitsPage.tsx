@@ -55,7 +55,8 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
       sideContent={
         commitUtils.commits?.length ? (
           <CommitList
-            commits={commitUtils.commits}
+            commits={commitUtils.commits.slice(1)}
+            lastCommit={commitUtils.lastCommit}
             error={commitUtils.commitsError}
             loading={commitUtils.commitsLoading}
             onLoadMoreClick={handleOnLoadMoreClick}

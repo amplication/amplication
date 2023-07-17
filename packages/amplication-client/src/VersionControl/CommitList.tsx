@@ -15,6 +15,7 @@ import "./CommitList.scss";
 
 type Props = {
   commits: models.Commit[];
+  lastCommit: models.Commit;
   error: ApolloError | undefined;
   loading: boolean;
   onLoadMoreClick: () => void;
@@ -25,6 +26,7 @@ const CLASS_NAME = "commit-list";
 
 const CommitList = ({
   commits,
+  lastCommit,
   error,
   loading,
   onLoadMoreClick,
@@ -37,7 +39,13 @@ const CommitList = ({
   return (
     <div className={CLASS_NAME}>
       {loading && <CircularProgress centerToParent />}
-
+      {currentProject && (
+        <CommitListItem
+          key={`${lastCommit.id}_${Date.now()}`}
+          commit={lastCommit}
+          projectId={currentProject.id}
+        />
+      )}
       {currentProject &&
         commits.map((commit) => (
           <CommitListItem

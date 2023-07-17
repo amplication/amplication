@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
+import { AppContext } from "../context/appContext";
 
 const POLL_INTERVAL = 5000;
 /**
@@ -10,6 +11,7 @@ const POLL_INTERVAL = 5000;
 const useBuildWatchStatus = (
   build?: models.Build
 ): { data: { build?: models.Build } } => {
+  const { commitUtils } = useContext(AppContext);
   const { data, startPolling, stopPolling, refetch } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
@@ -38,6 +40,13 @@ const useBuildWatchStatus = (
       stopPolling();
     };
   }, [stopPolling]);
+
+  useEffect(() => {
+    if (!data) return;
+
+    data?.build?.status === models.EnumBuildStatus.Completed &&
+      commitUtils.refetchLastCommit();
+  }, [data]);
 
   return { data: data || { build } };
 };
