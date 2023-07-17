@@ -67,7 +67,7 @@ import {
 import { validateSchemaProcessing, validateSchemaUpload } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
-import { EnumActionLogLevel } from "../action/dto";
+import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { ActionContext } from "../userAction/types";
 
 @Injectable()
@@ -110,10 +110,15 @@ export class PrismaSchemaParserService {
     );
 
     if (isErrorsValidationLog) {
+      this.logger.error("Prisma Schema Validation Failed", null, {
+        validationLog,
+      });
       void actionContext.logByStep(
         EnumActionLogLevel.Error,
         "Prisma Schema Validation Failed"
       );
+
+      void actionContext.onComplete(EnumActionStepStatus.Failed);
 
       return [];
     } else {
