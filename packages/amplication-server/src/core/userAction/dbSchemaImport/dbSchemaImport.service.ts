@@ -169,17 +169,22 @@ export class DBSchemaImportService {
     userActionId: string
   ): ActionContext {
     const logByStep = (level: EnumActionLogLevel, message: string) =>
-      this.actionService
-        .logByStepId(step.id, level, message)
-        .catch((error) =>
-          this.logger.error(`Failed to log action step ${step.id}`, error)
-        );
+      this.actionService.logByStepId(step.id, level, message).catch((error) =>
+        this.logger.error(`Failed to log action step ${step.id}`, error, {
+          stepId: step.id,
+          message,
+          userActionId,
+        })
+      );
 
     const onComplete = (
       status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
     ) =>
       this.completeDBSchemaImportStep(userActionId, status).catch((error) =>
-        this.logger.error(`Failed to complete action step ${step.id}`, error)
+        this.logger.error(`Failed to complete action step ${step.id}`, error, {
+          stepId: step.id,
+          userActionId,
+        })
       );
 
     return {

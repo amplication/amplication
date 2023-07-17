@@ -448,6 +448,12 @@ export class EntityService {
           event: EnumEventType.ImportPrismaSchemaError,
         });
 
+        this.logger.error(`Invalid Prisma schema`, null, {
+          resourceId,
+          fileName,
+          functionName: "createEntitiesFromPrismaSchema",
+        });
+
         void actionContext.logByStep(
           EnumActionLogLevel.Error,
           `Import operation aborted due to errors. See the log for more details.`
@@ -501,6 +507,11 @@ export class EntityService {
           error: error.message,
         },
         event: EnumEventType.ImportPrismaSchemaError,
+      });
+      this.logger.error(error.message, error, {
+        resourceId,
+        fileName,
+        functionName: "createEntitiesFromPrismaSchema",
       });
 
       void actionContext.logByStep(EnumActionLogLevel.Error, error.message);
@@ -591,6 +602,7 @@ export class EntityService {
         );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
+
         void actionContext.logByStep(
           EnumActionLogLevel.Error,
           `Failed to create entity "${entity.name}". ${error.message}`
