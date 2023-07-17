@@ -641,6 +641,11 @@ export class PrismaSchemaParserService {
         );
 
         if (!isIdField && field.name === ID_FIELD_NAME) {
+          void actionContext.logByStep(
+            EnumActionLogLevel.Info,
+            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`
+          );
+
           builder
             .model(model.name)
             .field(field.name)
@@ -656,12 +661,12 @@ export class PrismaSchemaParserService {
             oldName: field.name,
             newName: `${model.name}Id`,
           };
-
+        } else if (isIdField && field.name !== ID_FIELD_NAME) {
           void actionContext.logByStep(
             EnumActionLogLevel.Info,
-            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`
+            `field name "${field.name}" on model name ${model.name} was changed to "id"`
           );
-        } else if (isIdField && field.name !== ID_FIELD_NAME) {
+
           builder
             .model(model.name)
             .field(field.name)
@@ -677,11 +682,6 @@ export class PrismaSchemaParserService {
             oldName: field.name,
             newName: `id`,
           };
-
-          void actionContext.logByStep(
-            EnumActionLogLevel.Info,
-            `field name "${field.name}" on model name ${model.name} was changed to "id"`
-          );
         }
       });
     });
