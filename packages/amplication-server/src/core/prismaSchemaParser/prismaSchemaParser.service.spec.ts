@@ -24,7 +24,7 @@ describe("prismaSchema", () => {
     );
 
     actionContext = {
-      logByStep: jest.fn(),
+      onEmitUserActionLog: jest.fn(),
       onComplete: jest.fn(),
     };
   });
@@ -39,9 +39,9 @@ describe("prismaSchema", () => {
         actionContext
       );
       expect(result).toEqual([]);
-      expect(actionContext.logByStep).toBeCalledWith(
-        EnumActionLogLevel.Error,
-        "Prisma Schema Validation Failed"
+      expect(actionContext.onEmitUserActionLog).toBeCalledWith(
+        "Prisma Schema Validation Failed",
+        EnumActionLogLevel.Error
       );
     });
 
@@ -251,41 +251,41 @@ describe("prismaSchema", () => {
         },
       ];
       expect(result).toEqual(expectedEntitiesWithFields);
-      expect(actionContext.logByStep).toBeCalledTimes(7);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toBeCalledTimes(7);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Info,
-        "Starting Prisma Schema Validation"
+        "Starting Prisma Schema Validation",
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         2,
-        EnumActionLogLevel.Info,
-        `Prisma Schema Validation Completed`
+        `Prisma Schema Validation Completed`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         3,
-        EnumActionLogLevel.Info,
-        `Prepare Prisma Schema for import`
+        `Prepare Prisma Schema for import`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         4,
-        EnumActionLogLevel.Info,
-        `Model name "admin" was changed to "Admin"`
+        `Model name "admin" was changed to "Admin"`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         5,
-        EnumActionLogLevel.Info,
-        `Prepare Prisma Schema for import completed`
+        `Prepare Prisma Schema for import completed`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         6,
-        EnumActionLogLevel.Info,
-        `Create import objects from Prisma Schema`
+        `Create import objects from Prisma Schema`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         7,
-        EnumActionLogLevel.Info,
-        `Create import objects from Prisma Schema completed`
+        `Create import objects from Prisma Schema completed`,
+        EnumActionLogLevel.Info
       );
     });
 
@@ -386,36 +386,36 @@ describe("prismaSchema", () => {
         },
       ];
       expect(result).toEqual(expectedEntitiesWithFields);
-      expect(actionContext.logByStep).toBeCalledTimes(6);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toBeCalledTimes(6);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Info,
-        "Starting Prisma Schema Validation"
+        "Starting Prisma Schema Validation",
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         2,
-        EnumActionLogLevel.Info,
-        `Prisma Schema Validation Completed`
+        `Prisma Schema Validation Completed`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         3,
-        EnumActionLogLevel.Info,
-        `Prepare Prisma Schema for import`
+        `Prepare Prisma Schema for import`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         4,
-        EnumActionLogLevel.Info,
-        `Prepare Prisma Schema for import completed`
+        `Prepare Prisma Schema for import completed`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         5,
-        EnumActionLogLevel.Info,
-        `Create import objects from Prisma Schema`
+        `Create import objects from Prisma Schema`,
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         6,
-        EnumActionLogLevel.Info,
-        `Create import objects from Prisma Schema completed`
+        `Create import objects from Prisma Schema completed`,
+        EnumActionLogLevel.Info
       );
     });
   });

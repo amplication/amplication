@@ -366,7 +366,7 @@ describe("schema-utils", () => {
 
     beforeEach(() => {
       actionContext = {
-        logByStep: jest.fn(),
+        onEmitUserActionLog: jest.fn(),
         onComplete: jest.fn(),
       };
     });
@@ -393,16 +393,16 @@ describe("schema-utils", () => {
         { label: "enumerator2", value: "enumerator2" },
       ]);
 
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(2);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(2);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Info,
-        "The option 'enumerator1' has been created in the enum 'TestEnum'"
+        "The option 'enumerator1' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         2,
-        EnumActionLogLevel.Info,
-        "The option 'enumerator2' has been created in the enum 'TestEnum'"
+        "The option 'enumerator2' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
     });
 
@@ -422,11 +422,11 @@ describe("schema-utils", () => {
 
       expect(result).toEqual([]);
 
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(1);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(1);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Warning,
-        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported."
+        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
+        EnumActionLogLevel.Warning
       );
     });
 
@@ -445,7 +445,7 @@ describe("schema-utils", () => {
       const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(0);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(0);
     });
   });
 });
