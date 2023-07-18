@@ -17,6 +17,9 @@ import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQuer
 import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
+import { BillingFeature } from "../../util/BillingFeature";
+import { useStiggContext } from "@stigg/react-sdk";
+import { Button } from "../../Components/Button";
 
 const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
 
@@ -68,6 +71,12 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
 
   const { resource: resourceId, project: projectId } = match.params;
   const { trackEvent } = useTracking();
+
+  const { stigg } = useStiggContext();
+
+  const canImportDBSchema = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ImportDBSchema,
+  }).hasAccess;
 
   const [createEntitiesFormSchema, { data, error, loading }] =
     useMutation<TData>(CREATE_ENTITIES_FROM_SCHEMA, {
@@ -143,35 +152,70 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <>
-        <div className={`${CLASS_NAME}__header`}>
-          <SvgThemeImage image={EnumImages.ImportPrisma} />
-          <h2>Import Prisma schema file</h2>
-          <div className={`${CLASS_NAME}__message`}>
-            upload a Prisma schema file to import its content, and create
-            entities and relations.
-            <br />
-            Only '*.prisma' files are supported.
+        {!canImportDBSchema ? (
+          <div className={`${CLASS_NAME}__beta-wrapper`}>
+            <div className={`${CLASS_NAME}__beta-wrapper__header`}>
+              <SvgThemeImage image={EnumImages.ImportPrisma} />
+              <h2>Modernize Faster with Amplication DB Schema Import</h2>
+              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
+                Seamlessly import your existing database schema directly into
+                Amplication. <br /> Ideal for modernization initiatives,
+                significantly reduces transition time by preserving your
+                underlying database while you rebuild and enhance your systems.
+              </div>
+              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
+                Want to get early access and help shape the future of our
+                platform?
+              </div>
+              <a
+                target="db-import-beta"
+                href="https://amplication.com/db-import-beta"
+              >
+                <Button
+                  eventData={{
+                    eventName:
+                      AnalyticsEventNames.ImportPrismaSchemaJoinBetaClick,
+                  }}
+                >
+                  Join our beta group now
+                </Button>
+              </a>
+            </div>
           </div>
-        </div>
-        <div className={`${CLASS_NAME}__content`}>
-          {loading || (data && data.createEntitiesFromPrismaSchema) ? (
-            <>
-              <ActionLog
-                action={actionLog}
-                title="Import Schema"
-                versionNumber=""
-              />
-            </>
-          ) : (
-            <>
-              <FileUploader
-                onFilesSelected={onFilesSelected}
-                maxFiles={MAX_FILES}
-                acceptedFileTypes={ACCEPTED_FILE_TYPES}
-              />
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            <div className={`${CLASS_NAME}__header`}>
+              <SvgThemeImage image={EnumImages.ImportPrismaSchema} />
+              <h2>Import Prisma schema file</h2>
+              <div className={`${CLASS_NAME}__message`}>
+                upload a Prisma schema file to import its content, and create
+                entities and relations.
+                <br />
+                Only '*.prisma' files are supported.
+              </div>
+            </div>
+
+            <div className={`${CLASS_NAME}__content`}>
+              {loading || (data && data.createEntitiesFromPrismaSchema) ? (
+                <>
+                  <ActionLog
+                    action={actionLog}
+                    title="Import Schema"
+                    versionNumber=""
+                  />
+                </>
+              ) : (
+                <>
+                  <FileUploader
+                    onFilesSelected={onFilesSelected}
+                    maxFiles={MAX_FILES}
+                    acceptedFileTypes={ACCEPTED_FILE_TYPES}
+                  />
+                </>
+              )}
+            </div>
+          </>
+        )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </>
     </PageContent>
