@@ -1,30 +1,22 @@
 import { Module } from "@amplication/code-gen-types";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { outputFile, remove } from "fs-extra";
 import { join, normalize } from "path";
-import {
-  BASE_BUILDS_FOLDER,
-  DEFAULT_BUILDS_FOLDER,
-} from "../../../../constants";
+import { BASE_BUILDS_FOLDER } from "../../../../constants";
 import { AmplicationError } from "../../../../errors/AmplicationError";
 @Injectable()
 export class BuildFilesSaver {
   private baseBuildsPath: string;
   constructor(
     configService: ConfigService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
-    const envFilePath = configService.get<string>(BASE_BUILDS_FOLDER);
-
-    this.baseBuildsPath = envFilePath
-      ? normalize(envFilePath)
-      : DEFAULT_BUILDS_FOLDER;
+    this.baseBuildsPath = normalize(
+      configService.get<string>(BASE_BUILDS_FOLDER)
+    );
   }
   async saveFiles(relativePath: string, modules: Module[]): Promise<void> {
     this.logger.info(

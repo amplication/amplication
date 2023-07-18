@@ -1,4 +1,4 @@
-import { Icon, Snackbar, TreeView } from "@amplication/design-system";
+import { Icon, Snackbar, TreeView } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import { Build } from "../../models";
 import { FileDetails } from "./CodeViewPage";

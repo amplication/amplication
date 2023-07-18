@@ -2,7 +2,7 @@ import {
   CircularProgress,
   Snackbar,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { Formik } from "formik";
 import { Location } from "history";
@@ -10,18 +10,21 @@ import queryString from "query-string";
 import { useCallback, useEffect, useMemo } from "react";
 import { Helmet } from "react-helmet";
 import { Link, useHistory, useLocation } from "react-router-dom";
-import useLocalStorage from "react-use-localstorage";
 import { setToken } from "../authentication/authentication";
 import { Button } from "../Components/Button";
 import { ErrorMessage } from "../Components/ErrorMessage";
 import { Form } from "../Components/Form";
-import { REACT_APP_GITHUB_AUTH_ENABLED } from "../env";
+import {
+  NX_REACT_APP_AUTH_LOGIN_URI,
+  REACT_APP_GITHUB_AUTH_ENABLED,
+} from "../env";
 import WelcomePage from "../Layout/WelcomePage";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { DEFAULT_PAGE_SOURCE, SIGN_IN_PAGE_CONTENT } from "./constants";
 import { GitHubLoginButton } from "./GitHubLoginButton";
 import "./Login.scss";
+import { useTracking } from "../util/analytics";
 
 type Values = {
   email: string;
@@ -40,17 +43,11 @@ const INITIAL_VALUES: Values = {
   password: "",
 };
 
-export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
-
 const Login = () => {
   const history = useHistory();
   const location = useLocation();
   const [login, { loading, data, error }] = useMutation(DO_LOGIN);
-
-  const [, setInvitationToken] = useLocalStorage(
-    LOCAL_STORAGE_KEY_INVITATION_TOKEN,
-    undefined
-  );
+  const { trackEvent } = useTracking();
 
   const content = useMemo(() => {
     const s: LocationStateInterface | undefined | null = location.state;
@@ -72,21 +69,17 @@ const Login = () => {
     [login]
   );
 
+  const handleContinueWithSsoClick = useCallback(() => {
+    trackEvent({
+      eventName: AnalyticsEventNames.ContinueWithSSOClick,
+    });
+  }, [trackEvent]);
+
   const urlError = useMemo(() => {
     const params = queryString.parse(location.search);
 
     return params.error;
   }, [location.search]);
-
-  useEffect(() => {
-    const params = queryString.parse(location.search);
-    if (params.invitation) {
-      //save the invitation token in local storage to be validated by
-      //<CompleteInvitation/> after signup or sign in
-      //we user local storage since github-passport does not support dynamic callback
-      setInvitationToken(params.invitation as string);
-    }
-  }, [setInvitationToken, location.search]);
 
   useEffect(() => {
     if (data) {
@@ -97,7 +90,8 @@ const Login = () => {
       if (from === "login") {
         from = "/";
       }
-      history.replace(from);
+
+      history.replace(`${from.pathname || from}${location.search}`);
     }
   }, [data, history, location]);
 
@@ -120,12 +114,13 @@ const Login = () => {
                 sign&nbsp;in.
               </div>
               <GitHubLoginButton />
-              <div className={`${CLASS_NAME}__signup`}>
-                Do not have a GitHub account?{" "}
-                <a href="https://github.com/join" target="Github">
-                  Join GitHub
-                </a>
-              </div>
+              <a
+                href={NX_REACT_APP_AUTH_LOGIN_URI}
+                className={`${CLASS_NAME}__sso`}
+                onClick={handleContinueWithSsoClick}
+              >
+                Continue with SSO
+              </a>
             </>
           ) : (
             <>
@@ -158,7 +153,7 @@ const Login = () => {
           )}
 
           <div className={`${CLASS_NAME}__policy`}>
-            By signing up to {content.name}, you agree to our{" "}
+            By signing up to {content.name}, you agree to our <br />
             <a href="https://amplication.com/terms" target="terms">
               terms of service
             </a>{" "}

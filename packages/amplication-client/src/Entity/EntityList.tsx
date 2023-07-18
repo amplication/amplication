@@ -1,7 +1,8 @@
-import React, { useState, useCallback, useEffect } from "react";
-import { match } from "react-router-dom";
+import React, { useState, useCallback, useEffect, useContext } from "react";
+import { Link, match } from "react-router-dom";
 import { gql, useQuery } from "@apollo/client";
-
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import * as models from "../models";
 import {
@@ -9,7 +10,8 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
+  LimitationNotification,
+} from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
 import PageContent from "../Layout/PageContent";
@@ -18,9 +20,18 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityList.scss";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
+import usePlugins from "../Plugins/hooks/usePlugins";
+import { AppContext } from "../context/appContext";
 
 type TData = {
   entities: models.Entity[];
+};
+
+type GetWorkspaceResponse = {
+  currentWorkspace: models.Workspace;
 };
 
 type Props = AppRouteProps & {
@@ -38,10 +49,21 @@ const POLL_INTERVAL = 2000;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
+  const { trackEvent } = useTracking();
   const [error, setError] = useState<Error>();
   const pageTitle = "Entities";
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newEntity, setNewEntity] = useState<boolean>(false);
+  const { pluginInstallations } = usePlugins(resource);
+
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
+
+  const isUserEntityMandatory =
+    pluginInstallations?.filter(
+      (x) =>
+        x.configurations?.requireAuthenticationEntity === "true" && x.enabled
+    ).length > 0;
 
   const handleNewEntityClick = useCallback(() => {
     setNewEntity(!newEntity);
@@ -83,6 +105,25 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     };
   }, [refetch, stopPolling, startPolling]);
 
+  const handleEntityClick = () => {
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeOnEntityListClick,
+    });
+  };
+
+  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
+    GET_CURRENT_WORKSPACE
+  );
+
+  const { stigg } = useStiggContext();
+  const hideNotifications = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.HideNotifications,
+  });
+
+  const importDBSchema = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ImportDBSchema,
+  });
+
   const errorMessage =
     formatError(errorLoading) || (error && formatError(error));
 
@@ -103,20 +144,49 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             placeholder="search"
             onChange={handleSearchChange}
           />
-          <Button
-            className={`${CLASS_NAME}__add-button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleNewEntityClick}
-            icon="plus"
-          >
-            Add entity
-          </Button>
+          <div className={`${CLASS_NAME}__action-buttons`}>
+            {importDBSchema.hasAccess && (
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
+              >
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="upload1"
+                  eventData={{
+                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  }}
+                >
+                  Upload Prisma Schema
+                </Button>
+              </Link>
+            )}
+            <Button
+              className={`${CLASS_NAME}__add-button`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleNewEntityClick}
+              icon="plus"
+            >
+              Add entity
+            </Button>
+          </div>
         </div>
+
+        <div className={`${CLASS_NAME}__separator`} />
+
         <div className={`${CLASS_NAME}__title`}>
           {data?.entities.length}{" "}
           {pluralize(data?.entities.length, "Entity", "Entities")}
         </div>
         {loading && <CircularProgress centerToParent />}
+
+        {!hideNotifications.hasAccess && (
+          <LimitationNotification
+            description="With the current plan, you can use to 7 entities per service."
+            link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+            handleClick={handleEntityClick}
+          />
+        )}
 
         <div className={`${CLASS_NAME}__content`}>
           {data?.entities.map((entity) => (
@@ -125,6 +195,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               entity={entity}
               resourceId={resource}
               onError={setError}
+              isUserEntityMandatory={isUserEntityMandatory}
               relatedEntities={data.entities.filter(
                 (dataEntity) =>
                   dataEntity.fields.some(

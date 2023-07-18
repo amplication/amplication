@@ -1,0 +1,48 @@
+@import "../../style/index.scss";
+
+$dropdown-box-shadow: 0 36px 34px -24px #15102c70;
+$dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+
+.select-menu {
+  & &__item {
+    border-bottom: none;
+    color: var(--black80);
+    background-color: var(--black2);
+    flex-direction: row-reverse;
+    justify-content: space-between;
+
+    &--selected,
+    &[aria-checked="true"] {
+      color: var(--black100);
+    }
+
+    &:hover {
+      background-color: var(--black5);
+    }
+  }
+
+  & &__modal {
+    > div {
+      border: $border-black30;
+      box-shadow: $dropdown-box-shadow;
+      border-radius: var(--default-border-radius);
+      position: relative;
+      overflow: visible;
+
+      & > div {
+        border-radius: var(--default-border-radius);
+        background: var(--black2);
+      }
+    }
+
+    .select-menu__filter {
+      padding: var(--default-spacing);
+      padding-left: 0;
+      border-bottom: $border-black10;
+    }
+  }
+}
+
+.SelectMenu-icon {
+  margin-right: var(--double-spacing) !important;
+}

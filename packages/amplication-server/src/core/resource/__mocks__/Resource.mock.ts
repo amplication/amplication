@@ -1,4 +1,4 @@
-import { EnumResourceType } from "@amplication/prisma-db";
+import { EnumResourceType } from "../../../prisma";
 import { Resource } from "../../../models";
 import { TEST_RESOURCE_ID } from "./resourceId.mock";
 

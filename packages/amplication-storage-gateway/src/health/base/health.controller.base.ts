@@ -1,7 +1,7 @@
 import { Get, HttpStatus, Res } from "@nestjs/common";
 import { Response } from "express";
 import { HealthService } from "../health.service";
-import { AmplicationLogger } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export class HealthControllerBase {
   constructor(

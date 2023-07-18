@@ -27,6 +27,11 @@ export class PluginInstallationCreateInput extends BlockCreateInput {
   })
   settings?: JsonValue;
 
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  configurations?: JsonValue;
+
   @Field(() => String, {
     nullable: false,
   })

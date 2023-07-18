@@ -1,70 +1,94 @@
+import { EnvironmentVariables } from "@amplication/util/kafka";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../env";
-import { QueueService } from "../queue/queue.service";
-import { BuildRunnerService } from "./build-runner.service";
-import { EnvironmentVariables } from "@amplication/kafka";
 import { EventPattern, Payload } from "@nestjs/microservices";
-import { KafkaMessage } from "kafkajs";
-import { plainToInstance } from "class-transformer";
-import { CodeGenerationRequest } from "./dto/CodeGenerationRequest";
 import axios from "axios";
-import { CodeGenerationSuccess } from "./dto/CodeGenerationSuccess";
-import { CodeGenerationFailure } from "./dto/CodeGenerationFailure";
+import { plainToInstance } from "class-transformer";
+import { Env } from "../env";
+import { BuildRunnerService } from "./build-runner.service";
+import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
+import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
+import {
+  CodeGenerationFailure,
+  CodeGenerationSuccess,
+} from "@amplication/schema-registry";
 
 @Controller("build-runner")
 export class BuildRunnerController {
   constructor(
     private readonly buildRunnerService: BuildRunnerService,
     private readonly configService: ConfigService<Env, true>,
-    private readonly queueService: QueueService
+    private readonly producerService: KafkaProducerService,
+    private readonly logger: AmplicationLogger
   ) {}
 
   @Post("code-generation-success")
   async onCodeGenerationSuccess(
-    @Payload() dto: CodeGenerationSuccess
+    @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
     try {
       await this.buildRunnerService.copyFromJobToArtifact(
         dto.resourceId,
         dto.buildId
       );
-      this.queueService.emitMessage(
+
+      const successEvent: CodeGenerationSuccess.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId },
+      };
+
+      await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
-        JSON.stringify({ buildId: dto.buildId })
+        successEvent
       );
     } catch (error) {
-      console.error(error);
-      this.queueService.emitMessage(
+      this.logger.error(error.message, error);
+
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId, error },
+      };
+
+      await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        JSON.stringify({ buildId: dto.buildId, error })
+        failureEvent
       );
     }
   }
 
   @Post("code-generation-failure")
   async onCodeGenerationFailure(
-    @Payload() dto: CodeGenerationFailure
+    @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
     try {
-      this.queueService.emitMessage(
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: dto.buildId, error: dto.error },
+      };
+
+      await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        JSON.stringify({ buildId: dto.buildId, error: dto.error })
+        failureEvent
       );
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
 
   @EventPattern(
     EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
   )
-  async onCreatePRRequest(@Payload() message: KafkaMessage): Promise<void> {
-    console.log("Code generation request received");
-    let args: CodeGenerationRequest;
+  async onCodeGenerationRequest(
+    @Payload() message: CodeGenerationRequestDto
+  ): Promise<void> {
+    this.logger.info("Code generation request received");
+    let args: CodeGenerationRequestDto;
     try {
-      args = plainToInstance(CodeGenerationRequest, message.value);
-      console.log("Code Generation Request", args);
+      args = plainToInstance(CodeGenerationRequestDto, message);
+      this.logger.debug("Code Generation Request", args);
       await this.buildRunnerService.saveDsgResourceData(
         args.buildId,
         args.dsgResourceData
@@ -75,10 +99,16 @@ export class BuildRunnerController {
         buildId: args.buildId,
       });
     } catch (error) {
-      console.error(error);
-      this.queueService.emitMessage(
+      this.logger.error(error.message, error);
+
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId: args.buildId, error },
+      };
+
+      await this.producerService.emitMessage(
         this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
-        JSON.stringify({ buildId: args?.buildId, error })
+        failureEvent
       );
     }
   }

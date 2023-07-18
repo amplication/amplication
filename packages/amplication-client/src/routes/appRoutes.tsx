@@ -36,7 +36,7 @@ export const Routes: RouteDef[] = [
             moduleName: "CodeViewPage",
             moduleClass: "code-view-page",
             routeTrackType: "",
-            exactPath: false,
+            exactPath: true,
             isAnalytics: true,
           },
           {
@@ -60,7 +60,7 @@ export const Routes: RouteDef[] = [
             isAnalytics: true,
           },
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
             Component: lazy(
               () => import("../Resource/create-resource/CreateServiceWizard")
             ),
@@ -69,6 +69,18 @@ export const Routes: RouteDef[] = [
             routeTrackType: "",
             exactPath: true,
             isAnalytics: true,
+          },
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
+            Component: lazy(
+              () => import("../Resource/create-resource/CreateServiceWizard")
+            ),
+            moduleName: "CreateServiceWizard",
+            moduleClass: "create-service-wizard",
+            routeTrackType: "",
+            exactPath: false,
+            isAnalytics: true,
+            routes: [],
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
@@ -108,7 +120,24 @@ export const Routes: RouteDef[] = [
         routes: [],
         isAnalytics: true,
       },
+      {
+        path: "/:workspace([A-Za-z0-9-]{20,})/purchase",
+        Component: lazy(() => import("../Purchase/PurchasePage")),
+        moduleName: "",
+        routes: [],
+        exactPath: true,
+        isAnalytics: true,
+      },
     ],
+  },
+  {
+    path: "/purchase",
+    routeTrackType: "purchase",
+    redirect: "/",
+    moduleName: "purchase",
+    routes: [],
+    exactPath: true,
+    isAnalytics: true,
   },
   {
     path: "/login",
@@ -122,9 +151,20 @@ export const Routes: RouteDef[] = [
   {
     path: "/github-auth-app/callback",
     Component: lazy(
-      () => import("../Resource/git/AuthResourceWithGitCallback")
+      () => import("../Resource/git/AuthResourceWithGithubCallback")
     ),
-    moduleName: "AuthAppWithGitCallback",
+    moduleName: "AuthResourceWithGithubCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
+    path: "/bitbucket-auth-app/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithBitbucketCallback")
+    ),
+    moduleName: "AuthResourceWithBitbucketCallback",
     permission: true,
     routeTrackType: "auth app with git callback",
     exactPath: true,
@@ -137,16 +177,6 @@ export const Routes: RouteDef[] = [
     moduleClass: "signup-page",
     routeTrackType: "signup",
     exactPath: true,
-    isAnalytics: true,
-  },
-  {
-    path: "/user/profile",
-    Component: lazy(() => import("../Profile/ProfilePage")),
-    permission: true,
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
     isAnalytics: true,
   },
 ];

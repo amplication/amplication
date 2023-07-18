@@ -1,4 +1,5 @@
 import { ObjectType, Field } from "@nestjs/graphql";
+import { Pagination } from "./Pagination";
 
 @ObjectType({
   isAbstract: true,
@@ -18,6 +19,14 @@ export class RemoteGitRepository {
 
   @Field(() => Boolean)
   admin: boolean | null;
+
+  @Field(() => String)
+  defaultBranch: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  groupName?: string | null;
 }
 
 @ObjectType({
@@ -28,11 +37,8 @@ export class RemoteGitRepos {
   repos: RemoteGitRepository[];
 
   @Field(() => Number)
-  totalRepos: number | null;
+  total: number | null;
 
-  @Field(() => Number)
-  currentPage: number | null;
-
-  @Field(() => Number)
-  pageSize: number | null;
+  @Field(() => Pagination)
+  pagination: Pagination;
 }

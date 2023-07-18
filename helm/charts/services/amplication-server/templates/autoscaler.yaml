@@ -1,5 +1,0 @@
-{{- define "amplication-server.autoscaling" -}}
-{{- end }}
-{{- if .Values.autoscaling.enabled }}
-{{ include "base.autoscaling" (list . "amplication-server.autoscaling") -}}
-{{- end }}

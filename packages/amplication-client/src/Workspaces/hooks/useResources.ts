@@ -4,18 +4,21 @@ import { match, useHistory, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { expireCookie } from "../../util/cookie";
 import {
   CREATE_SERVICE_WITH_ENTITIES,
   GET_RESOURCES,
   CREATE_MESSAGE_BROKER,
 } from "../queries/resourcesQueries";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
+import { GET_PROJECTS } from "../queries/projectQueries";
 
 type TGetResources = {
   resources: models.Resource[];
 };
 
 type TCreateService = {
-  createServiceWithEntities: models.Resource;
+  createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
 };
 
 type TCreateMessageBroker = {
@@ -23,18 +26,29 @@ type TCreateMessageBroker = {
 };
 
 const createGitRepositoryFullName = (
+  provider: models.EnumGitProvider,
   gitRepository: models.Maybe<models.GitRepository> | undefined
 ) => {
-  return (
-    (gitRepository &&
-      `${gitRepository.gitOrganization.name}/${gitRepository.name}`) ||
-    "connect to GitHub"
-  );
+  if (!gitRepository && !gitRepository?.gitOrganization)
+    return "Connect to Git Provider";
+
+  if (provider === models.EnumGitProvider.Github) {
+    return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
+  }
+
+  if (
+    provider === models.EnumGitProvider.Bitbucket &&
+    gitRepository?.groupName
+  ) {
+    return `${gitRepository.groupName}/${gitRepository.name}`;
+  }
 };
 
 const useResources = (
   currentWorkspace: models.Workspace | undefined,
-  currentProject: models.Project | undefined
+  currentProject: models.Project | undefined,
+  addBlock: (id: string) => void,
+  addEntity: (id: string) => void
 ) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -49,16 +63,37 @@ const useResources = (
   }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
   );
+  const createResourceMatch:
+    | (match & {
+        params: { workspace: string; project: string };
+      })
+    | null = useRouteMatch<{
+    workspace: string;
+    project: string;
+  }>(
+    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource"
+  );
 
   const [currentResource, setCurrentResource] = useState<models.Resource>();
+  const [createServiceWithEntitiesResult, setCreateServiceWithEntitiesResult] =
+    useState<models.ResourceCreateWithEntitiesResult>();
+
   const [resources, setResources] = useState<models.Resource[]>([]);
   const [projectConfigurationResource, setProjectConfigurationResource] =
     useState<models.Resource | undefined>(undefined);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [gitRepositoryFullName, setGitRepositoryFullName] = useState<string>(
-    createGitRepositoryFullName(currentResource?.gitRepository)
+    createGitRepositoryFullName(
+      currentResource?.gitRepository?.gitOrganization?.provider,
+      currentResource?.gitRepository
+    )
   );
+
   const [gitRepositoryUrl, setGitRepositoryUrl] = useState<string>("");
+  const [
+    gitRepositoryOrganizationProvider,
+    setGitRepositoryOrganizationProvider,
+  ] = useState<models.EnumGitProvider>(undefined);
 
   const {
     data: resourcesData,
@@ -77,33 +112,45 @@ const useResources = (
   });
 
   const resourceRedirect = useCallback(
-    (resourceId: string) =>
+    (resourceId: string) => {
       history.push({
-        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`,
-      }),
+        pathname: `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}`, //todo:change the route
+      });
+    },
     [currentWorkspace, history, currentProject]
   );
 
   const [
     createServiceWithEntities,
     { loading: loadingCreateService, error: errorCreateService },
-  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES);
+  ] = useMutation<TCreateService>(CREATE_SERVICE_WITH_ENTITIES, {
+    refetchQueries: [
+      {
+        query: GET_PROJECTS,
+      },
+    ],
+  });
 
   const createService = (
     data: models.ResourceCreateWithEntitiesInput,
-    eventName: AnalyticsEventNames,
-    addEntity: (id: string) => void
+    eventName: AnalyticsEventNames
   ) => {
     trackEvent({
       eventName: eventName,
     });
     createServiceWithEntities({ variables: { data: data } }).then((result) => {
-      result.data?.createServiceWithEntities.id &&
-        addEntity(result.data?.createServiceWithEntities.id);
-      result.data?.createServiceWithEntities.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createServiceWithEntities.id as string)
-        );
+      if (!result.data?.createServiceWithEntities.resource.id) return;
+
+      setCreateServiceWithEntitiesResult(
+        result.data?.createServiceWithEntities
+      );
+
+      const currentResourceId =
+        result.data?.createServiceWithEntities.resource.id;
+      addEntity(currentResourceId);
+      setCurrentResource(result.data?.createServiceWithEntities.resource);
+      expireCookie("signup");
+      refetch();
     });
   };
 
@@ -121,20 +168,37 @@ const useResources = (
     });
     createBroker({ variables: { data: data } }).then((result) => {
       result.data?.createMessageBroker.id &&
-        refetch().then(() =>
-          resourceRedirect(result.data?.createMessageBroker.id as string)
-        );
+        addBlock(result.data.createMessageBroker.id);
+      result.data?.createMessageBroker.id &&
+        refetch().then(() => {
+          resourceRedirect(result.data?.createMessageBroker.id as string);
+        });
     });
   };
+
   useEffect(() => {
-    if (resourceMatch) return;
+    if (resourceMatch || createResourceMatch) return;
 
     currentResource && setCurrentResource(undefined);
     projectConfigurationResource &&
       setGitRepositoryFullName(
-        createGitRepositoryFullName(projectConfigurationResource.gitRepository)
+        createGitRepositoryFullName(
+          projectConfigurationResource?.gitRepository?.gitOrganization
+            ?.provider,
+          projectConfigurationResource?.gitRepository
+        )
       );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryDetails({
+        organization:
+          projectConfigurationResource?.gitRepository?.gitOrganization,
+        repositoryName: projectConfigurationResource?.gitRepository?.name,
+        groupName: projectConfigurationResource?.gitRepository?.groupName,
+      }).repositoryUrl
+    );
+    setGitRepositoryOrganizationProvider(
+      projectConfigurationResource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     currentResource,
@@ -153,9 +217,21 @@ const useResources = (
 
     setCurrentResource(resource);
     setGitRepositoryFullName(
-      createGitRepositoryFullName(resource?.gitRepository)
+      createGitRepositoryFullName(
+        resource?.gitRepository?.gitOrganization?.provider,
+        resource?.gitRepository
+      )
     );
-    setGitRepositoryUrl(`https://github.com/${gitRepositoryFullName}`);
+    setGitRepositoryUrl(
+      getGitRepositoryDetails({
+        organization: resource?.gitRepository?.gitOrganization,
+        repositoryName: resource?.gitRepository?.name,
+        groupName: resource?.gitRepository?.groupName,
+      }).repositoryUrl
+    );
+    setGitRepositoryOrganizationProvider(
+      resource?.gitRepository?.gitOrganization?.provider
+    );
   }, [
     resourceMatch,
     resources,
@@ -213,6 +289,8 @@ const useResources = (
     errorCreateMessageBroker,
     gitRepositoryFullName,
     gitRepositoryUrl,
+    gitRepositoryOrganizationProvider,
+    createServiceWithEntitiesResult,
   };
 };
 

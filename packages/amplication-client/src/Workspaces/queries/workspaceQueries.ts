@@ -21,6 +21,8 @@ export const GET_CURRENT_WORKSPACE = gql`
         name
         installationId
         type
+        provider
+        useGroupingForRepositories
       }
     }
   }
@@ -47,5 +49,27 @@ export const NEW_WORKSPACE_FRAGMENT = gql`
   fragment NewWorkspace on Workspace {
     id
     name
+  }
+`;
+
+export const GET_WORKSPACES = gql`
+  query getWorkspaces {
+    workspaces {
+      id
+      name
+      subscription {
+        id
+        subscriptionPlan
+      }
+    }
+  }
+`;
+
+export const PROVISION_SUBSCRIPTION = gql`
+  mutation provisionSubscription($data: ProvisionSubscriptionInput!) {
+    provisionSubscription(data: $data) {
+      provisionStatus
+      checkoutUrl
+    }
   }
 `;

@@ -6,7 +6,7 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
@@ -78,7 +78,7 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
           label="search"
-          placeholder="search"
+          placeholder="Search"
           onChange={handleSearchChange}
         />
       </div>
@@ -122,6 +122,7 @@ export const GET_FIELDS = gql`
         required
         unique
         searchable
+        customAttributes
         description
         properties
       }

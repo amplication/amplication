@@ -1,5 +1,0 @@
-{{ include "base.service" (list . "amplication-client.service") -}}
-{{- define "amplication-client.service" -}}
-{{- end }}
-# if you are running locally you can use port-forwarding: kubectl port-forward -n [NAMESPACE] service/[SERVICE_NAME] 3000:3000
-

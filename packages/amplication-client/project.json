@@ -6,6 +6,8 @@
   "targets": {
     "prebuild": {
       "executor": "nx:run-commands",
+      "inputs": ["{workspaceRoot}/package.json"],
+      "outputs": ["{projectRoot}/src/util/version.ts"],
       "options": {
         "command": "ts-node ./scripts/update-version.ts",
         "cwd": "packages/amplication-client"
@@ -15,6 +17,13 @@
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
+      "dependsOn": [
+        "prebuild",
+        "^build",
+        "db:prisma:generate",
+        "^db:prisma:generate",
+        "^graphql:models:generate"
+      ],
       "options": {
         "compiler": "babel",
         "outputPath": "dist/packages/amplication-client",
@@ -52,11 +61,39 @@
           "sourceMap": true,
           "vendorChunk": true
         },
+        "sandbox": {
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-client/src/environments/environment.ts",
+              "with": "packages/amplication-client/src/environments/environment.sandbox.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": true
+        },
+        "staging": {
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-client/src/environments/environment.ts",
+              "with": "packages/amplication-client/src/environments/environment.staging.ts"
+            }
+          ],
+          "optimization": true,
+          "outputHashing": "all",
+          "sourceMap": false,
+          "namedChunks": false,
+          "extractLicenses": true,
+          "vendorChunk": true
+        },
         "production": {
           "fileReplacements": [
             {
               "replace": "packages/amplication-client/src/environments/environment.ts",
-              "with": "packages/amplication-client/src/environments/environment.prod.ts"
+              "with": "packages/amplication-client/src/environments/environment.production.ts"
             }
           ],
           "optimization": true,
@@ -97,19 +134,61 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-client"],
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-client"],
       "options": {
         "jestConfig": "packages/amplication-client/jest.config.ts",
         "passWithNoTests": true
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/client:latest"]
+        "tags": ["amplication/client:latest"],
+        "build-args": []
+      },
+      "configurations": {
+        "production": {
+          "build-args": []
+        }
       }
-    }
+    },
+    "deploy:static": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx build amplication-client",
+          "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+          "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+        ],
+        "forwardAllArgs": false,
+        "parallel": false
+      },
+      "configurations": {
+        "sandbox": {
+          "commands": [
+            "nx build amplication-client --configuration=sandbox",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
+        },
+        "staging": {
+          "commands": [
+            "nx build amplication-client --configuration=staging",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
+        },
+        "production": {
+          "commands": [
+            "nx build amplication-client --configuration=production",
+            "aws s3 sync ./dist/packages/amplication-client s3://{args.bucket-name} --delete",
+            "aws cloudfront create-invalidation --distribution-id '{args.distribution-id}'  --paths '/*'"
+          ]
+        }
+      }
+    },
+    "deploy:container": { "executor": "nx:run-commands" }
   },
   "tags": []
 }

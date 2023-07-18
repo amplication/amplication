@@ -5,7 +5,7 @@ import { isEmpty } from "lodash";
 import { setToken } from "../authentication/authentication";
 import useLocalStorage from "react-use-localstorage";
 
-import { LOCAL_STORAGE_KEY_INVITATION_TOKEN } from "./Login";
+import { LOCAL_STORAGE_KEY_INVITATION_TOKEN } from "../App";
 
 type TData = {
   completeInvitation: {

@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, EnumButtonStyle } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import "./PendingChangesBar.scss";
 import PendingChanges from "./PendingChanges";
 

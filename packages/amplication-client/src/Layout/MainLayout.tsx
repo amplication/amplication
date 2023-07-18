@@ -10,12 +10,13 @@ import CommandPalette from "../CommandPalette/CommandPalette";
 import MenuItem from "./MenuItem";
 import UserBadge from "../Components/UserBadge";
 import { FixedMenuPanel } from "../util/teleporter";
-import { Popover, Icon } from "@amplication/design-system";
+import { Popover, Icon } from "@amplication/ui/design-system";
 import SupportMenu from "./SupportMenu";
 import { useTracking } from "../util/analytics";
 import DarkModeToggle from "./DarkModeToggle";
 import "./MainLayout.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../env";
 
 type Props = {
   children: React.ReactNode;
@@ -52,11 +53,10 @@ const Menu = ({ children }: MenuProps) => {
   }, [history]);
 
   const handleSignOut = useCallback(() => {
-    /**@todo: sign out on server */
     unsetToken();
     apolloClient.clearStore();
 
-    history.replace("/");
+    window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
 
   const handleSupportClick = useCallback(() => {

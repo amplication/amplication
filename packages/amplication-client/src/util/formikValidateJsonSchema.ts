@@ -25,6 +25,8 @@ import { set } from "lodash";
 
 export const validationErrorMessages = {
   AT_LEAST_TWO_CHARARCTERS: "Must be at least 2 characters long",
+  NO_SYMBOLS_ERROR: "Unsupported character",
+  AT_MOST_SIXTY_CHARACTERS: "Must be at most 60 characters long",
 };
 
 export function validate<T>(
@@ -37,6 +39,18 @@ export function validate<T>(
   ajvErrors(ajv);
 
   const isValid = ajv.validate(validationSchema, values);
+
+  const { minimumValue, maximumValue } = values as unknown as {
+    minimumValue: number;
+    maximumValue: number;
+  };
+  if (minimumValue && minimumValue >= maximumValue) {
+    set(
+      errors,
+      "minimumValue",
+      "Minimum value can not be greater than, or equal to, the Maximum value"
+    );
+  }
 
   if (!isValid && ajv.errors) {
     for (const error of ajv.errors) {

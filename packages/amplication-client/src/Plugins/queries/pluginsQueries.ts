@@ -12,6 +12,7 @@ export const GET_PLUGIN_INSTALLATIONS = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;
@@ -25,6 +26,7 @@ export const GET_PLUGIN_INSTALLATION = gql`
       enabled
       version
       settings
+      configurations
     }
   }
 `;
@@ -80,6 +82,31 @@ export const UPDATE_PLUGIN_ORDER = gql`
         order
       }
       id
+    }
+  }
+`;
+
+export const GET_PLUGIN_VERSIONS_CATALOG = gql`
+  query Plugins($where: PluginVersionWhereInput) {
+    plugins {
+      id
+      pluginId
+      name
+      icon
+      description
+      taggedVersions
+      npm
+      github
+      website
+      versions(where: $where, orderBy: { createdAt: Desc }) {
+        id
+        pluginId
+        deprecated
+        isLatest
+        version
+        settings
+        configurations
+      }
     }
   }
 `;

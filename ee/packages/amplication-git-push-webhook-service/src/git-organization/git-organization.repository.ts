@@ -1,4 +1,4 @@
-import { GitOrganization, PrismaService } from '@amplication/prisma-db';
+import { GitOrganization, PrismaService } from '../prisma';
 import { Injectable } from '@nestjs/common';
 import { EnumProvider } from './git-organization.types';
 

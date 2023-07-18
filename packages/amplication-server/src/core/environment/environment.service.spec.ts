@@ -4,7 +4,7 @@ import {
   EnvironmentService,
   DEFAULT_ENVIRONMENT_NAME,
 } from "./environment.service";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Environment } from "./dto";
 
 const EXAMPLE_ENVIRONMENT_ID = "exampleEnvironmentId";

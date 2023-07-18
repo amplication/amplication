@@ -18,10 +18,21 @@ export const GET_PROJECTS = gql`
     projects {
       id
       name
+      useDemoRepo
+      demoRepoName
       resources {
         id
         name
         resourceType
+        gitRepository {
+          id
+          name
+          groupName
+          gitOrganizationId
+          gitOrganization {
+            provider
+          }
+        }
       }
       createdAt
     }
@@ -29,7 +40,7 @@ export const GET_PROJECTS = gql`
 `;
 
 export const CREATE_PROJECT = gql`
-  mutation createProject($data: ProjectCreateInput) {
+  mutation createProject($data: ProjectCreateInput!) {
     createProject(data: $data) {
       id
       name

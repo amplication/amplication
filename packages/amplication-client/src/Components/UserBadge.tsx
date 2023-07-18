@@ -4,7 +4,7 @@ import { gql, useQuery } from "@apollo/client";
 import * as models from "../models";
 
 import useAuthenticated from "../authentication/use-authenticated";
-import { UserAvatar, Tooltip } from "@amplication/design-system";
+import { UserAvatar, Tooltip } from "@amplication/ui/design-system";
 
 import "./UserBadge.scss";
 import { identity } from "../util/analytics";

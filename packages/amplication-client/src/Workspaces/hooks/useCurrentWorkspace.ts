@@ -27,7 +27,9 @@ const useCurrentWorkspace = (authenticated: boolean) => {
   useEffect(() => {
     if (location.pathname !== "/") return;
 
-    !authenticated && location.pathname === "/" && history.push("/login");
+    !authenticated &&
+      location.pathname === "/" &&
+      history.push(`/login${location.search}`);
 
     authenticated && getCurrentWorkspace();
   }, [authenticated, location.pathname]);

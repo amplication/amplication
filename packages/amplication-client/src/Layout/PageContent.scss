@@ -1,13 +1,13 @@
 @import "../style/index.scss";
 
-$side-min-width: 500px;
 $tabs-width: 300px;
 
 .amp-page-content {
   display: flex;
   flex: 1;
   gap: var(--large-spacing);
-  padding: var(--large-spacing) 0 var(--large-spacing) var(--large-spacing);
+  padding: var(--large-spacing);
+  padding-right: 0;
   background: var(--page-content-background);
   box-sizing: border-box;
   overflow: hidden;
@@ -31,7 +31,7 @@ $tabs-width: 300px;
 
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
-    scrollbar-gutter: stable;
+    padding-right: var(--large-spacing);
     flex: 1;
     overflow: auto;
     position: relative;
@@ -40,10 +40,5 @@ $tabs-width: 300px;
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));
     }
-  }
-
-  .log-container {
-    flex: 1;
-    min-width: $side-min-width;
   }
 }

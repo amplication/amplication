@@ -13,7 +13,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-storage-gateway"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-storage-gateway"
+      ],
       "options": {
         "jestConfig": "packages/amplication-storage-gateway/jest.config.ts",
         "passWithNoTests": true
@@ -26,7 +28,7 @@
         "outputPath": "dist/packages/amplication-storage-gateway",
         "main": "packages/amplication-storage-gateway/src/main.ts",
         "tsConfig": "packages/amplication-storage-gateway/tsconfig.app.json",
-        "webpackConfig": "packages/amplication-storage-gateway/webpack.config.js"
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -47,12 +49,21 @@
         }
       }
     },
-    "docker:build": {
-      "executor": "@nx-tools/nx-docker:build",
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/storage-gateway:latest"]
+        "tags": ["amplication/storage-gateway:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
       }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
     }
   },
   "tags": []

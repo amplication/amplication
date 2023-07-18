@@ -1,4 +1,4 @@
-import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";
@@ -7,12 +7,15 @@ import { UserRoleArgs } from "./dto";
 export class UserService {
   constructor(private readonly prisma: PrismaService) {}
 
-  findUser(args: Prisma.UserFindUniqueArgs): Promise<User> {
+  findUser(
+    args: Prisma.UserFindUniqueArgs,
+    includeDeleted = false
+  ): Promise<User> {
     return this.prisma.user.findFirst({
       ...args,
       where: {
         ...args.where,
-        deletedAt: null,
+        deletedAt: includeDeleted ? undefined : null,
       },
     });
   }
@@ -92,11 +95,11 @@ export class UserService {
     });
   }
 
-  async getAccount(id: string): Promise<Account> {
+  async getAccount(userId: string): Promise<Account> {
     return this.prisma.user
       .findUnique({
         where: {
-          id,
+          id: userId,
         },
       })
       .account();
@@ -119,6 +122,20 @@ export class UserService {
       },
       data: {
         deletedAt: new Date(),
+      },
+    });
+  }
+
+  async setLastActivity(
+    userId: string,
+    lastActive: Date = new Date()
+  ): Promise<User> {
+    return this.prisma.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        lastActive,
       },
     });
   }

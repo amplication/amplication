@@ -1,37 +1,15 @@
 import { gql } from "@apollo/client";
 import * as models from "../models";
+import { EnumAuthProviderType } from "../models";
+import { DefineUser } from "./create-resource/CreateServiceWizard";
+import { TemplateSettings } from "./create-resource/wizardResourceSchema";
+import { EnumGitProvider } from "../models";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
   generateGraphQL: true,
   generateRestApi: true,
-  resourceType: "scratch",
 };
-
-export const sampleServiceResourceWithoutEntities = (
-  projectId: string,
-  generateAdminUI: boolean,
-  generateGraphQL: boolean,
-  generateRestApi: boolean
-): models.ResourceCreateWithEntitiesInput => ({
-  resource: {
-    name: "My service",
-    description: "",
-    resourceType: models.EnumResourceType.Service,
-    project: {
-      connect: {
-        id: projectId,
-      },
-    },
-  },
-  commitMessage: "",
-  entities: [],
-  generationSettings: {
-    generateAdminUI: generateAdminUI,
-    generateGraphQL: generateGraphQL,
-    generateRestApi: generateRestApi,
-  },
-});
 
 export const sampleServiceResourceWithEntities = [
   {
@@ -126,32 +104,55 @@ export type createServiceSettings = {
 };
 
 export function prepareServiceObject(
+  serviceName: string,
   projectId: string,
-  isResourceWithEntities: boolean,
+  templateSettings: TemplateSettings,
   generateAdminUI: boolean,
   generateGraphQL: boolean,
-  generateRestApi: boolean
+  generateRestApi: boolean,
+  gitRepository: models.ConnectGitRepositoryInput = null,
+  serverDir: string,
+  adminDir: string,
+  plugins: models.PluginInstallationsCreateInput,
+  wizardType: DefineUser,
+  repoType: string,
+  dbType: string,
+  auth: string,
+  connectToDemoRepo: boolean
+  // gitOrganizationName: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
     resource: {
-      name: isResourceWithEntities ? "Sample service" : "My service",
-      description: isResourceWithEntities
-        ? "Sample service for e-commerce"
-        : "",
+      name: serviceName,
+      description: templateSettings.description,
       resourceType: models.EnumResourceType.Service,
       project: {
         connect: {
           id: projectId,
         },
       },
+      serviceSettings: {
+        adminUISettings: {
+          generateAdminUI: generateAdminUI,
+          adminUIPath: adminDir,
+        },
+        serverSettings: {
+          generateGraphQL: generateGraphQL,
+          generateRestApi: generateRestApi,
+          serverPath: serverDir,
+        },
+        authProvider: EnumAuthProviderType.Jwt,
+      },
+      gitRepository: gitRepository,
     },
     commitMessage: "",
-    generationSettings: {
-      generateAdminUI: generateAdminUI,
-      generateGraphQL: generateGraphQL,
-      generateRestApi: generateRestApi,
-    },
-    entities: isResourceWithEntities ? sampleServiceResourceWithEntities : [],
+    entities: templateSettings.entities,
+    plugins: plugins,
+    wizardType,
+    repoType,
+    dbType,
+    authType: auth,
+    connectToDemoRepo,
   };
 }
 
@@ -169,20 +170,6 @@ export function prepareMessageBrokerObject(
     },
   };
 }
-
-export const GET_APP_SETTINGS = gql`
-  query serviceSettings($id: String!) {
-    serviceSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
-      authProvider
-    }
-  }
-`;
 
 export const resourceThemeMap: {
   [key in models.EnumResourceType]: {
@@ -202,4 +189,12 @@ export const resourceThemeMap: {
     icon: "queue",
     color: "#8DD9B9",
   },
+};
+
+export const PROVIDERS_DISPLAY_NAME: {
+  [key in EnumGitProvider]: string;
+} = {
+  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+  [EnumGitProvider.Github]: "GitHub",
 };

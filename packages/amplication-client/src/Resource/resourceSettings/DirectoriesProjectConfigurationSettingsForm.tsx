@@ -3,7 +3,7 @@ import {
   Panel,
   EnumPanelStyle,
   TextField,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
 import * as models from "../../models";

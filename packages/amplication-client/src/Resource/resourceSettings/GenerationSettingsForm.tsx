@@ -1,4 +1,4 @@
-import { Snackbar, ToggleField } from "@amplication/design-system";
+import { Snackbar, ToggleField } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";
@@ -113,11 +113,6 @@ export const UPDATE_SERVICE_SETTINGS = gql`
   ) {
     updateServiceSettings(data: $data, where: { id: $resourceId }) {
       id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
       authProvider
       serverSettings {
         generateGraphQL
@@ -135,12 +130,6 @@ export const UPDATE_SERVICE_SETTINGS = gql`
 export const GET_RESOURCE_SETTINGS = gql`
   query serviceSettings($id: String!) {
     serviceSettings(where: { id: $id }) {
-      id
-      dbHost
-      dbName
-      dbUser
-      dbPassword
-      dbPort
       authProvider
       serverSettings {
         generateGraphQL

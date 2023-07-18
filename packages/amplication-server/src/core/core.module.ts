@@ -15,7 +15,6 @@ import { CommitModule } from "./commit/commit.module";
 import { MailModule } from "./mail/mail.module";
 import { ServiceSettingsModule } from "./serviceSettings/serviceSettings.module";
 import { SubscriptionModule } from "./subscription/subscription.module";
-import { GitModule } from "@amplication/git-utils";
 import { GitProviderModule } from "./git/git.provider.module";
 import { ProjectModule } from "./project/project.module";
 import { HealthModule } from "./health/health.module";
@@ -39,7 +38,6 @@ import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
     EnvironmentModule,
     CommitModule,
     ServiceSettingsModule,
-    GitModule,
     GitProviderModule,
     CommitModule,
     MailModule,
@@ -65,9 +63,7 @@ import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
     CommitModule,
     ServiceSettingsModule,
     GitProviderModule,
-    GitModule,
     CommitModule,
-    GitModule,
     MailModule,
     SubscriptionModule,
     ProjectModule,

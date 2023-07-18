@@ -20,6 +20,7 @@
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
         "packageJson": "packages/amplication-code-gen-types/package.json",
+        "updateBuildableProjectDepsInPackageJson": true,
         "main": "packages/amplication-code-gen-types/src/index.ts",
         "assets": ["packages/amplication-code-gen-types/*.md"]
       }
@@ -33,7 +34,9 @@
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": ["coverage/packages/amplication-code-gen-types"],
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-code-gen-types"
+      ],
       "dependsOn": ["prebuild"],
       "options": {
         "jestConfig": "packages/amplication-code-gen-types/jest.config.ts",

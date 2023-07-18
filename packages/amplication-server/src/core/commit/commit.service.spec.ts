@@ -1,5 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Commit } from "../../models";
 import { CommitService } from "./commit.service";
 import { EntityService } from "../entity/entity.service";

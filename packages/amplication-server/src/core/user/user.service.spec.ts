@@ -1,4 +1,4 @@
-import { Prisma, PrismaService } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Role } from "../../enums/Role";
 import { Account, User, UserRole } from "../../models";
@@ -111,17 +111,30 @@ describe("UserService", () => {
   });
 
   it("should find one", async () => {
-    const args = { where: { id: EXAMPLE_USER_ID, deletedAt: null } };
+    const args = { where: { id: EXAMPLE_USER_ID } };
     expect(await service.findUser(args)).toEqual(EXAMPLE_USER);
     expect(prismaUserFindOneMock).toBeCalledTimes(1);
-    expect(prismaUserFindOneMock).toBeCalledWith(args);
+    expect(prismaUserFindOneMock).toBeCalledWith({
+      where: { ...args.where, deletedAt: null },
+    });
+  });
+
+  it("should find one including deleted when requested", async () => {
+    const args = { where: { id: EXAMPLE_USER_ID } };
+    expect(await service.findUser(args, true)).toEqual(EXAMPLE_USER);
+    expect(prismaUserFindOneMock).toBeCalledTimes(1);
+    expect(prismaUserFindOneMock).toBeCalledWith({
+      where: { ...args.where, deletedAt: undefined },
+    });
   });
 
   it("should find many", async () => {
-    const args = { where: { deletedAt: null } };
+    const args = { where: { id: EXAMPLE_USER_ID } };
     expect(await service.findUsers(args)).toEqual([EXAMPLE_USER]);
     expect(prismaUserFindManyMock).toBeCalledTimes(1);
-    expect(prismaUserFindManyMock).toBeCalledWith(args);
+    expect(prismaUserFindManyMock).toBeCalledWith({
+      where: { ...args.where, deletedAt: null },
+    });
   });
 
   it("should delete a user", async () => {
@@ -256,5 +269,23 @@ describe("UserService", () => {
     ]);
     expect(prismaUserRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaUserRoleFindManyMock).toBeCalledWith(args);
+  });
+
+  it("should set lastActive", async () => {
+    const args = {
+      userId: EXAMPLE_USER_ID,
+      lastActive: new Date(),
+    };
+    const returnArgs = {
+      data: {
+        lastActive: args.lastActive,
+      },
+      where: { id: args.userId },
+    };
+    expect(await service.setLastActivity(args.userId, args.lastActive)).toEqual(
+      EXAMPLE_USER
+    );
+    expect(prismaUserUpdateMock).toBeCalledTimes(1);
+    expect(prismaUserUpdateMock).toBeCalledWith(returnArgs);
   });
 });

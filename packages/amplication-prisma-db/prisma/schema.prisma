@@ -1,7 +1,15 @@
-generator client {
-  provider      = "prisma-client-js"
-  output        = "./generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+generator serverClient {
+  provider        = "prisma-client-js"
+  output          = "../../amplication-server/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
+}
+
+generator pushWebhookServiceClient {
+  provider        = "prisma-client-js"
+  output          = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -36,30 +44,34 @@ model Workspace {
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  name        String
-  workspaceId String
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  resources   Resource[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
-  commits     Commit[]
+  id           String     @id @default(cuid())
+  name         String
+  workspaceId  String
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resources    Resource[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  commits      Commit[]
+  useDemoRepo  Boolean    @default(false)
+  demoRepoName String?
 
   @@unique([workspaceId, name])
 }
 
 model GitOrganization {
-  id              String                   @id @default(cuid())
-  provider        EnumGitProvider
-  name            String
-  installationId  String
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
-  workspaceId     String
-  type            EnumGitOrganizationType? @default(User)
-  workspace       Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
-  gitRepositories GitRepository[]
+  id                         String                   @id @default(cuid())
+  provider                   EnumGitProvider
+  name                       String
+  useGroupingForRepositories Boolean                  @default(false)
+  installationId             String
+  providerProperties         Json                     @default("{}")
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  workspaceId                String
+  type                       EnumGitOrganizationType? @default(User)
+  workspace                  Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
+  gitRepositories            GitRepository[]
 
   @@unique([provider, installationId])
 }
@@ -67,6 +79,7 @@ model GitOrganization {
 model GitRepository {
   id                String          @id @default(cuid())
   name              String
+  groupName         String?
   createdAt         DateTime        @default(now())
   updatedAt         DateTime        @updatedAt
   gitOrganizationId String
@@ -94,6 +107,7 @@ model User {
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   deletedAt             DateTime?
+  lastActive            DateTime?    @default(now())
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -133,6 +147,7 @@ model Resource {
   githubLastSync        DateTime?
   githubLastMessage     String?
   deletedAt             DateTime?
+  archived              Boolean          @default(false)
   gitRepositoryId       String?
   roles                 ResourceRole[]
   blocks                Block[]
@@ -185,6 +200,7 @@ model Entity {
   displayName       String
   pluralDisplayName String
   description       String?
+  customAttributes  String?
   lockedByUserId    String?
   lockedAt          DateTime?
   deletedAt         DateTime?
@@ -207,6 +223,7 @@ model EntityVersion {
   displayName       String
   pluralDisplayName String
   description       String?
+  customAttributes  String?
   commitId          String?
   deleted           Boolean?
   commit            Commit?            @relation(fields: [commitId], references: [id])
@@ -255,22 +272,23 @@ model EntityPermissionField {
 }
 
 model EntityField {
-  id              String                  @id @default(cuid())
-  createdAt       DateTime                @default(now())
-  updatedAt       DateTime                @updatedAt
-  entityVersionId String
-  permanentId     String                  @default(cuid())
-  name            String
-  displayName     String
-  dataType        EnumDataType
-  properties      Json
-  required        Boolean
-  searchable      Boolean
-  description     String
-  position        Int?
-  unique          Boolean                 @default(false)
-  entityVersion   EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
-  permissionField EntityPermissionField[]
+  id               String                  @id @default(cuid())
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  entityVersionId  String
+  permanentId      String                  @default(cuid())
+  name             String
+  displayName      String
+  dataType         EnumDataType
+  properties       Json
+  required         Boolean
+  searchable       Boolean
+  customAttributes String?
+  description      String
+  position         Int?
+  unique           Boolean                 @default(false)
+  entityVersion    EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
+  permissionField  EntityPermissionField[]
 
   @@unique([entityVersionId, displayName], map: "EntityField.entityVersionId_displayName_unique")
   @@unique([entityVersionId, name], map: "EntityField.entityVersionId_name_unique")
@@ -499,8 +517,8 @@ model Invitation {
 }
 
 enum EnumSubscriptionPlan {
+  Free
   Pro
-  Business
   Enterprise
 }
 
@@ -532,6 +550,8 @@ enum EnumResourceType {
 
 enum EnumGitProvider {
   Github
+  Bitbucket
+  AwsCodeCommit
 }
 
 enum EnumGitOrganizationType {

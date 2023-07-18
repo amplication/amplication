@@ -46,4 +46,9 @@ $toggle-min-width: 250px;
   &__action-name {
     color: var(--black100);
   }
+  .amp-panel-collapsible__body {
+    .panel-list .toggle-button label span {
+      border-radius: 25px;
+    }
+  }
 }

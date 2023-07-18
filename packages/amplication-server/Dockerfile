@@ -1,4 +1,4 @@
-FROM node:19.1-slim AS base
+FROM node:18.12.1-slim AS base
 
 # Required to run Prisma on ARM64 machines
 # https://github.com/prisma/prisma/issues/861#issuecomment-881992292

@@ -1,22 +1,34 @@
-import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { Inject, Injectable } from "@nestjs/common";
 import { FindSubscriptionsArgs } from "./dto/FindSubscriptionsArgs";
 import { Subscription } from "./dto/Subscription";
-import { SubscriptionData } from "./dto";
-import { CreateSubscriptionInput } from "./dto/CreateSubscriptionInput";
 import {
+  EnumSubscriptionPlan,
   EnumSubscriptionStatus,
-  Prisma,
+  SubscriptionData,
+} from "./dto";
+import {
   PrismaService,
+  Prisma,
+  EnumSubscriptionStatus as PrismaEnumSubscriptionStatus,
   Subscription as PrismaSubscription,
-} from "@amplication/prisma-db";
-import { UpdateSubscriptionInput } from "./dto/UpdateSubscriptionInput";
+} from "../../prisma";
+import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
+import { BillingService } from "../billing/billing.service";
+import { UpdateStatusDto } from "./dto/UpdateStatusDto";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class SubscriptionService {
   constructor(
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger,
     private readonly prisma: PrismaService,
-    private readonly configService: ConfigService
+    private readonly billingService: BillingService,
+    private readonly analyticsService: SegmentAnalyticsService
   ) {}
 
   private async getSubscriptions(
@@ -29,12 +41,22 @@ export class SubscriptionService {
     });
   }
 
+  async getSubscriptionById(id: string): Promise<Subscription | null> {
+    const sub = await this.prisma.subscription.findUnique({
+      where: {
+        id: id,
+      },
+    });
+    return this.transformPrismaObject(sub);
+  }
+
   async getCurrentSubscription(
     workspaceId: string
   ): Promise<Subscription | null> {
     const sub = await this.prisma.subscription.findFirst({
       where: {
         workspaceId: workspaceId,
+        status: PrismaEnumSubscriptionStatus.Active,
         // eslint-disable-next-line @typescript-eslint/naming-convention
         OR: [
           {
@@ -55,23 +77,6 @@ export class SubscriptionService {
     return this.transformPrismaObject(sub);
   }
 
-  private async getSubscriptionByPaddleSubscriptionId(
-    workspaceId: string,
-    paddleSubscriptionId: string
-  ): Promise<Subscription> {
-    const subscriptions = await this.getSubscriptions({
-      where: {
-        workspace: {
-          id: workspaceId,
-        },
-      },
-    });
-
-    return subscriptions.find((sub) => {
-      return sub.subscriptionData.paddleSubscriptionId === paddleSubscriptionId;
-    });
-  }
-
   private transformPrismaObject(
     subscription: PrismaSubscription | null
   ): Subscription | null {
@@ -90,69 +95,108 @@ export class SubscriptionService {
     };
   }
 
-  async createSubscription(
-    data: CreateSubscriptionInput
-  ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
-
-    if (subscriptionToUpdate) {
-      return this.updateSubscription(data);
-    }
-
-    return this.transformPrismaObject(
-      await this.prisma.subscription.create({
-        data: {
-          workspace: {
-            connect: {
-              id: data.workspaceId,
-            },
-          },
-          status: data.status,
-          subscriptionPlan: data.plan,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
+  async trackUpgradeCompletedEvent(
+    plan: EnumSubscriptionPlan,
+    userId: string,
+    workspaceId: string
+  ): Promise<void> {
+    if (plan !== EnumSubscriptionPlan.Free && userId) {
+      await this.analyticsService.track({
+        userId: userId,
+        properties: {
+          workspaceId: workspaceId,
         },
-      })
-    );
+        event: EnumEventType.WorkspacePlanUpgradeCompleted,
+      });
+    }
   }
 
-  async updateSubscription(
-    data: UpdateSubscriptionInput
-  ): Promise<Subscription> {
-    const subscriptionToUpdate =
-      await this.getSubscriptionByPaddleSubscriptionId(
-        data.workspaceId,
-        data.subscriptionData.paddleSubscriptionId
-      );
+  async handleUpdateSubscriptionStatusEvent(
+    updateStatusDto: UpdateStatusDto
+  ): Promise<void> {
+    const data =
+      this.mapUpdateStatusDtoToUpsertSubscriptionInput(updateStatusDto);
 
-    if (!subscriptionToUpdate) {
-      throw new Error(
-        `Can't find subscription to update for workspace ID ${data.workspaceId} and paddle subscription ID ${data.subscriptionData.paddleSubscriptionId}`
+    switch (updateStatusDto.type) {
+      case "subscription.created":
+      case "subscription.updated":
+      case "subscription.expired":
+      case "subscription.canceled": {
+        await this.prisma.subscription.upsert({
+          where: {
+            id: updateStatusDto.id,
+          },
+          create: {
+            id: updateStatusDto.id,
+            workspaceId: data.workspaceId,
+            status: data.status,
+            subscriptionPlan: data.plan,
+            subscriptionData:
+              data.subscriptionData as unknown as Prisma.InputJsonValue,
+          },
+          update: {
+            status: data.status,
+            subscriptionData:
+              data.subscriptionData as unknown as Prisma.InputJsonValue,
+          },
+        });
+        break;
+      }
+    }
+    if (updateStatusDto.type === "subscription.created") {
+      await this.trackUpgradeCompletedEvent(
+        data.plan,
+        updateStatusDto.metadata?.userId,
+        updateStatusDto.customer.id
       );
     }
+  }
 
-    const cancellationEffectiveDate =
-      data.status === EnumSubscriptionStatus.Deleted
-        ? data.subscriptionData.paddleCancellationEffectiveDate
-        : null;
+  mapUpdateStatusDtoToUpsertSubscriptionInput(
+    updateStatusDto: UpdateStatusDto
+  ): UpsertSubscriptionInput {
+    return {
+      workspaceId: updateStatusDto.customer.id,
+      status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
+      plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
+      subscriptionData: new SubscriptionData(),
+    };
+  }
 
-    return this.transformPrismaObject(
-      await this.prisma.subscription.update({
-        where: {
-          id: subscriptionToUpdate.id,
-        },
-        data: {
-          status: data.status,
-          subscriptionPlan: data.plan,
-          cancellationEffectiveDate: cancellationEffectiveDate,
-          subscriptionData:
-            data.subscriptionData as unknown as Prisma.InputJsonValue,
-        },
-      })
+  async resolveSubscription(workspaceId: string): Promise<Subscription> {
+    const databaseSubscription = await this.getCurrentSubscription(workspaceId);
+    if (databaseSubscription) {
+      return databaseSubscription;
+    }
+
+    const stiggSubscription = await this.billingService.getSubscription(
+      workspaceId
     );
+    if (stiggSubscription) {
+      const createSubscriptionInput: UpsertSubscriptionInput = {
+        workspaceId: workspaceId,
+        status: stiggSubscription.status as EnumSubscriptionStatus,
+        plan: stiggSubscription.subscriptionPlan as EnumSubscriptionPlan,
+        subscriptionData: new SubscriptionData(),
+      };
+
+      const savedSubscription = await this.prisma.subscription.create({
+        data: {
+          id: stiggSubscription.id,
+          workspaceId: createSubscriptionInput.workspaceId,
+          status: createSubscriptionInput.status,
+          subscriptionPlan: createSubscriptionInput.plan,
+          subscriptionData:
+            createSubscriptionInput.subscriptionData as unknown as Prisma.InputJsonValue,
+        },
+      });
+
+      const mappedSubscription = {
+        ...savedSubscription,
+        subscriptionData: null,
+      };
+      return mappedSubscription;
+    }
+    return null;
   }
 }

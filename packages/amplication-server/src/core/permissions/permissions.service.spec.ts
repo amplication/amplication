@@ -1,6 +1,6 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { PermissionsService } from "./permissions.service";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { User, Workspace } from "../../models";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 
@@ -90,6 +90,9 @@ describe("PermissionsService", () => {
     const countArgs = {
       where: {
         deletedAt: null,
+        archived: {
+          not: true,
+        },
         id: args.originId,
         project: {
           workspace: {

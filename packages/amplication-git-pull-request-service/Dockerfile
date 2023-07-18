@@ -1,6 +1,10 @@
-FROM node:19.1-alpine AS base
+FROM node:18.12.1-alpine AS base
 
 WORKDIR /app
+
+RUN apk update \
+    && apk add --no-cache git \
+    && rm /var/cache/apk/*
 
 COPY ./dist/packages/amplication-git-pull-request-service/package.json .
 

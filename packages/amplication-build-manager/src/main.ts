@@ -1,4 +1,5 @@
-import { createNestjsKafkaConfig } from "@amplication/kafka";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
 
 import { NestFactory } from "@nestjs/core";
@@ -8,7 +9,8 @@ import { AppModule } from "./app.module";
 import { Env } from "./env";
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {});
+  const app = await NestFactory.create(AppModule, { bufferLogs: true });
+  app.useLogger(app.get(AmplicationLogger));
 
   app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
 

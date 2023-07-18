@@ -2,6 +2,8 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { useHistory, useLocation, useRouteMatch } from "react-router-dom";
 import * as models from "../../models";
+import { PURCHASE_URL } from "../../routes/routesUtil";
+import { expireCookie, getCookie, setCookie } from "../../util/cookie";
 import { CREATE_PROJECT, GET_PROJECTS } from "../queries/projectQueries";
 
 const useProjectSelector = (
@@ -18,6 +20,7 @@ const useProjectSelector = (
   const workspaceUtil = useRouteMatch([
     "/:workspace([A-Za-z0-9-]{20,})/settings",
     "/:workspace([A-Za-z0-9-]{20,})/members",
+    "/:workspace([A-Za-z0-9-]{20,})/purchase",
   ]);
   const projectMatch: {
     params: { workspace: string; project: string };
@@ -39,7 +42,9 @@ const useProjectSelector = (
     projects: models.Project[];
   }>(GET_PROJECTS, {
     skip:
-      !workspace || (currentWorkspace && currentWorkspace?.id !== workspace),
+      !workspace ||
+      (currentWorkspace && currentWorkspace?.id !== workspace) ||
+      !currentWorkspace,
     onError: (error) => {
       // if error push to ? check with @Yuval
     },
@@ -47,6 +52,7 @@ const useProjectSelector = (
 
   const projectRedirect = useCallback(
     (projectId: string, search?: string) =>
+      (currentWorkspace?.id || workspace) &&
       history.push({
         pathname: `/${currentWorkspace?.id || workspace}/${projectId}`,
         search: search || "",
@@ -69,6 +75,20 @@ const useProjectSelector = (
   );
 
   useEffect(() => {
+    const signupCookie = getCookie("signup");
+
+    if (signupCookie) {
+      let refreshTimes = Number(signupCookie);
+      refreshTimes += 1;
+      if (refreshTimes < 4) {
+        setCookie("signup", refreshTimes.toString());
+      } else {
+        expireCookie("signup");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
     if (loadingList || !projectListData) return;
 
     const sortedProjects = [...projectListData.projects].sort((a, b) => {
@@ -82,10 +102,22 @@ const useProjectSelector = (
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
-    !workspaceUtil &&
+    const isSignupCookieExist = getCookie("signup");
+    !isSignupCookieExist && isFromSignup && setCookie("signup", "1");
+    const isFromPurchase = localStorage.getItem(PURCHASE_URL);
+
+    if (isFromPurchase) {
+      localStorage.removeItem(PURCHASE_URL);
+      return history.push({
+        pathname: `/${currentWorkspace?.id}/purchase`,
+        state: { source: "redirect" },
+      });
+    }
+
+    !!(!workspaceUtil && currentWorkspace?.id) &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup ? "/create-resource" : ""
+          isFromSignup || isSignupCookieExist ? "/welcome" : ""
         }`
       );
   }, [

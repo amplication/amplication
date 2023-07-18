@@ -17,11 +17,18 @@ export const GET_RESOURCES = gql`
       gitRepository {
         id
         name
+        groupName
         gitOrganization {
           id
           name
           type
+          provider
+          useGroupingForRepositories
         }
+      }
+      entities {
+        id
+        name
       }
       builds(orderBy: { createdAt: Desc }, take: 1) {
         id
@@ -65,11 +72,48 @@ export const GET_RESOURCES = gql`
 export const CREATE_SERVICE_WITH_ENTITIES = gql`
   mutation createServiceWithEntities($data: ResourceCreateWithEntitiesInput!) {
     createServiceWithEntities(data: $data) {
-      id
-      name
-      description
-      builds(orderBy: { createdAt: Desc }, take: 1) {
+      resource {
         id
+        name
+        description
+        builds(orderBy: { createdAt: Desc }, take: 1) {
+          id
+        }
+        gitRepository {
+          id
+          name
+          groupName
+          gitOrganization {
+            id
+            name
+            provider
+          }
+        }
+        resourceType
+      }
+      build {
+        id
+        version
+        status
+        action {
+          id
+          createdAt
+          steps {
+            id
+            name
+            createdAt
+            message
+            status
+            completedAt
+            logs {
+              id
+              createdAt
+              message
+              meta
+              level
+            }
+          }
+        }
       }
     }
   }
@@ -104,6 +148,7 @@ export const DISCONNECT_GIT_REPOSITORY = gql`
       id
       gitRepository {
         id
+        groupName
       }
     }
   }
@@ -115,6 +160,7 @@ export const CONNECT_RESOURCE_PROJECT_REPO = gql`
       id
       gitRepository {
         id
+        groupName
       }
     }
   }

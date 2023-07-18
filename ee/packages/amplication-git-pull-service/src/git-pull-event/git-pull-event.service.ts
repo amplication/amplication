@@ -2,10 +2,7 @@ import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { convertToNumber } from "../utils/convert-to-number";
 import { DEFAULT_GITHUB_PULL_FOLDER } from "./git-pull-event.constants";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { GitHostProviderFactory } from "./git-host-provider-factory";
 import { GitPullEventRepository } from "./git-pull-event.repository";
 import { GitClientService } from "./git-client.service";
@@ -29,7 +26,7 @@ export class GitPullEventService {
     private gitPullEventRepository: GitPullEventRepository,
     private gitClientService: GitClientService,
     private storageService: StorageService,
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {
     this.rootStorageDir =
@@ -86,12 +83,12 @@ export class GitPullEventService {
     } catch (err) {
       if (err instanceof Error) {
         this.logger.error(
-          GitPullEventService.name,
-          { err: err.message },
-          "pushEventHandler method"
+          "pushEventHandler method",
+          err,
+          GitPullEventService.name
         );
       } else {
-        console.log("Unexpected error", err);
+        this.logger.error("Unexpected error", err, GitPullEventService.name);
       }
     }
   }

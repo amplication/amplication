@@ -1,12 +1,12 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ActionService, SELECT_ID } from "./action.service";
-import { PrismaService } from "@amplication/prisma-db";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Action } from "./dto/Action";
 import { ActionStep } from "./dto/ActionStep";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { FindOneActionArgs } from "./dto/FindOneActionArgs";
 import { EnumActionLogLevel } from "./dto";
-import { AMPLICATION_LOGGER_PROVIDER } from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_ACTION_ID = "exampleActionId";
 const EXAMPLE_ACTION_STEP_ID = "exampleActionStepId";
@@ -62,7 +62,7 @@ describe("ActionService", () => {
           },
         },
         {
-          provide: AMPLICATION_LOGGER_PROVIDER,
+          provide: AmplicationLogger,
           useClass: jest.fn(() => ({
             error: jest.fn(),
           })),
@@ -209,7 +209,7 @@ describe("ActionService", () => {
     expect(prismaActionLogCreateMock).toBeCalledWith({
       data: {
         level: EnumActionLogLevel.Error,
-        message: EXAMPLE_ERROR.toString(),
+        message: EXAMPLE_ERROR.message,
         meta: {},
         step: {
           connect: { id: EXAMPLE_ACTION_STEP_ID },

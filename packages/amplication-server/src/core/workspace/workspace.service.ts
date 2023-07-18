@@ -1,6 +1,6 @@
 import { Injectable, ConflictException } from "@nestjs/common";
 import { Workspace, User } from "../../models";
-import { PrismaService, Prisma } from "@amplication/prisma-db";
+import { Prisma, PrismaService } from "../../prisma";
 import { Invitation } from "./dto/Invitation";
 import {
   FindManyWorkspaceArgs,
@@ -25,6 +25,12 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { Subscription } from "../subscription/dto/Subscription";
 import { GitOrganization } from "../../models/GitOrganization";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingPlan } from "../billing/billing.types";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -35,7 +41,9 @@ export class WorkspaceService {
     private readonly userService: UserService,
     private readonly mailService: MailService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly billingService: BillingService,
+    private analytics: SegmentAnalyticsService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -91,6 +99,8 @@ export class WorkspaceService {
         users: args?.include?.users || true,
       },
     });
+
+    await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
 
     const [user] = workspace.users;
 
@@ -257,6 +267,14 @@ export class WorkspaceService {
             id: newUser.id,
           },
         },
+      },
+    });
+
+    await this.analytics.track({
+      userId: account.id,
+      event: EnumEventType.InvitationAcceptance,
+      properties: {
+        workspaceId: invitation.workspaceId,
       },
     });
 

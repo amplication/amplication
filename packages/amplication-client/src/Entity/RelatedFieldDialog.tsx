@@ -5,7 +5,7 @@ import {
   Dialog,
   DialogProps,
   EnumButtonStyle,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { camelCase } from "camel-case";
 import { Formik, useFormikContext } from "formik";
 import { DisplayNameField } from "../Components/DisplayNameField";

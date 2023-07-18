@@ -28,6 +28,7 @@ import {
   CreateOneResourceArgs,
   FindManyResourceArgs,
   UpdateOneResourceArgs,
+  ResourceCreateWithEntitiesResult,
 } from "./dto";
 
 @Resolver(() => Resource)
@@ -107,7 +108,7 @@ export class ResourceResolver {
     @Args() args: CreateOneResourceArgs,
     @UserEntity() user: User
   ): Promise<Resource> {
-    return this.resourceService.createMessageBroker(args);
+    return this.resourceService.createMessageBroker(args, user);
   }
 
   @Mutation(() => Resource, { nullable: false })
@@ -123,7 +124,7 @@ export class ResourceResolver {
     return this.resourceService.createService(args, user);
   }
 
-  @Mutation(() => Resource, { nullable: false })
+  @Mutation(() => ResourceCreateWithEntitiesResult, { nullable: false })
   @Roles("ORGANIZATION_ADMIN")
   @AuthorizeContext(
     AuthorizableOriginParameter.ProjectId,
@@ -132,7 +133,7 @@ export class ResourceResolver {
   async createServiceWithEntities(
     @Args() args: CreateServiceWithEntitiesArgs,
     @UserEntity() user: User
-  ): Promise<Resource> {
+  ): Promise<ResourceCreateWithEntitiesResult> {
     return this.resourceService.createServiceWithEntities(args.data, user);
   }
 
@@ -140,8 +141,11 @@ export class ResourceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async deleteResource(@Args() args: FindOneArgs): Promise<Resource | null> {
-    return this.resourceService.deleteResource(args);
+  async deleteResource(
+    @Args() args: FindOneArgs,
+    @UserEntity() user: User
+  ): Promise<Resource | null> {
+    return this.resourceService.deleteResource(args, user);
   }
 
   @Mutation(() => Resource, {

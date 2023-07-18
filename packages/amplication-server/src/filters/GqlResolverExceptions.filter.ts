@@ -8,14 +8,11 @@
 import { Catch, ArgumentsHost, Inject, HttpException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { GqlExceptionFilter, GqlArgumentsHost } from "@nestjs/graphql";
-import { Prisma } from "@amplication/prisma-db";
+import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
 import { AmplicationError } from "../errors/AmplicationError";
-import {
-  AmplicationLogger,
-  AMPLICATION_LOGGER_PROVIDER,
-} from "@amplication/nest-logger-module";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export type RequestData = {
   query: string;
@@ -23,6 +20,10 @@ export type RequestData = {
   ip: string;
   userId: string;
 };
+
+interface RequestWithUser extends Request {
+  user: { id: string } | null;
+}
 
 export const PRISMA_CODE_UNIQUE_KEY_VIOLATION = "P2002";
 
@@ -40,8 +41,8 @@ export class InternalServerError extends ApolloError {
   }
 }
 
-export function createRequestData(req: Request): RequestData {
-  const user = req.user as { id: string } | null;
+export function createRequestData(req: RequestWithUser): RequestData {
+  const user = req.user;
   return {
     query: req.body?.query,
     hostname: req.hostname,
@@ -53,7 +54,7 @@ export function createRequestData(req: Request): RequestData {
 @Catch()
 export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
   constructor(
-    @Inject(AMPLICATION_LOGGER_PROVIDER)
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly configService: ConfigService
   ) {}
@@ -83,7 +84,7 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       // eslint-disable-next-line
       // @ts-ignore
       exception.requestData = requestData;
-      this.logger.error(exception);
+      this.logger.error(exception.message, exception);
       clientError =
         this.configService.get("NODE_ENV") === "production"
           ? new InternalServerError()

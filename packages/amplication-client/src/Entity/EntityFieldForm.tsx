@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import { omit, isEmpty } from "lodash";
 import { getSchemaForDataType } from "@amplication/code-gen-types";
-import { ToggleField } from "@amplication/design-system";
+import { TextField, ToggleField } from "@amplication/ui/design-system";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
@@ -22,7 +22,9 @@ export type Values = {
   unique: boolean;
   required: boolean;
   searchable: boolean;
+  customAttributes: string | null;
   description: string | null;
+  permanentId?: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
   properties: {
     relatedEntityId?: string;
@@ -34,7 +36,7 @@ type Props = {
   onSubmit: (values: Values) => void;
   defaultValues?: Partial<models.EntityField>;
   resourceId: string;
-  entityDisplayName: string;
+  entity: models.Entity;
   isSystemDataType?: boolean;
 };
 
@@ -62,6 +64,7 @@ export const INITIAL_VALUES: Values = {
   unique: false,
   required: false,
   searchable: false,
+  customAttributes: null,
   description: "",
   properties: {},
 };
@@ -70,7 +73,7 @@ const EntityFieldForm = ({
   onSubmit,
   defaultValues = {},
   resourceId,
-  entityDisplayName,
+  entity,
   isSystemDataType,
 }: Props) => {
   const initialValues = useMemo(() => {
@@ -83,12 +86,6 @@ const EntityFieldForm = ({
       ...sanitizedDefaultValues,
     };
   }, [defaultValues]);
-
-  function onKeyDown(keyEvent: any) {
-    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
-      keyEvent.preventDefault();
-    }
-  }
 
   return (
     <Formik
@@ -123,7 +120,7 @@ const EntityFieldForm = ({
         const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
-          <Form childrenAsBlocks onKeyDown={onKeyDown}>
+          <Form childrenAsBlocks>
             <FormikAutoSave debounceMS={1000} />
 
             <DisplayNameField
@@ -170,7 +167,17 @@ const EntityFieldForm = ({
             <SchemaFields
               schema={schema}
               resourceId={resourceId}
-              entityDisplayName={entityDisplayName}
+              entity={entity}
+            />
+
+            <TextField
+              autoComplete="off"
+              disabled={isSystemDataType}
+              placeholder='Add custom attributes to fields using the format @attribute([parameters]) or @attribute. For example: @map(name: "fieldName") @unique @default(value)'
+              textarea
+              rows={3}
+              name="customAttributes"
+              label="Custom Attributes"
             />
           </Form>
         );

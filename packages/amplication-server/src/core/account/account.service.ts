@@ -1,9 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { PrismaService, Prisma, Account } from "@amplication/prisma-db";
+import { Account, Prisma } from "../../prisma";
+import { PrismaService } from "../../prisma/prisma.service";
 import { Workspace } from "../../models";
 import {
   SegmentAnalyticsService,
   EnumEventType,
+  IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 @Injectable()
 export class AccountService {
@@ -12,18 +14,31 @@ export class AccountService {
     private analytics: SegmentAnalyticsService
   ) {}
 
-  async createAccount(args: Prisma.AccountCreateArgs): Promise<Account> {
+  async createAccount(
+    args: Prisma.AccountCreateArgs,
+    identityProvider: string
+  ): Promise<Account> {
     const account = await this.prisma.account.create(args);
-    await this.analytics.identify({
+
+    const userData: IdentifyData = {
       userId: account.id,
       createdAt: account.createdAt,
       email: account.email,
       firstName: account.firstName,
       lastName: account.lastName,
-    });
+    };
+
+    await this.analytics.identify(userData);
+    //we send the userData again to prevent race condition
     await this.analytics.track({
       userId: account.id,
       event: EnumEventType.Signup,
+      properties: {
+        identityProvider,
+      },
+      context: {
+        traits: userData,
+      },
     });
     return account;
   }

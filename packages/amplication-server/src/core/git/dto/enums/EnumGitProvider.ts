@@ -1,9 +1,8 @@
 import { registerEnumType } from "@nestjs/graphql";
-
-export enum EnumGitProvider {
-  Github = "Github",
-}
+import { EnumGitProvider } from "@amplication/util/git";
 
 registerEnumType(EnumGitProvider, {
   name: "EnumGitProvider",
 });
+
+export { EnumGitProvider };

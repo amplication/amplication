@@ -9,7 +9,7 @@ import {
   MultiStateToggle,
   TextField,
   Snackbar,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";

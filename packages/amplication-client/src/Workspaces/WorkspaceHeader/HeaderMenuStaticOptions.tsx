@@ -1,4 +1,4 @@
-import { Icon, SelectMenuItem } from "@amplication/design-system";
+import { Icon, SelectMenuItem } from "@amplication/ui/design-system";
 import React, { useMemo } from "react";
 import { useRouteMatch } from "react-router-dom";
 
@@ -35,7 +35,7 @@ export default function HeaderMenuStaticOptions({
         icon: "history_commit_outline",
       },
       {
-        title: "View code",
+        title: "View Code",
         link: `code-view`,
         icon: "code1",
       },

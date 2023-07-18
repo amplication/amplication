@@ -1,4 +1,4 @@
-import { CircularProgress, Snackbar } from "@amplication/design-system";
+import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
 import { isEmpty } from "lodash";
 import React, { useContext, useEffect } from "react";
@@ -42,14 +42,7 @@ export const ServiceConnectionsList = React.memo(
         const connectionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/service-connections/${resource.id}`;
         history.push(connectionUrl);
       }
-    }, [
-      messageBrokerList,
-      selectFirst,
-      resourceId,
-      history,
-      currentWorkspace,
-      currentProject,
-    ]);
+    }, [selectFirst, resourceId, history, currentWorkspace, currentProject]);
 
     return (
       <div className={CLASS_NAME}>

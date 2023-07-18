@@ -4,13 +4,14 @@ import {
   EnumPanelStyle,
   Icon,
   Panel,
-} from "@amplication/design-system";
+} from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitOrganizationType, Resource } from "../../../../models";
 import "../../AuthResourceWithGit.scss";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import GithubSyncDetails from "./GithubSyncDetails";
 import "./RepositoryActions.scss";
+import { EnumGitProvider } from "@amplication/code-gen-types/models";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
@@ -48,7 +49,7 @@ export default function RepositoryActions({
                 <>
                   <div className={`${CLASS_NAME}__action`}>
                     <Button
-                      buttonStyle={EnumButtonStyle.Primary}
+                      buttonStyle={EnumButtonStyle.Outline}
                       onClick={onSelectRepository}
                     >
                       Select repository
@@ -58,6 +59,7 @@ export default function RepositoryActions({
                     EnumGitOrganizationType.Organization && (
                     <div className={`${CLASS_NAME}__action`}>
                       <Button
+                        type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
                         icon="plus"
@@ -66,6 +68,26 @@ export default function RepositoryActions({
                       </Button>
                     </div>
                   )}
+                  {selectedGitOrganization.type ===
+                    EnumGitOrganizationType.User &&
+                    selectedGitOrganization.provider ===
+                      EnumGitProvider.Github && (
+                      <div className={`${CLASS_NAME}__action`}>
+                        <a
+                          href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Button
+                            type="button"
+                            buttonStyle={EnumButtonStyle.Primary}
+                            icon="plus"
+                          >
+                            Create repository
+                          </Button>
+                        </a>
+                      </div>
+                    )}
                 </>
               )}
             </div>

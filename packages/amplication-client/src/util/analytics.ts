@@ -1,11 +1,15 @@
 import * as reactTracking from "react-tracking";
 import { REACT_APP_AMPLITUDE_API_KEY } from "../env";
 import { AnalyticsEventNames } from "./analytics-events.types";
+import { version } from "../util/version";
 
 export interface Event {
   eventName: AnalyticsEventNames;
   [key: string]: unknown;
 }
+
+const ANALYTICS_SESSION_ID_KEY = "analytics_session_id";
+export const ANALYTICS_SESSION_ID_HEADER_KEY = "analytics-session-id";
 
 const MISSING_EVENT_NAME = "MISSING_EVENT_NAME";
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
@@ -23,15 +27,19 @@ export const useTracking: () => Omit<
 
 export function dispatch(event: Partial<Event>) {
   const { eventName, ...rest } = event;
+  const versionObj = version ? { version } : {};
   _hsq.push([
     "trackCustomBehavioralEvent",
-    { name: eventName, properties: rest },
+    { name: eventName, properties: { ...versionObj, ...rest } },
   ]);
   if (REACT_APP_AMPLITUDE_API_KEY) {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     //@ts-ignore
     const analytics = window.analytics;
-    analytics.track(eventName || MISSING_EVENT_NAME, rest);
+    analytics.track(eventName || MISSING_EVENT_NAME, {
+      ...versionObj,
+      ...rest,
+    });
   }
 }
 
@@ -69,4 +77,8 @@ export function page(name?: string, props?: EventProps) {
     const analytics = window.analytics;
     analytics.page(name, props);
   }
+}
+
+export function getSessionId(): string | null {
+  return localStorage.getItem(ANALYTICS_SESSION_ID_KEY);
 }

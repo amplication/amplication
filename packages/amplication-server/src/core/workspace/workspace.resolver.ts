@@ -29,6 +29,15 @@ import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { GitOrganization } from "../../models/GitOrganization";
 import { Subscription } from "../subscription/dto/Subscription";
 import { ProjectService } from "../project/project.service";
+import { BillingService } from "../billing/billing.service";
+import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
+import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -36,7 +45,11 @@ import { ProjectService } from "../project/project.service";
 export class WorkspaceResolver {
   constructor(
     private readonly workspaceService: WorkspaceService,
-    private readonly projectService: ProjectService
+    private readonly projectService: ProjectService,
+    private readonly billingService: BillingService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly userService: UserService
   ) {}
 
   @Query(() => Workspace, {
@@ -53,6 +66,15 @@ export class WorkspaceResolver {
   async currentWorkspace(
     @UserEntity() currentUser: User
   ): Promise<Workspace | null> {
+    await this.analytics.track({
+      userId: currentUser.account.id,
+      properties: {
+        workspaceId: currentUser.workspace.id,
+      },
+      event: EnumEventType.WorkspaceSelected,
+    });
+    await this.userService.setLastActivity(currentUser.id);
+
     return currentUser.workspace;
   }
 
@@ -144,7 +166,7 @@ export class WorkspaceResolver {
 
   @ResolveField(() => Subscription, { nullable: true })
   async subscription(@Parent() workspace: Workspace): Promise<Subscription> {
-    return this.workspaceService.getSubscription(workspace.id);
+    return await this.subscriptionService.resolveSubscription(workspace.id);
   }
 
   @ResolveField(() => [GitOrganization])
@@ -152,5 +174,18 @@ export class WorkspaceResolver {
     @Parent() workspace: Workspace
   ): Promise<GitOrganization[]> {
     return this.workspaceService.findManyGitOrganizations(workspace.id);
+  }
+
+  @Mutation(() => ProvisionSubscriptionResult, {
+    nullable: true,
+  })
+  async provisionSubscription(
+    @UserEntity() currentUser: User,
+    @Args() args: ProvisionSubscriptionArgs
+  ): Promise<ProvisionSubscriptionResult | null> {
+    return this.billingService.provisionSubscription({
+      ...args.data,
+      userId: currentUser.account.id,
+    });
   }
 }

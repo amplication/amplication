@@ -1,21 +1,4 @@
 {
-  "extends": "nx/presets/npm.json",
-  "pluginsConfig": {
-    "@nrwl/js": {
-      "analyzeSourceFiles": true
-    }
-  },
-  "npmScope": "amplication",
-  "affected": {
-    "defaultBase": "master"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    ".eslintrc.json": "*"
-  },
   "tasksRunnerOptions": {
     "default": {
       "runner": "@nrwl/nx-cloud",
@@ -30,14 +13,35 @@
           "db:init",
           "lint",
           "test:e2e",
-          "test:cov"
-        ]
+          "e2e",
+          "test:cov",
+          "build-storybook"
+        ],
+        "accessToken": "ZjczM2RhYjEtYzdmOS00MDVhLThkYWEtMDU4MmJkMTQ1ZWZjfHJlYWQ="
       }
     }
   },
+  "pluginsConfig": {
+    "@nrwl/js": {
+      "analyzeSourceFiles": true
+    }
+  },
+  "extends": "nx/presets/npm.json",
+  "npmScope": "amplication",
+  "affected": {
+    "defaultBase": "master"
+  },
+  "implicitDependencies": {
+    "package.json": {
+      "dependencies": "*",
+      "devDependencies": "*"
+    },
+    ".eslintrc.json": "*"
+  },
   "targetDefaults": {
     "test": {
-      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"]
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
@@ -59,8 +63,12 @@
     "lint": {
       "inputs": ["default", "{workspaceRoot}/.eslintrc.json"]
     },
-    "docker:build": {
+    "package:container": {
       "dependsOn": ["prebuild", "build", "postbuild"]
+    },
+    "e2e": {
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"],
+      "dependsOn": ["build"]
     }
   },
   "generators": {
@@ -75,9 +83,14 @@
       },
       "library": {
         "style": "scss",
-        "linter": "eslint"
+        "linter": "eslint",
+        "unitTestRunner": "none"
       }
     }
+  },
+  "workspaceLayout": {
+    "appsDir": "packages",
+    "libsDir": "libs"
   },
   "defaultProject": "amplication-client"
 }

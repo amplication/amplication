@@ -1,71 +1,67 @@
-import { Resource } from "@amplication/code-gen-types/models";
 import {
   Button,
   CircularProgress,
+  HorizontalRule,
   Label,
   TextField,
-  ToggleField,
-} from "@amplication/design-system";
-import { gql, useMutation } from "@apollo/client";
+  Toggle,
+} from "@amplication/ui/design-system";
+import { ApolloError, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
-import React, { useCallback } from "react";
-import { EnumGitProvider, CreateGitRepositoryInput } from "../../../../models";
-import { useTracking } from "../../../../util/analytics";
+import { useCallback, useEffect, useState } from "react";
+import { CreateGitRepositoryInput } from "../../../../models";
 import { formatError } from "../../../../util/error";
 import { CreateGitFormSchema } from "./CreateGitFormSchema/CreateGitFormSchema";
 import "./GitCreateRepo.scss";
+import { GitSelectMenu } from "../../select/GitSelectMenu";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GET_GROUPS } from "../../queries/gitProvider";
 
 type Props = {
-  gitProvider: EnumGitProvider;
-  resource: Resource;
-  gitOrganizationId: string;
-  // eslint-disable-next-line @typescript-eslint/ban-types
-  onCompleted: Function;
-  gitOrganizationName: string;
+  gitOrganization: GitOrganizationFromGitRepository;
+  repoCreated: {
+    isRepoCreateLoading: boolean;
+    RepoCreatedError: ApolloError;
+  };
+  onCreateGitRepository: (data: CreateGitRepositoryInput) => void;
 };
 
 const CLASS_NAME = "git-create-repo";
 
 export default function GitCreateRepo({
-  resource,
-  gitOrganizationId,
-  gitProvider,
-  onCompleted,
-  gitOrganizationName,
+  gitOrganization,
+  repoCreated,
+  onCreateGitRepository,
 }: Props) {
   const initialValues: Partial<CreateGitRepositoryInput> = {
     name: "",
-    public: true,
+    isPublic: true,
   };
-  const { trackEvent } = useTracking();
 
-  const [triggerCreation, { loading, error }] = useMutation(
-    CREATE_GIT_REPOSITORY_IN_ORGANIZATION,
-    {
-      onCompleted: (data) => {
-        onCompleted();
+  const { data: gitGroupsData } = useQuery(GET_GROUPS, {
+    variables: {
+      organizationId: gitOrganization.id,
+    },
+    skip: !gitOrganization.useGroupingForRepositories,
+  });
 
-        trackEvent({
-          eventName: AnalyticsEventNames.GitHubRepositoryCreate,
-        });
-      },
+  const gitGroups = gitGroupsData?.gitGroups?.groups;
+  const [repositoryGroup, setRepositoryGroup] = useState(null);
+
+  useEffect(() => {
+    if (!repositoryGroup && gitGroups && gitGroups.length > 0) {
+      setRepositoryGroup(gitGroups[0]);
     }
-  );
+  }, [gitGroups]);
 
   const handleCreation = useCallback(
     (data: CreateGitRepositoryInput) => {
-      triggerCreation({
-        variables: {
-          name: data.name,
-          gitOrganizationId,
-          gitProvider,
-          public: data.public,
-          resourceId: resource.id,
-        },
-      }).catch((error) => {});
+      const inputData = repositoryGroup
+        ? { ...data, groupName: repositoryGroup.name }
+        : data;
+      onCreateGitRepository(inputData);
     },
-    [resource.id, gitOrganizationId, gitProvider, triggerCreation]
+    [repositoryGroup]
   );
 
   return (
@@ -77,44 +73,49 @@ export default function GitCreateRepo({
       validateOnBlur
     >
       {({ errors: formError, values, handleChange }) => (
-        <Form>
+        <Form className={CLASS_NAME}>
           <div className={`${CLASS_NAME}__header`}>
-            <h4>
-              Create a new {gitProvider} repository to sync your resource with
-            </h4>
-            <br />
+            Create a new {gitOrganization.provider} repository to sync your
+            resource with
           </div>
+
+          {gitOrganization.useGroupingForRepositories && (
+            <>
+              <div className={`${CLASS_NAME}__label`}>Change workspace</div>
+              <GitSelectMenu
+                gitProvider={gitOrganization.provider}
+                selectedItem={repositoryGroup}
+                items={gitGroups}
+                onSelect={setRepositoryGroup}
+              />
+            </>
+          )}
+
           <div>
-            <ToggleField
-              name="public"
-              label={values.public ? "Public Repo" : "Private Repo"}
-              checked={values.public}
+            <Toggle
+              name="isPublic"
+              label="Public Repository"
+              checked={values.isPublic}
               onChange={handleChange}
             />
           </div>
-          <table className={`${CLASS_NAME}__table`}>
-            <tr>
-              <th>Owner</th>
-              <th>Repository name</th>
-            </tr>
-            <tr>
-              <td>{gitOrganizationName}/</td>
-              <td>
-                <TextField
-                  autoFocus
-                  name="name"
-                  autoComplete="off"
-                  showError={false}
-                />
-              </td>
-            </tr>
-          </table>
+
+          <div className={`${CLASS_NAME}__label`}>Repository name</div>
+          <TextField
+            autoFocus
+            name="name"
+            autoComplete="off"
+            showError={false}
+          />
+
+          <HorizontalRule />
+
           <Button
             type="submit"
             className={`${CLASS_NAME}__button`}
-            disabled={loading}
+            disabled={repoCreated.isRepoCreateLoading}
           >
-            {loading ? (
+            {repoCreated.isRepoCreateLoading ? (
               <CircularProgress
                 className={`${CLASS_NAME}__progress`}
                 centerToParent
@@ -124,7 +125,9 @@ export default function GitCreateRepo({
             )}
           </Button>
           <Label
-            text={formError.name || formatError(error) || ""}
+            text={
+              formError.name || formatError(repoCreated.RepoCreatedError) || ""
+            }
             type="error"
           />
         </Form>
@@ -132,29 +135,3 @@ export default function GitCreateRepo({
     </Formik>
   );
 }
-
-const CREATE_GIT_REPOSITORY_IN_ORGANIZATION = gql`
-  mutation createGitRepository(
-    $gitProvider: EnumGitProvider!
-    $gitOrganizationId: String!
-    $resourceId: String!
-    $name: String!
-    $public: Boolean!
-  ) {
-    createGitRepository(
-      data: {
-        name: $name
-        public: $public
-        gitOrganizationId: $gitOrganizationId
-        resourceId: $resourceId
-        gitProvider: $gitProvider
-        gitOrganizationType: Organization
-      }
-    ) {
-      id
-      gitRepository {
-        id
-      }
-    }
-  }
-`;

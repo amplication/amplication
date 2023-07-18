@@ -1,3 +1,0 @@
-{{ include "base.deployment" (list . "amplication-client.deployment") -}}
-{{- define "amplication-client.deployment" -}}
-{{- end }}

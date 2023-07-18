@@ -5,6 +5,10 @@ export type TData = {
   currentWorkspace: models.Workspace;
 };
 
+export type workspacesListTData = {
+  workspaces: models.Workspace[];
+};
+
 export type TSetData = {
   setCurrentWorkspace: {
     token: string;

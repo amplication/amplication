@@ -1,6 +1,6 @@
 import React, { useCallback } from "react";
 
-import { Button, EnumButtonStyle } from "@amplication/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 
 import { useTracking } from "../util/analytics";
 import OverviewSecondaryTile from "./OverviewSecondaryTile";
@@ -16,7 +16,7 @@ function FeatureRequestTile() {
   return (
     <OverviewSecondaryTile
       icon="main_logo"
-      title="Submit a feature request"
+      title="Submit a Feature Request"
       message="If there’s something you’d like to see in Amplication, open a Feature Request on GitHub and tell us about it."
       footer={
         <a
