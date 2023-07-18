@@ -21,7 +21,10 @@ registerEnumType(EnumUserActionStatus, {
 });
 
 export type ActionContext = {
-  logByStep: (level: EnumActionLogLevel, message: string) => Promise<void>;
+  onEmitUserActionLog: (
+    message: string,
+    level: EnumActionLogLevel
+  ) => Promise<void>;
   onComplete: (
     status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
   ) => Promise<void>;
