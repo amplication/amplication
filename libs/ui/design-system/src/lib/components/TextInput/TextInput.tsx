@@ -4,6 +4,7 @@ import { Icon } from "../Icon/Icon";
 import { Button } from "../Button/Button";
 import "./TextInput.scss";
 import { Label, LabelTypes } from "../Label/Label";
+import { Props as InputToolTipProps } from "../InputTooltip/InputTooltip";
 
 export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   helpText?: string;
@@ -16,6 +17,7 @@ export type Props = React.HTMLProps<HTMLTextAreaElement | HTMLInputElement> & {
   hasError?: boolean;
   textarea?: boolean;
   labelType?: LabelTypes;
+  inputToolTip?: InputToolTipProps | undefined;
 };
 
 const CLASS_NAME = "text-input";
@@ -30,6 +32,7 @@ export function TextInput({
   hasError,
   textarea,
   labelType,
+  inputToolTip,
   ...rest
 }: Props) {
   const key = rest.key || rest.autoFocus?.toString();
@@ -42,7 +45,10 @@ export function TextInput({
     >
       <div className={`${CLASS_NAME}__inner-wrapper`}>
         <label className="input-label">
-          {!hideLabel && label && <Label text={label} />}
+          {!hideLabel && label && (
+            <Label text={label} inputToolTip={inputToolTip} />
+          )}
+
           {textarea ? (
             <textarea
               {...rest}
