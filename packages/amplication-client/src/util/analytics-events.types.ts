@@ -95,7 +95,6 @@ export enum AnalyticsEventNames {
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",

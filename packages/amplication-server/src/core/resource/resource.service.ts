@@ -517,16 +517,15 @@ export class ResourceService {
 
     const { gitRepository, serviceSettings } = data.resource;
 
+    const gitOrganization = await this.gitOrganizationByResource({
+      where: {
+        id: resource.id,
+      },
+    });
+
     const provider = data.connectToDemoRepo
       ? "demo-repo"
-      : gitRepository &&
-        (
-          await this.gitOrganizationByResource({
-            where: {
-              id: resource.id,
-            },
-          })
-        ).provider;
+      : gitRepository && gitOrganization.provider;
 
     const totalEntities = data.entities.length;
     const totalFields = data.entities.reduce((acc, entity) => {
@@ -553,6 +552,7 @@ export class ResourceService {
         workspaceId: project.workspaceId,
         totalEntities,
         totalFields,
+        gitOrgType: gitOrganization?.type,
       },
     });
 
