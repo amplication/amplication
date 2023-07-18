@@ -376,6 +376,8 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
+    const { onEmitUserActionLog, onComplete } = actionContext;
+
     const resourceWithProject = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
@@ -454,11 +456,11 @@ export class EntityService {
           functionName: "createEntitiesFromPrismaSchema",
         });
 
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Import operation aborted due to errors. See the log for more details.`
+        void onEmitUserActionLog(
+          `Import operation aborted due to errors. See the log for more details.`,
+          EnumActionLogLevel.Error
         );
-        void actionContext.onComplete(EnumActionStepStatus.Failed);
+        await onComplete(EnumActionStepStatus.Failed);
 
         return [];
       } else {
@@ -472,11 +474,11 @@ export class EntityService {
           actionContext
         );
 
-        void actionContext.logByStep(
-          EnumActionLogLevel.Info,
-          `Import operation Completed.`
+        void onEmitUserActionLog(
+          `Import operation completed successfully.`,
+          EnumActionLogLevel.Info
         );
-        void actionContext.onComplete(EnumActionStepStatus.Success);
+        await onComplete(EnumActionStepStatus.Success);
 
         await this.analytics.track({
           userId: user.account.id,
@@ -514,7 +516,7 @@ export class EntityService {
         functionName: "createEntitiesFromPrismaSchema",
       });
 
-      void actionContext.logByStep(EnumActionLogLevel.Error, error.message);
+      void onEmitUserActionLog(error.message, EnumActionLogLevel.Error);
       void actionContext.onComplete(EnumActionStepStatus.Failed);
       return [];
     }
@@ -538,9 +540,9 @@ export class EntityService {
 
     if (existingEntities.length > 0) {
       existingEntities.forEach((entity) => {
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Entity "${entity.name}" already exists`
+        void actionContext.onEmitUserActionLog(
+          `Entity "${entity.name}" already exists`,
+          EnumActionLogLevel.Error
         );
 
         this.logger.error(
@@ -596,16 +598,17 @@ export class EntityService {
           false
         );
         entities.push(newEntity);
-        void actionContext.logByStep(
-          EnumActionLogLevel.Info,
-          `Entity "${newEntity.name}" created successfully`
+
+        void actionContext.onEmitUserActionLog(
+          `Entity "${newEntity.name}" created successfully`,
+          EnumActionLogLevel.Info
         );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
 
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Failed to create entity "${entity.name}". ${error.message}`
+        void actionContext.onEmitUserActionLog(
+          `Failed to create entity "${entity.name}". ${error.message}`,
+          EnumActionLogLevel.Error
         );
       }
     }
