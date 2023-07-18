@@ -6,16 +6,12 @@ import { PrismaService } from "../../../prisma";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../../env";
 import { EntityService, UserService } from "../..";
-import { EnumUserActionType, ActionContext } from "../types";
+import { EnumUserActionType } from "../types";
 import { AmplicationError } from "../../../errors/AmplicationError";
 import { isDBImportMetadata } from "./utils/type-guards";
 import { UserAction } from "../dto";
 import { PROCESSING_PRISMA_SCHEMA, initialStepData } from "./constants";
-import {
-  ActionStep,
-  EnumActionLogLevel,
-  EnumActionStepStatus,
-} from "../../action/dto";
+import { ActionStep } from "../../action/dto";
 import { ActionService } from "../../action/action.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserActionService } from "../userAction.service";
@@ -100,10 +96,9 @@ export class DBSchemaImportService {
 
       if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
         const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
-
-        const actionContext = this.createActionContext(
+        const actionContext = this.actionService.createActionContext(
           step,
-          dbSchemaImportAction.id
+          this.configService.get(Env.USER_ACTION_LOG_TOPIC)
         );
 
         await this.entityService.createEntitiesFromPrismaSchema(
@@ -140,56 +135,5 @@ export class DBSchemaImportService {
       });
 
     return dbSchemaImportStep;
-  }
-
-  async completeDBSchemaImportStep(
-    userActionId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-  ): Promise<void> {
-    const step = await this.getDBSchemaImportStep(userActionId);
-
-    if (!step) {
-      throw new AmplicationError(
-        `Step ${PROCESSING_PRISMA_SCHEMA} not found for action with id ${userActionId}`
-      );
-    }
-
-    await this.actionService.complete(step, status);
-  }
-
-  /**
-   * Creates an ActionContext for logByStepId and complete functions that can be invoked synchronously.
-   * These functions are invoked as Promises and potential errors are immediately caught and logged.
-   * This provides a means to fire-and-forget these actions without the need to await their completion.
-   * The client of this ActionContext is expected to use 'void' operator while invoking these functions,
-   * indicating we're not interested in their resolved value, thus handling uncaught Promise rejections.
-   */
-  private createActionContext(
-    step: ActionStep,
-    userActionId: string
-  ): ActionContext {
-    const logByStep = (level: EnumActionLogLevel, message: string) =>
-      this.actionService.logByStepId(step.id, level, message).catch((error) =>
-        this.logger.error(`Failed to log action step ${step.id}`, error, {
-          stepId: step.id,
-          message,
-          userActionId,
-        })
-      );
-
-    const onComplete = (
-      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-    ) =>
-      this.completeDBSchemaImportStep(userActionId, status).catch((error) =>
-        this.logger.error(`Failed to complete action step ${step.id}`, error, {
-          stepId: step.id,
-          userActionId,
-        })
-      );
-
-    return {
-      logByStep,
-      onComplete,
-    };
   }
 }
