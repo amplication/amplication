@@ -797,6 +797,7 @@ input GitOrganizationWhereInput {
 }
 
 type GitRepository {
+  baseBranchName: String
   createdAt: DateTime
   gitOrganization: GitOrganization!
   gitOrganizationId: String!
@@ -804,6 +805,10 @@ type GitRepository {
   id: String!
   name: String!
   updatedAt: DateTime
+}
+
+input GitRepositoryUpdateInput {
+  baseBranchName: String
 }
 
 interface IBlock {
@@ -926,6 +931,7 @@ type Mutation {
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): Resource!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings

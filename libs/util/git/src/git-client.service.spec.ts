@@ -212,6 +212,7 @@ describe("GitClientService", () => {
           gitCli: gitCliMock,
           repositoryGroupName: "group",
           defaultBranch: "default",
+          baseBranch: "base",
         };
         getBranchMock.mockResolvedValueOnce(null);
 
@@ -239,13 +240,14 @@ describe("GitClientService", () => {
         // Assert the result
         expect(result).toEqual({ name: "new-branch" });
         expect(gitProviderMock.getBranch).toHaveBeenCalledWith(args);
-        expect(gitGetFirstCommitShaMock).toHaveBeenCalledWith("default");
+        expect(gitGetFirstCommitShaMock).toHaveBeenCalledWith("base");
         expect(gitProviderMock.createBranch).toHaveBeenCalledWith({
           owner: "owner",
           branchName: "new-branch",
           repositoryName: "repository",
           repositoryGroupName: "group",
           pointingSha: "first-commit-sha",
+          baseBranchName: "base",
         });
         expect(gitLogMock).toHaveBeenCalledWith(
           [amplicationBotOrIntegrationApp.gitAuthor, amplicationGitUserAuthor],
@@ -263,6 +265,7 @@ describe("GitClientService", () => {
           gitCli: gitCliMock,
           repositoryGroupName: "group",
           defaultBranch: "default",
+          baseBranch: "base",
         };
         const emptyCommitSha = "commit-2";
         const successfullCommitShas = [];
@@ -316,6 +319,7 @@ describe("GitClientService", () => {
         gitCli: gitCliMock,
         repositoryGroupName: "group",
         defaultBranch: "default",
+        baseBranch: "base",
       };
 
       getBranchMock.mockResolvedValue({

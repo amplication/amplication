@@ -48,11 +48,12 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { User } from "../../models";
+import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ProjectService } from "../project/project.service";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
+import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";
 
 @Traceable()
 @Injectable()
@@ -257,6 +258,12 @@ export class GitProviderService {
     });
 
     return true;
+  }
+
+  async updateGitRepository(
+    args: UpdateGitRepositoryArgs
+  ): Promise<GitRepository> {
+    return this.prisma.gitRepository.update(args);
   }
 
   async disconnectResourceGitRepository(resourceId: string): Promise<Resource> {

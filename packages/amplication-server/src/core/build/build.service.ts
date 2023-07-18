@@ -87,6 +87,7 @@ export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
   gitRepositoryName: string;
   repositoryGroupName?: string;
+  baseBranchName: string;
   gitProvider: EnumGitProvider;
   gitProviderProperties: GitProviderProperties;
   commit: {
@@ -581,6 +582,7 @@ export class BuildService {
         gitOrganizationName: organizationName,
         gitRepositoryName: project.demoRepoName,
         repositoryGroupName: "",
+        baseBranchName: "", //leave empty to use default branch
         gitProvider: EnumGitProvider.Github,
         gitProviderProperties: {
           installationId: installationId,
@@ -626,11 +628,20 @@ export class BuildService {
 
       const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
 
+      const canUseCustomBaseBranch =
+        await this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+
       const gitProviderArgs =
         await this.gitProviderService.getGitProviderProperties(gitOrganization);
       gitSettings = {
         gitOrganizationName: gitOrganization.name,
         gitRepositoryName: resourceRepository.name,
+        baseBranchName: canUseCustomBaseBranch
+          ? resourceRepository.baseBranchName
+          : "",
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,

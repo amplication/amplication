@@ -68,6 +68,9 @@ export function TextInput({
               className={`${CLASS_NAME}__invalid`}
             />
           )}
+          {helpText && labelType && labelType === "normal" && (
+            <Label text={helpText} type={labelType} />
+          )}
         </label>
         {trailingButton && (
           <Button type="submit" icon={trailingButton.icon}>
@@ -75,9 +78,7 @@ export function TextInput({
           </Button>
         )}
       </div>
-      {helpText && labelType && labelType === "normal" && (
-        <Label text={helpText} type={labelType} />
-      )}
+
       {hasError && helpText && <Label text={helpText} type="error" />}
     </div>
   );

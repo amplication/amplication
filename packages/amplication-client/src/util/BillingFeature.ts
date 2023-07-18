@@ -10,4 +10,5 @@ export enum BillingFeature {
   AwsCodeCommit = "feature-awscodecommit",
   Bitbucket = "feature-bitbucket",
   ImportDBSchema = "feature-import-db-schema",
+  ChangeGitBaseBranch = "feature-change-git-base-branch",
 }
