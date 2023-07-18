@@ -7,6 +7,7 @@ import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { FindOneActionArgs } from "./dto/FindOneActionArgs";
 import { EnumActionLogLevel } from "./dto";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 const EXAMPLE_ACTION_ID = "exampleActionId";
 const EXAMPLE_ACTION_STEP_ID = "exampleActionStepId";
@@ -60,6 +61,12 @@ describe("ActionService", () => {
               create: prismaActionLogCreateMock,
             },
           },
+        },
+        {
+          provide: KafkaProducerService,
+          useClass: jest.fn(() => ({
+            emitMessage: jest.fn(),
+          })),
         },
         {
           provide: AmplicationLogger,
