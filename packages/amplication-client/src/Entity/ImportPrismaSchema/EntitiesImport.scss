@@ -1,6 +1,7 @@
 @import "../../style/index.scss";
 
 $header-image-size: 100px;
+$header-image-size-large: 150px;
 $max-width: 700px;
 
 .entities-import {
@@ -23,7 +24,7 @@ $max-width: 700px;
         @include bold;
       }
       .svg-theme-image {
-        height: $header-image-size;
+        height: $header-image-size-large;
         background-position: center;
       }
     }
