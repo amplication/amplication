@@ -64,6 +64,7 @@ export enum AnalyticsEventNames {
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
   ImportPrismaSchemaClick = "importPrismaSchemaClick",
+  ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
