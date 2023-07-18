@@ -18,7 +18,7 @@ import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySel
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
 
-const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
+const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
 const ACTION_LOG: models.Action = {
   id: "1",
