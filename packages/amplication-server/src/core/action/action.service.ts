@@ -18,6 +18,15 @@ import { UserActionLog } from "@amplication/schema-registry";
 
 export const SELECT_ID = { id: true };
 
+export const ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warning: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug,
+};
+
 @Injectable()
 export class ActionService {
   constructor(
@@ -141,6 +150,15 @@ export class ActionService {
     });
   }
 
+  async onUserActionLog(logEntry: UserActionLog.Value): Promise<void> {
+    const { stepId, message, level } = logEntry;
+    await this.logByStepId(
+      stepId,
+      ACTION_LOG_LEVEL[level.toLowerCase()],
+      message
+    );
+  }
+
   async logByStepId(
     stepId: string,
     level: EnumActionLogLevel,
@@ -175,18 +193,26 @@ export class ActionService {
    * The client of this ActionContext is expected to use 'void' operator while invoking these functions,
    * indicating we're not interested in their resolved value, thus handling uncaught Promise rejections.
    */
-  createActionContext(step: ActionStep, topicName: string): ActionContext {
+  createActionContext(
+    userActionId: string,
+    step: ActionStep,
+    topicName: string
+  ): ActionContext {
     const onEmitUserActionLog = (
       message: string,
       level: EnumActionLogLevel
     ) => {
       const onCreateKafkaMessageForUserActionLog =
-        (stepId: string) => (message: string, level: EnumActionLogLevel) =>
-          this.createKafkaMessageForUserActionLog(stepId)(message, level);
+        (userActionId: string, stepId: string) =>
+        (message: string, level: EnumActionLogLevel) =>
+          this.createKafkaMessageForUserActionLog(userActionId, stepId)(
+            message,
+            level
+          );
 
       // partial application: the stepId is already known and the message and level are provided later
       const partialAppliedOnCreateKafkaMessageForUserActionLog =
-        onCreateKafkaMessageForUserActionLog(step.id);
+        onCreateKafkaMessageForUserActionLog(userActionId, step.id);
 
       const kafkaMessage = partialAppliedOnCreateKafkaMessageForUserActionLog(
         message,
@@ -216,12 +242,14 @@ export class ActionService {
     };
   }
 
-  createKafkaMessageForUserActionLog(stepId: string) {
+  createKafkaMessageForUserActionLog(userActionId: string, stepId: string) {
     return (
       message: string,
       level: EnumActionLogLevel
     ): UserActionLog.KafkaEvent => ({
-      key: null,
+      key: {
+        userActionId,
+      },
       value: {
         stepId: stepId,
         message,

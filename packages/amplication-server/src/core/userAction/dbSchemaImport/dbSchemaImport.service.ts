@@ -97,6 +97,7 @@ export class DBSchemaImportService {
       if (isDBImportMetadata(dbSchemaImportAction.metadata)) {
         const step = await this.getDBSchemaImportStep(dbSchemaImportAction.id);
         const actionContext = this.actionService.createActionContext(
+          dbSchemaImportAction.id,
           step,
           this.configService.get(Env.USER_ACTION_LOG_TOPIC)
         );

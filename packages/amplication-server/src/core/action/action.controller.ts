@@ -23,8 +23,7 @@ export class UserActionController {
   ): Promise<void> {
     try {
       const logEntry = plainToInstance(UserActionLog.Value, message);
-      const { stepId, message: logMessage, level } = logEntry;
-      await this.actionService.logByStepId(stepId, level, logMessage);
+      await this.actionService.onUserActionLog(logEntry);
     } catch (error) {
       this.logger.error(error.message, error);
     }
