@@ -30,10 +30,10 @@ describe("prismaSchema", () => {
   });
 
   describe("convertPrismaSchemaForImportObjects", () => {
-    it("should return a validation error if the schema is empty", () => {
+    it("should return a validation error if the schema is empty", async () => {
       const prismaSchema = "";
       const existingEntities: ExistingEntitySelect[] = [];
-      const result = service.convertPrismaSchemaForImportObjects(
+      const result = await service.convertPrismaSchemaForImportObjects(
         prismaSchema,
         existingEntities,
         actionContext
@@ -45,7 +45,7 @@ describe("prismaSchema", () => {
       );
     });
 
-    it("should return a validation error if the schema is not a valid Prisma schema", () => {
+    it("should return a validation error if the schema is not a valid Prisma schema", async () => {
       expect.assertions(1);
       const prismaSchema = `datasource db {
         provider = "postgresql"
@@ -65,7 +65,7 @@ describe("prismaSchema", () => {
 
       const existingEntities: ExistingEntitySelect[] = [];
       try {
-        service.convertPrismaSchemaForImportObjects(
+        await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
           existingEntities,
           actionContext
@@ -77,7 +77,7 @@ describe("prismaSchema", () => {
       }
     });
 
-    it("should return an object with entities and fields and an empty log", () => {
+    it("should return an object with entities and fields and an empty log", async () => {
       // arrange
       const prismaSchema = `datasource db {
         provider = "postgresql"
@@ -96,7 +96,7 @@ describe("prismaSchema", () => {
       }`;
       const existingEntities: ExistingEntitySelect[] = [];
       // act
-      const result = service.convertPrismaSchemaForImportObjects(
+      const result = await service.convertPrismaSchemaForImportObjects(
         prismaSchema,
         existingEntities,
         actionContext
@@ -165,7 +165,7 @@ describe("prismaSchema", () => {
       expect(result).toEqual(expectedEntitiesWithFields);
     });
 
-    it("should rename models starting in lower case to upper case, add a `@@map` attribute to the model with the original model name and a log informing what happened", () => {
+    it("should rename models starting in lower case to upper case, add a `@@map` attribute to the model with the original model name and a log informing what happened", async () => {
       // arrange
       const prismaSchema = `datasource db {
         provider = "postgresql"
@@ -184,7 +184,7 @@ describe("prismaSchema", () => {
       }`;
       const existingEntities: ExistingEntitySelect[] = [];
       // act
-      const result = service.convertPrismaSchemaForImportObjects(
+      const result = await service.convertPrismaSchemaForImportObjects(
         prismaSchema,
         existingEntities,
         actionContext
@@ -289,7 +289,7 @@ describe("prismaSchema", () => {
       );
     });
 
-    it("should return object with entities and fields with the right relations and a log", () => {
+    it("should return object with entities and fields with the right relations and a log", async () => {
       // arrange
       const prismaSchema = `datasource db {
         provider = "postgresql"
@@ -312,7 +312,7 @@ describe("prismaSchema", () => {
       }`;
       const existingEntities: ExistingEntitySelect[] = [];
       // act
-      const result = service.convertPrismaSchemaForImportObjects(
+      const result = await service.convertPrismaSchemaForImportObjects(
         prismaSchema,
         existingEntities,
         actionContext
