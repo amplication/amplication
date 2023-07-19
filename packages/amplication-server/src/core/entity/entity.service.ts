@@ -474,6 +474,10 @@ export class EntityService {
           actionContext
         );
 
+        this.logger.debug(`Import operation completed successfully`, {
+          entitiesCount: entities.length,
+        });
+
         void onEmitUserActionLog(
           `Import operation completed successfully.`,
           EnumActionLogLevel.Info
