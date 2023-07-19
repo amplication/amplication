@@ -21,7 +21,7 @@ import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";
 
-const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
+const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
 const ACTION_LOG: models.Action = {
   id: "1",

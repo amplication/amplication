@@ -92,14 +92,16 @@ export class PrismaSchemaParserService {
    * @param schema The schema to be processed
    * @returns The processed schema
    */
-  convertPrismaSchemaForImportObjects(
+  async convertPrismaSchemaForImportObjects(
     schema: string,
     existingEntities: ExistingEntitySelect[],
     actionContext: ActionContext
-  ): CreateBulkEntitiesInput[] {
-    void actionContext.logByStep(
-      EnumActionLogLevel.Info,
-      "Starting Prisma Schema Validation"
+  ): Promise<CreateBulkEntitiesInput[]> {
+    const { onEmitUserActionLog, onComplete } = actionContext;
+
+    void onEmitUserActionLog(
+      "Starting Prisma Schema Validation",
+      EnumActionLogLevel.Info
     );
 
     validateSchemaUpload(schema);
@@ -113,24 +115,24 @@ export class PrismaSchemaParserService {
       this.logger.error("Prisma Schema Validation Failed", null, {
         validationLog,
       });
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        "Prisma Schema Validation Failed"
+      void onEmitUserActionLog(
+        "Prisma Schema Validation Failed",
+        EnumActionLogLevel.Error
       );
 
-      void actionContext.onComplete(EnumActionStepStatus.Failed);
+      await onComplete(EnumActionStepStatus.Failed);
 
       return [];
     } else {
-      void actionContext.logByStep(
-        EnumActionLogLevel.Info,
-        "Prisma Schema Validation Completed"
+      void onEmitUserActionLog(
+        "Prisma Schema Validation Completed",
+        EnumActionLogLevel.Info
       );
     }
 
-    void actionContext.logByStep(
-      EnumActionLogLevel.Info,
-      "Prepare Prisma Schema for import"
+    void onEmitUserActionLog(
+      "Prepare Prisma Schema for import",
+      EnumActionLogLevel.Info
     );
 
     const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)({
@@ -139,14 +141,14 @@ export class PrismaSchemaParserService {
       actionContext,
     });
 
-    void actionContext.logByStep(
-      EnumActionLogLevel.Info,
-      "Prepare Prisma Schema for import completed"
+    void onEmitUserActionLog(
+      "Prepare Prisma Schema for import completed",
+      EnumActionLogLevel.Info
     );
 
-    void actionContext.logByStep(
-      EnumActionLogLevel.Info,
-      "Create import objects from Prisma Schema"
+    void onEmitUserActionLog(
+      "Create import objects from Prisma Schema",
+      EnumActionLogLevel.Info
     );
 
     const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
@@ -155,9 +157,9 @@ export class PrismaSchemaParserService {
       actionContext
     );
 
-    void actionContext.logByStep(
-      EnumActionLogLevel.Info,
-      "Create import objects from Prisma Schema completed"
+    void onEmitUserActionLog(
+      "Create import objects from Prisma Schema completed",
+      EnumActionLogLevel.Info
     );
     return importObjects;
   }
@@ -233,21 +235,10 @@ export class PrismaSchemaParserService {
 
       for (const field of modelFields) {
         if (this.isFkFieldOfARelation(schema, model, field)) {
-          this.logger.debug("FK field of a relation. Skip field creation", {
-            fieldName: field.name,
-            modelName: model.name,
-          });
           continue;
         }
 
         if (this.isNotAnnotatedRelationField(schema, field)) {
-          this.logger.debug(
-            "Not annotated relation field. Skip field creation",
-            {
-              fieldName: field.name,
-              modelName: model.name,
-            }
-          );
           continue;
         }
 
@@ -401,9 +392,9 @@ export class PrismaSchemaParserService {
           newName: newModelName,
         };
 
-        void actionContext.logByStep(
-          EnumActionLogLevel.Info,
-          `Model name "${model.name}" was changed to "${newModelName}"`
+        void actionContext.onEmitUserActionLog(
+          `Model name "${model.name}" was changed to "${newModelName}"`,
+          EnumActionLogLevel.Info
         );
 
         !hasMapAttribute &&
@@ -477,9 +468,9 @@ export class PrismaSchemaParserService {
             newName: newFieldName,
           };
 
-          void actionContext.logByStep(
-            EnumActionLogLevel.Info,
-            `Field name "${field.name}" on model ${model.name} was changed to "${newFieldName}"`
+          void actionContext.onEmitUserActionLog(
+            `Field name "${field.name}" on model ${model.name} was changed to "${newFieldName}"`,
+            EnumActionLogLevel.Info
           );
 
           !hasMapAttribute &&
@@ -532,9 +523,9 @@ export class PrismaSchemaParserService {
               newName,
             };
 
-            void actionContext.logByStep(
-              EnumActionLogLevel.Info,
-              `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`
+            void actionContext.onEmitUserActionLog(
+              `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
+              EnumActionLogLevel.Info
             );
 
             builder
@@ -588,9 +579,9 @@ export class PrismaSchemaParserService {
         modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
       });
 
-      void actionContext.logByStep(
-        EnumActionLogLevel.Warning,
-        `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`
+      void actionContext.onEmitUserActionLog(
+        `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
+        EnumActionLogLevel.Warning
       );
 
       // add an id field with id attribute to the model
@@ -599,9 +590,9 @@ export class PrismaSchemaParserService {
         .field(ID_FIELD_NAME, "String")
         .attribute(ID_ATTRIBUTE_NAME);
 
-      void actionContext.logByStep(
-        EnumActionLogLevel.Warning,
-        `id field was added to model "${model.name}"`
+      void actionContext.onEmitUserActionLog(
+        `id field was added to model "${model.name}"`,
+        EnumActionLogLevel.Warning
       );
     });
 
@@ -641,6 +632,11 @@ export class PrismaSchemaParserService {
         );
 
         if (!isIdField && field.name === ID_FIELD_NAME) {
+          void actionContext.onEmitUserActionLog(
+            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
+            EnumActionLogLevel.Info
+          );
+
           builder
             .model(model.name)
             .field(field.name)
@@ -656,12 +652,12 @@ export class PrismaSchemaParserService {
             oldName: field.name,
             newName: `${model.name}Id`,
           };
-
-          void actionContext.logByStep(
-            EnumActionLogLevel.Info,
-            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`
-          );
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
+          void actionContext.onEmitUserActionLog(
+            `field name "${field.name}" on model name ${model.name} was changed to "id"`,
+            EnumActionLogLevel.Info
+          );
+
           builder
             .model(model.name)
             .field(field.name)
@@ -677,11 +673,6 @@ export class PrismaSchemaParserService {
             oldName: field.name,
             newName: `id`,
           };
-
-          void actionContext.logByStep(
-            EnumActionLogLevel.Info,
-            `field name "${field.name}" on model name ${model.name} was changed to "id"`
-          );
         }
       });
     });
@@ -856,9 +847,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -886,9 +877,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -916,9 +907,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -946,9 +937,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -985,9 +976,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1025,9 +1016,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1064,9 +1055,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1102,9 +1093,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1132,9 +1123,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1185,9 +1176,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1235,9 +1226,9 @@ export class PrismaSchemaParserService {
 
     if (!entity) {
       this.logger.error(`Entity ${model.name} not found`);
-      void actionContext.logByStep(
-        EnumActionLogLevel.Error,
-        `Entity ${model.name} not found`
+      void actionContext.onEmitUserActionLog(
+        `Entity ${model.name} not found`,
+        EnumActionLogLevel.Error
       );
       throw new Error(`Entity ${model.name} not found`);
     }
@@ -1286,9 +1277,9 @@ export class PrismaSchemaParserService {
 
       if (!entity) {
         this.logger.error(`Entity ${model.name} not found`);
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Entity ${model.name} not found`
+        void actionContext.onEmitUserActionLog(
+          `Entity ${model.name} not found`,
+          EnumActionLogLevel.Error
         );
         throw new Error(`Entity ${model.name} not found`);
       }
@@ -1350,7 +1341,10 @@ export class PrismaSchemaParserService {
         functionName: "convertPrismaLookupToEntityField",
       });
 
-      void actionContext.logByStep(EnumActionLogLevel.Error, error.message);
+      void actionContext.onEmitUserActionLog(
+        EnumActionLogLevel.Error,
+        error.message
+      );
       throw error;
     }
   }

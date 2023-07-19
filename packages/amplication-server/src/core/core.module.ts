@@ -22,7 +22,7 @@ import { PluginInstallationModule } from "./pluginInstallation/pluginInstallatio
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 import { UserActionModule } from "./userAction/userActionModule";
-import { DBSchemaImportModule } from "./userAction/dbSchemaImport/dbSchemaImport.module";
+import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 
 @Module({
   imports: [

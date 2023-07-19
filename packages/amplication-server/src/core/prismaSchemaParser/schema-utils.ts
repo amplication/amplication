@@ -339,9 +339,9 @@ export function handleEnumMapAttribute(
       (enumerators[i] as unknown as BlockAttribute).kind === OBJECT_KIND_NAME &&
       enumerators[i].name === MAP_ATTRIBUTE_NAME
     ) {
-      void actionContext.logByStep(
-        EnumActionLogLevel.Warning,
-        `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`
+      void actionContext.onEmitUserActionLog(
+        `The enum '${enumOfTheField.name}' has been created, but it has not been mapped. Mapping an enum name is not supported.`,
+        EnumActionLogLevel.Warning
       );
       continue;
     }
@@ -369,9 +369,9 @@ export function handleEnumMapAttribute(
         value: enumerators[i].name,
       };
 
-      void actionContext.logByStep(
-        EnumActionLogLevel.Warning,
-        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`
+      void actionContext.onEmitUserActionLog(
+        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}', but its value has not been mapped`,
+        EnumActionLogLevel.Warning
       );
 
       enumOptions.push(optionSetObj);
@@ -382,9 +382,9 @@ export function handleEnumMapAttribute(
         value: enumerators[i].name,
       };
 
-      void actionContext.logByStep(
-        EnumActionLogLevel.Info,
-        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`
+      void actionContext.onEmitUserActionLog(
+        `The option '${enumerators[i].name}' has been created in the enum '${enumOfTheField.name}'`,
+        EnumActionLogLevel.Info
       );
 
       enumOptions.push(optionSetObj);
