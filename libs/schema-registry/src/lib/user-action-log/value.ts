@@ -1,13 +1,15 @@
-import { EnumActionLogLevel } from "@amplication/code-gen-types/models";
-import { IsEnum, IsString } from "class-validator";
+import { LogEntry } from "@amplication/util/logging";
+import { IsString } from "class-validator";
 
-export class Value {
+export class Value implements LogEntry {
   @IsString()
   stepId!: string;
 
   @IsString()
+  level!: string;
+
+  @IsString()
   message!: string;
 
-  @IsEnum(EnumActionLogLevel)
-  level!: EnumActionLogLevel;
+  [key: string]: any;
 }
