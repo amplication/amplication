@@ -233,21 +233,10 @@ export class PrismaSchemaParserService {
 
       for (const field of modelFields) {
         if (this.isFkFieldOfARelation(schema, model, field)) {
-          this.logger.debug("FK field of a relation. Skip field creation", {
-            fieldName: field.name,
-            modelName: model.name,
-          });
           continue;
         }
 
         if (this.isNotAnnotatedRelationField(schema, field)) {
-          this.logger.debug(
-            "Not annotated relation field. Skip field creation",
-            {
-              fieldName: field.name,
-              modelName: model.name,
-            }
-          );
           continue;
         }
 
