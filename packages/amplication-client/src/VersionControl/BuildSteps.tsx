@@ -24,7 +24,7 @@ export const EMPTY_STEP: models.ActionStep = {
   message: "",
 };
 
-export const GENERATE_STEP_NAME = "GENERATE_APPLICATION";
+export const GENERATE_STEP_NAME = "ADD_TO_QUEUE";
 export const BUILD_DOCKER_IMAGE_STEP_NAME = "BUILD_DOCKER";
 export const DEPLOY_STEP_NAME = "DEPLOY_RESOURCE";
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: models.EnumGitProvider) =>
@@ -47,6 +47,12 @@ const BuildSteps = ({ build }: Props) => {
     if (!data.build.action?.steps?.length) {
       return EMPTY_STEP;
     }
+    console.log(
+      "TESTING DATA -----------------",
+      data.build.action.steps[0].status || EMPTY_STEP
+    );
+    console.log("DATA STEPS -----------------", data.build.action.steps);
+
     return (
       data.build.action.steps.find(
         (step) => step.name === GENERATE_STEP_NAME
@@ -54,6 +60,7 @@ const BuildSteps = ({ build }: Props) => {
     );
   }, [data.build.action]);
 
+  console.log("generateCode STATUS-------------", stepGenerateCode);
   const stepGithub = useMemo(() => {
     if (!data.build.action?.steps?.length) {
       return null;

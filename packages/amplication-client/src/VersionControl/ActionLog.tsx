@@ -121,7 +121,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         )}
       </div>
       <div className={`${CLASS_NAME}__body`}>
-        {logData.map((stepData) => (
+        {logData.map((stepData, index) => (
           <div className={`${CLASS_NAME}__step`} key={stepData.id}>
             <div className={`${CLASS_NAME}__step__row`}>
               <span
@@ -136,6 +136,7 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
               <span className={`${CLASS_NAME}__step__message`}>
                 {stepData.message}
               </span>
+
               <span className={`${CLASS_NAME}__step__duration`}>
                 {stepData.duration}
               </span>
