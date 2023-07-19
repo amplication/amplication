@@ -1,5 +1,5 @@
-import { Prisma } from "../../../prisma";
-import { EnumActionLogLevel, EnumActionStepStatus } from "../../action/dto";
+import { Prisma } from "../../prisma";
+import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 
 export const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 

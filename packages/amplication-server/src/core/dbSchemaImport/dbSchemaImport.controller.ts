@@ -2,7 +2,7 @@ import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { DBSchemaImportRequest } from "@amplication/schema-registry";
-import { Env } from "../../../env";
+import { Env } from "../../env";
 import { plainToInstance } from "class-transformer";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { DBSchemaImportService } from "./dbSchemaImport.service";

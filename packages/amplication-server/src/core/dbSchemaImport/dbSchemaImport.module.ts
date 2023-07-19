@@ -3,12 +3,12 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { DBSchemaImportController } from "./dbSchemaImport.controller";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
 import { DBSchemaImportResolver } from "./dbSchemaImport.resolver";
-import { PrismaModule } from "../../../prisma";
-import { EntityModule } from "../../entity/entity.module";
-import { PermissionsModule } from "../../permissions/permissions.module";
-import { UserModule } from "../../user/user.module";
-import { ActionModule } from "../../action/action.module";
-import { UserActionModule } from "../userActionModule";
+import { PrismaModule } from "../../prisma";
+import { EntityModule } from "../entity/entity.module";
+import { PermissionsModule } from "../permissions/permissions.module";
+import { UserModule } from "../user/user.module";
+import { ActionModule } from "../action/action.module";
+import { UserActionModule } from "../userAction/userActionModule";
 
 @Module({
   imports: [

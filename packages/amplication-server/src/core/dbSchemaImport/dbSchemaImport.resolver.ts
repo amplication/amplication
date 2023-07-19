@@ -1,15 +1,15 @@
-import { GqlAuthGuard } from "../../../guards/gql-auth.guard";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver } from "@nestjs/graphql";
 import { FileUpload, GraphQLUpload } from "graphql-upload";
-import { GqlResolverExceptionsFilter } from "../../../filters/GqlResolverExceptions.filter";
-import { AuthorizeContext } from "../../../decorators/authorizeContext.decorator";
-import { AuthorizableOriginParameter } from "../../../enums/AuthorizableOriginParameter";
-import { User } from "../../../models";
-import { UserEntity } from "../../../decorators/user.decorator";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
+import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
+import { User } from "../../models";
+import { UserEntity } from "../../decorators/user.decorator";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
-import { graphqlUpload } from "../utils/graphql-upload";
-import { UserAction } from "../dto";
+import { graphqlUpload } from "../userAction/utils/graphql-upload";
+import { UserAction } from "../userAction/dto";
 import { DBSchemaImportMetadata } from "./types";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
 
