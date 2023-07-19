@@ -1,18 +1,18 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
 import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "../../../prisma/prisma.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { EntityService } from "../../entity/entity.service";
-import { UserService } from "../../user/user.service";
-import { UserActionService } from "../userAction.service";
-import { ActionService } from "../../action/action.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { DBSchemaImportMetadata } from "./types";
-import { User } from "../../../models";
 import { CreateDBSchemaImportArgs } from "./dto/CreateDBSchemaImportArgs";
-import { EnumUserActionType } from "../types";
-import { Env } from "../../../env";
+import { EnumUserActionType } from "../userAction/types";
+import { User } from "../../models";
+import { PrismaService } from "../../prisma";
+import { EntityService } from "../entity/entity.service";
+import { UserService } from "../user/user.service";
+import { UserActionService } from "../userAction/userAction.service";
+import { ActionService } from "../action/action.service";
+import { Env } from "../../env";
 
 describe("DbSchemaImportService", () => {
   let service: DBSchemaImportService;
