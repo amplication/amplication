@@ -521,7 +521,7 @@ export class EntityService {
       });
 
       void onEmitUserActionLog(error.message, EnumActionLogLevel.Error);
-      void actionContext.onComplete(EnumActionStepStatus.Failed);
+      await onComplete(EnumActionStepStatus.Failed);
       return [];
     }
   }

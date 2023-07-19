@@ -92,14 +92,14 @@ export class PrismaSchemaParserService {
    * @param schema The schema to be processed
    * @returns The processed schema
    */
-  convertPrismaSchemaForImportObjects(
+  async convertPrismaSchemaForImportObjects(
     schema: string,
     existingEntities: ExistingEntitySelect[],
     actionContext: ActionContext
-  ): CreateBulkEntitiesInput[] {
+  ): Promise<CreateBulkEntitiesInput[]> {
     const { onEmitUserActionLog, onComplete } = actionContext;
 
-    void actionContext.onEmitUserActionLog(
+    void onEmitUserActionLog(
       "Starting Prisma Schema Validation",
       EnumActionLogLevel.Info
     );
@@ -120,7 +120,7 @@ export class PrismaSchemaParserService {
         EnumActionLogLevel.Error
       );
 
-      void onComplete(EnumActionStepStatus.Failed);
+      await onComplete(EnumActionStepStatus.Failed);
 
       return [];
     } else {
