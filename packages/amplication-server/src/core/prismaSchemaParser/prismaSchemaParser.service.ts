@@ -97,6 +97,8 @@ export class PrismaSchemaParserService {
     existingEntities: ExistingEntitySelect[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput[] {
+    const { onEmitUserActionLog, onComplete } = actionContext;
+
     void actionContext.onEmitUserActionLog(
       "Starting Prisma Schema Validation",
       EnumActionLogLevel.Info
@@ -113,22 +115,22 @@ export class PrismaSchemaParserService {
       this.logger.error("Prisma Schema Validation Failed", null, {
         validationLog,
       });
-      void actionContext.onEmitUserActionLog(
+      void onEmitUserActionLog(
         "Prisma Schema Validation Failed",
         EnumActionLogLevel.Error
       );
 
-      void actionContext.onComplete(EnumActionStepStatus.Failed);
+      void onComplete(EnumActionStepStatus.Failed);
 
       return [];
     } else {
-      void actionContext.onEmitUserActionLog(
+      void onEmitUserActionLog(
         "Prisma Schema Validation Completed",
         EnumActionLogLevel.Info
       );
     }
 
-    void actionContext.onEmitUserActionLog(
+    void onEmitUserActionLog(
       "Prepare Prisma Schema for import",
       EnumActionLogLevel.Info
     );
@@ -139,12 +141,12 @@ export class PrismaSchemaParserService {
       actionContext,
     });
 
-    void actionContext.onEmitUserActionLog(
+    void onEmitUserActionLog(
       "Prepare Prisma Schema for import completed",
       EnumActionLogLevel.Info
     );
 
-    void actionContext.onEmitUserActionLog(
+    void onEmitUserActionLog(
       "Create import objects from Prisma Schema",
       EnumActionLogLevel.Info
     );
@@ -155,7 +157,7 @@ export class PrismaSchemaParserService {
       actionContext
     );
 
-    void actionContext.onEmitUserActionLog(
+    void onEmitUserActionLog(
       "Create import objects from Prisma Schema completed",
       EnumActionLogLevel.Info
     );
