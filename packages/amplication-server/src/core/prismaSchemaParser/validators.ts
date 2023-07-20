@@ -47,7 +47,7 @@ export function isValidSchema(schema: string): {
  * @throws if the schema is invalid
  * @returns void
  **/
-export function validatePrismaSchemaUpload(file: string): {
+function validatePrismaSchemaUpload(file: string): {
   isValid: boolean;
   errorMessage?: string;
 } {
@@ -70,7 +70,7 @@ export function validatePrismaSchemaUpload(file: string): {
  * @param schema schema string
  * @returns array of errors if there are any or null if there are no errors
  */
-export function validateSchemaProcessing(schema: string): ActionLog[] {
+function validateSchemaProcessing(schema: string): ActionLog[] {
   const schemaObject = getSchema(schema);
   const errors: ActionLog[] = [];
   const models = schemaObject.list.filter(
