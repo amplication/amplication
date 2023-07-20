@@ -1,5 +1,5 @@
 import { Args, Mutation, Query, Resolver } from "@nestjs/graphql";
-import { UseFilters } from "@nestjs/common";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParameter";
 import {
@@ -12,9 +12,11 @@ import {
 import { ResourceRole } from "../../models";
 import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 import { ResourceRoleService } from "./resourceRole.service";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 
 @Resolver(() => ResourceRole)
 @UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class ResourceRoleResolver {
   constructor(private readonly resourceRoleService: ResourceRoleService) {}
   @Query(() => ResourceRole, {
