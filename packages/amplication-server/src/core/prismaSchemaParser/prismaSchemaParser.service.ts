@@ -64,10 +64,10 @@ import {
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
 } from "./constants";
-import { validateSchemaProcessing, validateSchemaUpload } from "./validators";
+import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
-import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
+import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
 
 @Injectable()
@@ -97,71 +97,60 @@ export class PrismaSchemaParserService {
     existingEntities: ExistingEntitySelect[],
     actionContext: ActionContext
   ): Promise<CreateBulkEntitiesInput[]> {
-    const { onEmitUserActionLog, onComplete } = actionContext;
+    const { onEmitUserActionLog } = actionContext;
 
-    void onEmitUserActionLog(
+    // enforce the order of the logs
+    await onEmitUserActionLog(
       "Starting Prisma Schema Validation",
       EnumActionLogLevel.Info
     );
 
-    validateSchemaUpload(schema);
+    const schemaValidation = isValidSchema(schema);
 
-    const validationLog = validateSchemaProcessing(schema);
-    const isErrorsValidationLog = validationLog.some(
-      (log) => log.level === EnumActionLogLevel.Error
-    );
-
-    if (isErrorsValidationLog) {
-      this.logger.error("Prisma Schema Validation Failed", null, {
-        validationLog,
-      });
-      void onEmitUserActionLog(
-        "Prisma Schema Validation Failed",
-        EnumActionLogLevel.Error
-      );
-
-      await onComplete(EnumActionStepStatus.Failed);
-
-      return [];
+    if (!schemaValidation.isValid) {
+      // the error will be caught, logged and completed by the caller (entity service)
+      throw new Error(schemaValidation.errorMessage);
     } else {
       void onEmitUserActionLog(
-        "Prisma Schema Validation Completed",
+        "Prisma Schema Validation completed successfully",
         EnumActionLogLevel.Info
       );
+
+      void onEmitUserActionLog(
+        "Prepare Prisma Schema for import",
+        EnumActionLogLevel.Info
+      );
+
+      const preparedSchemaResult = this.prepareSchema(
+        ...this.prepareOperations
+      )({
+        inputSchema: schema,
+        existingEntities,
+        actionContext,
+      });
+
+      void onEmitUserActionLog(
+        "Prepare Prisma Schema for import completed",
+        EnumActionLogLevel.Info
+      );
+
+      void onEmitUserActionLog(
+        "Create import objects from Prisma Schema",
+        EnumActionLogLevel.Info
+      );
+
+      const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
+      const importObjects = this.convertPreparedSchemaForImportObjects(
+        preparedSchemaObject,
+        actionContext
+      );
+
+      void onEmitUserActionLog(
+        "Create import objects from Prisma Schema completed",
+        EnumActionLogLevel.Info
+      );
+      return importObjects;
     }
-
-    void onEmitUserActionLog(
-      "Prepare Prisma Schema for import",
-      EnumActionLogLevel.Info
-    );
-
-    const preparedSchemaResult = this.prepareSchema(...this.prepareOperations)({
-      inputSchema: schema,
-      existingEntities,
-      actionContext,
-    });
-
-    void onEmitUserActionLog(
-      "Prepare Prisma Schema for import completed",
-      EnumActionLogLevel.Info
-    );
-
-    void onEmitUserActionLog(
-      "Create import objects from Prisma Schema",
-      EnumActionLogLevel.Info
-    );
-
-    const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
-    const importObjects = this.convertPreparedSchemaForImportObjects(
-      preparedSchemaObject,
-      actionContext
-    );
-
-    void onEmitUserActionLog(
-      "Create import objects from Prisma Schema completed",
-      EnumActionLogLevel.Info
-    );
-    return importObjects;
   }
 
   /**

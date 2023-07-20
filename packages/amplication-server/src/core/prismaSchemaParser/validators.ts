@@ -2,7 +2,44 @@ import { validate } from "@prisma/internals";
 import { Model, getSchema } from "@mrleebo/prisma-ast";
 import { MODEL_TYPE_NAME } from "./constants";
 import { ActionLog, EnumActionLogLevel } from "../action/dto";
-import { Logger } from "@nestjs/common";
+
+/**
+ * This function is a wrapper around the validate function of the Prisma and our custom validation logic
+ * @param schema the schema file that was uploaded
+ * @param actionContext an object containing functions to emit logs and complete the action
+ * @returns
+ */
+export function isValidSchema(schema: string): {
+  isValid: boolean;
+  errorMessage?: string;
+} {
+  const validatePrismaSchemaUploadResponse = validatePrismaSchemaUpload(schema);
+
+  if (!validatePrismaSchemaUploadResponse.isValid) {
+    return {
+      isValid: false,
+      errorMessage: validatePrismaSchemaUploadResponse.errorMessage,
+    };
+  }
+
+  const validationLog = validateSchemaProcessing(schema);
+  const isErrorsValidationLog = validationLog.some(
+    (log) => log.level === EnumActionLogLevel.Error
+  );
+
+  if (isErrorsValidationLog) {
+    return {
+      isValid: false,
+      errorMessage: "Prisma Schema Validation Failed",
+    };
+  }
+
+  if (!isErrorsValidationLog && validatePrismaSchemaUploadResponse.isValid) {
+    return {
+      isValid: true,
+    };
+  }
+}
 
 /**
  * Validate schema by Prisma
@@ -10,13 +47,21 @@ import { Logger } from "@nestjs/common";
  * @throws if the schema is invalid
  * @returns void
  **/
-export function validateSchemaUpload(file: string): void {
+export function validatePrismaSchemaUpload(file: string): {
+  isValid: boolean;
+  errorMessage?: string;
+} {
   const schemaString = file.replace(/\\n/g, "\n");
   try {
     validate({ datamodel: schemaString });
+    return {
+      isValid: true,
+    };
   } catch (error) {
-    Logger.error(error, "PrismaSchemaParser.validateSchemaUpload");
-    throw error;
+    return {
+      isValid: false,
+      errorMessage: `Prisma Schema Validation Failed: ${error.message}`,
+    };
   }
 }
 
