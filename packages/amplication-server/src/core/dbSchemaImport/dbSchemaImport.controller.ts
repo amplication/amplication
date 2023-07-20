@@ -23,7 +23,7 @@ export class DBSchemaImportController {
   ): Promise<void> {
     try {
       const args = plainToInstance(DBSchemaImportRequest.Value, message);
-      await this.dbSchemaImportService.createEntitiesFromPrismaSchema(args);
+      void this.dbSchemaImportService.createEntitiesFromPrismaSchema(args);
     } catch (error) {
       this.logger.error(error.message, error);
     }
