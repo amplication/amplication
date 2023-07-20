@@ -22,7 +22,7 @@ export class ResourceRoleResolver {
   @Query(() => ResourceRole, {
     nullable: true,
   })
-  @AuthorizeContext(AuthorizableOriginParameter.BlockId, "where.id")
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceRoleId, "where.id")
   async resourceRole(
     @Args() args: FindOneResourceRoleArgs
   ): Promise<ResourceRole | null> {
