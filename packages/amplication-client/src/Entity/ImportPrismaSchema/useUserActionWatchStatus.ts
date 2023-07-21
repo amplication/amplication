@@ -24,6 +24,7 @@ const useUserActionWatchStatus = (
   useEffect(() => {
     if (!shouldReload(data?.userAction)) {
       stopPolling();
+      refetch();
     } else {
       startPolling(POLL_INTERVAL);
     }
