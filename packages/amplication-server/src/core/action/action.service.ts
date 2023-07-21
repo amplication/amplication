@@ -12,7 +12,6 @@ import { StepNameEmptyError } from "./errors/StepNameEmptyError";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { DecodedKafkaMessage } from "@amplication/util/kafka";
 import { ActionContext } from "../userAction/types";
 import { UserActionLog } from "@amplication/schema-registry";
 
@@ -181,7 +180,7 @@ export class ActionService {
   }
 
   emitUserActionLog(
-    kafkaMessage: DecodedKafkaMessage,
+    kafkaMessage: UserActionLog.KafkaEvent,
     topicName: string
   ): Promise<void> {
     return this.kafkaProducerService.emitMessage(topicName, kafkaMessage);
