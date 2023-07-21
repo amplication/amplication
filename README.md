@@ -22,13 +22,13 @@
     <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license">
   </a>
   <br>
-  <a href="https://amplication.com/discord">
+ <a href="https://amplication.com/discord" target="_blank">
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
   </a>
-  <a href="https://twitter.com/amplication">
+  <a href="https://twitter.com/amplication" target="_blank">
     <img src="https://img.shields.io/badge/twitter-18a1d6.svg?style=flat-square" alt="twitter">
   </a>
-  <a href="https://www.youtube.com/c/Amplicationcom">
+  <a href="https://www.youtube.com/c/Amplicationcom" target="_blank">
     <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&" alt="youtube">
   </a>
 </h4>
