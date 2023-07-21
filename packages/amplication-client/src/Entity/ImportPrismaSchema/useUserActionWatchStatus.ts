@@ -5,22 +5,28 @@ import * as models from "../../models";
 import { GET_USER_ACTION } from "./queries";
 
 const POLL_INTERVAL = 2000;
+
+type TGetUserAction = {
+  userAction: models.UserAction;
+};
+
 /**
  * Pulls updates of the userAction from the server as long as the user action is still in progress
  */
 const useUserActionWatchStatus = (
   userAction?: models.UserAction
 ): { data: { userAction?: models.UserAction } } => {
-  const { data, startPolling, stopPolling, refetch } = useQuery<{
-    userAction: models.UserAction;
-  }>(GET_USER_ACTION, {
-    variables: {
-      userActionId: userAction?.id,
-    },
-    skip: !userAction?.id || !shouldReload(userAction),
-  });
+  const { data, startPolling, stopPolling, refetch } = useQuery<TGetUserAction>(
+    GET_USER_ACTION,
+    {
+      variables: {
+        userActionId: userAction?.id,
+      },
+      skip: !userAction?.id || !shouldReload(userAction),
+    }
+  );
 
-  //stop polling when build process completed
+  //stop polling when user action log process completed
   useEffect(() => {
     if (!shouldReload(data?.userAction)) {
       stopPolling();
