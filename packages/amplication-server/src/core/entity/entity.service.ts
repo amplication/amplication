@@ -376,7 +376,7 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
-    const { onEmitUserActionLog, onComplete } = actionContext;
+    const { onEmitUserActionLog } = actionContext;
 
     const resourceWithProject = await this.prisma.resource.findUnique({
       where: {
@@ -458,17 +458,10 @@ export class EntityService {
 
         void onEmitUserActionLog(
           `Import operation aborted due to errors. See the log for more details.`,
-          EnumActionLogLevel.Error
+          EnumActionLogLevel.Error,
+          EnumActionStepStatus.Failed,
+          true
         );
-        this.logger.debug("before onComplete", {
-          status: EnumActionStepStatus.Failed,
-        });
-
-        await onComplete(EnumActionStepStatus.Failed);
-
-        this.logger.debug("after onComplete", {
-          status: EnumActionStepStatus.Failed,
-        });
 
         return [];
       } else {
@@ -488,18 +481,10 @@ export class EntityService {
 
         void onEmitUserActionLog(
           `Import operation completed successfully.`,
-          EnumActionLogLevel.Info
+          EnumActionLogLevel.Info,
+          EnumActionStepStatus.Success,
+          true
         );
-
-        this.logger.debug("before onComplete", {
-          status: EnumActionStepStatus.Success,
-        });
-
-        await onComplete(EnumActionStepStatus.Success);
-
-        this.logger.debug("after onComplete", {
-          status: EnumActionStepStatus.Success,
-        });
 
         await this.analytics.track({
           userId: user.account.id,
@@ -537,16 +522,12 @@ export class EntityService {
         functionName: "createEntitiesFromPrismaSchema",
       });
 
-      void onEmitUserActionLog(error.message, EnumActionLogLevel.Error);
-      this.logger.debug("before onComplete", {
-        status: EnumActionStepStatus.Failed,
-      });
-
-      await onComplete(EnumActionStepStatus.Failed);
-
-      this.logger.debug("after onComplete", {
-        status: EnumActionStepStatus.Failed,
-      });
+      void onEmitUserActionLog(
+        error.message,
+        EnumActionLogLevel.Error,
+        EnumActionStepStatus.Failed,
+        true
+      );
 
       return [];
     }
