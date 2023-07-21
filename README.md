@@ -11,27 +11,27 @@
   <i align="center">Instantly generate production-ready Node.js backend apps 🚀</i>
 </p>
 
-<h4 align="center">
-  <a href="https://github.com/amplication/amplication/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration">
-  </a>
-  <a href="https://github.com/amplication/amplication/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributers">
-  </a>
-  <a href="https://opensource.org/licenses/Apache-2.0">
-    <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license">
-  </a>
-  <br>
- <a href="https://amplication.com/discord" target="_blank">
-    <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
-  </a>
-  <a href="https://twitter.com/amplication" target="_blank">
-    <img src="https://img.shields.io/badge/twitter-18a1d6.svg?style=flat-square" alt="twitter">
-  </a>
-  <a href="https://www.youtube.com/c/Amplicationcom" target="_blank">
-    <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&" alt="youtube">
-  </a>
-</h4>
+ <h4 align="center">
+        <a href="https://github.com/amplication/amplication/actions/workflows/ci.yml" target="_blank">
+            <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration">
+        </a>
+        <a href="https://github.com/amplication/amplication/graphs/contributors" target="_blank">
+            <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributors">
+        </a>
+        <a href="https://opensource.org/licenses/Apache-2.0" target="_blank">
+            <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license">
+        </a>
+        <br>
+        <a href="https://amplication.com/discord" target="_blank">
+            <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
+        </a>
+        <a href="https://twitter.com/amplication" target="_blank">
+            <img src="https://img.shields.io/badge/twitter-18a1d6.svg?style=flat-square" alt="twitter">
+        </a>
+        <a href="https://www.youtube.com/c/Amplicationcom" target="_blank">
+            <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&" alt="youtube">
+        </a>
+    </h4>
 
 <p align="center">
     <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard"/>
