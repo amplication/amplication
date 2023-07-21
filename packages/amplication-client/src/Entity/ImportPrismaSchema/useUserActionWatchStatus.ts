@@ -4,7 +4,7 @@ import { useQuery } from "@apollo/client";
 import * as models from "../../models";
 import { GET_USER_ACTION } from "./queries";
 
-const POLL_INTERVAL = 2500;
+const POLL_INTERVAL = 2000;
 /**
  * Pulls updates of the userAction from the server as long as the user action is still in progress
  */
