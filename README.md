@@ -6,8 +6,7 @@
 </head>
 
 <body>
-
-    <h1 align="center">
+<h1 align="center">
         <a href="https://amplication.com/#gh-light-mode-only" target="_blank">
             <img src="./.github/assets/amplication-logo-light-mode.svg">
         </a>
@@ -15,12 +14,11 @@
             <img src="./.github/assets/amplication-logo-dark-mode.svg">
         </a>
     </h1>
-
     <p align="center">
         <i align="center">Instantly generate production-ready Node.js backend apps 🚀</i>
     </p>
 
-    <h4 align="center">
+ <h4 align="center">
         <a href="https://github.com/amplication/amplication/actions/workflows/ci.yml" target="_blank">
             <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration">
         </a>
@@ -42,10 +40,9 @@
         </a>
     </h4>
 
-    <p align="center">
+ <p align="center">
         <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard" />
     </p>
-
     <h2>Introduction</h2>
     <p>
         Amplication is a robust, open-source development platform crafted to revolutionize the creation of scalable
@@ -54,7 +51,7 @@
         <!-- ... -->
     </p>
 
-    <h2>Usage</h2>
+<h2>Usage</h2>
     <p>
         To get started with Amplication, the hosted version of the product can be used. You can get started immediately
         at <a href="https://app.amplication.com" target="_blank">app.amplication.com</a>. After the login page, you will
@@ -64,7 +61,7 @@
         <!-- ... -->
     </p>
 
-    <h2>Development</h2>
+ <h2>Development</h2>
     <p>
         Alternatively to using the hosted version of the product, Amplication can be ran locally for code generation
         purposes or contributions - if so please refer to our
@@ -72,7 +69,7 @@
         <!-- ... -->
     </p>
 
-    <h2>Contributing</h2>
+<h2>Contributing</h2>
     <p>
         Amplication is an open-source project. We are committed to a fully transparent development process and highly
         appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our
@@ -82,12 +79,12 @@
         <!-- ... -->
     </p>
 
-    <h2>Contributors</h2>
+<h2>Contributors</h2>
     <p>
         <!-- ... -->
     </p>
 
-    <h2>License</h2>
+ <h2>License</h2>
     <p>
         A large part of this project is licensed under the <a href="./LICENSE" target="_blank">Apache 2.0</a> license. The
         only exception is the components under the <code>ee</code> (enterprise edition) directory, which are licensed
@@ -97,4 +94,3 @@
 </body>
 
 </html>
-
