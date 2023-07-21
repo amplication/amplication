@@ -152,11 +152,13 @@ export class ActionService {
 
   async onUserActionLog(logEntry: UserActionLog.Value): Promise<void> {
     const { stepId, message, level } = logEntry;
+    this.logger.debug("before writing to db", { message });
     await this.logByStepId(
       stepId,
       ACTION_LOG_LEVEL[level.toLowerCase()],
       message
     );
+    this.logger.debug("after writing to db", { message });
   }
 
   async logByStepId(
