@@ -110,6 +110,31 @@ export class ActionService {
     });
   }
 
+  completeWithLog(step: ActionStep, userActionId: string, topicName: string) {
+    return async (
+      message: string,
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+      isStepCompleted: boolean
+    ) => {
+      const kafkaMessage: UserActionLog.KafkaEvent = {
+        key: {
+          userActionId,
+        },
+        value: {
+          stepId: step.id,
+          level,
+          message,
+          status,
+          isCompleted: isStepCompleted,
+        },
+      };
+
+      await this.emitUserActionLog(kafkaMessage, topicName);
+      await this.updateActionStepStatus(step.id, status);
+    };
+  }
+
   async updateActionStepStatus(
     actionStepId: string,
     status: EnumActionStepStatus
@@ -150,14 +175,17 @@ export class ActionService {
   }
 
   async onUserActionLog(logEntry: UserActionLog.Value): Promise<void> {
-    const { stepId, message, level } = logEntry;
-    this.logger.debug("before writing to db", { message });
+    const { stepId, message, level, status, isCompleted } = logEntry;
+
     await this.logByStepId(
       stepId,
       ACTION_LOG_LEVEL[level.toLowerCase()],
       message
     );
-    this.logger.debug("after writing to db", { message });
+
+    if (isCompleted) {
+      await this.updateActionStepStatus(stepId, status);
+    }
   }
 
   async logByStepId(
@@ -201,14 +229,23 @@ export class ActionService {
   ): ActionContext {
     const onEmitUserActionLog = (
       message: string,
-      level: EnumActionLogLevel
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus = EnumActionStepStatus.Running,
+      isStepCompleted = false
     ) => {
       const onCreateKafkaMessageForUserActionLog =
         (userActionId: string, stepId: string) =>
-        (message: string, level: EnumActionLogLevel) =>
+        (
+          message: string,
+          level: EnumActionLogLevel,
+          status: EnumActionStepStatus,
+          isStepCompleted: boolean
+        ) =>
           this.createKafkaMessageForUserActionLog(userActionId, stepId)(
             message,
-            level
+            level,
+            status,
+            isStepCompleted
           );
 
       // partial application: the stepId is already known and the message and level are provided later
@@ -217,7 +254,9 @@ export class ActionService {
 
       const kafkaMessage = partialAppliedOnCreateKafkaMessageForUserActionLog(
         message,
-        level
+        level,
+        status,
+        isStepCompleted
       );
 
       return this.emitUserActionLog(kafkaMessage, topicName).catch((error) =>
@@ -228,10 +267,18 @@ export class ActionService {
       );
     };
 
-    const onComplete = async (
-      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    const onCompleteWithLog = async (
+      message: string,
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+      isStepCompleted = true
     ) =>
-      await this.complete(step, status).catch((error) =>
+      this.completeWithLog(step, userActionId, topicName)(
+        message,
+        level,
+        status,
+        isStepCompleted
+      ).catch((error) =>
         this.logger.error(`Failed to complete action step ${step.id}`, error, {
           stepId: step.id,
         })
@@ -239,14 +286,16 @@ export class ActionService {
 
     return {
       onEmitUserActionLog,
-      onComplete,
+      onCompleteWithLog,
     };
   }
 
   createKafkaMessageForUserActionLog(userActionId: string, stepId: string) {
     return (
       message: string,
-      level: EnumActionLogLevel
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus,
+      isStepCompleted: boolean
     ): UserActionLog.KafkaEvent => ({
       key: {
         userActionId,
@@ -255,6 +304,8 @@ export class ActionService {
         stepId: stepId,
         message,
         level,
+        status,
+        isCompleted: isStepCompleted,
       },
     });
   }

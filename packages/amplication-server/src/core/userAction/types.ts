@@ -23,9 +23,14 @@ registerEnumType(EnumUserActionStatus, {
 export type ActionContext = {
   onEmitUserActionLog: (
     message: string,
-    level: EnumActionLogLevel
+    level: EnumActionLogLevel,
+    status?: EnumActionStepStatus,
+    isStepCompleted?: boolean
   ) => Promise<void>;
-  onComplete: (
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  onCompleteWithLog: (
+    message: string,
+    level: EnumActionLogLevel,
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+    isStepCompleted: boolean
   ) => Promise<void>;
 };
