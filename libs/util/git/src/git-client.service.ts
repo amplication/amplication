@@ -348,11 +348,15 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLog(gitCli: GitCli, maxCount = -1): Promise<LogResult> {
+  private async gitLog(
+    gitCli: GitCli,
+    maxCount = -1,
+    includeBotCommits = true
+  ): Promise<LogResult> {
     const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
     const authors: string[] = [];
-    if (amplicationBot) {
+    if (includeBotCommits && amplicationBot) {
       authors.push(amplicationBot.gitAuthor);
     }
     authors.push(gitCli.gitAuthorUser);
@@ -438,9 +442,15 @@ export class GitClientService {
     }
 
     const firstCommitOnBaseBranch = await gitCli.getFirstCommitSha(baseBranch);
-
     if (firstCommitOnBaseBranch === null) {
       throw new NoCommitOnBranch(baseBranch);
+    }
+    let hash = firstCommitOnBaseBranch.sha;
+
+    await gitCli.checkout(baseBranch);
+    let gitLogs = await this.gitLog(gitCli, 1, false);
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      hash = gitLogs.latest.hash;
     }
 
     const newBranch = await this.provider.createBranch({
@@ -448,13 +458,13 @@ export class GitClientService {
       branchName,
       repositoryName,
       repositoryGroupName,
-      pointingSha: firstCommitOnBaseBranch.sha,
+      pointingSha: hash,
       baseBranchName: baseBranch,
     });
 
     // Cherry pick all amplication authored commits from the base branch to the new branch
-    await gitCli.checkout(baseBranch);
-    const gitLogs = await this.gitLog(gitCli);
+    //await gitCli.checkout(baseBranch);
+    gitLogs = await this.gitLog(gitCli);
     await gitCli.resetState();
     await gitCli.checkout(newBranch.name);
 
