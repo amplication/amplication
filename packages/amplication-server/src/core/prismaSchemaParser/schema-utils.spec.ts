@@ -367,7 +367,6 @@ describe("schema-utils", () => {
     beforeEach(() => {
       actionContext = {
         onEmitUserActionLog: jest.fn(),
-        onComplete: jest.fn(),
       };
     });
 

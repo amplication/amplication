@@ -27,7 +27,6 @@ describe("prismaSchemaParser", () => {
 
     actionContext = {
       onEmitUserActionLog: jest.fn(),
-      onComplete: jest.fn(),
     };
   });
 
