@@ -13,6 +13,7 @@ import { DeleteUserArgs } from "./dto";
 import { SubscriptionService } from "../subscription/subscription.service";
 import { ProjectService } from "../project/project.service";
 import { BillingService } from "../billing/billing.service";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -62,6 +63,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   deletedAt: undefined,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 EXAMPLE_USER.workspace = EXAMPLE_WORKSPACE;
@@ -189,6 +192,14 @@ describe("WorkspaceService", () => {
           provide: ProjectService,
           useClass: jest.fn().mockImplementation(() => ({
             createProject: createProjectMock,
+          })),
+        },
+        {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
           })),
         },
       ],

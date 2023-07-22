@@ -54,7 +54,7 @@ const EXAMPLE_ORGANIZATION = {
 const verbose = process.env.VERBOSE ? true : false;
 const logger = new Logger({
   isProduction: false,
-  serviceName: "dsg-e2e",
+  component: "dsg-e2e",
   logLevel: verbose ? LogLevel.Debug : LogLevel.Warn,
 });
 

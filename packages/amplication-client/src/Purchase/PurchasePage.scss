@@ -122,8 +122,12 @@
   max-width: 244px !important;
   min-width: 244px !important;
   padding-top: 16px !important;
+  box-sizing: content-box;
 }
 
+.stigg-plan-offering-container * {
+  box-sizing: content-box;
+}
 .stigg-plan-offering-container:nth-child(1) {
   border-top: 10px solid #a787ff !important;
 }

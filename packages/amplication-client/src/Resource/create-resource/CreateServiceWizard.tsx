@@ -35,6 +35,7 @@ import { Plugin } from "../../Plugins/hooks/usePlugins";
 import { useQuery } from "@apollo/client";
 import { GET_PLUGIN_VERSIONS_CATALOG } from "../../Plugins/queries/pluginsQueries";
 import ImgSvg from "./wizard-pages/ImgSvg";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../../env";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -46,6 +47,7 @@ type Props = AppRouteProps & {
 
 const FLOW_ONBOARDING = "Onboarding";
 const FLOW_CREATE_SERVICE = "Create Service";
+const pluginUseLatest = REACT_APP_PLUGIN_VERSION_USE_LATEST === "true";
 
 export type DefineUser = "Onboarding" | "Create Service";
 
@@ -161,25 +163,6 @@ const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
-const AUTH_PLUGINS = [
-  {
-    displayName: "Auth-core",
-    pluginId: "auth-core",
-    enabled: true,
-    npm: "@amplication/plugin-auth-core",
-    version: "latest",
-    resource: { connect: { id: "" } },
-  },
-  {
-    displayName: "Auth-jwt",
-    pluginId: "auth-jwt",
-    enabled: true,
-    npm: "@amplication/plugin-auth-jwt",
-    version: "latest",
-    resource: { connect: { id: "" } },
-  },
-];
-
 const signupCookie = getCookie("signup");
 
 const CreateServiceWizard: React.FC<Props> = ({
@@ -230,8 +213,50 @@ const CreateServiceWizard: React.FC<Props> = ({
     },
   });
 
-  const defineUser: DefineUser =
-    signupCookie === "1" ? FLOW_ONBOARDING : FLOW_CREATE_SERVICE;
+  const authCorePlugin = pluginsVersionData?.plugins.find(
+    (x) => x.pluginId === "auth-core"
+  );
+
+  const authCoreVersion = pluginUseLatest
+    ? authCorePlugin?.versions.find((x) => x.isLatest)
+    : authCorePlugin?.versions[0];
+
+  const authJwtPlugin = pluginsVersionData?.plugins.find(
+    (x) => x.pluginId === "auth-jwt"
+  );
+
+  const authJwtVersion = pluginUseLatest
+    ? authJwtPlugin?.versions.find((x) => x.isLatest)
+    : authJwtPlugin?.versions[0];
+
+  const AUTH_PLUGINS = [
+    {
+      displayName: "Auth-core",
+      pluginId: "auth-core",
+      enabled: true,
+      npm: "@amplication/plugin-auth-core",
+      version: "latest",
+      resource: { connect: { id: "" } },
+      settings: authCoreVersion?.settings || JSON.parse("{}"),
+      configurations: authCoreVersion?.configurations || JSON.parse("{}"),
+    },
+    {
+      displayName: "Auth-jwt",
+      pluginId: "auth-jwt",
+      enabled: true,
+      npm: "@amplication/plugin-auth-jwt",
+      version: "latest",
+      resource: { connect: { id: "" } },
+      settings: authJwtVersion?.settings || JSON.parse("{}"),
+      configurations: authJwtVersion?.configurations || JSON.parse("{}"),
+    },
+  ];
+
+  const isSignupUser = signupCookie === "1";
+
+  const defineUser: DefineUser = isSignupUser
+    ? FLOW_ONBOARDING
+    : FLOW_CREATE_SERVICE;
 
   const wizardSteps =
     defineUser === FLOW_CREATE_SERVICE
@@ -242,6 +267,16 @@ const CreateServiceWizard: React.FC<Props> = ({
     defineUser === FLOW_CREATE_SERVICE
       ? CREATE_SERVICE_PATTERN
       : ONBOARDING_PATTERN;
+
+  const serviceNextStepStatus = {
+    description: isSignupUser
+      ? ["Invite", "my team"]
+      : ["Add plugins", "to my service"],
+    defineUser,
+    icon: isSignupUser ? "users" : "plugins",
+    iconBackgroundColor: isSignupUser ? "#8DD9B9" : "#f85b6e",
+    eventActionName: isSignupUser ? "Invite Team" : "Add Plugins",
+  };
 
   const errorMessage = formatError(errorCreateService);
   const setWizardProgressItems = useCallback(() => {
@@ -290,7 +325,10 @@ const CreateServiceWizard: React.FC<Props> = ({
       const dbPlugin = pluginsVersionData?.plugins.find(
         (x) => x.pluginId === `db-${databaseType}`
       );
-      const dbLastVersion = dbPlugin?.versions[dbPlugin?.versions.length - 1];
+
+      const dbLastVersion = pluginUseLatest
+        ? dbPlugin?.versions.find((x) => x.isLatest)
+        : dbPlugin?.versions[0];
 
       const authCorePlugins = authType === "core" && AUTH_PLUGINS;
 
@@ -303,7 +341,8 @@ const CreateServiceWizard: React.FC<Props> = ({
             npm: `@amplication/plugin-db-${databaseType}`,
             version: "latest",
             resource: { connect: { id: "" } },
-            settings: JSON.parse(dbLastVersion?.settings || "{}"),
+            settings: dbLastVersion?.settings || JSON.parse("{}"),
+            configurations: dbLastVersion?.configurations || JSON.parse("{}"),
           },
         ],
       };
@@ -311,12 +350,14 @@ const CreateServiceWizard: React.FC<Props> = ({
       if (authCorePlugins) data.plugins.push(...authCorePlugins);
       return data;
     },
-    [pluginsVersionData?.plugins]
+    [pluginsVersionData]
   );
 
   const handleCloseWizard = useCallback(
     (currentPage: string) => {
-      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick);
+      trackWizardPageEvent(AnalyticsEventNames.ServiceWizardStep_CloseClick, {
+        step: currentPage,
+      });
       history.push(`/${currentWorkspace.id}/${currentProject.id}`);
     },
     [currentWorkspace, currentProject]
@@ -330,18 +371,8 @@ const CreateServiceWizard: React.FC<Props> = ({
       page: string,
       pageEventName: AnalyticsEventNames
     ) => {
-      trackEvent({
-        eventName,
-        category: "Service Wizard",
-        WizardType: defineUser,
-        step: page,
-      });
-
-      trackEvent({
-        eventName: pageEventName,
-        category: "Service Wizard",
-        WizardType: defineUser,
-      });
+      trackWizardPageEvent(eventName, { step: page });
+      trackWizardPageEvent(pageEventName);
     },
     []
   );
@@ -378,6 +409,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         templateType,
         structureType,
         baseDir,
+        connectToDemoRepo,
       } = values;
 
       const kebabCaseServiceName = kebabCase(serviceName);
@@ -402,6 +434,7 @@ const CreateServiceWizard: React.FC<Props> = ({
             isOverrideGitRepository: isOverrideGitRepository,
           };
         }
+
         const resource = prepareServiceObject(
           serviceName,
           currentProject?.id,
@@ -416,14 +449,14 @@ const CreateServiceWizard: React.FC<Props> = ({
           defineUser,
           structureType,
           databaseType,
-          authType
-          // gitOrganizationName
+          authType,
+          connectToDemoRepo
         );
         createStarterResource(resource, templateSettings.eventName);
       }
       expireCookie("signup");
     },
-    []
+    [pluginsVersionData]
   );
 
   return (
@@ -488,6 +521,7 @@ const CreateServiceWizard: React.FC<Props> = ({
         <CreateServiceNextSteps
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
+          {...serviceNextStepStatus}
         />
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />

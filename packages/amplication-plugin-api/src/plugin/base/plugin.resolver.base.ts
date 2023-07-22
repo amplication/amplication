@@ -9,26 +9,26 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePluginArgs } from "./CreatePluginArgs";
 import { UpdatePluginArgs } from "./UpdatePluginArgs";
 import { DeletePluginArgs } from "./DeletePluginArgs";
+import { PluginCountArgs } from "./PluginCountArgs";
 import { PluginFindManyArgs } from "./PluginFindManyArgs";
 import { PluginFindUniqueArgs } from "./PluginFindUniqueArgs";
 import { Plugin } from "./Plugin";
 import { PluginService } from "../plugin.service";
-
-@graphql.Resolver(() => Plugin)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => Plugin)
 export class PluginResolverBase {
   constructor(
     protected readonly service: PluginService,
@@ -38,15 +38,11 @@ export class PluginResolverBase {
   @Public()
   @graphql.Query(() => MetaQueryPayload)
   async _pluginsMeta(
-    @graphql.Args() args: PluginFindManyArgs
+    @graphql.Args() args: PluginCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 

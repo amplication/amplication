@@ -12,6 +12,7 @@ import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
 import "./RepositoryActions.scss";
 import WizardGithubSyncDetails from "./WizardGithubSyncDetails";
+import { EnumGitProvider } from "@amplication/code-gen-types/models";
 type Props = {
   onCreateRepository: () => void;
   onSelectRepository: () => void;
@@ -69,6 +70,25 @@ export default function WizardRepositoryActions({
                       </Button>
                     </div>
                   )}
+                  {selectedGitOrganization.type ===
+                    EnumGitOrganizationType.User &&
+                    selectedGitOrganization.provider ===
+                      EnumGitProvider.Github && (
+                      <div className={`${CLASS_NAME}__action`}>
+                        <a
+                          href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          <Button
+                            type="button"
+                            buttonStyle={EnumButtonStyle.Primary}
+                          >
+                            Create repository
+                          </Button>
+                        </a>
+                      </div>
+                    )}
                 </>
               )}
             </div>

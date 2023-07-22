@@ -34,7 +34,7 @@ describe("getLoggerFormat", () => {
 
     options = {
       logLevel: LogLevel.Debug,
-      serviceName: "Test Service",
+      component: "Test Service",
       metadata: {},
       additionalFormats: [],
       additionalDevelopmentFormats: [],

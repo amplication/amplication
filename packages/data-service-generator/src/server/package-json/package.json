@@ -32,7 +32,8 @@
     "apollo-server-express": "3.6.1",
     "bcrypt": "5.0.1",
     "class-transformer": "0.5.1",
-    "class-validator": "0.13.2",
+    "class-validator": "0.14.0",
+    "dotenv": "^16.1.4",
     "graphql": "15.7.2",
     "graphql-type-json": "0.3.2",
     "nest-access-control": "2.0.3",
@@ -41,6 +42,7 @@
     "reflect-metadata": "0.1.13",
     "swagger-ui-express": "4.3.0",
     "ts-node": "10.9.1",
+    "type-fest": "0.13.1",
     "validator": "^13.9.0"
   },
   "devDependencies": {
@@ -57,7 +59,6 @@
     "prisma": "4.6.1",
     "supertest": "4.0.2",
     "ts-jest": "27.0.3",
-    "type-fest": "0.11.0",
     "typescript": "4.2.3"
   },
   "jest": {

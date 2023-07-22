@@ -3,6 +3,7 @@ import * as models from "../models";
 import { EnumAuthProviderType } from "../models";
 import { DefineUser } from "./create-resource/CreateServiceWizard";
 import { TemplateSettings } from "./create-resource/wizardResourceSchema";
+import { EnumGitProvider } from "../models";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,
@@ -116,7 +117,8 @@ export function prepareServiceObject(
   wizardType: DefineUser,
   repoType: string,
   dbType: string,
-  auth: string
+  auth: string,
+  connectToDemoRepo: boolean
   // gitOrganizationName: string
 ): models.ResourceCreateWithEntitiesInput {
   return {
@@ -150,7 +152,7 @@ export function prepareServiceObject(
     repoType,
     dbType,
     authType: auth,
-    // gitOrganizationName
+    connectToDemoRepo,
   };
 }
 
@@ -187,4 +189,12 @@ export const resourceThemeMap: {
     icon: "queue",
     color: "#8DD9B9",
   },
+};
+
+export const PROVIDERS_DISPLAY_NAME: {
+  [key in EnumGitProvider]: string;
+} = {
+  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+  [EnumGitProvider.Github]: "GitHub",
 };
