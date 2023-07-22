@@ -110,31 +110,6 @@ export class ActionService {
     });
   }
 
-  completeWithLog(step: ActionStep, userActionId: string, topicName: string) {
-    return async (
-      message: string,
-      level: EnumActionLogLevel,
-      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-      isStepCompleted: boolean
-    ): Promise<void> => {
-      const kafkaMessage: UserActionLog.KafkaEvent = {
-        key: {
-          userActionId,
-        },
-        value: {
-          stepId: step.id,
-          level,
-          message,
-          status,
-          isCompleted: isStepCompleted,
-        },
-      };
-
-      await this.emitUserActionLog(kafkaMessage, topicName);
-      await this.updateActionStepStatus(step.id, status);
-    };
-  }
-
   async updateActionStepStatus(
     actionStepId: string,
     status: EnumActionStepStatus
@@ -267,26 +242,8 @@ export class ActionService {
       );
     };
 
-    const onCompleteWithLog = async (
-      message: string,
-      level: EnumActionLogLevel,
-      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-      isStepCompleted = true
-    ) =>
-      this.completeWithLog(step, userActionId, topicName)(
-        message,
-        level,
-        status,
-        isStepCompleted
-      ).catch((error) =>
-        this.logger.error(`Failed to complete action step ${step.id}`, error, {
-          stepId: step.id,
-        })
-      );
-
     return {
       onEmitUserActionLog,
-      onCompleteWithLog,
     };
   }
 

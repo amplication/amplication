@@ -27,10 +27,4 @@ export type ActionContext = {
     status?: EnumActionStepStatus,
     isStepCompleted?: boolean
   ) => Promise<void>;
-  onCompleteWithLog: (
-    message: string,
-    level: EnumActionLogLevel,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
-    isStepCompleted: boolean
-  ) => Promise<void>;
 };
