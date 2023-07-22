@@ -415,29 +415,6 @@ describe("ActionService", () => {
       );
     });
 
-    it("onCompleteWithLog should call emitUserActionLog and updateActionStepStatus", async () => {
-      const message = "Test message";
-      const level = EnumActionLogLevel.Info;
-      const status = EnumActionStepStatus.Success;
-      const isStepCompleted = true;
-
-      const emitUserActionLogSpy = jest.spyOn(service, "emitUserActionLog");
-      const updateActionStepStatusSpy = jest.spyOn(
-        service,
-        "updateActionStepStatus"
-      );
-
-      await actionContext.onCompleteWithLog(
-        message,
-        level,
-        status,
-        isStepCompleted
-      );
-
-      expect(emitUserActionLogSpy).toHaveBeenCalledTimes(1);
-      expect(updateActionStepStatusSpy).toHaveBeenCalledWith(step.id, status);
-    });
-
     it("createKafkaMessageForUserActionLog should return a Kafka message", () => {
       const userActionId = "user-action-id";
       const stepId = "step-id";
