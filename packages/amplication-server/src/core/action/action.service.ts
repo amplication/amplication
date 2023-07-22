@@ -116,7 +116,7 @@ export class ActionService {
       level: EnumActionLogLevel,
       status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
       isStepCompleted: boolean
-    ) => {
+    ): Promise<void> => {
       const kafkaMessage: UserActionLog.KafkaEvent = {
         key: {
           userActionId,
@@ -215,7 +215,7 @@ export class ActionService {
   }
 
   /**
-   * Creates an ActionContext for emitLogByStepId and complete functions.
+   * Creates an ActionContext for emitLogByStepId and completeWithLog functions.
    * These functions are invoked as Promises and potential errors are immediately caught and logged.
    * The onEmitLogByStepId can be invoked synchronously.
    * This provides a means to fire-and-forget these actions without the need to await their completion.
