@@ -13,13 +13,22 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
-import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import {
+  GET_RESOURCE_SETTINGS,
+  UPDATE_SERVICE_SETTINGS,
+} from "../Resource/resourceSettings/GenerationSettingsForm";
+import useSettingsHook from "../Resource/useSettingsHook";
+import { useTracking } from "../util/analytics";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {
   deleteEntity: { id: string };
+};
+
+type TData = {
+  updateServiceSettings: models.ServiceSettings;
 };
 
 type Props = {
@@ -46,6 +55,14 @@ export const EntityListItem = ({
   const history = useHistory();
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+
+  const { data: resourceSettings } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resourceId,
+    },
+  });
 
   const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
@@ -84,8 +101,50 @@ export const EntityListItem = ({
     setConfirmDelete(false);
   }, [setConfirmDelete]);
 
+  const { trackEvent } = useTracking();
+
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS
+  );
+  const { handleSubmit } = useSettingsHook({
+    trackEvent,
+    resourceId,
+    updateResourceSettings,
+  });
+
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
+    const { serviceSettings } = resourceSettings;
+    const authEntity = serviceSettings.authEntityName;
+
+    if (authEntity === entity.name) {
+      const updateServiceSettings = {
+        authEntityName: null,
+        adminUISettings: {
+          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
+          generateAdminUI: serviceSettings.adminUISettings.generateAdminUI,
+        },
+        serverSettings: {
+          generateGraphQL: serviceSettings.serverSettings.generateGraphQL,
+          generateRestApi: serviceSettings.serverSettings.generateRestApi,
+          serverPath: serviceSettings.serverSettings.serverPath,
+        },
+        id: serviceSettings.id,
+        updatedAt: serviceSettings.updatedAt,
+        versionNumber: serviceSettings.versionNumber,
+        authProvider: serviceSettings.authProvider,
+        blockType: serviceSettings.blockType,
+        createdAt: serviceSettings.createdAt,
+        description: serviceSettings.description,
+        displayName: serviceSettings.displayName,
+        inputParameters: serviceSettings.inputParameters,
+        lockedAt: serviceSettings.lockedAt,
+        lockedByUserId: serviceSettings.lockedByUserId,
+        outputParameters: serviceSettings.outputParameters,
+      };
+      handleSubmit(updateServiceSettings);
+    }
+
     deleteEntity({
       variables: {
         entityId: entity.id,
@@ -101,26 +160,18 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const { data: resourceSettings } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resourceId,
-    },
-  });
-
-  const isUserEntity =
+  const isAuthEntity =
     entity.name === resourceSettings.serviceSettings.authEntityName;
 
-  const isDeleteButtonDisable = isUserEntity && isUserEntityMandatory;
+  const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
 
-  const deleteMessage = isUserEntity
+  const deleteMessage = isAuthEntity
     ? "Deleting this entity may impact the authentication functionality of your service"
     : "you want to delete this entity?";
 
-  const deleteMessageConfirmation = isUserEntity ? "Notice:" : "Are you sure";
+  const deleteMessageConfirmation = isAuthEntity ? "Notice:" : "Are you sure";
 
-  const deleteClassName = isUserEntity ? "__alert-bold-notice" : "__alert-bold";
+  const deleteClassName = isAuthEntity ? "__alert-bold-notice" : "__alert-bold";
 
   return (
     <>
