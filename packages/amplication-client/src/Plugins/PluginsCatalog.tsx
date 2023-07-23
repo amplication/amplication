@@ -3,6 +3,7 @@ import { useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useMemo, useState } from "react";
 import { match } from "react-router-dom";
+import { USER_ENTITY } from "../Entity/constants";
 import { GET_ENTITIES } from "../Entity/EntityList";
 import * as models from "../models";
 import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
@@ -43,12 +44,13 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   });
 
   const userEntity = useMemo(() => {
-    return entities?.entities?.find(
-      (entity) =>
-        entity.name.toLowerCase() ===
-        resourceSettings.serviceSettings.authEntityName?.toLowerCase()
-    );
-  }, [entities]);
+    const authEntity = resourceSettings.serviceSettings.authEntityName;
+    if (!authEntity) {
+      return entities?.entities?.find(
+        (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
+      );
+    } else return authEntity;
+  }, [entities, resourceSettings]);
 
   const {
     pluginInstallations,

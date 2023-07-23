@@ -15,6 +15,7 @@ import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import { useQuery } from "@apollo/client";
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import { USER_ENTITY } from "../Entity/constants";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -62,11 +63,13 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   });
 
   const userEntity = useMemo(() => {
-    return entities?.entities?.find(
-      (entity) =>
-        entity.name.toLowerCase() ===
-        resourceSettings.serviceSettings.authEntityName?.toLowerCase()
-    );
+    const authEntity = resourceSettings.serviceSettings.authEntityName;
+
+    if (!authEntity) {
+      return entities?.entities?.find(
+        (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
+      );
+    } else return authEntity;
   }, [entities]);
 
   const handleInstall = useCallback(
