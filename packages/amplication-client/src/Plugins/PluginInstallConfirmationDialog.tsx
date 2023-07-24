@@ -5,33 +5,40 @@ import { DIALOG_CLASS_NAME } from "./PluginsCatalog";
 type Props = {
   confirmInstall: boolean;
   handleDismissInstall: () => void;
+  handleCreateDefaultEntitiesConfirmation: () => void;
 };
 
 const PluginInstallConfirmationDialog: React.FC<Props> = ({
   confirmInstall,
   handleDismissInstall,
+  handleCreateDefaultEntitiesConfirmation,
 }: Props) => {
   return (
     <div>
       <Dialog
-        title=""
+        title="Restore 'User' Entity?"
         className={DIALOG_CLASS_NAME}
         isOpen={confirmInstall}
         onDismiss={handleDismissInstall}
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Plugin installation cannot proceed as an entity for authentication has
-          not been defined. Please refer to our documentation on how to define
-          an entity for authentication before attempting to install the
-          authentication plugin
+          We've noticed you're creating a new 'User' entity. This entity is used
+          by the Authentication plugin.
         </div>
-        <Button
-          className={`${DIALOG_CLASS_NAME}__upgrade_button`}
-          buttonStyle={EnumButtonStyle.Primary}
-          onClick={handleDismissInstall}
-        >
-          Dismiss
-        </Button>
+        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
+          Restore the Default 'User' Entity - This will re-establish the
+          original 'User' entity provided by Amplication, including all
+          associated settings and functionalities.
+        </div>
+        <div className={`${DIALOG_CLASS_NAME}__dialog_btn`}>
+          <Button
+            className={`${DIALOG_CLASS_NAME}__upgrade_button`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleCreateDefaultEntitiesConfirmation}
+          >
+            Restore Default
+          </Button>
+        </div>
       </Dialog>
     </div>
   );

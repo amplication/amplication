@@ -31,7 +31,7 @@ type DType = {
   createOneEntity: models.Entity;
 };
 
-type TEntities = {
+export type TEntities = {
   createDefaultEntities: [
     {
       id: string;
@@ -267,14 +267,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           original 'User' entity provided by Amplication, including all
           associated settings and functionalities.
         </div>
-        {/* <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          2. Create a New 'User' Entity - This will create a fresh 'User' entity
-          for you to customize as per your needs. Please note that this may
-          require additional configuration for the Authentication plugin.
-        </div>
-        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Please select your preferred option to continue.
-        </div> */}
         <div className={`${CLASS_NAME}__dialog_btn`}>
           <Button
             className={`${DIALOG_CLASS_NAME}__upgrade_button`}
@@ -283,13 +275,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
           >
             Restore Default
           </Button>
-          {/* <Button
-            className={`${DIALOG_CLASS_NAME}__upgrade_button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleDismissInstall}
-          >
-            Create New
-          </Button> */}
         </div>
       </Dialog>
       <Formik

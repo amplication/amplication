@@ -19,6 +19,7 @@ import {
 } from "../Resource/resourceSettings/GenerationSettingsForm";
 import useSettingsHook from "../Resource/useSettingsHook";
 import { useTracking } from "../util/analytics";
+import { USER_ENTITY } from "./constants";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -161,7 +162,8 @@ export const EntityListItem = ({
   const [latestVersion] = entity.versions || [];
 
   const isAuthEntity =
-    entity.name === resourceSettings.serviceSettings.authEntityName;
+    entity.name === resourceSettings.serviceSettings.authEntityName ||
+    entity.name === USER_ENTITY;
 
   const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
 
