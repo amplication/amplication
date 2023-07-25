@@ -112,28 +112,8 @@ export const EntityListItem = ({
 
     if (authEntity === entity.name) {
       const updateServiceSettings = {
+        ...serviceSettings,
         authEntityName: null,
-        adminUISettings: {
-          adminUIPath: serviceSettings.adminUISettings.adminUIPath,
-          generateAdminUI: serviceSettings.adminUISettings.generateAdminUI,
-        },
-        serverSettings: {
-          generateGraphQL: serviceSettings.serverSettings.generateGraphQL,
-          generateRestApi: serviceSettings.serverSettings.generateRestApi,
-          serverPath: serviceSettings.serverSettings.serverPath,
-        },
-        id: serviceSettings.id,
-        updatedAt: serviceSettings.updatedAt,
-        versionNumber: serviceSettings.versionNumber,
-        authProvider: serviceSettings.authProvider,
-        blockType: serviceSettings.blockType,
-        createdAt: serviceSettings.createdAt,
-        description: serviceSettings.description,
-        displayName: serviceSettings.displayName,
-        inputParameters: serviceSettings.inputParameters,
-        lockedAt: serviceSettings.lockedAt,
-        lockedByUserId: serviceSettings.lockedByUserId,
-        outputParameters: serviceSettings.outputParameters,
       };
       handleSubmit(updateServiceSettings);
     }
