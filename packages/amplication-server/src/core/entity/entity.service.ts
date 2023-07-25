@@ -1981,16 +1981,22 @@ export class EntityService {
     // In case created data type is Lookup define related field names according
     // to the entity
     if (data.dataType === EnumDataType.Lookup) {
-      const { allowMultipleSelection } =
+      const { allowMultipleSelection: entityFieldAllowMultipleSelection } =
         data.properties as unknown as types.Lookup;
 
       createFieldArgs.relatedFieldName = camelCase(
-        !allowMultipleSelection ? entity.pluralDisplayName : entity.name
+        !entityFieldAllowMultipleSelection
+          ? entity.pluralDisplayName
+          : entity.name
       );
 
-      createFieldArgs.relatedFieldDisplayName = !allowMultipleSelection
-        ? entity.pluralDisplayName
-        : entity.displayName;
+      createFieldArgs.relatedFieldDisplayName =
+        !entityFieldAllowMultipleSelection
+          ? entity.pluralDisplayName
+          : entity.displayName;
+
+      createFieldArgs.relatedFieldAllowMultipleSelection =
+        !entityFieldAllowMultipleSelection;
     }
 
     return this.createField(createFieldArgs, user, true, trackEvent);
@@ -2404,7 +2410,7 @@ export class EntityService {
             },
           },
           properties: {
-            allowMultipleSelection: relatedFieldAllowMultipleSelection || false,
+            allowMultipleSelection: relatedFieldAllowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
