@@ -1,44 +1,25 @@
-import React, { useContext } from "react";
+import { useContext } from "react";
 import * as models from "../../models";
 import "./GenerationSettingsForm.scss";
 import { AppContext } from "../../context/appContext";
 import { Form, Formik } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { useMutation, useQuery } from "@apollo/client";
-import {
-  GET_RESOURCE_SETTINGS,
-  UPDATE_SERVICE_SETTINGS,
-} from "./GenerationSettingsForm";
 import { useTracking } from "../../util/analytics";
 import useSettingsHook from "../useSettingsHook";
 import EntitySelectField from "../../Components/EntitySelectField";
 import FormikAutoSave from "../../util/formikAutoSave";
+import useResource from "../hooks/useResource";
 
 const CLASS_NAME = "generation-settings-form";
 
-type TData = {
-  updateServiceSettings: models.ServiceSettings;
-};
-
 function AuthenticationSettingsForm() {
-  const { currentResource, addBlock } = useContext(AppContext);
-  const { data, error } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: currentResource?.id,
-    },
-  });
+  const { currentResource } = useContext(AppContext);
+  const { resourceSettings, updateResourceSettings } = useResource(
+    currentResource.id
+  );
+
   const { trackEvent } = useTracking();
 
-  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_SERVICE_SETTINGS,
-    {
-      onCompleted: (data) => {
-        addBlock(data.updateServiceSettings.id);
-      },
-    }
-  );
   const resourceId = currentResource?.id;
   const { handleSubmit, SERVICE_CONFIG_FORM_SCHEMA } = useSettingsHook({
     trackEvent,
@@ -48,9 +29,9 @@ function AuthenticationSettingsForm() {
 
   return (
     <div className={CLASS_NAME}>
-      {data?.serviceSettings && (
+      {resourceSettings?.serviceSettings && (
         <Formik
-          initialValues={data.serviceSettings}
+          initialValues={resourceSettings.serviceSettings}
           validate={(values: models.ServiceSettings) =>
             validate(values, SERVICE_CONFIG_FORM_SCHEMA)
           }
@@ -75,10 +56,6 @@ function AuthenticationSettingsForm() {
           }}
         </Formik>
       )}
-      {/* <Snackbar
-        open={Boolean(error)}
-        message={formatError(error || updateError)}
-      /> */}
     </div>
   );
 }

@@ -8,7 +8,7 @@ import { USER_ENTITY } from "../Entity/constants";
 import { GET_ENTITIES } from "../Entity/EntityList";
 import { TEntities } from "../Entity/NewEntity";
 import * as models from "../models";
-import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import useResource from "../Resource/hooks/useResource";
 import { AppRouteProps } from "../routes/routesUtil";
 import { formatError } from "../util/error";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
@@ -45,6 +45,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const [pluginInstallationUpdateData, setPluginInstallationUpdateData] =
     useState<models.PluginInstallation>(null);
 
+  const { resourceSettings } = useResource(resource);
+
   const { data: entities } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resource,
@@ -52,14 +54,6 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   });
 
   const { addEntity } = useContext(AppContext);
-
-  const { data: resourceSettings } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resource,
-    },
-  });
 
   const userEntity = useMemo(() => {
     const authEntity = resourceSettings?.serviceSettings?.authEntityName;

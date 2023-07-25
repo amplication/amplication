@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
-
 import * as models from "../models";
 import { TextField } from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
@@ -12,8 +11,7 @@ import {
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
 import { isEqual } from "../util/customValidations";
-import { useQuery } from "@apollo/client";
-import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import useResource from "../Resource/hooks/useResource";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -72,6 +70,7 @@ const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
 const CLASS_NAME = "entity-form";
 
 const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
+  const { resourceSettings } = useResource(resourceId);
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -81,14 +80,6 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
     );
     return sanitizedDefaultValues as EntityInput;
   }, [entity]);
-
-  const { data: resourceSettings } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resourceId,
-    },
-  });
 
   return (
     <div className={CLASS_NAME}>

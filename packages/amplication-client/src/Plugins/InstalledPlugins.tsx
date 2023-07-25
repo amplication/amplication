@@ -14,11 +14,11 @@ import { REQUIRE_AUTH_ENTITY } from "./PluginsCatalog";
 import PluginInstallConfirmationDialog from "./PluginInstallConfirmationDialog";
 import { useMutation, useQuery } from "@apollo/client";
 import { GET_ENTITIES } from "../Entity/EntityList";
-import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 import { USER_ENTITY } from "../Entity/constants";
 import { TEntities } from "../Entity/NewEntity";
 import { CREATE_DEFAULT_ENTITIES } from "../Workspaces/queries/entitiesQueries";
 import { AppContext } from "../context/appContext";
+import useResource from "../Resource/hooks/useResource";
 // import DragPluginsCatalogItem from "./DragPluginCatalogItem";
 
 type Props = AppRouteProps & {
@@ -53,6 +53,8 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const [isCreatePluginInstallation, setIsCreatePluginInstallation] =
     useState<boolean>(false);
 
+  const { resourceSettings } = useResource(resource);
+
   const [pluginInstallationData, setPluginInstallationData] =
     useState<Plugin>(null);
 
@@ -67,14 +69,6 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     },
   });
 
-  const { data: resourceSettings } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resource,
-    },
-  });
-
   const userEntity = useMemo(() => {
     const authEntity = resourceSettings?.serviceSettings?.authEntityName;
 
@@ -83,7 +77,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities]);
+  }, [entities, resourceSettings?.serviceSettings?.authEntityName]);
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {
@@ -148,32 +142,6 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           }).catch(console.error);
         }
       },
-      // update(cache, { data }) {
-      //   if (!data) return;
-      //   const userEntity = data.createDefaultEntities.find(
-      //     (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
-      //   );
-      // const newEntity = userEntity;
-      // cache.modify({
-      //   fields: {
-      //     entities(existingEntityRefs = [], { readField }) {
-      //       const newEntityRef = cache.writeFragment({
-      //         data: newEntity,
-      //         fragment: NEW_ENTITY_FRAGMENT,
-      //       });
-      //       if (
-      //         existingEntityRefs.some(
-      //           (EntityRef: Reference) =>
-      //             readField("id", EntityRef) === newEntity.id
-      //         )
-      //       ) {
-      //         return existingEntityRefs;
-      //       }
-      //       return [...existingEntityRefs, newEntityRef];
-      //     },
-      //   },
-      // });
-      // },
     });
 
   const handleCreateDefaultEntitiesConfirmation = useCallback(() => {

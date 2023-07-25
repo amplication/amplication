@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useState } from "react";
-import { gql, useMutation, Reference, useQuery } from "@apollo/client";
+import { gql, useMutation, Reference } from "@apollo/client";
 import * as models from "../models";
 import {
   ConfirmationDialog,
@@ -13,13 +13,11 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
-import {
-  GET_RESOURCE_SETTINGS,
-  UPDATE_SERVICE_SETTINGS,
-} from "../Resource/resourceSettings/GenerationSettingsForm";
+import { UPDATE_SERVICE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 import useSettingsHook from "../Resource/useSettingsHook";
 import { useTracking } from "../util/analytics";
 import { USER_ENTITY } from "./constants";
+import useResource from "../Resource/hooks/useResource";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -55,15 +53,9 @@ export const EntityListItem = ({
     useContext(AppContext);
   const history = useHistory();
 
-  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+  const { resourceSettings } = useResource(resourceId);
 
-  const { data: resourceSettings } = useQuery<{
-    serviceSettings: models.ServiceSettings;
-  }>(GET_RESOURCE_SETTINGS, {
-    variables: {
-      id: resourceId,
-    },
-  });
+  const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
   const [deleteEntity, { loading: deleteLoading }] = useMutation<DType>(
     DELETE_ENTITY,
