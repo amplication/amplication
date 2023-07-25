@@ -1991,6 +1991,9 @@ export class EntityService {
       createFieldArgs.relatedFieldDisplayName = !allowMultipleSelection
         ? entity.pluralDisplayName
         : entity.displayName;
+
+      createFieldArgs.relatedFieldAllowMultipleSelection =
+        !allowMultipleSelection;
     }
 
     return this.createField(createFieldArgs, user, true, trackEvent);
@@ -2404,7 +2407,7 @@ export class EntityService {
             },
           },
           properties: {
-            allowMultipleSelection: relatedFieldAllowMultipleSelection || false,
+            allowMultipleSelection: relatedFieldAllowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
