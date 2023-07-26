@@ -348,15 +348,11 @@ export class GitClientService {
    * @param gitCli Git client
    * @param maxCount Limit the number of commits to output. Negative numbers denote no upper limit
    */
-  private async gitLog(
-    gitCli: GitCli,
-    maxCount = -1,
-    includeBotCommits = true
-  ): Promise<LogResult> {
+  private async gitLog(gitCli: GitCli, maxCount = -1): Promise<LogResult> {
     const amplicationBot = await this.provider.getAmplicationBotIdentity();
 
     const authors: string[] = [];
-    if (includeBotCommits && amplicationBot) {
+    if (amplicationBot) {
       authors.push(amplicationBot.gitAuthor);
     }
     authors.push(gitCli.gitAuthorUser);
@@ -387,6 +383,7 @@ export class GitClientService {
       }
 
       // Reset the branch to the latest commit of the user / bot
+      this.logger.debug("preCommit - resetting branch ", { branchName, hash });
       await gitCli.reset([hash]);
       await gitCli.push(["--force"]);
       this.logger.info("Diff returned");
@@ -441,16 +438,9 @@ export class GitClientService {
       return branch;
     }
 
-    const firstCommitOnBaseBranch = await gitCli.getFirstCommitSha(baseBranch);
-    if (firstCommitOnBaseBranch === null) {
+    const lastCommitOnBaseBranch = await gitCli.getLastCommitSha(baseBranch);
+    if (lastCommitOnBaseBranch === null) {
       throw new NoCommitOnBranch(baseBranch);
-    }
-    let hash = firstCommitOnBaseBranch.sha;
-
-    await gitCli.checkout(baseBranch);
-    let gitLogs = await this.gitLog(gitCli, 1, false);
-    if (gitLogs.total > 0 && gitLogs.latest) {
-      hash = gitLogs.latest.hash;
     }
 
     const newBranch = await this.provider.createBranch({
@@ -458,52 +448,11 @@ export class GitClientService {
       branchName,
       repositoryName,
       repositoryGroupName,
-      pointingSha: hash,
+      pointingSha: lastCommitOnBaseBranch.sha,
       baseBranchName: baseBranch,
     });
 
-    // Cherry pick all amplication authored commits from the base branch to the new branch
-    //await gitCli.checkout(baseBranch);
-    gitLogs = await this.gitLog(gitCli);
-    await gitCli.resetState();
-    await gitCli.checkout(newBranch.name);
-
-    await this.cherryPickCommits(
-      gitLogs,
-      gitCli,
-      branchName,
-      firstCommitOnBaseBranch
-    );
     return newBranch;
-  }
-
-  private async cherryPickCommits(
-    commitsFromLatest: LogResult,
-    gitCli: GitCli,
-    branchName: string,
-    firstCommitOnBaseBranch: Commit
-  ) {
-    for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
-      const commit = commitsFromLatest.all[index];
-      if (firstCommitOnBaseBranch.sha === commit.hash) {
-        continue;
-      }
-      try {
-        await gitCli.cherryPick(commit.hash);
-      } catch (error) {
-        if (error instanceof GitError) {
-          this.logger.error(
-            `Failed to cherry pick commit ${commit.hash} on branch ${branchName}`,
-            error
-          );
-          await gitCli.cherryPickAbort();
-          await gitCli.resetState();
-          continue;
-        }
-      }
-    }
-
-    await gitCli.push();
   }
 
   private async manageAmplicationIgnoreFile(
