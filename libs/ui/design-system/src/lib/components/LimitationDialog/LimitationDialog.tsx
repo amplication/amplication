@@ -2,6 +2,7 @@ import React from "react";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import "./LimitationDialog.scss";
+import { Icon } from "../Icon/Icon";
 
 const CLASS_NAME = "limitation-dialog";
 
@@ -44,7 +45,8 @@ export const LimitationDialog = ({
         buttonStyle={EnumButtonStyle.Primary}
         onClick={onConfirm}
       >
-        Upgrade Now
+        <Icon icon="gift" />
+        Limited Time Offer: 2 months free pro plan
       </Button>
     </Dialog>
   );
