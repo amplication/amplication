@@ -4,7 +4,7 @@ import { promisify } from "util";
 export class KafkaPacemaker {
   static async wrapLongRunningMethod<T>(
     kafkaContext: KafkaContext,
-    fn: () => Promise<T>,
+    fn: (...args: unknown[]) => Promise<T>,
     timeout = 3000
   ) {
     const heartbeat = kafkaContext.getHeartbeat();
