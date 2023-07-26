@@ -1,8 +1,9 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 
 import * as models from "../../models";
 import { GET_USER_ACTION } from "./queries";
+import { AppContext } from "../../context/appContext";
 
 const POLL_INTERVAL = 2000;
 
@@ -16,6 +17,7 @@ type TGetUserAction = {
 const useUserActionWatchStatus = (
   userAction?: models.UserAction
 ): { data: { userAction?: models.UserAction } } => {
+  const { addBlock } = useContext(AppContext);
   const { data, startPolling, stopPolling, refetch } = useQuery<TGetUserAction>(
     GET_USER_ACTION,
     {
@@ -30,7 +32,7 @@ const useUserActionWatchStatus = (
   useEffect(() => {
     if (!shouldReload(data?.userAction)) {
       stopPolling();
-      refetch();
+      addBlock(data?.userAction.id);
     } else {
       startPolling(POLL_INTERVAL);
     }
