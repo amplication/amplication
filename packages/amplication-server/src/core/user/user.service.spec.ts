@@ -270,4 +270,22 @@ describe("UserService", () => {
     expect(prismaUserRoleFindManyMock).toBeCalledTimes(1);
     expect(prismaUserRoleFindManyMock).toBeCalledWith(args);
   });
+
+  it("should set lastActive", async () => {
+    const args = {
+      userId: EXAMPLE_USER_ID,
+      lastActive: new Date(),
+    };
+    const returnArgs = {
+      data: {
+        lastActive: args.lastActive,
+      },
+      where: { id: args.userId },
+    };
+    expect(await service.setLastActivity(args.userId, args.lastActive)).toEqual(
+      EXAMPLE_USER
+    );
+    expect(prismaUserUpdateMock).toBeCalledTimes(1);
+    expect(prismaUserUpdateMock).toBeCalledWith(returnArgs);
+  });
 });

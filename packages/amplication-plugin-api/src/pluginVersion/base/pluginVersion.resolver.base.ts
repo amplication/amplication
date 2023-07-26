@@ -22,6 +22,7 @@ import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateReq
 import { CreatePluginVersionArgs } from "./CreatePluginVersionArgs";
 import { UpdatePluginVersionArgs } from "./UpdatePluginVersionArgs";
 import { DeletePluginVersionArgs } from "./DeletePluginVersionArgs";
+import { PluginVersionCountArgs } from "./PluginVersionCountArgs";
 import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 import { PluginVersion } from "./PluginVersion";
@@ -37,15 +38,11 @@ export class PluginVersionResolverBase {
   @Public()
   @graphql.Query(() => MetaQueryPayload)
   async _pluginVersionsMeta(
-    @graphql.Args() args: PluginVersionFindManyArgs
+    @graphql.Args() args: PluginVersionCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 

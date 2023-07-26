@@ -15,6 +15,7 @@ export enum BillingFeature {
   ServicesWithManyEntities = "feature-services-wth-many-entities",
   SmartGitSync = "feature-smart-git-sync",
   TeamMembers = "feature-team-members",
+  AwsCodeCommit = "feature-awscodecommit",
   Bitbucket = "feature-bitbucket",
   ImportDBSchema = "feature-import-db-schema",
 }

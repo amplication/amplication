@@ -1,43 +1,16 @@
-import {
-  Enum,
-  Field,
-  Func,
-  KeyValue,
-  Model,
-  RelationArray,
-  Schema,
-} from "@mrleebo/prisma-ast";
+import { Enum, Field, Func, Schema } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
 import {
-  ARG_KEY_FIELD_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
-  ID_TYPE_AUTOINCREMENT,
-  ID_TYPE_CUID,
-  ID_TYPE_UUID,
   NOW_FUNCTION_NAME,
-  RELATION_ATTRIBUTE_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
-import { ExistingEntitySelect, Mapper } from "./types";
-
-export const idTypePropertyMap = {
-  autoincrement: ID_TYPE_AUTOINCREMENT,
-  cuid: ID_TYPE_CUID,
-  uuid: ID_TYPE_UUID,
-};
-
-export const idTypePropertyMapByFieldType = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: ID_TYPE_AUTOINCREMENT,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  String: ID_TYPE_CUID,
-};
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -178,10 +151,11 @@ export function updateAtField(field: Field) {
 
 export function optionSetField(schema: Schema, field: Field) {
   const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
+  const isMultiSelect = field.array || false;
   const fieldOptionSetType = enumList.find(
     (enumItem: Enum) => enumItem.name === field.fieldType
   );
-  if (fieldOptionSetType) {
+  if (fieldOptionSetType && !isMultiSelect) {
     return EnumDataType.OptionSet;
   }
 }
@@ -190,9 +164,9 @@ export function multiSelectOptionSetField(schema: Schema, field: Field) {
   const enumList = schema.list.filter((item) => item.type === ENUM_TYPE_NAME);
   const isMultiSelect = field.array || false;
   const fieldOptionSetType = enumList.find(
-    (enumItem: Enum) => enumItem.name === field.fieldType && isMultiSelect
+    (enumItem: Enum) => enumItem.name === field.fieldType
   );
-  if (fieldOptionSetType) {
+  if (fieldOptionSetType && isMultiSelect) {
     return EnumDataType.MultiSelectOptionSet;
   }
 }
@@ -235,69 +209,4 @@ export function jsonField(field: Field) {
   if (field.fieldType === ScalarType.Json) {
     return EnumDataType.Json;
   }
-}
-
-export function findFkFieldNameOnAnnotatedField(field: Field): string {
-  const relationAttribute = field.attributes?.find(
-    (attr) => attr.name === RELATION_ATTRIBUTE_NAME
-  );
-
-  if (!relationAttribute) {
-    throw new Error(`Missing relation attribute on field ${field.name}`);
-  }
-
-  const fieldsArgs = relationAttribute.args?.find(
-    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
-  );
-
-  if (!fieldsArgs) {
-    throw new Error(
-      `Missing fields attribute on relation attribute on field ${field.name}`
-    );
-  }
-
-  const fieldsArgsValues = (
-    (fieldsArgs.value as KeyValue).value as RelationArray
-  ).args;
-
-  if (fieldsArgsValues.length > 1) {
-    throw new Error(
-      `Relation attribute on field ${field.name} has more than one field, which is not supported`
-    );
-  }
-
-  return fieldsArgsValues[0];
-}
-
-export function handleModelNamesCollision(
-  modelList: Model[],
-  existingEntities: ExistingEntitySelect[],
-  mapper: Mapper,
-  formattedModelName: string
-): string {
-  const modelSuffix = "Model";
-  let isFormattedModelNameAlreadyTaken = false;
-  let newName = formattedModelName;
-  let counter = 0;
-
-  do {
-    isFormattedModelNameAlreadyTaken = modelList.some(
-      (modelFromList) => modelFromList.name === newName
-    );
-
-    isFormattedModelNameAlreadyTaken ||= existingEntities.some(
-      (existingEntity) => existingEntity.name === newName
-    );
-
-    isFormattedModelNameAlreadyTaken ||= Object.values(mapper.modelNames).some(
-      (model) => model.newName === newName
-    );
-
-    if (isFormattedModelNameAlreadyTaken) {
-      newName = `${formattedModelName}${modelSuffix}${counter ? counter : ""}`;
-      counter++;
-    }
-  } while (isFormattedModelNameAlreadyTaken);
-
-  return newName;
 }
