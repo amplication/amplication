@@ -28,6 +28,7 @@ export const GET_PROJECTS = gql`
           id
           name
           groupName
+          baseBranchName
           gitOrganizationId
           gitOrganization {
             provider

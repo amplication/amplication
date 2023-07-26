@@ -8,7 +8,7 @@ import {
   createNestjsKafkaConfig,
   KAFKA_CLIENT,
 } from "./createNestjsKafkaConfig";
-import { KafkaProducerService } from "./producer/KafkaProducer.service";
+import { KafkaProducerService } from "./producer";
 
 @Module({
   imports: [

@@ -122,7 +122,20 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                 />
                 <TextField
                   autoComplete="off"
-                  placeholder='Add custom attributes to model using the format @@attribute([parameters]) or @@attribute(). For example: @@index([field_1, field_2])  @@map("modelName")'
+                  placeholder="Custom Prisma attributes"
+                  inputToolTip={{
+                    content: (
+                      <span>
+                        Add custom attributes to model using the format
+                        @@attribute([parameters]) or @@attribute().
+                        <br />
+                        <br /> For example:
+                        <br />
+                        @@index([field_1, field_2]) <br />
+                        @@map("modelName")
+                      </span>
+                    ),
+                  }}
                   textarea
                   rows={3}
                   name="customAttributes"

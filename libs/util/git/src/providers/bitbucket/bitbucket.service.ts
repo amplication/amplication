@@ -395,7 +395,7 @@ export class BitBucketService implements GitProvider {
       repositoryGroupName,
       repositoryName,
       branchName,
-      defaultBranchName,
+      baseBranchName,
       pullRequestTitle,
       pullRequestBody,
     } = createPullRequestArgs;
@@ -414,7 +414,7 @@ export class BitBucketService implements GitProvider {
       },
       destination: {
         branch: {
-          name: defaultBranchName,
+          name: baseBranchName,
         },
       },
     };

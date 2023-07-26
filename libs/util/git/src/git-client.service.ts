@@ -39,6 +39,8 @@ import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { GitError, LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
+import { isEmpty } from "lodash";
+import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
 
 export class GitClientService {
   private provider: GitProvider;
@@ -121,6 +123,7 @@ export class GitClientService {
       cloneDirPath,
       buildId,
       resourceId,
+      baseBranchName,
     } = createPullRequestArgs;
 
     const gitRepoDir = normalize(
@@ -149,31 +152,52 @@ export class GitClientService {
     );
 
     try {
-      const { defaultBranch } = await this.provider.getRepository({
-        owner,
-        repositoryName,
-        groupName: repositoryGroupName,
-      });
+      let baseBranch: string;
+
+      //if not base branch name is provided, use the default branch of the repository
+      if (isEmpty(baseBranchName)) {
+        const repo = await this.provider.getRepository({
+          owner,
+          repositoryName,
+          groupName: repositoryGroupName,
+        });
+        baseBranch = repo.defaultBranch;
+      } else {
+        baseBranch = baseBranchName;
+
+        const branch = await this.provider.getBranch({
+          owner,
+          repositoryName,
+          branchName: baseBranch,
+          repositoryGroupName,
+        });
+
+        if (!branch) {
+          throw new InvalidBaseBranch(baseBranch);
+        }
+      }
 
       await gitCli.clone();
 
-      const firstCommitOnDefaultBranch = await gitCli.getFirstCommitSha(
-        defaultBranch
+      const firstCommitOnBaseBranch = await gitCli.getFirstCommitSha(
+        baseBranch
       );
 
-      if (!firstCommitOnDefaultBranch) {
+      //This is the first commit by Amplication on the base branch
+      if (!firstCommitOnBaseBranch) {
         await this.createInitialCommit({
           gitRepoDir,
           gitCli,
           repositoryName,
-          defaultBranch,
+          branchName: baseBranch,
         });
       }
 
       const amplicationIgnoreManger = await this.manageAmplicationIgnoreFile(
         owner,
         repositoryName,
-        repositoryGroupName
+        repositoryGroupName,
+        baseBranch
       );
 
       const preparedFiles = await prepareFilesForPullRequest(
@@ -207,7 +231,7 @@ export class GitClientService {
             commitMessage,
             pullRequestBody,
             preparedFiles,
-            defaultBranch,
+            baseBranch,
             repositoryGroupName,
           });
           break;
@@ -233,7 +257,7 @@ export class GitClientService {
     commitMessage: string;
     pullRequestBody: string;
     preparedFiles: UpdateFile[];
-    defaultBranch: string;
+    baseBranch: string;
     repositoryGroupName?: string;
   }): Promise<string> {
     const {
@@ -244,7 +268,7 @@ export class GitClientService {
       commitMessage,
       pullRequestBody,
       preparedFiles,
-      defaultBranch,
+      baseBranch,
       repositoryGroupName,
     } = options;
 
@@ -255,7 +279,7 @@ export class GitClientService {
       repositoryGroupName,
       branchName,
       gitCli,
-      defaultBranch,
+      baseBranch,
     });
 
     const { diff } = await this.preCommitProcess({
@@ -300,7 +324,7 @@ export class GitClientService {
         pullRequestTitle: accumulativePullRequestTitle,
         pullRequestBody: accumulativePullRequestBody,
         branchName,
-        defaultBranchName: defaultBranch,
+        baseBranchName: baseBranch,
       });
     }
 
@@ -406,19 +430,17 @@ export class GitClientService {
       repositoryName,
       gitCli,
       repositoryGroupName,
-      defaultBranch,
+      baseBranch,
     } = args;
     const branch = await this.provider.getBranch(args);
     if (branch) {
       return branch;
     }
 
-    const firstCommitOnDefaultBranch = await gitCli.getFirstCommitSha(
-      defaultBranch
-    );
+    const firstCommitOnBaseBranch = await gitCli.getFirstCommitSha(baseBranch);
 
-    if (firstCommitOnDefaultBranch === null) {
-      throw new NoCommitOnBranch(defaultBranch);
+    if (firstCommitOnBaseBranch === null) {
+      throw new NoCommitOnBranch(baseBranch);
     }
 
     const newBranch = await this.provider.createBranch({
@@ -426,11 +448,12 @@ export class GitClientService {
       branchName,
       repositoryName,
       repositoryGroupName,
-      pointingSha: firstCommitOnDefaultBranch.sha,
+      pointingSha: firstCommitOnBaseBranch.sha,
+      baseBranchName: baseBranch,
     });
 
-    // Cherry pick all amplication authored commits from the default branch to the new branch
-    await gitCli.checkout(defaultBranch);
+    // Cherry pick all amplication authored commits from the base branch to the new branch
+    await gitCli.checkout(baseBranch);
     const gitLogs = await this.gitLog(gitCli);
     await gitCli.resetState();
     await gitCli.checkout(newBranch.name);
@@ -439,7 +462,7 @@ export class GitClientService {
       gitLogs,
       gitCli,
       branchName,
-      firstCommitOnDefaultBranch
+      firstCommitOnBaseBranch
     );
     return newBranch;
   }
@@ -448,11 +471,11 @@ export class GitClientService {
     commitsFromLatest: LogResult,
     gitCli: GitCli,
     branchName: string,
-    firstCommitOnDefaultBranch: Commit
+    firstCommitOnBaseBranch: Commit
   ) {
     for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
       const commit = commitsFromLatest.all[index];
-      if (firstCommitOnDefaultBranch.sha === commit.hash) {
+      if (firstCommitOnBaseBranch.sha === commit.hash) {
         continue;
       }
       try {
@@ -510,9 +533,9 @@ export class GitClientService {
     repositoryName: string;
     gitCli: GitCli;
     gitRepoDir: string;
-    defaultBranch: string;
+    branchName: string;
   }) {
-    const { gitCli, repositoryName, gitRepoDir, defaultBranch } = args;
+    const { gitCli, repositoryName, gitRepoDir, branchName } = args;
     const defaultREADMEFile = getDefaultREADMEFile(repositoryName);
     const foldersToIgnore = [".git"];
     if ((await isFolderEmpty(gitRepoDir, foldersToIgnore)) === false) {
@@ -520,7 +543,7 @@ export class GitClientService {
         "The repository is not empty, crash the pull request logic to prevent data loss"
       );
     }
-    await gitCli.commit(defaultBranch, "Initial commit", [
+    await gitCli.commit(branchName, "Initial commit", [
       {
         path: "README.md",
         content: defaultREADMEFile,

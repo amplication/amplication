@@ -1,16 +1,11 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { FindSubscriptionsArgs } from "./dto/FindSubscriptionsArgs";
 import { Subscription } from "./dto/Subscription";
-import {
-  EnumSubscriptionPlan,
-  EnumSubscriptionStatus,
-  SubscriptionData,
-} from "./dto";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "./dto";
 import {
   PrismaService,
   Prisma,
   EnumSubscriptionStatus as PrismaEnumSubscriptionStatus,
-  Subscription as PrismaSubscription,
 } from "../../prisma";
 import { UpsertSubscriptionInput } from "./dto/UpsertSubscriptionInput";
 import { BillingService } from "../billing/billing.service";
@@ -36,9 +31,7 @@ export class SubscriptionService {
   ): Promise<Subscription[] | null> {
     const subs = await this.prisma.subscription.findMany(args);
 
-    return subs.map((sub) => {
-      return this.transformPrismaObject(sub);
-    });
+    return subs;
   }
 
   async getSubscriptionById(id: string): Promise<Subscription | null> {
@@ -47,7 +40,7 @@ export class SubscriptionService {
         id: id,
       },
     });
-    return this.transformPrismaObject(sub);
+    return sub;
   }
 
   async getCurrentSubscription(
@@ -74,25 +67,7 @@ export class SubscriptionService {
       },
     });
 
-    return this.transformPrismaObject(sub);
-  }
-
-  private transformPrismaObject(
-    subscription: PrismaSubscription | null
-  ): Subscription | null {
-    if (!subscription) return null;
-    const data = subscription.subscriptionData as unknown as SubscriptionData;
-
-    return {
-      ...subscription,
-      cancelUrl: data.paddleCancelUrl,
-      updateUrl: data.paddleUpdateUrl,
-      nextBillDate: data.paddleNextBillDate
-        ? new Date(data.paddleNextBillDate)
-        : null,
-      price: data.paddleUnitPrice,
-      subscriptionData: data,
-    };
+    return sub;
   }
 
   async trackUpgradeCompletedEvent(
@@ -131,13 +106,9 @@ export class SubscriptionService {
             workspaceId: data.workspaceId,
             status: data.status,
             subscriptionPlan: data.plan,
-            subscriptionData:
-              data.subscriptionData as unknown as Prisma.InputJsonValue,
           },
           update: {
             status: data.status,
-            subscriptionData:
-              data.subscriptionData as unknown as Prisma.InputJsonValue,
           },
         });
         break;
@@ -159,7 +130,6 @@ export class SubscriptionService {
       workspaceId: updateStatusDto.customer.id,
       status: this.billingService.mapSubscriptionStatus(updateStatusDto.status),
       plan: this.billingService.mapSubscriptionPlan(updateStatusDto.plan.id),
-      subscriptionData: new SubscriptionData(),
     };
   }
 
@@ -177,7 +147,6 @@ export class SubscriptionService {
         workspaceId: workspaceId,
         status: stiggSubscription.status as EnumSubscriptionStatus,
         plan: stiggSubscription.subscriptionPlan as EnumSubscriptionPlan,
-        subscriptionData: new SubscriptionData(),
       };
 
       const savedSubscription = await this.prisma.subscription.create({
@@ -186,16 +155,10 @@ export class SubscriptionService {
           workspaceId: createSubscriptionInput.workspaceId,
           status: createSubscriptionInput.status,
           subscriptionPlan: createSubscriptionInput.plan,
-          subscriptionData:
-            createSubscriptionInput.subscriptionData as unknown as Prisma.InputJsonValue,
         },
       });
 
-      const mappedSubscription = {
-        ...savedSubscription,
-        subscriptionData: null,
-      };
-      return mappedSubscription;
+      return savedSubscription;
     }
     return null;
   }

@@ -291,7 +291,7 @@ export class AwsCodeCommitService implements GitProvider {
     const {
       repositoryName,
       branchName,
-      defaultBranchName,
+      baseBranchName,
       pullRequestTitle,
       pullRequestBody,
     } = createPullRequestArgs;
@@ -303,7 +303,7 @@ export class AwsCodeCommitService implements GitProvider {
         {
           repositoryName,
           sourceReference: branchName,
-          destinationReference: defaultBranchName,
+          destinationReference: baseBranchName,
         },
       ],
     });
