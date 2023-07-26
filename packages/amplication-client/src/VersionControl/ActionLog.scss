@@ -108,7 +108,6 @@ $step-status-width: 20px;
   .react-lazylog {
     color: var(--black10);
     background-color: var(--action-log-background-color);
-    height: auto !important;
     @include scrollbars($default-scroll-width, var(--black60), transparent);
 
     .log-line {
@@ -118,5 +117,8 @@ $step-status-width: 20px;
         width: $log-line-number-width;
       }
     }
+  }
+  .__auto__height {
+    height: auto !important;
   }
 }

@@ -88,6 +88,7 @@ const BuildPage = ({ match }: Props) => {
               <BuildSteps build={data.build} />
               <aside className="log-container">
                 <ActionLog
+                  autoHeight={true}
                   action={actionLog?.action}
                   title={actionLog?.title || ""}
                   versionNumber={actionLog?.versionNumber || ""}
