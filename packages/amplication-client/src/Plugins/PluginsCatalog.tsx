@@ -47,7 +47,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const { resourceSettings } = useResource(resource);
 
-  const { data: entities } = useQuery<TData>(GET_ENTITIES, {
+  const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resource,
     },
@@ -58,11 +58,12 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const userEntity = useMemo(() => {
     const authEntity = resourceSettings?.serviceSettings?.authEntityName;
     if (!authEntity) {
+      console.log("entities:", entities?.entities);
       return entities?.entities?.find(
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities, resourceSettings]);
+  }, [entities?.entities, resourceSettings?.serviceSettings]);
 
   const {
     pluginInstallations,
@@ -130,6 +131,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       const requireAuthenticationEntity = configurations
         ? configurations[REQUIRE_AUTH_ENTITY]
         : null;
+      console.log("onEnableStateChange", userEntity);
       if (requireAuthenticationEntity === "true" && !userEntity && !enabled) {
         setIsCreatePluginInstallation(false);
         setPluginInstallationUpdateData(pluginInstallation);
@@ -152,7 +154,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updatePluginInstallation]
+    [updatePluginInstallation, userEntity]
   );
 
   const installedPlugins = useMemo(() => {
@@ -171,6 +173,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
         );
         addEntity(userEntity.id);
+        refetch();
         setConfirmInstall(false);
 
         if (isCreatePluginInstallation) {

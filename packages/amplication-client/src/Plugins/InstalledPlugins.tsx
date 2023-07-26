@@ -63,7 +63,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
 
   const { addEntity } = useContext(AppContext);
 
-  const { data: entities } = useQuery<TData>(GET_ENTITIES, {
+  const { data: entities, refetch } = useQuery<TData>(GET_ENTITIES, {
     variables: {
       id: resource,
     },
@@ -77,7 +77,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
         (entity) => entity.name.toLowerCase() === USER_ENTITY.toLowerCase()
       );
     } else return authEntity;
-  }, [entities, resourceSettings?.serviceSettings?.authEntityName]);
+  }, [entities?.entities, resourceSettings?.serviceSettings?.authEntityName]);
 
   const handleInstall = useCallback(
     (plugin: Plugin) => {
@@ -108,6 +108,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           (x) => x.name.toLowerCase() === USER_ENTITY.toLowerCase()
         );
         addEntity(userEntity.id);
+        refetch();
         setConfirmInstall(false);
 
         if (isCreatePluginInstallation) {
@@ -203,7 +204,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
         },
       }).catch(console.error);
     },
-    [updatePluginInstallation]
+    [updatePluginInstallation, userEntity]
   );
 
   const handleDismissInstall = useCallback(() => {
