@@ -46,7 +46,7 @@ export const LimitationDialog = ({
         onClick={onConfirm}
       >
         <Icon icon="gift" />
-        &nbsp; Limited Time Offer: 2 months free pro plan
+        &nbsp; Limited Time Offer: 2 Months Free Pro Plan!
       </Button>
     </Dialog>
   );
