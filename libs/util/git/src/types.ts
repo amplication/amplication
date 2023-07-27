@@ -226,6 +226,7 @@ export interface CreatePullRequestArgs {
   cloneDirPath: string;
   resourceId: string;
   buildId: string;
+  baseBranchName: string;
 }
 
 export interface CreatePullRequestFromFilesArgs {
@@ -249,7 +250,7 @@ export interface GitProviderCreatePullRequestArgs {
   owner: string;
   repositoryName: string;
   branchName: string;
-  defaultBranchName: string;
+  baseBranchName: string;
   pullRequestTitle: string;
   pullRequestBody: string;
   repositoryGroupName?: string;
@@ -310,7 +311,7 @@ export interface CreateBranchIfNotExistsArgs {
   repositoryName: string;
   branchName: string;
   gitCli: GitCli;
-  defaultBranch: string;
+  baseBranch: string;
   repositoryGroupName?: string;
 }
 
@@ -320,6 +321,7 @@ export interface CreateBranchArgs {
   branchName: string;
   pointingSha: string;
   repositoryGroupName?: string;
+  baseBranchName: string;
 }
 
 export interface Commit {

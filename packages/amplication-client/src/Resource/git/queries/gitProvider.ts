@@ -31,6 +31,7 @@ export const CONNECT_GIT_PROVIDER_REPOSITORY = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }
@@ -55,6 +56,7 @@ export const CONNECT_GIT_REPOSITORY = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }
@@ -105,6 +107,19 @@ export const GET_GROUPS = gql`
         name
         displayName
       }
+    }
+  }
+`;
+
+export const UPDATE_GIT_REPOSITORY = gql`
+  mutation updateGitRepository(
+    $data: GitRepositoryUpdateInput!
+    $where: WhereUniqueInput!
+  ) {
+    updateGitRepository(data: $data, where: $where) {
+      id
+      groupName
+      baseBranchName
     }
   }
 `;

@@ -517,16 +517,20 @@ export class ResourceService {
 
     const { gitRepository, serviceSettings } = data.resource;
 
+    const gitOrganization = await this.gitOrganizationByResource({
+      where: {
+        id: resource.id,
+      },
+    });
+
     const provider = data.connectToDemoRepo
       ? "demo-repo"
-      : gitRepository &&
-        (
-          await this.gitOrganizationByResource({
-            where: {
-              id: resource.id,
-            },
-          })
-        ).provider;
+      : gitRepository && gitOrganization.provider;
+
+    const totalEntities = data.entities.length;
+    const totalFields = data.entities.reduce((acc, entity) => {
+      return acc + entity.fields.length;
+    }, 0);
 
     await this.analytics.track({
       userId: user.account.id,
@@ -546,6 +550,9 @@ export class ResourceService {
         auth: data.authType,
         projectId: project.id,
         workspaceId: project.workspaceId,
+        totalEntities,
+        totalFields,
+        gitOrgType: gitOrganization?.type,
       },
     });
 

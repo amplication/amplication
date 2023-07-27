@@ -28,9 +28,6 @@ const AuthResourceWithBitbucketCallback = () => {
     const urlParams = new URLSearchParams(queryString);
     const authorizationCode = urlParams.get("code");
     if (window.opener) {
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
-      });
       completeAuthWithGit({
         variables: {
           code: authorizationCode,

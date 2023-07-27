@@ -173,7 +173,22 @@ const EntityFieldForm = ({
             <TextField
               autoComplete="off"
               disabled={isSystemDataType}
-              placeholder='Add custom attributes to fields using the format @attribute([parameters]) or @attribute. For example: @map(name: "fieldName") @unique @default(value)'
+              placeholder="Custom Prisma Attributes"
+              inputToolTip={{
+                content: (
+                  <span>
+                    Add custom attributes to fields using the format
+                    @attribute([parameters]) or @attribute. <br />
+                    <br /> For example:
+                    <br />
+                    @map(name: "fieldName")
+                    <br />
+                    @unique
+                    <br />
+                    @default(value)
+                  </span>
+                ),
+              }}
               textarea
               rows={3}
               name="customAttributes"

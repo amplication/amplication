@@ -30,6 +30,9 @@ export class Env {
 
   static readonly DSG_LOG_TOPIC = "DSG_LOG_TOPIC";
 
+  static readonly DB_SCHEMA_IMPORT_TOPIC = "DB_SCHEMA_IMPORT_TOPIC";
+  static readonly USER_ACTION_LOG_TOPIC = "USER_ACTION_LOG_TOPIC";
+
   static readonly BILLING_ENABLED = "BILLING_ENABLED";
   static readonly BILLING_API_KEY = "BILLING_API_KEY";
 
