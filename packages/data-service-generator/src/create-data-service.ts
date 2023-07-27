@@ -26,6 +26,11 @@ export async function createDataService(
       pluginInstallationPath
     );
 
+    const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
+    await context.logger.info(
+      `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
+    );
+
     await context.logger.info("Creating application...", {
       resourceId: dSGResourceData.resourceInfo.id,
       buildId: dSGResourceData.buildId,
@@ -34,7 +39,6 @@ export async function createDataService(
     const { appInfo } = context;
     const { settings } = appInfo;
 
-    await context.logger.info("Copying static modules...");
     const serverModules = await createServer();
 
     const { adminUISettings } = settings;
@@ -48,6 +52,9 @@ export async function createDataService(
     await modules.merge(adminUIModules);
 
     // This code normalizes the path of each module to always use Unix path separator.
+    await context.logger.info(
+      "Normalizing modules path to use Unix path separator"
+    );
     await modules.replaceModulesPath((path) => normalize(path));
 
     const endTime = Date.now();
@@ -55,7 +62,9 @@ export async function createDataService(
       durationInMs: endTime - startTime,
     });
 
-    internalLogger.info("App generation process finished successfully");
+    await context.logger.info(
+      "Creating application process finished successfully"
+    );
 
     return modules;
   } catch (error) {

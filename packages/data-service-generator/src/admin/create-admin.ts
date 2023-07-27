@@ -47,12 +47,10 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     clientDirectories,
   } = context;
 
+  await context.logger.info("Creating admin...");
   await context.logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
 
-  await context.logger.info("Creating admin...");
-
   await context.logger.info("Copying static modules...");
-
   const staticModules = await readStaticModules(
     STATIC_MODULES_PATH,
     clientDirectories.baseDirectory
@@ -61,6 +59,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
 
+  await context.logger.info("Creating package.json...");
   const packageJson = await createAdminUIPackageJson();
 
   /**@todo: add code to auto import static DTOs from /server/static/src/util and strip the decorators
@@ -77,13 +76,18 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entities.map((entity) => [entity.name, entity])
   );
 
+  await context.logger.info("Creating public files...");
   const publicFilesModules = await createPublicFiles();
+  await context.logger.info("Creating public files...");
   const entityToDirectory = createEntityToDirectory(entities);
+  await context.logger.info("Creating DTOs...");
   const dtoNameToPath = createDTONameToPath(DTOs);
   const dtoModuleMap = await createDTOModules(DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);
   const rolesModule = createRolesModule(roles, clientDirectories.srcDirectory);
+
   // Create title components first so they are available when creating entity modules
+  await context.logger.info("Creating entities components...");
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
     entityToDirectory,
@@ -104,15 +108,17 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   const entityComponentsModules = await createEntityComponentsModules(
     entitiesComponents
   );
+
+  await context.logger.info("Creating application module...");
   const appModule = await createAppModule(entitiesComponents);
 
+  await context.logger.info("Creating Dot Env...");
   const dotEnvModule = await createDotEnvModule(
     appInfo,
     clientDirectories.baseDirectory
   );
 
   await context.logger.info("Formatting code...");
-
   const tsModules = new ModuleMap(context.logger);
   await tsModules.set(appModule);
   await tsModules.set(enumRolesModule);
@@ -123,6 +129,8 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entityComponentsModules,
   ]);
   await tsModules.replaceModulesCode((code) => formatCode(code));
+
+  await context.logger.info("Finalizing admin creation...");
 
   const allModules = new ModuleMap(context.logger);
   await allModules.mergeMany([
