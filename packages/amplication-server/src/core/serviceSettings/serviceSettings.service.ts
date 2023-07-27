@@ -39,7 +39,7 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettings> {
-    const [serviceSettings] =
+    let [serviceSettings] =
       await this.blockService.findManyByBlockType<ServiceSettings>(
         {
           where: {
@@ -50,6 +50,12 @@ export class ServiceSettingsService {
         },
         EnumBlockType.ServiceSettings
       );
+    if (!serviceSettings) {
+      serviceSettings = await this.createDefaultServiceSettings(
+        args.where.id,
+        user
+      );
+    }
 
     return {
       ...serviceSettings,
