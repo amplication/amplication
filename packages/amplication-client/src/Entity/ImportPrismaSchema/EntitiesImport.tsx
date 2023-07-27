@@ -183,6 +183,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
               {loading || (data && data.createEntitiesFromPrismaSchema) ? (
                 <>
                   <ActionLog
+                    height={"40vh"}
                     action={actionLog}
                     title="Import Schema"
                     versionNumber=""
