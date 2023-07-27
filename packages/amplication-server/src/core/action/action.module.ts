@@ -5,6 +5,8 @@ import { GqlAuthModule } from "../../guards/gql-auth.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { ActionService } from "./action.service";
 import { ActionResolver } from "./action.resolver";
+import { KafkaModule } from "@amplication/util/nestjs/kafka";
+import { UserActionController } from "./action.controller";
 
 @Module({
   imports: [
@@ -12,7 +14,9 @@ import { ActionResolver } from "./action.resolver";
     GqlAuthModule,
     PrismaModule,
     PermissionsModule,
+    KafkaModule,
   ],
+  controllers: [UserActionController],
   providers: [ActionService, ActionResolver],
   exports: [ActionService, ActionResolver],
 })

@@ -428,7 +428,7 @@ describe("AwsCodeCommit", () => {
     beforeEach(() => {
       createPullRequestArgs = {
         branchName: "branchName",
-        defaultBranchName: "defaultBranchName",
+        baseBranchName: "defaultBranchName",
         pullRequestTitle: "pullRequestTitle",
         pullRequestBody: "pullRequestBody",
         repositoryName: "repositoryName",
@@ -445,7 +445,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })
@@ -474,7 +474,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })
@@ -493,7 +493,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })

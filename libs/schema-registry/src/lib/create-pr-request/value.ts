@@ -38,4 +38,7 @@ export class Value {
   gitResourceMeta!: GitResourceMeta;
   @IsString()
   pullRequestMode!: EnumPullRequestMode;
+  @IsString()
+  @IsOptional()
+  baseBranchName?: string;
 }

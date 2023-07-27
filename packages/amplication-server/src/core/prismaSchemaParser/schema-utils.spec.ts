@@ -16,7 +16,8 @@ import {
 } from "@mrleebo/prisma-ast";
 import { Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { ActionLog, EnumActionLogLevel } from "../action/dto";
+import { EnumActionLogLevel } from "../action/dto";
+import { ActionContext } from "../userAction/types";
 
 describe("schema-utils", () => {
   beforeEach(() => {
@@ -359,6 +360,16 @@ describe("schema-utils", () => {
   });
 
   describe("handleEnumMapAttribute", () => {
+    jest.clearAllMocks();
+
+    let actionContext: ActionContext;
+
+    beforeEach(() => {
+      actionContext = {
+        onEmitUserActionLog: jest.fn(),
+      };
+    });
+
     it("should return array of options and log info message when only enumerators are present", () => {
       const enumOfTheField = {
         name: "TestEnum",
@@ -374,29 +385,23 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([
         { label: "enumerator1", value: "enumerator1" },
         { label: "enumerator2", value: "enumerator2" },
       ]);
 
-      expect(log).toHaveLength(2);
-      expect(log[0]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Info,
-          message:
-            "The option 'enumerator1' has been created in the enum 'TestEnum'",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(2);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        1,
+        "The option 'enumerator1' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
-      expect(log[1]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Info,
-          message:
-            "The option 'enumerator2' has been created in the enum 'TestEnum'",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        2,
+        "The option 'enumerator2' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
     });
 
@@ -412,19 +417,15 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
 
-      expect(log).toHaveLength(1);
-      expect(log[0]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Warning,
-          message:
-            "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(1);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        1,
+        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
+        EnumActionLogLevel.Warning
       );
     });
 
@@ -440,13 +441,10 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
-
-      expect(log).toHaveLength(0);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(0);
     });
   });
 });

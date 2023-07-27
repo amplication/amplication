@@ -29,9 +29,6 @@ const AuthResourceWithGithubCallback = () => {
     const urlParams = new URLSearchParams(queryString);
     const installationId = urlParams.get("installation_id");
     if (window.opener) {
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
-      });
       completeAuthWithGit({
         variables: {
           installationId,

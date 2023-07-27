@@ -23,6 +23,7 @@ const EntitySelectField = ({ resourceId, isValueId, ...props }: Props) => {
       variables: {
         resourceId: resourceId,
       },
+      fetchPolicy: "no-cache",
     }
   );
 

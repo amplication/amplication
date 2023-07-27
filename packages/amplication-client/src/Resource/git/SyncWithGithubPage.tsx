@@ -114,6 +114,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
         id
         name
         groupName
+        baseBranchName
         gitOrganization {
           id
           name

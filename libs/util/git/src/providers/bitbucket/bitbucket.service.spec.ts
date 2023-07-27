@@ -560,6 +560,7 @@ describe("bitbucket.service", () => {
         branchName: "amit-test",
         pointingSha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
         repositoryGroupName: "my-group",
+        baseBranchName: "master",
       });
 
       const expectedResult = {
@@ -867,7 +868,7 @@ describe("bitbucket.service", () => {
           owner: "maccheroni",
           repositoryName: "myrepo",
           branchName: "feat/my-feature",
-          defaultBranchName: "dev",
+          baseBranchName: "dev",
           pullRequestTitle: "my pull request title",
           pullRequestBody: "my pull request body",
         });
@@ -1047,8 +1048,7 @@ describe("bitbucket.service", () => {
         owner: "maccheroni",
         repositoryName: "best-repo",
         branchName: mockedCreatePullRequestResponse.source.branch.name,
-        defaultBranchName:
-          mockedCreatePullRequestResponse.destination.branch.name,
+        baseBranchName: mockedCreatePullRequestResponse.destination.branch.name,
         pullRequestTitle: mockedCreatePullRequestResponse.title,
         pullRequestBody: "description for my pull request",
         repositoryGroupName: "ab-2",

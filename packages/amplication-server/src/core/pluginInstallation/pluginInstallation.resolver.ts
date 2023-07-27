@@ -21,8 +21,13 @@ import { User } from "../../models";
 import { FindOneArgs } from "../../dto";
 import { PluginOrderService } from "./pluginOrder.service";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 
 @Resolver(() => PluginInstallation)
+@UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
   "PluginInstallations",
