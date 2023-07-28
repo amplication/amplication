@@ -238,7 +238,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    return this.entityService.createField(args, user, true, true);
+    return this.entityService.createField(args, user, null, true, true);
   }
 
   @Mutation(() => EntityField, { nullable: false })
