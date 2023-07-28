@@ -1314,7 +1314,7 @@ export class PrismaSchemaParserService {
       const properties = <types.Lookup>{
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: field.array || false,
-        fkHolder: null,
+        fkHolder: entityField.permanentId, // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
         fkFieldName: fkFieldName,
       };
 
