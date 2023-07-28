@@ -124,6 +124,7 @@ export type CreateBulkFieldsInput = Omit<
   "entity" | "properties"
 > & {
   properties: JsonObject;
+  permanentId: string;
   relatedFieldName?: string;
   relatedFieldDisplayName?: string;
   relatedFieldAllowMultipleSelection?: boolean;
