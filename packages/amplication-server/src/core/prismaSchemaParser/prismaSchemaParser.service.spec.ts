@@ -121,6 +121,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: "",
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,
@@ -134,6 +135,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "createdAt",
                 displayName: "Created At",
                 dataType: EnumDataType.CreatedAt,
@@ -145,6 +147,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "username",
                 displayName: "Username",
                 dataType: EnumDataType.SingleLineText,
@@ -158,6 +161,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "@db.VarChar(256)",
               },
               {
+                permanentId: expect.any(String),
                 name: "roles",
                 displayName: "Roles",
                 dataType: EnumDataType.Json,
@@ -209,6 +213,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: '@@map("admin")',
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,
@@ -222,6 +227,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "createdAt",
                 displayName: "Created At",
                 dataType: EnumDataType.CreatedAt,
@@ -233,6 +239,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "username",
                 displayName: "Username",
                 dataType: EnumDataType.SingleLineText,
@@ -246,6 +253,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "@db.VarChar(256)",
               },
               {
+                permanentId: expect.any(String),
                 name: "roles",
                 displayName: "Roles",
                 dataType: EnumDataType.Json,
@@ -320,6 +328,7 @@ describe("prismaSchemaParser", () => {
           orders      Order[]
         }`;
         const existingEntities: ExistingEntitySelect[] = [];
+        const customerFieldPermanentId = expect.any(String);
         // act
         const result = await service.convertPrismaSchemaForImportObjects(
           prismaSchema,
@@ -337,6 +346,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: "",
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,
@@ -350,6 +360,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: customerFieldPermanentId,
                 name: "customer",
                 displayName: "Customer",
                 dataType: EnumDataType.Lookup,
@@ -360,7 +371,7 @@ describe("prismaSchemaParser", () => {
                 properties: {
                   relatedEntityId: expect.any(String),
                   allowMultipleSelection: false,
-                  fkHolder: null,
+                  fkHolder: customerFieldPermanentId,
                   fkFieldName: "customerId",
                 },
                 customAttributes: "",
@@ -379,6 +390,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: "",
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,

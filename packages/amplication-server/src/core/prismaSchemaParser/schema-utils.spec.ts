@@ -18,6 +18,7 @@ import { Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
+import { CreateBulkFieldsInput } from "../entity/entity.service";
 
 describe("schema-utils", () => {
   beforeEach(() => {
@@ -32,12 +33,14 @@ describe("schema-utils", () => {
         attributes: [{ name: "unique" }],
       } as unknown as Field;
 
-      const result = createOneEntityFieldCommonProperties(
-        mockField,
-        EnumDataType.SingleLineText
-      );
+      const result: CreateBulkFieldsInput =
+        createOneEntityFieldCommonProperties(
+          mockField,
+          EnumDataType.SingleLineText
+        );
 
       expect(result).toEqual({
+        permanentId: expect.any(String),
         name: "mockField",
         displayName: "Mock Field",
         dataType: EnumDataType.SingleLineText,
