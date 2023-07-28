@@ -78,8 +78,6 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
 
   await context.logger.info("Creating public files...");
   const publicFilesModules = await createPublicFiles();
-  await context.logger.info("Creating public files...");
-  const entityToDirectory = createEntityToDirectory(entities);
   await context.logger.info("Creating DTOs...");
   const dtoNameToPath = createDTONameToPath(DTOs);
   const dtoModuleMap = await createDTOModules(DTOs, dtoNameToPath);
@@ -88,6 +86,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
 
   // Create title components first so they are available when creating entity modules
   await context.logger.info("Creating entities components...");
+  const entityToDirectory = createEntityToDirectory(entities);
   const entityToTitleComponent = await createEntityTitleComponents(
     entities,
     entityToDirectory,
