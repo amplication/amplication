@@ -1094,6 +1094,7 @@ describe("EntityResolver", () => {
     expect(createFieldMock).toBeCalledWith(
       { data: { ...variables, entity: { connect: { id: EXAMPLE_ID } } } },
       EXAMPLE_USER,
+      null,
       true,
       true
     );
