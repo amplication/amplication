@@ -239,8 +239,7 @@ export class PrismaSchemaParserService {
             return entity.fields.find((entityField) => {
               return (
                 entityField.dataType === EnumDataType.Lookup &&
-                entityField.relatedFieldDisplayName ===
-                  formatDisplayName(field.name)
+                entityField.relatedFieldName === field.name
               );
             });
           });
