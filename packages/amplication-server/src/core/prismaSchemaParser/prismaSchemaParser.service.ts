@@ -227,8 +227,34 @@ export class PrismaSchemaParserService {
           continue;
         }
 
-        if (this.isNotAnnotatedRelationField(schema, field)) {
+        if (
+          this.isNotAnnotatedRelationField(schema, field) &&
+          !this.isManyToManyRelation(schema, model, field)
+        ) {
           continue;
+        }
+
+        if (this.isManyToManyRelation(schema, model, field)) {
+          const isOneOfTheSideExists = preparedEntities.some((entity) => {
+            return entity.fields.find((entityField) => {
+              return (
+                entityField.dataType === EnumDataType.Lookup &&
+                entityField.relatedFieldDisplayName ===
+                  formatDisplayName(field.name)
+              );
+            });
+          });
+
+          // only if we haven't already created any of the sides of the relation
+          if (!isOneOfTheSideExists) {
+            this.convertPrismaLookupToEntityField(
+              schema,
+              model,
+              field,
+              preparedEntities,
+              actionContext
+            );
+          }
         }
 
         if (this.isIdField(schema, field)) {
@@ -757,6 +783,50 @@ export class PrismaSchemaParserService {
       (fieldModelType &&
         hasRelationAttributeWithRelationNameAndWithoutReferenceField)
     );
+  }
+
+  private isManyToManyRelation(
+    schema: Schema,
+    model: Model,
+    field: Field
+  ): boolean {
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+    const isFieldTypeIsModel = models.some(
+      (modelItem: Model) => modelItem.name === field.fieldType
+    );
+    // if the field is a lookup field with array and it doesn't have the @relation attribute with reference field
+    if (
+      isFieldTypeIsModel &&
+      field.array &&
+      this.isNotAnnotatedRelationField(schema, field)
+    ) {
+      // find the other side of the relation
+      const hasManyToManyRelation = models.some((modelItem: Model) => {
+        const modelFields = modelItem.properties.filter(
+          (property) => property.type === FIELD_TYPE_NAME
+        ) as Field[];
+
+        const theOtherSide = modelFields.find((fieldItem: Field) => {
+          return fieldItem.fieldType === model.name;
+        });
+
+        if (!theOtherSide) return false;
+
+        // check if the other side is also and array and it doesn't have the @relation attribute with reference field
+        if (
+          theOtherSide.array &&
+          this.isNotAnnotatedRelationField(schema, theOtherSide)
+        ) {
+          return true;
+        }
+        return false;
+      });
+
+      return hasManyToManyRelation;
+    }
+    return false;
   }
 
   private isFkFieldOfARelation(
@@ -1309,7 +1379,9 @@ export class PrismaSchemaParserService {
         (entity) => entity.name === remoteModel.name
       ) as CreateBulkEntitiesInput;
 
-      const fkFieldName = findFkFieldNameOnAnnotatedField(field);
+      const fkFieldName = !this.isManyToManyRelation(schema, model, field)
+        ? findFkFieldNameOnAnnotatedField(field)
+        : "";
 
       const properties = <types.Lookup>{
         relatedEntityId: relatedEntity.id,
