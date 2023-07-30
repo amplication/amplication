@@ -22,7 +22,7 @@ const PluginInstallConfirmationDialog: React.FC<Props> = ({
         onDismiss={handleDismissInstall}
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          plugin installation cannot be proceed without an entity defined for
+          Plugin installation cannot proceed without an entity defined for
           authentication
         </div>
         <div className={`${DIALOG_CLASS_NAME}__dialog_btn`}>
