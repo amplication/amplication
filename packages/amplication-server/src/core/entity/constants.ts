@@ -55,8 +55,6 @@ export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVers
 
 export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.Id,
-  EnumDataType.Username,
-  EnumDataType.Password,
   EnumDataType.Roles,
 ]);
 

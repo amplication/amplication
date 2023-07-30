@@ -345,6 +345,7 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
+  authEntityName: USER_ENTITY_NAME,
 };
 
 const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
@@ -582,6 +583,7 @@ describe("ResourceService", () => {
           useClass: jest.fn(() => ({
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock,
+            updateServiceSettings: serviceSettingsCreateMock,
           })),
         },
         {

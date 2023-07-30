@@ -1378,6 +1378,7 @@ input ServerSettingsUpdateInput {
 
 type ServiceSettings implements IBlock {
   adminUISettings: AdminUISettings!
+  authEntityName: String
   authProvider: EnumAuthProviderType!
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1397,6 +1398,7 @@ type ServiceSettings implements IBlock {
 
 input ServiceSettingsUpdateInput {
   adminUISettings: AdminUISettingsUpdateInput!
+  authEntityName: String
   authProvider: EnumAuthProviderType!
   description: String
   displayName: String
