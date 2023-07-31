@@ -121,6 +121,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: "",
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,
@@ -134,6 +135,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "createdAt",
                 displayName: "Created At",
                 dataType: EnumDataType.CreatedAt,
@@ -145,6 +147,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "username",
                 displayName: "Username",
                 dataType: EnumDataType.SingleLineText,
@@ -158,6 +161,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "@db.VarChar(256)",
               },
               {
+                permanentId: expect.any(String),
                 name: "roles",
                 displayName: "Roles",
                 dataType: EnumDataType.Json,
@@ -209,6 +213,7 @@ describe("prismaSchemaParser", () => {
             customAttributes: '@@map("admin")',
             fields: [
               {
+                permanentId: expect.any(String),
                 name: "id",
                 displayName: "Id",
                 dataType: EnumDataType.Id,
@@ -222,6 +227,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "createdAt",
                 displayName: "Created At",
                 dataType: EnumDataType.CreatedAt,
@@ -233,6 +239,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "",
               },
               {
+                permanentId: expect.any(String),
                 name: "username",
                 displayName: "Username",
                 dataType: EnumDataType.SingleLineText,
@@ -246,6 +253,7 @@ describe("prismaSchemaParser", () => {
                 customAttributes: "@db.VarChar(256)",
               },
               {
+                permanentId: expect.any(String),
                 name: "roles",
                 displayName: "Roles",
                 dataType: EnumDataType.Json,
@@ -298,134 +306,239 @@ describe("prismaSchemaParser", () => {
         );
       });
 
-      it("should return object with entities and fields with the right relations and a log", async () => {
-        // arrange
-        const prismaSchema = `datasource db {
-          provider = "postgresql"
-          url      = env("DB_URL")
-        }
-        
-        generator client {
-          provider = "prisma-client-js"
-        }
-        
-        model Order {
-          id         String    @id @default(cuid())
-          customer   Customer? @relation(fields: [customerId], references: [id])
-          customerId String?
-        }
-        
-        model Customer {
-          id          String     @id @default(cuid())
-          orders      Order[]
-        }`;
-        const existingEntities: ExistingEntitySelect[] = [];
-        // act
-        const result = await service.convertPrismaSchemaForImportObjects(
-          prismaSchema,
-          existingEntities,
-          actionContext
-        );
-        // assert
-        const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-          {
-            id: expect.any(String),
-            name: "Order",
-            displayName: "Order",
-            pluralDisplayName: "Orders",
-            description: "",
-            customAttributes: "",
-            fields: [
-              {
-                name: "id",
-                displayName: "Id",
-                dataType: EnumDataType.Id,
-                required: true,
-                unique: false,
-                searchable: false,
-                description: "",
-                properties: {
-                  idType: "CUID",
+      describe("when we handle a relation field", () => {
+        it("should return object with entities and fields with the right relations and a log", async () => {
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Order {
+            id         String    @id @default(cuid())
+            customer   Customer? @relation(fields: [customerId], references: [id])
+            customerId String?
+          }
+          
+          model Customer {
+            id          String     @id @default(cuid())
+            orders      Order[]
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          const customerFieldPermanentId = expect.any(String);
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Order",
+              displayName: "Order",
+              pluralDisplayName: "Orders",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
                 },
-                customAttributes: "",
-              },
-              {
-                name: "customer",
-                displayName: "Customer",
-                dataType: EnumDataType.Lookup,
-                required: false,
-                unique: false,
-                searchable: true,
-                description: "",
-                properties: {
-                  relatedEntityId: expect.any(String),
-                  allowMultipleSelection: false,
-                  fkHolder: null,
-                  fkFieldName: "customerId",
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "customer",
+                  displayName: "Customer",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "customerId",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Orders",
+                  relatedFieldName: "orders",
                 },
-                customAttributes: "",
-                relatedFieldAllowMultipleSelection: true,
-                relatedFieldDisplayName: "Orders",
-                relatedFieldName: "orders",
-              },
-            ],
-          },
-          {
-            id: expect.any(String),
-            name: "Customer",
-            displayName: "Customer",
-            pluralDisplayName: "Customers",
-            description: "",
-            customAttributes: "",
-            fields: [
-              {
-                name: "id",
-                displayName: "Id",
-                dataType: EnumDataType.Id,
-                required: true,
-                unique: false,
-                searchable: false,
-                description: "",
-                properties: {
-                  idType: "CUID",
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Customer",
+              displayName: "Customer",
+              pluralDisplayName: "Customers",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
                 },
-                customAttributes: "",
-              },
-            ],
-          },
-        ];
-        expect(result).toEqual(expectedEntitiesWithFields);
-        expect(actionContext.onEmitUserActionLog).toBeCalledTimes(6);
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          1,
-          "Starting Prisma Schema Validation",
-          EnumActionLogLevel.Info
-        );
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          2,
-          `Prisma Schema Validation completed successfully`,
-          EnumActionLogLevel.Info
-        );
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          3,
-          `Prepare Prisma Schema for import`,
-          EnumActionLogLevel.Info
-        );
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          4,
-          `Prepare Prisma Schema for import completed`,
-          EnumActionLogLevel.Info
-        );
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          5,
-          `Create import objects from Prisma Schema`,
-          EnumActionLogLevel.Info
-        );
-        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
-          6,
-          `Create import objects from Prisma Schema completed`,
-          EnumActionLogLevel.Info
-        );
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+          expect(actionContext.onEmitUserActionLog).toBeCalledTimes(6);
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            1,
+            "Starting Prisma Schema Validation",
+            EnumActionLogLevel.Info
+          );
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            2,
+            `Prisma Schema Validation completed successfully`,
+            EnumActionLogLevel.Info
+          );
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            3,
+            `Prepare Prisma Schema for import`,
+            EnumActionLogLevel.Info
+          );
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            4,
+            `Prepare Prisma Schema for import completed`,
+            EnumActionLogLevel.Info
+          );
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            5,
+            `Create import objects from Prisma Schema`,
+            EnumActionLogLevel.Info
+          );
+          expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+            6,
+            `Create import objects from Prisma Schema completed`,
+            EnumActionLogLevel.Info
+          );
+        });
+
+        it("should not rename the field and therefore, should not add the @map attribute if it is a relation field", async () => {
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Order {
+            id         String    @id @default(cuid())
+            the_customer   Customer? @relation(fields: [customerId], references: [id])
+            customerId String?
+          }
+          
+          model Customer {
+            id          String     @id @default(cuid())
+            orders      Order[]
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          const customerFieldPermanentId = expect.any(String);
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Order",
+              displayName: "Order",
+              pluralDisplayName: "Orders",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "the_customer", // should not be formatted to theCustomer because it is a relation field
+                  displayName: "The Customer",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "customerId",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Orders",
+                  relatedFieldName: "orders",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Customer",
+              displayName: "Customer",
+              pluralDisplayName: "Customers",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
       });
 
       it("should create one side of the relation (the first side that it encounters in the schema) when the relation is many to many", async () => {

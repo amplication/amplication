@@ -454,8 +454,13 @@ export class PrismaSchemaParserService {
       modelFieldList.map((field: Field) => {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
+        // we are not renaming enum fields because we are not supporting custom attributes on enum fields
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
+        // we are not renaming lookup fields because
+        //  1. relation field is not really a field in the DB
+        //  2. other attributes than @relation are not supported on relation fields
+        if (this.isLookupField(schema, field)) return builder;
 
         const fieldAttributes = field.attributes?.filter(
           (attr) => attr.type === ATTRIBUTE_TYPE_NAME
@@ -1385,7 +1390,7 @@ export class PrismaSchemaParserService {
       const properties = <types.Lookup>{
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: field.array || false,
-        fkHolder: null,
+        fkHolder: entityField.permanentId, // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
         fkFieldName: fkFieldName,
       };
 
