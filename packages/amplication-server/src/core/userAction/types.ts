@@ -1,5 +1,6 @@
 import { registerEnumType } from "@nestjs/graphql";
 import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
+import { UserActionLog } from "@amplication/schema-registry";
 
 export enum EnumUserActionType {
   DBSchemaImport = "DBSchemaImport",
@@ -20,9 +21,18 @@ registerEnumType(EnumUserActionStatus, {
   name: "EnumUserActionStatus",
 });
 
+export type UserActionLogKafkaEvent = (
+  message: string,
+  level: EnumActionLogLevel,
+  status: EnumActionStepStatus,
+  isStepCompleted: boolean
+) => UserActionLog.KafkaEvent;
+
 export type ActionContext = {
-  logByStep: (level: EnumActionLogLevel, message: string) => Promise<void>;
-  onComplete: (
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+  onEmitUserActionLog: (
+    message: string,
+    level: EnumActionLogLevel,
+    status?: EnumActionStepStatus,
+    isStepCompleted?: boolean
   ) => Promise<void>;
 };

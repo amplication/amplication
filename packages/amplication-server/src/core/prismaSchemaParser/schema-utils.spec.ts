@@ -25,29 +25,113 @@ describe("schema-utils", () => {
   });
 
   describe("createOneEntityFieldCommonProperties", () => {
-    it("should return common properties of an entity field", () => {
-      const mockField = {
-        name: "mockField",
-        optional: false,
-        attributes: [{ name: "unique" }],
-      } as unknown as Field;
+    const mockAttributes = [
+      {
+        type: "attribute",
+        name: "map",
+        kind: "field",
+        args: [
+          {
+            type: "attributeArgument",
+            value: '"mock_field"',
+          },
+        ],
+      },
+    ] as unknown as Attribute[];
 
-      const result = createOneEntityFieldCommonProperties(
-        mockField,
-        EnumDataType.SingleLineText
-      );
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should create properties for a standard field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
 
       expect(result).toEqual({
-        name: "mockField",
-        displayName: "Mock Field",
-        dataType: EnumDataType.SingleLineText,
+        permanentId: expect.any(String),
+        name: "testField",
+        displayName: "Test Field",
+        dataType: dataType,
         required: true,
-        unique: true,
+        unique: false,
         searchable: false,
         description: "",
         properties: {},
-        customAttributes: "",
+        customAttributes: '@map("mock_field")',
       });
+    });
+
+    it("should handle unique attribute", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: [{ name: "unique" }],
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.unique).toEqual(true);
+    });
+
+    it("should handle optional field", () => {
+      const field = {
+        name: "testField",
+        optional: true,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.required).toEqual(false);
+    });
+
+    it("should mark Lookup field as searchable", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.Lookup;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.searchable).toEqual(true);
+    });
+
+    it("should throw error if Lookup field has custom attributes", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.Lookup;
+
+      expect(() =>
+        createOneEntityFieldCommonProperties(field, dataType)
+      ).toThrowError(
+        "Custom attributes are not allowed on relation fields. Only @relation attribute is allowed"
+      );
+    });
+
+    it("should add custom attributes for non-Lookup field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.customAttributes).toEqual('@map("mock_field")');
     });
   });
 
@@ -366,8 +450,7 @@ describe("schema-utils", () => {
 
     beforeEach(() => {
       actionContext = {
-        logByStep: jest.fn(),
-        onComplete: jest.fn(),
+        onEmitUserActionLog: jest.fn(),
       };
     });
 
@@ -393,16 +476,16 @@ describe("schema-utils", () => {
         { label: "enumerator2", value: "enumerator2" },
       ]);
 
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(2);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(2);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Info,
-        "The option 'enumerator1' has been created in the enum 'TestEnum'"
+        "The option 'enumerator1' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         2,
-        EnumActionLogLevel.Info,
-        "The option 'enumerator2' has been created in the enum 'TestEnum'"
+        "The option 'enumerator2' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
     });
 
@@ -422,11 +505,11 @@ describe("schema-utils", () => {
 
       expect(result).toEqual([]);
 
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(1);
-      expect(actionContext.logByStep).toHaveBeenNthCalledWith(
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(1);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
         1,
-        EnumActionLogLevel.Warning,
-        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported."
+        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
+        EnumActionLogLevel.Warning
       );
     });
 
@@ -445,7 +528,7 @@ describe("schema-utils", () => {
       const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
-      expect(actionContext.logByStep).toHaveBeenCalledTimes(0);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(0);
     });
   });
 });

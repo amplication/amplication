@@ -11,6 +11,7 @@ import {
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
+import { camelCase } from "lodash";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -75,18 +76,11 @@ export function formatFieldName(fieldName: string | Func): string {
     const isCamelCase = /^[a-z][A-Za-z0-9]*$/.test(fieldName);
 
     if (!isCamelCase) {
-      // first, convert the entire string to lowercase
-      fieldName = fieldName.toLowerCase();
-
-      // then, convert any character (letter or digit) that follows an underscore to uppercase in order to get camel case
-      fieldName = fieldName.replace(/_([a-z0-9])/g, (g) => g[1].toUpperCase());
+      fieldName = camelCase(fieldName);
     }
 
-    // ensure the first letter is always lowercased (in case it was made uppercase by the previous step)
-    fieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-
     if (isReservedName(fieldName.toLowerCase().trim())) {
-      fieldName = `${fieldName}Field`;
+      fieldName = `${camelCase(fieldName)}Field`;
     }
 
     return fieldName;

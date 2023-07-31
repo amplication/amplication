@@ -208,7 +208,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
         <div className={`${CLASS_NAME}__separator`} />
         {loading && <CircularProgress centerToParent />}
-
         <>
           {displayMode === "table" ? (
             <>
@@ -216,6 +215,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 {data?.entities.length}{" "}
                 {pluralize(data?.entities.length, "Entity", "Entities")}
               </div>
+
 
               {!hideNotifications.hasAccess && (
                 <LimitationNotification

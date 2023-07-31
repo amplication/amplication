@@ -961,7 +961,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
-  updateGitRepository: Resource;
+  updateGitRepository: GitRepository;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1983,6 +1983,7 @@ export type ServerSettingsUpdateInput = {
 
 export type ServiceSettings = IBlock & {
   adminUISettings: AdminUiSettings;
+  authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -2002,6 +2003,7 @@ export type ServiceSettings = IBlock & {
 
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
+  authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;

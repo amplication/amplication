@@ -13,15 +13,13 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
-import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
-import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";
 
-const PROCESSING_PRISMA_SCHEMA = "Processing Prisma schema";
+const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -83,20 +81,6 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       onCompleted: (data) => {
         setUserAction(data.createEntitiesFromPrismaSchema);
       },
-      refetchQueries: [
-        {
-          query: GET_PENDING_CHANGES_STATUS,
-          variables: {
-            projectId: projectId,
-          },
-        },
-        {
-          query: GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
-          variables: {
-            resourceId,
-          },
-        },
-      ],
     });
 
   const actionLog: models.Action = useMemo(() => {
@@ -199,6 +183,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
               {loading || (data && data.createEntitiesFromPrismaSchema) ? (
                 <>
                   <ActionLog
+                    height={"40vh"}
                     action={actionLog}
                     title="Import Schema"
                     versionNumber=""

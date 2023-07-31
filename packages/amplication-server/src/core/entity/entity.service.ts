@@ -124,6 +124,7 @@ export type CreateBulkFieldsInput = Omit<
   "entity" | "properties"
 > & {
   properties: JsonObject;
+  permanentId: string;
   relatedFieldName?: string;
   relatedFieldDisplayName?: string;
   relatedFieldAllowMultipleSelection?: boolean;
@@ -376,6 +377,8 @@ export class EntityService {
     resourceId: string,
     user: User
   ): Promise<Entity[]> {
+    const { onEmitUserActionLog } = actionContext;
+
     const resourceWithProject = await this.prisma.resource.findUnique({
       where: {
         id: resourceId,
@@ -454,11 +457,12 @@ export class EntityService {
           functionName: "createEntitiesFromPrismaSchema",
         });
 
-        void actionContext.logByStep(
+        void onEmitUserActionLog(
+          `Import operation aborted due to errors. See the log for more details.`,
           EnumActionLogLevel.Error,
-          `Import operation aborted due to errors. See the log for more details.`
+          EnumActionStepStatus.Failed,
+          true
         );
-        void actionContext.onComplete(EnumActionStepStatus.Failed);
 
         return [];
       } else {
@@ -472,11 +476,16 @@ export class EntityService {
           actionContext
         );
 
-        void actionContext.logByStep(
+        this.logger.debug(`Import operation completed successfully`, {
+          entitiesCount: entities.length,
+        });
+
+        void onEmitUserActionLog(
+          `Import operation completed successfully.`,
           EnumActionLogLevel.Info,
-          `Import operation Completed.`
+          EnumActionStepStatus.Success,
+          true
         );
-        void actionContext.onComplete(EnumActionStepStatus.Success);
 
         await this.analytics.track({
           userId: user.account.id,
@@ -514,8 +523,13 @@ export class EntityService {
         functionName: "createEntitiesFromPrismaSchema",
       });
 
-      void actionContext.logByStep(EnumActionLogLevel.Error, error.message);
-      void actionContext.onComplete(EnumActionStepStatus.Failed);
+      void onEmitUserActionLog(
+        error.message,
+        EnumActionLogLevel.Error,
+        EnumActionStepStatus.Failed,
+        true
+      );
+
       return [];
     }
   }
@@ -538,9 +552,9 @@ export class EntityService {
 
     if (existingEntities.length > 0) {
       existingEntities.forEach((entity) => {
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Entity "${entity.name}" already exists`
+        void actionContext.onEmitUserActionLog(
+          `Entity "${entity.name}" already exists`,
+          EnumActionLogLevel.Error
         );
 
         this.logger.error(
@@ -596,16 +610,17 @@ export class EntityService {
           false
         );
         entities.push(newEntity);
-        void actionContext.logByStep(
-          EnumActionLogLevel.Info,
-          `Entity "${newEntity.name}" created successfully`
+
+        void actionContext.onEmitUserActionLog(
+          `Entity "${newEntity.name}" created successfully`,
+          EnumActionLogLevel.Info
         );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
 
-        void actionContext.logByStep(
-          EnumActionLogLevel.Error,
-          `Failed to create entity "${entity.name}". ${error.message}`
+        void actionContext.onEmitUserActionLog(
+          `Failed to create entity "${entity.name}". ${error.message}`,
+          EnumActionLogLevel.Error
         );
       }
     }
@@ -620,6 +635,7 @@ export class EntityService {
           relatedFieldName,
           relatedFieldDisplayName,
           relatedFieldAllowMultipleSelection,
+          permanentId,
           ...rest
         } = field;
         try {
@@ -638,7 +654,7 @@ export class EntityService {
               relatedFieldAllowMultipleSelection,
             },
             user,
-
+            permanentId, // here we want to use the permanentId that was created in the prisma parser service
             false
           );
         } catch (error) {
@@ -1967,19 +1983,25 @@ export class EntityService {
     // In case created data type is Lookup define related field names according
     // to the entity
     if (data.dataType === EnumDataType.Lookup) {
-      const { allowMultipleSelection } =
+      const { allowMultipleSelection: entityFieldAllowMultipleSelection } =
         data.properties as unknown as types.Lookup;
 
       createFieldArgs.relatedFieldName = camelCase(
-        !allowMultipleSelection ? entity.pluralDisplayName : entity.name
+        !entityFieldAllowMultipleSelection
+          ? entity.pluralDisplayName
+          : entity.name
       );
 
-      createFieldArgs.relatedFieldDisplayName = !allowMultipleSelection
-        ? entity.pluralDisplayName
-        : entity.displayName;
+      createFieldArgs.relatedFieldDisplayName =
+        !entityFieldAllowMultipleSelection
+          ? entity.pluralDisplayName
+          : entity.displayName;
+
+      createFieldArgs.relatedFieldAllowMultipleSelection =
+        !entityFieldAllowMultipleSelection;
     }
 
-    return this.createField(createFieldArgs, user, true, trackEvent);
+    return this.createField(createFieldArgs, user, null, true, trackEvent);
   }
 
   /**
@@ -2189,6 +2211,7 @@ export class EntityService {
   async createField(
     args: CreateOneEntityFieldArgs,
     user: User,
+    permanentId?: string,
     enforceValidation = true,
     trackEvent = false
   ): Promise<EntityField> {
@@ -2232,7 +2255,7 @@ export class EntityService {
             args.relatedFieldAllowMultipleSelection,
             properties.relatedEntityId,
             entity.id,
-            fieldId,
+            permanentId ?? fieldId, // if permanentId was provided use it, otherwise use the fieldId
             user,
             properties.fkHolder
           );
@@ -2265,7 +2288,7 @@ export class EntityService {
         return this.prisma.entityField.create({
           data: {
             ...data,
-            permanentId: fieldId,
+            permanentId: permanentId ?? fieldId, // if permanentId was provided use it, otherwise use the fieldId
             entityVersion: {
               connect: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2372,6 +2395,9 @@ export class EntityService {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     fkHolder?: string
   ): Promise<EntityField> {
+    this.logger.debug("relatedFieldId===fieldId===permanentId", {
+      relatedFieldId,
+    });
     return await this.useLocking(entityId, user, async () => {
       return this.prisma.entityField.create({
         data: {
@@ -2390,11 +2416,11 @@ export class EntityService {
             },
           },
           properties: {
-            allowMultipleSelection: relatedFieldAllowMultipleSelection || false,
+            allowMultipleSelection: relatedFieldAllowMultipleSelection,
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            fkHolder: fkHolder || relatedFieldId,
+            fkHolder,
           },
         },
       });
