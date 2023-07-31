@@ -1387,10 +1387,14 @@ export class PrismaSchemaParserService {
         ? findFkFieldNameOnAnnotatedField(field)
         : "";
 
+      const fkHolder = !this.isManyToManyRelation(schema, model, field)
+        ? entityField.permanentId // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
+        : null;
+
       const properties = <types.Lookup>{
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: field.array || false,
-        fkHolder: entityField.permanentId, // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
+        fkHolder,
         fkFieldName: fkFieldName,
       };
 

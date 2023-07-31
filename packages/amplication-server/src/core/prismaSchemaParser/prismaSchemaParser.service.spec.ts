@@ -539,104 +539,107 @@ describe("prismaSchemaParser", () => {
           ];
           expect(result).toEqual(expectedEntitiesWithFields);
         });
-      });
 
-      it("should create one side of the relation (the first side that it encounters in the schema) when the relation is many to many", async () => {
-        // arrange
-        const prismaSchema = `datasource db {
-          provider = "postgresql"
-          url      = env("DB_URL")
-        }
-        
-        generator client {
-          provider = "prisma-client-js"
-        }
-        
-        model Doctor {
-          id          String     @id @default(cuid())
-          patients    Patient[]  
-        }
-        
-        model Patient {
-          id             String          @id @default(cuid())
-          doctors        Doctor[]       
-        }`;
-        const existingEntities: ExistingEntitySelect[] = [];
-        // act
-        const result = await service.convertPrismaSchemaForImportObjects(
-          prismaSchema,
-          existingEntities,
-          actionContext
-        );
-        // assert
-        const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-          {
-            id: expect.any(String),
-            name: "Doctor",
-            displayName: "Doctor",
-            pluralDisplayName: "Doctors",
-            description: "",
-            customAttributes: "",
-            fields: [
-              {
-                name: "id",
-                displayName: "Id",
-                dataType: EnumDataType.Id,
-                required: true,
-                unique: false,
-                searchable: false,
-                description: "",
-                properties: {
-                  idType: "CUID",
+        it("should create one side of the relation (the first side that it encounters in the schema) when the relation is many to many", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Doctor {
+            id          String     @id @default(cuid())
+            patients    Patient[]  
+          }
+          
+          model Patient {
+            id             String          @id @default(cuid())
+            doctors        Doctor[]       
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Doctor",
+              displayName: "Doctor",
+              pluralDisplayName: "Doctors",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
                 },
-                customAttributes: "",
-              },
-              {
-                name: "patients",
-                displayName: "Patients",
-                dataType: EnumDataType.Lookup,
-                required: true,
-                unique: false,
-                searchable: true,
-                description: "",
-                properties: {
-                  relatedEntityId: expect.any(String),
-                  allowMultipleSelection: true,
-                  fkHolder: null,
-                  fkFieldName: "",
+                {
+                  permanentId: expect.any(String),
+                  name: "patients",
+                  displayName: "Patients",
+                  dataType: EnumDataType.Lookup,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: true,
+                    fkHolder: null,
+                    fkFieldName: "",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Doctors",
+                  relatedFieldName: "doctors",
                 },
-                customAttributes: "",
-                relatedFieldAllowMultipleSelection: true,
-                relatedFieldDisplayName: "Doctors",
-                relatedFieldName: "doctors",
-              },
-            ],
-          },
-          {
-            id: expect.any(String),
-            name: "Patient",
-            displayName: "Patient",
-            pluralDisplayName: "Patients",
-            description: "",
-            customAttributes: "",
-            fields: [
-              {
-                name: "id",
-                displayName: "Id",
-                dataType: EnumDataType.Id,
-                required: true,
-                unique: false,
-                searchable: false,
-                description: "",
-                properties: {
-                  idType: "CUID",
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Patient",
+              displayName: "Patient",
+              pluralDisplayName: "Patients",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
                 },
-                customAttributes: "",
-              },
-            ],
-          },
-        ];
-        expect(result).toEqual(expectedEntitiesWithFields);
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
       });
     });
   });
