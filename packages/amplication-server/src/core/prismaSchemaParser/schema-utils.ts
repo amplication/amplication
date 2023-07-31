@@ -50,6 +50,9 @@ export function createOneEntityFieldCommonProperties(
     field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
     false;
 
+  const isSearchableField =
+    fieldDataType === EnumDataType.Lookup ? true : false;
+
   const fieldAttributes = filterOutAmplicationAttributes(
     prepareFieldAttributes(field.attributes)
   )
@@ -57,13 +60,19 @@ export function createOneEntityFieldCommonProperties(
     .filter((attr) => attr !== "@default()")
     .join(" ");
 
+  if (fieldDataType === EnumDataType.Lookup && fieldAttributes !== "") {
+    throw new Error(
+      `Custom attributes are not allowed on relation fields. Only @relation attribute is allowed`
+    );
+  }
+
   return {
     name: field.name,
     displayName: fieldDisplayName,
     dataType: fieldDataType,
     required: !field.optional || false,
     unique: isUniqueField,
-    searchable: fieldDataType === EnumDataType.Lookup ? true : false,
+    searchable: isSearchableField,
     description: "",
     properties: {},
     customAttributes: fieldAttributes,
