@@ -42,6 +42,7 @@ describe("schema-utils", () => {
     beforeEach(() => {
       jest.clearAllMocks();
     });
+
     it("should create properties for a standard field", () => {
       const field = {
         name: "testField",
@@ -53,6 +54,7 @@ describe("schema-utils", () => {
       const result = createOneEntityFieldCommonProperties(field, dataType);
 
       expect(result).toEqual({
+        permanentId: expect.any(String),
         name: "testField",
         displayName: "Test Field",
         dataType: dataType,

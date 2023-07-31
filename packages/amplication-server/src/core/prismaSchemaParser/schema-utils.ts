@@ -34,6 +34,7 @@ import { CreateBulkFieldsInput } from "../entity/entity.service";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
+import cuid from "cuid";
 
 /**
  * create the common properties of one entity field from model field
@@ -67,6 +68,7 @@ export function createOneEntityFieldCommonProperties(
   }
 
   return {
+    permanentId: cuid(),
     name: field.name,
     displayName: fieldDisplayName,
     dataType: fieldDataType,
