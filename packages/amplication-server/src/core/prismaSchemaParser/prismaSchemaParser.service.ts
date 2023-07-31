@@ -433,7 +433,7 @@ export class PrismaSchemaParserService {
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
         // we are not renaming lookup fields because
-        // 1. relation field is not really a field in the DB0
+        //  1. relation field is not really a field in the DB
         //  2. other attributes than @relation are not supported on relation fields
         if (this.isLookupField(schema, field)) return builder;
 
