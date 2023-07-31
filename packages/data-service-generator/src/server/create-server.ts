@@ -17,7 +17,10 @@ import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createServerPackageJson } from "./package-json/create-package-json";
 import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
-import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
+import {
+  createDockerComposeDBFile,
+  createDockerComposeDevFile,
+} from "./docker-compose/create-docker-compose-dev";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createAuthModules } from "./auth/create-auth";
@@ -105,6 +108,7 @@ async function createServerInternal(
   await context.logger.info("Creating Docker compose configurations...");
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDBFile = await createDockerComposeDBFile();
+  const dockerComposeDevFile = await createDockerComposeDevFile();
 
   await context.logger.info("Finalizing server creation...");
   const moduleMap = new ModuleMap(context.logger);
@@ -123,6 +127,7 @@ async function createServerInternal(
     dotEnvModule,
     dockerComposeFile,
     dockerComposeDBFile,
+    dockerComposeDevFile,
   ]);
   return moduleMap;
 }
