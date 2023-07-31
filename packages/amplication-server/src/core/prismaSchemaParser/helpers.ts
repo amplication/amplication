@@ -1,4 +1,4 @@
-import { Enum, Field, Func, Schema } from "@mrleebo/prisma-ast";
+import { Enum, Field, Func, Model, Schema } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
@@ -6,6 +6,7 @@ import {
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
+  MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
 } from "./constants";
@@ -102,11 +103,16 @@ export function idField(field: Field) {
   }
 }
 
-export function lookupField(field: Field) {
-  const fieldLookupType = field.attributes?.some(
-    (attribute) => attribute.name === "relation"
+export function lookupField(schema: Schema, field: Field) {
+  const models = schema.list.filter(
+    (item) => item.type === MODEL_TYPE_NAME
+  ) as Model[];
+
+  const isFieldTypeIsModel = models.some(
+    (modelItem: Model) => modelItem.name === field.fieldType
   );
-  if (fieldLookupType) {
+
+  if (isFieldTypeIsModel) {
     return EnumDataType.Lookup;
   }
 }
