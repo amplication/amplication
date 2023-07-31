@@ -32,33 +32,6 @@ export async function createDockerComposeDBFile(): Promise<ModuleMap> {
 async function createDockerComposeDBFileInternal(
   eventParams: CreateServerDockerComposeDBParams
 ): Promise<ModuleMap> {
-  const { serverDirectories } = DsgContext.getInstance;
-  const preparedFile = prepareYamlFile(
-    eventParams.fileContent,
-    eventParams.updateProperties
-  );
-  const module: Module = {
-    path: path.join(
-      serverDirectories.baseDirectory,
-      eventParams.outputFileName
-    ),
-    code: preparedFile,
-  };
-  const context = DsgContext.getInstance;
-  const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.set(module);
-  return moduleMap;
-}
-
-export async function createDockerComposeDevFile(): Promise<ModuleMap> {
-  const filePath = path.resolve(__dirname, DOCKER_COMPOSE_DEV_FILE_NAME);
-
-  const eventParams: CreateServerDockerComposeDevParams = {
-    fileContent: await fs.readFile(filePath, "utf-8"),
-    outputFileName: DOCKER_COMPOSE_DEV_FILE_NAME.replace(".template", ""),
-    updateProperties: [],
-  };
-
   return pluginWrapper(
     createDockerComposeDevFileInternal,
     EventNames.CreateServerDockerComposeDev,
