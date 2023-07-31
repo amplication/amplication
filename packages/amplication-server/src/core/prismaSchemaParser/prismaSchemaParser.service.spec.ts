@@ -540,6 +540,107 @@ describe("prismaSchemaParser", () => {
           expect(result).toEqual(expectedEntitiesWithFields);
         });
 
+        it("should not rename the field and therefore, should not add the @map attribute if it is a many to many field", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Doctor {
+            id          String     @id @default(cuid())
+            the_patients    Patient[]  
+          }
+          
+          model Patient {
+            id             String          @id @default(cuid())
+            the_doctors        Doctor[]       
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Doctor",
+              displayName: "Doctor",
+              pluralDisplayName: "Doctors",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "the_patients",
+                  displayName: "The Patients",
+                  dataType: EnumDataType.Lookup,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: true,
+                    fkHolder: null,
+                    fkFieldName: "",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "The Doctors",
+                  relatedFieldName: "the_doctors",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Patient",
+              displayName: "Patient",
+              pluralDisplayName: "Patients",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         it("should create one side of the relation (the first side that it encounters in the schema) when the relation is many to many", async () => {
           // arrange
           const prismaSchema = `datasource db {
