@@ -223,19 +223,18 @@ export class PrismaSchemaParserService {
       ) as Field[];
 
       for (const field of modelFields) {
+        const isManyToMany = this.isManyToManyRelation(schema, model, field);
+
         if (this.isFkFieldOfARelation(schema, model, field)) {
           continue;
         }
 
-        if (
-          this.isNotAnnotatedRelationField(schema, field) &&
-          !this.isManyToManyRelation(schema, model, field)
-        ) {
+        if (this.isNotAnnotatedRelationField(schema, field) && !isManyToMany) {
           continue;
         }
 
-        if (this.isManyToManyRelation(schema, model, field)) {
-          const isOneOfTheSideExists = preparedEntities.some((entity) => {
+        if (isManyToMany) {
+          const isOneOfTheSidesExists = preparedEntities.some((entity) => {
             return entity.fields.find((entityField) => {
               return (
                 entityField.dataType === EnumDataType.Lookup &&
@@ -244,8 +243,9 @@ export class PrismaSchemaParserService {
             });
           });
 
-          // only if we haven't already created any of the sides of the relation
-          if (!isOneOfTheSideExists) {
+          // only if we haven't already created any sides of the relation
+          // this check is needed because in the entity service we create the related entity of the entity that we are currently creating
+          if (!isOneOfTheSidesExists) {
             this.convertPrismaLookupToEntityField(
               schema,
               model,
@@ -461,6 +461,7 @@ export class PrismaSchemaParserService {
         //  1. relation field is not really a field in the DB
         //  2. other attributes than @relation are not supported on relation fields
         if (this.isLookupField(schema, field)) return builder;
+        if (this.isManyToManyRelation(schema, model, field)) return builder;
 
         const fieldAttributes = field.attributes?.filter(
           (attr) => attr.type === ATTRIBUTE_TYPE_NAME
@@ -1383,11 +1384,13 @@ export class PrismaSchemaParserService {
         (entity) => entity.name === remoteModel.name
       ) as CreateBulkEntitiesInput;
 
-      const fkFieldName = !this.isManyToManyRelation(schema, model, field)
+      const isManyToMany = this.isManyToManyRelation(schema, model, field);
+
+      const fkFieldName = !isManyToMany
         ? findFkFieldNameOnAnnotatedField(field)
         : "";
 
-      const fkHolder = !this.isManyToManyRelation(schema, model, field)
+      const fkHolder = !isManyToMany
         ? entityField.permanentId // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
         : null;
 
