@@ -238,8 +238,9 @@ export class PrismaSchemaParserService {
         }
 
         if (
-          this.isNotAnnotatedRelationField(schema, field, modelList) &&
-          !isManyToMany
+          this.isNotAnnotatedRelationField(schema, field, modelList) ||
+          (this.isNotAnnotatedRelationField(schema, field, modelList) &&
+            !isManyToMany)
         ) {
           continue;
         }
@@ -859,9 +860,11 @@ export class PrismaSchemaParserService {
     field: Field,
     modelList: Model[]
   ): boolean {
-    // at this time, we already know that we are in a lookup field and this is not an annotated relation field
-    // we only need to check if the field is an array (relation array i.e. order[])
-    if (field.array) {
+    if (
+      lookupField(field, modelList) &&
+      this.isNotAnnotatedRelationField(schema, field, modelList) &&
+      field.array
+    ) {
       // find the other side of the relation
       const hasManyToManyRelation = modelList.some((modelItem: Model) => {
         const modelFields = modelItem.properties.filter(

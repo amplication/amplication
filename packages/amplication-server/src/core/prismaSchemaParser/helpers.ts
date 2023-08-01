@@ -104,7 +104,9 @@ export function idField(field: Field) {
 
 export function lookupField(field: Field, modelList: Model[]) {
   const isFieldTypeIsModel = modelList.some(
-    (modelItem: Model) => modelItem.name === field.fieldType
+    (modelItem: Model) =>
+      formatModelName(modelItem.name) ===
+      formatModelName(field.fieldType as string)
   );
 
   if (isFieldTypeIsModel) {
