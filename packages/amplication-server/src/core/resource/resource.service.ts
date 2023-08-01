@@ -286,30 +286,14 @@ export class ResourceService {
 
     if (requireAuthenticationEntity) {
       await this.entityService.createDefaultEntities(resource.id, user);
-      const defaultServiceSettings =
-        await this.serviceSettingsService.createDefaultServiceSettings(
-          resource.id,
-          user,
-          serviceSettings
-        );
-
-      const serviceSettingsUpdate: UpdateServiceSettingsArgs = {
-        data: {
-          authProvider: defaultServiceSettings.authProvider,
-          adminUISettings: defaultServiceSettings.adminUISettings,
-          serverSettings: defaultServiceSettings.serverSettings,
-          authEntityName: USER_ENTITY_NAME,
-          displayName: defaultServiceSettings.displayName,
-          description: defaultServiceSettings.description,
-        },
-        where: { id: resource.id },
-      };
-
-      await this.serviceSettingsService.updateServiceSettings(
-        serviceSettingsUpdate,
-        user
-      );
+      serviceSettings.authEntityName = USER_ENTITY_NAME;
     }
+
+    await this.serviceSettingsService.createDefaultServiceSettings(
+      resource.id,
+      user,
+      serviceSettings
+    );
 
     await this.environmentService.createDefaultEnvironment(resource.id);
 
