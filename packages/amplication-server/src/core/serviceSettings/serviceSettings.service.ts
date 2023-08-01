@@ -183,6 +183,7 @@ export class ServiceSettingsService {
     const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
     const { generateGraphQL, generateRestApi, serverPath } =
       serviceSettings.serverSettings;
+
     (settings.adminUISettings = {
       generateAdminUI: generateAdminUI,
       adminUIPath: adminUIPath,
@@ -191,6 +192,7 @@ export class ServiceSettingsService {
         generateGraphQL: generateGraphQL,
         generateRestApi: generateRestApi,
         serverPath: serverPath,
-      });
+      }),
+      (settings.authEntityName = serviceSettings.authEntityName);
   }
 }
