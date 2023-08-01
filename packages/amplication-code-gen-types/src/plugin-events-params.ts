@@ -129,6 +129,12 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   outputFileName: string;
 }
 
+export interface CreateServerDockerComposeDevParams extends EventParams {
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+  outputFileName: string;
+}
+
 export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
 
 export type CreateSchemaFieldHandler = (

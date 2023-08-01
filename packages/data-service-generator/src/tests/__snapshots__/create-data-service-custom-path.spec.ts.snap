@@ -2934,7 +2934,7 @@ PORT=3000",
 /dist
 .DS_Store
 ",
-  "test/docker-compose.db.yml": "version: \\"3\\"
+  "test/docker-compose.dev.yml": "version: \\"3\\"
 ",
   "test/docker-compose.yml": "version: \\"3\\"
 services:
