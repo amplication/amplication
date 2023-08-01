@@ -133,9 +133,9 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isAuthEntity =
-    entity.name === resourceSettings.serviceSettings.authEntityName ||
-    entity.name === USER_ENTITY;
+  const isAuthEntity = resourceSettings.serviceSettings.authEntityName
+    ? entity.name === resourceSettings.serviceSettings.authEntityName
+    : entity.name === USER_ENTITY;
 
   const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
 
