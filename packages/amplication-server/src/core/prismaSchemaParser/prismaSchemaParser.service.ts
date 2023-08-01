@@ -238,9 +238,8 @@ export class PrismaSchemaParserService {
         }
 
         if (
-          this.isNotAnnotatedRelationField(schema, field, modelList) ||
-          (this.isNotAnnotatedRelationField(schema, field, modelList) &&
-            !isManyToMany)
+          this.isNotAnnotatedRelationField(schema, field, modelList) &&
+          !isManyToMany
         ) {
           continue;
         }
@@ -865,29 +864,40 @@ export class PrismaSchemaParserService {
       this.isNotAnnotatedRelationField(schema, field, modelList) &&
       field.array
     ) {
-      // find the other side of the relation
-      const hasManyToManyRelation = modelList.some((modelItem: Model) => {
-        const modelFields = modelItem.properties.filter(
-          (property) => property.type === FIELD_TYPE_NAME
-        ) as Field[];
+      const remoteModel = modelList.find(
+        (modelItem: Model) =>
+          formatModelName(modelItem.name) ===
+          formatModelName(field.fieldType as string)
+      );
 
-        const theOtherSide = modelFields.find((fieldItem: Field) => {
-          return fieldItem.fieldType === model.name;
-        });
+      if (!remoteModel) {
+        throw new Error(
+          `Remote model ${field.fieldType} not found for field ${field.name} on model ${model.name}`
+        );
+      }
 
-        if (!theOtherSide) return false;
+      const remoteModelFields = remoteModel.properties.filter(
+        (property) => property.type === FIELD_TYPE_NAME
+      ) as Field[];
 
-        // check if the other side is also and array and it doesn't have the @relation attribute with reference field
-        if (
-          theOtherSide.array &&
-          this.isNotAnnotatedRelationField(schema, theOtherSide, modelList)
-        ) {
-          return true;
-        }
-        return false;
-      });
+      const theOtherSide = remoteModelFields.find(
+        (fieldItem: Field) =>
+          formatModelName(model.name) ===
+          formatModelName(fieldItem.fieldType as string)
+      );
 
-      return hasManyToManyRelation;
+      if (!theOtherSide) {
+        throw new Error(
+          `The other side of the relation not found for field ${field.name} on model ${model.name}`
+        );
+      }
+
+      if (
+        theOtherSide.array &&
+        this.isNotAnnotatedRelationField(schema, theOtherSide, modelList)
+      ) {
+        return true;
+      }
     }
     return false;
   }
