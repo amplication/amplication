@@ -13,7 +13,7 @@ import pluginWrapper from "../../plugin-wrapper";
 import { DOCKER_COMPOSE_DEV_FILE_NAME } from "../constants";
 import DsgContext from "../../dsg-context";
 
-export async function createDockerComposeDBFile(): Promise<ModuleMap> {
+export async function createDockerComposeDevFile(): Promise<ModuleMap> {
   const filePath = path.resolve(__dirname, DOCKER_COMPOSE_DEV_FILE_NAME);
 
   const eventParams: CreateServerDockerComposeDBParams = {
