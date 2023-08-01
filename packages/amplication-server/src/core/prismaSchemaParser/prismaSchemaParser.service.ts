@@ -223,11 +223,13 @@ export class PrismaSchemaParserService {
       ) as Field[];
 
       for (const field of modelFields) {
+        const isManyToMany = this.isManyToManyRelation(schema, model, field);
+
         if (this.isFkFieldOfARelation(schema, model, field)) {
           continue;
         }
 
-        if (this.isNotAnnotatedRelationField(schema, field)) {
+        if (this.isNotAnnotatedRelationField(schema, field) && !isManyToMany) {
           continue;
         }
 
@@ -320,13 +322,36 @@ export class PrismaSchemaParserService {
             actionContext
           );
         } else if (this.isLookupField(schema, field)) {
-          this.convertPrismaLookupToEntityField(
-            schema,
-            model,
-            field,
-            preparedEntities,
-            actionContext
-          );
+          if (isManyToMany) {
+            const isOneOfTheSidesExists = preparedEntities.some((entity) => {
+              return entity.fields.find((entityField) => {
+                return (
+                  entityField.dataType === EnumDataType.Lookup &&
+                  entityField.relatedFieldName === field.name
+                );
+              });
+            });
+
+            // only if we haven't already created any sides of the relation
+            // this check is needed because in the entity service we create the related entity of the entity that we are currently creating
+            if (!isOneOfTheSidesExists) {
+              this.convertPrismaLookupToEntityField(
+                schema,
+                model,
+                field,
+                preparedEntities,
+                actionContext
+              );
+            }
+          } else {
+            this.convertPrismaLookupToEntityField(
+              schema,
+              model,
+              field,
+              preparedEntities,
+              actionContext
+            );
+          }
         }
       }
     }
@@ -432,10 +457,6 @@ export class PrismaSchemaParserService {
         // we are not renaming enum fields because we are not supporting custom attributes on enum fields
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
-        // we are not renaming lookup fields because
-        //  1. relation field is not really a field in the DB
-        //  2. other attributes than @relation are not supported on relation fields
-        if (this.isLookupField(schema, field)) return builder;
 
         const fieldAttributes = field.attributes?.filter(
           (attr) => attr.type === ATTRIBUTE_TYPE_NAME
@@ -444,6 +465,9 @@ export class PrismaSchemaParserService {
         const hasMapAttribute = fieldAttributes?.find(
           (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
         );
+
+        const shouldAddMapAttribute =
+          !hasMapAttribute && !this.isLookupField(schema, field);
 
         const formattedFieldName = formatFieldName(field.name);
 
@@ -467,7 +491,7 @@ export class PrismaSchemaParserService {
             EnumActionLogLevel.Info
           );
 
-          !hasMapAttribute &&
+          shouldAddMapAttribute &&
             builder
               .model(model.name)
               .field(field.name)
@@ -719,7 +743,7 @@ export class PrismaSchemaParserService {
   }
 
   private isLookupField(schema: Schema, field: Field): boolean {
-    return lookupField(field) === EnumDataType.Lookup;
+    return lookupField(schema, field) === EnumDataType.Lookup;
   }
 
   private isOptionSetField(schema: Schema, field: Field): boolean {
@@ -762,6 +786,45 @@ export class PrismaSchemaParserService {
       (fieldModelType &&
         hasRelationAttributeWithRelationNameAndWithoutReferenceField)
     );
+  }
+
+  private isManyToManyRelation(
+    schema: Schema,
+    model: Model,
+    field: Field
+  ): boolean {
+    // at this time, we already know that we are in a lookup field and this is not an annotated relation field
+    // we only need to check if the field is an array (relation array i.e. order[])
+    if (field.array) {
+      const models = schema.list.filter(
+        (item) => item.type === MODEL_TYPE_NAME
+      ) as Model[];
+
+      // find the other side of the relation
+      const hasManyToManyRelation = models.some((modelItem: Model) => {
+        const modelFields = modelItem.properties.filter(
+          (property) => property.type === FIELD_TYPE_NAME
+        ) as Field[];
+
+        const theOtherSide = modelFields.find((fieldItem: Field) => {
+          return fieldItem.fieldType === model.name;
+        });
+
+        if (!theOtherSide) return false;
+
+        // check if the other side is also and array and it doesn't have the @relation attribute with reference field
+        if (
+          theOtherSide.array &&
+          this.isNotAnnotatedRelationField(schema, theOtherSide)
+        ) {
+          return true;
+        }
+        return false;
+      });
+
+      return hasManyToManyRelation;
+    }
+    return false;
   }
 
   private isFkFieldOfARelation(
@@ -1314,12 +1377,20 @@ export class PrismaSchemaParserService {
         (entity) => entity.name === remoteModel.name
       ) as CreateBulkEntitiesInput;
 
-      const fkFieldName = findFkFieldNameOnAnnotatedField(field);
+      const isManyToMany = this.isManyToManyRelation(schema, model, field);
+
+      const fkFieldName = !isManyToMany
+        ? findFkFieldNameOnAnnotatedField(field)
+        : "";
+
+      const fkHolder = !isManyToMany
+        ? entityField.permanentId // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
+        : null;
 
       const properties = <types.Lookup>{
         relatedEntityId: relatedEntity.id,
         allowMultipleSelection: field.array || false,
-        fkHolder: entityField.permanentId, // we are on the "main", annotated side of the relation, meaning that this field is the fkHolder
+        fkHolder,
         fkFieldName: fkFieldName,
       };
 
