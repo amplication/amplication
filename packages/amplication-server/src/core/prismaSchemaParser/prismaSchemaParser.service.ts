@@ -793,36 +793,47 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field
   ): boolean {
-    // at this time, we already know that we are in a lookup field and this is not an annotated relation field
-    // we only need to check if the field is an array (relation array i.e. order[])
-    if (field.array) {
-      const models = schema.list.filter(
+    // at this point we know that the field a lookup field
+    if (field.array && this.isNotAnnotatedRelationField(schema, field)) {
+      const modelList = schema.list.filter(
         (item) => item.type === MODEL_TYPE_NAME
       ) as Model[];
 
-      // find the other side of the relation
-      const hasManyToManyRelation = models.some((modelItem: Model) => {
-        const modelFields = modelItem.properties.filter(
-          (property) => property.type === FIELD_TYPE_NAME
-        ) as Field[];
+      const remoteModel = modelList.find(
+        (modelItem: Model) =>
+          formatModelName(modelItem.name) ===
+          formatModelName(field.fieldType as string)
+      );
 
-        const theOtherSide = modelFields.find((fieldItem: Field) => {
-          return fieldItem.fieldType === model.name;
-        });
+      if (!remoteModel) {
+        throw new Error(
+          `Remote model ${field.fieldType} not found for field ${field.name} on model ${model.name}`
+        );
+      }
 
-        if (!theOtherSide) return false;
+      const remoteModelFields = remoteModel.properties.filter(
+        (property) => property.type === FIELD_TYPE_NAME
+      ) as Field[];
 
-        // check if the other side is also and array and it doesn't have the @relation attribute with reference field
-        if (
-          theOtherSide.array &&
-          this.isNotAnnotatedRelationField(schema, theOtherSide)
-        ) {
-          return true;
-        }
-        return false;
-      });
+      const theOtherSide = remoteModelFields.find(
+        (fieldItem: Field) =>
+          formatModelName(model.name) ===
+          formatModelName(fieldItem.fieldType as string)
+      );
 
-      return hasManyToManyRelation;
+      if (!theOtherSide) {
+        throw new Error(
+          `The other side of the relation not found for field ${field.name} on model ${model.name}`
+        );
+      }
+
+      if (
+        this.isLookupField(schema, theOtherSide) &&
+        this.isNotAnnotatedRelationField(schema, theOtherSide) &&
+        theOtherSide.array
+      ) {
+        return true;
+      }
     }
     return false;
   }

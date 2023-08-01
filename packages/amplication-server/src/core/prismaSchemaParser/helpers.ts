@@ -109,7 +109,9 @@ export function lookupField(schema: Schema, field: Field) {
   ) as Model[];
 
   const isFieldTypeIsModel = models.some(
-    (modelItem: Model) => modelItem.name === field.fieldType
+    (modelItem: Model) =>
+      formatModelName(modelItem.name) ===
+      formatModelName(field.fieldType as string)
   );
 
   if (isFieldTypeIsModel) {
