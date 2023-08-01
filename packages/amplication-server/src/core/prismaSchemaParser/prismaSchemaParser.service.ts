@@ -142,6 +142,7 @@ export class PrismaSchemaParserService {
       const preparedSchemaObject = preparedSchemaResult.builder.getSchema();
       const importObjects = this.convertPreparedSchemaForImportObjects(
         preparedSchemaObject,
+        preparedSchemaResult.modelList,
         actionContext
       );
 
@@ -185,16 +186,21 @@ export class PrismaSchemaParserService {
         idFields: {},
       };
 
+      const modelList = builder
+        .getSchema()
+        .list.filter((item) => item.type === MODEL_TYPE_NAME) as Model[];
+
       operations.forEach((operation) => {
         operation.call(this, {
           builder,
+          modelList,
           existingEntities,
           mapper,
           actionContext,
         });
       });
 
-      return { builder, existingEntities, mapper, actionContext };
+      return { builder, modelList, existingEntities, mapper, actionContext };
     };
   }
 
@@ -207,12 +213,9 @@ export class PrismaSchemaParserService {
    */
   private convertPreparedSchemaForImportObjects(
     schema: Schema,
+    modelList: Model[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput[] {
-    const modelList = schema.list.filter(
-      (item: Model) => item.type === MODEL_TYPE_NAME
-    ) as Model[];
-
     const preparedEntities = modelList.map((model: Model) =>
       this.convertModelToEntity(model)
     );
@@ -223,81 +226,97 @@ export class PrismaSchemaParserService {
       ) as Field[];
 
       for (const field of modelFields) {
-        const isManyToMany = this.isManyToManyRelation(schema, model, field);
+        const isManyToMany = this.isManyToManyRelation(
+          schema,
+          model,
+          field,
+          modelList
+        );
 
         if (this.isFkFieldOfARelation(schema, model, field)) {
           continue;
         }
 
-        if (this.isNotAnnotatedRelationField(schema, field) && !isManyToMany) {
+        if (
+          this.isNotAnnotatedRelationField(schema, field, modelList) &&
+          !isManyToMany
+        ) {
           continue;
         }
 
-        if (this.isIdField(schema, field)) {
+        if (this.isIdField(schema, field, modelList)) {
           this.convertPrismaIdToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isBooleanField(schema, field)) {
+        } else if (this.isBooleanField(schema, field, modelList)) {
           this.convertPrismaBooleanToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isCreatedAtField(schema, field)) {
+        } else if (this.isCreatedAtField(schema, field, modelList)) {
           this.convertPrismaCreatedAtToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isUpdatedAtField(schema, field)) {
+        } else if (this.isUpdatedAtField(schema, field, modelList)) {
           this.convertPrismaUpdatedAtToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isDateTimeField(schema, field)) {
+        } else if (this.isDateTimeField(schema, field, modelList)) {
           this.convertPrismaDateTimeToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isDecimalNumberField(schema, field)) {
+        } else if (this.isDecimalNumberField(schema, field, modelList)) {
           this.convertPrismaDecimalNumberToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isWholeNumberField(schema, field)) {
+        } else if (this.isWholeNumberField(schema, field, modelList)) {
           this.convertPrismaWholeNumberToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isSingleLineTextField(schema, field)) {
+        } else if (this.isSingleLineTextField(schema, field, modelList)) {
           this.convertPrismaSingleLineTextToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isJsonField(schema, field)) {
+        } else if (this.isJsonField(schema, field, modelList)) {
           this.convertPrismaJsonToEntityField(
             schema,
             model,
@@ -305,23 +324,25 @@ export class PrismaSchemaParserService {
             preparedEntities,
             actionContext
           );
-        } else if (this.isOptionSetField(schema, field)) {
+        } else if (this.isOptionSetField(schema, field, modelList)) {
           this.convertPrismaOptionSetToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isMultiSelectOptionSetField(schema, field)) {
+        } else if (this.isMultiSelectOptionSetField(schema, field, modelList)) {
           this.convertPrismaMultiSelectOptionSetToEntityField(
             schema,
             model,
             field,
+            modelList,
             preparedEntities,
             actionContext
           );
-        } else if (this.isLookupField(schema, field)) {
+        } else if (this.isLookupField(schema, field, modelList)) {
           if (isManyToMany) {
             const isOneOfTheSidesExists = preparedEntities.some((entity) => {
               return entity.fields.find((entityField) => {
@@ -339,6 +360,7 @@ export class PrismaSchemaParserService {
                 schema,
                 model,
                 field,
+                modelList,
                 preparedEntities,
                 actionContext
               );
@@ -348,6 +370,7 @@ export class PrismaSchemaParserService {
               schema,
               model,
               field,
+              modelList,
               preparedEntities,
               actionContext
             );
@@ -373,14 +396,11 @@ export class PrismaSchemaParserService {
    */
   private prepareModelNames({
     builder,
+    modelList,
     existingEntities,
     mapper,
     actionContext,
   }: PrepareOperationIO): PrepareOperationIO {
-    const schema = builder.getSchema();
-    const modelList = schema.list.filter(
-      (item) => item.type === MODEL_TYPE_NAME
-    ) as Model[];
     modelList.map((model: Model) => {
       const modelAttributes = model.properties.filter(
         (prop) =>
@@ -423,6 +443,7 @@ export class PrismaSchemaParserService {
     });
     return {
       builder,
+      modelList,
       existingEntities,
       mapper,
       actionContext,
@@ -439,13 +460,13 @@ export class PrismaSchemaParserService {
    */
   private prepareFieldNames({
     builder,
+    modelList,
     existingEntities,
     mapper,
     actionContext,
   }: PrepareOperationIO): PrepareOperationIO {
     const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-    models.map((model: Model) => {
+    modelList.map((model: Model) => {
       const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
@@ -455,8 +476,9 @@ export class PrismaSchemaParserService {
         // we don't want to rename field if it is a foreign key holder
         if (this.isFkFieldOfARelation(schema, model, field)) return builder;
         // we are not renaming enum fields because we are not supporting custom attributes on enum fields
-        if (this.isOptionSetField(schema, field)) return builder;
-        if (this.isMultiSelectOptionSetField(schema, field)) return builder;
+        if (this.isOptionSetField(schema, field, modelList)) return builder;
+        if (this.isMultiSelectOptionSetField(schema, field, modelList))
+          return builder;
 
         const fieldAttributes = field.attributes?.filter(
           (attr) => attr.type === ATTRIBUTE_TYPE_NAME
@@ -467,7 +489,7 @@ export class PrismaSchemaParserService {
         );
 
         const shouldAddMapAttribute =
-          !hasMapAttribute && !this.isLookupField(schema, field);
+          !hasMapAttribute && !this.isLookupField(schema, field, modelList);
 
         const formattedFieldName = formatFieldName(field.name);
 
@@ -508,6 +530,7 @@ export class PrismaSchemaParserService {
     });
     return {
       builder,
+      modelList,
       existingEntities,
       mapper,
       actionContext,
@@ -522,15 +545,13 @@ export class PrismaSchemaParserService {
    */
   private prepareFieldTypes({
     builder,
+    modelList,
     existingEntities,
     mapper,
     actionContext,
   }: PrepareOperationIO): PrepareOperationIO {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-
     Object.entries(mapper.modelNames).map(([oldName, { newName }]) => {
-      models.map((model: Model) => {
+      modelList.map((model: Model) => {
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
@@ -559,6 +580,7 @@ export class PrismaSchemaParserService {
 
     return {
       builder,
+      modelList,
       existingEntities,
       mapper,
       actionContext,
@@ -573,14 +595,12 @@ export class PrismaSchemaParserService {
    */
   private prepareModelIdAttribute({
     builder,
+    modelList,
     existingEntities,
     mapper,
     actionContext,
   }: PrepareOperationIO): PrepareOperationIO {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-
-    models.forEach((model: Model) => {
+    modelList.forEach((model: Model) => {
       const modelAttributes = model.properties.filter(
         (prop) =>
           prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
@@ -616,6 +636,7 @@ export class PrismaSchemaParserService {
 
     return {
       builder,
+      modelList,
       existingEntities,
       mapper,
       actionContext,
@@ -632,14 +653,12 @@ export class PrismaSchemaParserService {
    */
   private prepareIdField({
     builder,
+    modelList,
     existingEntities,
     mapper,
     actionContext,
   }: PrepareOperationIO): PrepareOperationIO {
-    const schema = builder.getSchema();
-    const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
-
-    models.forEach((model: Model) => {
+    modelList.forEach((model: Model) => {
       const modelFields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
@@ -696,6 +715,7 @@ export class PrismaSchemaParserService {
     });
     return {
       builder,
+      modelList,
       existingEntities,
       mapper,
       actionContext,
@@ -706,61 +726,106 @@ export class PrismaSchemaParserService {
    * FIELD DATA TYPE CHECKS *
    ************************/
 
-  private isSingleLineTextField(schema: Schema, field: Field): boolean {
+  private isSingleLineTextField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return singleLineTextField(field) === EnumDataType.SingleLineText;
   }
 
-  private isWholeNumberField(schema: Schema, field: Field): boolean {
+  private isWholeNumberField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return wholeNumberField(field) === EnumDataType.WholeNumber;
   }
 
-  private isDecimalNumberField(schema: Schema, field: Field): boolean {
+  private isDecimalNumberField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return decimalNumberField(field) === EnumDataType.DecimalNumber;
   }
 
-  private isBooleanField(schema: Schema, field: Field): boolean {
+  private isBooleanField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return booleanField(field) === EnumDataType.Boolean;
   }
 
-  private isCreatedAtField(schema: Schema, field: Field): boolean {
+  private isCreatedAtField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return createAtField(field) === EnumDataType.CreatedAt;
   }
 
-  private isUpdatedAtField(schema: Schema, field: Field): boolean {
+  private isUpdatedAtField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return updateAtField(field) === EnumDataType.UpdatedAt;
   }
 
-  private isDateTimeField(schema: Schema, field: Field): boolean {
+  private isDateTimeField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return dateTimeField(field) === EnumDataType.DateTime;
   }
 
-  private isJsonField(schema: Schema, field: Field): boolean {
+  private isJsonField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return jsonField(field) === EnumDataType.Json;
   }
 
-  private isIdField(schema: Schema, field: Field): boolean {
+  private isIdField(schema: Schema, field: Field, modelList: Model[]): boolean {
     return idField(field) === EnumDataType.Id;
   }
 
-  private isLookupField(schema: Schema, field: Field): boolean {
-    return lookupField(schema, field) === EnumDataType.Lookup;
+  private isLookupField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
+    return lookupField(schema, field, modelList) === EnumDataType.Lookup;
   }
 
-  private isOptionSetField(schema: Schema, field: Field): boolean {
+  private isOptionSetField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return optionSetField(schema, field) === EnumDataType.OptionSet;
   }
 
-  private isMultiSelectOptionSetField(schema: Schema, field: Field): boolean {
+  private isMultiSelectOptionSetField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     return (
       multiSelectOptionSetField(schema, field) ===
       EnumDataType.MultiSelectOptionSet
     );
   }
 
-  private isNotAnnotatedRelationField(schema: Schema, field: Field): boolean {
-    const modelList = schema.list.filter(
-      (item) => item.type === MODEL_TYPE_NAME
-    );
+  private isNotAnnotatedRelationField(
+    schema: Schema,
+    field: Field,
+    modelList: Model[]
+  ): boolean {
     const relationAttribute =
       field.attributes?.some((attr) => attr.name === RELATION_ATTRIBUTE_NAME) ??
       false;
@@ -791,17 +856,14 @@ export class PrismaSchemaParserService {
   private isManyToManyRelation(
     schema: Schema,
     model: Model,
-    field: Field
+    field: Field,
+    modelList: Model[]
   ): boolean {
     // at this time, we already know that we are in a lookup field and this is not an annotated relation field
     // we only need to check if the field is an array (relation array i.e. order[])
     if (field.array) {
-      const models = schema.list.filter(
-        (item) => item.type === MODEL_TYPE_NAME
-      ) as Model[];
-
       // find the other side of the relation
-      const hasManyToManyRelation = models.some((modelItem: Model) => {
+      const hasManyToManyRelation = modelList.some((modelItem: Model) => {
         const modelFields = modelItem.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
@@ -815,7 +877,7 @@ export class PrismaSchemaParserService {
         // check if the other side is also and array and it doesn't have the @relation attribute with reference field
         if (
           theOtherSide.array &&
-          this.isNotAnnotatedRelationField(schema, theOtherSide)
+          this.isNotAnnotatedRelationField(schema, theOtherSide, modelList)
         ) {
           return true;
         }
@@ -895,6 +957,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -925,6 +988,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -955,6 +1019,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -985,6 +1050,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1024,6 +1090,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1064,6 +1131,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1103,6 +1171,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1171,6 +1240,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1224,6 +1294,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1274,6 +1345,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1324,6 +1396,7 @@ export class PrismaSchemaParserService {
     schema: Schema,
     model: Model,
     field: Field,
+    modelList: Model[],
     preparedEntities: CreateBulkEntitiesInput[],
     actionContext: ActionContext
   ): CreateBulkEntitiesInput {
@@ -1377,7 +1450,12 @@ export class PrismaSchemaParserService {
         (entity) => entity.name === remoteModel.name
       ) as CreateBulkEntitiesInput;
 
-      const isManyToMany = this.isManyToManyRelation(schema, model, field);
+      const isManyToMany = this.isManyToManyRelation(
+        schema,
+        model,
+        field,
+        modelList
+      );
 
       const fkFieldName = !isManyToMany
         ? findFkFieldNameOnAnnotatedField(field)

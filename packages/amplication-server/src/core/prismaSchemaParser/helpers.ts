@@ -6,7 +6,6 @@ import {
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
-  MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
 } from "./constants";
@@ -103,12 +102,8 @@ export function idField(field: Field) {
   }
 }
 
-export function lookupField(schema: Schema, field: Field) {
-  const models = schema.list.filter(
-    (item) => item.type === MODEL_TYPE_NAME
-  ) as Model[];
-
-  const isFieldTypeIsModel = models.some(
+export function lookupField(schema: Schema, field: Field, modelList: Model[]) {
+  const isFieldTypeIsModel = modelList.some(
     (modelItem: Model) => modelItem.name === field.fieldType
   );
 
