@@ -1,8 +1,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Prisma, PrismaService } from "../../prisma";
-import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
-import { omit, orderBy } from "lodash";
+import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
@@ -138,8 +137,6 @@ export const ACTION_LOG_LEVEL: {
   info: EnumActionLogLevel.Info,
   debug: EnumActionLogLevel.Debug,
 };
-
-const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
 We encourage you to continue exploring the many ways Amplication can supercharge your development. 
@@ -468,7 +465,11 @@ export class BuildService {
       step,
       PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
     );
-    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.log(
+      step,
+      EnumActionLogLevel.Error,
+      response.errorMessage
+    );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
     await this.analytics.track({
@@ -701,17 +702,6 @@ export class BuildService {
       },
       true
     );
-  }
-
-  private async createLog(
-    step: ActionStep,
-    info: { message: string }
-  ): Promise<void> {
-    const { message, ...metaInfo } = info;
-    const level = ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
-
-    await this.actionService.log(step, level, message, meta);
   }
 
   /**
