@@ -216,7 +216,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 {pluralize(data?.entities.length, "Entity", "Entities")}
               </div>
 
-
               {!hideNotifications.hasAccess && (
                 <LimitationNotification
                   description="With the current plan, you can use to 7 entities per service."
