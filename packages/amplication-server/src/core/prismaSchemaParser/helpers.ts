@@ -102,7 +102,7 @@ export function idField(field: Field) {
   }
 }
 
-export function lookupField(schema: Schema, field: Field, modelList: Model[]) {
+export function lookupField(field: Field, modelList: Model[]) {
   const isFieldTypeIsModel = modelList.some(
     (modelItem: Model) => modelItem.name === field.fieldType
   );

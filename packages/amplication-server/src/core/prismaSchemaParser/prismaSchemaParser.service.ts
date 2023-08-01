@@ -799,7 +799,7 @@ export class PrismaSchemaParserService {
     field: Field,
     modelList: Model[]
   ): boolean {
-    return lookupField(schema, field, modelList) === EnumDataType.Lookup;
+    return lookupField(field, modelList) === EnumDataType.Lookup;
   }
 
   private isOptionSetField(
