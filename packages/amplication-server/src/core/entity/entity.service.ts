@@ -2395,9 +2395,6 @@ export class EntityService {
     // eslint-disable-next-line @typescript-eslint/naming-convention
     fkHolder?: string
   ): Promise<EntityField> {
-    this.logger.debug("relatedFieldId===fieldId===permanentId", {
-      relatedFieldId,
-    });
     return await this.useLocking(entityId, user, async () => {
       return this.prisma.entityField.create({
         data: {
