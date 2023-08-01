@@ -17,7 +17,6 @@ import {
   ARRAY_ARG_TYPE_NAME,
   KEY_VALUE_ARG_TYPE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
-  MODEL_TYPE_NAME,
   FIELD_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
   MAP_ATTRIBUTE_NAME,
@@ -191,7 +190,8 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
 export function findRemoteRelatedModelAndField(
   schema: Schema,
   model: Model,
-  field: Field
+  field: Field,
+  modelList: Model[]
 ): { remoteModel: Model; remoteField: Field } | undefined {
   let relationAttributeName: string | undefined;
   let remoteField: Field | undefined;
@@ -212,11 +212,10 @@ export function findRemoteRelatedModelAndField(
       (relationAttributeStringArgument.value as string);
   });
 
-  const remoteModel = schema.list.find(
-    (item) =>
-      item.type === MODEL_TYPE_NAME &&
-      formatModelName(item.name) === formatModelName(field.fieldType as string)
-  ) as Model;
+  const remoteModel = modelList.find(
+    (model) =>
+      formatModelName(model.name) === formatModelName(field.fieldType as string)
+  );
 
   if (!remoteModel) {
     throw new Error(

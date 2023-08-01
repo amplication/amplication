@@ -1422,7 +1422,8 @@ export class PrismaSchemaParserService {
       const remoteModelAndField = findRemoteRelatedModelAndField(
         schema,
         model,
-        field
+        field,
+        modelList
       );
 
       if (!remoteModelAndField) {
