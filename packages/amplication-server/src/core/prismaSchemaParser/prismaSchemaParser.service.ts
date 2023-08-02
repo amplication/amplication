@@ -56,6 +56,7 @@ import {
   FIELD_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
+  INDEX_ATTRIBUTE_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
@@ -77,6 +78,7 @@ export class PrismaSchemaParserService {
     this.prepareFieldNames,
     this.prepareFieldTypes,
     this.prepareModelIdAttribute,
+    this.prepareModelAttributes,
     this.prepareIdField,
   ];
 
@@ -612,6 +614,68 @@ export class PrismaSchemaParserService {
         `id field was added to model "${model.name}"`,
         EnumActionLogLevel.Warning
       );
+    });
+
+    return {
+      builder,
+      existingEntities,
+      mapper,
+      actionContext,
+    };
+  }
+
+  private prepareModelAttributes({
+    builder,
+    existingEntities,
+    mapper,
+    actionContext,
+  }: PrepareOperationIO): PrepareOperationIO {
+    const schema = builder.getSchema();
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+
+    models.forEach((model: Model) => {
+      const modelFieldNames = model.properties
+        .filter((property) => property.type === FIELD_TYPE_NAME)
+        .map((field: Field) => field.name);
+
+      builder.model(model.name).then<Model>((modelItem) => {
+        const modelAttributes = modelItem.properties.filter(
+          (prop) =>
+            prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+        ) as BlockAttribute[];
+
+        for (const prop of modelItem.properties) {
+          if (
+            prop.type === ATTRIBUTE_TYPE_NAME &&
+            prop.kind === OBJECT_KIND_NAME
+          ) {
+            const modelReferenceAttributes = modelAttributes.filter(
+              (attribute) =>
+                attribute.name === ID_ATTRIBUTE_NAME ||
+                attribute.name === UNIQUE_ATTRIBUTE_NAME ||
+                attribute.name === INDEX_ATTRIBUTE_NAME
+            );
+
+            for (const attribute of modelReferenceAttributes) {
+              const attrArgArr = (attribute.args[0].value as RelationArray)
+                ?.args;
+
+              const shouldRename = attrArgArr?.some((arg) => {
+                return modelFieldNames.includes(arg as string);
+              });
+
+              if (shouldRename) {
+                for (let arg of attrArgArr) {
+                  arg = formatFieldName(arg);
+                }
+              }
+              this.logger.debug("attrArgArr", { attrArgArr });
+            }
+          }
+        }
+      });
     });
 
     return {
