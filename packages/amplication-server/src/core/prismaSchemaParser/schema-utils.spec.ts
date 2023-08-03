@@ -301,6 +301,51 @@ describe("schema-utils", () => {
         "@mockFieldAttribute2()",
       ]);
     });
+
+    it("should correctly format args that are arrays of functions", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "mockModelAttribute",
+          kind: "object",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "array",
+                args: [
+                  {
+                    type: "function",
+                    name: "value_1",
+                    params: [
+                      {
+                        type: "keyValue",
+                        key: "ops",
+                        value: "Int4BloomOps",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "type",
+                value: "Brin",
+              },
+            },
+          ],
+        },
+      ] as unknown as BlockAttribute[];
+
+      const result = prepareModelAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        "@@mockModelAttribute([value_1(ops: Int4BloomOps)], type: Brin)",
+      ]);
+    });
   });
 
   describe("findFkFieldNameOnAnnotatedField", () => {
