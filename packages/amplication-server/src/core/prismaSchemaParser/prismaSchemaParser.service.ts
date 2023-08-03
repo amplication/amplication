@@ -78,7 +78,7 @@ export class PrismaSchemaParserService {
     this.prepareFieldNames,
     this.prepareFieldTypes,
     this.prepareModelIdAttribute,
-    this.prepareModelAttributes,
+    this.prepareModelCompositeTypeAttributes,
     this.prepareIdField,
   ];
 
@@ -624,7 +624,7 @@ export class PrismaSchemaParserService {
     };
   }
 
-  private prepareModelAttributes({
+  private prepareModelCompositeTypeAttributes({
     builder,
     existingEntities,
     mapper,
