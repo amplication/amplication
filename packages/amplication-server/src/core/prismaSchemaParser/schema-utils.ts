@@ -216,7 +216,7 @@ export function findRemoteRelatedModelAndField(
 
   // in the main relation, check if the relation annotation has a name
   field.attributes?.find((attr) => {
-    const relationAttribute = attr.name === "relation";
+    const relationAttribute = attr.name === RELATION_ATTRIBUTE_NAME;
 
     if (relationAttribute) {
       relationAttributeStringArgument = attr.args?.find(
@@ -250,14 +250,14 @@ export function findRemoteRelatedModelAndField(
     remoteField = remoteModelFields.find((field: Field) => {
       return field.attributes?.some(
         (attr) =>
-          attr.name === "relation" &&
+          attr.name === RELATION_ATTRIBUTE_NAME &&
           attr.args?.find((arg) => arg.value === relationAttributeName)
       );
     });
   } else {
     const remoteFields = remoteModelFields.filter((remoteField: Field) => {
       const hasRelationAttribute = remoteField.attributes?.some(
-        (attr) => attr.name === "relation"
+        (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
 
       return (
