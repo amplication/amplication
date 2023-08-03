@@ -119,7 +119,18 @@ export function prepareModelAttributes(attributes: BlockAttribute[]): string[] {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isRelationArray(arg.value)) {
-          return `[${arg.value.args.join(", ")}]`;
+          if (
+            arg.value.args[0] &&
+            (arg.value.args[0] as unknown as Func).type === "function"
+          ) {
+            const func = arg.value.args[0] as unknown as Func;
+            const funcParams = (func.params as unknown as KeyValue[])
+              .map((param) => `${param.key}: ${param.value}`)
+              .join(", ");
+            return `[${func.name}(${funcParams})]`;
+          } else {
+            return `[${arg.value.args.join(", ")}]`;
+          }
         } else if (isFunction(arg.value)) {
           return arg.value.name;
         } else if (typeof arg.value === "string") {
