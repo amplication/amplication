@@ -51,9 +51,11 @@ import {
 } from "./types";
 import {
   ARG_KEY_FIELD_NAME,
+  ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
+  FUNCTION_ARG_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
   INDEX_ATTRIBUTE_NAME,
@@ -660,7 +662,7 @@ export class PrismaSchemaParserService {
               const compositeArgs = attribute.args?.find(
                 (arg) =>
                   arg.type === "attributeArgument" &&
-                  (arg.value as RelationArray).type === "array"
+                  (arg.value as RelationArray).type === ARRAY_ARG_TYPE_NAME
               );
 
               const functionArgs = attribute.args?.find(
@@ -668,7 +670,7 @@ export class PrismaSchemaParserService {
                   compositeArgs &&
                   (
                     (arg.value as RelationArray).args as unknown as Array<Func>
-                  )?.some((item) => item.type === "function")
+                  )?.some((item) => item.type === FUNCTION_ARG_TYPE_NAME)
               );
 
               // range index: @@index([value_1(ops: Int4BloomOps)], type: Brin)

@@ -23,6 +23,7 @@ import {
   MAP_ATTRIBUTE_NAME,
   ENUMERATOR_TYPE_NAME,
   OBJECT_KIND_NAME,
+  FUNCTION_ARG_TYPE_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -93,7 +94,7 @@ function isRelationArray(argValue: any): argValue is RelationArray {
 }
 
 function isFunction(argValue: any): argValue is Func {
-  return argValue && argValue.type === "function";
+  return argValue && argValue.type === FUNCTION_ARG_TYPE_NAME;
 }
 
 /**
@@ -125,7 +126,8 @@ export function prepareModelAttributes(attributes: BlockAttribute[]): string[] {
           // it is just knows how to translate the schema to an object, but the types are wrong or missing
           if (
             arg.value.args[0] &&
-            (arg.value.args[0] as unknown as Func).type === "function"
+            (arg.value.args[0] as unknown as Func).type ===
+              FUNCTION_ARG_TYPE_NAME
           ) {
             const func = arg.value.args[0] as unknown as Func;
             const funcParams = (func.params as unknown as KeyValue[])

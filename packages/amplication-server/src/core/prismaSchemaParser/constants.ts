@@ -6,6 +6,7 @@ export const ATTRIBUTE_TYPE_NAME = "attribute";
 
 export const KEY_VALUE_ARG_TYPE_NAME = "keyValue";
 export const ARRAY_ARG_TYPE_NAME = "array";
+export const FUNCTION_ARG_TYPE_NAME = "function";
 export const OBJECT_KIND_NAME = "object";
 
 export const MAP_ATTRIBUTE_NAME = "map";
