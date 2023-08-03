@@ -644,29 +644,65 @@ export class PrismaSchemaParserService {
             prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
         ) as BlockAttribute[];
 
+        const modelReferenceAttributes = modelAttributes.filter(
+          (attribute) =>
+            attribute.name === ID_ATTRIBUTE_NAME ||
+            attribute.name === UNIQUE_ATTRIBUTE_NAME ||
+            attribute.name === INDEX_ATTRIBUTE_NAME
+        );
+
         for (const prop of modelItem.properties) {
           if (
             prop.type === ATTRIBUTE_TYPE_NAME &&
             prop.kind === OBJECT_KIND_NAME
           ) {
-            const modelReferenceAttributes = modelAttributes.filter(
-              (attribute) =>
-                attribute.name === ID_ATTRIBUTE_NAME ||
-                attribute.name === UNIQUE_ATTRIBUTE_NAME ||
-                attribute.name === INDEX_ATTRIBUTE_NAME
-            );
-
             for (const attribute of modelReferenceAttributes) {
-              const attrArgArr = (attribute.args[0].value as RelationArray)
-                ?.args;
+              const compositeArgs = attribute.args?.find(
+                (arg) =>
+                  arg.type === "attributeArgument" &&
+                  (arg.value as RelationArray).type === "array"
+              );
 
-              const shouldRename = attrArgArr?.some((arg) => {
-                return originalFieldNames.includes(arg as string);
-              });
+              const functionArgs = attribute.args?.find(
+                (arg) =>
+                  compositeArgs &&
+                  (
+                    (arg.value as RelationArray).args as unknown as Array<Func>
+                  )?.some((item) => item.type === "function")
+              );
 
-              if (shouldRename) {
-                for (const [index, arg] of attrArgArr.entries()) {
-                  attrArgArr[index] = formatFieldName(arg);
+              const rangeIndexAttribute =
+                attribute.name === INDEX_ATTRIBUTE_NAME && functionArgs;
+
+              if (rangeIndexAttribute) {
+                const rangeIndexArgArr = (
+                  rangeIndexAttribute.value as RelationArray
+                ).args as unknown as Array<Func>;
+
+                const shouldRename = rangeIndexArgArr?.some((arg) => {
+                  return originalFieldNames.includes(arg.name as string);
+                });
+
+                if (shouldRename) {
+                  for (const arg of rangeIndexArgArr) {
+                    if (typeof arg.name === "string") {
+                      arg.name = formatFieldName(arg.name);
+                    }
+                  }
+                }
+              }
+
+              if (compositeArgs && !rangeIndexAttribute) {
+                const attrArgArr = (compositeArgs.value as RelationArray)?.args;
+
+                const shouldRename = attrArgArr?.some((arg) => {
+                  return originalFieldNames.includes(arg as string);
+                });
+
+                if (shouldRename) {
+                  for (const [index, arg] of attrArgArr.entries()) {
+                    attrArgArr[index] = formatFieldName(arg);
+                  }
                 }
               }
             }
