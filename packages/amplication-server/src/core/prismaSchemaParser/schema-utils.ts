@@ -23,6 +23,7 @@ import {
   MAP_ATTRIBUTE_NAME,
   ENUMERATOR_TYPE_NAME,
   OBJECT_KIND_NAME,
+  FUNCTION_ARG_TYPE_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -93,7 +94,7 @@ function isRelationArray(argValue: any): argValue is RelationArray {
 }
 
 function isFunction(argValue: any): argValue is Func {
-  return argValue && argValue.type === "function";
+  return argValue && argValue.type === FUNCTION_ARG_TYPE_NAME;
 }
 
 /**
@@ -119,7 +120,23 @@ export function prepareModelAttributes(attributes: BlockAttribute[]): string[] {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isRelationArray(arg.value)) {
-          return `[${arg.value.args.join(", ")}]`;
+          // this if block is for the case that the model attribute contains a function argument like with
+          // range index: @@index([value_1(ops: Int4BloomOps)], type: Brin)
+          // the usage of "as unknown" is because the library doesn't seem to have a support for this case,
+          // it is just knows how to translate the schema to an object, but the types are wrong or missing
+          if (
+            arg.value.args[0] &&
+            (arg.value.args[0] as unknown as Func).type ===
+              FUNCTION_ARG_TYPE_NAME
+          ) {
+            const func = arg.value.args[0] as unknown as Func;
+            const funcParams = (func.params as unknown as KeyValue[])
+              .map((param) => `${param.key}: ${param.value}`)
+              .join(", ");
+            return `[${func.name}(${funcParams})]`;
+          } else {
+            return `[${arg.value.args.join(", ")}]`;
+          }
         } else if (isFunction(arg.value)) {
           return arg.value.name;
         } else if (typeof arg.value === "string") {
@@ -199,7 +216,7 @@ export function findRemoteRelatedModelAndField(
 
   // in the main relation, check if the relation annotation has a name
   field.attributes?.find((attr) => {
-    const relationAttribute = attr.name === "relation";
+    const relationAttribute = attr.name === RELATION_ATTRIBUTE_NAME;
 
     if (relationAttribute) {
       relationAttributeStringArgument = attr.args?.find(
@@ -233,14 +250,14 @@ export function findRemoteRelatedModelAndField(
     remoteField = remoteModelFields.find((field: Field) => {
       return field.attributes?.some(
         (attr) =>
-          attr.name === "relation" &&
+          attr.name === RELATION_ATTRIBUTE_NAME &&
           attr.args?.find((arg) => arg.value === relationAttributeName)
       );
     });
   } else {
     const remoteFields = remoteModelFields.filter((remoteField: Field) => {
       const hasRelationAttribute = remoteField.attributes?.some(
-        (attr) => attr.name === "relation"
+        (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
 
       return (

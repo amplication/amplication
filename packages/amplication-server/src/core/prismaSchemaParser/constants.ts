@@ -3,11 +3,14 @@ export const FIELD_TYPE_NAME = "field";
 export const ENUM_TYPE_NAME = "enum";
 export const ENUMERATOR_TYPE_NAME = "enumerator";
 export const ATTRIBUTE_TYPE_NAME = "attribute";
-export const MAP_ATTRIBUTE_NAME = "map";
+
 export const KEY_VALUE_ARG_TYPE_NAME = "keyValue";
 export const ARRAY_ARG_TYPE_NAME = "array";
+export const FUNCTION_ARG_TYPE_NAME = "function";
 export const OBJECT_KIND_NAME = "object";
 
+export const MAP_ATTRIBUTE_NAME = "map";
+export const INDEX_ATTRIBUTE_NAME = "index";
 export const DEFAULT_ATTRIBUTE_NAME = "default";
 export const UNIQUE_ATTRIBUTE_NAME = "unique";
 export const UPDATED_AT_ATTRIBUTE_NAME = "updatedAt";

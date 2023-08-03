@@ -51,11 +51,14 @@ import {
 } from "./types";
 import {
   ARG_KEY_FIELD_NAME,
+  ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
+  FUNCTION_ARG_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
+  INDEX_ATTRIBUTE_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
@@ -77,6 +80,7 @@ export class PrismaSchemaParserService {
     this.prepareFieldNames,
     this.prepareFieldTypes,
     this.prepareModelIdAttribute,
+    this.prepareModelCompositeTypeAttributes,
     this.prepareIdField,
   ];
 
@@ -612,6 +616,102 @@ export class PrismaSchemaParserService {
         `id field was added to model "${model.name}"`,
         EnumActionLogLevel.Warning
       );
+    });
+
+    return {
+      builder,
+      existingEntities,
+      mapper,
+      actionContext,
+    };
+  }
+
+  private prepareModelCompositeTypeAttributes({
+    builder,
+    existingEntities,
+    mapper,
+    actionContext,
+  }: PrepareOperationIO): PrepareOperationIO {
+    const schema = builder.getSchema();
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+
+    const originalFieldNames = Object.keys(mapper.fieldNames);
+
+    models.forEach((model: Model) => {
+      builder.model(model.name).then<Model>((modelItem) => {
+        const modelAttributes = modelItem.properties.filter(
+          (prop) =>
+            prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+        ) as BlockAttribute[];
+
+        const modelReferenceAttributes = modelAttributes.filter(
+          (attribute) =>
+            attribute.name === ID_ATTRIBUTE_NAME ||
+            attribute.name === UNIQUE_ATTRIBUTE_NAME ||
+            attribute.name === INDEX_ATTRIBUTE_NAME
+        );
+
+        for (const prop of modelItem.properties) {
+          if (
+            prop.type === ATTRIBUTE_TYPE_NAME &&
+            prop.kind === OBJECT_KIND_NAME
+          ) {
+            for (const attribute of modelReferenceAttributes) {
+              const compositeArgs = attribute.args?.find(
+                (arg) =>
+                  arg.type === "attributeArgument" &&
+                  (arg.value as RelationArray).type === ARRAY_ARG_TYPE_NAME
+              );
+
+              const functionArgs = attribute.args?.find(
+                (arg) =>
+                  compositeArgs &&
+                  (
+                    (arg.value as RelationArray).args as unknown as Array<Func>
+                  )?.some((item) => item.type === FUNCTION_ARG_TYPE_NAME)
+              );
+
+              // range index: @@index([value_1(ops: Int4BloomOps)], type: Brin)
+              const rangeIndexAttribute =
+                attribute.name === INDEX_ATTRIBUTE_NAME && functionArgs;
+
+              if (rangeIndexAttribute) {
+                const rangeIndexArgArr = (
+                  rangeIndexAttribute.value as RelationArray
+                ).args as unknown as Array<Func>;
+
+                const shouldRename = rangeIndexArgArr?.some((arg) => {
+                  return originalFieldNames.includes(arg.name as string);
+                });
+
+                if (shouldRename) {
+                  for (const arg of rangeIndexArgArr) {
+                    if (typeof arg.name === "string") {
+                      arg.name = formatFieldName(arg.name);
+                    }
+                  }
+                }
+              }
+
+              if (compositeArgs && !rangeIndexAttribute) {
+                const attrArgArr = (compositeArgs.value as RelationArray)?.args;
+
+                const shouldRename = attrArgArr?.some((arg) => {
+                  return originalFieldNames.includes(arg as string);
+                });
+
+                if (shouldRename) {
+                  for (const [index, arg] of attrArgArr.entries()) {
+                    attrArgArr[index] = formatFieldName(arg);
+                  }
+                }
+              }
+            }
+          }
+        }
+      });
     });
 
     return {
