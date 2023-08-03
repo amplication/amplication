@@ -671,6 +671,7 @@ export class PrismaSchemaParserService {
                   )?.some((item) => item.type === "function")
               );
 
+              // range index: @@index([value_1(ops: Int4BloomOps)], type: Brin)
               const rangeIndexAttribute =
                 attribute.name === INDEX_ATTRIBUTE_NAME && functionArgs;
 

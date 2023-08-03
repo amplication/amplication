@@ -119,6 +119,10 @@ export function prepareModelAttributes(attributes: BlockAttribute[]): string[] {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isRelationArray(arg.value)) {
+          // this if block is for the case that the model attribute contains a function argument like with
+          // range index: @@index([value_1(ops: Int4BloomOps)], type: Brin)
+          // the usage of "as unknown" is because the library doesn't seem to have a support for this case,
+          // it is just knows how to translate the schema to an object, but the types are wrong or missing
           if (
             arg.value.args[0] &&
             (arg.value.args[0] as unknown as Func).type === "function"
