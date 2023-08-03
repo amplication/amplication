@@ -635,11 +635,9 @@ export class PrismaSchemaParserService {
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
 
-    models.forEach((model: Model) => {
-      const modelFieldNames = model.properties
-        .filter((property) => property.type === FIELD_TYPE_NAME)
-        .map((field: Field) => field.name);
+    const originalFieldNames = Object.keys(mapper.fieldNames);
 
+    models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
         const modelAttributes = modelItem.properties.filter(
           (prop) =>
@@ -663,15 +661,14 @@ export class PrismaSchemaParserService {
                 ?.args;
 
               const shouldRename = attrArgArr?.some((arg) => {
-                return modelFieldNames.includes(arg as string);
+                return originalFieldNames.includes(arg as string);
               });
 
               if (shouldRename) {
-                for (let arg of attrArgArr) {
-                  arg = formatFieldName(arg);
+                for (const [index, arg] of attrArgArr.entries()) {
+                  attrArgArr[index] = formatFieldName(arg);
                 }
               }
-              this.logger.debug("attrArgArr", { attrArgArr });
             }
           }
         }
