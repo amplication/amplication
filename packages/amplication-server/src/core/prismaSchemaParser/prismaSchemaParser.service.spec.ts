@@ -833,6 +833,171 @@ describe("prismaSchemaParser", () => {
           expect(result).toEqual(expectedEntitiesWithFields);
         });
 
+        it("should NOT format the args in the @@index attribute if they were not formatted in the model fields", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+
+          model Order {
+            id         String    @id @default(cuid())
+            order_number   Int
+            the_customer   Customer? @relation(fields: [customer_id], references: [id])
+            customer_id String?
+
+            @@index([customer_id, order_number], map: "customer_id_order_number")
+          }
+          
+          model Customer {
+            id          String     @id @default(cuid())
+            customer_type CustomerType? @default(INDIVIDUAL)
+            customer_id_number Int
+            orders  Order[]
+
+            @@index([customer_type, customer_id_number], map: "customer_type_customer_id_number")
+          }
+
+          enum CustomerType {
+            INDIVIDUAL
+            COMPANY
+          }
+          `;
+          const customerFieldPermanentId = expect.any(String);
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Order",
+              displayName: "Order",
+              pluralDisplayName: "Orders",
+              description: "",
+              customAttributes:
+                '@@index([customer_id, orderNumber], map: "customer_id_order_number")',
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "orderNumber",
+                  displayName: "Order Number",
+                  dataType: EnumDataType.WholeNumber,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maximumValue: 99999999999,
+                    minimumValue: 0,
+                  },
+                  customAttributes: '@map("order_number")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "theCustomer",
+                  displayName: "The Customer",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "customer_id",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Orders",
+                  relatedFieldName: "orders",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Customer",
+              displayName: "Customer",
+              pluralDisplayName: "Customers",
+              description: "",
+              customAttributes:
+                '@@index([customer_type, customerIdNumber], map: "customer_type_customer_id_number")',
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "customer_type",
+                  displayName: "Customer Type",
+                  dataType: EnumDataType.OptionSet,
+                  required: false,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    options: [
+                      { label: "INDIVIDUAL", value: "INDIVIDUAL" },
+                      { label: "COMPANY", value: "COMPANY" },
+                    ],
+                  },
+                  customAttributes: "@default(INDIVIDUAL)",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "customerIdNumber",
+                  displayName: "Customer Id Number",
+                  dataType: EnumDataType.WholeNumber,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maximumValue: 99999999999,
+                    minimumValue: 0,
+                  },
+                  customAttributes: '@map("customer_id_number")',
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         it("should format the args in the range @@index attribute in the same way they were formatted in the model fields", async () => {
           // arrange
           const prismaSchema = `datasource db {
