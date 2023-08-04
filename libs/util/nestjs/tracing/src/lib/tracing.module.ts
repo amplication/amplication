@@ -112,8 +112,8 @@ export class TracingModule extends OpenTelemetryModule {
       ...configuration,
       instrumentations: [
         autoInstrumentations,
-        new KafkaJsInstrumentation({}),
-        new PrismaInstrumentation({}),
+        // new KafkaJsInstrumentation({}),
+        // new PrismaInstrumentation({}),
       ],
       traceAutoInjectors:
         configuration?.traceAutoInjectors ||
