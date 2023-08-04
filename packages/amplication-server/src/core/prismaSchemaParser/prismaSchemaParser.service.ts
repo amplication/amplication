@@ -638,9 +638,6 @@ export class PrismaSchemaParserService {
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
 
-    const originalFieldNames = Object.keys(mapper.fieldNames);
-    const newFieldNames = Object.values(mapper.fieldNames);
-
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
         const modelAttributes = modelItem.properties.filter(
@@ -684,14 +681,12 @@ export class PrismaSchemaParserService {
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
-                const shouldRename = rangeIndexArgArr?.some((arg) => {
-                  return originalFieldNames.includes(arg.name as string);
-                });
+                for (const arg of rangeIndexArgArr) {
+                  if (typeof arg.name === "string") {
+                    const newFieldName = mapper.fieldNames[arg.name].newName;
 
-                if (shouldRename) {
-                  for (const arg of rangeIndexArgArr) {
-                    if (typeof arg.name === "string") {
-                      arg.name = formatFieldName(arg.name);
+                    if (newFieldName) {
+                      arg.name = newFieldName;
                     }
                   }
                 }
@@ -703,9 +698,7 @@ export class PrismaSchemaParserService {
                 // avoid formatting an arg when the field in the model was not formatted, for example: the fk field of a relation
                 // or a field that represents an enum value
                 for (const [index, arg] of attrArgArr.entries()) {
-                  const newFieldName = newFieldNames.find(
-                    (item) => item.oldName === arg
-                  );
+                  const newFieldName = mapper.fieldNames[arg];
 
                   if (newFieldName) {
                     attrArgArr[index] = newFieldName.newName;
