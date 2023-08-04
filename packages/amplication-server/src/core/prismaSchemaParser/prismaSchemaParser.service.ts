@@ -53,6 +53,7 @@ import {
   ARG_KEY_FIELD_NAME,
   ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   FUNCTION_ARG_TYPE_NAME,
@@ -727,6 +728,7 @@ export class PrismaSchemaParserService {
    * If a non-ID field is named id, it's renamed to ${modelName}Id to prevent any collisions with the actual ID field.
    * If an ID field (a field with an `@id` attribute) has a different name, it's renamed to id
    * In both cases, a `@map` attribute is added to the field with the original field name
+   * And in the end we remove the `@default` attribute from any id field if it exists because we are adding it later as it's a part of the idType properties
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
@@ -780,6 +782,7 @@ export class PrismaSchemaParserService {
             .model(model.name)
             .field(field.name)
             .attribute("map", [`"${field.name}"`]);
+
           builder
             .model(model.name)
             .field(field.name)
@@ -792,6 +795,18 @@ export class PrismaSchemaParserService {
             newName: `id`,
           };
         }
+
+        const hasDefaultAttributeOnIdField =
+          isIdField &&
+          field.attributes?.some(
+            (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+          );
+
+        hasDefaultAttributeOnIdField &&
+          builder
+            .model(model.name)
+            .field(field.name)
+            .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
     });
     return {
@@ -1304,7 +1319,7 @@ export class PrismaSchemaParserService {
     );
 
     const defaultIdAttribute = field.attributes?.find(
-      (attr) => attr.name === "default"
+      (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
     );
 
     if (!defaultIdAttribute) {
