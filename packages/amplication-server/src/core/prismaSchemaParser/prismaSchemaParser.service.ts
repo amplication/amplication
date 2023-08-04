@@ -683,7 +683,7 @@ export class PrismaSchemaParserService {
 
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
-                    const newFieldName = mapper.fieldNames[arg.name].newName;
+                    const newFieldName = mapper.fieldNames[arg.name]?.newName;
 
                     if (newFieldName) {
                       arg.name = newFieldName;
