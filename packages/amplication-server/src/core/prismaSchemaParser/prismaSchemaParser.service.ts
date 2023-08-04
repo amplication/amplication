@@ -639,6 +639,7 @@ export class PrismaSchemaParserService {
     ) as Model[];
 
     const originalFieldNames = Object.keys(mapper.fieldNames);
+    const newFieldNames = Object.values(mapper.fieldNames);
 
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
@@ -699,13 +700,15 @@ export class PrismaSchemaParserService {
               if (compositeArgs && !rangeIndexAttribute) {
                 const attrArgArr = (compositeArgs.value as RelationArray)?.args;
 
-                const shouldRename = attrArgArr?.some((arg) => {
-                  return originalFieldNames.includes(arg as string);
-                });
+                // avoid formatting an arg when the field in the model was not formatted, for example: the fk field of a relation
+                // or a field that represents an enum value
+                for (const [index, arg] of attrArgArr.entries()) {
+                  const newFieldName = newFieldNames.find(
+                    (item) => item.oldName === arg
+                  );
 
-                if (shouldRename) {
-                  for (const [index, arg] of attrArgArr.entries()) {
-                    attrArgArr[index] = formatFieldName(arg);
+                  if (newFieldName) {
+                    attrArgArr[index] = newFieldName.newName;
                   }
                 }
               }
