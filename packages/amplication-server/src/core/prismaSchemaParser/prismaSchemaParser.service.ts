@@ -53,6 +53,7 @@ import {
   ARG_KEY_FIELD_NAME,
   ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
   FUNCTION_ARG_TYPE_NAME,
@@ -637,8 +638,6 @@ export class PrismaSchemaParserService {
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
 
-    const originalFieldNames = Object.keys(mapper.fieldNames);
-
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
         const modelAttributes = modelItem.properties.filter(
@@ -682,14 +681,12 @@ export class PrismaSchemaParserService {
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
-                const shouldRename = rangeIndexArgArr?.some((arg) => {
-                  return originalFieldNames.includes(arg.name as string);
-                });
+                for (const arg of rangeIndexArgArr) {
+                  if (typeof arg.name === "string") {
+                    const newFieldName = mapper.fieldNames[arg.name]?.newName;
 
-                if (shouldRename) {
-                  for (const arg of rangeIndexArgArr) {
-                    if (typeof arg.name === "string") {
-                      arg.name = formatFieldName(arg.name);
+                    if (newFieldName) {
+                      arg.name = newFieldName;
                     }
                   }
                 }
@@ -698,13 +695,13 @@ export class PrismaSchemaParserService {
               if (compositeArgs && !rangeIndexAttribute) {
                 const attrArgArr = (compositeArgs.value as RelationArray)?.args;
 
-                const shouldRename = attrArgArr?.some((arg) => {
-                  return originalFieldNames.includes(arg as string);
-                });
+                // avoid formatting an arg when the field in the model was not formatted, for example: the fk field of a relation
+                // or a field that represents an enum value
+                for (const [index, arg] of attrArgArr.entries()) {
+                  const newFieldName = mapper.fieldNames[arg];
 
-                if (shouldRename) {
-                  for (const [index, arg] of attrArgArr.entries()) {
-                    attrArgArr[index] = formatFieldName(arg);
+                  if (newFieldName) {
+                    attrArgArr[index] = newFieldName.newName;
                   }
                 }
               }
@@ -727,6 +724,7 @@ export class PrismaSchemaParserService {
    * If a non-ID field is named id, it's renamed to ${modelName}Id to prevent any collisions with the actual ID field.
    * If an ID field (a field with an `@id` attribute) has a different name, it's renamed to id
    * In both cases, a `@map` attribute is added to the field with the original field name
+   * And in the end we remove the `@default` attribute from any id field if it exists because we are adding it later as it's a part of the idType properties
    * @param builder - prisma schema builder
    * @returns the new builder if there was a change or the old one if there was no change
    */
@@ -780,6 +778,7 @@ export class PrismaSchemaParserService {
             .model(model.name)
             .field(field.name)
             .attribute("map", [`"${field.name}"`]);
+
           builder
             .model(model.name)
             .field(field.name)
@@ -792,6 +791,18 @@ export class PrismaSchemaParserService {
             newName: `id`,
           };
         }
+
+        const hasDefaultAttributeOnIdField =
+          isIdField &&
+          field.attributes?.some(
+            (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+          );
+
+        hasDefaultAttributeOnIdField &&
+          builder
+            .model(model.name)
+            .field(field.name)
+            .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
     });
     return {
@@ -1304,7 +1315,7 @@ export class PrismaSchemaParserService {
     );
 
     const defaultIdAttribute = field.attributes?.find(
-      (attr) => attr.name === "default"
+      (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
     );
 
     if (!defaultIdAttribute) {
