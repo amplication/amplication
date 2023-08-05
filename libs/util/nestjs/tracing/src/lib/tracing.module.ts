@@ -103,8 +103,7 @@ export class TracingModule extends OpenTelemetryModule {
         depth: 2,
       },
       "@opentelemetry/instrumentation-express": {
-        enabled: true,
-        ignoreLayersType: [ExpressLayerType.MIDDLEWARE],
+        enabled: false,
       },
     });
 
