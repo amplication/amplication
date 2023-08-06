@@ -84,7 +84,9 @@ export class SegmentAnalyticsService {
     if (!this.analytics) return;
 
     const req = RequestContext?.currentContext?.req;
-    const analyticsSessionId = req?.analyticsSessionId;
+    const analyticsSessionId = parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
 
     this.analytics.track({
       ...data,
@@ -99,5 +101,16 @@ export class SegmentAnalyticsService {
         },
       },
     } as TrackData);
+  }
+}
+
+function parseValidUnixTimestampOrUndefined(value: string): string | undefined {
+  const timestamp = parseInt(value, 10);
+
+  // Check if the value is an integer and within a valid range for Unix timestamps
+  if (!isNaN(timestamp) && Number.isInteger(timestamp) && timestamp >= 0) {
+    return value;
+  } else {
+    return undefined;
   }
 }
