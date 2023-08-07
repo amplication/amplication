@@ -36,4 +36,6 @@ export const idTypePropertyMapByFieldType = {
   Int: ID_TYPE_AUTOINCREMENT,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   String: ID_TYPE_CUID,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  BigInt: ID_TYPE_AUTOINCREMENT,
 };
