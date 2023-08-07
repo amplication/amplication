@@ -8,6 +8,7 @@
   "properties": {
     "dataType": {
       "type": "string",
+      "description": "The Prisma model field scalar type",
       "enum": ["INT", "BIG_INT"],
       "default": "INT"
     },
