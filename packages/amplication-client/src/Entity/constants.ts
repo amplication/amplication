@@ -117,3 +117,82 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     icon: "users",
   },
 };
+
+export const ENTITY_FIELD_ENUM_MAPPER: {
+  [key in models.EnumDataType]: {
+    [key: string]: {
+      label: string;
+      value: string;
+    }[];
+  };
+} = {
+  /**@todo: update the icons for each type */
+  [models.EnumDataType.SingleLineText]: {},
+  [models.EnumDataType.MultiLineText]: {},
+  [models.EnumDataType.Email]: {},
+  [models.EnumDataType.WholeNumber]: {
+    dataType: [
+      {
+        label: "Whole Number",
+        value: "bookmark",
+      },
+    ],
+  },
+  [models.EnumDataType.DecimalNumber]: {
+    label: "Decimal Number",
+    icon: "decimal_number",
+  },
+  [models.EnumDataType.DateTime]: {
+    label: "Date Time",
+    icon: "calendar",
+  },
+  [models.EnumDataType.Lookup]: {
+    label: "Relation to Entity",
+    icon: "lookup",
+  },
+  [models.EnumDataType.Boolean]: {
+    label: "Boolean",
+    icon: "check_square",
+  },
+  [models.EnumDataType.Json]: {
+    label: "Json",
+    icon: "code1",
+  },
+  [models.EnumDataType.OptionSet]: {
+    label: "Option Set",
+    icon: "option_set",
+  },
+  [models.EnumDataType.MultiSelectOptionSet]: {
+    label: "Multi Select Option Set",
+    icon: "multi_select_option_set",
+  },
+  [models.EnumDataType.GeographicLocation]: {
+    label: "Geographic Location",
+    icon: "map_pin",
+  },
+  [models.EnumDataType.CreatedAt]: {
+    label: "Created At",
+    icon: "created_at",
+  },
+  [models.EnumDataType.UpdatedAt]: {
+    label: "Updated At",
+    icon: "updated_at",
+  },
+
+  [models.EnumDataType.Id]: {
+    label: "Id",
+    icon: "id",
+  },
+  [models.EnumDataType.Username]: {
+    label: "Username",
+    icon: "user",
+  },
+  [models.EnumDataType.Password]: {
+    label: "Password",
+    icon: "lock",
+  },
+  [models.EnumDataType.Roles]: {
+    label: "Roles",
+    icon: "users",
+  },
+};

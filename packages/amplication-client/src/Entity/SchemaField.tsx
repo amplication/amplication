@@ -1,5 +1,10 @@
 import { capitalCase } from "capital-case";
-import { ToggleField, TextField } from "@amplication/ui/design-system";
+import {
+  ToggleField,
+  TextField,
+  OptionItem,
+  SelectField,
+} from "@amplication/ui/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
 import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "./RelatedEntityFieldField";
@@ -9,6 +14,8 @@ import OptionSet from "../Entity/OptionSet";
 import { JSONSchema7 } from "json-schema";
 import RelationFkHolderField from "./RelationFkHolderField";
 import * as models from "../models";
+import { useMemo } from "react";
+import { ENTITY_FIELD_ENUM_MAPPER } from "./constants";
 
 type Props = {
   propertyName: string;
@@ -28,14 +35,19 @@ export const SchemaField = ({
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
 
+  const enumOptions = useMemo((): OptionItem[] | null => {
+    if (propertySchema.enum) {
+      return (propertySchema.enum as string[]).map((item) => ({
+        value: item.toString(),
+        label: ENTITY_FIELD_ENUM_MAPPER[propertyName][item.toString()],
+      }));
+    } else return null;
+  }, []);
+
   if (propertySchema.enum) {
     if (propertySchema.enum.every((item) => typeof item === "string")) {
       return (
-        <EnumSelectField
-          label={label}
-          name={fieldName}
-          options={propertySchema.enum as string[]}
-        />
+        <SelectField label={label} name={fieldName} options={enumOptions} />
       );
     } else {
       throw new Error(
