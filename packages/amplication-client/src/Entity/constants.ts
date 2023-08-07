@@ -138,7 +138,7 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
       },
       {
         label: "Big Integer",
-        value: "BIGINT",
+        value: "BIG_INT",
       },
     ],
   },
@@ -148,7 +148,12 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
       { label: "Float Number", value: "FLOAT" },
     ],
   },
-  [models.EnumDataType.DateTime]: {},
+  [models.EnumDataType.DateTime]: {
+    timeZone: [
+      { label: "Local Time", value: "localTime" },
+      { label: "Server Time", value: "serverTime" },
+    ],
+  },
   [models.EnumDataType.Lookup]: {},
   [models.EnumDataType.Boolean]: {},
   [models.EnumDataType.Json]: {},

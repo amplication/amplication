@@ -46,7 +46,7 @@ export const SchemaField = ({
 
         return {
           value: item,
-          label: labelByItem.value || item,
+          label: labelByItem.label || item,
         };
       });
     } else return null;
