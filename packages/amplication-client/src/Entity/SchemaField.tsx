@@ -17,6 +17,7 @@ import { useMemo } from "react";
 import { ENTITY_FIELD_ENUM_MAPPER } from "./constants";
 
 type Props = {
+  fieldDataType: models.EnumDataType;
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
@@ -26,6 +27,7 @@ type Props = {
 };
 
 export const SchemaField = ({
+  fieldDataType,
   propertyName,
   propertySchema,
   resourceId,
@@ -36,10 +38,17 @@ export const SchemaField = ({
 
   const enumOptions = useMemo((): OptionItem[] | null => {
     if (propertySchema.enum) {
-      return (propertySchema.enum as string[]).map((item) => ({
-        value: item,
-        label: ENTITY_FIELD_ENUM_MAPPER[propertyName][item] || item,
-      }));
+      return (propertySchema.enum as string[]).map((item) => {
+        const labelByItem: { label: string; value: string } =
+          ENTITY_FIELD_ENUM_MAPPER[fieldDataType][propertyName].find(
+            (option) => option.value === item
+          );
+
+        return {
+          value: item,
+          label: labelByItem.value || item,
+        };
+      });
     } else return null;
   }, []);
 
