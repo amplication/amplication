@@ -133,8 +133,12 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
   [models.EnumDataType.WholeNumber]: {
     dataType: [
       {
-        label: "Whole Number",
-        value: "bookmark",
+        label: "Integer",
+        value: "INT",
+      },
+      {
+        label: "Big Integer",
+        value: "BIGINT",
       },
     ],
   },
@@ -144,57 +148,24 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
       { label: "Float Number", value: "FLOAT" },
     ],
   },
-  [models.EnumDataType.DateTime]: {
-    label: "Date Time",
-    icon: "calendar",
-  },
-  [models.EnumDataType.Lookup]: {
-    label: "Relation to Entity",
-    icon: "lookup",
-  },
-  [models.EnumDataType.Boolean]: {
-    label: "Boolean",
-    icon: "check_square",
-  },
-  [models.EnumDataType.Json]: {
-    label: "Json",
-    icon: "code1",
-  },
-  [models.EnumDataType.OptionSet]: {
-    label: "Option Set",
-    icon: "option_set",
-  },
-  [models.EnumDataType.MultiSelectOptionSet]: {
-    label: "Multi Select Option Set",
-    icon: "multi_select_option_set",
-  },
-  [models.EnumDataType.GeographicLocation]: {
-    label: "Geographic Location",
-    icon: "map_pin",
-  },
-  [models.EnumDataType.CreatedAt]: {
-    label: "Created At",
-    icon: "created_at",
-  },
-  [models.EnumDataType.UpdatedAt]: {
-    label: "Updated At",
-    icon: "updated_at",
-  },
-
+  [models.EnumDataType.DateTime]: {},
+  [models.EnumDataType.Lookup]: {},
+  [models.EnumDataType.Boolean]: {},
+  [models.EnumDataType.Json]: {},
+  [models.EnumDataType.OptionSet]: {},
+  [models.EnumDataType.MultiSelectOptionSet]: {},
+  [models.EnumDataType.GeographicLocation]: {},
+  [models.EnumDataType.CreatedAt]: {},
+  [models.EnumDataType.UpdatedAt]: {},
   [models.EnumDataType.Id]: {
-    label: "Id",
-    icon: "id",
+    idType: [
+      { label: "UUID", value: "UUID" },
+      { label: "CUID", value: "CUID" },
+      { label: "Auto Increment", value: "AUTO_INCREMENT" },
+      { label: "Auto Increment Integer", value: "AUTO_INCREMENT_BIG_INT" },
+    ],
   },
-  [models.EnumDataType.Username]: {
-    label: "Username",
-    icon: "user",
-  },
-  [models.EnumDataType.Password]: {
-    label: "Password",
-    icon: "lock",
-  },
-  [models.EnumDataType.Roles]: {
-    label: "Roles",
-    icon: "users",
-  },
+  [models.EnumDataType.Username]: {},
+  [models.EnumDataType.Password]: {},
+  [models.EnumDataType.Roles]: {},
 };
