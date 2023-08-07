@@ -139,8 +139,10 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
     ],
   },
   [models.EnumDataType.DecimalNumber]: {
-    label: "Decimal Number",
-    icon: "decimal_number",
+    dataType: [
+      { label: "Decimal Number", value: "DECIMAL" },
+      { label: "Float Number", value: "FLOAT" },
+    ],
   },
   [models.EnumDataType.DateTime]: {
     label: "Date Time",

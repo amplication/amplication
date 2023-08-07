@@ -6,7 +6,6 @@ import {
   SelectField,
 } from "@amplication/ui/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
-import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/code-gen-types";
@@ -38,8 +37,8 @@ export const SchemaField = ({
   const enumOptions = useMemo((): OptionItem[] | null => {
     if (propertySchema.enum) {
       return (propertySchema.enum as string[]).map((item) => ({
-        value: item.toString(),
-        label: ENTITY_FIELD_ENUM_MAPPER[propertyName][item.toString()],
+        value: item,
+        label: ENTITY_FIELD_ENUM_MAPPER[propertyName][item] || item,
       }));
     } else return null;
   }, []);
