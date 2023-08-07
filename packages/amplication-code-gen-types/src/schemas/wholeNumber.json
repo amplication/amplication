@@ -6,6 +6,11 @@
   "additionalProperties": false,
   "required": ["minimumValue", "maximumValue"],
   "properties": {
+    "dataType": {
+      "type": "string",
+      "enum": ["INT", "BIG_INT"],
+      "default": "INT"
+    },
     "minimumValue": {
       "type": "integer",
       "description": "The minimum value",

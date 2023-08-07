@@ -6,6 +6,11 @@
   "additionalProperties": false,
   "required": ["minimumValue", "maximumValue", "precision"],
   "properties": {
+    "dataType": {
+      "type": "string",
+      "enum": ["DECIMAL", "FLOAT"],
+      "default": "DECIMAL"
+    },
     "minimumValue": {
       "type": "integer",
       "description": "The minimum value",
