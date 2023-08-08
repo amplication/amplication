@@ -69,6 +69,19 @@ export class SegmentAnalyticsService {
     }
   }
 
+  private parseValidUnixTimestampOrUndefined(
+    value: string
+  ): string | undefined {
+    const timestamp = parseInt(value, 10);
+
+    // Check if the value is an integer and within a valid range for Unix timestamps
+    if (!isNaN(timestamp) && Number.isInteger(timestamp) && timestamp >= 0) {
+      return value;
+    } else {
+      return undefined;
+    }
+  }
+
   public async identify(data: IdentifyData): Promise<void> {
     if (!this.analytics) return;
 
@@ -84,7 +97,9 @@ export class SegmentAnalyticsService {
     if (!this.analytics) return;
 
     const req = RequestContext?.currentContext?.req;
-    const analyticsSessionId = req?.analyticsSessionId;
+    const analyticsSessionId = this.parseValidUnixTimestampOrUndefined(
+      req?.analyticsSessionId
+    );
 
     this.analytics.track({
       ...data,
