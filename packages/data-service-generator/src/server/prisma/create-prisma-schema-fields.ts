@@ -47,6 +47,20 @@ export const idCallExpressionMapper: {
   UUID: UUID_CALL_EXPRESSION,
 };
 
+export const wholeNumberTypeMapper: {
+  [key in types.WholeNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  INT: PrismaSchemaDSLTypes.ScalarType.Int,
+  BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
+};
+
+export const decimalNumberTypeMapper: {
+  [key in types.DecimalNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  DECIMAL: PrismaSchemaDSLTypes.ScalarType.Decimal,
+  FLOAT: PrismaSchemaDSLTypes.ScalarType.Float,
+};
+
 export function createPrismaFields(
   field: EntityField,
   entity: Entity,
@@ -123,21 +137,27 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => [
-    PrismaSchemaDSL.createScalarField(
-      field.name,
-      PrismaSchemaDSLTypes.ScalarType.Int,
-      false,
-      field.required,
-      field.unique,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      field.customAttributes
-    ),
-  ],
+  ) => {
+    const { dataType } = (field?.properties as types.WholeNumber) || {
+      dataType: "INT",
+    };
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        field.name,
+        wholeNumberTypeMapper[dataType],
+        false,
+        field.required,
+        field.unique,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
+      ),
+    ];
+  },
   [EnumDataType.DateTime]: (
     field: EntityField,
     entity: Entity,
@@ -161,21 +181,26 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => [
-    PrismaSchemaDSL.createScalarField(
-      field.name,
-      PrismaSchemaDSLTypes.ScalarType.Float,
-      false,
-      field.required,
-      field.unique,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      field.customAttributes
-    ),
-  ],
+  ) => {
+    const { dataType } = (field?.properties as types.DecimalNumber) || {
+      dataType: "FLOAT",
+    };
+    return [
+      PrismaSchemaDSL.createScalarField(
+        field.name,
+        decimalNumberTypeMapper[dataType],
+        false,
+        field.required,
+        field.unique,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
+      ),
+    ];
+  },
   [EnumDataType.Boolean]: (
     field: EntityField,
     entity: Entity,
