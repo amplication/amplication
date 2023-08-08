@@ -107,7 +107,7 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                 <NameField
                   name="name"
                   disabled={
-                    resourceSettings.serviceSettings.authEntityName ===
+                    resourceSettings?.serviceSettings?.authEntityName ===
                     entity?.name
                   }
                   capitalized
