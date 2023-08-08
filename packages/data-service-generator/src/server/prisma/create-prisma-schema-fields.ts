@@ -29,6 +29,24 @@ export const NOW_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
   callee: PrismaSchemaDSLTypes.NOW,
 };
 
+export const idTypeMapper: {
+  [key in types.Id["idType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  AUTO_INCREMENT: PrismaSchemaDSLTypes.ScalarType.Int,
+  AUTO_INCREMENT_BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
+  CUID: PrismaSchemaDSLTypes.ScalarType.String,
+  UUID: PrismaSchemaDSLTypes.ScalarType.String,
+};
+
+export const idCallExpressionMapper: {
+  [key in types.Id["idType"]]: PrismaSchemaDSLTypes.CallExpression;
+} = {
+  AUTO_INCREMENT: INCREMENTAL_CALL_EXPRESSION,
+  AUTO_INCREMENT_BIG_INT: INCREMENTAL_CALL_EXPRESSION,
+  CUID: CUID_CALL_EXPRESSION,
+  UUID: UUID_CALL_EXPRESSION,
+};
+
 export function createPrismaFields(
   field: EntityField,
   entity: Entity,
@@ -286,9 +304,7 @@ export const createPrismaSchemaFieldsHandlers: {
       // Prisma Scalar Relation Field
       PrismaSchemaDSL.createScalarField(
         scalarRelationFieldName,
-        idType === "AUTO_INCREMENT"
-          ? PrismaSchemaDSLTypes.ScalarType.Int
-          : PrismaSchemaDSLTypes.ScalarType.String,
+        idTypeMapper[idType],
         false,
         field.required,
         !field.properties.allowMultipleSelection &&
@@ -350,25 +366,17 @@ export const createPrismaSchemaFieldsHandlers: {
   ) => {
     const { name, properties } = field;
     const { idType } = (properties as types.Id) || { idType: "CUID" };
-    const isAutoIncremental = idType === "AUTO_INCREMENT";
-    const isUUID = idType === "UUID";
 
     return [
       PrismaSchemaDSL.createScalarField(
         name,
-        isAutoIncremental
-          ? PrismaSchemaDSLTypes.ScalarType.Int
-          : PrismaSchemaDSLTypes.ScalarType.String,
+        idTypeMapper[idType],
         false,
         field.required,
         false,
         true,
         false,
-        isAutoIncremental
-          ? INCREMENTAL_CALL_EXPRESSION
-          : isUUID
-          ? UUID_CALL_EXPRESSION
-          : CUID_CALL_EXPRESSION,
+        idCallExpressionMapper[idType],
         undefined,
         undefined,
         field.customAttributes
