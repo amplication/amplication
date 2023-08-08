@@ -65,8 +65,10 @@ import {
   OBJECT_KIND_NAME,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
+  decimalNumberMap,
   idTypePropertyMap,
   idTypePropertyMapByFieldType,
+  wholeNumberMap,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -1175,6 +1177,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.DecimalNumber>{
+      dataType: decimalNumberMap[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
@@ -1215,6 +1218,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.WholeNumber>{
+      dataType: wholeNumberMap[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
     };

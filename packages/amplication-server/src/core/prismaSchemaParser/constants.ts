@@ -24,11 +24,29 @@ export const ARG_KEY_FIELD_NAME = "fields";
 export const ID_TYPE_CUID = "CUID";
 export const ID_TYPE_UUID = "UUID";
 export const ID_TYPE_AUTOINCREMENT = "AUTO_INCREMENT";
+export const INT_TYPE = "INT";
+export const BIG_INT_TYPE = "BIG_INT";
+export const DECIMAL_TYPE = "DECIMAL";
+export const FLOAT_TYPE = "FLOAT";
 
 export const idTypePropertyMap = {
   autoincrement: ID_TYPE_AUTOINCREMENT,
   cuid: ID_TYPE_CUID,
   uuid: ID_TYPE_UUID,
+};
+
+export const wholeNumberMap = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Int: INT_TYPE,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  BigInt: BIG_INT_TYPE,
+};
+
+export const decimalNumberMap = {
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Float: FLOAT_TYPE,
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  Decimal: DECIMAL_TYPE,
 };
 
 export const idTypePropertyMapByFieldType = {
