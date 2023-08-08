@@ -167,7 +167,10 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
       { label: "UUID", value: "UUID" },
       { label: "CUID", value: "CUID" },
       { label: "Auto Increment", value: "AUTO_INCREMENT" },
-      { label: "Auto Increment Integer", value: "AUTO_INCREMENT_BIG_INT" },
+      {
+        label: "Big Auto Increment",
+        value: "AUTO_INCREMENT_BIG_INT",
+      },
     ],
   },
   [models.EnumDataType.Username]: {},
