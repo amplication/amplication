@@ -7,6 +7,7 @@ type TEntities = {
     {
       id: string;
       displayName: string;
+      name: string;
     }
   ];
 };
@@ -30,7 +31,7 @@ const EntitySelectField = ({ resourceId, isValueId, ...props }: Props) => {
   const entityListOptions = useMemo(() => {
     return entityList
       ? entityList.entities.map((entity) => ({
-          value: isValueId ? entity.id : entity.displayName,
+          value: isValueId ? entity.id : entity.name,
           label: entity.displayName,
         }))
       : [];
@@ -46,6 +47,7 @@ export const GET_ENTITIES_FOR_ENTITY_SELECT_FIELD = gql`
     entities(where: { resource: { id: $resourceId } }) {
       id
       displayName
+      name
     }
   }
 `;
