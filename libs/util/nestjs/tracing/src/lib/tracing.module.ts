@@ -103,8 +103,7 @@ export class TracingModule extends OpenTelemetryModule {
         depth: 2,
       },
       "@opentelemetry/instrumentation-express": {
-        enabled: true,
-        ignoreLayersType: [ExpressLayerType.MIDDLEWARE],
+        enabled: false,
       },
     });
 
@@ -112,8 +111,8 @@ export class TracingModule extends OpenTelemetryModule {
       ...configuration,
       instrumentations: [
         autoInstrumentations,
-        new KafkaJsInstrumentation({}),
-        new PrismaInstrumentation({}),
+        // new KafkaJsInstrumentation({}),
+        // new PrismaInstrumentation({}),
       ],
       traceAutoInjectors:
         configuration?.traceAutoInjectors ||

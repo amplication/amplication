@@ -33,6 +33,7 @@ import {
   CreateAdminGitIgnoreParams,
   CreateDTOsParams,
   LoadStaticFilesParams,
+  CreateServerDockerComposeDevParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -49,6 +50,7 @@ export type Events = {
   [EventNames.CreateEntityControllerBase]?: PluginEventType<CreateEntityControllerBaseParams>;
   [EventNames.CreateServerDockerCompose]?: PluginEventType<CreateServerDockerComposeParams>;
   [EventNames.CreateServerDockerComposeDB]?: PluginEventType<CreateServerDockerComposeDBParams>;
+  [EventNames.CreateServerDockerComposeDev]?: PluginEventType<CreateServerDockerComposeDevParams>;
   [EventNames.CreatePrismaSchema]?: PluginEventType<CreatePrismaSchemaParams>;
   [EventNames.CreateMessageBroker]?: PluginEventType<CreateMessageBrokerParams>;
   [EventNames.CreateMessageBrokerTopicsEnum]?: PluginEventType<CreateMessageBrokerTopicsEnumParams>;

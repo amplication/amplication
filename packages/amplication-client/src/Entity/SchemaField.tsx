@@ -79,6 +79,7 @@ export const SchemaField = ({
               label={label}
               name={fieldName}
               resourceId={resourceId}
+              isValueId
             />
           );
         }

@@ -124,6 +124,7 @@ export type CreateBulkFieldsInput = Omit<
   "entity" | "properties"
 > & {
   properties: JsonObject;
+  permanentId: string;
   relatedFieldName?: string;
   relatedFieldDisplayName?: string;
   relatedFieldAllowMultipleSelection?: boolean;
@@ -634,6 +635,7 @@ export class EntityService {
           relatedFieldName,
           relatedFieldDisplayName,
           relatedFieldAllowMultipleSelection,
+          permanentId,
           ...rest
         } = field;
         try {
@@ -652,7 +654,7 @@ export class EntityService {
               relatedFieldAllowMultipleSelection,
             },
             user,
-
+            permanentId, // here we want to use the permanentId that was created in the prisma parser service
             false
           );
         } catch (error) {
@@ -1999,7 +2001,7 @@ export class EntityService {
         !entityFieldAllowMultipleSelection;
     }
 
-    return this.createField(createFieldArgs, user, true, trackEvent);
+    return this.createField(createFieldArgs, user, null, true, trackEvent);
   }
 
   /**
@@ -2209,6 +2211,7 @@ export class EntityService {
   async createField(
     args: CreateOneEntityFieldArgs,
     user: User,
+    permanentId?: string,
     enforceValidation = true,
     trackEvent = false
   ): Promise<EntityField> {
@@ -2252,7 +2255,7 @@ export class EntityService {
             args.relatedFieldAllowMultipleSelection,
             properties.relatedEntityId,
             entity.id,
-            fieldId,
+            permanentId ?? fieldId, // if permanentId was provided use it, otherwise use the fieldId
             user,
             properties.fkHolder
           );
@@ -2285,7 +2288,7 @@ export class EntityService {
         return this.prisma.entityField.create({
           data: {
             ...data,
-            permanentId: fieldId,
+            permanentId: permanentId ?? fieldId, // if permanentId was provided use it, otherwise use the fieldId
             entityVersion: {
               connect: {
                 // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -2414,7 +2417,7 @@ export class EntityService {
             relatedEntityId,
             relatedFieldId,
             // eslint-disable-next-line @typescript-eslint/naming-convention
-            fkHolder: fkHolder || relatedFieldId,
+            fkHolder,
           },
         },
       });
