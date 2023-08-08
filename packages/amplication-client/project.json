@@ -187,8 +187,7 @@
           ]
         }
       }
-    },
-    "deploy:container": { "executor": "nx:run-commands" }
+    }
   },
   "tags": []
 }
