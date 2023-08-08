@@ -640,6 +640,9 @@ export class PrismaSchemaParserService {
 
     models.forEach((model: Model) => {
       builder.model(model.name).then<Model>((modelItem) => {
+        const modelFields = modelItem.properties.filter(
+          (prop) => prop.type === FIELD_TYPE_NAME
+        ) as Field[];
         const modelAttributes = modelItem.properties.filter(
           (prop) =>
             prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
@@ -698,11 +701,15 @@ export class PrismaSchemaParserService {
                 // avoid formatting an arg when the field in the model was not formatted, for example: the fk field of a relation
                 // or a field that represents an enum value
                 for (const [index, arg] of attrArgArr.entries()) {
-                  const newFieldName = mapper.fieldNames[arg];
-
-                  if (newFieldName) {
-                    attrArgArr[index] = newFieldName.newName;
-                  }
+                  modelFields.forEach((field) => {
+                    // check that we are at the right field
+                    if (formatFieldName(field.name) === formatFieldName(arg)) {
+                      // if the field was formatted, we format the arg, otherwise we leave it as it is
+                      if (field.name !== arg) {
+                        attrArgArr[index] = field.name;
+                      }
+                    }
+                  });
                 }
               }
             }
