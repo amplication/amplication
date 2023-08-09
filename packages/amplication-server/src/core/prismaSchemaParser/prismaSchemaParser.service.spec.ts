@@ -178,11 +178,11 @@ describe("prismaSchemaParser", () => {
         expect(result).toEqual(expectedEntitiesWithFields);
       });
 
-      it("should NOT have the '@default' attribute as a custom attribute if it is an id field", async () => {
+      it("should NOT have the '@default' attribute Value (not Function) as a custom attribute if it is an id field", async () => {
         // arrange
         const prismaSchema = `datasource db {
           provider = "postgresql"
-          url      = env("DB_URL")
+          url      = env("DB_URL")  
         }
         
         generator client {
@@ -240,6 +240,7 @@ describe("prismaSchemaParser", () => {
                 searchable: false,
                 description: "",
                 properties: {
+                  dataType: "INT",
                   maximumValue: 99999999999,
                   minimumValue: 0,
                 },
@@ -279,6 +280,7 @@ describe("prismaSchemaParser", () => {
                 searchable: false,
                 description: "",
                 properties: {
+                  dataType: "INT",
                   maximumValue: 99999999999,
                   minimumValue: 0,
                 },
@@ -723,6 +725,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -822,6 +825,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -968,6 +972,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1045,6 +1050,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1133,6 +1139,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1210,6 +1217,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1280,6 +1288,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
+                    dataType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
