@@ -63,7 +63,7 @@ import {
   ID_DEFAULT_VALUE_CUID,
   ID_DEFAULT_VALUE_UUID,
   ID_FIELD_NAME,
-  ID_TYPE_AUTOINCREMENT,
+  ID_TYPE_AUTO_INCREMENT,
   ID_TYPE_AUTO_INCREMENT_BIG_INT,
   ID_TYPE_CUID,
   ID_TYPE_UUID,
@@ -1366,7 +1366,7 @@ export class PrismaSchemaParserService {
       }
       if (idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT) {
         if (field.fieldType === PRISMA_TYPE_INT) {
-          idType = ID_TYPE_AUTOINCREMENT;
+          idType = ID_TYPE_AUTO_INCREMENT;
         }
         if (field.fieldType === PRISMA_TYPE_BIG_INT) {
           idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;

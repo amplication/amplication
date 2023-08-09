@@ -27,7 +27,7 @@ export const ID_DEFAULT_VALUE_AUTO_INCREMENT = "autoincrement";
 
 export const ID_TYPE_CUID = "CUID";
 export const ID_TYPE_UUID = "UUID";
-export const ID_TYPE_AUTOINCREMENT = "AUTO_INCREMENT";
+export const ID_TYPE_AUTO_INCREMENT = "AUTO_INCREMENT";
 export const ID_TYPE_AUTO_INCREMENT_BIG_INT = "AUTO_INCREMENT_BIG_INT";
 export const INT_TYPE = "INT";
 export const BIG_INT_TYPE = "BIG_INT";
@@ -54,7 +54,7 @@ export const decimalNumberMap = {
 
 export const idTypePropertyMapByFieldType = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: ID_TYPE_AUTOINCREMENT,
+  Int: ID_TYPE_AUTO_INCREMENT,
   // eslint-disable-next-line @typescript-eslint/naming-convention
   String: ID_TYPE_CUID,
   // eslint-disable-next-line @typescript-eslint/naming-convention
