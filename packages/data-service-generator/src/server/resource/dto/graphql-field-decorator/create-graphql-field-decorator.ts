@@ -101,7 +101,9 @@ function createGraphQLFieldType(
   }
   if (
     prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Int
+    prismaField.type === ScalarType.Decimal ||
+    prismaField.type === ScalarType.Int ||
+    prismaField.type === ScalarType.BigInt
   ) {
     return NUMBER_ID;
   }
