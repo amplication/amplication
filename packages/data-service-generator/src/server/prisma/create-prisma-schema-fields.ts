@@ -29,7 +29,7 @@ export const NOW_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
   callee: PrismaSchemaDSLTypes.NOW,
 };
 
-export const idTypeMapper: {
+export const idTypeToPrismaScalarType: {
   [key in types.Id["idType"]]: PrismaSchemaDSLTypes.ScalarType;
 } = {
   AUTO_INCREMENT: PrismaSchemaDSLTypes.ScalarType.Int,
@@ -38,7 +38,7 @@ export const idTypeMapper: {
   UUID: PrismaSchemaDSLTypes.ScalarType.String,
 };
 
-export const idCallExpressionMapper: {
+export const idTypeToCallExpression: {
   [key in types.Id["idType"]]: PrismaSchemaDSLTypes.CallExpression;
 } = {
   AUTO_INCREMENT: INCREMENTAL_CALL_EXPRESSION,
@@ -47,14 +47,14 @@ export const idCallExpressionMapper: {
   UUID: UUID_CALL_EXPRESSION,
 };
 
-export const wholeNumberTypeMapper: {
+export const wholeNumberToPrismaScalarType: {
   [key in types.WholeNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
 } = {
   INT: PrismaSchemaDSLTypes.ScalarType.Int,
   BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
 };
 
-export const decimalNumberTypeMapper: {
+export const decimalNumberToPrismaScalarType: {
   [key in types.DecimalNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
 } = {
   DECIMAL: PrismaSchemaDSLTypes.ScalarType.Decimal,
@@ -145,7 +145,7 @@ export const createPrismaSchemaFieldsHandlers: {
     return [
       PrismaSchemaDSL.createScalarField(
         field.name,
-        wholeNumberTypeMapper[dataType],
+        wholeNumberToPrismaScalarType[dataType],
         false,
         field.required,
         field.unique,
@@ -188,7 +188,7 @@ export const createPrismaSchemaFieldsHandlers: {
     return [
       PrismaSchemaDSL.createScalarField(
         field.name,
-        decimalNumberTypeMapper[dataType],
+        decimalNumberToPrismaScalarType[dataType],
         false,
         field.required,
         field.unique,
@@ -329,7 +329,7 @@ export const createPrismaSchemaFieldsHandlers: {
       // Prisma Scalar Relation Field
       PrismaSchemaDSL.createScalarField(
         scalarRelationFieldName,
-        idTypeMapper[idType],
+        idTypeToPrismaScalarType[idType],
         false,
         field.required,
         !field.properties.allowMultipleSelection &&
@@ -395,13 +395,13 @@ export const createPrismaSchemaFieldsHandlers: {
     return [
       PrismaSchemaDSL.createScalarField(
         name,
-        idTypeMapper[idType],
+        idTypeToPrismaScalarType[idType],
         false,
         field.required,
         false,
         true,
         false,
-        idCallExpressionMapper[idType],
+        idTypeToCallExpression[idType],
         undefined,
         undefined,
         field.customAttributes
