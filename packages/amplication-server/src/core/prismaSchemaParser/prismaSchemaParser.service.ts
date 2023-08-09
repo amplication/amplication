@@ -14,6 +14,7 @@ import {
   ConcretePrismaSchemaBuilder,
   Attribute,
   BlockAttribute,
+  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -805,7 +806,10 @@ export class PrismaSchemaParserService {
           field.attributes?.some(
             (attr) =>
               attr.name === DEFAULT_ATTRIBUTE_NAME &&
-              attr.args.some((arg) => arg.type === "attributeArgument")
+              attr.args.some(
+                (arg) =>
+                  (arg.value as AttributeArgument | Func).type !== "function"
+              )
           );
 
         hasDefaultValueAttributeOnIdField &&
