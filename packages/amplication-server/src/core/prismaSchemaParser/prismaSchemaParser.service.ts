@@ -59,11 +59,21 @@ import {
   FIELD_TYPE_NAME,
   FUNCTION_ARG_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT,
+  ID_DEFAULT_VALUE_CUID,
+  ID_DEFAULT_VALUE_UUID,
   ID_FIELD_NAME,
+  ID_TYPE_AUTOINCREMENT,
+  ID_TYPE_AUTO_INCREMENT_BIG_INT,
+  ID_TYPE_CUID,
+  ID_TYPE_UUID,
   INDEX_ATTRIBUTE_NAME,
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
+  PRISMA_TYPE_BIG_INT,
+  PRISMA_TYPE_INT,
+  PRISMA_TYPE_STRING,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
   decimalNumberMap,
@@ -1346,20 +1356,20 @@ export class PrismaSchemaParserService {
     if (defaultIdAttribute && defaultIdAttribute.args) {
       let idType: types.Id["idType"];
       const idTypeDefaultArg = (defaultIdAttribute.args[0].value as Func).name;
-      if (field.fieldType === "String") {
-        if (idTypeDefaultArg === "cuid") {
-          idType = "CUID";
+      if (field.fieldType === PRISMA_TYPE_STRING) {
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_CUID) {
+          idType = ID_TYPE_CUID;
         }
-        if (idTypeDefaultArg === "uuid") {
-          idType = "UUID";
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_UUID) {
+          idType = ID_TYPE_UUID;
         }
       }
-      if (idTypeDefaultArg === "autoincrement") {
-        if (field.fieldType === "Int") {
-          idType = "AUTO_INCREMENT";
+      if (idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT) {
+        if (field.fieldType === PRISMA_TYPE_INT) {
+          idType = ID_TYPE_AUTOINCREMENT;
         }
-        if (field.fieldType === "BigInt") {
-          idType = "AUTO_INCREMENT_BIG_INT";
+        if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+          idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
         }
       }
 
