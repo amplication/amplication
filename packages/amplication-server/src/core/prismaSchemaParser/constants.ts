@@ -29,12 +29,6 @@ export const BIG_INT_TYPE = "BIG_INT";
 export const DECIMAL_TYPE = "DECIMAL";
 export const FLOAT_TYPE = "FLOAT";
 
-export const idTypePropertyMap = {
-  autoincrement: ID_TYPE_AUTOINCREMENT,
-  cuid: ID_TYPE_CUID,
-  uuid: ID_TYPE_UUID,
-};
-
 export const wholeNumberMap = {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   Int: INT_TYPE,

@@ -14,6 +14,7 @@ import {
   ConcretePrismaSchemaBuilder,
   Attribute,
   BlockAttribute,
+  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -66,7 +67,6 @@ import {
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
   decimalNumberMap,
-  idTypePropertyMap,
   idTypePropertyMapByFieldType,
   wholeNumberMap,
 } from "./constants";
@@ -801,13 +801,19 @@ export class PrismaSchemaParserService {
           };
         }
 
-        const hasDefaultAttributeOnIdField =
+        const hasDefaultValueAttributeOnIdField =
           isIdField &&
           field.attributes?.some(
-            (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+            (attr) =>
+              attr.name === DEFAULT_ATTRIBUTE_NAME &&
+              attr.args.some(
+                (arg) =>
+                  (arg.value as AttributeArgument | Func).type ===
+                  "attributeArgument"
+              )
           );
 
-        hasDefaultAttributeOnIdField &&
+        hasDefaultValueAttributeOnIdField &&
           builder
             .model(model.name)
             .field(field.name)
@@ -1339,9 +1345,27 @@ export class PrismaSchemaParserService {
     }
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
-      const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
+      let idType: types.Id["idType"];
+      const idTypeDefaultArg = (defaultIdAttribute.args[0].value as Func).name;
+      if (field.fieldType === "String") {
+        if (idTypeDefaultArg === "cuid") {
+          idType = "CUID";
+        }
+        if (idTypeDefaultArg === "uuid") {
+          idType = "UUID";
+        }
+      }
+      if (idTypeDefaultArg === "autoincrement") {
+        if (field.fieldType === "Int") {
+          idType = "AUTO_INCREMENT";
+        }
+        if (field.fieldType === "BigInt") {
+          idType = "AUTO_INCREMENT_BIG_INT";
+        }
+      }
+
       const properties = <types.Id>{
-        idType: idTypePropertyMap[idType],
+        idType,
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;
