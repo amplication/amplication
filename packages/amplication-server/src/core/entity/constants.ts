@@ -191,10 +191,12 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   },
   [EnumDataType.Email]: {},
   [EnumDataType.WholeNumber]: {
+    dataType: "INT",
     minimumValue: -999999999,
     maximumValue: 999999999,
   },
   [EnumDataType.DecimalNumber]: {
+    dataType: "FLOAT",
     minimumValue: -999999999,
     maximumValue: 999999999,
     precision: 2,
