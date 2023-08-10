@@ -50,7 +50,7 @@ export const SchemaField = ({
         };
       });
     } else return null;
-  }, []);
+  }, [fieldDataType, propertyName, propertySchema]);
 
   if (propertySchema.enum) {
     if (propertySchema.enum.every((item) => typeof item === "string")) {
