@@ -131,7 +131,7 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
   [models.EnumDataType.MultiLineText]: {},
   [models.EnumDataType.Email]: {},
   [models.EnumDataType.WholeNumber]: {
-    dataType: [
+    databaseFieldType: [
       {
         label: "Integer",
         value: "INT",
@@ -143,7 +143,7 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
     ],
   },
   [models.EnumDataType.DecimalNumber]: {
-    dataType: [
+    databaseFieldType: [
       { label: "Decimal Number", value: "DECIMAL" },
       { label: "Float Number", value: "FLOAT" },
     ],
