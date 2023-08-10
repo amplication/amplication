@@ -4,7 +4,7 @@
 -- AND NOT (ef.properties)::jsonb ? 'dataType';
 
 UPDATE "EntityField"
-SET properties = properties || '{ "dataType": "INT" }'
+SET properties = properties || '{ "databaseFieldType": "INT" }'
 WHERE "dataType" = 'WholeNumber'
 AND NOT (properties)::jsonb ? 'dataType';
 
