@@ -1192,7 +1192,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.DecimalNumber>{
-      dataType: decimalNumberMap[field.fieldType as string],
+      databaseFieldType: decimalNumberMap[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
@@ -1233,7 +1233,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.WholeNumber>{
-      dataType: wholeNumberMap[field.fieldType as string],
+      databaseFieldType: wholeNumberMap[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
     };
