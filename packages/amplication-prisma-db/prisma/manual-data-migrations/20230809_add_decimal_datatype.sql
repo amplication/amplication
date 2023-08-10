@@ -6,4 +6,4 @@
 UPDATE "EntityField"
 SET properties = properties || '{ "databaseFieldType": "FLOAT" }'
 WHERE "dataType" = 'DecimalNumber'
-AND NOT (properties)::jsonb ? 'dataType';
+AND NOT (properties)::jsonb ? 'databaseFieldType';
