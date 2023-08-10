@@ -240,7 +240,7 @@ describe("prismaSchemaParser", () => {
                 searchable: false,
                 description: "",
                 properties: {
-                  dataType: "INT",
+                  databaseFieldType: "INT",
                   maximumValue: 99999999999,
                   minimumValue: 0,
                 },
@@ -280,7 +280,7 @@ describe("prismaSchemaParser", () => {
                 searchable: false,
                 description: "",
                 properties: {
-                  dataType: "INT",
+                  databaseFieldType: "INT",
                   maximumValue: 99999999999,
                   minimumValue: 0,
                 },
@@ -738,7 +738,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "DECIMAL",
+                    databaseFieldType: "DECIMAL",
                     minimumValue: 0,
                     maximumValue: 99999999999,
                     precision: 8,
@@ -822,7 +822,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "FLOAT",
+                    databaseFieldType: "FLOAT",
                     minimumValue: 0,
                     maximumValue: 99999999999,
                     precision: 8,
@@ -906,7 +906,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     minimumValue: 0,
                     maximumValue: 99999999999,
                   },
@@ -989,7 +989,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "BIG_INT",
+                    databaseFieldType: "BIG_INT",
                     minimumValue: 0,
                     maximumValue: 99999999999,
                   },
@@ -1268,7 +1268,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1368,7 +1368,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1515,7 +1515,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1593,7 +1593,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1682,7 +1682,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1760,7 +1760,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
@@ -1831,7 +1831,7 @@ describe("prismaSchemaParser", () => {
                   searchable: false,
                   description: "",
                   properties: {
-                    dataType: "INT",
+                    databaseFieldType: "INT",
                     maximumValue: 99999999999,
                     minimumValue: 0,
                   },
