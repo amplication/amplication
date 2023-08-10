@@ -475,7 +475,7 @@ import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
-import { DecimalNullableFilter } from \\"../../util/DecimalNullableFilter\\";
+import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
@@ -489,7 +489,7 @@ export type CustomerWhereInput = {
   lastName?: StringNullableFilter;
   isVip?: BooleanNullableFilter;
   birthData?: DateTimeNullableFilter;
-  averageSale?: DecimalNullableFilter;
+  averageSale?: FloatNullableFilter;
   favoriteNumber?: IntNullableFilter;
   geoLocation?: StringNullableFilter;
   comments?: StringNullableFilter;
@@ -3057,7 +3057,7 @@ model User {
   email              String
   age                Int
   birthDate          DateTime
-  score              Decimal
+  score              Float
   manager            User?               @relation(name: \\"employees\\", fields: [managerId], references: [id])
   managerId          String?
   employees          User[]              @relation(name: \\"employees\\")
@@ -3114,7 +3114,7 @@ model Customer {
   lastName          String?
   isVip             Boolean?
   birthData         DateTime?
-  averageSale       Decimal?
+  averageSale       Float?
   favoriteNumber    Int?
   geoLocation       String?
   comments          String?
@@ -4352,7 +4352,7 @@ import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
-import { DecimalNullableFilter } from \\"../../util/DecimalNullableFilter\\";
+import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
 import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -4450,14 +4450,14 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
-    type: DecimalNullableFilter,
+    type: FloatNullableFilter,
   })
-  @Type(() => DecimalNullableFilter)
+  @Type(() => FloatNullableFilter)
   @IsOptional()
-  @Field(() => DecimalNullableFilter, {
+  @Field(() => FloatNullableFilter, {
     nullable: true,
   })
-  averageSale?: DecimalNullableFilter;
+  averageSale?: FloatNullableFilter;
 
   @ApiProperty({
     required: false,
