@@ -4,6 +4,6 @@
 -- AND NOT (ef.properties)::jsonb ? 'dataType';
 
 UPDATE "EntityField"
-SET properties = properties || '{ "dataType": "FLOAT" }'
+SET properties = properties || '{ "databaseFieldType": "FLOAT" }'
 WHERE "dataType" = 'DecimalNumber'
 AND NOT (properties)::jsonb ? 'dataType';
