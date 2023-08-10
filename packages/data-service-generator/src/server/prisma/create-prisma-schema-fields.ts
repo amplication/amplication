@@ -48,14 +48,14 @@ export const idTypeToCallExpression: {
 };
 
 export const wholeNumberToPrismaScalarType: {
-  [key in types.WholeNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
+  [key in types.WholeNumber["databaseFieldType"]]: PrismaSchemaDSLTypes.ScalarType;
 } = {
   INT: PrismaSchemaDSLTypes.ScalarType.Int,
   BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
 };
 
 export const decimalNumberToPrismaScalarType: {
-  [key in types.DecimalNumber["dataType"]]: PrismaSchemaDSLTypes.ScalarType;
+  [key in types.DecimalNumber["databaseFieldType"]]: PrismaSchemaDSLTypes.ScalarType;
 } = {
   DECIMAL: PrismaSchemaDSLTypes.ScalarType.Decimal,
   FLOAT: PrismaSchemaDSLTypes.ScalarType.Float,
@@ -138,13 +138,13 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const dataType =
-      (field?.properties as types.WholeNumber)?.dataType ?? "INT";
+    const databaseFieldType =
+      (field?.properties as types.WholeNumber)?.databaseFieldType ?? "INT";
 
     return [
       PrismaSchemaDSL.createScalarField(
         field.name,
-        wholeNumberToPrismaScalarType[dataType],
+        wholeNumberToPrismaScalarType[databaseFieldType],
         false,
         field.required,
         field.unique,
@@ -181,13 +181,13 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const dataType =
-      (field?.properties as types.DecimalNumber)?.dataType ?? "FLOAT";
+    const databaseFieldType =
+      (field?.properties as types.DecimalNumber)?.databaseFieldType ?? "FLOAT";
 
     return [
       PrismaSchemaDSL.createScalarField(
         field.name,
-        decimalNumberToPrismaScalarType[dataType],
+        decimalNumberToPrismaScalarType[databaseFieldType],
         false,
         field.required,
         field.unique,
