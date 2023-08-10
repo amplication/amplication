@@ -6,9 +6,9 @@
   "additionalProperties": false,
   "required": ["minimumValue", "maximumValue", "precision"],
   "properties": {
-    "dataType": {
+    "databaseFieldType": {
       "type": "string",
-      "description": "The Prisma model field scalar type",
+      "description": "The database field scalar type",
       "enum": ["DECIMAL", "FLOAT"],
       "default": "DECIMAL"
     },
