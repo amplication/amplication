@@ -182,7 +182,7 @@ export const createPrismaSchemaFieldsHandlers: {
     fieldNamesCount: Record<string, number> = {}
   ) => {
     const dataType =
-      (field?.properties as types.DecimalNumber)?.dataType ?? "DECIMAL";
+      (field?.properties as types.DecimalNumber)?.dataType ?? "FLOAT";
 
     return [
       PrismaSchemaDSL.createScalarField(
