@@ -138,9 +138,8 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType } = (field?.properties as types.WholeNumber) || {
-      dataType: "INT",
-    };
+    const dataType =
+      (field?.properties as types.WholeNumber)?.dataType ?? "INT";
 
     return [
       PrismaSchemaDSL.createScalarField(
@@ -182,9 +181,9 @@ export const createPrismaSchemaFieldsHandlers: {
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
   ) => {
-    const { dataType } = (field?.properties as types.DecimalNumber) || {
-      dataType: "FLOAT",
-    };
+    const dataType =
+      (field?.properties as types.DecimalNumber)?.dataType ?? "DECIMAL";
+
     return [
       PrismaSchemaDSL.createScalarField(
         field.name,
@@ -306,9 +305,8 @@ export const createPrismaSchemaFieldsHandlers: {
       (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
     );
 
-    const { idType } = (relatedEntityFiledId?.properties as types.Id) || {
-      idType: "CUID",
-    };
+    const idType =
+      (relatedEntityFiledId?.properties as types.Id)?.idType ?? "CUID";
 
     return [
       PrismaSchemaDSL.createObjectField(
@@ -390,7 +388,7 @@ export const createPrismaSchemaFieldsHandlers: {
     fieldNamesCount: Record<string, number> = {}
   ) => {
     const { name, properties } = field;
-    const { idType } = (properties as types.Id) || { idType: "CUID" };
+    const idType = (properties as types.Id)?.idType ?? "CUID";
 
     return [
       PrismaSchemaDSL.createScalarField(
