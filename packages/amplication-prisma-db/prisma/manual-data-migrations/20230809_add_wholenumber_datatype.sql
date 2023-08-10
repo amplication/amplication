@@ -1,7 +1,7 @@
 -- SELECT ef."name", ef."dataType", ef.properties
 -- FROM "EntityField" as ef
 -- WHERE ef."dataType" = 'WholeNumber'
--- AND NOT (ef.properties)::jsonb ? 'dataType';
+-- AND NOT (ef.properties)::jsonb ? 'databaseFieldType';
 
 UPDATE "EntityField"
 SET properties = properties || '{ "databaseFieldType": "INT" }'
