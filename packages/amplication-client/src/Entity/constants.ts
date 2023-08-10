@@ -144,8 +144,8 @@ export const ENTITY_FIELD_ENUM_MAPPER: {
   },
   [models.EnumDataType.DecimalNumber]: {
     databaseFieldType: [
-      { label: "Decimal Number", value: "DECIMAL" },
-      { label: "Float Number", value: "FLOAT" },
+      { label: "Decimal", value: "DECIMAL" },
+      { label: "Float", value: "FLOAT" },
     ],
   },
   [models.EnumDataType.DateTime]: {
