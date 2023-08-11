@@ -3374,7 +3374,7 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
-  IsNumber,
+  IsDecimal,
   IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
@@ -3467,7 +3467,7 @@ class Customer {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsDecimal()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -3478,7 +3478,7 @@ class Customer {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -3604,15 +3604,18 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsOptional,
   IsBoolean,
   IsDate,
-  IsNumber,
+  IsDecimal,
+  IsInt,
   IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
@@ -3677,7 +3680,7 @@ class CustomerCreateInput {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsDecimal()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -3688,7 +3691,7 @@ class CustomerCreateInput {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -4145,15 +4148,18 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+
 import {
   IsString,
   IsOptional,
   IsBoolean,
   IsDate,
-  IsNumber,
+  IsDecimal,
+  IsInt,
   IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
+
 import { Type } from \\"class-transformer\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
@@ -4221,7 +4227,7 @@ class CustomerUpdateInput {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsDecimal()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
@@ -4232,7 +4238,7 @@ class CustomerUpdateInput {
     required: false,
     type: Number,
   })
-  @IsNumber()
+  @IsInt()
   @IsOptional()
   @Field(() => Number, {
     nullable: true,
