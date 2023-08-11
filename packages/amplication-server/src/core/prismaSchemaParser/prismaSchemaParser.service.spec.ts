@@ -158,7 +158,7 @@ describe("prismaSchemaParser", () => {
                 properties: {
                   maxLength: 256,
                 },
-                customAttributes: "@db.VarChar(256)",
+                customAttributes: "@postgresql.VarChar(256)",
               },
               {
                 permanentId: expect.any(String),
@@ -362,7 +362,7 @@ describe("prismaSchemaParser", () => {
                 properties: {
                   maxLength: 256,
                 },
-                customAttributes: "@db.VarChar(256)",
+                customAttributes: "@postgresql.VarChar(256)",
               },
               {
                 permanentId: expect.any(String),
@@ -607,7 +607,7 @@ describe("prismaSchemaParser", () => {
                 properties: {
                   maxLength: 256,
                 },
-                customAttributes: "@db.VarChar(256)",
+                customAttributes: "@postgresql.VarChar(256)",
               },
               {
                 permanentId: expect.any(String),
