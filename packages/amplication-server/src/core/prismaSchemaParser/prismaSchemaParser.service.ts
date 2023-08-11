@@ -14,6 +14,8 @@ import {
   ConcretePrismaSchemaBuilder,
   Attribute,
   BlockAttribute,
+  Datasource,
+  Assignment,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -53,6 +55,7 @@ import {
   ARG_KEY_FIELD_NAME,
   ARRAY_ARG_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
+  DATA_SOURCE_TYPE_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   FIELD_TYPE_NAME,
@@ -63,6 +66,7 @@ import {
   MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
+  PROVIDER_TYPE_NAME,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
   idTypePropertyMap,
@@ -80,6 +84,7 @@ export class PrismaSchemaParserService {
     this.prepareModelNames,
     this.prepareFieldNames,
     this.prepareFieldTypes,
+    this.prepareFieldAttributes,
     this.prepareModelIdAttribute,
     this.prepareModelCompositeTypeAttributes,
     this.prepareIdField,
@@ -557,6 +562,50 @@ export class PrismaSchemaParserService {
               .then<Field>((field) => {
                 field.fieldType = newName;
               });
+          }
+        });
+      });
+    });
+
+    return {
+      builder,
+      existingEntities,
+      mapper,
+      actionContext,
+    };
+  }
+
+  /**
+   * change the attribute group from "db" to provider name, i.e. "db" -> "mysql"
+   */
+  private prepareFieldAttributes({
+    builder,
+    existingEntities,
+    mapper,
+    actionContext,
+  }: PrepareOperationIO): PrepareOperationIO {
+    const schema = builder.getSchema();
+    const datasource = schema.list.find(
+      (item) => item.type === DATA_SOURCE_TYPE_NAME
+    ) as Datasource;
+
+    const provider = datasource.assignments.find(
+      (assignment: Assignment) => assignment.key === PROVIDER_TYPE_NAME
+    ) as Assignment;
+
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+
+    models.forEach((model: Model) => {
+      const modelFields = model.properties.filter(
+        (prop) => prop.type === FIELD_TYPE_NAME
+      ) as Field[];
+
+      modelFields.forEach((field: Field) => {
+        field.attributes?.forEach((attribute: Attribute) => {
+          if (attribute.group && attribute.group !== provider.value) {
+            attribute.group = provider.value.toString().replace(/"/g, "");
           }
         });
       });

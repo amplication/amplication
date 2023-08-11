@@ -3,6 +3,8 @@ export const FIELD_TYPE_NAME = "field";
 export const ENUM_TYPE_NAME = "enum";
 export const ENUMERATOR_TYPE_NAME = "enumerator";
 export const ATTRIBUTE_TYPE_NAME = "attribute";
+export const DATA_SOURCE_TYPE_NAME = "datasource";
+export const PROVIDER_TYPE_NAME = "provider";
 
 export const KEY_VALUE_ARG_TYPE_NAME = "keyValue";
 export const ARRAY_ARG_TYPE_NAME = "array";
