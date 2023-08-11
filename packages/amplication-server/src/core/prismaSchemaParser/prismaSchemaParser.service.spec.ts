@@ -1767,6 +1767,73 @@ describe("prismaSchemaParser", () => {
           });
         });
       });
+
+      it("should replace the group attribute name to the provider name", async () => {
+        // arrange
+        const prismaSchema = `datasource db {
+          provider = "postgresql"
+          url      = env("DB_URL")
+        }
+        
+        generator client {
+          provider = "prisma-client-js"
+        }
+
+        model Admin {
+          id          Int     @id @default(cuid())
+          name        String @db.VarChar(255)
+        }
+        `;
+        const existingEntities: ExistingEntitySelect[] = [];
+        // act
+        const result = await service.convertPrismaSchemaForImportObjects(
+          prismaSchema,
+          existingEntities,
+          actionContext
+        );
+        // assert
+        const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+          {
+            id: expect.any(String),
+            name: "Admin",
+            displayName: "Admin",
+            pluralDisplayName: "Admins",
+            description: "",
+            customAttributes: "",
+            fields: [
+              {
+                permanentId: expect.any(String),
+                name: "id",
+                displayName: "Id",
+                dataType: EnumDataType.Id,
+                required: true,
+                unique: false,
+                searchable: false,
+                description: "",
+                properties: {
+                  idType: "AUTO_INCREMENT",
+                },
+                customAttributes: "",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "name",
+                displayName: "Name",
+                dataType: EnumDataType.SingleLineText,
+                required: true,
+                unique: false,
+                searchable: false,
+                description: "",
+                properties: {
+                  maxLength: 256,
+                },
+                customAttributes: "@postgresql.VarChar(255)",
+              },
+            ],
+          },
+        ];
+        expect(result).toEqual(expectedEntitiesWithFields);
+      });
     });
   });
 });
