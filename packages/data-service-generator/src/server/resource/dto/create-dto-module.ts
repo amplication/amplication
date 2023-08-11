@@ -21,6 +21,7 @@ import {
   IS_JSON_VALUE_ID,
   VALIDATE_NESTED_ID,
   CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE,
+  IS_DECIMAL_ID,
 } from "./class-validator.util";
 import {
   CLASS_TRANSFORMER_MODULE,
@@ -64,6 +65,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_DATE_ID,
     IS_NUMBER_ID,
     IS_INT_ID,
+    IS_DECIMAL_ID,
     IS_STRING_ID,
     IS_OPTIONAL_ID,
     IS_ENUM_ID,

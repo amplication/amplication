@@ -22,6 +22,7 @@ import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
+  IS_DECIMAL_ID,
   IS_ENUM_ID,
   IS_INT_ID,
   IS_JSON_VALUE_ID,
@@ -116,8 +117,8 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Int]: IS_INT_ID,
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: IS_JSON_VALUE_ID,
-  [ScalarType.Decimal]: IS_NUMBER_ID,
-  [ScalarType.BigInt]: IS_NUMBER_ID,
+  [ScalarType.Decimal]: IS_DECIMAL_ID,
+  [ScalarType.BigInt]: IS_INT_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
