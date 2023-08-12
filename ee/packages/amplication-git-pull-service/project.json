@@ -121,7 +121,7 @@
         "cwd": "ee/packages/amplication-git-pull-service"
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,

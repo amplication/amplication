@@ -48,6 +48,11 @@ export class EntityFieldCreateInput {
   })
   description!: string;
 
+  @Field(() => String, {
+    nullable: true,
+  })
+  customAttributes?: string;
+
   @Field(() => WhereParentIdInput, {
     nullable: false,
   })

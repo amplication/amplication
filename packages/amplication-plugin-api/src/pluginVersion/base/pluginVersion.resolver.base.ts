@@ -9,26 +9,26 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { Public } from "../../decorators/public.decorator";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreatePluginVersionArgs } from "./CreatePluginVersionArgs";
 import { UpdatePluginVersionArgs } from "./UpdatePluginVersionArgs";
 import { DeletePluginVersionArgs } from "./DeletePluginVersionArgs";
+import { PluginVersionCountArgs } from "./PluginVersionCountArgs";
 import { PluginVersionFindManyArgs } from "./PluginVersionFindManyArgs";
 import { PluginVersionFindUniqueArgs } from "./PluginVersionFindUniqueArgs";
 import { PluginVersion } from "./PluginVersion";
 import { PluginVersionService } from "../pluginVersion.service";
-
-@graphql.Resolver(() => PluginVersion)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => PluginVersion)
 export class PluginVersionResolverBase {
   constructor(
     protected readonly service: PluginVersionService,
@@ -38,15 +38,11 @@ export class PluginVersionResolverBase {
   @Public()
   @graphql.Query(() => MetaQueryPayload)
   async _pluginVersionsMeta(
-    @graphql.Args() args: PluginVersionFindManyArgs
+    @graphql.Args() args: PluginVersionCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 

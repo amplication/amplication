@@ -30,12 +30,15 @@ on:
       affected-e2e:
         description: Nx e2e projects affected by the changes
         value: ${{ jobs.nx.outputs.affected-e2e }}
-      affected-dockerable: 
-        description: Nx projects configured with docker:build affected by the changes
-        value: ${{ jobs.nx.outputs.affected-dockerable }}
-      affected-deployable: 
-        description:  Nx projects configured with deploy affected by the changes
-        value: ${{ jobs.nx.outputs.affected-deployable }}
+      affected-package-container: 
+        description: Nx projects configured with package:container affected by the changes
+        value: ${{ jobs.nx.outputs.affected-package-container }}
+      affected-deploy-static: 
+        description: Nx projects configured with deploy:static affected by the changes
+        value: ${{ jobs.nx.outputs.affected-deploy-static }}
+      affected-deploy-container: 
+        description: Nx projects configured with deploy:container affected by the changes
+        value: ${{ jobs.nx.outputs.affected-deploy-container }}
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -53,8 +56,9 @@ jobs:
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
       affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
-      affected-dockerable: ${{ steps.configure-nx.outputs.affected-dockerable }}
-      affected-deployable: ${{ steps.configure-nx.outputs.affected-deployable }}
+      affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -70,7 +74,7 @@ jobs:
           node-version-file: 'package.json'
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
-      
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -80,20 +84,8 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache other node modules
-        id: cache-other-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-other-node-modules
-        with:
-          path: |
-            libs/data-service-generator/node_modules
-            libs/util/code-gen-utils/node_modules
-            packages/amplication-cli/node_modules
-          key:  ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
-
       - name: Install dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
       - name: Evaluate affected projects
@@ -102,7 +94,8 @@ jobs:
           echo affected-apps=$(npx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-lib=$(npx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-e2e=$(npx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-dockerable=$(npx nx print-affected --target=docker:build --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deployable=$(npx nx print-affected --target=deploy --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(npx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(npx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(npx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected
   

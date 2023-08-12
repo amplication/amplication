@@ -42,7 +42,8 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-git-pull-request-service:build"
+        "buildTarget": "amplication-git-pull-request-service:build",
+        "port": 7001
       },
       "configurations": {
         "production": {
@@ -50,7 +51,7 @@
         }
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
@@ -63,7 +64,7 @@
         }
       }
     },
-    "deploy": {
+    "deploy:container": {
       "executor": "nx:run-commands"
     }
   },

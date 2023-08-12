@@ -8,7 +8,7 @@
     "graphql": "15.6.1",
     "lodash": "4.17.21",
     "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "0.0.13",
+    "ra-data-graphql-amplication": "0.0.14",
     "react": "16.14.0",
     "react-admin": "3.19.11",
     "react-dom": "16.14.0",
@@ -26,7 +26,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "docker:build": "docker build ."
+    "package:container": "docker build ."
   },
   "eslintConfig": {},
   "browserslist": {

@@ -43,7 +43,7 @@ import { Logger } from '@amplication/util/logging';
 
 const logger = new Logger ({
   isProduction: true,
-  serviceName: "component-name",
+  component: "component-name",
   logLevel: LogLevel.Warn
 })
 
@@ -52,6 +52,13 @@ const logMe = () => {
     // ....
 }
 ```
+
+The minimum log level can be configured also with the `LOG_LEVEL` environment variable, instead of the `logLevel: LogLevel.Warn`, to one of the following values:
+- `debug`
+- `info`
+- `warn`
+- `error`
+
 
 ## Testing utilsutils
 

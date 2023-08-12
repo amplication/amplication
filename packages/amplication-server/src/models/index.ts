@@ -19,3 +19,4 @@ export { BlockInputOutput } from "./BlockInputOutput";
 export { PropertySelector } from "./PropertySelector";
 export { Project } from "./Project";
 export { GitOrganization } from "./GitOrganization";
+export { GitRepository } from "./GitRepository";

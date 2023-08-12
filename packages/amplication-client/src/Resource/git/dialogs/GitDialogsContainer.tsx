@@ -1,6 +1,5 @@
 import { Dialog } from "@amplication/ui/design-system";
 import { ApolloError } from "@apollo/client";
-import React from "react";
 import { EnumGitProvider } from "../../../models";
 import GitCreateRepo from "./GitCreateRepo/GitCreateRepo";
 import WizardGitCreateRepo from "./GitCreateRepo/WizardGitCreateRepo";
@@ -8,34 +7,37 @@ import GitRepos, {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
+import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
+import "./GitDialogsContainer.scss";
+import { useCallback } from "react";
+import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
 type Props = {
-  gitOrganizationId: string;
+  gitOrganization: GitOrganizationFromGitRepository;
   isSelectRepositoryOpen: boolean;
   isPopupFailed: boolean;
   gitCreateRepoOpen: boolean;
   gitProvider: EnumGitProvider;
-  gitOrganizationName: string;
   src: string;
   repoCreated?: {
     isRepoCreateLoading: boolean;
     RepoCreatedError: ApolloError;
   };
-
   onGitCreateRepository: (data: GitRepositoryCreatedData) => void;
   onPopupFailedClose: () => void;
   onGitCreateRepositoryClose: () => void;
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: GitRepositorySelected) => void;
+  openCreateNewRepo?: () => void;
+  closeSelectRepoDialog?: () => void;
 };
 
 export default function GitDialogsContainer({
-  gitOrganizationId,
+  gitOrganization,
   isSelectRepositoryOpen,
   isPopupFailed,
   gitCreateRepoOpen,
   gitProvider,
-  gitOrganizationName,
   repoCreated,
   src,
   onGitCreateRepository,
@@ -43,19 +45,29 @@ export default function GitDialogsContainer({
   onSelectGitRepositoryDialogClose,
   onSelectGitRepository,
   onGitCreateRepositoryClose,
+  openCreateNewRepo,
+  closeSelectRepoDialog,
 }: Props) {
+  const handleCreateNewRepoClick = useCallback(() => {
+    closeSelectRepoDialog();
+    openCreateNewRepo();
+  }, [closeSelectRepoDialog, openCreateNewRepo]);
+
+  const providerDisplayName = PROVIDERS_DISPLAY_NAME[gitProvider];
+
   return (
     <div>
       <Dialog
         className="select-repo-dialog"
         isOpen={isSelectRepositoryOpen}
-        title={`Select ${gitProvider} repository`}
+        title={`Select ${providerDisplayName} repository`}
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos
-          gitOrganizationId={gitOrganizationId}
+          gitOrganization={gitOrganization}
           onGitRepositoryConnected={onSelectGitRepository}
           gitProvider={gitProvider}
+          openCreateNewRepo={handleCreateNewRepoClick}
         />
       </Dialog>
       <Dialog
@@ -74,17 +86,14 @@ export default function GitDialogsContainer({
       >
         {src === "serviceWizard" ? (
           <WizardGitCreateRepo
-            gitProvider={gitProvider}
             repoCreated={repoCreated}
-            gitOrganizationName={gitOrganizationName}
             onCreateGitRepository={onGitCreateRepository}
-            gitOrganizationId={gitOrganizationId}
+            gitOrganization={gitOrganization}
           ></WizardGitCreateRepo>
         ) : (
           <GitCreateRepo
-            gitProvider={gitProvider}
+            gitOrganization={gitOrganization}
             repoCreated={repoCreated}
-            gitOrganizationName={gitOrganizationName}
             onCreateGitRepository={onGitCreateRepository}
           />
         )}

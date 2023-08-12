@@ -1,11 +1,6 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 import classNames from "classnames";
-import { isEmpty } from "lodash";
-import {
-  Tooltip,
-  Button,
-  EnumButtonStyle,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
@@ -14,23 +9,17 @@ import { formatDistanceToNow } from "date-fns";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import useCommit from "./hooks/useCommits";
+import { Commit } from "../models";
 
 type Props = {
-  resourceId?: string;
+  lastCommit: Commit;
 };
 
 const CLASS_NAME = "last-commit";
 
-const LastCommit = ({ resourceId }: Props) => {
+const LastCommit = ({ lastCommit }: Props) => {
   const { currentWorkspace, currentProject, commitRunning } =
     useContext(AppContext);
-
-  const { lastCommit, refetchCommits } = useCommit();
-
-  useEffect(() => {
-    refetchCommits();
-  }, [resourceId]);
 
   const { commitStatus } = useCommitStatus(lastCommit);
   if (!lastCommit) return null;
@@ -60,15 +49,7 @@ const LastCommit = ({ resourceId }: Props) => {
         </p>
 
         <div className={`${CLASS_NAME}__status`}>
-          <div>
-            {isEmpty(lastCommit?.message) ? (
-              ClickableCommitId
-            ) : (
-              <Tooltip aria-label={lastCommit?.message} direction="ne">
-                {ClickableCommitId}
-              </Tooltip>
-            )}
-          </div>
+          <div>{ClickableCommitId}</div>
           <span className={classNames("clickable-id")}>
             {formatTimeToNow(lastCommit?.createdAt)}
           </span>

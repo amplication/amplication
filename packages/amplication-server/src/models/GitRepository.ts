@@ -16,6 +16,12 @@ export class GitRepository {
   @Field(() => String, { nullable: false })
   name!: string;
 
+  @Field(() => String, { nullable: true })
+  groupName?: string;
+
+  @Field(() => String, { nullable: true })
+  baseBranchName?: string;
+
   @Field(() => Date, { nullable: true })
   createdAt?: Date;
 

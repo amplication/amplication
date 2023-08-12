@@ -28,6 +28,11 @@ export class PluginInstallation extends IBlock {
   })
   settings?: JsonValue;
 
+  @Field(() => GraphQLJSONObject, {
+    nullable: true,
+  })
+  configurations?: JsonValue;
+
   @Field(() => String, {
     nullable: false,
   })

@@ -1,15 +1,15 @@
-import { namedTypes } from "ast-types";
+import type { namedTypes } from "ast-types";
 import {
   DTOs,
   Entity,
   EntityField,
   EntityLookupField,
   EnumDataType,
-  Module,
+  ModuleMap,
   NamedClassDeclaration,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
-import {
+import type {
   Generator,
   DataSource,
   ScalarField,
@@ -129,6 +129,12 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   outputFileName: string;
 }
 
+export interface CreateServerDockerComposeDevParams extends EventParams {
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+  outputFileName: string;
+}
+
 export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
 
 export type CreateSchemaFieldHandler = (
@@ -166,7 +172,7 @@ export interface CreateAdminUIPackageJsonParams extends EventParams {
 }
 
 export interface CreateServerAppModuleParams extends EventParams {
-  modulesFiles: Module[];
+  modulesFiles: ModuleMap;
   template: namedTypes.File;
   templateMapping: { [key: string]: any };
 }

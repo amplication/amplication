@@ -1,0 +1,15 @@
+@import "../style/index.scss";
+
+$button-height: 40px;
+$icon-font-size: 24px;
+
+.login-button {
+  .amp-button {
+    margin-top: 0;
+    height: $button-height;
+    i {
+      font-size: $icon-font-size;
+      margin-right: var(--default-spacing);
+    }
+  }
+}

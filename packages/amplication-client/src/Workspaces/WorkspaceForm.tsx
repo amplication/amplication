@@ -75,6 +75,7 @@ function WorkspaceForm() {
     >
       <div className={CLASS_NAME}>
         <h2>Workspace Settings</h2>
+        <div className={`${CLASS_NAME}__separator`} />
         {currentWorkspace && (
           <Formik
             initialValues={currentWorkspace}
@@ -94,7 +95,7 @@ function WorkspaceForm() {
             }}
           </Formik>
         )}
-        <label className={`${CLASS_NAME}__label`}>workspace ID </label>
+        <label className={`${CLASS_NAME}__label`}>Workspace ID </label>
         {currentWorkspace && <div>{currentWorkspace.id}</div>}
 
         <Snackbar open={Boolean(errorMessage)} message={errorMessage} />

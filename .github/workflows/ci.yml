@@ -19,16 +19,11 @@ on:
         default: false
   pull_request:
     types: [opened, reopened, synchronize]
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
   push:
     branches:
       - master
       - next
-    paths-ignore:
-      - "**/*.md"
-      - ".all-contributorsrc"
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.head_ref || github.ref_name }}
@@ -95,6 +90,8 @@ jobs:
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
       - name: Test
+        env:
+          NODE_OPTIONS: "--max_old_space_size=4096"
         run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=text-summary $NX_FORCE_ALL
       
   nx:
@@ -117,10 +114,11 @@ jobs:
       branch: ${{ github.ref_name }}
       affected-apps: ${{ needs.nx.outputs.affected-apps }}
       affected-lib: ${{ needs.nx.outputs.affected-lib }}
-      affected-dockerable: ${{ needs.nx.outputs.affected-dockerable }}
-      affected-deployable: ${{ needs.nx.outputs.affected-deployable }}
+      affected-package-container: ${{ needs.nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ needs.nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ needs.nx.outputs.affected-deploy-container }}
     secrets:
-      nx-cloud-access-token: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
       ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}

@@ -10,12 +10,21 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from "@nestjs/graphql";
+import { ApiProperty } from "@nestjs/swagger";
 import { PluginVersionWhereUniqueInput } from "./PluginVersionWhereUniqueInput";
+import { ValidateNested } from "class-validator";
+import { Type } from "class-transformer";
 
 @ArgsType()
 class DeletePluginVersionArgs {
+  @ApiProperty({
+    required: true,
+    type: () => PluginVersionWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => PluginVersionWhereUniqueInput)
   @Field(() => PluginVersionWhereUniqueInput, { nullable: false })
   where!: PluginVersionWhereUniqueInput;
 }
 
-export { DeletePluginVersionArgs };
+export { DeletePluginVersionArgs as DeletePluginVersionArgs };

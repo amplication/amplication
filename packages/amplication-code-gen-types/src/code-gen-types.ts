@@ -1,7 +1,8 @@
-import { namedTypes } from "ast-types";
+import type { namedTypes } from "ast-types";
 import * as models from "./models";
 import { Lookup, MultiSelectOptionSet, OptionSet } from "./types";
 import { DSGResourceData } from "./dsg-resource-data";
+import { BuildLogger } from "./build-logger";
 
 export {
   EnumDataType,
@@ -9,13 +10,6 @@ export {
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
 } from "./models";
-
-export type WorkerResult = {
-  done: boolean;
-  message?: string;
-  modules?: Module[];
-  error?: any;
-};
 
 export type ServiceSettings = Omit<
   BlockOmittedFields<models.ServiceSettings>,
@@ -129,6 +123,105 @@ export type Module = {
   code: string;
 };
 
+/**
+ * ModuleMap is a map of module paths to modules
+ */
+export class ModuleMap {
+  private map: Record<string, Module> = {};
+  constructor(private readonly logger: BuildLogger) {}
+
+  /**
+   * Merge another map into this map
+   *
+   * @param anotherMap The map to merge into this map
+   * @returns This map
+   */
+  async merge(anotherMap: ModuleMap): Promise<ModuleMap> {
+    for await (const module of anotherMap.modules()) {
+      await this.set(module);
+    }
+
+    return this;
+  }
+
+  /**
+   * Merge many maps into this map
+   * @param maps The maps to merge into this map
+   * @returns This map
+   * @see merge
+   */
+  async mergeMany(maps: ModuleMap[]): Promise<void> {
+    const modules = maps.map((map) => map.modules()).flat();
+    for await (const module of modules) {
+      await this.set(module);
+    }
+  }
+
+  /**
+   * Set a module in the map. If the module already exists, it will be overwritten and a log message will be printed.
+   * @param module The module (file) to add to the set
+   */
+  async set(module: Module) {
+    if (this.map[module.path]) {
+      await this.logger.warn(
+        `Module ${module.path} already exists. Overwriting...`
+      );
+    }
+    this.map[module.path] = module;
+  }
+
+  /**
+   * @returns A module for the given path, or undefined if no module exists for the path
+   */
+  get(path: string) {
+    return this.map[path];
+  }
+
+  /**
+   * Replace a module in the map. If the module does not exist, it will be added to the set.
+   * @param oldModule The module to replace
+   * @param newModule The new module to replace the old module with
+   */
+  replace(oldModule: Module, newModule: Module): void {
+    if (newModule.path !== oldModule.path) {
+      delete this.map[oldModule.path];
+    }
+    this.map[newModule.path] = newModule;
+  }
+
+  /**
+   * Replace all modules paths using a function
+   * @param fn A function that receives a module path and returns a new path
+   */
+  replaceModulesPath(fn: (path: string) => string): void {
+    for (const oldModule of this.modules()) {
+      const newModule: Module = {
+        ...oldModule,
+        path: fn(oldModule.path),
+      };
+      this.replace(oldModule, newModule);
+    }
+  }
+
+  /**
+   * Replace all modules code using a function
+   * @param fn A function that receives a module code and returns a new code
+   */
+  async replaceModulesCode(fn: (code: string) => string): Promise<void> {
+    for await (const module of Object.values(this.map)) {
+      module.code = fn(module.code);
+      this.map[module.path] = module;
+    }
+  }
+
+  /**
+   * @returns An array of modules
+   */
+  modules(): Module[] {
+    return Object.values(this.map);
+  }
+}
+
 export type ClassDeclaration = namedTypes.ClassDeclaration & {
   decorators: namedTypes.Decorator[];
 };
@@ -150,6 +243,7 @@ export type EntityDTOs = {
   whereInput: NamedClassDeclaration;
   whereUniqueInput: NamedClassDeclaration;
   deleteArgs: NamedClassDeclaration;
+  countArgs: NamedClassDeclaration;
   findManyArgs: NamedClassDeclaration;
   findOneArgs: NamedClassDeclaration;
   createArgs?: NamedClassDeclaration;

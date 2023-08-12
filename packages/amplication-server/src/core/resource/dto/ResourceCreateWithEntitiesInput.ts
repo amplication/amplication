@@ -82,8 +82,8 @@ export class ResourceCreateWithEntitiesInput {
   })
   repoType!: string;
 
-  // @Field(() => String, {
-  //   nullable: false,
-  // })
-  // gitOrganizationName!: string;
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  connectToDemoRepo!: boolean;
 }

@@ -34,6 +34,8 @@ const USER: Entity = {
   displayName: "User",
   pluralDisplayName: "Users",
   pluralName: "users",
+  customAttributes: `@@index([name, email]) @@unique([name(sort: Desc), email]) @@map("users")`,
+
   fields: [
     {
       id: "053e75d0-9f02-4182-8f61-46fbdbaa71bd",
@@ -57,6 +59,7 @@ const USER: Entity = {
       unique: false,
       searchable: true,
       dataType: EnumDataType.SingleLineText,
+      customAttributes: '@unique @map("name")',
     },
     {
       id: "e3fa6ddd-ad36-48ce-8042-9c0aa576e5a9",

@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Formik, FormikErrors } from "formik";
 import { omit, isEmpty } from "lodash";
 import { getSchemaForDataType } from "@amplication/code-gen-types";
-import { ToggleField } from "@amplication/ui/design-system";
+import { TextField, ToggleField } from "@amplication/ui/design-system";
 import * as models from "../models";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import { Form } from "../Components/Form";
@@ -22,6 +22,7 @@ export type Values = {
   unique: boolean;
   required: boolean;
   searchable: boolean;
+  customAttributes: string | null;
   description: string | null;
   permanentId?: string | null;
   // eslint-disable-next-line @typescript-eslint/ban-types
@@ -63,6 +64,7 @@ export const INITIAL_VALUES: Values = {
   unique: false,
   required: false,
   searchable: false,
+  customAttributes: null,
   description: "",
   properties: {},
 };
@@ -84,12 +86,6 @@ const EntityFieldForm = ({
       ...sanitizedDefaultValues,
     };
   }, [defaultValues]);
-
-  function onKeyDown(keyEvent: any) {
-    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
-      keyEvent.preventDefault();
-    }
-  }
 
   return (
     <Formik
@@ -124,7 +120,7 @@ const EntityFieldForm = ({
         const schema = getSchemaForDataType(formik.values.dataType);
 
         return (
-          <Form childrenAsBlocks onKeyDown={onKeyDown}>
+          <Form childrenAsBlocks>
             <FormikAutoSave debounceMS={1000} />
 
             <DisplayNameField
@@ -172,6 +168,31 @@ const EntityFieldForm = ({
               schema={schema}
               resourceId={resourceId}
               entity={entity}
+            />
+
+            <TextField
+              autoComplete="off"
+              disabled={isSystemDataType}
+              placeholder="Custom Prisma Attributes"
+              inputToolTip={{
+                content: (
+                  <span>
+                    Add custom attributes to fields using the format
+                    @attribute([parameters]) or @attribute. <br />
+                    <br /> For example:
+                    <br />
+                    @map(name: "fieldName")
+                    <br />
+                    @unique
+                    <br />
+                    @default(value)
+                  </span>
+                ),
+              }}
+              textarea
+              rows={3}
+              name="customAttributes"
+              label="Custom Attributes"
             />
           </Form>
         );

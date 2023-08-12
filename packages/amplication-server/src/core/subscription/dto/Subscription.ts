@@ -1,10 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { Workspace } from "../../../models/Workspace";
-import {
-  EnumSubscriptionPlan,
-  EnumSubscriptionStatus,
-  SubscriptionData,
-} from ".";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from ".";
 
 @ObjectType({
   isAbstract: true,
@@ -69,6 +65,4 @@ export class Subscription {
     nullable: true,
   })
   price?: number;
-
-  subscriptionData!: SubscriptionData;
 }

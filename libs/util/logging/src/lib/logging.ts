@@ -19,7 +19,7 @@ export class Logger implements ILogger {
     const format = this.getLoggerFormat();
     this.logger = createLogger({
       defaultMeta: {
-        component: options.serviceName,
+        component: options.component,
         ...options.metadata,
       },
       level: this.level,
@@ -34,8 +34,8 @@ export class Logger implements ILogger {
 
   public getLoggerFormat(): Format {
     const developmentFormats: Format[] = [
-      format.errors({ stack: true }),
       format.timestamp(),
+      format.errors({ stack: true, cause: true }),
       customFormat(),
     ];
     if (this.options.additionalDevelopmentFormats) {
@@ -46,8 +46,8 @@ export class Logger implements ILogger {
     }
 
     const productionFormats: Format[] = [
-      format.errors({ stack: true }),
       format.timestamp(),
+      format.errors({ stack: true, cause: true }),
       format.json(),
     ];
     if (this.options.additionalFormats) {
@@ -76,13 +76,21 @@ export class Logger implements ILogger {
     error?: Error,
     params?: Record<string, unknown>
   ): void {
-    this.logger.error(message, params, error);
+    if (error) {
+      Object.assign(error, {
+        message,
+        ...(error.message !== message ? { errorMessage: error.message } : {}),
+        ...params,
+      });
+      this.logger.error(error);
+    }
+    this.logger.error(message, params);
   }
 
   child(metadata?: Pick<LoggerOptions, "metadata">): Logger {
     return new Logger({
       ...this.options,
-      metadata: { ...this.options.metadata, metadata },
+      metadata: { ...this.options.metadata, ...metadata },
     });
   }
 }

@@ -1,6 +1,5 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
-
 import * as models from "../models";
 import { TextField } from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
@@ -11,8 +10,8 @@ import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import { USER_ENTITY } from "./constants";
 import { isEqual } from "../util/customValidations";
+import useResource from "../Resource/hooks/useResource";
 
 // This must be here unless we get rid of deepdash as it does not support ES imports
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -71,6 +70,7 @@ const EQUAL_PLURAL_DISPLAY_NAME_AND_NAME_TEXT =
 const CLASS_NAME = "entity-form";
 
 const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
+  const { resourceSettings } = useResource(resourceId);
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omitDeep(
       {
@@ -106,7 +106,10 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
 
                 <NameField
                   name="name"
-                  disabled={USER_ENTITY === entity?.name}
+                  disabled={
+                    resourceSettings?.serviceSettings?.authEntityName ===
+                    entity?.name
+                  }
                   capitalized
                 />
                 <TextField
@@ -119,6 +122,27 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
                   rows={3}
                   name="description"
                   label="Description"
+                />
+                <TextField
+                  autoComplete="off"
+                  placeholder="Custom Prisma attributes"
+                  inputToolTip={{
+                    content: (
+                      <span>
+                        Add custom attributes to model using the format
+                        @@attribute([parameters]) or @@attribute().
+                        <br />
+                        <br /> For example:
+                        <br />
+                        @@index([field_1, field_2]) <br />
+                        @@map("modelName")
+                      </span>
+                    ),
+                  }}
+                  textarea
+                  rows={3}
+                  name="customAttributes"
+                  label="Custom Attributes"
                 />
               </>
             </Form>

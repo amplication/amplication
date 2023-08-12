@@ -24,7 +24,7 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const { authProvider, serverSettings, adminUISettings } =
+    const { authProvider, serverSettings, adminUISettings, authEntityName } =
       await this.getServiceSettingsBlock(args, user);
 
     return {
@@ -32,6 +32,7 @@ export class ServiceSettingsService {
       authProvider,
       serverSettings,
       adminUISettings,
+      authEntityName,
     };
   }
 
@@ -39,7 +40,7 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettings> {
-    const [serviceSettings] =
+    let [serviceSettings] =
       await this.blockService.findManyByBlockType<ServiceSettings>(
         {
           where: {
@@ -50,6 +51,12 @@ export class ServiceSettingsService {
         },
         EnumBlockType.ServiceSettings
       );
+    if (!serviceSettings) {
+      serviceSettings = await this.createDefaultServiceSettings(
+        args.where.id,
+        user
+      );
+    }
 
     return {
       ...serviceSettings,
@@ -176,6 +183,7 @@ export class ServiceSettingsService {
     const { generateAdminUI, adminUIPath } = serviceSettings.adminUISettings;
     const { generateGraphQL, generateRestApi, serverPath } =
       serviceSettings.serverSettings;
+
     (settings.adminUISettings = {
       generateAdminUI: generateAdminUI,
       adminUIPath: adminUIPath,
@@ -184,6 +192,7 @@ export class ServiceSettingsService {
         generateGraphQL: generateGraphQL,
         generateRestApi: generateRestApi,
         serverPath: serverPath,
-      });
+      }),
+      (settings.authEntityName = serviceSettings.authEntityName);
   }
 }

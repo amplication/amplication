@@ -1,14 +1,15 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
-import fetch from "node-fetch";
-import type { AbbreviatedManifest } from "pacote";
-
-interface NpmVersion {
-  [versionNumber: string]: AbbreviatedManifest;
-}
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { Packument } from "pacote";
+import { NpmService } from "../npm/npm.service";
 
 @Injectable()
 export class NpmPluginVersionService {
+  constructor(
+    @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
+    private readonly npmService: NpmService
+  ) {}
   /**
    * get npm versions results per package and structure it as plugin version DTO
    * @param npmVersions
@@ -16,24 +17,24 @@ export class NpmPluginVersionService {
    * @returns
    */
   structurePluginVersion(
-    npmVersions: NpmVersion,
+    npmManifest: Packument,
     pluginId: string
   ): (PluginVersion & { tarballUrl: string })[] {
     const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
-    const now = new Date();
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    for (const [key, value] of Object.entries(npmVersions)) {
+    for (const [, value] of Object.entries(npmManifest.versions)) {
       pluginVersions.push({
-        createdAt: now,
+        createdAt: new Date(npmManifest.time[value.version]),
         deprecated: value.deprecated?.toString() || null,
         id: "",
         pluginId: pluginId,
         pluginIdVersion: `${pluginId}_${value.version}`,
         settings: "{}",
-        updatedAt: now,
+        configurations: "{}",
+        updatedAt: new Date(),
         version: value.version,
         tarballUrl: value.dist.tarball,
+        isLatest: npmManifest["dist-tags"].latest === value.version,
       });
     }
     return pluginVersions;
@@ -47,7 +48,7 @@ export class NpmPluginVersionService {
     plugins: Plugin[]
   ): AsyncGenerator<(PluginVersion & { tarballUrl: string })[], void> {
     try {
-      const pluginLength = plugins.length;
+      const pluginLength = plugins?.length || 0;
       let index = 0;
 
       do {
@@ -55,15 +56,20 @@ export class NpmPluginVersionService {
         if (!pluginNpmName)
           throw `Plugin ${plugins[index].name} doesn't have npm name`;
 
-        const npmResponse = await fetch(
-          `https://registry.npmjs.org/${pluginNpmName}`
-        );
-        const pluginNpmData = await npmResponse.json();
-        if (!pluginNpmData.versions)
-          throw `Plugin ${plugins[index].name} doesn't have npm versions`;
+        let npmPackument: Packument;
+        try {
+          npmPackument = await this.npmService.getPackagePackument(
+            pluginNpmName
+          );
+        } catch (error) {
+          this.logger.error(error.message, error, { pluginNpmName });
+          ++index;
+          yield null;
+          continue;
+        }
 
         const pluginVersionArr = this.structurePluginVersion(
-          pluginNpmData.versions,
+          npmPackument,
           plugins[index].pluginId
         );
 
@@ -72,7 +78,7 @@ export class NpmPluginVersionService {
         yield pluginVersionArr;
       } while (pluginLength > index);
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
   /**
@@ -85,14 +91,15 @@ export class NpmPluginVersionService {
   ): Promise<(PluginVersion & { tarballUrl: string })[]> {
     try {
       const pluginsVersions: (PluginVersion & { tarballUrl: string })[] = [];
+      if (!plugins?.length) return pluginsVersions;
 
       for await (const pluginVersionArr of this.getPluginVersion(plugins)) {
-        pluginsVersions.push(...pluginVersionArr);
+        pluginVersionArr && pluginsVersions.push(...pluginVersionArr);
       }
 
       return pluginsVersions;
     } catch (error) {
-      console.error(error);
+      this.logger.error(error.message, error);
     }
   }
 }

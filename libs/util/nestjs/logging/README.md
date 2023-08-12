@@ -19,13 +19,20 @@ import { AmplicationLoggerModule } from '@amplication/util/nestjs/logging';
   imports: [
     //...
     AmplicationLoggerModule.forRoot({
-      serviceName: SERVICE_NAME,
+      component: SERVICE_NAME,
     }),
     //...
   ],
 })
 export class AppModule implements // ....
 ```
+
+The minimum log level can be configured also with the `LOG_LEVEL` environment variable, instead of the `logLevel: LogLevel.Warn`, to one of the following values:
+- `debug`
+- `info`
+- `warn`
+- `error`
+
 
 ### Usage
 

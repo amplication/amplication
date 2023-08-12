@@ -4,6 +4,8 @@ import React, {
   useCallback,
   useEffect,
   useMemo,
+  forwardRef,
+  useRef,
 } from "react";
 import { Button, EnumButtonStyle, Icon } from "@amplication/ui/design-system";
 import { ResourceSettings } from "./wizard-pages/interfaces";
@@ -15,6 +17,7 @@ import CreateServiceLoader from "./CreateServiceLoader";
 import { DefineUser } from "./CreateServiceWizard";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { useTracking } from "../../util/analytics";
+import { GlobalHotKeys } from "react-hotkeys";
 
 export type WizardStep = {
   index: number;
@@ -45,33 +48,70 @@ interface ServiceWizardProps {
   ) => void;
 }
 
-const BackButton: React.FC<{
+type BackButtonProps = {
   wizardPattern: number[];
   activePageIndex: number;
   hideBackButton?: boolean;
   goPrevPage: () => void;
-}> = ({ hideBackButton, wizardPattern, activePageIndex, goPrevPage }) =>
-  !hideBackButton &&
-  activePageIndex !== wizardPattern[0] &&
-  activePageIndex !== wizardPattern[wizardPattern.length - 1] ? (
-    <Button buttonStyle={EnumButtonStyle.Outline} onClick={goPrevPage}>
-      Back
-    </Button>
-  ) : null;
+};
 
-const ContinueButton: React.FC<{
+const BackButton = forwardRef<HTMLButtonElement, BackButtonProps>(function (
+  { hideBackButton, wizardPattern, activePageIndex, goPrevPage },
+  ref
+) {
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    goPrevPage();
+    event.currentTarget.blur();
+  };
+  if (
+    !hideBackButton &&
+    activePageIndex !== wizardPattern[0] &&
+    activePageIndex !== wizardPattern[wizardPattern.length - 1]
+  ) {
+    return (
+      <button
+        className="amp-button amp-button--outline"
+        onClick={handleClick}
+        ref={ref}
+      >
+        Back
+      </button>
+    );
+  }
+  return null;
+});
+
+type ContinueButtonProps = {
   goNextPage: () => void;
   disabled: boolean;
   buttonName: string;
-}> = ({ goNextPage, disabled, buttonName }) => {
-  return (
-    <Button onClick={goNextPage} {...(disabled ? { disabled } : {})}>
-      {buttonName}
-    </Button>
-  );
 };
 
+const ContinueButton = forwardRef<HTMLButtonElement, ContinueButtonProps>(
+  function ({ disabled, buttonName, goNextPage }, ref) {
+    const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+      goNextPage();
+      event.currentTarget.blur();
+    };
+    return (
+      <button
+        className="amp-button amp-button--primary"
+        onClick={handleClick}
+        {...(disabled ? { disabled } : {})}
+        ref={ref}
+      >
+        {buttonName}
+      </button>
+    );
+  }
+);
+
 const MIN_TIME_OUT_LOADER = 2000;
+
+export const keyMap = {
+  GO_TO_NEXT_PAGE: ["enter", "right"],
+  GO_TO_PREV_PAGE: ["left"],
+};
 
 const ServiceWizard: React.FC<ServiceWizardProps> = ({
   wizardSteps,
@@ -182,14 +222,26 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
     return () => clearTimeout(timer);
   }, [keepLoadingAnimation]);
 
-  const onKeyDown = (keyEvent) => {
-    if ((keyEvent.charCode || keyEvent.keyCode) === 13) {
-      keyEvent.preventDefault();
-    }
+  const goNextPageButtonRef = useRef<HTMLButtonElement>(null);
+  const goPrevPageButtonRef = useRef<HTMLButtonElement>(null);
+
+  const handleNextKeyDown = useCallback(() => {
+    goNextPageButtonRef?.current?.click();
+  }, [goNextPageButtonRef]);
+
+  const handlePrevKeyDown = useCallback(() => {
+    goPrevPageButtonRef?.current?.click();
+  }, [goNextPageButtonRef]);
+
+  const handlers = {
+    GO_TO_NEXT_PAGE: handleNextKeyDown,
+    GO_TO_PREV_PAGE: handlePrevKeyDown,
   };
 
   return (
     <div className={`${moduleCss}__wizard_container`}>
+      <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+
       {defineUser === "Create Service" && (
         <Button
           buttonStyle={EnumButtonStyle.Clear}
@@ -236,7 +288,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
           {(formik) => {
             return (
               <>
-                <Form onKeyDown={onKeyDown}>
+                <Form>
                   {keepLoadingAnimation || submitLoader ? (
                     <CreateServiceLoader />
                   ) : (
@@ -254,6 +306,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                   <div className={`${moduleCss}__footer`}>
                     <div className={`${moduleCss}__backButton`}>
                       <BackButton
+                        ref={goPrevPageButtonRef}
                         hideBackButton={currentStep.hideBackButton}
                         wizardPattern={wizardPattern}
                         activePageIndex={activePageIndex}
@@ -269,6 +322,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
                       {activePageIndex !==
                         wizardPattern[wizardPattern.length - 1] && (
                         <ContinueButton
+                          ref={goNextPageButtonRef}
                           goNextPage={
                             activePageIndex === submitFormPage
                               ? () => {

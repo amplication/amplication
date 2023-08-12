@@ -21,9 +21,13 @@ import { User } from "../../models";
 import { FindOneArgs } from "../../dto";
 import { PluginOrderService } from "./pluginOrder.service";
 import { DeletePluginOrderArgs } from "./dto/DeletePluginOrderArgs";
-import { CreatePluginInstallationsArgs } from "./dto/CreatePluginInstallationsArgs";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 
 @Resolver(() => PluginInstallation)
+@UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class PluginInstallationResolver extends BlockTypeResolver(
   PluginInstallation,
   "PluginInstallations",
@@ -40,17 +44,6 @@ export class PluginInstallationResolver extends BlockTypeResolver(
     private readonly pluginOrderService: PluginOrderService
   ) {
     super();
-  }
-
-  @Mutation(() => [PluginInstallation], {
-    nullable: true,
-  })
-  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
-  async createPluginInstallations(
-    @Args() args: CreatePluginInstallationsArgs,
-    @UserEntity() user: User
-  ): Promise<PluginInstallation[] | null> {
-    return await this.service.createMany(args, user);
   }
 
   @Mutation(() => PluginOrder, {

@@ -4,7 +4,6 @@ import { camelCase } from "camel-case";
 import { pick, omit } from "lodash";
 import {
   createEntityNamesWhereInput,
-  DELETE_ONE_USER_ENTITY_ERROR_MESSAGE,
   EntityPendingChange,
   EntityService,
   NAME_VALIDATION_ERROR_MESSAGE,
@@ -17,14 +16,11 @@ import {
   User,
   Commit,
   Resource,
+  Account,
 } from "../../models";
 import { EnumDataType } from "../../enums/EnumDataType";
 import { FindManyEntityArgs } from "./dto";
-import {
-  CURRENT_VERSION_NUMBER,
-  DEFAULT_PERMISSIONS,
-  USER_ENTITY_NAME,
-} from "./constants";
+import { CURRENT_VERSION_NUMBER, DEFAULT_PERMISSIONS } from "./constants";
 import { JsonSchemaValidationModule } from "../../services/jsonSchemaValidation.module";
 import { DiffModule } from "../../services/diff.module";
 import { prepareDeletedItemName } from "../../util/softDelete";
@@ -39,6 +35,9 @@ import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { Build } from "../build/dto/Build";
 import { Environment } from "../environment/dto";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
+import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -94,6 +93,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
   lockedByUserId: undefined,
   lockedAt: null,
@@ -103,11 +103,6 @@ const EXAMPLE_LOCKED_ENTITY: Entity = {
   ...EXAMPLE_ENTITY,
   lockedByUserId: EXAMPLE_USER_ID,
   lockedAt: new Date(),
-};
-
-const EXAMPLE_USER_ENTITY: Entity = {
-  ...EXAMPLE_ENTITY,
-  name: USER_ENTITY_NAME,
 };
 
 const EXAMPLE_ENTITY_FIELD: EntityField = {
@@ -124,6 +119,7 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   unique: false,
   searchable: true,
   description: "example field",
+  customAttributes: "ExampleCustomAttributes",
 };
 
 const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
@@ -136,6 +132,7 @@ const EXAMPLE_CURRENT_ENTITY_VERSION: EntityVersion = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
 };
 
@@ -156,6 +153,14 @@ const EXAMPLE_RESOURCE: Resource = {
   builds: [EXAMPLE_BUILD],
   environments: [EXAMPLE_ENVIRONMENT],
   gitRepositoryOverride: false,
+  project: {
+    id: EXAMPLE_PROJECT_ID,
+    workspaceId: "exampleWorkspaceId",
+    name: "exampleProjectName",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    useDemoRepo: false,
+  },
 };
 
 const EXAMPLE_ENTITY_PENDING_CHANGE_DELETE: EntityPendingChange = {
@@ -193,6 +198,7 @@ const EXAMPLE_LAST_ENTITY_VERSION: EntityVersion = {
   name: "exampleEntity",
   displayName: "example entity",
   pluralDisplayName: "exampleEntities",
+  customAttributes: "customAttributes",
   description: "example entity",
   fields: [
     {
@@ -209,6 +215,7 @@ const EXAMPLE_ENTITY_FIELD_DATA = {
   unique: false,
   searchable: false,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
   dataType: EnumDataType.SingleLineText,
   properties: {
     maxLength: 42,
@@ -233,6 +240,7 @@ const EXAMPLE_ENTITY_FIELD_DATA_WITH_INVALID_MINIMUM_VALUE = {
   unique: false,
   searchable: true,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
 };
 const EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE = {
   name: "exampleEntityFieldNameWithInvalidMinimumValue",
@@ -243,6 +251,7 @@ const EXAMPLE_ENTITY_FIELD_DATA_WITH_VALID_MINIMUM_VALUE = {
   unique: false,
   searchable: true,
   description: "",
+  customAttributes: "ExampleCustomAttributes",
 };
 const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
   createdAt: new Date(),
@@ -258,18 +267,41 @@ const EXAMPLE_ENTITY_FIELD_WHOLE_NUMBER: EntityField = {
   searchable: true,
   unique: false,
   updatedAt: new Date(),
+  customAttributes: "ExampleCustomAttributes",
 };
+
+const EXAMPLE_ACCOUNT_ID = "exampleAccountId";
+const EXAMPLE_EMAIL = "exampleEmail";
+const EXAMPLE_FIRST_NAME = "exampleFirstName";
+const EXAMPLE_LAST_NAME = "exampleLastName";
+const EXAMPLE_PASSWORD = "examplePassword";
+
+const EXAMPLE_ACCOUNT: Account = {
+  id: EXAMPLE_ACCOUNT_ID,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+  email: EXAMPLE_EMAIL,
+  firstName: EXAMPLE_FIRST_NAME,
+  lastName: EXAMPLE_LAST_NAME,
+  password: EXAMPLE_PASSWORD,
+};
+
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
   updatedAt: new Date(),
   isOwner: true,
+  account: EXAMPLE_ACCOUNT,
 };
 
 const RESERVED_NAME = "class";
 const UNRESERVED_NAME = "person";
 
 const EXAMPLE_ENTITY_WHERE_PARENT_ID = { connect: { id: "EXAMPLE_ID" } };
+
+const prismaResourceFindUniqueMock = jest.fn(() => {
+  return EXAMPLE_RESOURCE;
+});
 
 const prismaEntityFindFirstMock = jest.fn(() => {
   return EXAMPLE_ENTITY;
@@ -385,8 +417,38 @@ describe("EntityService", () => {
       imports: [JsonSchemaValidationModule, DiffModule],
       providers: [
         {
+          provide: SegmentAnalyticsService,
+          useClass: jest.fn(() => ({
+            track: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(() => ({
+            getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+          })),
+        },
+        {
+          provide: PrismaSchemaParserService,
+          useClass: jest.fn(() => ({
+            prepareEntities: jest.fn(() => {
+              return;
+            }),
+            validateSchemaProcessing: jest.fn(() => {
+              return;
+            }),
+          })),
+        },
+        {
           provide: PrismaService,
           useClass: jest.fn(() => ({
+            resource: {
+              findUnique: prismaResourceFindUniqueMock,
+            },
             entity: {
               findFirst: prismaEntityFindFirstMock,
               findMany: prismaEntityFindManyMock,
@@ -493,6 +555,7 @@ describe("EntityService", () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
         },
       },
@@ -514,6 +577,7 @@ describe("EntityService", () => {
             name: createArgs.args.data.name,
             displayName: createArgs.args.data.displayName,
             pluralDisplayName: createArgs.args.data.pluralDisplayName,
+            customAttributes: createArgs.args.data.customAttributes,
             description: createArgs.args.data.description,
             permissions: {
               create: DEFAULT_PERMISSIONS,
@@ -582,31 +646,6 @@ describe("EntityService", () => {
     expect(prismaEntityUpdateMock).toBeCalledWith(updateArgs);
   });
 
-  it("should throw an exception when trying to delete user entity", async () => {
-    const deleteArgs = {
-      args: {
-        where: { id: EXAMPLE_ENTITY_ID },
-      },
-      user: EXAMPLE_USER,
-    };
-
-    prismaEntityUpdateMock.mockImplementationOnce(() => EXAMPLE_USER_ENTITY);
-
-    await expect(
-      service.deleteOneEntity(deleteArgs.args, deleteArgs.user)
-    ).rejects.toThrow(DELETE_ONE_USER_ENTITY_ERROR_MESSAGE);
-
-    expect(prismaEntityFindFirstMock).toBeCalledTimes(1);
-    expect(prismaEntityFindFirstMock).toBeCalledWith({
-      where: {
-        id: EXAMPLE_ENTITY_ID,
-        deletedAt: null,
-      },
-    });
-
-    expect(prismaEntityUpdateMock).toBeCalledTimes(1);
-  });
-
   it("should update one entity", async () => {
     const updateArgs = {
       args: {
@@ -615,6 +654,7 @@ describe("EntityService", () => {
           name: EXAMPLE_ENTITY.name,
           displayName: EXAMPLE_ENTITY.displayName,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           description: EXAMPLE_ENTITY.description,
         },
       },
@@ -642,6 +682,7 @@ describe("EntityService", () => {
               name: updateArgs.args.data.name,
               displayName: updateArgs.args.data.displayName,
               pluralDisplayName: updateArgs.args.data.pluralDisplayName,
+              customAttributes: updateArgs.args.data.customAttributes,
               description: updateArgs.args.data.description,
             },
           },
@@ -695,6 +736,7 @@ describe("EntityService", () => {
         name: EXAMPLE_ENTITY.name,
         displayName: EXAMPLE_ENTITY.displayName,
         pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+        customAttributes: EXAMPLE_ENTITY.customAttributes,
         description: EXAMPLE_ENTITY.description,
         commit: {
           connect: {
@@ -714,6 +756,7 @@ describe("EntityService", () => {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 
@@ -813,6 +856,7 @@ describe("EntityService", () => {
       "name",
       "displayName",
       "pluralDisplayName",
+      "customAttributes",
       "description",
     ]);
 
@@ -1430,6 +1474,7 @@ describe("EntityService", () => {
           displayName: EXAMPLE_ENTITY.displayName,
           description: EXAMPLE_ENTITY.description,
           pluralDisplayName: EXAMPLE_ENTITY.pluralDisplayName,
+          customAttributes: EXAMPLE_ENTITY.customAttributes,
           resource: { connect: { id: EXAMPLE_ENTITY.resourceId } },
         },
       },

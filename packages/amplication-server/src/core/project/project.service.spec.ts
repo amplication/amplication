@@ -31,6 +31,7 @@ import { BlockService } from "../block/block.service";
 import { ConfigService } from "@nestjs/config";
 import { BillingService } from "../billing/billing.service";
 import { prepareDeletedItemName } from "../../util/softDelete";
+import { GitProviderService } from "../git/git.provider.service";
 
 /** values mock */
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -44,6 +45,7 @@ const EXAMPLE_NAME = "exampleName";
 const EXAMPLE_DESCRIPTION = "exampleDescription";
 const EXAMPLE_DISPLAY_NAME = "exampleDisplayName";
 const EXAMPLE_PLURAL_DISPLAY_NAME = "examplePluralDisplayName";
+const EXAMPLE_CUSTOM_ATTRIBUTES = "exampleCustomAttributes";
 const EXAMPLE_BUILD_ID = "exampleBuildId";
 const EXAMPLE_VERSION = "exampleVersion";
 const EXAMPLE_ACTION_ID = "exampleActionId";
@@ -117,6 +119,7 @@ const EXAMPLE_ENTITY: Entity = {
   name: EXAMPLE_NAME,
   displayName: EXAMPLE_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK: Block = {
@@ -171,6 +174,7 @@ const EXAMPLE_ENTITY_VERSION: EntityVersion = {
   name: EXAMPLE_ENTITY_NAME,
   displayName: EXAMPLE_ENTITY_DISPLAY_NAME,
   pluralDisplayName: EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME,
+  customAttributes: EXAMPLE_CUSTOM_ATTRIBUTES,
 };
 
 const EXAMPLE_BLOCK_VERSION: BlockVersion = {
@@ -186,6 +190,8 @@ const EXAMPLE_PROJECT_2: Project = {
   name: EXAMPLE_PROJECT_NAME,
   createdAt: new Date(),
   updatedAt: new Date(),
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_WORKSPACE: Workspace = {
@@ -203,6 +209,8 @@ const EXAMPLE_PROJECT: Project = {
   updatedAt: new Date(),
   workspace: EXAMPLE_WORKSPACE,
   resources: [EXAMPLE_RESOURCE],
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_PROJECT_CONFIGURATION = {};
@@ -330,6 +338,10 @@ describe("ProjectService", () => {
               return;
             }),
           })),
+        },
+        {
+          provide: GitProviderService,
+          useClass: jest.fn(() => ({})),
         },
       ],
     }).compile();

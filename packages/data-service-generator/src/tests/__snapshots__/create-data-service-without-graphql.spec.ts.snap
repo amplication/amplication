@@ -38,7 +38,7 @@ yarn-error.log*
     \\"graphql\\": \\"15.6.1\\",
     \\"lodash\\": \\"4.17.21\\",
     \\"pluralize\\": \\"8.0.0\\",
-    \\"ra-data-graphql-amplication\\": \\"0.0.13\\",
+    \\"ra-data-graphql-amplication\\": \\"0.0.14\\",
     \\"react\\": \\"16.14.0\\",
     \\"react-admin\\": \\"3.19.11\\",
     \\"react-dom\\": \\"16.14.0\\",
@@ -56,7 +56,7 @@ yarn-error.log*
     \\"build\\": \\"react-scripts build\\",
     \\"test\\": \\"react-scripts test\\",
     \\"eject\\": \\"react-scripts eject\\",
-    \\"docker:build\\": \\"docker build .\\"
+    \\"package:container\\": \\"docker build .\\"
   },
   \\"eslintConfig\\": {
     \\"extends\\": [
@@ -250,7 +250,7 @@ const Login = ({ theme }: any) => {
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
-      notify(\\"Invalid email or password\\")
+      notify(\\"Invalid username or password\\")
     );
   };
 
@@ -285,7 +285,7 @@ const Login = ({ theme }: any) => {
             <h2>Admin UI</h2>
             <div className={\`\${CLASS_NAME}__box__message\`}>
               Sign in to a React-Admin client with ready-made forms for creating
-              and editing all the data models of your application.
+              and editing all the data models of your application
             </div>
             <form onSubmit={submit}>
               <label>
@@ -299,7 +299,7 @@ const Login = ({ theme }: any) => {
                 />
               </label>
               <label>
-                <span>password</span>
+                <span>Password</span>
 
                 <input
                   name=\\"password\\"
@@ -376,6 +376,12 @@ export type Customer = {
   organization?: Organization | null;
   vipOrganization?: Organization | null;
   orders?: Array<Order>;
+};
+",
+  "admin-ui/src/api/customer/CustomerCountArgs.ts": "import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+
+export type CustomerCountArgs = {
+  where?: CustomerWhereInput;
 };
 ",
   "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
@@ -551,6 +557,12 @@ export type DeleteEmptyArgs = {
   updatedAt: Date;
 };
 ",
+  "admin-ui/src/api/empty/EmptyCountArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+
+export type EmptyCountArgs = {
+  where?: EmptyWhereInput;
+};
+",
   "admin-ui/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
 ",
   "admin-ui/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
@@ -631,6 +643,12 @@ export type Order = {
   customer?: Customer;
   status?: \\"pending\\" | \\"inProgress\\" | \\"done\\";
   label?: \\"fragile\\" | null;
+};
+",
+  "admin-ui/src/api/order/OrderCountArgs.ts": "import { OrderWhereInput } from \\"./OrderWhereInput\\";
+
+export type OrderCountArgs = {
+  where?: OrderWhereInput;
 };
 ",
   "admin-ui/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from \\"../customer/CustomerWhereUniqueInput\\";
@@ -746,6 +764,12 @@ export type Organization = {
   users?: Array<User>;
   customers?: Array<Customer>;
   vipCustomers?: Array<Customer>;
+};
+",
+  "admin-ui/src/api/organization/OrganizationCountArgs.ts": "import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+
+export type OrganizationCountArgs = {
+  where?: OrganizationWhereInput;
 };
 ",
   "admin-ui/src/api/organization/OrganizationCreateInput.ts": "import { UserCreateNestedManyWithoutOrganizationsInput } from \\"./UserCreateNestedManyWithoutOrganizationsInput\\";
@@ -864,6 +888,12 @@ export type Profile = {
   updatedAt: Date;
   email: string;
   user?: User | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileCountArgs.ts": "import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+
+export type ProfileCountArgs = {
+  where?: ProfileWhereInput;
 };
 ",
   "admin-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from \\"../user/UserWhereUniqueInput\\";
@@ -1013,6 +1043,12 @@ export type User = {
   location: string;
   extendedProperties: JsonValue;
   profile?: Profile | null;
+};
+",
+  "admin-ui/src/api/user/UserCountArgs.ts": "import { UserWhereInput } from \\"./UserWhereInput\\";
+
+export type UserCountArgs = {
+  where?: UserWhereInput;
 };
 ",
   "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
@@ -1649,7 +1685,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
         </ReferenceField>
         <ReferenceManyField
           reference=\\"Order\\"
-          target=\\"CustomerId\\"
+          target=\\"customerId\\"
           label=\\"Orders\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2120,7 +2156,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         <TextField label=\\"Name\\" source=\\"name\\" />
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"organizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2168,7 +2204,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
         </ReferenceManyField>
         <ReferenceManyField
           reference=\\"Customer\\"
-          target=\\"OrganizationId\\"
+          target=\\"vipOrganizationId\\"
           label=\\"The Customers\\"
         >
           <Datagrid rowClick=\\"show\\">
@@ -2898,7 +2934,7 @@ PORT=3000",
 /dist
 .DS_Store
 ",
-  "server/docker-compose.db.yml": "version: \\"3\\"
+  "server/docker-compose.dev.yml": "version: \\"3\\"
 ",
   "server/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2952,7 +2988,7 @@ services:
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
     \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
-    \\"docker:build\\": \\"docker build .\\",
+    \\"package:container\\": \\"docker build .\\",
     \\"compose:up\\": \\"docker-compose up -d\\",
     \\"compose:down\\": \\"docker-compose down --volumes\\"
   },
@@ -2964,26 +3000,27 @@ services:
     \\"@nestjs/platform-express\\": \\"8.4.7\\",
     \\"@nestjs/serve-static\\": \\"2.2.2\\",
     \\"@nestjs/swagger\\": \\"5.1.5\\",
+    \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@prisma/client\\": \\"4.6.1\\",
     \\"apollo-server-express\\": \\"3.6.1\\",
     \\"bcrypt\\": \\"5.0.1\\",
     \\"class-transformer\\": \\"0.5.1\\",
-    \\"class-validator\\": \\"0.13.2\\",
+    \\"class-validator\\": \\"0.14.0\\",
+    \\"dotenv\\": \\"^16.1.4\\",
     \\"graphql\\": \\"15.7.2\\",
     \\"graphql-type-json\\": \\"0.3.2\\",
     \\"nest-access-control\\": \\"2.0.3\\",
     \\"nest-morgan\\": \\"1.0.1\\",
-    \\"nestjs-prisma\\": \\"0.19.0\\",
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"reflect-metadata\\": \\"0.1.13\\",
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"10.9.1\\",
+    \\"type-fest\\": \\"0.13.1\\",
     \\"validator\\": \\"^13.9.0\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
     \\"@nestjs/testing\\": \\"8.4.7\\",
-    \\"@types/bcrypt\\": \\"5.0.0\\",
     \\"@types/express\\": \\"4.17.9\\",
     \\"@types/graphql-type-json\\": \\"0.3.2\\",
     \\"@types/jest\\": \\"26.0.19\\",
@@ -2995,7 +3032,6 @@ services:
     \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
-    \\"type-fest\\": \\"0.11.0\\",
     \\"typescript\\": \\"4.2.3\\"
   },
   \\"jest\\": {
@@ -3016,7 +3052,7 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
-  name               String
+  name               String              @unique @map(\\"name\\")
   bio                String
   email              String
   age                Int
@@ -3033,6 +3069,10 @@ model User {
   extendedProperties Json
   profile            Profile?            @relation(fields: [profileId], references: [id])
   profileId          Int?                @unique
+
+  @@unique([name(sort: Desc), email])
+  @@index([name, email])
+  @@map(\\"users\\")
 }
 
 model Profile {
@@ -3295,10 +3335,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerCreateInput } from \\"./CustomerCreateInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CreateCustomerArgs {
+  @ApiProperty({
+    required: true,
+    type: () => CustomerCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerCreateInput)
   @Field(() => CustomerCreateInput, { nullable: false })
   data!: CustomerCreateInput;
 }
@@ -3513,6 +3562,35 @@ class Customer {
 
 export { Customer as Customer };
 ",
+  "server/src/customer/base/CustomerCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class CustomerCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => CustomerWhereInput,
+  })
+  @Field(() => CustomerWhereInput, { nullable: true })
+  @Type(() => CustomerWhereInput)
+  where?: CustomerWhereInput;
+}
+
+export { CustomerCountArgs as CustomerCountArgs };
+",
   "server/src/customer/base/CustomerCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -3720,6 +3798,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereInput } from \\"./CustomerWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { CustomerOrderByInput } from \\"./CustomerOrderByInput\\";
 
@@ -3729,6 +3808,8 @@ class CustomerFindManyArgs {
     required: false,
     type: () => CustomerWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => CustomerWhereInput, { nullable: true })
   @Type(() => CustomerWhereInput)
   where?: CustomerWhereInput;
@@ -3737,6 +3818,8 @@ class CustomerFindManyArgs {
     required: false,
     type: [CustomerOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [CustomerOrderByInput], { nullable: true })
   @Type(() => CustomerOrderByInput)
   orderBy?: Array<CustomerOrderByInput>;
@@ -3745,6 +3828,8 @@ class CustomerFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -3753,6 +3838,8 @@ class CustomerFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -3772,10 +3859,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CustomerFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => CustomerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
   @Field(() => CustomerWhereUniqueInput, { nullable: false })
   where!: CustomerWhereUniqueInput;
 }
@@ -3852,6 +3948,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -3863,6 +3960,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3872,6 +3971,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3881,6 +3982,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3890,6 +3993,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3899,6 +4004,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3908,6 +4015,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3917,6 +4026,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3926,6 +4037,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3935,6 +4048,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3944,6 +4059,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3953,6 +4070,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3962,6 +4081,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3971,6 +4092,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3980,6 +4103,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3989,6 +4114,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -3998,6 +4125,8 @@ class CustomerOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -4457,10 +4586,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteCustomerArgs {
+  @ApiProperty({
+    required: true,
+    type: () => CustomerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
   @Field(() => CustomerWhereUniqueInput, { nullable: false })
   where!: CustomerWhereUniqueInput;
 }
@@ -4603,13 +4741,29 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { CustomerUpdateInput } from \\"./CustomerUpdateInput\\";
 
 @ArgsType()
 class UpdateCustomerArgs {
+  @ApiProperty({
+    required: true,
+    type: () => CustomerWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerWhereUniqueInput)
   @Field(() => CustomerWhereUniqueInput, { nullable: false })
   where!: CustomerWhereUniqueInput;
+
+  @ApiProperty({
+    required: true,
+    type: () => CustomerUpdateInput,
+  })
+  @ValidateNested()
+  @Type(() => CustomerUpdateInput)
   @Field(() => CustomerUpdateInput, { nullable: false })
   data!: CustomerUpdateInput;
 }
@@ -5247,8 +5401,8 @@ import { Prisma, Customer, Order, Organization } from \\"@prisma/client\\";
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.CustomerFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
+  async count<T extends Prisma.CustomerCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.CustomerCountArgs>
   ): Promise<number> {
     return this.prisma.customer.count(args);
   }
@@ -5448,10 +5602,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteEmptyArgs {
+  @ApiProperty({
+    required: true,
+    type: () => EmptyWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => EmptyWhereUniqueInput)
   @Field(() => EmptyWhereUniqueInput, { nullable: false })
   where!: EmptyWhereUniqueInput;
 }
@@ -5503,6 +5666,35 @@ class Empty {
 
 export { Empty as Empty };
 ",
+  "server/src/empty/base/EmptyCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class EmptyCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => EmptyWhereInput,
+  })
+  @Field(() => EmptyWhereInput, { nullable: true })
+  @Type(() => EmptyWhereInput)
+  where?: EmptyWhereInput;
+}
+
+export { EmptyCountArgs as EmptyCountArgs };
+",
   "server/src/empty/base/EmptyCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -5531,6 +5723,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereInput } from \\"./EmptyWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { EmptyOrderByInput } from \\"./EmptyOrderByInput\\";
 
@@ -5540,6 +5733,8 @@ class EmptyFindManyArgs {
     required: false,
     type: () => EmptyWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => EmptyWhereInput, { nullable: true })
   @Type(() => EmptyWhereInput)
   where?: EmptyWhereInput;
@@ -5548,6 +5743,8 @@ class EmptyFindManyArgs {
     required: false,
     type: [EmptyOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [EmptyOrderByInput], { nullable: true })
   @Type(() => EmptyOrderByInput)
   orderBy?: Array<EmptyOrderByInput>;
@@ -5556,6 +5753,8 @@ class EmptyFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -5564,6 +5763,8 @@ class EmptyFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -5583,10 +5784,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { EmptyWhereUniqueInput } from \\"./EmptyWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class EmptyFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => EmptyWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => EmptyWhereUniqueInput)
   @Field(() => EmptyWhereUniqueInput, { nullable: false })
   where!: EmptyWhereUniqueInput;
 }
@@ -5663,6 +5873,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -5674,6 +5885,8 @@ class EmptyOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -5683,6 +5896,8 @@ class EmptyOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -5692,6 +5907,8 @@ class EmptyOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6158,8 +6375,8 @@ import { Prisma, Empty } from \\"@prisma/client\\";
 export class EmptyServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.EmptyFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
+  async count<T extends Prisma.EmptyCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.EmptyCountArgs>
   ): Promise<number> {
     return this.prisma.empty.count(args);
   }
@@ -6431,6 +6648,7 @@ async function main() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
+      forbidUnknownValues: false,
     })
   );
 
@@ -6472,10 +6690,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderCreateInput } from \\"./OrderCreateInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CreateOrderArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrderCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderCreateInput)
   @Field(() => OrderCreateInput, { nullable: false })
   data!: OrderCreateInput;
 }
@@ -6494,10 +6721,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteOrderArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrderWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereUniqueInput)
   @Field(() => OrderWhereUniqueInput, { nullable: false })
   where!: OrderWhereUniqueInput;
 }
@@ -6631,6 +6867,35 @@ class Order {
 
 export { Order as Order };
 ",
+  "server/src/order/base/OrderCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class OrderCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => OrderWhereInput,
+  })
+  @Field(() => OrderWhereInput, { nullable: true })
+  @Type(() => OrderWhereInput)
+  where?: OrderWhereInput;
+}
+
+export { OrderCountArgs as OrderCountArgs };
+",
   "server/src/order/base/OrderCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -6697,6 +6962,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereInput } from \\"./OrderWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrderOrderByInput } from \\"./OrderOrderByInput\\";
 
@@ -6706,6 +6972,8 @@ class OrderFindManyArgs {
     required: false,
     type: () => OrderWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => OrderWhereInput, { nullable: true })
   @Type(() => OrderWhereInput)
   where?: OrderWhereInput;
@@ -6714,6 +6982,8 @@ class OrderFindManyArgs {
     required: false,
     type: [OrderOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [OrderOrderByInput], { nullable: true })
   @Type(() => OrderOrderByInput)
   orderBy?: Array<OrderOrderByInput>;
@@ -6722,6 +6992,8 @@ class OrderFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -6730,6 +7002,8 @@ class OrderFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -6749,10 +7023,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class OrderFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrderWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereUniqueInput)
   @Field(() => OrderWhereUniqueInput, { nullable: false })
   where!: OrderWhereUniqueInput;
 }
@@ -6829,6 +7112,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -6840,6 +7124,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6849,6 +7135,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6858,6 +7146,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6867,6 +7157,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6876,6 +7168,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -6885,6 +7179,8 @@ class OrderOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -7084,13 +7380,29 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrderWhereUniqueInput } from \\"./OrderWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { OrderUpdateInput } from \\"./OrderUpdateInput\\";
 
 @ArgsType()
 class UpdateOrderArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrderWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderWhereUniqueInput)
   @Field(() => OrderWhereUniqueInput, { nullable: false })
   where!: OrderWhereUniqueInput;
+
+  @ApiProperty({
+    required: true,
+    type: () => OrderUpdateInput,
+  })
+  @ValidateNested()
+  @Type(() => OrderUpdateInput)
   @Field(() => OrderUpdateInput, { nullable: false })
   data!: OrderUpdateInput;
 }
@@ -7520,8 +7832,8 @@ import { Prisma, Order, Customer } from \\"@prisma/client\\";
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrderFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
+  async count<T extends Prisma.OrderCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrderCountArgs>
   ): Promise<number> {
     return this.prisma.order.count(args);
   }
@@ -7610,10 +7922,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationCreateInput } from \\"./OrganizationCreateInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CreateOrganizationArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrganizationCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationCreateInput)
   @Field(() => OrganizationCreateInput, { nullable: false })
   data!: OrganizationCreateInput;
 }
@@ -7708,10 +8029,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteOrganizationArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
   @Field(() => OrganizationWhereUniqueInput, { nullable: false })
   where!: OrganizationWhereUniqueInput;
 }
@@ -7800,6 +8130,35 @@ class Organization {
 
 export { Organization as Organization };
 ",
+  "server/src/organization/base/OrganizationCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class OrganizationCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => OrganizationWhereInput,
+  })
+  @Field(() => OrganizationWhereInput, { nullable: true })
+  @Type(() => OrganizationWhereInput)
+  where?: OrganizationWhereInput;
+}
+
+export { OrganizationCountArgs as OrganizationCountArgs };
+",
   "server/src/organization/base/OrganizationCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -7881,6 +8240,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereInput } from \\"./OrganizationWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { OrganizationOrderByInput } from \\"./OrganizationOrderByInput\\";
 
@@ -7890,6 +8250,8 @@ class OrganizationFindManyArgs {
     required: false,
     type: () => OrganizationWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => OrganizationWhereInput, { nullable: true })
   @Type(() => OrganizationWhereInput)
   where?: OrganizationWhereInput;
@@ -7898,6 +8260,8 @@ class OrganizationFindManyArgs {
     required: false,
     type: [OrganizationOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [OrganizationOrderByInput], { nullable: true })
   @Type(() => OrganizationOrderByInput)
   orderBy?: Array<OrganizationOrderByInput>;
@@ -7906,6 +8270,8 @@ class OrganizationFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -7914,6 +8280,8 @@ class OrganizationFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -7933,10 +8301,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class OrganizationFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
   @Field(() => OrganizationWhereUniqueInput, { nullable: false })
   where!: OrganizationWhereUniqueInput;
 }
@@ -8013,6 +8390,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -8024,6 +8402,8 @@ class OrganizationOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -8033,6 +8413,8 @@ class OrganizationOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -8042,6 +8424,8 @@ class OrganizationOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -8051,6 +8435,8 @@ class OrganizationOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -8274,13 +8660,29 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { OrganizationWhereUniqueInput } from \\"./OrganizationWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { OrganizationUpdateInput } from \\"./OrganizationUpdateInput\\";
 
 @ArgsType()
 class UpdateOrganizationArgs {
+  @ApiProperty({
+    required: true,
+    type: () => OrganizationWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationWhereUniqueInput)
   @Field(() => OrganizationWhereUniqueInput, { nullable: false })
   where!: OrganizationWhereUniqueInput;
+
+  @ApiProperty({
+    required: true,
+    type: () => OrganizationUpdateInput,
+  })
+  @ValidateNested()
+  @Type(() => OrganizationUpdateInput)
   @Field(() => OrganizationUpdateInput, { nullable: false })
   data!: OrganizationUpdateInput;
 }
@@ -9030,8 +9432,8 @@ import { Prisma, Organization, User, Customer } from \\"@prisma/client\\";
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.OrganizationFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
+  async count<T extends Prisma.OrganizationCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.OrganizationCountArgs>
   ): Promise<number> {
     return this.prisma.organization.count(args);
   }
@@ -9226,10 +9628,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { ProfileCreateInput } from \\"./ProfileCreateInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CreateProfileArgs {
+  @ApiProperty({
+    required: true,
+    type: () => ProfileCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileCreateInput)
   @Field(() => ProfileCreateInput, { nullable: false })
   data!: ProfileCreateInput;
 }
@@ -9248,10 +9659,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteProfileArgs {
+  @ApiProperty({
+    required: true,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
   @Field(() => ProfileWhereUniqueInput, { nullable: false })
   where!: ProfileWhereUniqueInput;
 }
@@ -9343,6 +9763,35 @@ class Profile {
 
 export { Profile as Profile };
 ",
+  "server/src/profile/base/ProfileCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class ProfileCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => ProfileWhereInput,
+  })
+  @Field(() => ProfileWhereInput, { nullable: true })
+  @Type(() => ProfileWhereInput)
+  where?: ProfileWhereInput;
+}
+
+export { ProfileCountArgs as ProfileCountArgs };
+",
   "server/src/profile/base/ProfileCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
@@ -9415,6 +9864,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { ProfileWhereInput } from \\"./ProfileWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { ProfileOrderByInput } from \\"./ProfileOrderByInput\\";
 
@@ -9424,6 +9874,8 @@ class ProfileFindManyArgs {
     required: false,
     type: () => ProfileWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => ProfileWhereInput, { nullable: true })
   @Type(() => ProfileWhereInput)
   where?: ProfileWhereInput;
@@ -9432,6 +9884,8 @@ class ProfileFindManyArgs {
     required: false,
     type: [ProfileOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [ProfileOrderByInput], { nullable: true })
   @Type(() => ProfileOrderByInput)
   orderBy?: Array<ProfileOrderByInput>;
@@ -9440,6 +9894,8 @@ class ProfileFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -9448,6 +9904,8 @@ class ProfileFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -9467,10 +9925,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class ProfileFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
   @Field(() => ProfileWhereUniqueInput, { nullable: false })
   where!: ProfileWhereUniqueInput;
 }
@@ -9547,6 +10014,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -9558,6 +10026,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9567,6 +10037,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9576,6 +10048,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9585,6 +10059,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9594,6 +10070,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9603,6 +10081,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9612,6 +10092,8 @@ class ProfileOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -9834,13 +10316,29 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { ProfileWhereUniqueInput } from \\"./ProfileWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { ProfileUpdateInput } from \\"./ProfileUpdateInput\\";
 
 @ArgsType()
 class UpdateProfileArgs {
+  @ApiProperty({
+    required: true,
+    type: () => ProfileWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileWhereUniqueInput)
   @Field(() => ProfileWhereUniqueInput, { nullable: false })
   where!: ProfileWhereUniqueInput;
+
+  @ApiProperty({
+    required: true,
+    type: () => ProfileUpdateInput,
+  })
+  @ValidateNested()
+  @Type(() => ProfileUpdateInput)
   @Field(() => ProfileUpdateInput, { nullable: false })
   data!: ProfileUpdateInput;
 }
@@ -10288,8 +10786,8 @@ import { Prisma, Profile, User } from \\"@prisma/client\\";
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.ProfileFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
+  async count<T extends Prisma.ProfileCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.ProfileCountArgs>
   ): Promise<number> {
     return this.prisma.profile.count(args);
   }
@@ -10397,12 +10895,12 @@ describe(\\"Testing the secrets manager base class\\", () => {
     expect(result).toBeNull();
   });
   it(\\"should throw error if dont get key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret()).rejects.toThrow();
+    return expect(secretsManagerServiceBase.getSecret(\\"\\")).rejects.toThrow();
   });
   it(\\"should throw an exeption if getting null key\\", () => {
-    //@ts-ignore
-    return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
+    return expect(
+      secretsManagerServiceBase.getSecret(null as unknown as string)
+    ).rejects.toThrow();
   });
 });
 ",
@@ -10495,7 +10993,6 @@ export const swaggerDocumentOptions = new DocumentBuilder()
   .setDescription(
     'Sample application for testing\\\\n\\\\n## Congratulations! Your service resource is ready.\\\\n  \\\\nPlease note that all endpoints are secured with HTTP Basic authentication.\\\\nBy default, your service resource comes with one user with the username \\"admin\\" and password \\"admin\\".\\\\nLearn more in [our docs](https://docs.amplication.com)'
   )
-  .setVersion(\\"0.1.3\\")
   .addBasicAuth()
   .build();
 
@@ -10509,7 +11006,7 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
 };
 ",
   "server/src/tests/health/health.service.spec.ts": "import { mock } from \\"jest-mock-extended\\";
-import { PrismaService } from \\"nestjs-prisma\\";
+import { PrismaService } from \\"../../prisma/prisma.service\\";
 import { HealthServiceBase } from \\"../../health/base/health.service.base\\";
 
 describe(\\"Testing the HealthServiceBase\\", () => {
@@ -10524,9 +11021,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return true if allow connection to db\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.resolve(true));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.resolve(true)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -10534,9 +11031,9 @@ describe(\\"Testing the HealthServiceBase\\", () => {
     });
     it(\\"should return false if db is not available\\", async () => {
       //ARRANGE
-      prismaService.$queryRaw
-        //@ts-ignore
-        .mockReturnValue(Promise.reject(false));
+      (prismaService.$queryRaw as jest.Mock).mockReturnValue(
+        Promise.reject(false)
+      );
       //ACT
       const response = await healthServiceBase.isDbReady();
       //ASSERT
@@ -10561,10 +11058,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserCreateInput } from \\"./UserCreateInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class CreateUserArgs {
+  @ApiProperty({
+    required: true,
+    type: () => UserCreateInput,
+  })
+  @ValidateNested()
+  @Type(() => UserCreateInput)
   @Field(() => UserCreateInput, { nullable: false })
   data!: UserCreateInput;
 }
@@ -10583,10 +11089,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class DeleteUserArgs {
+  @ApiProperty({
+    required: true,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @Field(() => UserWhereUniqueInput, { nullable: false })
   where!: UserWhereUniqueInput;
 }
@@ -10726,13 +11241,29 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 import { UserUpdateInput } from \\"./UserUpdateInput\\";
 
 @ArgsType()
 class UpdateUserArgs {
+  @ApiProperty({
+    required: true,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @Field(() => UserWhereUniqueInput, { nullable: false })
   where!: UserWhereUniqueInput;
+
+  @ApiProperty({
+    required: true,
+    type: () => UserUpdateInput,
+  })
+  @ValidateNested()
+  @Type(() => UserUpdateInput)
   @Field(() => UserUpdateInput, { nullable: false })
   data!: UserUpdateInput;
 }
@@ -10916,6 +11447,35 @@ class User {
 }
 
 export { User as User };
+",
+  "server/src/user/base/UserCountArgs.ts": "/*
+------------------------------------------------------------------------------ 
+This code was generated by Amplication. 
+ 
+Changes to this file will be lost if the code is regenerated. 
+
+There are other ways to to customize your code, see this doc to learn more
+https://docs.amplication.com/how-to/custom-code
+
+------------------------------------------------------------------------------
+  */
+import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { UserWhereInput } from \\"./UserWhereInput\\";
+import { Type } from \\"class-transformer\\";
+
+@ArgsType()
+class UserCountArgs {
+  @ApiProperty({
+    required: false,
+    type: () => UserWhereInput,
+  })
+  @Field(() => UserWhereInput, { nullable: true })
+  @Type(() => UserWhereInput)
+  where?: UserWhereInput;
+}
+
+export { UserCountArgs as UserCountArgs };
 ",
   "server/src/user/base/UserCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -11142,6 +11702,7 @@ https://docs.amplication.com/how-to/custom-code
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereInput } from \\"./UserWhereInput\\";
+import { IsOptional, ValidateNested, IsInt } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
 import { UserOrderByInput } from \\"./UserOrderByInput\\";
 
@@ -11151,6 +11712,8 @@ class UserFindManyArgs {
     required: false,
     type: () => UserWhereInput,
   })
+  @IsOptional()
+  @ValidateNested()
   @Field(() => UserWhereInput, { nullable: true })
   @Type(() => UserWhereInput)
   where?: UserWhereInput;
@@ -11159,6 +11722,8 @@ class UserFindManyArgs {
     required: false,
     type: [UserOrderByInput],
   })
+  @IsOptional()
+  @ValidateNested({ each: true })
   @Field(() => [UserOrderByInput], { nullable: true })
   @Type(() => UserOrderByInput)
   orderBy?: Array<UserOrderByInput>;
@@ -11167,6 +11732,8 @@ class UserFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   skip?: number;
@@ -11175,6 +11742,8 @@ class UserFindManyArgs {
     required: false,
     type: Number,
   })
+  @IsOptional()
+  @IsInt()
   @Field(() => Number, { nullable: true })
   @Type(() => Number)
   take?: number;
@@ -11194,10 +11763,19 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { ArgsType, Field } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
 import { UserWhereUniqueInput } from \\"./UserWhereUniqueInput\\";
+import { ValidateNested } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
 
 @ArgsType()
 class UserFindUniqueArgs {
+  @ApiProperty({
+    required: true,
+    type: () => UserWhereUniqueInput,
+  })
+  @ValidateNested()
+  @Type(() => UserWhereUniqueInput)
   @Field(() => UserWhereUniqueInput, { nullable: false })
   where!: UserWhereUniqueInput;
 }
@@ -11274,6 +11852,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional, IsEnum } from \\"class-validator\\";
 import { SortOrder } from \\"../../util/SortOrder\\";
 
 @InputType({
@@ -11285,6 +11864,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11294,6 +11875,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11303,6 +11886,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11312,6 +11897,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11321,6 +11908,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11330,6 +11919,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11339,6 +11930,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11348,6 +11941,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11357,6 +11952,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11366,6 +11963,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11375,6 +11974,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11384,6 +11985,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11393,6 +11996,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -11402,6 +12007,8 @@ class UserOrderByInput {
     required: false,
     enum: [\\"asc\\", \\"desc\\"],
   })
+  @IsOptional()
+  @IsEnum(SortOrder)
   @Field(() => SortOrder, {
     nullable: true,
   })
@@ -12554,8 +13161,8 @@ import { Prisma, User, Organization, Profile } from \\"@prisma/client\\";
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
 
-  async count<T extends Prisma.UserFindManyArgs>(
-    args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
+  async count<T extends Prisma.UserCountArgs>(
+    args: Prisma.SelectSubset<T, Prisma.UserCountArgs>
   ): Promise<number> {
     return this.prisma.user.count(args);
   }

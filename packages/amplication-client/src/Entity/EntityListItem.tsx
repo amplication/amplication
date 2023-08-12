@@ -10,10 +10,14 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
+import { UPDATE_SERVICE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import useSettingsHook from "../Resource/useSettingsHook";
+import { useTracking } from "../util/analytics";
+import { USER_ENTITY } from "./constants";
+import useResource from "../Resource/hooks/useResource";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -22,12 +26,17 @@ type DType = {
   deleteEntity: { id: string };
 };
 
+type TData = {
+  updateServiceSettings: models.ServiceSettings;
+};
+
 type Props = {
   resourceId: string;
   entity: models.Entity;
   onDelete?: () => void;
   onError: (error: Error) => void;
   relatedEntities: models.Entity[];
+  isUserEntityMandatory: boolean;
 };
 
 const CLASS_NAME = "entity-list-item";
@@ -38,10 +47,13 @@ export const EntityListItem = ({
   onDelete,
   onError,
   relatedEntities,
+  isUserEntityMandatory,
 }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
   const history = useHistory();
+
+  const { resourceSettings } = useResource(resourceId);
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -82,8 +94,30 @@ export const EntityListItem = ({
     setConfirmDelete(false);
   }, [setConfirmDelete]);
 
+  const { trackEvent } = useTracking();
+
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS
+  );
+  const { handleSubmit } = useSettingsHook({
+    trackEvent,
+    resourceId,
+    updateResourceSettings,
+  });
+
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
+
+    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+
+    if (authEntity === entity.name) {
+      const updateServiceSettings = {
+        ...resourceSettings?.serviceSettings,
+        authEntityName: null,
+      };
+      handleSubmit(updateServiceSettings);
+    }
+
     deleteEntity({
       variables: {
         entityId: entity.id,
@@ -99,6 +133,20 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
+  const isAuthEntity = resourceSettings?.serviceSettings?.authEntityName
+    ? entity.name === resourceSettings?.serviceSettings?.authEntityName
+    : entity.name === USER_ENTITY;
+
+  const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
+
+  const deleteMessage = isAuthEntity
+    ? "Deleting this entity may impact the authentication functionality of your service"
+    : "you want to delete this entity?";
+
+  const deleteMessageConfirmation = isAuthEntity ? "Notice:" : "Are you sure";
+
+  const deleteClassName = isAuthEntity ? "__alert-bold-notice" : "__alert-bold";
+
   return (
     <>
       <ConfirmationDialog
@@ -108,8 +156,10 @@ export const EntityListItem = ({
         dismissButton={DISMISS_BUTTON}
         message={
           <span>
-            <span className={`${CLASS_NAME}__alert-bold`}>Are you sure</span>{" "}
-            you want to delete this entity?
+            <span className={`${CLASS_NAME}${deleteClassName}`}>
+              {deleteMessageConfirmation}
+            </span>{" "}
+            {deleteMessage}
             <br />
             {relatedEntities.length > 0 && (
               <ConfirmationDialogFieldList relatedEntities={relatedEntities} />
@@ -138,11 +188,12 @@ export const EntityListItem = ({
           )}
 
           <span className="spacer" />
-          {!deleteLoading && entity.name !== USER_ENTITY && (
+          {!deleteLoading && (
             <Button
               buttonStyle={EnumButtonStyle.Text}
               icon="trash_2"
               onClick={handleDelete}
+              disabled={isDeleteButtonDisable}
             />
           )}
         </div>

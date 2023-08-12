@@ -84,7 +84,7 @@
     "generate-local-code": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts ",
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts",
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
       }
@@ -101,7 +101,7 @@
         "cwd": "packages/data-service-generator"
       }
     },
-    "docker:build": {
+    "package:container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
       "options": {

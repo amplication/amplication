@@ -1,34 +1,116 @@
 import { GET_COMMITS } from "./commitQueries";
-import { useContext, useEffect, useMemo, useState } from "react";
-import { Commit, SortOrder } from "../../models";
-import { useQuery } from "@apollo/client";
-import { AppContext } from "../../context/appContext";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { Commit, PendingChange, SortOrder } from "../../models";
+import { ApolloError, useLazyQuery } from "@apollo/client";
 import { groupBy } from "lodash";
 
-const useCommits = () => {
-  const { currentProject } = useContext(AppContext);
-  const [commits, setCommits] = useState<Commit[]>([]);
+const MAX_ITEMS_PER_LOADING = 20;
 
-  const {
-    data: commitsData,
-    error: commitsError,
-    loading: commitsLoading,
-    refetch: refetchCommits,
-  } = useQuery(GET_COMMITS, {
-    skip: !currentProject?.id && !commits.length,
+export type CommitChangesByResource = (commitId: string) => {
+  resourceId: string;
+  changes: PendingChange[];
+}[];
+
+export interface CommitUtils {
+  commits: Commit[];
+  lastCommit: Commit;
+  commitsError: ApolloError;
+  commitsLoading: boolean;
+  commitChangesByResource: (commitId: string) => {
+    resourceId: string;
+    changes: PendingChange[];
+  }[];
+  refetchCommitsData: (refetchFromStart?: boolean) => void;
+  refetchLastCommit: () => void;
+  disableLoadMore: boolean;
+}
+
+const useCommits = (currentProjectId: string, maxCommits?: number) => {
+  const [commits, setCommits] = useState<Commit[]>([]);
+  const [lastCommit, setLastCommit] = useState<Commit>();
+  const [commitsCount, setCommitsCount] = useState(1);
+  const [disableLoadMore, setDisableLoadMore] = useState(false);
+
+  const [
+    getInitialCommits,
+    {
+      data: commitsData,
+      error: commitsError,
+      loading: commitsLoading,
+      refetch: refetchCommits,
+    },
+  ] = useLazyQuery(GET_COMMITS, {
     notifyOnNetworkStatusChange: true,
     variables: {
-      projectId: currentProject?.id,
+      projectId: currentProjectId,
+      take: maxCommits || MAX_ITEMS_PER_LOADING,
+      skip: 0,
       orderBy: {
         createdAt: SortOrder.Desc,
       },
     },
+    onCompleted: (data) => {
+      if (!data?.commits.length || data?.commits.length < MAX_ITEMS_PER_LOADING)
+        setDisableLoadMore(true);
+    },
   });
 
+  // get initial commits for a specific project
   useEffect(() => {
-    if (!commitsData) return;
-    setCommits(commitsData.commits);
-  }, [commitsData]);
+    if (!currentProjectId) return;
+
+    getInitialCommits();
+    commitsCount !== 1 && setCommitsCount(1);
+  }, [currentProjectId]);
+
+  // fetch the initial commit data and assign it
+  useEffect(() => {
+    if (!commitsData && !commitsData?.commits.length) return;
+
+    if (commits.length) return;
+
+    if (commitsLoading) return;
+
+    setCommits(commitsData?.commits);
+    setLastCommit(commitsData?.commits[0]);
+  }, [commitsData?.commits, commits]);
+
+  const refetchCommitsData = useCallback(
+    (refetchFromStart?: boolean) => {
+      refetchCommits({
+        skip: refetchFromStart ? 0 : commitsCount * MAX_ITEMS_PER_LOADING,
+        take: MAX_ITEMS_PER_LOADING,
+      });
+      refetchFromStart && setCommits([]);
+      setCommitsCount(refetchFromStart ? 1 : commitsCount + 1);
+    },
+    [refetchCommits, setCommitsCount, commitsCount]
+  );
+
+  const refetchLastCommit = useCallback(() => {
+    if (!currentProjectId) return;
+
+    refetchCommits({
+      skip: 0,
+      take: 1,
+    });
+  }, [currentProjectId]);
+
+  // pagination refetch
+  useEffect(() => {
+    if (!commitsData?.commits?.length || commitsCount === 1 || commitsLoading)
+      return;
+
+    setCommits([...commits, ...commitsData.commits]);
+  }, [commitsData?.commits, commitsCount]);
+
+  // last commit refetch
+  useEffect(() => {
+    if (!commitsData?.commits?.length || commitsData?.commits?.length > 1)
+      return;
+
+    setLastCommit(commitsData?.commits[0]);
+  }, [commitsData?.commits]);
 
   const getCommitIdx = (commits: Commit[], commitId: string): number =>
     commits.findIndex((commit) => commit.id === commitId);
@@ -55,11 +137,13 @@ const useCommits = () => {
 
   return {
     commits,
-    lastCommit: (commits && commits.length && commits[0]) || null,
+    lastCommit,
     commitsError,
     commitsLoading,
     commitChangesByResource,
-    refetchCommits,
+    refetchCommitsData,
+    refetchLastCommit,
+    disableLoadMore,
   };
 };
 

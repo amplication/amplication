@@ -3,17 +3,20 @@ import {
   GitClientService,
   File,
   GitProvidersConfiguration,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
-import { CreatePullRequestArgs } from "./dto/create-pull-request.args";
+import { CreatePrRequest } from "@amplication/schema-registry";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class PullRequestService {
   gitProvidersConfiguration: GitProvidersConfiguration;
+
   constructor(
     private readonly diffService: DiffService,
     private readonly configService: ConfigService,
@@ -59,17 +62,20 @@ export class PullRequestService {
     resourceId,
     oldBuildId,
     newBuildId,
-    installationId,
     gitProvider,
+    gitProviderProperties,
     gitOrganizationName: owner,
     gitRepositoryName: repo,
     commit,
     gitResourceMeta,
     pullRequestMode,
-  }: CreatePullRequestArgs): Promise<string> {
+    repositoryGroupName,
+    baseBranchName,
+  }: CreatePrRequest.Value): Promise<string> {
+    const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
     const head =
-      commit.head || pullRequestMode === EnumPullRequestMode.Accumulative
+      pullRequestMode === EnumPullRequestMode.Accumulative
         ? "amplication"
         : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
@@ -78,30 +84,44 @@ export class PullRequestService {
       newBuildId
     );
 
-    this.logger.info(
+    logger.info(
       "The changed files have returned from the diff service listOfChangedFiles are",
-      { lengthOfFile: changedFiles.length }
-    );
-    const gitClientService = await new GitClientService().create(
       {
-        provider: gitProvider,
-        providerOrganizationProperties: { installationId },
-      },
-      this.gitProvidersConfiguration,
-      this.logger
+        lengthOfFile: changedFiles.length,
+      }
     );
+
+    const gitClientService = TraceWrapper.trace(
+      await new GitClientService().create(
+        {
+          provider: gitProvider,
+          providerOrganizationProperties: gitProviderProperties,
+        },
+        this.gitProvidersConfiguration,
+        logger
+      ),
+      { logger }
+    );
+    const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
+
     const prUrl = await gitClientService.createPullRequest({
       owner,
+      cloneDirPath,
       repositoryName: repo,
+      repositoryGroupName,
       branchName: head,
-      commitMessage: commit.body,
+      commitMessage: body,
       pullRequestTitle: title,
       pullRequestBody: body,
       pullRequestMode,
       gitResourceMeta,
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
+      resourceId,
+      buildId: newBuildId,
+      baseBranchName,
     });
-    this.logger.info("Opened a new pull request", { prUrl });
+
+    logger.info("Opened a new pull request", { prUrl });
     return prUrl;
   }
 

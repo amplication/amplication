@@ -6,8 +6,13 @@ import { Topic } from "./dto/Topic";
 import { CreateTopicArgs } from "./dto/CreateTopicArgs";
 import { UpdateTopicArgs } from "./dto/UpdateTopicArgs";
 import { DeleteTopicArgs } from "./dto/DeleteTopicArgs";
+import { UseFilters, UseGuards } from "@nestjs/common";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
+import { GqlAuthGuard } from "../../guards/gql-auth.guard";
 
 @Resolver(() => Topic)
+@UseFilters(GqlResolverExceptionsFilter)
+@UseGuards(GqlAuthGuard)
 export class TopicResolver extends BlockTypeResolver(
   Topic,
   "Topics",

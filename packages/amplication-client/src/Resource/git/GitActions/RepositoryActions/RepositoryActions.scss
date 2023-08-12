@@ -5,18 +5,20 @@
 }
 
 .repository-actions {
+  max-width: 800px;
+
   &__auth {
     margin: var(--medium-spacing) 0;
     min-height: var(--min-height-of-banner);
     display: flex;
-    background: var(--black10);
+    background: var(--white);
   }
 
   &__wizard_auth {
     margin: var(--default-spacing-small) 0 var(--double-spacing) 0;
     min-height: var(--min-height-of-banner);
     display: flex;
-    background: transparent;
+    background: var(--white);
   }
   &__action {
     margin-left: var(--default-spacing-small);

@@ -1,12 +1,10 @@
 import { Logger } from "./logging";
 import { LoggerOptions, LogLevel } from "./types";
 import { format } from "winston";
-import { Colorizer, Format } from "logform";
-import { customFormat } from "./cli-format";
+import { Format } from "logform";
 
-const FORMAT_COLORIZE = "colorize";
 const FORMAT_ERRORS = "errors";
-const FORMAT_SIMPLE = "simple";
+const FORMAT_SPLAT = "splat";
 const FORMAT_JSON = "json";
 const FORMAT_TIMESTAMP = "timestamp";
 
@@ -19,6 +17,9 @@ describe("getLoggerFormat", () => {
     spyOnCombineFormat = jest
       .spyOn(format, "combine")
       .mockReturnValue({} as unknown as Format);
+    jest
+      .spyOn(format, "splat")
+      .mockReturnValue(FORMAT_SPLAT as unknown as Format);
     jest
       .spyOn(format, "errors")
       .mockReturnValue(FORMAT_ERRORS as unknown as Format);
@@ -33,7 +34,7 @@ describe("getLoggerFormat", () => {
 
     options = {
       logLevel: LogLevel.Debug,
-      serviceName: "Test Service",
+      component: "Test Service",
       metadata: {},
       additionalFormats: [],
       additionalDevelopmentFormats: [],
@@ -50,8 +51,8 @@ describe("getLoggerFormat", () => {
     new Logger(options);
 
     expect(spyOnCombineFormat).toHaveBeenCalledWith(
-      FORMAT_ERRORS,
       FORMAT_TIMESTAMP,
+      FORMAT_ERRORS,
       { template: expect.any(Function) }
     );
   });
@@ -61,8 +62,8 @@ describe("getLoggerFormat", () => {
     new Logger(options);
 
     expect(spyOnCombineFormat).toHaveBeenCalledWith(
-      FORMAT_ERRORS,
       FORMAT_TIMESTAMP,
+      FORMAT_ERRORS,
       FORMAT_JSON
     );
   });

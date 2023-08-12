@@ -6,7 +6,7 @@ export const postgres: PluginInstallation[] = [
     pluginId: "db-postgres",
     npm: "@amplication/plugin-db-postgres",
     enabled: true,
-    version: "latest",
+    version: "1.3.0",
   },
 ];
 
@@ -16,7 +16,7 @@ export const mongo: PluginInstallation[] = [
     pluginId: "db-mongo",
     npm: "@amplication/plugin-db-mongo",
     enabled: true,
-    version: "latest",
+    version: "1.4.0",
   },
 ];
 
@@ -26,7 +26,7 @@ export const mysql: PluginInstallation[] = [
     pluginId: "db-mysql",
     npm: "@amplication/plugin-db-mysql",
     enabled: true,
-    version: "latest",
+    version: "1.1.0",
   },
 ];
 
@@ -36,13 +36,13 @@ export const basicAuth: PluginInstallation[] = [
     pluginId: "auth-core",
     npm: "@amplication/plugin-auth-core",
     enabled: true,
-    version: "latest",
+    version: "1.1.0",
   },
   {
     id: "auth-basic-id",
     pluginId: "auth-basic",
     npm: "@amplication/plugin-auth-basic",
     enabled: true,
-    version: "latest",
+    version: "1.4.0",
   },
 ];

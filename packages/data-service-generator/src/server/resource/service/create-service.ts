@@ -17,6 +17,7 @@ import {
   CreateEntityServiceParams,
   CreateEntityServiceBaseParams,
   types,
+  ModuleMap,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -50,7 +51,7 @@ export async function createServiceModules(
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
   delegateId: namedTypes.Identifier
-): Promise<Module[]> {
+): Promise<ModuleMap> {
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
 
@@ -61,20 +62,17 @@ export async function createServiceModules(
     delegateId
   );
 
-  return [
-    ...(await pluginWrapper(
-      createServiceModule,
-      EventNames.CreateEntityService,
-      {
-        entityName,
-        templateMapping,
-        serviceId,
-        serviceBaseId,
-        template,
-      }
-    )),
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
 
-    ...(await pluginWrapper(
+  await moduleMap.mergeMany([
+    await pluginWrapper(createServiceModule, EventNames.CreateEntityService, {
+      entityName,
+      templateMapping,
+      serviceId,
+      serviceBaseId,
+      template,
+    }),
+    await pluginWrapper(
       createServiceBaseModule,
       EventNames.CreateEntityServiceBase,
       {
@@ -86,8 +84,10 @@ export async function createServiceModules(
         delegateId,
         template: templateBase,
       }
-    )),
-  ];
+    ),
+  ]);
+
+  return moduleMap;
 }
 
 async function createServiceModule({
@@ -96,7 +96,7 @@ async function createServiceModule({
   serviceId,
   serviceBaseId,
   template,
-}: CreateEntityServiceParams): Promise<Module[]> {
+}: CreateEntityServiceParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.service.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
@@ -117,12 +117,13 @@ async function createServiceModule({
   removeTSVariableDeclares(template);
   removeTSInterfaceDeclares(template);
 
-  return [
-    {
-      path: modulePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: modulePath,
+    code: print(template).code,
+  };
+  const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 async function createServiceBaseModule({
@@ -133,7 +134,7 @@ async function createServiceBaseModule({
   serviceBaseId,
   delegateId,
   template,
-}: CreateEntityServiceBaseParams): Promise<Module[]> {
+}: CreateEntityServiceBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
 
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.service.base.ts`;
@@ -207,12 +208,14 @@ async function createServiceBaseModule({
   removeTSInterfaceDeclares(template);
   addAutoGenerationComment(template);
 
-  return [
-    {
-      path: moduleBasePath,
-      code: print(template).code,
-    },
-  ];
+  const module: Module = {
+    path: moduleBasePath,
+    code: print(template).code,
+  };
+  const context = DsgContext.getInstance;
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.set(module);
+  return moduleMap;
 }
 
 export function createServiceId(entityType: string): namedTypes.Identifier {
@@ -301,6 +304,7 @@ function createTemplateMapping(
     SERVICE: serviceId,
     SERVICE_BASE: serviceBaseId,
     ENTITY: builders.identifier(entityType),
+    COUNT_ARGS: builders.identifier(`${entityType}CountArgs`),
     FIND_MANY_ARGS: builders.identifier(`${entityType}FindManyArgs`),
     FIND_ONE_ARGS: builders.identifier(`${entityType}FindUniqueArgs`),
     CREATE_ARGS: builders.identifier(`${entityType}CreateArgs`),

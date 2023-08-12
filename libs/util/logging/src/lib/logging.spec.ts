@@ -24,7 +24,7 @@ let logOptions: LoggerOptions;
 describe("Logger", () => {
   beforeEach(() => {
     logOptions = {
-      serviceName: "maccheroni-service",
+      component: "maccheroni-service",
       logLevel: LogLevel.Debug,
       isProduction: false,
     };
@@ -34,7 +34,7 @@ describe("Logger", () => {
     jest.clearAllMocks();
   });
 
-  it("should configure a serviceName and minimal log level as per LoggerOptions", async () => {
+  it("should configure a component and minimal log level as per LoggerOptions", async () => {
     const spyOnCreateLogger = jest.spyOn(winston, "createLogger");
 
     const logger = new Logger(logOptions);
@@ -44,7 +44,7 @@ describe("Logger", () => {
     expect(spyOnCreateLogger).toBeCalledWith(
       expect.objectContaining({
         defaultMeta: {
-          component: logOptions.serviceName,
+          component: logOptions.component,
         },
       })
     );
@@ -55,7 +55,7 @@ describe("Logger", () => {
 
     expect(winston.createLogger).toHaveBeenCalledWith({
       defaultMeta: {
-        component: logOptions.serviceName,
+        component: logOptions.component,
         ...logOptions.metadata,
       },
       level: logOptions.logLevel,
@@ -107,16 +107,52 @@ describe("Logger", () => {
       expect(mockLogger.warn).toHaveBeenCalledWith("warn message", undefined);
     });
 
-    it("logs an error message", () => {
+    it("logs an simple error message", () => {
       const logger = new Logger(logOptions);
 
       logger.error("error message");
 
-      expect(mockLogger.error).toHaveBeenCalledWith(
-        "error message",
-        undefined,
-        undefined
-      );
+      expect(mockLogger.error).toHaveBeenCalledWith("error message", undefined);
+    });
+
+    it("logs an error message with Error", () => {
+      const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("My error message", error);
+
+      const expectedError = error;
+      Object.assign(expectedError, {
+        errorMessage: "error",
+        message: "My error message",
+      });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
+    });
+
+    it("logs an error message with Error and additional parameters", () => {
+      const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("My error message", error, { foo: { what: "yeah" } });
+
+      const expectedError = error;
+      Object.assign(expectedError, {
+        errorMessage: "error",
+        message: "My error message",
+        foo: { what: "yeah" },
+      });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
+    });
+
+    it("logs an error message with Error without errorMessage if Error message is the same of message", () => {
+      const logger = new Logger(logOptions);
+      const error = new Error("error");
+      logger.error("error", error, { foo: { what: "yeah" } });
+
+      const expectedError = error;
+      Object.assign(expectedError, { foo: { what: "yeah" } });
+
+      expect(mockLogger.error).toHaveBeenCalledWith(expectedError);
     });
   });
 });

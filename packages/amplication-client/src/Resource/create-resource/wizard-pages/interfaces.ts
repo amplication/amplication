@@ -1,10 +1,13 @@
 import { FormikProps } from "formik";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
+import { EnumGitProvider } from "../../../models";
 
 export interface ResourceSettings {
   serviceName: string;
   gitOrganizationId: string;
   gitRepositoryName: string;
+  groupName: string;
+  gitProvider: EnumGitProvider;
   isOverrideGitRepository: boolean;
   generateAdminUI: boolean;
   generateGraphQL: boolean;
@@ -15,6 +18,7 @@ export interface ResourceSettings {
   templateType: "empty" | "orderManagement";
   authType: string;
   isGenerateCompleted: string;
+  connectToDemoRepo: boolean;
 }
 export interface NextPage {
   nextTitle: string;

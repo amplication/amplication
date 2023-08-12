@@ -10,6 +10,7 @@ export enum AnalyticsEventNames {
   ApiTokenCreate = "createApiToken",
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
+  ContinueWithSSOClick = "continueWithSSOClick",
 
   // account
   AccountInfoUpdate = "updateAccountInfo",
@@ -59,12 +60,12 @@ export enum AnalyticsEventNames {
   ServiceCreate = "createResourceClick-Service",
 
   // entity
-  EntityCreate = "createEntity",
-  EntityUpdate = "updateEntity",
-  EntityFieldCreate = "createEntityField",
-  EntityFieldUpdate = "updateEntityField",
+
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  ImportPrismaSchemaClick = "importPrismaSchemaClick",
+  ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
+  ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
@@ -95,7 +96,6 @@ export enum AnalyticsEventNames {
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",
@@ -104,6 +104,8 @@ export enum AnalyticsEventNames {
   CreateService = "CreateService",
   CreateMessageBroker = "CreateMessageBroker",
   CreateProjectConfiguration = "CreateProjectConfiguration",
+  StarUsBannerCTAClick = "StarUsBannerCTAClick",
+  StarUsBannerClose = "StarUsBannerClose",
 
   // new event for startAuthResourceWithGitHub
   AddGitProviderClick = "addGitProviderClick",
@@ -111,7 +113,6 @@ export enum AnalyticsEventNames {
   // Purchase Page
   PricingPageClose = "PricingPageClose",
   PricingPageCTAClick = "PricingPageCTAClick",
-  PassedLimitsNotificationView = "PassedLimitsNotificationView",
   PassedLimitsNotificationClose = "PassedLimitsNotificationClose",
   PricingPageChangeBillingCycle = "PricingPageChangeBillingCycle",
   UpgradeOnResourceListClick = "UpgradeOnResourceListClick",
@@ -120,6 +121,7 @@ export enum AnalyticsEventNames {
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
   ContactUsButtonClick = "ContactUsButtonClick",
+  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",

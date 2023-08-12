@@ -17,6 +17,7 @@ import {
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 
 type Props = {
   resource: models.Resource;
@@ -58,9 +59,14 @@ function ResourceListItem({ resource, onDelete }: Props) {
 
   const lastBuild = resource.builds[0];
 
-  const gitHubRepo = gitRepository
-    ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
-    : undefined;
+  const provider = gitRepository?.gitOrganization?.provider;
+
+  const gitRepo =
+    gitRepository && provider === models.EnumGitProvider.Github
+      ? `${gitRepository.gitOrganization.name}/${gitRepository.name}`
+      : provider === models.EnumGitProvider.Bitbucket
+      ? `${gitRepository.groupName}/${gitRepository.name}`
+      : undefined;
 
   return (
     <>
@@ -105,20 +111,20 @@ function ResourceListItem({ resource, onDelete }: Props) {
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__github`}>
+            <div className={`${CLASS_NAME}__git-sync`}>
               <span
-                className={classNames(`${CLASS_NAME}__github-repo`, {
-                  [`${CLASS_NAME}__github-repo--not-connected`]: !gitHubRepo,
+                className={classNames(`${CLASS_NAME}__git-sync-repo`, {
+                  [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
                 })}
               >
                 <Icon
-                  icon="github"
+                  icon={gitProviderIconMap[provider]}
                   size="small"
-                  className={`${CLASS_NAME}__github-repo__icon${
-                    !gitHubRepo ? "-not-connected" : ""
+                  className={`${CLASS_NAME}__git-sync-repo__icon${
+                    !gitRepo ? "-not-connected" : ""
                   }`}
                 />
-                <span>{gitHubRepo ? gitHubRepo : "Not connected"}</span>
+                <span>{gitRepo ? gitRepo : "Not connected"}</span>
               </span>
             </div>
             <span className="spacer" />

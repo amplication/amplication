@@ -11,13 +11,26 @@ import {
 import { StepNameEmptyError } from "./errors/StepNameEmptyError";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { ActionContext, UserActionLogKafkaEvent } from "../userAction/types";
+import { UserActionLog } from "@amplication/schema-registry";
 
 export const SELECT_ID = { id: true };
+
+export const ACTION_LOG_LEVEL: {
+  [level: string]: EnumActionLogLevel;
+} = {
+  error: EnumActionLogLevel.Error,
+  warning: EnumActionLogLevel.Warning,
+  info: EnumActionLogLevel.Info,
+  debug: EnumActionLogLevel.Debug,
+};
 
 @Injectable()
 export class ActionService {
   constructor(
     private readonly prisma: PrismaService,
+    private readonly kafkaProducerService: KafkaProducerService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
@@ -136,6 +149,20 @@ export class ActionService {
     });
   }
 
+  async onUserActionLog(logEntry: UserActionLog.Value): Promise<void> {
+    const { stepId, message, level, status, isCompleted } = logEntry;
+
+    await this.logByStepId(
+      stepId,
+      ACTION_LOG_LEVEL[level.toLowerCase()],
+      message
+    );
+
+    if (isCompleted) {
+      await this.updateActionStepStatus(stepId, status);
+    }
+  }
+
   async logByStepId(
     stepId: string,
     level: EnumActionLogLevel,
@@ -155,6 +182,88 @@ export class ActionService {
     });
   }
 
+  /**
+   * Creates an ActionContext for emitLogByStepId and completeWithLog functions.
+   * These functions are invoked as Promises and potential errors are immediately caught and logged.
+   * The onEmitLogByStepId can be invoked synchronously.
+   * This provides a means to fire-and-forget these actions without the need to await their completion.
+   * The client of this ActionContext is expected to use 'void' operator while invoking these functions,
+   * indicating we're not interested in their resolved value, thus handling uncaught Promise rejections.
+   */
+  createActionContext(
+    userActionId: string,
+    step: ActionStep,
+    topicName: string
+  ): ActionContext {
+    const onEmitUserActionLog = async (
+      message: string,
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus = EnumActionStepStatus.Running,
+      isStepCompleted = false
+    ) => {
+      const onCreateKafkaMessageForUserActionLog =
+        (userActionId: string, stepId: string) =>
+        (
+          message: string,
+          level: EnumActionLogLevel,
+          status: EnumActionStepStatus,
+          isStepCompleted: boolean
+        ) =>
+          this.createKafkaMessageForUserActionLog(userActionId, stepId)(
+            message,
+            level,
+            status,
+            isStepCompleted
+          );
+
+      // partial application: the stepId is already known and the message and level are provided later
+      const partialAppliedOnCreateKafkaMessageForUserActionLog =
+        onCreateKafkaMessageForUserActionLog(userActionId, step.id);
+
+      const kafkaMessage = partialAppliedOnCreateKafkaMessageForUserActionLog(
+        message,
+        level,
+        status,
+        isStepCompleted
+      );
+
+      return this.kafkaProducerService
+        .emitMessage(topicName, kafkaMessage)
+        .catch((error) =>
+          this.logger.error(`Failed to log action step ${step.id}`, error, {
+            stepId: step.id,
+            topicName,
+          })
+        );
+    };
+
+    return {
+      onEmitUserActionLog,
+    };
+  }
+
+  createKafkaMessageForUserActionLog(
+    userActionId: string,
+    stepId: string
+  ): UserActionLogKafkaEvent {
+    return (
+      message: string,
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus,
+      isStepCompleted: boolean
+    ): UserActionLog.KafkaEvent => ({
+      key: {
+        userActionId,
+      },
+      value: {
+        stepId: stepId,
+        message,
+        level,
+        status,
+        isCompleted: isStepCompleted,
+      },
+    });
+  }
   /**
    * Creates a new step for given action with given message and sets its status
    * to running, runs given step function and updates the status of the step

@@ -41,8 +41,21 @@ describe("createUpdateArgs", () => {
     );
     expect(updateArgs && print(updateArgs).code).toEqual(`@ArgsType()
 class ${createUpdateArgsId(EXAMPLE_ENTITY.name).name} {
+  @ApiProperty({
+    required: true,
+    type: () => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name},
+  })
+  @ValidateNested()
+  @Type(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name})
   @Field(() => ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name}, { nullable: false })
   where!: ${EXAMPLE_WHERE_UNIQUE_INPUT.id.name};
+
+  @ApiProperty({
+    required: true,
+    type: () => ${EXAMPLE_UPDATE_INPUT.id.name},
+  })
+  @ValidateNested()
+  @Type(() => ${EXAMPLE_UPDATE_INPUT.id.name})
   @Field(() => ${EXAMPLE_UPDATE_INPUT.id.name}, { nullable: false })
   data!: ${EXAMPLE_UPDATE_INPUT.id.name};
 }`);

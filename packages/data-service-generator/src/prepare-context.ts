@@ -5,7 +5,6 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
-  Module,
   serverDirectories,
   types,
 } from "@amplication/code-gen-types";
@@ -24,10 +23,10 @@ import { resolveTopicNames } from "./utils/message-broker";
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
   dSGResourceData: DSGResourceData,
-  logger: ILogger,
+  internalLogger: ILogger,
   pluginInstallationPath?: string
-): Promise<Module[]> {
-  logger.info("Preparing context...");
+): Promise<void> {
+  internalLogger.info("Preparing context...");
 
   const {
     pluginInstallations: resourcePlugins,
@@ -68,7 +67,6 @@ export async function prepareContext(
   );
 
   context.plugins = plugins;
-  return [];
 }
 
 function validatePath(path: string): string | null {
@@ -99,9 +97,13 @@ function dynamicClientPathCreator(clientPath: string): clientDirectories {
   };
 }
 
-function prepareEntityPluralName(entities: Entity[]): Entity[] {
+export function prepareEntityPluralName(entities: Entity[]): Entity[] {
   const currentEntities = entities.map((entity) => {
     entity.pluralName = pluralize(camelCase(entity.name));
+    entity.pluralName =
+      entity.pluralName === camelCase(entity.name)
+        ? `${entity.pluralName}Items`
+        : entity.pluralName;
     return entity;
   });
   return currentEntities;
@@ -132,7 +134,8 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
         if (field.dataType === EnumDataType.Lookup) {
           const fieldProperties = field.properties as types.Lookup;
 
-          const { relatedEntityId, relatedFieldId } = fieldProperties;
+          const { relatedEntityId, relatedFieldId, fkFieldName } =
+            fieldProperties;
           if (!relatedEntityId) {
             throw new Error(
               `Lookup entity field ${field.name} must have a relatedEntityId property with a valid entity ID`
@@ -178,6 +181,7 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             relatedEntity,
             relatedField,
             isOneToOneWithoutForeignKey,
+            fkFieldName: fkFieldName || `${field.name}Id`,
           };
           return {
             ...field,

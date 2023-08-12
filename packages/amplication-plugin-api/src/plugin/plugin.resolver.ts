@@ -13,6 +13,7 @@ import { PluginVersion } from "../pluginVersion/base/PluginVersion";
 import { PluginVersionService } from "../pluginVersion/pluginVersion.service";
 import { ProcessedPluginVersions } from "./plugin.types";
 import { PluginVersionFindManyArgs } from "../pluginVersion/base/PluginVersionFindManyArgs";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @graphql.Resolver(() => Plugin)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -21,7 +22,8 @@ export class PluginResolver extends PluginResolverBase {
     protected readonly service: PluginService,
     @nestAccessControl.InjectRolesBuilder()
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder,
-    protected readonly pluginVersionService: PluginVersionService
+    protected readonly pluginVersionService: PluginVersionService,
+    @common.Inject(AmplicationLogger) readonly logger: AmplicationLogger
   ) {
     super(service, rolesBuilder);
   }
@@ -29,8 +31,10 @@ export class PluginResolver extends PluginResolverBase {
   @Public()
   @graphql.Mutation(() => [Plugin], { nullable: true })
   async processPluginCatalog(): Promise<ProcessedPluginVersions[]> {
+    const startTime = new Date().getTime();
+
     try {
-      const amplicationPlugins = await this.service.githubCatalogPlugins();
+      const amplicationPlugins = await this.service.processCatalogPlugins();
       if (
         Object.prototype.toString.call(amplicationPlugins) === "[object String]"
       ) {
@@ -38,12 +42,18 @@ export class PluginResolver extends PluginResolverBase {
       }
 
       const npmPluginsVersions =
-        await this.pluginVersionService.npmPluginsVersions(amplicationPlugins);
+        await this.pluginVersionService.processPluginsVersions(
+          amplicationPlugins
+        );
 
       const npmPluginsVersionsMap = groupBy(
         npmPluginsVersions,
         (version) => version.pluginId
       );
+
+      this.logger.debug("processPluginCatalog", {
+        timeToProcessPluginCatalog: (new Date().getTime() - startTime) / 1000,
+      });
 
       return amplicationPlugins.map((plugin) => {
         return {
