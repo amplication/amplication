@@ -9,6 +9,7 @@ import { MessageModule } from "./message/message.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
+import { KafkaModule } from "./kafka/kafka.module";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
@@ -20,6 +21,7 @@ import { AuthModule } from "./auth/auth.module";
 @Module({
   controllers: [],
   imports: [
+    KafkaModule,
     ACLModule,
     AuthModule,
     UserModule,
