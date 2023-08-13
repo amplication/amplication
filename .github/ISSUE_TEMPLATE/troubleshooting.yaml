@@ -1,0 +1,91 @@
+name: Troubleshooting
+description: Support Issues and their resolution
+labels: ["type: bug", "type: docs"]
+body:
+  - type: markdown
+    attributes:
+      value: "
+        <img src='https://avatars.githubusercontent.com/u/65107786?s=200&v=4' align='left' width='80' height='80'>
+        Thank you for finding the time to report the problem!
+
+        Amplication's Support server on Discord provides an effective channel for resolving problems that the user may encounter when using Amplication.
+        If you have been involved in resolving a user's issue, or have yourself found a solution to a tricky problem, use this
+        template to ensure that your hard work doesn't go to waste, and is available to other users who might have a similar problem in the future.
+        The information you include in this issue will be used to create troubleshooting articles in Docs or other formats.
+        Note, that after you create an issue, if you have a change ready to submit you can open a [Pull Request](https://github.com/amplication/amplication/pulls) immediately after.
+        <br clear='left'/>"
+  - type: textarea
+    attributes:
+      label: Overview
+      description: Write a high-level overview of the issue.
+      placeholder: >
+        The purpose of the overview is to help the user decide if this article is relevant to the issue she is trying to resolve.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Symptoms
+      description: Describe what the user sees or experiences.
+      placeholder: >
+        Describe the user experiences and if necessary, describe why it indicates a problem. 
+        If there are one or more error messages, include screenshots.
+  - type: textarea
+    attributes:
+      label: Cause
+      description: Describe what caused the problem
+      placeholder: >
+        Explain what has caused the problem. If there are several potential causes, list all possibilities.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Resolution
+      description: Describe how the problem was resolved
+      placeholder: >
+        Describe the steps that must be taken to resolve the problem. 
+        If there are several possible causes (and resolutions) create a numbered list of the steps to be performed in the recommended order. 
+        If the resolution is already described in the Docs or elsewhere, insert a hyperlink to the appropriate information.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Tags
+      description: Which tags should be included with this support issue resolution?
+      placeholder: >
+        Tags help the readers find the information they need to solve their problems.
+        Create tags for apps, frameworks and processes that were associated with the problem and its resolution.
+    validations:
+      required: true
+  - type: textarea
+    attributes:
+      label: Additional Information
+      description: Link to Docs or external websites.
+      placeholder: >
+        Link to Docs and other resources that  provide additional related information.
+    validations:
+      required: false
+  - type: textarea
+    attributes:
+      label: Related Discord Threads
+      description: Link to Docs or external websites.
+      placeholder: >
+        Link to Docs and other resources that  provide additional related information.
+    validations:
+      required: true
+  - type: dropdown
+    attributes:
+      label: Are you willing to submit PR?
+      description: >
+        This is absolutely not required, but we are happy to guide you in the contribution process
+        especially if you already have a good understanding of how to implement the fix.
+        Amplication is a community-managed project and we love to bring new contributors in.
+        Find us in #support on [Discord](https://amplication.com/discord)!
+      multiple: true
+      options:
+        - "Yes I am willing to submit a PR!"
+  - type: markdown
+    attributes:
+      value: <br>
+  - type: markdown
+    attributes:
+      value: By submitting this issue I agree to follow this project`s [Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)

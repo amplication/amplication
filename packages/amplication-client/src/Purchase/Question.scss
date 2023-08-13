@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.question {
+  border: 1px solid var(--black10);
+  border-radius: 8px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: var(--default-spacing) var(--large-spacing);
+
+    &__text {
+      font-weight: 600;
+      font-size: 14px;
+    }
+  }
+
+  &__separator {
+    margin: 0 var(--large-spacing);
+    height: 1px;
+    border: none;
+    background-color: var(--black10);
+  }
+
+  &__answer {
+    white-space: pre-line;
+    padding: var(--default-spacing) var(--large-spacing);
+  }
+}

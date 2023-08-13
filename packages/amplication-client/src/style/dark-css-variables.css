@@ -1,0 +1,78 @@
+.amp-theme-dark {
+  --surface: var(--black2);
+  --white: #15192c; /*dark: black100 */
+
+  --black100: #ffffff; /*dark: white */
+  --black90: #b7bac7; /*dark: black10 */
+  --black80: #a3a8b8; /*dark: black20 */
+  --black60: #80869d; /*dark: black30 */
+  --black40: #686f8c; /*dark: black40 */
+  --black30: #515873; /*dark: black50 */
+  --black20: #444b66; /*dark: black60 */
+  --black10: #373d57; /*dark: black70 */
+  --black5: #2c3249; /*dark: black80 */
+  --black2: #22273c; /*dark: black90 */
+
+  --welcome-page-stripe-background: var(--white);
+  --panel-hover-background: var(--black100);
+
+  --panel-background: var(--black5);
+  --panel-hover-background: var(--black10);
+
+  --menu-background-color: var(--black2);
+  --menu-fixed-panel-background: var(--white);
+
+  --page-content-background: var(--black2);
+  --page-content-tab-background: var(--white);
+
+  --action-log-background-color: var(--white);
+  --action-log-header-color: var(--black100);
+  --action-log-step-color: var(--black100);
+
+  --image-roles: url("../assets/images/mono/roles-dark.svg");
+  --image-entities: url("../assets/images/mono/entities-dark.svg");
+  --image-sync-github: url("../assets/images/mono/sync-github-dark.svg");
+  --image-commit: url("../assets/images/mono/commit-dark.svg");
+  --image-no-changes: url("../assets/images/mono/no-changes-dark.svg");
+  --image-add-resource: url("../assets/images/mono/add-resource-dark.svg");
+  --image-relations: url("../assets/images/mono/relations-dark.svg");
+  --image-import-excel: url("../assets/images/mono/import-excel-dark.svg");
+  --image-drop-excel: url("../assets/images/mono/drop-excel-dark.svg");
+  --image-my-resources: url("../assets/images/mono/my-resources-dark.svg");
+  --image-generating: url("../assets/images/mono/generating-dark.svg");
+  --image-create-service-wizard: url("../assets/images/mono/service-wizard-create.svg");
+  --image-commit-empty-state: url("../assets/images/mono/commit-empty-state-dark.svg");
+  --image-code-view-empty-state: url("../assets/images/mono/code-view-empty-state-dark.svg");
+  --image-message-broker-empty-state: url("../assets/images/mono/message-broker-empty-state-dark.svg");
+  --plugin-installation-empty: url("../assets/images/mono/plugin-installation-empty-dark.svg");
+  --image-import-prisma-schema: url("../assets/images/mono/import-prisma-schema-dark.svg");
+  --image-import-prisma: url("../assets/images/mono/import-prisma-dark.svg");
+
+  --diffViewerBackground: var(--white);
+  --diffViewerColor: var(--black100);
+  --addedBackground: #1b3b3e;
+  --addedColor: var(--black100);
+  --removedBackground: #3f2033;
+  --removedColor: var(--black100);
+  --wordAddedBackground: #288e6a;
+  --wordRemovedBackground: #a53145;
+  --addedGutterBackground: #205e50;
+  --removedGutterBackground: #6a273b;
+  --gutterBackground: var(--black5);
+  --gutterBackgroundDark: var(--white);
+  --highlightBackground: var(--white);
+  --highlightGutterBackground: var(--white);
+  --codeFoldGutterBackground: var(--black5);
+  --codeFoldBackground: var(--black2);
+  --emptyLineBackground: var(--black2);
+  --gutterColor: var(--black100);
+  --addedGutterColor: var(--black100);
+  --removedGutterColor: var(--black100);
+  --codeFoldContentColor: var(--black100);
+  --diffViewerTitleBackground: var(--white);
+  --diffViewerTitleColor: var(--black100);
+  --diffViewerTitleBorderColor: var(--white);
+  --screenResolutionMessageColor: var(--black100);
+
+  --floating-box-shadow: 0px 44px 40px -24px rgba(9, 11, 20, 0.3);
+}

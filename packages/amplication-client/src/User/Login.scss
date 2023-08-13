@@ -1,0 +1,45 @@
+@import "../style/index.scss";
+
+$title-padding-bottom: 24px;
+$policy-margin-top: 64px;
+$message-margin-bottom: 40px;
+
+.login-page {
+  &__sso {
+    text-decoration: underline;
+  }
+
+  &__signup {
+    @include body2;
+    color: var(--black80);
+
+    a {
+      color: var(--dark-secondary-turquoise);
+    }
+  }
+
+  &__message {
+    @include body1;
+    white-space: normal;
+    color: var(--black60);
+    margin-top: var(--default-spacing);
+    margin-bottom: $message-margin-bottom;
+  }
+
+  &__title {
+    @include pageTitle;
+    display: inline-block;
+  }
+
+  &__policy {
+    margin-top: $policy-margin-top !important;
+    margin-bottom: 0;
+    @include body2;
+    color: var(--black80);
+
+    a {
+      color: var(--black80);
+      text-decoration: underline;
+    }
+  }
+}

@@ -1,0 +1,78 @@
+@import "../../style/index.scss";
+
+.entities-erd {
+  width: 100%;
+  height: 100%;
+
+  &__node_container {
+    overflow: hidden;
+    border-radius: 8px;
+    background-color: var(--white);
+    box-shadow: "box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)";
+    border: $border-black10;
+    min-width: 235px;
+  }
+  &__display_name {
+    padding: var(--default-spacing-small) var(--default-spacing);
+    margin: 0;
+    font-size: var(--normal-font-size);
+    line-height: 22px;
+    font-weight: 600;
+    border-bottom: $border-black10;
+  }
+  &__column_container {
+    padding: var(--default-spacing-small) 0;
+  }
+  &__column_inner_container {
+    display: flex;
+    position: relative;
+  }
+  &__column_display_name {
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
+    align-items: center;
+    display: flex;
+    font-size: var(--normal-font-size);
+    gap: var(--default-spacing-small);
+    &_datatype {
+      color: var(--secondary-light-blue);
+      font-weight: 200;
+      font-size: calc(var(--normal-font-size) - 2px);
+    }
+    &_custom_attributes {
+      color: var(--secondary-turquoise);
+      font-weight: 200;
+      font-size: calc(var(--normal-font-size) - 2px);
+    }
+  }
+  &__handle {
+    &_left {
+      left: -2px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      height: 100% !important;
+      background-color: transparent !important;
+    }
+
+    &_right {
+      right: -2px !important;
+      border-radius: 0 !important;
+      border-width: 0 !important;
+      width: 0.5rem !important;
+      height: 100% !important;
+      background-color: transparent !important;
+    }
+  }
+
+  .react-flow__node.selected {
+    div {
+      border-color: var(--black100) !important;
+    }
+  }
+  .react-flow__attribution {
+    font-size: calc(var(--normal-font-size) - 2px);
+    background: var(--black2) !important;
+    padding: 0 4px !important;
+  }
+}

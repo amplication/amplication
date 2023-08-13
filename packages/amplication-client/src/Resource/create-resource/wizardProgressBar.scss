@@ -1,0 +1,59 @@
+@import "../../style/index.scss";
+
+$small-size: 15px;
+
+.wizard-progress-bar {
+  &__container {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-grow: 1;
+  }
+  &__disabled {
+    color: var(--black40) !important;
+  }
+
+  &__item {
+    position: relative;
+    margin-right: 8px;
+    &:after {
+      content: "";
+      width: 8px;
+      height: 0px;
+      border: 1px solid var(--black30);
+      right: -8px;
+      position: absolute;
+      top: 50%;
+    }
+
+    &:last-child {
+      margin-right: 0;
+      &:after {
+        display: none;
+      }
+    }
+  }
+
+  &__item_container {
+    display: flex;
+    flex-direction: column;
+    margin: 0 20px;
+  }
+  &__item_icon {
+    text-align: center;
+
+    i {
+      font-size: $small-size;
+    }
+    .wizard_check {
+      color: var(--positive-default);
+    }
+    .wizard_loading {
+      color: var(--secondary);
+    }
+  }
+  &__item_title {
+    @include regular-10;
+    text-transform: capitalize;
+  }
+}

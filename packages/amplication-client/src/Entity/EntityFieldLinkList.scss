@@ -1,0 +1,11 @@
+@import "../style/index.scss";
+
+.entity-field-link-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing-small);
+  overflow-y: auto;
+  min-height: 0;
+  @include scrollbars(16px, var(--black60), transparent);
+}

@@ -1,0 +1,16 @@
+{
+  "name": "schema-registry",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/schema-registry/src",
+  "projectType": "library",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["libs/schema-registry/**/*.ts"]
+      }
+    }
+  },
+  "tags": []
+}

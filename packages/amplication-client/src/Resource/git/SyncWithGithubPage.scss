@@ -1,0 +1,19 @@
+@import "../../style/index.scss";
+
+$max-width: 700px;
+$icon-font-size: 40px;
+
+.sync-with-git-page {
+  &__header {
+    @include title-18;
+  }
+
+  &__message {
+    @include body1;
+    @include regular-14;
+    color: var(--black);
+    line-height: 1.5;
+    margin-bottom: var(--default-spacing);
+    max-width: $max-width;
+  }
+}

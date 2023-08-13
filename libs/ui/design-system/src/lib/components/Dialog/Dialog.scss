@@ -1,0 +1,63 @@
+@import "../../style/index.scss";
+
+$modal-max-width: 50vw;
+$modal-top-position: 20vh;
+
+.amp-dialog {
+  box-shadow: none;
+  border-radius: var(--default-border-radius);
+  border: $border-black10;
+  width: max-content !important;
+  max-width: $modal-max-width;
+  min-width: var(--modal-min-width);
+  margin-top: $modal-top-position !important;
+  margin-bottom: 0 !important;
+  background-color: var(--black2) !important;
+  padding: var(--double-spacing);
+
+  //mobile
+  @media only screen and (max-width: $breakpoint-tablet) {
+    min-width: auto;
+    max-width: 100%;
+  }
+
+  // hide the button added by primer
+  button:not(.amp-button) {
+    display: none;
+  }
+
+  &__title {
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  & &__header {
+    @include semiBold;
+    color: var(--black100);
+    background-color: transparent;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: none;
+    border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
+    margin-bottom: var(--large-spacing);
+  }
+
+  & &__body {
+    background-color: transparent;
+    box-sizing: border-box;
+  }
+
+  &--warning {
+    border-top: 3px solid var(--warning-default);
+  }
+
+  &--success {
+    border-top: 3px solid var(positive-default);
+  }
+
+  &--error {
+    border-top: 3px solid var(--negative);
+  }
+}
