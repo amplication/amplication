@@ -1,0 +1,22 @@
+@import "../../style/index.scss";
+.user-avatar {
+  height: var(--small-menu-item-height);
+  position: relative;
+  width: var(--small-menu-item-width);
+
+  & &__initials {
+    box-sizing: border-box;
+    background-color: var(--secondary-light-blue);
+    border-radius: 100px;
+    display: inline-flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    height: var(--small-menu-item-height);
+    text-align: center;
+    width: var(--small-menu-item-width);
+    color: var(--static-white);
+    font-size: var(--text-field-label-font-size);
+    text-transform: capitalize;
+  }
+}

@@ -1,0 +1,316 @@
+@import "../style/index.scss";
+
+.purchase-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #22273c;
+
+  &__layout {
+    height: 60px;
+    width: 100%;
+    border-bottom: 1px solid #373d57;
+    position: fixed;
+    display: block;
+    background-color: var(--black2);
+    z-index: 1000;
+    &__btn {
+      margin: 13px 0px 0px 15px;
+      &.amp-button--outline {
+        border-radius: 5px !important;
+      }
+    }
+  }
+
+  &__header {
+    @include pageTitle;
+    //TODO: Remove overrides after design system alignment
+    font-weight: 600;
+    margin-top: 120px;
+    margin-bottom: var(--double-spacing);
+  }
+
+  .workspace-list {
+    margin-bottom: var(--header-spacing);
+    margin-top: 10px;
+  }
+
+  &__contact {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    align-self: stretch;
+    padding: var(--header-spacing) 0;
+    gap: var(--double-spacing);
+    background: #15192c;
+
+    &__content {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: var(--black100);
+      gap: var(--default-spacing-small);
+
+      &__header {
+        @include pageTitle;
+        //TODO: Remove overrides after design system alignment
+        font-weight: 600;
+      }
+
+      &__description {
+        @include body1;
+        //TODO: Remove overrides after design system alignment
+        color: var(--black100);
+        font-size: 14px;
+      }
+    }
+
+    &_pro_btn {
+      color: var(--static-white);
+    }
+
+    &_pro_btn:hover {
+      background-color: var(--dark-purple);
+      border-color: var(--dark-purple);
+    }
+  }
+
+  &__footer {
+    margin: 80px 64px 0;
+    align-self: stretch;
+    display: flex;
+    justify-content: space-between;
+    padding: 32px 0;
+
+    border-top: 1px solid var(--black5);
+
+    &__copyright {
+      color: var(--black80);
+    }
+
+    &__links {
+      display: flex;
+      gap: var(--double-spacing);
+      //TODO: Remove overrides after design system alignment
+      size: 14px;
+      text-decoration-line: underline;
+    }
+  }
+}
+
+.stigg-skeleton-loader-billing-period {
+  display: none !important;
+}
+
+.stigg-skeleton-loader-plans-container > div {
+  max-width: 244px !important;
+  min-width: 244px !important;
+  padding-left: 24px !important;
+  padding-right: 24px !important;
+  background-color: #15192c !important;
+  border: 1px solid #373d57 !important;
+}
+
+.react-loading-skeleton {
+  --base-color: #15192c !important;
+  --highlight-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+.stigg-plan-offering-container {
+  border-radius: 8px !important;
+  border: 1px solid #373d57 !important;
+  max-width: 244px !important;
+  min-width: 244px !important;
+  padding-top: 16px !important;
+  box-sizing: content-box;
+}
+
+.stigg-plan-offering-container * {
+  box-sizing: content-box;
+}
+.stigg-plan-offering-container:nth-child(1) {
+  border-top: 10px solid #a787ff !important;
+}
+
+.stigg-plan-offering-container:nth-child(2) {
+  border-top: 10px solid #20a4f3 !important;
+}
+
+.stigg-plan-offering-container:nth-child(3) {
+  border-top: 10px solid #31c587 !important;
+}
+
+.stigg-header-wrapper {
+  margin: 0 -24px !important;
+  padding: 0 24px 24px 24px !important;
+  border-bottom: 1px solid #373d57 !important;
+}
+
+.stigg-plan-offering-container:nth-child(1).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #a787ff !important;
+}
+
+.stigg-plan-offering-container:nth-child(2).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #20a4f3 !important;
+}
+
+.stigg-plan-offering-container:nth-child(3).stigg-current-plan
+  .stigg-plan-header::before {
+  color: #31c587 !important;
+}
+
+.stigg-plan-header {
+  font-weight: 700 !important;
+  margin-bottom: 4px !important;
+  font-size: 24px !important;
+  line-height: 36px !important;
+  padding-bottom: 0 !important;
+}
+
+.stigg-plan-offering-container .stigg-plan-header::before {
+  display: block;
+  content: "";
+  height: 18px;
+  margin-bottom: 8px;
+}
+
+.stigg-current-plan .stigg-plan-header::before {
+  display: block;
+  content: "Current plan";
+  font-weight: 300;
+  font-size: 12px;
+  line-height: 18px;
+  color: #a787ff;
+  margin-left: -4px;
+}
+
+.stigg-current-plan .stigg-paywall-plan-button {
+  visibility: hidden;
+}
+
+.stigg-price-text {
+  order: 1;
+  font-size: 40px !important;
+  margin-top: 4px !important;
+}
+
+.stigg-price-billing-period-text {
+  order: 2;
+  font-weight: 400;
+  font-size: 10px;
+  line-height: 15px;
+  color: #a3a8b8;
+}
+
+.stigg-price-billing-period-text::first-letter {
+  text-transform: uppercase;
+}
+
+.stigg-plan-description {
+  min-height: auto !important;
+  margin-top: 0 !important;
+  font-size: 12px !important;
+}
+.stigg-price-text span[class*="PriceUnitSpan"] {
+  font-weight: 400 !important;
+  font-size: 18px !important;
+  line-height: 27px !important;
+  color: #a3a8b8 !important;
+  margin-left: 0px !important;
+}
+
+.stigg-plan-header-divider {
+  display: none !important;
+}
+
+.stigg-plan-entitlements-container {
+  gap: 2px !important;
+  width: 100% !important;
+  margin: 0 -24px 60px -24px !important;
+  padding: 0 24px !important;
+}
+
+.stigg-plan-description,
+.stigg-plan-entitlements-title,
+.stigg-entitlement-name {
+  color: white !important;
+  font-family: Poppins, sans-serif !important;
+  line-height: 18px !important;
+}
+
+.stigg-plan-entitlements-title {
+  font-size: 14px !important;
+  line-height: 22px !important;
+  font-weight: 500 !important;
+  border-bottom: 1px solid #373d57 !important;
+  margin: 0 -24px 12px -24px !important;
+  padding: 12px 24px !important;
+}
+
+.stigg-plan-description,
+.stigg-entitlement-name {
+  font-weight: 300 !important;
+}
+
+.stigg-plan-offering-container:nth-child(1)
+  .stigg-entitlement-row-container:nth-child(-n + 8)
+  .stigg-entitlement-row-icon {
+  display: block;
+}
+
+.stigg-plan-offering-container:nth-child(1)
+  .stigg-entitlement-row-container:nth-child(8) {
+  border-bottom: 1px solid #373d57 !important;
+  margin: 0 -24px 12px -24px;
+  padding: 0 24px 12px 24px;
+}
+
+.stigg-entitlement-row-container:last-child {
+  border-top: 1px solid #373d57 !important;
+  border-bottom: 1px solid #373d57 !important;
+  margin: 12px -24px 12px -24px;
+  padding: 12px 24px 12px 24px;
+}
+
+.stigg-entitlement-row-icon {
+  display: none;
+  transform: scale(0.55) !important;
+  margin-right: 8px !important;
+}
+
+.stigg-plan-offering-container:nth-child(1) .stigg-plan-entitlements-title {
+  font-size: 12px !important;
+  line-height: 18px !important;
+  font-weight: 400 !important;
+  border-bottom: none !important;
+  padding-bottom: 4px !important;
+  margin-bottom: 0 !important;
+}
+
+.stigg-entitlement-row-icon path {
+  fill: #a787ff !important;
+}
+
+.stigg-paywall-plan-button-layout {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+.stigg-paywall-plan-button {
+  background-color: #7950ed !important;
+  border-radius: 4px !important;
+  text-align: center !important;
+  padding: 2px 5px !important;
+  height: 28px !important;
+}
+
+.stigg-paywall-plan-button-text {
+  color: white !important;
+  font-family: Poppins, sans-serif !important;
+}
+
+.stigg-paywall-plan-button svg {
+  display: none !important;
+}

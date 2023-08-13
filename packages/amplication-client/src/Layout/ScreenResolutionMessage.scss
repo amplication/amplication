@@ -1,0 +1,36 @@
+@import "../style/index.scss";
+
+$title-margin-top: 20px;
+$content-width: 60%;
+$background-color: rgba(12, 11, 14, 0.9);
+
+.screen-resolution-message {
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: $detect-screen-resolution-z-index;
+  background-color: $background-color;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  color: var(--white);
+  flex-direction: column;
+
+  &__title {
+    @include sectionTitle;
+    @include semiBold;
+    width: $content-width;
+    text-align: center;
+    margin-top: $title-margin-top;
+    color: var(--screenResolutionMessageColor);
+  }
+
+  &__message {
+    @include body1;
+    width: $content-width;
+    text-align: center;
+    color: var(--screenResolutionMessageColor);
+  }
+}

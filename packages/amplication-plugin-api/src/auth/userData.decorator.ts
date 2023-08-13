@@ -1,6 +1,6 @@
 import { createParamDecorator, ExecutionContext } from "@nestjs/common";
 import { GqlContextType, GqlExecutionContext } from "@nestjs/graphql";
-import { User } from "@prisma/client";
+import { User } from "../../prisma/generated-prisma-client";
 
 /**
  * Access the user data from the request object i.e `req.user`.
@@ -25,6 +25,7 @@ function userFactory(ctx: ExecutionContext): User {
   throw new Error("Invalid context");
 }
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 export const UserData = createParamDecorator<undefined, ExecutionContext, User>(
   (data, ctx: ExecutionContext) => userFactory(ctx)
 );

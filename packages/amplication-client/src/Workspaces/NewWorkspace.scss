@@ -1,0 +1,10 @@
+@import "../style/index.scss";
+
+$image-height: 130px;
+
+.new-workspace {
+  @include modalForm;
+  svg {
+    height: $image-height;
+  }
+}

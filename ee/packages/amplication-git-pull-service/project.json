@@ -1,0 +1,139 @@
+{
+  "name": "amplication-git-pull-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ee/packages/amplication-git-pull-service/src",
+  "projectType": "application",
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["ee/packages/amplication-git-pull-service/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/ee/packages/amplication-git-pull-service"
+      ],
+      "options": {
+        "jestConfig": "ee/packages/amplication-git-pull-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "inputs": ["{projectRoot}/**/*"],
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/ee/packages/amplication-git-pull-service",
+        "main": "ee/packages/amplication-git-pull-service/src/main.ts",
+        "tsConfig": "ee/packages/amplication-git-pull-service/tsconfig.app.json",
+        "generatePackageJson": true,
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "ee/packages/amplication-git-pull-service",
+            "output": "prisma"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-git-pull-service:build",
+        "inspect": true,
+        "port": 7020
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-git-pull-service:build:production"
+        }
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "outputs": ["{workspaceRoot}/prisma/generated-prisma-client"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev amplication-git-pull-service",
+          "nx db:migrate:deploy amplication-git-pull-service",
+          "nx db:seed amplication-git-pull-service"
+        ],
+        "parallel": false,
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "ee/packages/amplication-git-pull-service"
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-pull-service"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    }
+  },
+  "tags": []
+}

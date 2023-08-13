@@ -1,0 +1,56 @@
+{
+  // Use IntelliSense to learn about possible attributes.
+  // Hover to view descriptions of existing attributes.
+  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "node",
+      "request": "attach",
+      "name": "Attach NestJS WS",
+      "port": 9229,
+      "restart": true
+    },
+    {
+      "name": "Debug Client",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3001",
+      "webRoot": "${workspaceFolder}/packages/amplication-client"
+    },
+    {
+      "type": "node",
+      "name": "Debug DSG generate-local-code",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "generate-local-code", "data-service-generator"],
+      "cwd": "${workspaceRoot}",
+      "outputCapture": "std",
+      "env": {}
+    },
+    {
+      "type": "node",
+      "name": "Debug Plugin API",
+      "request": "launch",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["nx", "serve", "amplication-plugin-api"],
+      "cwd": "${workspaceRoot}",
+      "outputCapture": "std",
+      "env": {}
+    },
+    {
+      "type": "node",
+      "name": "Attach Amplication Server",
+      "request": "attach",
+      "sourceMaps": true,
+      "port": 7000
+    },
+    {
+      "type": "node",
+      "name": "Attach Amplication PR service",
+      "request": "attach",
+      "sourceMaps": true,
+      "port": 7001
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.topic-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+
+  .search-field {
+    margin-left: 0;
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__header {
+    margin-bottom: var(--default-spacing);
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--default-spacing-small);
+    margin-bottom: var(--default-spacing);
+    overflow-x: hidden;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
+  }
+}

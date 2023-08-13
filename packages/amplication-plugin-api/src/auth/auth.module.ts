@@ -5,8 +5,6 @@ import { PassportModule } from "@nestjs/passport";
 import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
-// @ts-ignore
-// eslint-disable-next-line
 import { UserModule } from "../user/user.module";
 import { AuthController } from "./auth.controller";
 import { AuthResolver } from "./auth.resolver";

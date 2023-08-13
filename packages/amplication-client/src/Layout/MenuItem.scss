@@ -1,0 +1,104 @@
+@import "../style/index.scss";
+
+$select-item-width: 40px;
+$inverted-border-radius: 6px;
+
+.amp-menu-item {
+  position: relative;
+  border-radius: 0;
+  padding: var(--default-spacing-small)
+    calc((var(--menu-width) - var(--menu-item-width)) * 0.5) !important ;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  border: none !important;
+  box-sizing: border-box;
+  transition: all var(--menu-expand-animation-duration) ease-in;
+  height: auto !important;
+
+  .amp-button {
+    justify-content: flex-start;
+  }
+  &__title {
+    @include title1;
+    white-space: nowrap;
+    opacity: 0;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    color: var(--black40);
+    padding-left: 0;
+    width: 0;
+    letter-spacing: normal;
+  }
+
+  &__badge {
+    @include counterBadge;
+    background-color: var(--negative-light);
+    color: var(--static-white);
+  }
+
+  &:hover {
+    background-color: transparent !important;
+  }
+
+  i {
+    width: var(--menu-item-width);
+    min-width: var(--menu-item-width);
+    height: var(--menu-item-height);
+    background-size: contain;
+    transition: all var(--menu-expand-animation-duration) ease-in;
+    box-sizing: border-box;
+    color: var(--menu-item-color);
+    height: auto;
+  }
+
+  &--active {
+    i {
+      color: var(--menu-item-active-color);
+    }
+  }
+
+  &:before {
+    width: $select-item-width;
+    height: $select-item-width;
+    border-radius: var(--default-border-radius);
+    content: "";
+    position: absolute;
+    left: calc(50% - #{$select-item-width * 0.5});
+  }
+
+  &--active:before,
+  &:hover:before {
+    background-color: var(--menu-item-active-background);
+  }
+
+  &--no-hover:before {
+    display: none;
+  }
+
+  &--with-fixed-panel {
+    &:before,
+    &:hover:before {
+      width: 0;
+      height: $select-item-width;
+      border-radius: var(--default-border-radius);
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      background-color: var(--white);
+      content: "";
+      position: absolute;
+      right: 0;
+      left: auto;
+      transition: width 0.3s ease-in-out;
+    }
+
+    &--active {
+      &:before,
+      &:hover:before {
+        width: calc(100% - (100% - #{$select-item-width}) / 2);
+      }
+      i {
+        color: var(--black80);
+      }
+    }
+  }
+}

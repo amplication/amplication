@@ -1,0 +1,58 @@
+@import "../style/index.scss";
+
+$menuWidth: 500px;
+$selectMenuWidth: 200px;
+
+.installed-plugin-settings {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &__row {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: var(--default-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__column {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: var(--default-spacing);
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__label-title {
+    @include regular-12;
+    margin-top: var(--default-spacing-small);
+  }
+
+  &__menu {
+    width: $menuWidth;
+    .select-menu__modal > div {
+      width: $selectMenuWidth;
+    }
+  }
+
+  &__name {
+    @include title-18;
+  }
+
+  &__description {
+    @include regular-14;
+  }
+
+  &__save {
+    margin-left: auto;
+  }
+}

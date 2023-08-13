@@ -1,0 +1,160 @@
+@import "../../../../style/index.scss";
+@import "../GitDialogsIndex.scss";
+
+$menu_modal_width: 60px;
+
+.git-repos {
+  overflow: auto;
+  overflow-x: hidden;
+  &__change-label {
+    margin-bottom: 5px;
+    display: block;
+  }
+
+  .select-menu {
+    width: 50px;
+  }
+
+  &__menu {
+    background: var(--white);
+    width: 50px;
+    margin: 0px;
+    top: 28px;
+    border: 1px solid #373d57;
+    & div {
+      border-radius: 0px;
+      border: none;
+      margin: 0px;
+    }
+  }
+
+  &__list {
+    border: none;
+    width: 50px;
+  }
+
+  &__item {
+    background-color: transparent;
+    border: none;
+    width: 50px;
+    padding: 0;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: flex-start;
+    justify-content: flex-end;
+    padding: 5px 0px 5px 8px;
+    border-radius: 0px;
+    & .SelectMenu-icon {
+      margin-right: 0px !important;
+      margin-left: 15px !important;
+    }
+  }
+
+  &__item:hover {
+    background-color: var(--black5);
+  }
+
+  &__header {
+    @include flexFullRowWithSpacing;
+    align-items: center;
+    margin-bottom: var(--large-spacing);
+
+    &-left {
+      display: flex;
+      align-self: flex-start;
+      align-items: center;
+      position: relative;
+      .select-menu__summary {
+        width: 50px;
+        min-width: 50px;
+        background-color: var(--white);
+      }
+      .select-menu__summary:focus {
+        background-color: var(--white);
+      }
+      .amp-circular-progress {
+        margin-left: var(--default-spacing);
+      }
+    }
+
+    &-right {
+      display: flex;
+      align-self: flex-end;
+      align-items: center;
+
+      h4 {
+        color: var(--black80);
+      }
+
+      .select-menu {
+        width: $menu_modal_width;
+        position: relative;
+        margin-left: var(--default-spacing-small);
+        margin-right: var(--default-spacing-small);
+      }
+
+      .select-menu__summary {
+        width: $menu_modal_width;
+        min-width: $menu_modal_width;
+      }
+
+      .select-menu__modal > div {
+        width: $menu_modal_width;
+        min-width: $menu_modal_width;
+      }
+
+      .select-menu__list {
+        width: $menu_modal_width;
+        min-width: $menu_modal_width;
+        border: none;
+      }
+
+      .select-menu__item {
+        width: $menu_modal_width;
+        min-width: $menu_modal_width;
+        svg {
+          margin-left: var(--icon-spacing);
+        }
+      }
+    }
+  }
+
+  &__body {
+    @include flexFullRowWithSpacing;
+    align-items: center;
+
+    &__name {
+      @include title1;
+      padding-bottom: var(--default-spacing-small);
+    }
+  }
+
+  .amp-horizontal-rule {
+    margin-top: var(--large-spacing);
+    margin-bottom: var(--large-spacing);
+  }
+}
+
+.amp-button.amp-button--outline {
+  border-radius: 4px !important;
+}
+
+.amp-dialog.select-repo-dialog {
+  margin-top: 10vh !important;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: stretch;
+  min-width: 700px;
+
+  .amp-dialog__header {
+    margin-bottom: 0;
+  }
+
+  .amp-dialog__body {
+    flex: 1;
+    overflow: auto;
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+  }
+}
