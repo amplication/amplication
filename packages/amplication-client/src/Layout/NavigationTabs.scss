@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.navigation-tabs {
+  height: 32px;
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  &__tab {
+    padding-left: var(--large-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--default-border-radius) var(--default-border-radius) 0 0;
+    position: relative;
+    white-space: nowrap;
+
+    &--active {
+      background-color: var(--page-content-background);
+    }
+  }
+}

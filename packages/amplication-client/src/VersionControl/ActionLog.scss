@@ -1,0 +1,126 @@
+@import "../style/index.scss";
+
+$log-line-number-width: 30px;
+$step-status-width: 20px;
+
+.action-log {
+  display: flex;
+  flex: 1;
+
+  background-color: var(--action-log-background-color);
+  height: 100%;
+  overflow: auto;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+  box-sizing: border-box;
+
+  &__empty-state {
+    @include sectionTitle;
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    color: var(--action-log-header-color);
+    margin: 0;
+    img {
+      margin-bottom: var(--large-spacing);
+    }
+  }
+  &__header {
+    @include flexFullRowWithSpacing;
+    padding: var(--default-spacing);
+    color: var(--action-log-header-color);
+    margin-bottom: var(--double-spacing);
+    box-sizing: border-box;
+    .circle-icon {
+      margin-right: var(--default-spacing);
+      color: var(--static-white);
+    }
+
+    h3 {
+      display: inline-block;
+      color: var(--action-log-header-color);
+      margin: 0;
+      margin-left: var(--default-spacing);
+      span {
+        @include semiBold;
+      }
+    }
+  }
+  &__body {
+    flex: 1;
+    overflow: auto;
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--black60);
+    }
+
+    box-sizing: border-box;
+  }
+  &__step {
+    color: var(--action-log-step-color);
+    margin-bottom: var(--large-spacing);
+
+    &__row {
+      @include flexFullRowWithSpacing;
+      justify-content: flex-start;
+      padding-left: $log-line-number-width;
+      padding-right: var(--default-spacing);
+      margin-bottom: var(--default-spacing);
+      height: calc(var(--default-spacing) * 2);
+    }
+
+    &__status {
+      width: $step-status-width;
+
+      &--success {
+        color: var(--positive-default);
+      }
+
+      &--failed {
+        color: var(--negative);
+      }
+
+      &--running {
+        .amp-circular-progress {
+          .MuiCircularProgress-root {
+            color: var(--action-log-header-color);
+          }
+        }
+      }
+    }
+
+    &__message {
+      flex: 1;
+    }
+
+    &__duration {
+      @include bold;
+    }
+    &__log {
+      margin-bottom: var(--large-spacing);
+    }
+  }
+
+  .react-lazylog {
+    color: var(--black10);
+    background-color: var(--action-log-background-color);
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+
+    .log-line {
+      //line number
+      a {
+        min-width: $log-line-number-width;
+        width: $log-line-number-width;
+      }
+    }
+  }
+  .__auto__height {
+    height: auto !important;
+    font-family: "Monaco", monospace;
+    font-size: 12px;
+  }
+}

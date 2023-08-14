@@ -1,0 +1,177 @@
+@import "../style/index.scss";
+
+$z-index-edit-area: 998;
+$z-index-entity-hover: 997;
+$z-index-entity-default: 2;
+
+$entity-hover-margin: 50px;
+$droppable-min-height: 100px;
+
+$entity-width: 200px;
+
+@mixin edit-area {
+  position: absolute;
+  left: calc(100% + var(--default-spacing-small));
+  top: 0;
+  background: var(--black5);
+  border: $border-black10;
+  border-radius: var(--default-border-radius);
+  padding: var(--default-spacing-small);
+  width: $entity-width;
+  z-index: $z-index-edit-area;
+  box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.25);
+}
+
+.entities-diagram {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  &__droppable {
+    height: 100%;
+    min-height: $droppable-min-height;
+  }
+
+  &__scroll {
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+  }
+
+  &__scroll-content {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    position: relative;
+  }
+
+  &__scale {
+    transform: scale(1);
+    transform-origin: top left;
+  }
+
+  &__toolbar {
+    position: absolute;
+    right: var(--double-spacing);
+    top: -50px;
+  }
+
+  &__entities {
+    &__entity {
+      margin: var(--default-spacing);
+      background-color: var(--white);
+      overflow: hidden;
+      border: $border-black10;
+      border-radius: var(--default-border-radius);
+      width: $entity-width;
+      overflow: visible;
+      min-height: $entity-width;
+      position: absolute;
+      top: 0;
+      left: 0;
+
+      &:before {
+        content: "";
+        position: absolute;
+        background: transparent;
+        width: $entity-hover-margin;
+        right: -$entity-hover-margin;
+        height: 100%;
+      }
+
+      &__edit {
+        margin-left: 0 !important;
+      }
+
+      &:hover {
+        z-index: $z-index-entity-hover;
+      }
+      .handle {
+        cursor: grab;
+      }
+
+      &__name-wrapper {
+        @include flexFullRowWithSpacing;
+        padding: var(--default-spacing);
+        background-color: var(--black5);
+
+        label {
+          margin: 0;
+        }
+      }
+
+      &__name {
+        @include flexFullRowWithSpacing;
+      }
+
+      &__add.amp-button {
+        position: absolute;
+        background-color: var(--primary);
+        top: calc(50% - (var(--double-spacing) / 2));
+        right: calc(var(--double-spacing) * -1);
+        width: var(--double-spacing);
+        height: var(--double-spacing);
+        margin-right: calc(var(--double-spacing) * -1);
+        min-width: 0;
+      }
+    }
+  }
+
+  &__fields {
+    height: 100%;
+    padding: var(--default-spacing);
+    border: $border-primary;
+    border-color: transparent;
+
+    &--over {
+      border: $border-primary;
+    }
+    &__field {
+      @include flexFullRowWithSpacing;
+      padding: 0 var(--default-spacing-small);
+      border-radius: var(--default-border-radius);
+      border: $border-black10;
+      border-color: transparent;
+      position: relative;
+      margin-bottom: 2px;
+      min-height: 32px;
+
+      &--selected,
+      &--dragged {
+        background-color: var(--black5);
+      }
+
+      &:hover {
+        background-color: var(--black5);
+      }
+
+      &__edit {
+        visibility: hidden;
+      }
+
+      &__edit-area {
+        @include edit-area;
+      }
+
+      &--static {
+        color: var(--black60);
+        &:hover {
+          background-color: transparent;
+        }
+      }
+
+      .amp-button {
+        min-width: 0;
+        .amp-icon {
+          margin: 0;
+        }
+      }
+
+      &:hover {
+        .amp-button {
+          visibility: visible;
+        }
+      }
+    }
+  }
+}

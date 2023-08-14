@@ -1,0 +1,41 @@
+@import "../style/index.scss";
+
+.entity-list {
+  .limitation-notification {
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__separator {
+    margin: var(--large-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+
+  &__header {
+    @include flexFullRowWithSpacing;
+
+    .search-field {
+      width: var(--form-field-long);
+    }
+  }
+
+  &__action-buttons {
+    @include flexFullRowWithSpacing;
+
+    .toggle-field {
+      margin-bottom: 0 !important;
+    }
+  }
+
+  &__title {
+    @include body2;
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+  }
+}

@@ -1,0 +1,17 @@
+@import "../../style/index.scss";
+
+.json-editor {
+  margin-bottom: var(--default-spacing);
+  flex: 1;
+  border: $border-black10;
+  border-radius: var(--default-border-radius);
+  overflow: hidden;
+  background-color: var(--white);
+  section {
+    margin-top: 20px;
+  }
+}
+
+.editor--invalid {
+  border-color: var(--negative);
+}

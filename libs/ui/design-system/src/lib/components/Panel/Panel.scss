@@ -1,0 +1,78 @@
+@import "../../style/index.scss";
+
+$expandable-bottom-max-height: 200px;
+$expandable-transition-duration: 0.1s;
+
+.amp-panel {
+  background: var(--panel-background);
+  border-radius: var(--default-border-radius);
+  border: none;
+  box-sizing: border-box;
+  padding: var(--default-spacing) var(--large-spacing);
+  margin: var(--default-spacing);
+  margin-top: 0;
+  margin-bottom: var(--double-spacing);
+
+  > hr.panel-divider {
+    margin: var(--default-spacing) calc(var(--default-spacing) * -1);
+  }
+
+  &--transparent {
+    background: transparent;
+    margin: 0 calc(var(--default-spacing) * -1);
+    margin-top: 0;
+  }
+  &--shadow {
+    box-shadow: var(--default-box-shadow);
+  }
+
+  &--bordered {
+    border: $border-black10;
+    margin-bottom: var(--double-spacing);
+  }
+
+  &--clickable {
+    cursor: pointer;
+    &:hover {
+      background: var(--panel-hover-background);
+      border: $border-black20;
+
+      .amp-horizontal-rule {
+        border-top: $border-black20;
+      }
+    }
+  }
+
+  & &__header {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    h2,
+    h3 {
+      margin: 0;
+    }
+  }
+
+  & &__expandable-bottom {
+    max-height: 0;
+    transition: all $expandable-transition-duration ease-in;
+    overflow: hidden;
+    border-top: $border-black10;
+    border-top-color: transparent;
+    margin-left: calc(var(--default-spacing) * -1);
+    margin-right: calc(var(--default-spacing) * -1);
+    margin-bottom: calc(var(--default-spacing) * -1);
+    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    padding-left: var(--default-spacing);
+    padding-right: var(--default-spacing);
+
+    &--open {
+      max-height: $expandable-bottom-max-height;
+      overflow-y: auto;
+      padding: var(--default-spacing);
+      padding-bottom: 0;
+      border-top-color: var(--black10);
+      margin-bottom: 0;
+    }
+  }
+}

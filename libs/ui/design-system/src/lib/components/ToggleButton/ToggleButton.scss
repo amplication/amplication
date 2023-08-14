@@ -1,0 +1,46 @@
+@import "../../style/index.scss";
+
+.toggle-button {
+  display: inline;
+
+  label {
+    position: relative;
+    overflow: hidden;
+    span {
+      @include tag;
+      cursor: pointer;
+    }
+
+    input {
+      position: absolute;
+      width: 0;
+      height: 0;
+      visibility: hidden;
+
+      &:hover + span {
+        background-color: var(--black20);
+        color: var(--static-white);
+      }
+
+      &:focus + span {
+        background-color: var(--black20);
+        color: var(--static-white);
+      }
+
+      &:checked + span {
+        background-color: var(--primary);
+        color: var(--static-white);
+      }
+
+      &:checked:hover + span {
+        background-color: var(--secondary);
+        color: var(--static-white);
+      }
+
+      &:checked:focus + span {
+        background-color: var(--secondary);
+        color: var(--static-white);
+      }
+    }
+  }
+}

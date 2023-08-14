@@ -1,0 +1,83 @@
+{
+  "cSpell.words": [
+    "Amplication",
+    "amplicationignore",
+    "Authorizable",
+    "automerge",
+    "camelcase",
+    "checkmark",
+    "clonedeep",
+    "cloudbuild",
+    "codebrew",
+    "cronstrue",
+    "curveness",
+    "Datagrid",
+    "Datasources",
+    "deepdash",
+    "dockerode",
+    "Dropzone",
+    "dtos",
+    "endregion",
+    "flydrive",
+    "Formik",
+    "IBLOCK",
+    "isequalwith",
+    "kafkajs",
+    "linkcode",
+    "logform",
+    "loglevel",
+    "microservices",
+    "nestjs",
+    "nrwl",
+    "oclif",
+    "Octokit",
+    "ofek",
+    "openapi",
+    "postpack",
+    "posttest",
+    "prebuild",
+    "Promisable",
+    "QLJSON",
+    "Queryable",
+    "Repos",
+    "rmwc",
+    "schemaname",
+    "scrollbar",
+    "scrollbars",
+    "SENDGRID",
+    "Signup",
+    "slynova",
+    "Stigg",
+    "tablename",
+    "teleporter",
+    "uncontained",
+    "unelevated",
+    "unmark",
+    "UNREQUIRED",
+    "upsert",
+    "Xarrow",
+    "xarrows",
+    "xsmall"
+  ],
+  "eslint.workingDirectories": [
+    {
+      "pattern": "./packages/*"
+    }
+  ],
+  "files.watcherExclude": {
+    "**/.git/objects/**": true,
+    "**/.git/subtree-cache/**": true,
+    "**/.hg/store/**": true
+  },
+  "terraform.languageServer": {},
+  "editor.formatOnSave": true,
+  "cSpell.ignoreWords": ["exshql"],
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[prisma]": {
+    "editor.defaultFormatter": null
+  },
+  "[terraform]": {
+    "editor.defaultFormatter": "hashicorp.terraform"
+  },
+  "prettier.configPath": ".prettierrc"
+}

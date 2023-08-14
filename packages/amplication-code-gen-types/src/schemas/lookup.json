@@ -1,0 +1,48 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/lookup.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "lookup",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["relatedEntityId", "relatedFieldId", "allowMultipleSelection"],
+  "properties": {
+    "relatedEntityId": {
+      "title": "Related Entity",
+      "$ref": "#/definitions/EntityId",
+      "default": null
+    },
+    "allowMultipleSelection": {
+      "$ref": "#/definitions/RelationAllowMultiple",
+      "default": false
+    },
+    "fkHolder": {
+      "title": "Foreign Key Holder",
+      "$ref": "#/definitions/RelationFkHolder",
+      "default": null
+    },
+    "fkFieldName": {
+      "title": "Foreign Key Field Name (Optional)",
+      "type": "string",
+      "default": null
+    },
+    "relatedFieldId": {
+      "title": "Related Field",
+      "$ref": "#/definitions/EntityFieldId",
+      "default": null
+    }
+  },
+  "definitions": {
+    "EntityId": {
+      "type": "string"
+    },
+    "EntityFieldId": {
+      "type": "string"
+    },
+    "RelationAllowMultiple": {
+      "type": "boolean"
+    },
+    "RelationFkHolder": {
+      "type": ["string", "null"]
+    }
+  }
+}

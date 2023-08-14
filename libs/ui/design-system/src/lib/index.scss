@@ -1,0 +1,41 @@
+@import "./style/index.scss";
+
+body {
+  margin: 0;
+  @include font-base;
+  background: var(--surface);
+}
+
+:root {
+  --mdc-top-bar-adjust: 50px;
+}
+
+.mdc-top-app-bar a {
+  color: inherit;
+  text-decoration: none;
+}
+
+div.mdc-top-app-bar--fixed-adjust {
+  padding-top: var(--mdc-top-bar-adjust);
+}
+
+a {
+  text-decoration: none;
+  color: var(--black80);
+}
+
+h1 {
+  @include pageTitle;
+}
+
+h2 {
+  @include sectionTitle;
+}
+
+h3 {
+  @include title1;
+}
+
+h4 {
+  @include headline-description;
+}

@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.new-entity-field {
+  .text-input input {
+    border-style: dashed;
+  }
+
+  &__add-field {
+    position: relative;
+    width: 100%;
+
+    &__button {
+      position: absolute !important;
+      top: 0;
+      right: 0;
+      display: none !important;
+
+      &--show {
+        display: flex !important;
+      }
+    }
+  }
+}
