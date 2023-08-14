@@ -740,25 +740,6 @@ export class PrismaSchemaParserService {
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
-      const hasIdField = modelFields.some(
-        (field) =>
-          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
-          false
-      );
-
-      // add the id field if it doesn't exist. The type is the default type for id field in Amplication - String
-      if (!hasIdField) {
-        builder
-          .model(model.name)
-          .field(ID_FIELD_NAME, "String")
-          .attribute(ID_ATTRIBUTE_NAME);
-
-        void actionContext.onEmitUserActionLog(
-          `id field was added to model "${model.name}"`,
-          EnumActionLogLevel.Warning
-        );
-      }
-
       modelFields.forEach((field: Field) => {
         const isIdField = field.attributes?.some(
           (attr) => attr.name === ID_ATTRIBUTE_NAME
@@ -779,7 +760,7 @@ export class PrismaSchemaParserService {
           builder
             .model(model.name)
             .field(field.name)
-            .attribute("map", [`"${model.name}Id"`]);
+            .attribute("map", [`"${field.name}"`]);
           builder
             .model(model.name)
             .field(field.name)
@@ -827,6 +808,25 @@ export class PrismaSchemaParserService {
             .field(field.name)
             .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
+
+      const hasIdField = modelFields.some(
+        (field) =>
+          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
+          false
+      );
+
+      // add the id field if it doesn't exist. The type is the default type for id field in Amplication - String
+      if (!hasIdField) {
+        builder
+          .model(model.name)
+          .field(ID_FIELD_NAME, "String")
+          .attribute(ID_ATTRIBUTE_NAME);
+
+        void actionContext.onEmitUserActionLog(
+          `id field was added to model "${model.name}"`,
+          EnumActionLogLevel.Warning
+        );
+      }
     });
     return {
       builder,
