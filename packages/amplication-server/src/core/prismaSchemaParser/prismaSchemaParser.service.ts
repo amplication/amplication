@@ -574,7 +574,7 @@ export class PrismaSchemaParserService {
    * This function handle cases where the model doesn't have an id field (field with "@id" attribute),
    * but it has a composite id - unique identifier for a record in a database that is formed by combining multiple field values.
    * Model with composite id are decorated with `@@id` attribute on the model.
-   * In this cases, we rename the `@@id` attribute to `@@unique` and add id filed of type String with `@id` attribute to the model
+   * In this cases, we rename the `@@id` attribute to `@@unique`
    */
   private prepareModelIdAttribute({
     builder,
@@ -607,16 +607,7 @@ export class PrismaSchemaParserService {
         EnumActionLogLevel.Warning
       );
 
-      // add an id field with id attribute to the model
-      builder
-        .model(model.name)
-        .field(ID_FIELD_NAME, "String")
-        .attribute(ID_ATTRIBUTE_NAME);
-
-      void actionContext.onEmitUserActionLog(
-        `id field was added to model "${model.name}"`,
-        EnumActionLogLevel.Warning
-      );
+      // adding the id field to the model is done in the prepareIdField operation
     });
 
     return {
@@ -749,10 +740,35 @@ export class PrismaSchemaParserService {
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
+      const hasIdField = modelFields.some(
+        (field) =>
+          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
+          false
+      );
+
+      // add the id field if it doesn't exist. The type is the default type for id field in Amplication - String
+      if (!hasIdField) {
+        builder
+          .model(model.name)
+          .field(ID_FIELD_NAME, "String")
+          .attribute(ID_ATTRIBUTE_NAME);
+
+        void actionContext.onEmitUserActionLog(
+          `id field was added to model "${model.name}"`,
+          EnumActionLogLevel.Warning
+        );
+      }
+
       modelFields.forEach((field: Field) => {
         const isIdField = field.attributes?.some(
           (attr) => attr.name === ID_ATTRIBUTE_NAME
         );
+
+        if (isIdField && this.isFkFieldOfARelation(schema, model, field)) {
+          throw new Error(
+            `Using the foreign key field as the primary key is not supported. The field "${field.name}" is a primary key on model "${model.name}" but also a foreign key on the related model. Please fix this issue and import the schema again.`
+          );
+        }
 
         if (!isIdField && field.name === ID_FIELD_NAME) {
           void actionContext.onEmitUserActionLog(
