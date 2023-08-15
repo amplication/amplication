@@ -73,6 +73,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
+import { camelCase } from "lodash";
 
 @Injectable()
 export class PrismaSchemaParserService {
@@ -745,13 +746,29 @@ export class PrismaSchemaParserService {
           (attr) => attr.name === ID_ATTRIBUTE_NAME
         );
 
+        const isUniqueField = field.attributes?.some(
+          (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
+        );
+
         if (isIdField && this.isFkFieldOfARelation(schema, model, field)) {
           throw new Error(
             `Using the foreign key field as the primary key is not supported. The field "${field.name}" is a primary key on model "${model.name}" but also a foreign key on the related model. Please fix this issue and import the schema again.`
           );
         }
 
-        if (!isIdField && field.name === ID_FIELD_NAME) {
+        // if this field is named "id", but it is not decorated with id, but do decorated with @unique - we add the @id attribute to it
+        if (isUniqueField && !isIdField && field.name === ID_FIELD_NAME) {
+          void actionContext.onEmitUserActionLog(
+            `attribute "@id" was added to the field "${field.name}" on model name ${model.name}`,
+            EnumActionLogLevel.Info
+          );
+
+          builder
+            .model(model.name)
+            .field(field.name)
+            .attribute(ID_ATTRIBUTE_NAME);
+        } else if (!isIdField && field.name === ID_FIELD_NAME) {
+          // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
           void actionContext.onEmitUserActionLog(
             `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
             EnumActionLogLevel.Info
@@ -765,7 +782,7 @@ export class PrismaSchemaParserService {
             .model(model.name)
             .field(field.name)
             .then<Field>((field) => {
-              field.name = `${model.name}Id`;
+              field.name = `${camelCase(model.name)}Id`;
             });
 
           mapper.idFields[field.name] = {
