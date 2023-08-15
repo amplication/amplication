@@ -676,6 +676,299 @@ describe("prismaSchemaParser", () => {
           );
         });
 
+        it("should rename a PK field if is not named id and add the map attribute with the original name", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Admin {
+            something String @id @default(cuid())
+            username String
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: '@map("something")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "username",
+                  displayName: "Username",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
+        it("should rename a field named id to the {modelName}Id if it is not the PK of the model and add a @map attribute with the original name", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Admin {
+            id String 
+            something Int @id @default(autoincrement()) 
+            username String
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "adminId",
+                  displayName: "Admin Id",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: '@map("id")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "AUTO_INCREMENT",
+                  },
+                  customAttributes: '@map("something")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "username",
+                  displayName: "Username",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
+        it("should add the @id attribute to a field if its name is id but it is only decorated with the @unique attribute", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Admin {
+            id Int @unique
+            username String
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "AUTO_INCREMENT",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "username",
+                  displayName: "Username",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
+        it("should add a field with the @id attribute if the model doesn't have an id filed but it has a field with @unique attribute that is not named id", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Admin {
+            myUniqueField String @unique
+            username String
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "myUniqueField",
+                  displayName: "My Unique Field",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: true,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "username",
+                  displayName: "Username",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         it("should NOT have the '@default' attribute as a custom attribute if it is an id field", async () => {
           // arrange
           const prismaSchema = `datasource db {
