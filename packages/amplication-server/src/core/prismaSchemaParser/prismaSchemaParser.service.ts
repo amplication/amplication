@@ -134,6 +134,8 @@ export class PrismaSchemaParserService {
         actionContext,
       });
 
+      this.logger.debug("mapper", preparedSchemaResult.mapper);
+
       void onEmitUserActionLog(
         "Prepare Prisma Schema for import completed",
         EnumActionLogLevel.Info
@@ -407,7 +409,7 @@ export class PrismaSchemaParserService {
         );
 
         mapper.modelNames[model.name] = {
-          oldName: model.name,
+          originalName: model.name,
           newName: newModelName,
         };
 
@@ -486,10 +488,19 @@ export class PrismaSchemaParserService {
             ? `${formattedFieldName}Field`
             : formattedFieldName;
 
-          mapper.fieldNames[field.name] = {
-            oldName: field.name,
-            newName: newFieldName,
-          };
+          if (mapper.fieldNames[model.name]) {
+            mapper.fieldNames[model.name][field.name] = {
+              originalName: field.name,
+              newName: newFieldName,
+            };
+          } else {
+            mapper.fieldNames[model.name] = {
+              [field.name]: {
+                originalName: field.name,
+                newName: newFieldName,
+              },
+            };
+          }
 
           void actionContext.onEmitUserActionLog(
             `Field name "${field.name}" on model ${model.name} was changed to "${newFieldName}"`,
@@ -534,15 +545,34 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
-    Object.entries(mapper.modelNames).map(([oldName, { newName }]) => {
+    Object.entries(mapper.modelNames).map(([originalName, { newName }]) => {
       models.map((model: Model) => {
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
         fields.map((field: Field) => {
-          if (field.fieldType === oldName) {
-            mapper.fieldTypes[field.fieldType] = {
-              oldName: field.fieldType,
+          if (field.fieldType === originalName) {
+            if (
+              mapper.fieldTypes[model.name] &&
+              mapper.fieldTypes[model.name][field.name]
+            ) {
+              mapper.fieldTypes[model.name][field.name][field.fieldType] = {
+                originalName: field.fieldType,
+                newName,
+              };
+            } else {
+              mapper.fieldTypes[model.name] = {
+                [field.name]: {
+                  [field.fieldType]: {
+                    originalName: field.fieldType,
+                    newName,
+                  },
+                },
+              };
+            }
+
+            mapper.fieldTypes[model.name][field.name][field.fieldType] = {
+              originalName: field.fieldType,
               newName,
             };
 
@@ -686,7 +716,8 @@ export class PrismaSchemaParserService {
 
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
-                    const newFieldName = mapper.fieldNames[arg.name]?.newName;
+                    const newFieldName =
+                      mapper.fieldNames[model.name][arg.name]?.newName;
 
                     if (newFieldName) {
                       arg.name = newFieldName;
@@ -771,10 +802,19 @@ export class PrismaSchemaParserService {
               field.name = `${model.name}Id`;
             });
 
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `${model.name}Id`,
-          };
+          if (mapper.idFields[model.name]) {
+            mapper.idFields[model.name][field.name] = {
+              originalName: field.name,
+              newName: `${model.name}Id`,
+            };
+          } else {
+            mapper.idFields[model.name] = {
+              [field.name]: {
+                originalName: field.name,
+                newName: `${model.name}Id`,
+              },
+            };
+          }
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
           void actionContext.onEmitUserActionLog(
             `field name "${field.name}" on model name ${model.name} was changed to "id"`,
@@ -793,10 +833,19 @@ export class PrismaSchemaParserService {
               field.name = ID_FIELD_NAME;
             });
 
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `id`,
-          };
+          if (mapper.idFields[model.name]) {
+            mapper.idFields[model.name][field.name] = {
+              originalName: field.name,
+              newName: ID_FIELD_NAME,
+            };
+          } else {
+            mapper.idFields[model.name] = {
+              [field.name]: {
+                originalName: field.name,
+                newName: ID_FIELD_NAME,
+              },
+            };
+          }
         }
 
         const hasDefaultAttributeOnIdField =
