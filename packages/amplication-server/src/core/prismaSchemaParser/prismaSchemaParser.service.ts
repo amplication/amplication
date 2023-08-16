@@ -31,6 +31,7 @@ import {
   singleLineTextField,
   updateAtField,
   wholeNumberField,
+  isValidIdFieldType,
 } from "./helpers";
 import {
   handleModelNamesCollision,
@@ -741,13 +742,77 @@ export class PrismaSchemaParserService {
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
+      const hasIdField = modelFields.some(
+        (field) =>
+          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
+          false
+      );
+
+      const hasUniqueField = modelFields.some(
+        (field) =>
+          (field.attributes?.some(
+            (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
+          ) ??
+            false) &&
+          isValidIdFieldType(field.fieldType as string)
+      );
+
+      // if the model doesn't have any id or unique field that can be used as id filed, we add an id field
+      // The type is the default type for id field in Amplication - String
+      if (!hasIdField && !hasUniqueField) {
+        builder
+          .model(model.name)
+          .field(ID_FIELD_NAME, "String")
+          .attribute(ID_ATTRIBUTE_NAME);
+
+        void actionContext.onEmitUserActionLog(
+          `id field was added to model "${model.name}"`,
+          EnumActionLogLevel.Warning
+        );
+      }
+
+      const uniqueFieldAsIdField = modelFields.find(
+        (field) =>
+          isValidIdFieldType(field.fieldType as string) &&
+          field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)
+      );
+
+      if (!hasIdField && uniqueFieldAsIdField) {
+        if (uniqueFieldAsIdField.name !== ID_FIELD_NAME) {
+          builder
+            .model(model.name)
+            .field(uniqueFieldAsIdField.name)
+            .attribute("map", [`"${uniqueFieldAsIdField.name}"`])
+            .attribute(ID_ATTRIBUTE_NAME);
+
+          builder
+            .model(model.name)
+            .field(uniqueFieldAsIdField.name)
+            .then<Field>((field) => {
+              field.name = ID_FIELD_NAME;
+            });
+
+          this.logger.debug("builder", { builder });
+          mapper.idFields[uniqueFieldAsIdField.name] = {
+            oldName: uniqueFieldAsIdField.name,
+            newName: ID_FIELD_NAME,
+          };
+        } else {
+          builder
+            .model(model.name)
+            .field(uniqueFieldAsIdField.name)
+            .attribute(ID_ATTRIBUTE_NAME);
+
+          void actionContext.onEmitUserActionLog(
+            `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
+            EnumActionLogLevel.Info
+          );
+        }
+      }
+
       modelFields.forEach((field: Field) => {
         const isIdField = field.attributes?.some(
           (attr) => attr.name === ID_ATTRIBUTE_NAME
-        );
-
-        const isUniqueField = field.attributes?.some(
-          (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
         );
 
         if (isIdField && this.isFkFieldOfARelation(schema, model, field)) {
@@ -756,18 +821,7 @@ export class PrismaSchemaParserService {
           );
         }
 
-        // if this field is named "id", but it is not decorated with id, but do decorated with @unique - we add the @id attribute to it
-        if (isUniqueField && !isIdField && field.name === ID_FIELD_NAME) {
-          void actionContext.onEmitUserActionLog(
-            `attribute "@id" was added to the field "${field.name}" on model name ${model.name}`,
-            EnumActionLogLevel.Info
-          );
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute(ID_ATTRIBUTE_NAME);
-        } else if (!isIdField && field.name === ID_FIELD_NAME) {
+        if (!isIdField && field.name === ID_FIELD_NAME) {
           // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
           void actionContext.onEmitUserActionLog(
             `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
@@ -825,25 +879,6 @@ export class PrismaSchemaParserService {
             .field(field.name)
             .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
-
-      const hasIdField = modelFields.some(
-        (field) =>
-          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
-          false
-      );
-
-      // add the id field if it doesn't exist. The type is the default type for id field in Amplication - String
-      if (!hasIdField) {
-        builder
-          .model(model.name)
-          .field(ID_FIELD_NAME, "String")
-          .attribute(ID_ATTRIBUTE_NAME);
-
-        void actionContext.onEmitUserActionLog(
-          `id field was added to model "${model.name}"`,
-          EnumActionLogLevel.Warning
-        );
-      }
     });
     return {
       builder,
