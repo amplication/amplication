@@ -453,6 +453,13 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
+      const findOriginalModelName = (modelName: string): string =>
+        Object.values(mapper.modelNames).find(
+          (item) => item.newName === modelName
+        )?.originalName || modelName;
+
+      const originalModelName = findOriginalModelName(model.name);
+
       const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
@@ -488,13 +495,13 @@ export class PrismaSchemaParserService {
             ? `${formattedFieldName}Field`
             : formattedFieldName;
 
-          if (mapper.fieldNames[model.name]) {
-            mapper.fieldNames[model.name][field.name] = {
+          if (mapper.fieldNames[originalModelName]) {
+            mapper.fieldNames[originalModelName][field.name] = {
               originalName: field.name,
               newName: newFieldName,
             };
           } else {
-            mapper.fieldNames[model.name] = {
+            mapper.fieldNames[originalModelName] = {
               [field.name]: {
                 originalName: field.name,
                 newName: newFieldName,
@@ -547,22 +554,43 @@ export class PrismaSchemaParserService {
 
     Object.entries(mapper.modelNames).map(([originalName, { newName }]) => {
       models.map((model: Model) => {
+        const findOriginalModelName = (modelName: string): string =>
+          Object.values(mapper.modelNames).find(
+            (item) => item.newName === modelName
+          )?.originalName || modelName;
+
+        const findOriginalFieldName = (fieldName: string): string => {
+          for (const [, fields] of Object.entries(mapper.fieldNames)) {
+            const field = Object.values(fields).find(
+              (value) => value.newName === fieldName
+            );
+            if (field) {
+              return field.originalName;
+            }
+          }
+          return fieldName;
+        };
+
+        const originalModelName = findOriginalModelName(model.name);
+        const originalFieldName = findOriginalFieldName(model.name);
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
         fields.map((field: Field) => {
           if (field.fieldType === originalName) {
             if (
-              mapper.fieldTypes[model.name] &&
-              mapper.fieldTypes[model.name][field.name]
+              mapper.fieldTypes[originalModelName] &&
+              mapper.fieldTypes[originalModelName][originalFieldName]
             ) {
-              mapper.fieldTypes[model.name][field.name][field.fieldType] = {
+              mapper.fieldTypes[originalModelName][originalFieldName][
+                field.fieldType
+              ] = {
                 originalName: field.fieldType,
                 newName,
               };
             } else {
-              mapper.fieldTypes[model.name] = {
-                [field.name]: {
+              mapper.fieldTypes[originalModelName] = {
+                [originalFieldName]: {
                   [field.fieldType]: {
                     originalName: field.fieldType,
                     newName,
