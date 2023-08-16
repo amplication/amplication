@@ -571,11 +571,6 @@ export class PrismaSchemaParserService {
               };
             }
 
-            mapper.fieldTypes[model.name][field.name][field.fieldType] = {
-              originalName: field.fieldType,
-              newName,
-            };
-
             void actionContext.onEmitUserActionLog(
               `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
               EnumActionLogLevel.Info
