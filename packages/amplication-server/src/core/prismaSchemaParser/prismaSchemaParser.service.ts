@@ -777,6 +777,7 @@ export class PrismaSchemaParserService {
           field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)
       );
 
+      // if we have more than one unique field that can be used as id field, we pick the first one and convert it to id field
       if (!hasIdField && uniqueFieldAsIdField) {
         if (uniqueFieldAsIdField.name !== ID_FIELD_NAME) {
           builder
