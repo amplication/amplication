@@ -31,6 +31,8 @@ import {
   singleLineTextField,
   updateAtField,
   wholeNumberField,
+  findOriginalFieldName,
+  findOriginalModelName,
 } from "./helpers";
 import {
   handleModelNamesCollision,
@@ -453,12 +455,7 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
-      const findOriginalModelName = (modelName: string): string =>
-        Object.values(mapper.modelNames).find(
-          (item) => item.newName === modelName
-        )?.originalName || modelName;
-
-      const originalModelName = findOriginalModelName(model.name);
+      const originalModelName = findOriginalModelName(mapper, model.name);
 
       const modelFieldList = model.properties.filter(
         (property) =>
@@ -554,25 +551,8 @@ export class PrismaSchemaParserService {
 
     Object.entries(mapper.modelNames).map(([originalName, { newName }]) => {
       models.map((model: Model) => {
-        const findOriginalModelName = (modelName: string): string =>
-          Object.values(mapper.modelNames).find(
-            (item) => item.newName === modelName
-          )?.originalName || modelName;
-
-        const findOriginalFieldName = (fieldName: string): string => {
-          for (const [, fields] of Object.entries(mapper.fieldNames)) {
-            const field = Object.values(fields).find(
-              (value) => value.newName === fieldName
-            );
-            if (field) {
-              return field.originalName;
-            }
-          }
-          return fieldName;
-        };
-
-        const originalModelName = findOriginalModelName(model.name);
-        const originalFieldName = findOriginalFieldName(model.name);
+        const originalModelName = findOriginalModelName(mapper, model.name);
+        const originalFieldName = findOriginalFieldName(mapper, model.name);
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
