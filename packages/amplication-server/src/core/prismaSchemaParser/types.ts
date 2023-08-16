@@ -20,19 +20,18 @@ export type PrepareOperationIO = {
   actionContext: ActionContext;
 };
 
-type OriginalModelName = string;
-type OriginalFieldName = string;
-type NewModelName = string;
-type NewFieldName = string;
+type ModelName = string; // formatted model name
+type FieldName = string; // formatted field name
+type FieldTypeName = string; // formatted field type name
 
 export type Mapper = {
-  modelNames: Record<OriginalModelName, MapperItem>;
-  fieldNames: Record<NewModelName, Record<OriginalFieldName, MapperItem>>;
+  modelNames: Record<ModelName, MapperItem>;
+  fieldNames: Record<ModelName, Record<FieldName, MapperItem>>;
   fieldTypes: Record<
-    NewModelName,
-    Record<NewFieldName, Record<string, MapperItem>>
+    ModelName,
+    Record<ModelName, Record<FieldTypeName, MapperItem>>
   >;
-  idFields: Record<NewModelName, Record<NewFieldName, MapperItem>>;
+  idFields: Record<ModelName, Record<FieldName, MapperItem>>;
 };
 
 export type MapperItem = {
