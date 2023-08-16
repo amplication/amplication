@@ -1080,6 +1080,118 @@ describe("prismaSchemaParser", () => {
           ];
           expect(result).toEqual(expectedEntitiesWithFields);
         });
+
+        it("should NOT have the '@default' attribute as a custom attribute if it is an id field AND it has more than one attribute", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Example {
+            id    Int @id @default(0)
+            value Int    @default(123)    
+          }
+  
+          model Test {
+            test_id    String @unique @id @default("mock_id")
+            value2 Int        
+          }
+          `;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Example",
+              displayName: "Example",
+              pluralDisplayName: "Examples",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "AUTO_INCREMENT",
+                  },
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "value",
+                  displayName: "Value",
+                  dataType: EnumDataType.WholeNumber,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maximumValue: 99999999999,
+                    minimumValue: 0,
+                  },
+                  customAttributes: "@default(123)",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Test",
+              displayName: "Test",
+              pluralDisplayName: "Tests",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: '@map("test_id")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "value2",
+                  displayName: "Value2",
+                  dataType: EnumDataType.WholeNumber,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    maximumValue: 99999999999,
+                    minimumValue: 0,
+                  },
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
       });
 
       describe("when model has @@index/@@id/@@unique attributes", () => {
