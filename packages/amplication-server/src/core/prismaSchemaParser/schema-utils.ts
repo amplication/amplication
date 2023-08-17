@@ -30,6 +30,7 @@ import {
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
+  findOriginalModelName,
   formatDisplayName,
   formatModelName,
 } from "./helpers";
@@ -440,6 +441,7 @@ export function addIdFieldIfNotExists(
     EnumActionLogLevel.Warning
   );
 }
+
 export function convertUniqueFieldNamedIdToIdField(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
@@ -464,23 +466,33 @@ export function convertUniqueFieldNotNamedIdToIdField(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  // add map with the original field name to the field and @id attribute
   builder
     .model(model.name)
     .field(uniqueFieldAsIdField.name)
     .attribute(ID_ATTRIBUTE_NAME)
     .attribute("map", [`"${uniqueFieldAsIdField.name}"`]);
 
-  mapper.idFields[uniqueFieldAsIdField.name] = {
-    oldName: uniqueFieldAsIdField.name,
-    newName: ID_FIELD_NAME,
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [uniqueFieldAsIdField.name]: {
+        originalName: uniqueFieldAsIdField.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
   };
 
   void actionContext.onEmitUserActionLog(
     `field ${uniqueFieldAsIdField.name} was renamed to ${ID_FIELD_NAME}`,
-    EnumActionLogLevel.Info
-  );
-  void actionContext.onEmitUserActionLog(
-    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
     EnumActionLogLevel.Info
   );
 
@@ -499,10 +511,23 @@ export function handleIdFieldNotNamedId(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
   void actionContext.onEmitUserActionLog(
     `field name "${field.name}" on model name ${model.name} was changed to "id"`,
     EnumActionLogLevel.Info
   );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
 
   builder
     .model(model.name)
@@ -515,11 +540,6 @@ export function handleIdFieldNotNamedId(
     .then<Field>((field) => {
       field.name = ID_FIELD_NAME;
     });
-
-  mapper.idFields[field.name] = {
-    oldName: field.name,
-    newName: ID_FIELD_NAME,
-  };
 }
 
 export function handleNotIdFieldNotUniqueNamedId(
@@ -529,10 +549,23 @@ export function handleNotIdFieldNotUniqueNamedId(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
   void actionContext.onEmitUserActionLog(
     `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
     EnumActionLogLevel.Info
   );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: `${model.name}Id`,
+      },
+    },
+  };
 
   builder
     .model(model.name)
@@ -544,9 +577,4 @@ export function handleNotIdFieldNotUniqueNamedId(
     .then<Field>((field) => {
       field.name = `${camelCase(model.name)}Id`;
     });
-
-  mapper.idFields[field.name] = {
-    oldName: field.name,
-    newName: `${model.name}Id`,
-  };
 }
