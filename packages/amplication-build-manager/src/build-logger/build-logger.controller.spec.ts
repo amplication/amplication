@@ -2,9 +2,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
 
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { CodeGenerationLog } from "@amplication/schema-registry";
-
-import { Env } from "../env";
+import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BuildLoggerController } from "./build-logger.controller";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 
@@ -36,7 +34,7 @@ describe("Build Logger Controller", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case Env.DSG_LOG_TOPIC:
+                case KAFKA_TOPICS.DSG_LOG_TOPIC:
                   return "log_topic";
                 default:
                   return "";
@@ -70,7 +68,7 @@ describe("Build Logger Controller", () => {
     await controller.onCodeGenerationLog(mockRequestLogDOT);
 
     expect(mockServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.DSG_LOG_TOPIC),
+      configService.get(KAFKA_TOPICS.DSG_LOG_TOPIC),
       logEvent
     );
     await expect(mockServiceEmitMessage()).resolves.not.toThrow();

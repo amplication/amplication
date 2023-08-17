@@ -1,4 +1,3 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
@@ -14,6 +13,7 @@ import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import {
   CodeGenerationFailure,
   CodeGenerationSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 
 @Controller("build-runner")
@@ -41,7 +41,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
+        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC),
         successEvent
       );
     } catch (error) {
@@ -53,7 +53,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
         failureEvent
       );
     }
@@ -70,7 +70,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
         failureEvent
       );
     } catch (error) {
@@ -78,9 +78,7 @@ export class BuildRunnerController {
     }
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC)
   async onCodeGenerationRequest(
     @Payload() message: CodeGenerationRequestDto
   ): Promise<void> {
@@ -107,7 +105,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
         failureEvent
       );
     }

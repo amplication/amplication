@@ -3,7 +3,7 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
-import { CodeGenerationLog } from "@amplication/schema-registry";
+import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 
 @Controller("build-logger")
 export class BuildLoggerController {
@@ -21,7 +21,7 @@ export class BuildLoggerController {
       value: logEntry,
     };
     await this.producerService.emitMessage(
-      this.configService.get(Env.DSG_LOG_TOPIC),
+      this.configService.get(KAFKA_TOPICS.DSG_LOG_TOPIC),
       logEvent
     );
   }

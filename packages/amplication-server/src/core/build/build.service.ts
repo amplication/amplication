@@ -43,6 +43,7 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -371,7 +372,7 @@ export class BuildService {
         };
 
         await this.kafkaProducerService.emitMessage(
-          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          this.configService.get(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC),
           codeGenerationEvent
         );
 
@@ -693,7 +694,7 @@ export class BuildService {
             value: createPullRequestMessage,
           };
           await this.kafkaProducerService.emitMessage(
-            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            this.configService.get(KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC),
             createPullRequestEvent
           );
         } catch (error) {
