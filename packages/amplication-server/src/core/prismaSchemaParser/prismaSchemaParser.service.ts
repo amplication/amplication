@@ -40,6 +40,11 @@ import {
   createOneEntityFieldCommonProperties,
   findRemoteRelatedModelAndField,
   handleEnumMapAttribute,
+  convertUniqueFieldNotNamedIdToIdField,
+  convertUniqueFieldNamedIdToIdField,
+  addIdFieldIfNotExists,
+  handleIdFieldNotNamedId,
+  handleNotIdFieldNotUniqueNamedId,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -74,7 +79,6 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
-import { camelCase } from "lodash";
 
 @Injectable()
 export class PrismaSchemaParserService {
@@ -738,6 +742,8 @@ export class PrismaSchemaParserService {
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
     models.forEach((model: Model) => {
+      let uniqueFieldAsIdField: Field;
+
       const modelFields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
@@ -748,66 +754,49 @@ export class PrismaSchemaParserService {
           false
       );
 
-      const hasUniqueField = modelFields.some(
-        (field) =>
-          (field.attributes?.some(
-            (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
-          ) ??
-            false) &&
-          isValidIdFieldType(field.fieldType as string)
-      );
-
-      // if the model doesn't have any id or unique field that can be used as id filed, we add an id field
-      // The type is the default type for id field in Amplication - String
-      if (!hasIdField && !hasUniqueField) {
-        builder
-          .model(model.name)
-          .field(ID_FIELD_NAME, "String")
-          .attribute(ID_ATTRIBUTE_NAME);
-
-        void actionContext.onEmitUserActionLog(
-          `id field was added to model "${model.name}"`,
-          EnumActionLogLevel.Warning
-        );
-      }
-
-      const uniqueFieldAsIdField = modelFields.find(
+      // find the first unique field that can become an id field and its name is id
+      const uniqueFieldNamedId = modelFields.find(
         (field) =>
           isValidIdFieldType(field.fieldType as string) &&
+          field.name === ID_FIELD_NAME &&
           field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)
       );
 
-      // if we have more than one unique field that can be used as id field, we pick the first one and convert it to id field
+      if (!uniqueFieldNamedId) {
+        // find the first unique field that can become an id field and is not named id
+        uniqueFieldAsIdField = modelFields.find(
+          (field) =>
+            isValidIdFieldType(field.fieldType as string) &&
+            field.name !== ID_FIELD_NAME &&
+            field.attributes?.some(
+              (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
+            )
+        );
+      }
+
+      // if the model doesn't have any id or unique field that can be used as id filed, we add an id field
+      // The type is the default type for id field in Amplication - String
+      if (!hasIdField && !uniqueFieldNamedId && !uniqueFieldAsIdField) {
+        addIdFieldIfNotExists(builder, model, actionContext);
+      }
+
+      if (!hasIdField && uniqueFieldNamedId) {
+        convertUniqueFieldNamedIdToIdField(
+          builder,
+          model,
+          uniqueFieldNamedId,
+          actionContext
+        );
+      }
+
       if (!hasIdField && uniqueFieldAsIdField) {
-        if (uniqueFieldAsIdField.name !== ID_FIELD_NAME) {
-          builder
-            .model(model.name)
-            .field(uniqueFieldAsIdField.name)
-            .attribute("map", [`"${uniqueFieldAsIdField.name}"`])
-            .attribute(ID_ATTRIBUTE_NAME);
-
-          builder
-            .model(model.name)
-            .field(uniqueFieldAsIdField.name)
-            .then<Field>((field) => {
-              field.name = ID_FIELD_NAME;
-            });
-
-          mapper.idFields[uniqueFieldAsIdField.name] = {
-            oldName: uniqueFieldAsIdField.name,
-            newName: ID_FIELD_NAME,
-          };
-        } else {
-          builder
-            .model(model.name)
-            .field(uniqueFieldAsIdField.name)
-            .attribute(ID_ATTRIBUTE_NAME);
-
-          void actionContext.onEmitUserActionLog(
-            `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
-            EnumActionLogLevel.Info
-          );
-        }
+        convertUniqueFieldNotNamedIdToIdField(
+          builder,
+          model,
+          uniqueFieldAsIdField,
+          mapper,
+          actionContext
+        );
       }
 
       modelFields.forEach((field: Field) => {
@@ -823,48 +812,15 @@ export class PrismaSchemaParserService {
 
         if (!isIdField && field.name === ID_FIELD_NAME) {
           // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
-          void actionContext.onEmitUserActionLog(
-            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
-            EnumActionLogLevel.Info
+          handleNotIdFieldNotUniqueNamedId(
+            builder,
+            model,
+            field,
+            mapper,
+            actionContext
           );
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [`"${field.name}"`]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = `${camelCase(model.name)}Id`;
-            });
-
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `${model.name}Id`,
-          };
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
-          void actionContext.onEmitUserActionLog(
-            `field name "${field.name}" on model name ${model.name} was changed to "id"`,
-            EnumActionLogLevel.Info
-          );
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [`"${field.name}"`]);
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = ID_FIELD_NAME;
-            });
-
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `id`,
-          };
+          handleIdFieldNotNamedId(builder, model, field, mapper, actionContext);
         }
 
         const hasDefaultAttributeOnIdField =
