@@ -492,19 +492,15 @@ export class PrismaSchemaParserService {
             ? `${formattedFieldName}Field`
             : formattedFieldName;
 
-          if (mapper.fieldNames[originalModelName]) {
-            mapper.fieldNames[originalModelName][field.name] = {
-              originalName: field.name,
-              newName: newFieldName,
-            };
-          } else {
-            mapper.fieldNames[originalModelName] = {
+          mapper.fieldNames = {
+            ...mapper.fieldNames,
+            [originalModelName]: {
               [field.name]: {
                 originalName: field.name,
                 newName: newFieldName,
               },
-            };
-          }
+            },
+          };
 
           void actionContext.onEmitUserActionLog(
             `Field name "${field.name}" on model ${model.name} was changed to "${newFieldName}"`,
@@ -558,26 +554,21 @@ export class PrismaSchemaParserService {
         ) as Field[];
         fields.map((field: Field) => {
           if (field.fieldType === originalName) {
-            if (
-              mapper.fieldTypes[originalModelName] &&
-              mapper.fieldTypes[originalModelName][originalFieldName]
-            ) {
-              mapper.fieldTypes[originalModelName][originalFieldName][
-                field.fieldType
-              ] = {
-                originalName: field.fieldType,
-                newName,
-              };
-            } else {
-              mapper.fieldTypes[originalModelName] = {
+            mapper.fieldTypes = {
+              ...mapper.fieldTypes,
+              [originalModelName]: {
+                ...(mapper.fieldTypes[originalModelName] ?? {}),
                 [originalFieldName]: {
+                  ...(mapper.fieldTypes[originalModelName]?.[
+                    originalFieldName
+                  ] ?? {}),
                   [field.fieldType]: {
                     originalName: field.fieldType,
                     newName,
                   },
                 },
-              };
-            }
+              },
+            };
 
             void actionContext.onEmitUserActionLog(
               `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
@@ -717,10 +708,14 @@ export class PrismaSchemaParserService {
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
+                const originalModelName = findOriginalModelName(
+                  mapper,
+                  model.name
+                );
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
                     const newFieldName =
-                      mapper.fieldNames[model.name][arg.name]?.newName;
+                      mapper.fieldNames[originalModelName][arg.name]?.newName;
 
                     if (newFieldName) {
                       arg.name = newFieldName;
@@ -779,6 +774,7 @@ export class PrismaSchemaParserService {
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
     models.forEach((model: Model) => {
+      const originalModelName = findOriginalModelName(mapper, model.name);
       const modelFields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
@@ -794,6 +790,17 @@ export class PrismaSchemaParserService {
             EnumActionLogLevel.Info
           );
 
+          mapper.idFields = {
+            ...mapper.idFields,
+            [originalModelName]: {
+              ...mapper.idFields[originalModelName],
+              [field.name]: {
+                originalName: field.name,
+                newName: `${model.name}Id`,
+              },
+            },
+          };
+
           builder
             .model(model.name)
             .field(field.name)
@@ -804,25 +811,22 @@ export class PrismaSchemaParserService {
             .then<Field>((field) => {
               field.name = `${model.name}Id`;
             });
-
-          if (mapper.idFields[model.name]) {
-            mapper.idFields[model.name][field.name] = {
-              originalName: field.name,
-              newName: `${model.name}Id`,
-            };
-          } else {
-            mapper.idFields[model.name] = {
-              [field.name]: {
-                originalName: field.name,
-                newName: `${model.name}Id`,
-              },
-            };
-          }
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
           void actionContext.onEmitUserActionLog(
             `field name "${field.name}" on model name ${model.name} was changed to "id"`,
             EnumActionLogLevel.Info
           );
+
+          mapper.idFields = {
+            ...mapper.idFields,
+            [originalModelName]: {
+              ...mapper.idFields[originalModelName],
+              [field.name]: {
+                originalName: field.name,
+                newName: ID_FIELD_NAME,
+              },
+            },
+          };
 
           builder
             .model(model.name)
@@ -835,20 +839,6 @@ export class PrismaSchemaParserService {
             .then<Field>((field) => {
               field.name = ID_FIELD_NAME;
             });
-
-          if (mapper.idFields[model.name]) {
-            mapper.idFields[model.name][field.name] = {
-              originalName: field.name,
-              newName: ID_FIELD_NAME,
-            };
-          } else {
-            mapper.idFields[model.name] = {
-              [field.name]: {
-                originalName: field.name,
-                newName: ID_FIELD_NAME,
-              },
-            };
-          }
         }
 
         const hasDefaultAttributeOnIdField =
