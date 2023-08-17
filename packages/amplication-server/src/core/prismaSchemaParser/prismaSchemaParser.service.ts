@@ -793,7 +793,6 @@ export class PrismaSchemaParserService {
               field.name = ID_FIELD_NAME;
             });
 
-          this.logger.debug("builder", { builder });
           mapper.idFields[uniqueFieldAsIdField.name] = {
             oldName: uniqueFieldAsIdField.name,
             newName: ID_FIELD_NAME,
