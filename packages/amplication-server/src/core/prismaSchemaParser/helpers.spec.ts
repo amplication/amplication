@@ -29,6 +29,12 @@ describe("helpers", () => {
       expect(result).toEqual("TestModel");
     });
 
+    it("should format the model name with acronyms in PascalCase", () => {
+      (isReservedName as jest.Mock).mockReturnValueOnce(false);
+      const result = formatModelName("myDBName");
+      expect(result).toEqual("MyDbName");
+    });
+
     it("should add 'Model' suffix if the model name is a reserved name", () => {
       (isReservedName as jest.Mock).mockReturnValueOnce(true);
       const result = formatModelName("test_model");
