@@ -5,11 +5,13 @@ import { DIALOG_CLASS_NAME } from "./PluginsCatalog";
 type Props = {
   confirmInstall: boolean;
   handleDismissInstall: () => void;
+  handleCreateDefaultEntitiesConfirmation: () => void;
 };
 
 const PluginInstallConfirmationDialog: React.FC<Props> = ({
   confirmInstall,
   handleDismissInstall,
+  handleCreateDefaultEntitiesConfirmation,
 }: Props) => {
   return (
     <div>
@@ -20,18 +22,18 @@ const PluginInstallConfirmationDialog: React.FC<Props> = ({
         onDismiss={handleDismissInstall}
       >
         <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Plugin installation cannot proceed as an entity for authentication has
-          not been defined. Please refer to our documentation on how to define
-          an entity for authentication before attempting to install the
-          authentication plugin
+          Plugin installation cannot proceed without an entity defined for
+          authentication
         </div>
-        <Button
-          className={`${DIALOG_CLASS_NAME}__upgrade_button`}
-          buttonStyle={EnumButtonStyle.Primary}
-          onClick={handleDismissInstall}
-        >
-          Dismiss
-        </Button>
+        <div className={`${DIALOG_CLASS_NAME}__dialog_btn`}>
+          <Button
+            className={`${DIALOG_CLASS_NAME}__upgrade_button`}
+            buttonStyle={EnumButtonStyle.Primary}
+            onClick={handleCreateDefaultEntitiesConfirmation}
+          >
+            Create 'User' entity
+          </Button>
+        </div>
       </Dialog>
     </div>
   );

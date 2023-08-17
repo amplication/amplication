@@ -283,16 +283,18 @@ export class ResourceService {
       data: { ...USER_RESOURCE_ROLE, resourceId: resource.id },
     });
 
-    requireAuthenticationEntity &&
-      (await this.entityService.createDefaultEntities(resource.id, user));
-
-    await this.environmentService.createDefaultEnvironment(resource.id);
+    if (requireAuthenticationEntity) {
+      await this.entityService.createDefaultEntities(resource.id, user);
+      serviceSettings.authEntityName = USER_ENTITY_NAME;
+    }
 
     await this.serviceSettingsService.createDefaultServiceSettings(
       resource.id,
       user,
       serviceSettings
     );
+
+    await this.environmentService.createDefaultEnvironment(resource.id);
 
     const project = await this.projectService.findUnique({
       where: { id: resource.projectId },

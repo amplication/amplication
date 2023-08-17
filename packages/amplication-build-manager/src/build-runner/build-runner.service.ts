@@ -6,7 +6,9 @@ import { promises as fs } from "fs";
 import { copy } from "fs-extra";
 import { join, dirname } from "path";
 import { Env } from "../env";
+import { Traceable } from "@amplication/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class BuildRunnerService {
   constructor(private readonly configService: ConfigService<Env, true>) {}

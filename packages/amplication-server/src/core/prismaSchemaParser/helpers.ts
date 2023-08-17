@@ -1,4 +1,4 @@
-import { Enum, Field, Func, Schema } from "@mrleebo/prisma-ast";
+import { Enum, Field, Func, Model, Schema } from "@mrleebo/prisma-ast";
 import pluralize from "pluralize";
 import { sentenceCase } from "sentence-case";
 import { isReservedName } from "../entity/reservedNames";
@@ -6,11 +6,13 @@ import {
   DEFAULT_ATTRIBUTE_NAME,
   ENUM_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
+  MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
+import { camelCase } from "lodash";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -75,18 +77,11 @@ export function formatFieldName(fieldName: string | Func): string {
     const isCamelCase = /^[a-z][A-Za-z0-9]*$/.test(fieldName);
 
     if (!isCamelCase) {
-      // first, convert the entire string to lowercase
-      fieldName = fieldName.toLowerCase();
-
-      // then, convert any character (letter or digit) that follows an underscore to uppercase in order to get camel case
-      fieldName = fieldName.replace(/_([a-z0-9])/g, (g) => g[1].toUpperCase());
+      fieldName = camelCase(fieldName);
     }
 
-    // ensure the first letter is always lowercased (in case it was made uppercase by the previous step)
-    fieldName = fieldName.charAt(0).toLowerCase() + fieldName.slice(1);
-
     if (isReservedName(fieldName.toLowerCase().trim())) {
-      fieldName = `${fieldName}Field`;
+      fieldName = `${camelCase(fieldName)}Field`;
     }
 
     return fieldName;
@@ -108,11 +103,18 @@ export function idField(field: Field) {
   }
 }
 
-export function lookupField(field: Field) {
-  const fieldLookupType = field.attributes?.some(
-    (attribute) => attribute.name === "relation"
+export function lookupField(schema: Schema, field: Field) {
+  const models = schema.list.filter(
+    (item) => item.type === MODEL_TYPE_NAME
+  ) as Model[];
+
+  const isFieldTypeIsModel = models.some(
+    (modelItem: Model) =>
+      formatModelName(modelItem.name) ===
+      formatModelName(field.fieldType as string)
   );
-  if (fieldLookupType) {
+
+  if (isFieldTypeIsModel) {
     return EnumDataType.Lookup;
   }
 }

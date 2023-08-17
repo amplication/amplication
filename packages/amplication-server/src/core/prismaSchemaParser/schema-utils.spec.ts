@@ -25,29 +25,113 @@ describe("schema-utils", () => {
   });
 
   describe("createOneEntityFieldCommonProperties", () => {
-    it("should return common properties of an entity field", () => {
-      const mockField = {
-        name: "mockField",
-        optional: false,
-        attributes: [{ name: "unique" }],
-      } as unknown as Field;
+    const mockAttributes = [
+      {
+        type: "attribute",
+        name: "map",
+        kind: "field",
+        args: [
+          {
+            type: "attributeArgument",
+            value: '"mock_field"',
+          },
+        ],
+      },
+    ] as unknown as Attribute[];
 
-      const result = createOneEntityFieldCommonProperties(
-        mockField,
-        EnumDataType.SingleLineText
-      );
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should create properties for a standard field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
 
       expect(result).toEqual({
-        name: "mockField",
-        displayName: "Mock Field",
-        dataType: EnumDataType.SingleLineText,
+        permanentId: expect.any(String),
+        name: "testField",
+        displayName: "Test Field",
+        dataType: dataType,
         required: true,
-        unique: true,
+        unique: false,
         searchable: false,
         description: "",
         properties: {},
-        customAttributes: "",
+        customAttributes: '@map("mock_field")',
       });
+    });
+
+    it("should handle unique attribute", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: [{ name: "unique" }],
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.unique).toEqual(true);
+    });
+
+    it("should handle optional field", () => {
+      const field = {
+        name: "testField",
+        optional: true,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.required).toEqual(false);
+    });
+
+    it("should mark Lookup field as searchable", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.Lookup;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.searchable).toEqual(true);
+    });
+
+    it("should throw error if Lookup field has custom attributes", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.Lookup;
+
+      expect(() =>
+        createOneEntityFieldCommonProperties(field, dataType)
+      ).toThrowError(
+        "Custom attributes are not allowed on relation fields. Only @relation attribute is allowed"
+      );
+    });
+
+    it("should add custom attributes for non-Lookup field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.customAttributes).toEqual('@map("mock_field")');
     });
   });
 
@@ -217,6 +301,51 @@ describe("schema-utils", () => {
         "@mockFieldAttribute2()",
       ]);
     });
+
+    it("should correctly format args that are arrays of functions", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "mockModelAttribute",
+          kind: "object",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "array",
+                args: [
+                  {
+                    type: "function",
+                    name: "value_1",
+                    params: [
+                      {
+                        type: "keyValue",
+                        key: "ops",
+                        value: "Int4BloomOps",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "type",
+                value: "Brin",
+              },
+            },
+          ],
+        },
+      ] as unknown as BlockAttribute[];
+
+      const result = prepareModelAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        "@@mockModelAttribute([value_1(ops: Int4BloomOps)], type: Brin)",
+      ]);
+    });
   });
 
   describe("findFkFieldNameOnAnnotatedField", () => {
@@ -367,7 +496,6 @@ describe("schema-utils", () => {
     beforeEach(() => {
       actionContext = {
         onEmitUserActionLog: jest.fn(),
-        onComplete: jest.fn(),
       };
     });
 

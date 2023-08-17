@@ -1,5 +1,6 @@
+import { EnumActionStepStatus } from "@amplication/code-gen-types/models";
 import { LogEntry } from "@amplication/util/logging";
-import { IsString } from "class-validator";
+import { IsBoolean, IsEnum, IsString } from "class-validator";
 
 export class Value implements LogEntry {
   @IsString()
@@ -10,6 +11,12 @@ export class Value implements LogEntry {
 
   @IsString()
   message!: string;
+
+  @IsEnum(EnumActionStepStatus)
+  status!: EnumActionStepStatus;
+
+  @IsBoolean()
+  isCompleted!: boolean;
 
   [key: string]: any;
 }

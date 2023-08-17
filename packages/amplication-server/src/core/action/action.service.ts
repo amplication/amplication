@@ -12,8 +12,7 @@ import { StepNameEmptyError } from "./errors/StepNameEmptyError";
 import { EnumActionStepStatus } from "./dto/EnumActionStepStatus";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { DecodedKafkaMessage } from "@amplication/util/kafka";
-import { ActionContext } from "../userAction/types";
+import { ActionContext, UserActionLogKafkaEvent } from "../userAction/types";
 import { UserActionLog } from "@amplication/schema-registry";
 
 export const SELECT_ID = { id: true };
@@ -151,12 +150,17 @@ export class ActionService {
   }
 
   async onUserActionLog(logEntry: UserActionLog.Value): Promise<void> {
-    const { stepId, message, level } = logEntry;
+    const { stepId, message, level, status, isCompleted } = logEntry;
+
     await this.logByStepId(
       stepId,
       ACTION_LOG_LEVEL[level.toLowerCase()],
       message
     );
+
+    if (isCompleted) {
+      await this.updateActionStepStatus(stepId, status);
+    }
   }
 
   async logByStepId(
@@ -178,15 +182,8 @@ export class ActionService {
     });
   }
 
-  emitUserActionLog(
-    kafkaMessage: DecodedKafkaMessage,
-    topicName: string
-  ): Promise<void> {
-    return this.kafkaProducerService.emitMessage(topicName, kafkaMessage);
-  }
-
   /**
-   * Creates an ActionContext for emitLogByStepId and complete functions.
+   * Creates an ActionContext for emitLogByStepId and completeWithLog functions.
    * These functions are invoked as Promises and potential errors are immediately caught and logged.
    * The onEmitLogByStepId can be invoked synchronously.
    * This provides a means to fire-and-forget these actions without the need to await their completion.
@@ -198,16 +195,25 @@ export class ActionService {
     step: ActionStep,
     topicName: string
   ): ActionContext {
-    const onEmitUserActionLog = (
+    const onEmitUserActionLog = async (
       message: string,
-      level: EnumActionLogLevel
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus = EnumActionStepStatus.Running,
+      isStepCompleted = false
     ) => {
       const onCreateKafkaMessageForUserActionLog =
         (userActionId: string, stepId: string) =>
-        (message: string, level: EnumActionLogLevel) =>
+        (
+          message: string,
+          level: EnumActionLogLevel,
+          status: EnumActionStepStatus,
+          isStepCompleted: boolean
+        ) =>
           this.createKafkaMessageForUserActionLog(userActionId, stepId)(
             message,
-            level
+            level,
+            status,
+            isStepCompleted
           );
 
       // partial application: the stepId is already known and the message and level are provided later
@@ -216,36 +222,35 @@ export class ActionService {
 
       const kafkaMessage = partialAppliedOnCreateKafkaMessageForUserActionLog(
         message,
-        level
+        level,
+        status,
+        isStepCompleted
       );
 
-      return this.emitUserActionLog(kafkaMessage, topicName).catch((error) =>
-        this.logger.error(`Failed to log action step ${step.id}`, error, {
-          stepId: step.id,
-          topicName,
-        })
-      );
+      return this.kafkaProducerService
+        .emitMessage(topicName, kafkaMessage)
+        .catch((error) =>
+          this.logger.error(`Failed to log action step ${step.id}`, error, {
+            stepId: step.id,
+            topicName,
+          })
+        );
     };
-
-    const onComplete = async (
-      status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
-    ) =>
-      await this.complete(step, status).catch((error) =>
-        this.logger.error(`Failed to complete action step ${step.id}`, error, {
-          stepId: step.id,
-        })
-      );
 
     return {
       onEmitUserActionLog,
-      onComplete,
     };
   }
 
-  createKafkaMessageForUserActionLog(userActionId: string, stepId: string) {
+  createKafkaMessageForUserActionLog(
+    userActionId: string,
+    stepId: string
+  ): UserActionLogKafkaEvent {
     return (
       message: string,
-      level: EnumActionLogLevel
+      level: EnumActionLogLevel,
+      status: EnumActionStepStatus,
+      isStepCompleted: boolean
     ): UserActionLog.KafkaEvent => ({
       key: {
         userActionId,
@@ -254,6 +259,8 @@ export class ActionService {
         stepId: stepId,
         message,
         level,
+        status,
+        isCompleted: isStepCompleted,
       },
     });
   }
