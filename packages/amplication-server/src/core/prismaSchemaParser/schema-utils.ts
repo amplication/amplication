@@ -10,6 +10,7 @@ import {
   Func,
   Enum,
   Enumerator,
+  ConcretePrismaSchemaBuilder,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
@@ -24,6 +25,8 @@ import {
   ENUMERATOR_TYPE_NAME,
   OBJECT_KIND_NAME,
   FUNCTION_ARG_TYPE_NAME,
+  ID_FIELD_NAME,
+  ID_ATTRIBUTE_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -36,6 +39,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
+import { camelCase } from "lodash";
 
 /**
  * create the common properties of one entity field from model field
@@ -419,4 +423,130 @@ export function handleEnumMapAttribute(
     }
   }
   return enumOptions;
+}
+
+export function addIdFieldIfNotExists(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  actionContext: ActionContext
+) {
+  builder
+    .model(model.name)
+    .field(ID_FIELD_NAME, "String")
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `id field was added to model "${model.name}"`,
+    EnumActionLogLevel.Warning
+  );
+}
+export function convertUniqueFieldNamedIdToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  uniqueFieldNamedId: Field,
+  actionContext: ActionContext
+) {
+  builder
+    .model(model.name)
+    .field(uniqueFieldNamedId.name)
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+}
+
+export function convertUniqueFieldNotNamedIdToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  uniqueFieldAsIdField: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  builder
+    .model(model.name)
+    .field(uniqueFieldAsIdField.name)
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute("map", [`"${uniqueFieldAsIdField.name}"`]);
+
+  mapper.idFields[uniqueFieldAsIdField.name] = {
+    oldName: uniqueFieldAsIdField.name,
+    newName: ID_FIELD_NAME,
+  };
+
+  void actionContext.onEmitUserActionLog(
+    `field ${uniqueFieldAsIdField.name} was renamed to ${ID_FIELD_NAME}`,
+    EnumActionLogLevel.Info
+  );
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+
+  builder
+    .model(model.name)
+    .field(uniqueFieldAsIdField.name)
+    .then<Field>((field) => {
+      field.name = ID_FIELD_NAME;
+    });
+}
+
+export function handleIdFieldNotNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  void actionContext.onEmitUserActionLog(
+    `field name "${field.name}" on model name ${model.name} was changed to "id"`,
+    EnumActionLogLevel.Info
+  );
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .attribute("map", [`"${field.name}"`]);
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .then<Field>((field) => {
+      field.name = ID_FIELD_NAME;
+    });
+
+  mapper.idFields[field.name] = {
+    oldName: field.name,
+    newName: ID_FIELD_NAME,
+  };
+}
+
+export function handleNotIdFieldNotUniqueNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  void actionContext.onEmitUserActionLog(
+    `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
+    EnumActionLogLevel.Info
+  );
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .attribute("map", [`"${field.name}"`]);
+  builder
+    .model(model.name)
+    .field(field.name)
+    .then<Field>((field) => {
+      field.name = `${camelCase(model.name)}Id`;
+    });
+
+  mapper.idFields[field.name] = {
+    oldName: field.name,
+    newName: `${model.name}Id`,
+  };
 }

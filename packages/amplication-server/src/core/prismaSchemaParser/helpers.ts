@@ -9,10 +9,11 @@ import {
   MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
+  idTypePropertyMapByFieldType,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
-import { camelCase } from "lodash";
+import { camelCase, upperFirst } from "lodash";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -48,9 +49,9 @@ export function filterOutAmplicationAttributes(attributes): string[] {
 export function formatModelName(modelName: string): string {
   // plural models are mapped to singular
   if (pluralize.isPlural(modelName)) {
-    modelName = capitalizeFirstLetter(pluralize.singular(modelName));
+    modelName = pluralize.singular(modelName);
   }
-  // snake case models are mapped to pascal case
+  // snake case models are mapped to pascal case with the capitalizeFirstLetter helper function in order to know the separation between words
   if (modelName.includes("_")) {
     modelName = modelName.split("_").map(capitalizeFirstLetter).join("");
   }
@@ -60,7 +61,7 @@ export function formatModelName(modelName: string): string {
   }
 
   // always make sure the model name is in pascal case
-  modelName = capitalizeFirstLetter(modelName);
+  modelName = upperFirst(camelCase(modelName));
   return modelName;
 }
 
@@ -101,6 +102,10 @@ export function idField(field: Field) {
   if (fieldIdType) {
     return EnumDataType.Id;
   }
+}
+
+export function isValidIdFieldType(fieldType: string) {
+  return idTypePropertyMapByFieldType.hasOwnProperty(fieldType);
 }
 
 export function lookupField(schema: Schema, field: Field) {
