@@ -20,6 +20,11 @@
       "$ref": "#/definitions/RelationFkHolder",
       "default": null
     },
+    "fkFieldName": {
+      "title": "Foreign Key Field Name (Optional)",
+      "type": "string",
+      "default": null
+    },
     "relatedFieldId": {
       "title": "Related Field",
       "$ref": "#/definitions/EntityFieldId",

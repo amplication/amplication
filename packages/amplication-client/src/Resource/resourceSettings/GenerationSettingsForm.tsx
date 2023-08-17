@@ -114,6 +114,7 @@ export const UPDATE_SERVICE_SETTINGS = gql`
     updateServiceSettings(data: $data, where: { id: $resourceId }) {
       id
       authProvider
+      authEntityName
       serverSettings {
         generateGraphQL
         generateRestApi
@@ -130,7 +131,9 @@ export const UPDATE_SERVICE_SETTINGS = gql`
 export const GET_RESOURCE_SETTINGS = gql`
   query serviceSettings($id: String!) {
     serviceSettings(where: { id: $id }) {
+      id
       authProvider
+      authEntityName
       serverSettings {
         generateGraphQL
         generateRestApi

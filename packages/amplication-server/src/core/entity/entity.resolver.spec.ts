@@ -1093,7 +1093,10 @@ describe("EntityResolver", () => {
     expect(createFieldMock).toBeCalledTimes(1);
     expect(createFieldMock).toBeCalledWith(
       { data: { ...variables, entity: { connect: { id: EXAMPLE_ID } } } },
-      EXAMPLE_USER
+      EXAMPLE_USER,
+      null,
+      true,
+      true
     );
   });
 
@@ -1118,7 +1121,8 @@ describe("EntityResolver", () => {
           entity: { connect: { id: EXAMPLE_ID } },
         },
       },
-      EXAMPLE_USER
+      EXAMPLE_USER,
+      true
     );
   });
 

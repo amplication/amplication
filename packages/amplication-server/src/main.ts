@@ -1,5 +1,6 @@
 import { NestFactory } from "@nestjs/core";
 import { ValidationPipe } from "@nestjs/common";
+import { graphqlUploadExpress } from "graphql-upload";
 import { AppModule } from "./app.module";
 import { sendServerLoadEvent } from "./util/sendServerLoadEvent";
 import { createNestjsKafkaConfig } from "@amplication/util/nestjs/kafka";
@@ -38,6 +39,7 @@ async function bootstrap() {
   app.useLogger(app.get(AmplicationLogger));
 
   app.connectMicroservice<MicroserviceOptions>(createNestjsKafkaConfig());
+  app.use(graphqlUploadExpress({ maxFileSize: 1000000, maxFiles: 10 }));
 
   await app.startAllMicroservices();
 
@@ -64,7 +66,7 @@ async function bootstrap() {
 }
 
 bootstrap().catch((error) => {
-  new Logger({ serviceName: SERVICE_NAME, isProduction: true }).error(
+  new Logger({ component: SERVICE_NAME, isProduction: true }).error(
     error.message,
     error
   );

@@ -17,6 +17,13 @@
       "executor": "@nrwl/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "defaultConfiguration": "production",
+      "dependsOn": [
+        "prebuild",
+        "^build",
+        "db:prisma:generate",
+        "^db:prisma:generate",
+        "^graphql:models:generate"
+      ],
       "options": {
         "compiler": "babel",
         "outputPath": "dist/packages/amplication-client",
@@ -180,8 +187,7 @@
           ]
         }
       }
-    },
-    "deploy:container": { "executor": "nx:run-commands" }
+    }
   },
   "tags": []
 }

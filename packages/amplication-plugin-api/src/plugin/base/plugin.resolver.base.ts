@@ -22,6 +22,7 @@ import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateReq
 import { CreatePluginArgs } from "./CreatePluginArgs";
 import { UpdatePluginArgs } from "./UpdatePluginArgs";
 import { DeletePluginArgs } from "./DeletePluginArgs";
+import { PluginCountArgs } from "./PluginCountArgs";
 import { PluginFindManyArgs } from "./PluginFindManyArgs";
 import { PluginFindUniqueArgs } from "./PluginFindUniqueArgs";
 import { Plugin } from "./Plugin";
@@ -37,15 +38,11 @@ export class PluginResolverBase {
   @Public()
   @graphql.Query(() => MetaQueryPayload)
   async _pluginsMeta(
-    @graphql.Args() args: PluginFindManyArgs
+    @graphql.Args() args: PluginCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 

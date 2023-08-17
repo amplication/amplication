@@ -16,6 +16,11 @@ import "./index.scss";
 import App from "./App";
 import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
+import { createUploadLink } from "apollo-upload-client";
+import {
+  getSessionId,
+  ANALYTICS_SESSION_ID_HEADER_KEY,
+} from "./util/analytics";
 
 const queryClient = new QueryClient();
 
@@ -41,16 +46,23 @@ const authLink = setContext((_, { headers }) => {
     headers: {
       ...headers,
       authorization: token ? `Bearer ${token}` : "",
+      [ANALYTICS_SESSION_ID_HEADER_KEY]: getSessionId(),
     },
   };
 });
+
+const uploadLink = createUploadLink({ uri: REACT_APP_DATA_SOURCE }); // Your GraphQL endpoint
 
 const apolloClient = new ApolloClient({
   cache: new InMemoryCache(),
   link: ApolloLink.split(
     (operation) => operation.getContext().clientName === "pluginApiHttpLink",
     pluginApiHttpLink,
-    authLink.concat(httpLink)
+    ApolloLink.split(
+      (operation) => operation.getContext().hasUpload,
+      authLink.concat(uploadLink),
+      authLink.concat(httpLink)
+    )
   ),
 });
 

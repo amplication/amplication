@@ -82,6 +82,7 @@ const SyncWithGithubPage: React.FC = () => {
             resource={data.resource}
             onDone={handleOnDone}
             gitRepositorySelectedCb={gitRepositorySelectedCb}
+            gitRepositoryCreatedCb={handleOnDone}
           />
         )}
         {!isProjectConfiguration && data?.resource && (
@@ -89,6 +90,7 @@ const SyncWithGithubPage: React.FC = () => {
             resource={data.resource}
             onDone={handleOnDone}
             gitRepositorySelectedCb={gitRepositorySelectedCb}
+            gitRepositoryCreatedCb={handleOnDone}
           />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
@@ -112,6 +114,7 @@ export const GET_RESOURCE_GIT_REPOSITORY = gql`
         id
         name
         groupName
+        baseBranchName
         gitOrganization {
           id
           name

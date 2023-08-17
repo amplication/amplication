@@ -238,7 +238,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldArgs
   ): Promise<EntityField> {
-    return this.entityService.createField(args, user);
+    return this.entityService.createField(args, user, null, true, true);
   }
 
   @Mutation(() => EntityField, { nullable: false })
@@ -250,7 +250,7 @@ export class EntityResolver {
     @UserEntity() user: User,
     @Args() args: CreateOneEntityFieldByDisplayNameArgs
   ): Promise<EntityField> {
-    return this.entityService.createFieldByDisplayName(args, user);
+    return this.entityService.createFieldByDisplayName(args, user, true);
   }
 
   @Mutation(() => EntityField, { nullable: false })

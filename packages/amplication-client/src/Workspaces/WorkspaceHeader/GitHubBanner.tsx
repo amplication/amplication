@@ -23,14 +23,14 @@ export default function GitHubBanner() {
     trackEvent({
       eventName: AnalyticsEventNames.StarUsBannerCTAClick,
     });
-  }, []);
+  }, [trackEvent]);
 
   const handleCloseStarUsClick = useCallback(() => {
     setShowBanner("false");
     trackEvent({
       eventName: AnalyticsEventNames.StarUsBannerClose,
     });
-  }, [setShowBanner]);
+  }, [trackEvent, setShowBanner]);
 
   if (!isBannerShowing) return null;
 

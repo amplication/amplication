@@ -102,7 +102,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
       setSelectedVersion(pluginVersion.version);
       pluginInstallation?.PluginInstallation.version !==
         pluginVersion.version && setIsValid(false);
-      editorRef.current = pluginVersion.settings;
+      editorRef.current = JSON.stringify(pluginVersion.settings);
       setConfiguration(pluginVersion.configurations);
     },
     [setSelectedVersion, setIsValid, setConfiguration]
@@ -117,7 +117,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
         data: {
           enabled,
           version: selectedVersion,
-          settings: editorRef.current || JSON.parse("{}"),
+          settings: JSON.parse(editorRef.current) || JSON.parse("{}"),
           configurations: configurations || JSON.parse("{}"),
         },
         where: {

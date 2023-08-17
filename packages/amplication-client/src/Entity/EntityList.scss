@@ -20,6 +20,14 @@
     }
   }
 
+  &__action-buttons {
+    @include flexFullRowWithSpacing;
+
+    .toggle-field {
+      margin-bottom: 0 !important;
+    }
+  }
+
   &__title {
     @include body2;
     margin-bottom: var(--default-spacing-small);

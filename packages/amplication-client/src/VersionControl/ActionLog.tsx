@@ -19,6 +19,9 @@ type Props = {
   action?: models.Action;
   title: string;
   versionNumber: string;
+  height?: string | number;
+  dynamicHeight?: boolean;
+  autoHeight?: boolean;
 };
 const CLASS_NAME = "action-log";
 const SECOND_STRING = "s";
@@ -36,7 +39,16 @@ const LOG_LEVEL_TO_CHALK: {
   [models.EnumActionLogLevel.Warning]: "yellow",
 };
 
-const ActionLog = ({ action, title, versionNumber }: Props) => {
+const isNumber = (n) => !isNaN(parseFloat(n)) && !isNaN(n - 0);
+
+const ActionLog = ({
+  action,
+  title,
+  versionNumber,
+  height,
+  dynamicHeight,
+  autoHeight,
+}: Props) => {
   const logData = useMemo(() => {
     if (!action?.steps) return [];
 
@@ -121,40 +133,54 @@ const ActionLog = ({ action, title, versionNumber }: Props) => {
         )}
       </div>
       <div className={`${CLASS_NAME}__body`}>
-        {logData.map((stepData) => (
-          <div className={`${CLASS_NAME}__step`} key={stepData.id}>
-            <div className={`${CLASS_NAME}__step__row`}>
-              <span
-                className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
-              >
-                {stepData.status === models.EnumActionStepStatus.Running ? (
-                  <CircularProgress size={16} />
-                ) : (
-                  <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
-                )}
-              </span>
-              <span className={`${CLASS_NAME}__step__message`}>
-                {stepData.message}
-              </span>
-              <span className={`${CLASS_NAME}__step__duration`}>
-                {stepData.duration}
-              </span>
-            </div>
-            {!isEmpty(stepData.messages) && (
-              <div className={`${CLASS_NAME}__step__log`}>
-                <LazyLog
-                  rowHeight={LOG_ROW_HEIGHT}
-                  lineClassName={`${CLASS_NAME}__line`}
-                  extraLines={0}
-                  enableSearch={false}
-                  text={stepData.messages}
-                  selectableLines={true}
-                  height={10} //we use a random value in order to disable the auto-sizing, and use "height:auto !important" in CSS
-                />
+        {logData.map((stepData) => {
+          const logsHeight = stepData.logs.length * LOG_ROW_HEIGHT + 10;
+          const lazyLogHeight =
+            isNumber(height) && dynamicHeight
+              ? (height as number) > logsHeight
+                ? logsHeight
+                : height
+              : height;
+
+          return (
+            <div className={`${CLASS_NAME}__step`} key={stepData.id}>
+              <div className={`${CLASS_NAME}__step__row`}>
+                <span
+                  className={`${CLASS_NAME}__step__status ${CLASS_NAME}__step__status--${stepData.status.toLowerCase()}`}
+                >
+                  {stepData.status === models.EnumActionStepStatus.Running ? (
+                    <CircularProgress size={16} />
+                  ) : (
+                    <Icon icon={STEP_STATUS_TO_ICON[stepData.status]} />
+                  )}
+                </span>
+                <span className={`${CLASS_NAME}__step__message`}>
+                  {stepData.message}
+                </span>
+                <span className={`${CLASS_NAME}__step__duration`}>
+                  {stepData.duration}
+                </span>
               </div>
-            )}
-          </div>
-        ))}
+              {!isEmpty(stepData.messages) && (
+                <div
+                  {...(!autoHeight ? { style: { height: lazyLogHeight } } : {})}
+                >
+                  <LazyLog
+                    {...(autoHeight
+                      ? { className: "__auto__height", height: 10 }
+                      : {})}
+                    rowHeight={LOG_ROW_HEIGHT}
+                    lineClassName={`${CLASS_NAME}__line`}
+                    extraLines={0}
+                    enableSearch={false}
+                    text={stepData.messages}
+                    selectableLines={true}
+                  />
+                </div>
+              )}
+            </div>
+          );
+        })}
 
         {isEmpty(logData) && (
           <div className={`${CLASS_NAME}__empty-state`}>

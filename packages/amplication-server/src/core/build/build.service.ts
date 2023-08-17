@@ -1,8 +1,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Prisma, PrismaService } from "../../prisma";
-import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
-import { omit, orderBy } from "lodash";
+import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
@@ -33,13 +32,13 @@ import { BillingService } from "../billing/billing.service";
 import {
   EnumGitProvider,
   EnumPullRequestMode,
-  GitHubProviderOrganizationProperties,
-  OAuthProviderOrganizationProperties,
-} from "@amplication/git-utils";
+  GitProviderProperties,
+} from "@amplication/util/git";
 import { BillingFeature } from "../billing/billing.types";
 import { ILogger } from "@amplication/util/logging";
 import {
   CanUserAccessBuild,
+  CodeGenerationLog,
   CodeGenerationRequest,
   CreatePrFailure,
   CreatePrRequest,
@@ -47,6 +46,16 @@ import {
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
+import {
+  EnumEventType,
+  SegmentAnalyticsService,
+} from "../../services/segmentAnalytics/segmentAnalytics.service";
+
+const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
+  [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
+  [EnumGitProvider.Bitbucket]: "Bitbucket",
+  [EnumGitProvider.Github]: "GitHub",
+};
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -65,22 +74,21 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
   gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider}`;
+  `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Starting to push changes to ${gitProvider}`;
+  `Starting to push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
-  `Successfully pushed changes to ${gitProvider}`;
+  `Successfully pushed changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
-  `Push changes to ${gitProvider} failed`;
+  `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]} failed`;
 
 export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
   gitRepositoryName: string;
   repositoryGroupName?: string;
+  baseBranchName: string;
   gitProvider: EnumGitProvider;
-  gitProviderProperties:
-    | GitHubProviderOrganizationProperties
-    | OAuthProviderOrganizationProperties;
+  gitProviderProperties: GitProviderProperties;
   commit: {
     title: string;
     body: string;
@@ -129,8 +137,6 @@ export const ACTION_LOG_LEVEL: {
   info: EnumActionLogLevel.Info,
   debug: EnumActionLogLevel.Debug,
 };
-
-const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
 We encourage you to continue exploring the many ways Amplication can supercharge your development. 
@@ -192,7 +198,8 @@ export class BuildService {
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private analytics: SegmentAnalyticsService
   ) {
     this.host = this.configService.get(HOST_VAR);
     if (!this.host) {
@@ -434,7 +441,16 @@ export class BuildService {
   public async onCreatePRFailure(
     response: CreatePrFailure.Value
   ): Promise<void> {
-    const build = await this.findOne({ where: { id: response.buildId } });
+    const build = await this.prisma.build.findUnique({
+      where: { id: response.buildId },
+      include: {
+        createdBy: { include: { account: true } },
+        resource: {
+          include: { project: true },
+        },
+      },
+    });
+
     const steps = await this.actionService.getSteps(build.actionId);
     const step = steps.find(
       (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
@@ -449,8 +465,55 @@ export class BuildService {
       step,
       PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
     );
-    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.log(
+      step,
+      EnumActionLogLevel.Error,
+      response.errorMessage
+    );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
+
+    await this.analytics.track({
+      userId: build.createdBy.account.id,
+      properties: {
+        resourceId: build.resource.id,
+        projectId: build.resource.project.id,
+        workspaceId: build.resource.project.workspaceId,
+        message: response.errorMessage,
+      },
+      event: EnumEventType.GitSyncError,
+    });
+  }
+
+  public async onDsgLog(logEntry: CodeGenerationLog.Value): Promise<void> {
+    const step = await this.getGenerateCodeStep(logEntry.buildId);
+    await this.actionService.logByStepId(
+      step.id,
+      ACTION_LOG_LEVEL[logEntry.level],
+      logEntry.message
+    );
+
+    if (ACTION_LOG_LEVEL[logEntry.level] === EnumActionLogLevel.Error) {
+      const build = await this.prisma.build.findUnique({
+        where: { id: logEntry.buildId },
+        include: {
+          createdBy: { include: { account: true } },
+          resource: {
+            include: { project: true },
+          },
+        },
+      });
+
+      await this.analytics.track({
+        userId: build.createdBy.account.id,
+        properties: {
+          resourceId: build.resource.id,
+          projectId: build.resource.project.id,
+          workspaceId: build.resource.project.workspaceId,
+          message: logEntry.message,
+        },
+        event: EnumEventType.CodeGenerationError,
+      });
+    }
   }
 
   public async saveToGitProvider(buildId: string): Promise<void> {
@@ -520,6 +583,7 @@ export class BuildService {
         gitOrganizationName: organizationName,
         gitRepositoryName: project.demoRepoName,
         repositoryGroupName: "",
+        baseBranchName: "", //leave empty to use default branch
         gitProvider: EnumGitProvider.Github,
         gitProviderProperties: {
           installationId: installationId,
@@ -565,11 +629,20 @@ export class BuildService {
 
       const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
 
+      const canUseCustomBaseBranch =
+        await this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+
       const gitProviderArgs =
         await this.gitProviderService.getGitProviderProperties(gitOrganization);
       gitSettings = {
         gitOrganizationName: gitOrganization.name,
         gitRepositoryName: resourceRepository.name,
+        baseBranchName: canUseCustomBaseBranch
+          ? resourceRepository.baseBranchName
+          : "",
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
@@ -629,17 +702,6 @@ export class BuildService {
       },
       true
     );
-  }
-
-  private async createLog(
-    step: ActionStep,
-    info: { message: string }
-  ): Promise<void> {
-    const { message, ...metaInfo } = info;
-    const level = ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
-
-    await this.actionService.log(step, level, message, meta);
   }
 
   /**

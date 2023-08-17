@@ -63,6 +63,9 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  ImportPrismaSchemaClick = "importPrismaSchemaClick",
+  ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
+  ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
@@ -93,7 +96,6 @@ export enum AnalyticsEventNames {
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",
@@ -119,6 +121,7 @@ export enum AnalyticsEventNames {
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
   ContactUsButtonClick = "ContactUsButtonClick",
+  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",

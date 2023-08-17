@@ -61,6 +61,13 @@ const BuildPage = ({ match }: Props) => {
     };
   }, [data]);
 
+  const screenBuildHeight = window.innerHeight - 360;
+
+  const screenHeight =
+    actionLog?.action.steps.length < 3
+      ? screenBuildHeight - 150
+      : screenBuildHeight - 300;
+
   const errorMessage = formatError(errorLoading);
 
   return (
@@ -88,6 +95,8 @@ const BuildPage = ({ match }: Props) => {
               <BuildSteps build={data.build} />
               <aside className="log-container">
                 <ActionLog
+                  height={screenHeight}
+                  dynamicHeight={true}
                   action={actionLog?.action}
                   title={actionLog?.title || ""}
                   versionNumber={actionLog?.versionNumber || ""}

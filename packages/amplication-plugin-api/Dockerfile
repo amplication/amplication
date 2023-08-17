@@ -1,23 +1,39 @@
-FROM node:18.12.1-slim AS base
+FROM node:18.13.0-slim AS production
 
-ARG user=amplication-plugin-api
+# create arguments of builds time variables
+ARG component=amplication-plugin-api
+ARG user=${component}}
 ARG uid=1001
 ARG gid=$uid
 
-WORKDIR /workspace/packages/${user}
+# create directory where the application will be built
+WORKDIR /app
 
-COPY ./dist/packages/${user}/package.json .
-RUN npm install --omit-dev
+# copy over the dependency manifests, both the package.json 
+# and the package-lock.json are copied over
+COPY ./dist/packages/${component}/package.json ./
 
-COPY ./dist/packages/${user} .
+# installs packages and their dependencies
+RUN npm install --production
 
-RUN groupadd --gid ${gid} ${user}
-RUN useradd --uid ${uid} --gid ${gid} -m ${user}
-RUN chown -R ${uid}:${gid} /workspace/packages/${user}
+# copy over the code base
+COPY ./dist/packages/${component} .
 
+# [temporary] work around to be able to run prisma
+RUN apt-get update -y \
+    && apt-get install -y openssl
+
+# change ownership of the workspace directory
+RUN groupadd --gid ${gid} ${user} \
+    && useradd --uid ${uid} --gid ${gid} -m ${user} \
+    && chown -R ${uid}:${gid} /app
+
+# set user to the created non-privileged user
 USER ${user}
 
+# expose a specific port on the docker container
 ENV PORT=3005
-EXPOSE $PORT
+EXPOSE ${PORT}
 
-CMD ["node", "./main.js"]
+# start the server using the previously build application
+CMD [ "node", "./main.js" ]

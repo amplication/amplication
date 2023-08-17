@@ -19,6 +19,8 @@ export enum EnumImages {
   CommitEmptyState = "--image-commit-empty-state",
   CodeViewEmptyState = "--image-code-view-empty-state",
   MessageBrokerEmptyState = "--image-message-broker-empty-state",
+  ImportPrismaSchema = "--image-import-prisma-schema",
+  ImportPrisma = "--image-import-prisma",
 }
 
 export type Props = {
