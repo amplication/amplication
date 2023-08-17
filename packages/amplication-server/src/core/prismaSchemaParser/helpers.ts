@@ -13,7 +13,7 @@ import {
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
-import { camelCase } from "lodash";
+import { camelCase, upperFirst } from "lodash";
 import { Mapper } from "./types";
 
 export function capitalizeFirstLetter(string): string {
@@ -50,9 +50,9 @@ export function filterOutAmplicationAttributes(attributes): string[] {
 export function formatModelName(modelName: string): string {
   // plural models are mapped to singular
   if (pluralize.isPlural(modelName)) {
-    modelName = capitalizeFirstLetter(pluralize.singular(modelName));
+    modelName = pluralize.singular(modelName);
   }
-  // snake case models are mapped to pascal case
+  // snake case models are mapped to pascal case with the capitalizeFirstLetter helper function in order to know the separation between words
   if (modelName.includes("_")) {
     modelName = modelName.split("_").map(capitalizeFirstLetter).join("");
   }
@@ -62,7 +62,7 @@ export function formatModelName(modelName: string): string {
   }
 
   // always make sure the model name is in pascal case
-  modelName = capitalizeFirstLetter(modelName);
+  modelName = upperFirst(camelCase(modelName));
   return modelName;
 }
 
