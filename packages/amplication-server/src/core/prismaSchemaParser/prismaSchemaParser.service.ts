@@ -136,8 +136,6 @@ export class PrismaSchemaParserService {
         actionContext,
       });
 
-      this.logger.debug("mapper", preparedSchemaResult.mapper);
-
       void onEmitUserActionLog(
         "Prepare Prisma Schema for import completed",
         EnumActionLogLevel.Info
