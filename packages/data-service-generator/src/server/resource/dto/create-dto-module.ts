@@ -49,6 +49,7 @@ import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
 import { INPUT_JSON_VALUE_KEY } from "./constants";
 import DsgContext from "../../../dsg-context";
 import { logger } from "../../../logging";
+import { DECIMAL_JS_MODULE, DECIMAL_VALUE_ID } from "./decimal-js";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -71,6 +72,7 @@ export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
     IS_ENUM_ID,
     VALIDATE_NESTED_ID,
   ],
+  [DECIMAL_JS_MODULE]: [DECIMAL_VALUE_ID],
   [CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE]: [IS_JSON_VALUE_ID],
   [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
   [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],

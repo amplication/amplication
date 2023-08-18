@@ -14,6 +14,7 @@ import {
 import {
   BOOLEAN_ID,
   DATE_ID,
+  DECIMAL_ID,
   getFilterASTIdentifier,
   NULLABLE_ID,
   NUMBER_ID,
@@ -101,11 +102,13 @@ function createGraphQLFieldType(
   }
   if (
     prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Decimal ||
     prismaField.type === ScalarType.Int ||
     prismaField.type === ScalarType.BigInt
   ) {
     return NUMBER_ID;
+  }
+  if (prismaField.type === ScalarType.Decimal) {
+    return DECIMAL_ID;
   }
   if (prismaField.type === ScalarType.String) {
     return STRING_ID;

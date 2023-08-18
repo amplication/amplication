@@ -31,7 +31,7 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { DECIMAL_VALUE, INPUT_JSON_VALUE_KEY } from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
@@ -57,7 +57,9 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Json]: builders.tsTypeReference(
     builders.identifier(INPUT_JSON_VALUE_KEY)
   ),
-  [ScalarType.Decimal]: builders.tsNumberKeyword(),
+  [ScalarType.Decimal]: builders.tsTypeReference(
+    builders.identifier(DECIMAL_VALUE)
+  ),
   [ScalarType.BigInt]: builders.tsNumberKeyword(),
 };
 
@@ -122,6 +124,7 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
+export const DECIMAL_ID = builders.identifier("Decimal");
 export const STRING_ID = builders.identifier("String");
 const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
@@ -133,7 +136,7 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [ScalarType.Int]: NUMBER_ID,
   [ScalarType.String]: STRING_ID,
   [ScalarType.Json]: null,
-  [ScalarType.Decimal]: NUMBER_ID,
+  [ScalarType.Decimal]: DECIMAL_ID,
   [ScalarType.BigInt]: NUMBER_ID,
 };
 export const EACH_ID = builders.identifier("each");
