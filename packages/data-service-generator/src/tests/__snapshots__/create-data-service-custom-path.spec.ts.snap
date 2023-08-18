@@ -355,7 +355,8 @@ export type CreateCustomerArgs = {
   data: CustomerCreateInput;
 };
 ",
-  "test-ui/src/api/customer/Customer.ts": "import { Organization } from \\"../organization/Organization\\";
+  "test-ui/src/api/customer/Customer.ts": "import { Decimal } from \\"decimal.js\\";
+import { Organization } from \\"../organization/Organization\\";
 import { Order } from \\"../order/Order\\";
 
 export type Customer = {
@@ -367,7 +368,7 @@ export type Customer = {
   lastName: string | null;
   isVip: boolean | null;
   birthData: Date | null;
-  averageSale: number | null;
+  averageSale: Decimal | null;
   favoriteNumber: number | null;
   geoLocation: string | null;
   comments: string | null;
@@ -384,7 +385,8 @@ export type CustomerCountArgs = {
   where?: CustomerWhereInput;
 };
 ",
-  "test-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "test-ui/src/api/customer/CustomerCreateInput.ts": "import { Decimal } from \\"decimal.js\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 
 export type CustomerCreateInput = {
@@ -393,7 +395,7 @@ export type CustomerCreateInput = {
   lastName?: string | null;
   isVip?: boolean | null;
   birthData?: Date | null;
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
@@ -449,7 +451,8 @@ export type CustomerOrderByInput = {
   vipOrganizationId?: SortOrder;
 };
 ",
-  "test-ui/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "test-ui/src/api/customer/CustomerUpdateInput.ts": "import { Decimal } from \\"decimal.js\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
 
 export type CustomerUpdateInput = {
@@ -458,7 +461,7 @@ export type CustomerUpdateInput = {
   lastName?: string | null;
   isVip?: boolean | null;
   birthData?: Date | null;
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
   favoriteNumber?: number | null;
   geoLocation?: string | null;
   comments?: string | null;
@@ -3380,6 +3383,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -3465,14 +3469,14 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: Number,
+    type: Decimal,
   })
   @IsDecimal()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Decimal, {
     nullable: true,
   })
-  averageSale!: number | null;
+  averageSale!: Decimal | null;
 
   @ApiProperty({
     required: false,
@@ -3617,6 +3621,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -3678,14 +3683,14 @@ class CustomerCreateInput {
 
   @ApiProperty({
     required: false,
-    type: Number,
+    type: Decimal,
   })
   @IsDecimal()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Decimal, {
     nullable: true,
   })
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
 
   @ApiProperty({
     required: false,
@@ -4161,6 +4166,7 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -4225,14 +4231,14 @@ class CustomerUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: Number,
+    type: Decimal,
   })
   @IsDecimal()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Decimal, {
     nullable: true,
   })
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
 
   @ApiProperty({
     required: false,
