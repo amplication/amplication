@@ -282,12 +282,13 @@ export class GitClientService {
       baseBranch,
     });
 
+    const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
+
     const { diff } = await this.preCommitProcess({
       branchName,
       gitCli,
     });
 
-    const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
     this.logger.debug("New commit added", { sha });
 
     if (diff) {
@@ -371,10 +372,10 @@ export class GitClientService {
     this.logger.info("Pre commit process");
     await gitCli.checkout(branchName);
 
-    const gitLogs = await this.gitLog(gitCli, 1);
+    const gitLogs = await this.gitLog(gitCli, 2);
 
-    if (gitLogs.total > 0 && gitLogs.latest) {
-      const { hash } = gitLogs.latest;
+    if (gitLogs.total > 0) {
+      const { hash } = gitLogs.all[0];
 
       const diff = await gitCli.diff(hash);
       if (!diff) {
@@ -438,9 +439,18 @@ export class GitClientService {
       return branch;
     }
 
-    const lastCommitOnBaseBranch = await gitCli.getLastCommitSha(baseBranch);
-    if (lastCommitOnBaseBranch === null) {
+    const firstCommitOnBaseBranch = await gitCli.getFirstCommitSha(baseBranch);
+
+    if (firstCommitOnBaseBranch === null) {
       throw new NoCommitOnBranch(baseBranch);
+    }
+
+    let hash = firstCommitOnBaseBranch.sha;
+
+    await gitCli.checkout(baseBranch);
+    const gitLogs = await this.gitLog(gitCli, 1);
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      hash = gitLogs.latest.hash;
     }
 
     const newBranch = await this.provider.createBranch({
@@ -448,7 +458,7 @@ export class GitClientService {
       branchName,
       repositoryName,
       repositoryGroupName,
-      pointingSha: lastCommitOnBaseBranch.sha,
+      pointingSha: hash,
       baseBranchName: baseBranch,
     });
 
