@@ -33,6 +33,7 @@ import {
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
+  lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
@@ -461,6 +462,7 @@ export function convertUniqueFieldNamedIdToIdField(
 
 export function convertUniqueFieldNotNamedIdToIdField(
   builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
   model: Model,
   uniqueFieldAsIdField: Field,
   mapper: Mapper,
@@ -468,12 +470,18 @@ export function convertUniqueFieldNotNamedIdToIdField(
 ) {
   const originalModelName = findOriginalModelName(mapper, model.name);
 
-  // add map with the original field name to the field and @id attribute
+  addMapAttributeToField(
+    builder,
+    schema,
+    model,
+    uniqueFieldAsIdField,
+    actionContext
+  );
+
   builder
     .model(model.name)
     .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME)
-    .attribute("map", [`"${uniqueFieldAsIdField.name}"`]);
+    .attribute(ID_ATTRIBUTE_NAME);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
@@ -506,6 +514,7 @@ export function convertUniqueFieldNotNamedIdToIdField(
 
 export function handleIdFieldNotNamedId(
   builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
   model: Model,
   field: Field,
   mapper: Mapper,
@@ -529,10 +538,7 @@ export function handleIdFieldNotNamedId(
     },
   };
 
-  builder
-    .model(model.name)
-    .field(field.name)
-    .attribute("map", [`"${field.name}"`]);
+  addMapAttributeToField(builder, schema, model, field, actionContext);
 
   builder
     .model(model.name)
@@ -544,6 +550,7 @@ export function handleIdFieldNotNamedId(
 
 export function handleNotIdFieldNotUniqueNamedId(
   builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
   model: Model,
   field: Field,
   mapper: Mapper,
@@ -567,14 +574,68 @@ export function handleNotIdFieldNotUniqueNamedId(
     },
   };
 
-  builder
-    .model(model.name)
-    .field(field.name)
-    .attribute("map", [`"${field.name}"`]);
+  addMapAttributeToField(builder, schema, model, field, actionContext);
+
   builder
     .model(model.name)
     .field(field.name)
     .then<Field>((field) => {
       field.name = `${camelCase(model.name)}Id`;
     });
+}
+
+// add map attribute to model if the model was formatted and if the map attribute is not already exists
+export function addMapAttributeToModel(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  actionContext: ActionContext
+) {
+  const modelAttributes = model.properties.filter(
+    (prop) =>
+      prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+  ) as BlockAttribute[];
+
+  const hasMapAttribute = modelAttributes?.some(
+    (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+  );
+
+  if (!hasMapAttribute) {
+    builder.model(model.name).blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
+
+    void actionContext.onEmitUserActionLog(
+      `attribute "@@map" was added to the model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
+}
+
+// add map attribute to field if the field was formatted and if the map attribute is not already exists and if the field is not a lookup field
+export function addMapAttributeToField(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  actionContext: ActionContext
+) {
+  const fieldAttributes = field.attributes?.filter(
+    (attr) => attr.type === ATTRIBUTE_TYPE_NAME
+  ) as Attribute[];
+
+  const hasMapAttribute = fieldAttributes?.find(
+    (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+  );
+
+  const shouldAddMapAttribute = !hasMapAttribute && !lookupField(schema, field);
+
+  if (shouldAddMapAttribute) {
+    builder
+      .model(model.name)
+      .field(field.name)
+      .attribute(MAP_ATTRIBUTE_NAME, [`"${field.name}"`]);
+
+    void actionContext.onEmitUserActionLog(
+      `attribute "@map" was added to the field "${field.name}" on model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
 }

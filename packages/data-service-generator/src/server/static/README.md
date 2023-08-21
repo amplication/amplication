@@ -46,7 +46,7 @@ $ npm run prisma:generate
 
 ```sh
 # start the database where the server component will connect to
-$ npm run docker:db
+$ npm run docker:dev
 
 # initialize the database
 $ npm run db:init

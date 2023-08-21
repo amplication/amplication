@@ -12,7 +12,6 @@ import {
   RelationArray,
   Func,
   ConcretePrismaSchemaBuilder,
-  Attribute,
   BlockAttribute,
 } from "@mrleebo/prisma-ast";
 import {
@@ -47,6 +46,8 @@ import {
   addIdFieldIfNotExists,
   handleIdFieldNotNamedId,
   handleNotIdFieldNotUniqueNamedId,
+  addMapAttributeToField,
+  addMapAttributeToModel,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -68,7 +69,6 @@ import {
   ID_ATTRIBUTE_NAME,
   ID_FIELD_NAME,
   INDEX_ATTRIBUTE_NAME,
-  MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
   RELATION_ATTRIBUTE_NAME,
@@ -395,15 +395,6 @@ export class PrismaSchemaParserService {
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
     modelList.map((model: Model) => {
-      const modelAttributes = model.properties.filter(
-        (prop) =>
-          prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
-      ) as BlockAttribute[];
-
-      const hasMapAttribute = modelAttributes?.some(
-        (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
-      );
-
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
@@ -419,15 +410,12 @@ export class PrismaSchemaParserService {
           newName: newModelName,
         };
 
+        addMapAttributeToModel(builder, model, actionContext);
+
         void actionContext.onEmitUserActionLog(
           `Model name "${model.name}" was changed to "${newModelName}"`,
           EnumActionLogLevel.Info
         );
-
-        !hasMapAttribute &&
-          builder
-            .model(model.name)
-            .blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
 
         builder.model(model.name).then<Model>((model) => {
           model.name = newModelName;
@@ -473,17 +461,6 @@ export class PrismaSchemaParserService {
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
 
-        const fieldAttributes = field.attributes?.filter(
-          (attr) => attr.type === ATTRIBUTE_TYPE_NAME
-        ) as Attribute[];
-
-        const hasMapAttribute = fieldAttributes?.find(
-          (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
-        );
-
-        const shouldAddMapAttribute =
-          !hasMapAttribute && !this.isLookupField(schema, field);
-
         const formattedFieldName = formatFieldName(field.name);
 
         if (formattedFieldName !== field.name) {
@@ -511,11 +488,7 @@ export class PrismaSchemaParserService {
             EnumActionLogLevel.Info
           );
 
-          shouldAddMapAttribute &&
-            builder
-              .model(model.name)
-              .field(field.name)
-              .attribute(MAP_ATTRIBUTE_NAME, [`"${field.name}"`]);
+          addMapAttributeToField(builder, schema, model, field, actionContext);
 
           builder
             .model(model.name)
@@ -819,6 +792,7 @@ export class PrismaSchemaParserService {
       if (!hasIdField && uniqueFieldAsIdField) {
         convertUniqueFieldNotNamedIdToIdField(
           builder,
+          schema,
           model,
           uniqueFieldAsIdField,
           mapper,
@@ -841,13 +815,21 @@ export class PrismaSchemaParserService {
           // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
           handleNotIdFieldNotUniqueNamedId(
             builder,
+            schema,
             model,
             field,
             mapper,
             actionContext
           );
         } else if (isIdField && field.name !== ID_FIELD_NAME) {
-          handleIdFieldNotNamedId(builder, model, field, mapper, actionContext);
+          handleIdFieldNotNamedId(
+            builder,
+            schema,
+            model,
+            field,
+            mapper,
+            actionContext
+          );
         }
 
         const hasDefaultAttributeOnIdField =
