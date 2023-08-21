@@ -30,6 +30,8 @@ import {
   singleLineTextField,
   updateAtField,
   wholeNumberField,
+  findOriginalFieldName,
+  findOriginalModelName,
   isValidIdFieldType,
 } from "./helpers";
 import {
@@ -404,7 +406,7 @@ export class PrismaSchemaParserService {
         );
 
         mapper.modelNames[model.name] = {
-          oldName: model.name,
+          originalName: model.name,
           newName: newModelName,
         };
 
@@ -445,6 +447,8 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
+      const originalModelName = findOriginalModelName(mapper, model.name);
+
       const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
@@ -469,9 +473,14 @@ export class PrismaSchemaParserService {
             ? `${formattedFieldName}Field`
             : formattedFieldName;
 
-          mapper.fieldNames[field.name] = {
-            oldName: field.name,
-            newName: newFieldName,
+          mapper.fieldNames = {
+            ...mapper.fieldNames,
+            [originalModelName]: {
+              [field.name]: {
+                originalName: field.name,
+                newName: newFieldName,
+              },
+            },
           };
 
           void actionContext.onEmitUserActionLog(
@@ -513,16 +522,29 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
-    Object.entries(mapper.modelNames).map(([oldName, { newName }]) => {
+    Object.entries(mapper.modelNames).map(([originalName, { newName }]) => {
       models.map((model: Model) => {
+        const originalModelName = findOriginalModelName(mapper, model.name);
+        const originalFieldName = findOriginalFieldName(mapper, model.name);
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
         fields.map((field: Field) => {
-          if (field.fieldType === oldName) {
-            mapper.fieldTypes[field.fieldType] = {
-              oldName: field.fieldType,
-              newName,
+          if (field.fieldType === originalName) {
+            mapper.fieldTypes = {
+              ...mapper.fieldTypes,
+              [originalModelName]: {
+                ...(mapper.fieldTypes[originalModelName] ?? {}),
+                [originalFieldName]: {
+                  ...(mapper.fieldTypes[originalModelName]?.[
+                    originalFieldName
+                  ] ?? {}),
+                  [field.fieldType]: {
+                    originalName: field.fieldType,
+                    newName,
+                  },
+                },
+              },
             };
 
             void actionContext.onEmitUserActionLog(
@@ -654,9 +676,14 @@ export class PrismaSchemaParserService {
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
+                const originalModelName = findOriginalModelName(
+                  mapper,
+                  model.name
+                );
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
-                    const newFieldName = mapper.fieldNames[arg.name]?.newName;
+                    const newFieldName =
+                      mapper.fieldNames[originalModelName][arg.name]?.newName;
 
                     if (newFieldName) {
                       arg.name = newFieldName;

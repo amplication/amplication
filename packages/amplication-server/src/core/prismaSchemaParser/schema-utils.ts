@@ -30,6 +30,7 @@ import {
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
+  findOriginalModelName,
   formatDisplayName,
   formatModelName,
   lookupField,
@@ -441,6 +442,7 @@ export function addIdFieldIfNotExists(
     EnumActionLogLevel.Warning
   );
 }
+
 export function convertUniqueFieldNamedIdToIdField(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
@@ -466,6 +468,8 @@ export function convertUniqueFieldNotNamedIdToIdField(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
   addMapAttributeToField(
     builder,
     schema,
@@ -484,9 +488,15 @@ export function convertUniqueFieldNotNamedIdToIdField(
     EnumActionLogLevel.Info
   );
 
-  mapper.idFields[uniqueFieldAsIdField.name] = {
-    oldName: uniqueFieldAsIdField.name,
-    newName: ID_FIELD_NAME,
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [uniqueFieldAsIdField.name]: {
+        originalName: uniqueFieldAsIdField.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
   };
 
   void actionContext.onEmitUserActionLog(
@@ -510,10 +520,23 @@ export function handleIdFieldNotNamedId(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
   void actionContext.onEmitUserActionLog(
     `field name "${field.name}" on model name ${model.name} was changed to "id"`,
     EnumActionLogLevel.Info
   );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
 
   addMapAttributeToField(builder, schema, model, field, actionContext);
 
@@ -523,11 +546,6 @@ export function handleIdFieldNotNamedId(
     .then<Field>((field) => {
       field.name = ID_FIELD_NAME;
     });
-
-  mapper.idFields[field.name] = {
-    oldName: field.name,
-    newName: ID_FIELD_NAME,
-  };
 }
 
 export function handleNotIdFieldNotUniqueNamedId(
@@ -538,10 +556,23 @@ export function handleNotIdFieldNotUniqueNamedId(
   mapper: Mapper,
   actionContext: ActionContext
 ) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
   void actionContext.onEmitUserActionLog(
     `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
     EnumActionLogLevel.Info
   );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: `${model.name}Id`,
+      },
+    },
+  };
 
   addMapAttributeToField(builder, schema, model, field, actionContext);
 
@@ -551,11 +582,6 @@ export function handleNotIdFieldNotUniqueNamedId(
     .then<Field>((field) => {
       field.name = `${camelCase(model.name)}Id`;
     });
-
-  mapper.idFields[field.name] = {
-    oldName: field.name,
-    newName: `${model.name}Id`,
-  };
 }
 
 // add map attribute to model if the model was formatted and if the map attribute is not already exists
