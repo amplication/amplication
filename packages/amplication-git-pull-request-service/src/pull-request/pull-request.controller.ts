@@ -12,7 +12,10 @@ import { validateOrReject } from "class-validator";
 import { Env } from "../env";
 import { PullRequestService } from "./pull-request.service";
 import { KafkaTopics } from "./pull-request.type";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import {
+  KafkaProducerService,
+  KafkaPacemaker,
+} from "@amplication/util/nestjs/kafka";
 import {
   CreatePrFailure,
   CreatePrRequest,
@@ -58,8 +61,9 @@ export class PullRequestController {
     });
 
     try {
-      const pullRequest = await this.pullRequestService.createPullRequest(
-        validArgs
+      const pullRequest = await KafkaPacemaker.wrapLongRunningMethod<string>(
+        context,
+        () => this.pullRequestService.createPullRequest(validArgs)
       );
 
       logger.info(`Finish process, committing`, {

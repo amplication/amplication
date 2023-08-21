@@ -10,6 +10,7 @@ export enum AnalyticsEventNames {
   ApiTokenCreate = "createApiToken",
   SignInWithGitHub = "signInWithGitHub",
   SignInWithUserName = "signInWithUserName",
+  ContinueWithSSOClick = "continueWithSSOClick",
 
   // account
   AccountInfoUpdate = "updateAccountInfo",
@@ -62,6 +63,9 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  ImportPrismaSchemaClick = "importPrismaSchemaClick",
+  ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
+  ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
   MessageBrokerConnectedServicesTileClick = "messageBrokerConnectedServicesTileClick",
@@ -92,7 +96,6 @@ export enum AnalyticsEventNames {
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",
@@ -101,6 +104,8 @@ export enum AnalyticsEventNames {
   CreateService = "CreateService",
   CreateMessageBroker = "CreateMessageBroker",
   CreateProjectConfiguration = "CreateProjectConfiguration",
+  StarUsBannerCTAClick = "StarUsBannerCTAClick",
+  StarUsBannerClose = "StarUsBannerClose",
 
   // new event for startAuthResourceWithGitHub
   AddGitProviderClick = "addGitProviderClick",
@@ -116,6 +121,7 @@ export enum AnalyticsEventNames {
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
   ContactUsButtonClick = "ContactUsButtonClick",
+  UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",

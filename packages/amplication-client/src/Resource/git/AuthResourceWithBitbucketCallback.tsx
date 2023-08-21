@@ -1,18 +1,26 @@
 import { useEffect } from "react";
-import { useMutation } from "@apollo/client";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { EnumGitProvider } from "../../models";
-import { COMPLETE_OAUTH2_FLOW } from "./queries/git-callback";
+import {
+  EnumGitProvider,
+  useCompleteGitOAuth2FlowMutation,
+} from "../../models";
+import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
 
 const AuthResourceWithBitbucketCallback = () => {
   const { trackEvent } = useTracking();
-  const [completeAuthWithGit] = useMutation<boolean>(COMPLETE_OAUTH2_FLOW, {
+
+  const [completeAuthWithGit] = useCompleteGitOAuth2FlowMutation({
     onCompleted: (data) => {
       window.opener.postMessage({ completed: true });
       // close the popup
       window.close();
     },
+    refetchQueries: [
+      {
+        query: GET_PROJECTS,
+      },
+    ],
   });
 
   useEffect(() => {
@@ -20,9 +28,6 @@ const AuthResourceWithBitbucketCallback = () => {
     const urlParams = new URLSearchParams(queryString);
     const authorizationCode = urlParams.get("code");
     if (window.opener) {
-      trackEvent({
-        eventName: AnalyticsEventNames.GitHubAuthResourceComplete,
-      });
       completeAuthWithGit({
         variables: {
           code: authorizationCode,

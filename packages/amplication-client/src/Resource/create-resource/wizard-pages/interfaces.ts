@@ -18,6 +18,7 @@ export interface ResourceSettings {
   templateType: "empty" | "orderManagement";
   authType: string;
   isGenerateCompleted: string;
+  connectToDemoRepo: boolean;
 }
 export interface NextPage {
   nextTitle: string;

@@ -33,6 +33,7 @@ import { BillingService } from "../billing/billing.service";
 import { ProvisionSubscriptionArgs } from "./dto/ProvisionSubscriptionArgs";
 import { ProvisionSubscriptionResult } from "./dto/ProvisionSubscriptionResult";
 import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
 import {
   EnumEventType,
   SegmentAnalyticsService,
@@ -47,7 +48,8 @@ export class WorkspaceResolver {
     private readonly projectService: ProjectService,
     private readonly billingService: BillingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly analytics: SegmentAnalyticsService
+    private readonly analytics: SegmentAnalyticsService,
+    private readonly userService: UserService
   ) {}
 
   @Query(() => Workspace, {
@@ -71,6 +73,7 @@ export class WorkspaceResolver {
       },
       event: EnumEventType.WorkspaceSelected,
     });
+    await this.userService.setLastActivity(currentUser.id);
 
     return currentUser.workspace;
   }

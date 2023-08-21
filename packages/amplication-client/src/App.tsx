@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
-import { init as initPaddle } from "./util/paddle";
 import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
@@ -51,7 +50,6 @@ function App() {
 
   useEffect(() => {
     initAnalytics();
-    initPaddle();
   }, []);
 
   const handleTimeout = useCallback(() => {

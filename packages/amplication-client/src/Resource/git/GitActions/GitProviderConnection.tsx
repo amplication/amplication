@@ -12,6 +12,7 @@ import classNames from "classnames";
 
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -53,6 +54,8 @@ export default function GitProviderConnection({
 
   const contactUsLink = "https://amplication.com/contact-us";
 
+  const providerDisplayName = PROVIDERS_DISPLAY_NAME[provider];
+
   return (
     <div
       className={classNames(CLASS_NAME, { enabled: !comingSoon && !disabled })}
@@ -61,7 +64,7 @@ export default function GitProviderConnection({
         src={`../../../../assets/images/${provider?.toLowerCase()}.svg`}
         alt=""
       />
-      <div className={`${CLASS_NAME}__name`}>{provider}</div>
+      <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
         {disabled && (
           <WarningTooltip

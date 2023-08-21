@@ -8,7 +8,7 @@ import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { ReplyResultMessage } from "./dto/ReplyResultMessage";
 import { ReplyStatusEnum } from "./dto/ReplyStatusEnum";
-import { ACTION_LOG_LEVEL, BuildService } from "./build.service";
+import { BuildService } from "./build.service";
 import {
   CanUserAccessBuild,
   CodeGenerationFailure,
@@ -104,11 +104,6 @@ export class BuildController {
   @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
   async onDsgLog(@Payload() message: CodeGenerationLog.Value): Promise<void> {
     const logEntry = plainToInstance(CodeGenerationLog.Value, message);
-    const step = await this.buildService.getGenerateCodeStep(logEntry.buildId);
-    await this.actionService.logByStepId(
-      step.id,
-      ACTION_LOG_LEVEL[logEntry.level],
-      logEntry.message
-    );
+    await this.buildService.onDsgLog(logEntry);
   }
 }

@@ -3,14 +3,16 @@ import {
   GitClientService,
   File,
   GitProvidersConfiguration,
-} from "@amplication/git-utils";
+} from "@amplication/util/git";
 import { Env } from "../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Inject, Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { DiffService } from "../diff/diff.service";
 import { CreatePrRequest } from "@amplication/schema-registry";
+import { TraceWrapper, Traceable } from "@amplication/opentelemetry-nestjs";
 
+@Traceable()
 @Injectable()
 export class PullRequestService {
   gitProvidersConfiguration: GitProvidersConfiguration;
@@ -68,6 +70,7 @@ export class PullRequestService {
     gitResourceMeta,
     pullRequestMode,
     repositoryGroupName,
+    baseBranchName,
   }: CreatePrRequest.Value): Promise<string> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
@@ -88,13 +91,16 @@ export class PullRequestService {
       }
     );
 
-    const gitClientService = await new GitClientService().create(
-      {
-        provider: gitProvider,
-        providerOrganizationProperties: gitProviderProperties,
-      },
-      this.gitProvidersConfiguration,
-      logger
+    const gitClientService = TraceWrapper.trace(
+      await new GitClientService().create(
+        {
+          provider: gitProvider,
+          providerOrganizationProperties: gitProviderProperties,
+        },
+        this.gitProvidersConfiguration,
+        logger
+      ),
+      { logger }
     );
     const cloneDirPath = this.configService.get<string>(Env.CLONES_FOLDER);
 
@@ -112,6 +118,7 @@ export class PullRequestService {
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
       resourceId,
       buildId: newBuildId,
+      baseBranchName,
     });
 
     logger.info("Opened a new pull request", { prUrl });

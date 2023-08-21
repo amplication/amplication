@@ -8,9 +8,9 @@ import GitRepos, {
   GitRepositorySelected,
 } from "./GitRepos/GithubRepos";
 import { GitOrganizationFromGitRepository } from "../SyncWithGithubPage";
-
 import "./GitDialogsContainer.scss";
 import { useCallback } from "react";
+import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 
 type Props = {
   gitOrganization: GitOrganizationFromGitRepository;
@@ -29,7 +29,7 @@ type Props = {
   onSelectGitRepositoryDialogClose: () => void;
   onSelectGitRepository: (data: GitRepositorySelected) => void;
   openCreateNewRepo?: () => void;
-  setSelectRepoOpen?: (state: boolean) => void;
+  closeSelectRepoDialog?: () => void;
 };
 
 export default function GitDialogsContainer({
@@ -46,19 +46,21 @@ export default function GitDialogsContainer({
   onSelectGitRepository,
   onGitCreateRepositoryClose,
   openCreateNewRepo,
-  setSelectRepoOpen,
+  closeSelectRepoDialog,
 }: Props) {
   const handleCreateNewRepoClick = useCallback(() => {
-    setSelectRepoOpen(false);
+    closeSelectRepoDialog();
     openCreateNewRepo();
-  }, [setSelectRepoOpen, openCreateNewRepo]);
+  }, [closeSelectRepoDialog, openCreateNewRepo]);
+
+  const providerDisplayName = PROVIDERS_DISPLAY_NAME[gitProvider];
 
   return (
     <div>
       <Dialog
         className="select-repo-dialog"
         isOpen={isSelectRepositoryOpen}
-        title={`Select ${gitProvider} repository`}
+        title={`Select ${providerDisplayName} repository`}
         onDismiss={onSelectGitRepositoryDialogClose}
       >
         <GitRepos

@@ -173,6 +173,8 @@ const EXAMPLE_PROJECT: Project = {
   createdAt: new Date(),
   updatedAt: new Date(),
   workspaceId: EXAMPLE_WORKSPACE_ID,
+  useDemoRepo: false,
+  demoRepoName: undefined,
 };
 
 const EXAMPLE_USER_ID = "exampleUserId";
@@ -343,6 +345,7 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   versionNumber: 0,
   inputParameters: [],
   outputParameters: [],
+  authEntityName: USER_ENTITY_NAME,
 };
 
 const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {
@@ -580,6 +583,7 @@ describe("ResourceService", () => {
           useClass: jest.fn(() => ({
             create: serviceSettingsCreateMock,
             createDefaultServiceSettings: serviceSettingsCreateMock,
+            updateServiceSettings: serviceSettingsCreateMock,
           })),
         },
         {
@@ -646,7 +650,9 @@ describe("ResourceService", () => {
     expect(
       await service.createService(
         createResourceArgs.args,
-        createResourceArgs.user
+        createResourceArgs.user,
+        null,
+        true
       )
     ).toEqual(EXAMPLE_RESOURCE);
     expect(prismaResourceCreateMock).toBeCalledTimes(1);
@@ -692,10 +698,12 @@ describe("ResourceService", () => {
                 version: "latest",
                 pluginId: "auth-jwt",
                 settings: {},
+                configurations: {},
                 resource: { connect: { id: "" } },
               },
             ],
           },
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER
@@ -746,6 +754,7 @@ describe("ResourceService", () => {
           dbType: "postgres",
           repoType: "Mono",
           authType: "Jwt",
+          connectToDemoRepo: false,
         },
 
         EXAMPLE_USER

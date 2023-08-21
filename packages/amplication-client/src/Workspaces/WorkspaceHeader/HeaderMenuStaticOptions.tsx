@@ -35,7 +35,7 @@ export default function HeaderMenuStaticOptions({
         icon: "history_commit_outline",
       },
       {
-        title: "View code",
+        title: "View Code",
         link: `code-view`,
         icon: "code1",
       },

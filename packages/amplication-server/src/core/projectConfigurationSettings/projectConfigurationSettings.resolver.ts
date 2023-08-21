@@ -1,4 +1,4 @@
-import { UseGuards } from "@nestjs/common";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { Args, Mutation, Resolver, Query } from "@nestjs/graphql";
 import { AuthorizeContext } from "../../decorators/authorizeContext.decorator";
 import { UserEntity } from "../../decorators/user.decorator";
@@ -9,8 +9,10 @@ import { User } from "../../models";
 import { ProjectConfigurationSettings } from "./dto/ProjectConfigurationSettings";
 import { UpdateProjectConfigurationSettingsArgs } from "./dto/UpdateProjectConfigurationSettingsArgs";
 import { ProjectConfigurationSettingsService } from "./projectConfigurationSettings.service";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 
 @Resolver((of) => ProjectConfigurationSettings)
+@UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class ProjectConfigurationSettingsResolver {
   constructor(private readonly service: ProjectConfigurationSettingsService) {}
