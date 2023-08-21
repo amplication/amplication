@@ -177,6 +177,10 @@ export interface CreateServerAppModuleParams extends EventParams {
   templateMapping: { [key: string]: any };
 }
 
+export interface CreateConnectMicroservicesParams extends EventParams {
+  template: namedTypes.File;
+}
+
 export interface CreateEntityModuleParams extends EventParams {
   entityName: string;
   entityType: string;
