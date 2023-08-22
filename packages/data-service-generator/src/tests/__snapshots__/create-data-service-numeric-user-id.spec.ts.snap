@@ -369,7 +369,7 @@ export type Customer = {
   isVip: boolean | null;
   birthData: Date | null;
   averageSale: Decimal | null;
-  favoriteNumber: number | null;
+  favoriteNumber: bigint | null;
   geoLocation: string | null;
   comments: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -396,7 +396,7 @@ export type CustomerCreateInput = {
   isVip?: boolean | null;
   birthData?: Date | null;
   averageSale?: Decimal | null;
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
   geoLocation?: string | null;
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -462,7 +462,7 @@ export type CustomerUpdateInput = {
   isVip?: boolean | null;
   birthData?: Date | null;
   averageSale?: Decimal | null;
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
   geoLocation?: string | null;
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -2771,6 +2771,28 @@ export const UserTitle = (record: TUser): string => {
   },
 ];
 ",
+  "admin-ui/src/util/BigIntFilter.ts": "export class BigIntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/BigIntNullableFilter.ts": "export class BigIntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
   "admin-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
   equals?: boolean;
   not?: boolean;
@@ -2801,6 +2823,28 @@ export const UserTitle = (record: TUser): string => {
   gt?: Date;
   gte?: Date;
   not?: Date;
+}
+",
+  "admin-ui/src/util/DecimalFilter.ts": "export class DecimalFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/DecimalNullableFilter.ts": "export class DecimalNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
 }
 ",
   "admin-ui/src/util/FloatFilter.ts": "export class FloatFilter {
@@ -3368,7 +3412,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ObjectType, Field, Int, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3377,7 +3421,7 @@ import {
   IsString,
   IsOptional,
   IsBoolean,
-  IsDecimal,
+  IsNumber,
   IsEnum,
   ValidateNested,
 } from \\"class-validator\\";
@@ -3396,7 +3440,7 @@ class Customer {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 
   @ApiProperty({
@@ -3469,11 +3513,11 @@ class Customer {
 
   @ApiProperty({
     required: false,
-    type: Decimal,
+    type: Number,
   })
-  @IsDecimal()
+  @IsNumber()
   @IsOptional()
-  @Field(() => Decimal, {
+  @Field(() => Float, {
     nullable: true,
   })
   averageSale!: Decimal | null;
@@ -3484,10 +3528,10 @@ class Customer {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
   })
-  favoriteNumber!: number | null;
+  favoriteNumber!: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -3606,7 +3650,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3614,7 +3658,7 @@ import {
   IsOptional,
   IsBoolean,
   IsDate,
-  IsDecimal,
+  IsNumber,
   IsInt,
   IsEnum,
   ValidateNested,
@@ -3683,11 +3727,11 @@ class CustomerCreateInput {
 
   @ApiProperty({
     required: false,
-    type: Decimal,
+    type: Number,
   })
-  @IsDecimal()
+  @IsNumber()
   @IsOptional()
-  @Field(() => Decimal, {
+  @Field(() => Float, {
     nullable: true,
   })
   averageSale?: Decimal | null;
@@ -3698,10 +3742,10 @@ class CustomerCreateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
   })
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -4151,7 +4195,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4159,7 +4203,7 @@ import {
   IsOptional,
   IsBoolean,
   IsDate,
-  IsDecimal,
+  IsNumber,
   IsInt,
   IsEnum,
   ValidateNested,
@@ -4231,11 +4275,11 @@ class CustomerUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: Decimal,
+    type: Number,
   })
-  @IsDecimal()
+  @IsNumber()
   @IsOptional()
-  @Field(() => Decimal, {
+  @Field(() => Float, {
     nullable: true,
   })
   averageSale?: Decimal | null;
@@ -4246,10 +4290,10 @@ class CustomerUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
   })
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -4559,7 +4603,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
 import { Transform } from \\"class-transformer\\";
@@ -4574,7 +4618,7 @@ class CustomerWhereUniqueInput {
   @Transform((prop) => parseInt(prop.value), {
     toClassOnly: true,
   })
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 }
 
@@ -10259,7 +10303,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ObjectType, Field, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsInt,
@@ -10278,7 +10322,7 @@ class Profile {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 
   @ApiProperty({
@@ -10853,7 +10897,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
 import { Transform } from \\"class-transformer\\";
@@ -10868,7 +10912,7 @@ class ProfileWhereUniqueInput {
   @Transform((prop) => parseInt(prop.value), {
     toClassOnly: true,
   })
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 }
 
@@ -11996,7 +12040,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ObjectType, Field, Int, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -12026,7 +12070,7 @@ class User {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 
   @ApiProperty({
@@ -12058,7 +12102,7 @@ class User {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
+  @Field(() => Int)
   age!: number;
 
   @ApiProperty({
@@ -12074,7 +12118,7 @@ class User {
     type: Number,
   })
   @IsNumber()
-  @Field(() => Number)
+  @Field(() => Float)
   score!: number;
 
   @ApiProperty({
@@ -12203,7 +12247,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Int, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -12259,7 +12303,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
+  @Field(() => Int)
   age!: number;
 
   @ApiProperty({
@@ -12275,7 +12319,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsNumber()
-  @Field(() => Number)
+  @Field(() => Float)
   score!: number;
 
   @ApiProperty({
@@ -12743,7 +12787,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Int, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -12809,7 +12853,7 @@ class UserUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Int, {
     nullable: true,
   })
   age?: number;
@@ -12831,7 +12875,7 @@ class UserUpdateInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Float, {
     nullable: true,
   })
   score?: number;
@@ -13167,7 +13211,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
 import { Transform } from \\"class-transformer\\";
@@ -13182,7 +13226,7 @@ class UserWhereUniqueInput {
   @Transform((prop) => parseInt(prop.value), {
     toClassOnly: true,
   })
-  @Field(() => Number)
+  @Field(() => Int)
   id!: number;
 }
 
@@ -14180,6 +14224,204 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
+  "server/src/util/BigIntFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class BigIntFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Int], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: bigint[];
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Int], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: bigint[];
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: bigint;
+}
+",
+  "server/src/util/BigIntNullableFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class BigIntNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: bigint | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Int], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: bigint[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Int], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: bigint[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Int, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: bigint;
+}
+",
   "server/src/util/BooleanFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
@@ -14439,6 +14681,206 @@ export class DateTimeNullableFilter {
   })
   @Type(() => Date)
   not?: Date;
+}
+",
+  "server/src/util/DecimalFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class DecimalFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => [Float], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: Decimal[];
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Float], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: Decimal[];
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: Decimal;
+}
+",
+  "server/src/util/DecimalNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class DecimalNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  equals?: Decimal | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Decimal],
+  })
+  @IsOptional()
+  @Field(() => [Number], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: Decimal[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Decimal],
+  })
+  @IsOptional()
+  @Field(() => [Number], {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  notIn?: Decimal[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  lt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  lte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  gt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  gte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  not?: Decimal;
 }
 ",
   "server/src/util/FloatFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
