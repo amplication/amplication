@@ -14,10 +14,10 @@ import {
 import {
   BOOLEAN_ID,
   DATE_ID,
-  DECIMAL_ID,
   getFilterASTIdentifier,
   NULLABLE_ID,
-  NUMBER_ID,
+  FLOAT_ID,
+  INT_ID,
   STRING_ID,
   TRUE_LITERAL,
 } from "../create-field-class-property";
@@ -101,14 +101,16 @@ function createGraphQLFieldType(
     return DATE_ID;
   }
   if (
-    prismaField.type === ScalarType.Float ||
     prismaField.type === ScalarType.Int ||
     prismaField.type === ScalarType.BigInt
   ) {
-    return NUMBER_ID;
+    return INT_ID;
   }
-  if (prismaField.type === ScalarType.Decimal) {
-    return DECIMAL_ID;
+  if (
+    prismaField.type === ScalarType.Decimal ||
+    prismaField.type === ScalarType.Float
+  ) {
+    return FLOAT_ID;
   }
   if (prismaField.type === ScalarType.String) {
     return STRING_ID;
