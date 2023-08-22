@@ -5,10 +5,9 @@ import {
   OpenTelemetryModuleAsyncOption,
 } from "@amplication/opentelemetry-nestjs";
 import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
-import { ExpressLayerType } from "@opentelemetry/instrumentation-express";
 import { BatchSpanProcessor, Span } from "@opentelemetry/sdk-trace-base";
 import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-grpc";
-import type { OpenTelemetryModuleConfig } from "@amplication/opentelemetry-nestjs/dist/OpenTelemetryModuleConfig.interface";
+import type { OpenTelemetryModuleConfig } from "@amplication/opentelemetry-nestjs";
 import { AWSXRayPropagator } from "@opentelemetry/propagator-aws-xray";
 import { AWSXRayIdGenerator } from "@opentelemetry/id-generator-aws-xray";
 import { AwsInstrumentation } from "@opentelemetry/instrumentation-aws-sdk";
@@ -103,8 +102,7 @@ export class TracingModule extends OpenTelemetryModule {
         depth: 2,
       },
       "@opentelemetry/instrumentation-express": {
-        enabled: true,
-        ignoreLayersType: [ExpressLayerType.MIDDLEWARE],
+        enabled: false,
       },
     });
 
@@ -112,8 +110,8 @@ export class TracingModule extends OpenTelemetryModule {
       ...configuration,
       instrumentations: [
         autoInstrumentations,
-        new KafkaJsInstrumentation({}),
-        new PrismaInstrumentation({}),
+        // new KafkaJsInstrumentation({}),
+        // new PrismaInstrumentation({}),
       ],
       traceAutoInjectors:
         configuration?.traceAutoInjectors ||

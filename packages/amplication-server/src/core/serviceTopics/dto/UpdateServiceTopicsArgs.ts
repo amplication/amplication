@@ -5,5 +5,5 @@ import { ServiceTopicsUpdateInput } from "./ServiceTopicsUpdateInput";
 @ArgsType()
 export class UpdateServiceTopicsArgs extends UpdateBlockArgs {
   @Field(() => ServiceTopicsUpdateInput, { nullable: false })
-  data!: ServiceTopicsUpdateInput;
+  declare data: ServiceTopicsUpdateInput;
 }

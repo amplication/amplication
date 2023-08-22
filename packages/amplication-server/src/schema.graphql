@@ -258,15 +258,6 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
-input CreateEntitiesFromPrismaSchemaInput {
-  resourceId: String!
-}
-
-type CreateEntitiesFromPrismaSchemaResponse {
-  actionLog: Action!
-  entities: [Entity!]!
-}
-
 input CreateGitRepositoryBaseInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -292,6 +283,11 @@ input CreateGitRepositoryInput {
   isPublic: Boolean!
   name: String!
   resourceId: String
+}
+
+input DBSchemaImportCreateInput {
+  resource: WhereParentIdInput!
+  userActionType: EnumUserActionType!
 }
 
 """
@@ -709,6 +705,17 @@ enum EnumSubscriptionStatus {
   Trailing
 }
 
+enum EnumUserActionStatus {
+  Completed
+  Failed
+  Invalid
+  Running
+}
+
+enum EnumUserActionType {
+  DBSchemaImport
+}
+
 enum EnumWorkspaceMemberType {
   Invitation
   User
@@ -790,6 +797,7 @@ input GitOrganizationWhereInput {
 }
 
 type GitRepository {
+  baseBranchName: String
   createdAt: DateTime
   gitOrganization: GitOrganization!
   gitOrganizationId: String!
@@ -797,6 +805,10 @@ type GitRepository {
   id: String!
   name: String!
   updatedAt: DateTime
+}
+
+input GitRepositoryUpdateInput {
+  baseBranchName: String
 }
 
 interface IBlock {
@@ -872,7 +884,7 @@ type Mutation {
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
   createDefaultRelatedField(relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
-  createEntitiesFromPrismaSchema(data: CreateEntitiesFromPrismaSchemaInput!, file: Upload!): CreateEntitiesFromPrismaSchemaResponse!
+  createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   createMessageBroker(data: ResourceCreateInput!): Resource!
@@ -919,6 +931,7 @@ type Mutation {
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
+  updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1175,6 +1188,7 @@ type Query {
   resourceRoles(orderBy: ResourceRoleOrderByInput, skip: Int, take: Int, where: ResourceRoleWhereInput): [ResourceRole!]!
   resources(orderBy: [ResourceOrderByInput!], skip: Int, take: Int, where: ResourceWhereInput): [Resource!]!
   serviceSettings(where: WhereUniqueInput!): ServiceSettings!
+  userAction(where: WhereUniqueInput!): UserAction!
   userApiTokens: [ApiToken!]!
   workspace(where: WhereUniqueInput!): Workspace
   workspaceMembers: [WorkspaceMember!]
@@ -1364,6 +1378,7 @@ input ServerSettingsUpdateInput {
 
 type ServiceSettings implements IBlock {
   adminUISettings: AdminUISettings!
+  authEntityName: String
   authProvider: EnumAuthProviderType!
   blockType: EnumBlockType!
   createdAt: DateTime!
@@ -1383,6 +1398,7 @@ type ServiceSettings implements IBlock {
 
 input ServiceSettingsUpdateInput {
   adminUISettings: AdminUISettingsUpdateInput!
+  authEntityName: String
   authProvider: EnumAuthProviderType!
   description: String
   displayName: String
@@ -1559,6 +1575,21 @@ type User {
   updatedAt: DateTime!
   userRoles: [UserRole!]
   workspace: Workspace
+}
+
+type UserAction {
+  action: Action
+  actionId: String!
+  createdAt: DateTime!
+  id: String!
+  metadata: JSONObject
+  resource: Resource
+  resourceId: String!
+  status: EnumUserActionStatus
+  updatedAt: DateTime!
+  user: User!
+  userActionType: EnumUserActionType!
+  userId: String!
 }
 
 type UserRole {

@@ -6,10 +6,12 @@ import { AuthorizableOriginParameter } from "../../enums/AuthorizableOriginParam
 import { FindOneArgs } from "../../dto";
 import { UserEntity } from "../../decorators/user.decorator";
 import { User } from "../../models";
-import { UseGuards } from "@nestjs/common";
+import { UseFilters, UseGuards } from "@nestjs/common";
 import { GqlAuthGuard } from "../../guards/gql-auth.guard";
+import { GqlResolverExceptionsFilter } from "../../filters/GqlResolverExceptions.filter";
 
 @Resolver(() => ServiceSettings)
+@UseFilters(GqlResolverExceptionsFilter)
 @UseGuards(GqlAuthGuard)
 export class ServiceSettingsResolver {
   constructor(private readonly service: ServiceSettingsService) {}

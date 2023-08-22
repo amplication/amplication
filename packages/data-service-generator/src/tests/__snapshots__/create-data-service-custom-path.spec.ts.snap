@@ -2934,7 +2934,7 @@ PORT=3000",
 /dist
 .DS_Store
 ",
-  "test/docker-compose.db.yml": "version: \\"3\\"
+  "test/docker-compose.dev.yml": "version: \\"3\\"
 ",
   "test/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2987,7 +2987,7 @@ services:
     \\"db:clean\\": \\"ts-node scripts/clean.ts\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
-    \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
+    \\"docker:dev\\": \\"docker-compose -f docker-compose.dev.yml up -d\\",
     \\"package:container\\": \\"docker build .\\",
     \\"compose:up\\": \\"docker-compose up -d\\",
     \\"compose:down\\": \\"docker-compose down --volumes\\"
@@ -3319,6 +3319,13 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   ],
 })
 export class AppModule {}
+",
+  "test/src/connectMicroservices.ts": "import { INestApplication } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
+
+export async function connectMicroservices(app: INestApplication) {
+  const configService = app.get(ConfigService);
+}
 ",
   "test/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -6901,6 +6908,9 @@ import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { connectMicroservices } from \\"./connectMicroservices\\";
 import {
   swaggerPath,
   swaggerDocumentOptions,
@@ -6935,6 +6945,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

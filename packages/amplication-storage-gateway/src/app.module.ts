@@ -8,6 +8,11 @@ import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { StorageModule } from "./storage/storage.module";
 import { AuthModule } from "./auth/auth.module";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import {
+  ControllerInjector,
+  GuardInjector,
+} from "@amplication/opentelemetry-nestjs";
 
 @Module({
   controllers: [],
@@ -23,6 +28,10 @@ import { AuthModule } from "./auth/auth.module";
     }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
+    }),
+    TracingModule.forRoot({
+      serviceName: "amplication-storage-gateway",
+      traceAutoInjectors: [ControllerInjector, GuardInjector],
     }),
   ],
   providers: [

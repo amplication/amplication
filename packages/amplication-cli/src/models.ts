@@ -288,15 +288,6 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
-export type CreateEntitiesFromPrismaSchemaInput = {
-  resourceId: Scalars['String']['input'];
-};
-
-export type CreateEntitiesFromPrismaSchemaResponse = {
-  actionLog: Action;
-  entities: Array<Entity>;
-};
-
 export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String']['input'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -316,6 +307,11 @@ export type CreateGitRepositoryInput = {
   isPublic: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   resourceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DbSchemaImportCreateInput = {
+  resource: WhereParentIdInput;
+  userActionType: EnumUserActionType;
 };
 
 export type DateTimeFilter = {
@@ -749,6 +745,17 @@ export enum EnumSubscriptionStatus {
   Trailing = 'Trailing'
 }
 
+export enum EnumUserActionStatus {
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Invalid = 'Invalid',
+  Running = 'Running'
+}
+
+export enum EnumUserActionType {
+  DbSchemaImport = 'DBSchemaImport'
+}
+
 export enum EnumWorkspaceMemberType {
   Invitation = 'Invitation',
   User = 'User'
@@ -825,6 +832,7 @@ export type GitOrganizationWhereInput = {
 };
 
 export type GitRepository = {
+  baseBranchName?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String']['output'];
@@ -832,6 +840,10 @@ export type GitRepository = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type GitRepositoryUpdateInput = {
+  baseBranchName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IBlock = {
@@ -902,7 +914,7 @@ export type Mutation = {
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
-  createEntitiesFromPrismaSchema: CreateEntitiesFromPrismaSchemaResponse;
+  createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
@@ -949,6 +961,7 @@ export type Mutation = {
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateGitRepository: GitRepository;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1025,7 +1038,7 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 
 
 export type MutationCreateEntitiesFromPrismaSchemaArgs = {
-  data: CreateEntitiesFromPrismaSchemaInput;
+  data: DbSchemaImportCreateInput;
   file: Scalars['Upload']['input'];
 };
 
@@ -1268,6 +1281,12 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
+};
+
+
+export type MutationUpdateGitRepositoryArgs = {
+  data: GitRepositoryUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1566,6 +1585,7 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
@@ -1753,6 +1773,11 @@ export type QueryResourcesArgs = {
 
 
 export type QueryServiceSettingsArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryUserActionArgs = {
   where: WhereUniqueInput;
 };
 
@@ -1958,6 +1983,7 @@ export type ServerSettingsUpdateInput = {
 
 export type ServiceSettings = IBlock & {
   adminUISettings: AdminUiSettings;
+  authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -1977,6 +2003,7 @@ export type ServiceSettings = IBlock & {
 
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
+  authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -2150,6 +2177,21 @@ export type User = {
   updatedAt: Scalars['DateTime']['output'];
   userRoles?: Maybe<Array<UserRole>>;
   workspace?: Maybe<Workspace>;
+};
+
+export type UserAction = {
+  action?: Maybe<Action>;
+  actionId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  metadata?: Maybe<Scalars['JSONObject']['output']>;
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  status?: Maybe<EnumUserActionStatus>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userActionType: EnumUserActionType;
+  userId: Scalars['String']['output'];
 };
 
 export type UserRole = {

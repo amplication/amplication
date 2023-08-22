@@ -91,6 +91,7 @@ export enum EventNames {
   CreateEntityServiceBase = "CreateEntityServiceBase",
   CreateServerDockerCompose = "CreateServerDockerCompose",
   CreateServerDockerComposeDB = "CreateServerDockerComposeDB",
+  CreateServerDockerComposeDev = "CreateServerDockerComposeDev",
   CreatePrismaSchema = "CreatePrismaSchema",
   CreateServerPackageJson = "CreateServerPackageJson",
   CreateAdminUIPackageJson = "CreateAdminUIPackageJson",
@@ -105,6 +106,7 @@ export enum EventNames {
   CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
   CreateDTOs = "CreateDTOs",
   LoadStaticFiles = "LoadStaticFiles",
+  CreateConnectMicroservices = "CreateConnectMicroservices",
 }
 
 export interface AmplicationPlugin {

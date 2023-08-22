@@ -10,16 +10,24 @@ import {
 import { Link, useHistory } from "react-router-dom";
 import LockStatusIcon from "../VersionControl/LockStatusIcon";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import { USER_ENTITY } from "./constants";
 import "./EntityListItem.scss";
 import { AppContext } from "../context/appContext";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
+import { UPDATE_SERVICE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import useSettingsHook from "../Resource/useSettingsHook";
+import { useTracking } from "../util/analytics";
+import { USER_ENTITY } from "./constants";
+import useResource from "../Resource/hooks/useResource";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
 type DType = {
   deleteEntity: { id: string };
+};
+
+type TData = {
+  updateServiceSettings: models.ServiceSettings;
 };
 
 type Props = {
@@ -44,6 +52,8 @@ export const EntityListItem = ({
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
   const history = useHistory();
+
+  const { resourceSettings } = useResource(resourceId);
 
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
@@ -84,8 +94,30 @@ export const EntityListItem = ({
     setConfirmDelete(false);
   }, [setConfirmDelete]);
 
+  const { trackEvent } = useTracking();
+
+  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
+    UPDATE_SERVICE_SETTINGS
+  );
+  const { handleSubmit } = useSettingsHook({
+    trackEvent,
+    resourceId,
+    updateResourceSettings,
+  });
+
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
+
+    const authEntity = resourceSettings?.serviceSettings?.authEntityName;
+
+    if (authEntity === entity.name) {
+      const updateServiceSettings = {
+        ...resourceSettings?.serviceSettings,
+        authEntityName: null,
+      };
+      handleSubmit(updateServiceSettings);
+    }
+
     deleteEntity({
       variables: {
         entityId: entity.id,
@@ -101,17 +133,19 @@ export const EntityListItem = ({
 
   const [latestVersion] = entity.versions || [];
 
-  const isUserEntity = entity.name === USER_ENTITY;
+  const isAuthEntity = resourceSettings?.serviceSettings?.authEntityName
+    ? entity.name === resourceSettings?.serviceSettings?.authEntityName
+    : entity.name === USER_ENTITY;
 
-  const isDeleteButtonDisable = isUserEntity && isUserEntityMandatory;
+  const isDeleteButtonDisable = isAuthEntity && isUserEntityMandatory;
 
-  const deleteMessage = isUserEntity
+  const deleteMessage = isAuthEntity
     ? "Deleting this entity may impact the authentication functionality of your service"
     : "you want to delete this entity?";
 
-  const deleteMessageConfirmation = isUserEntity ? "Notice:" : "Are you sure";
+  const deleteMessageConfirmation = isAuthEntity ? "Notice:" : "Are you sure";
 
-  const deleteClassName = isUserEntity ? "__alert-bold-notice" : "__alert-bold";
+  const deleteClassName = isAuthEntity ? "__alert-bold-notice" : "__alert-bold";
 
   return (
     <>

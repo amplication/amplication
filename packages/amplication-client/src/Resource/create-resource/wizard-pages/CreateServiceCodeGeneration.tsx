@@ -143,6 +143,7 @@ const CreateServiceCodeGeneration: React.FC<
           </div>
           <div className={`${className}__status`}>
             <ActionLog
+              autoHeight={true}
               action={actionLog?.action}
               title={actionLog?.title || ""}
               versionNumber={actionLog?.versionNumber || ""}
@@ -156,6 +157,7 @@ const CreateServiceCodeGeneration: React.FC<
           </div>
           <div className={`${className}__negative_status`}>
             <ActionLog
+              autoHeight={true}
               action={actionLog?.action}
               title={actionLog?.title || ""}
               versionNumber={actionLog?.versionNumber || ""}

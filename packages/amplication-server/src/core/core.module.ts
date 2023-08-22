@@ -21,6 +21,8 @@ import { HealthModule } from "./health/health.module";
 import { PluginInstallationModule } from "./pluginInstallation/pluginInstallation.module";
 import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
+import { UserActionModule } from "./userAction/userActionModule";
+import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
 
 @Module({
   imports: [
@@ -47,6 +49,8 @@ import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
     PluginInstallationModule,
     TopicModule,
     ServiceTopicsModule,
+    UserActionModule,
+    DBSchemaImportModule,
   ],
   exports: [
     AccountModule,
@@ -70,6 +74,8 @@ import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
     PluginInstallationModule,
     TopicModule,
     ServiceTopicsModule,
+    UserActionModule,
+    DBSchemaImportModule,
   ],
 })
 export class CoreModule {}

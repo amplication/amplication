@@ -1,4 +1,4 @@
-import { gql, useMutation } from "@apollo/client";
+import { useMutation } from "@apollo/client";
 import React, { useCallback, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageContent from "../../Layout/PageContent";
@@ -13,8 +13,13 @@ import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
-import { GET_PENDING_CHANGES_STATUS } from "../../Workspaces/queries/projectQueries";
-import { GET_ENTITIES_FOR_ENTITY_SELECT_FIELD } from "../../Components/EntitySelectField";
+import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
+import useUserActionWatchStatus from "./useUserActionWatchStatus";
+import { BillingFeature } from "../../util/BillingFeature";
+import { useStiggContext } from "@stigg/react-sdk";
+import { Button } from "../../Components/Button";
+
+const PROCESSING_PRISMA_SCHEMA = "PROCESSING_PRISMA_SCHEMA";
 
 const ACTION_LOG: models.Action = {
   id: "1",
@@ -23,7 +28,7 @@ const ACTION_LOG: models.Action = {
 
 const ACTION_LOG_STEP: models.ActionStep = {
   id: "1",
-  name: "PROCESSING",
+  name: PROCESSING_PRISMA_SCHEMA,
   message: "Import Prisma schema file",
   status: models.EnumActionStepStatus.Running,
   createdAt: new Date().toISOString(),
@@ -47,7 +52,7 @@ type Props = AppRouteProps & {
 };
 
 type TData = {
-  createEntitiesFromPrismaSchema: models.CreateEntitiesFromPrismaSchemaResponse;
+  createEntitiesFromPrismaSchema: models.UserAction;
 };
 
 const MAX_FILES = 1;
@@ -59,25 +64,23 @@ const PAGE_TITLE = "Entities Import";
 const CLASS_NAME = "entities-import";
 
 const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
+  const [userAction, setUserAction] = React.useState<models.UserAction>(null);
+  const { data: userActionData } = useUserActionWatchStatus(userAction);
+
   const { resource: resourceId, project: projectId } = match.params;
   const { trackEvent } = useTracking();
 
+  const { stigg } = useStiggContext();
+
+  const canImportDBSchema = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ImportDBSchema,
+  }).hasAccess;
+
   const [createEntitiesFormSchema, { data, error, loading }] =
-    useMutation<TData>(CREATE_ENTITIES_FORM_SCHEMA, {
-      refetchQueries: [
-        {
-          query: GET_PENDING_CHANGES_STATUS,
-          variables: {
-            projectId: projectId,
-          },
-        },
-        {
-          query: GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
-          variables: {
-            resourceId,
-          },
-        },
-      ],
+    useMutation<TData>(CREATE_ENTITIES_FROM_SCHEMA, {
+      onCompleted: (data) => {
+        setUserAction(data.createEntitiesFromPrismaSchema);
+      },
     });
 
   const actionLog: models.Action = useMemo(() => {
@@ -93,8 +96,11 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       };
     }
 
-    return data.createEntitiesFromPrismaSchema.actionLog;
-  }, [data, loading]);
+    return {
+      ...data.createEntitiesFromPrismaSchema.action,
+      ...userActionData?.userAction?.action,
+    };
+  }, [data, loading, userActionData]);
 
   const errorMessage = formatError(error);
 
@@ -110,7 +116,12 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
       createEntitiesFormSchema({
         variables: {
           data: {
-            resourceId,
+            userActionType: models.EnumUserActionType.DbSchemaImport,
+            resource: {
+              connect: {
+                id: resourceId,
+              },
+            },
           },
           file,
         },
@@ -125,35 +136,71 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <>
-        <div className={`${CLASS_NAME}__header`}>
-          <SvgThemeImage image={EnumImages.ImportPrisma} />
-          <h2>Import Prisma schema file</h2>
-          <div className={`${CLASS_NAME}__message`}>
-            upload a Prisma schema file to import its content, and create
-            entities and relations.
-            <br />
-            Only '*.prisma' files are supported.
+        {!canImportDBSchema ? (
+          <div className={`${CLASS_NAME}__beta-wrapper`}>
+            <div className={`${CLASS_NAME}__beta-wrapper__header`}>
+              <SvgThemeImage image={EnumImages.ImportPrisma} />
+              <h2>Modernize Faster with Amplication DB Schema Import</h2>
+              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
+                Seamlessly import your existing database schema directly into
+                Amplication. <br /> Ideal for modernization initiatives,
+                significantly reduces transition time by preserving your
+                underlying database while you rebuild and enhance your systems.
+              </div>
+              <div className={`${CLASS_NAME}__beta-wrapper__feature `}>
+                Want to get early access and help shape the future of our
+                platform?
+              </div>
+              <a
+                target="db-import-beta"
+                href="https://amplication.com/db-import-beta"
+              >
+                <Button
+                  eventData={{
+                    eventName:
+                      AnalyticsEventNames.ImportPrismaSchemaJoinBetaClick,
+                  }}
+                >
+                  Join our beta group now
+                </Button>
+              </a>
+            </div>
           </div>
-        </div>
-        <div className={`${CLASS_NAME}__content`}>
-          {loading || (data && data.createEntitiesFromPrismaSchema) ? (
-            <>
-              <ActionLog
-                action={actionLog}
-                title="Import Schema"
-                versionNumber=""
-              />
-            </>
-          ) : (
-            <>
-              <FileUploader
-                onFilesSelected={onFilesSelected}
-                maxFiles={MAX_FILES}
-                acceptedFileTypes={ACCEPTED_FILE_TYPES}
-              />
-            </>
-          )}
-        </div>
+        ) : (
+          <>
+            <div className={`${CLASS_NAME}__header`}>
+              <SvgThemeImage image={EnumImages.ImportPrismaSchema} />
+              <h2>Import Prisma schema file</h2>
+              <div className={`${CLASS_NAME}__message`}>
+                upload a Prisma schema file to import its content, and create
+                entities and relations.
+                <br />
+                Only '*.prisma' files are supported.
+              </div>
+            </div>
+
+            <div className={`${CLASS_NAME}__content`}>
+              {loading || (data && data.createEntitiesFromPrismaSchema) ? (
+                <>
+                  <ActionLog
+                    height={"40vh"}
+                    action={actionLog}
+                    title="Import Schema"
+                    versionNumber=""
+                  />
+                </>
+              ) : (
+                <>
+                  <FileUploader
+                    onFilesSelected={onFilesSelected}
+                    maxFiles={MAX_FILES}
+                    acceptedFileTypes={ACCEPTED_FILE_TYPES}
+                  />
+                </>
+              )}
+            </div>
+          </>
+        )}
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </>
     </PageContent>
@@ -161,43 +208,3 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
 };
 
 export default EntitiesImport;
-
-const CREATE_ENTITIES_FORM_SCHEMA = gql`
-  mutation createEntitiesFromPrismaSchema(
-    $data: CreateEntitiesFromPrismaSchemaInput!
-    $file: Upload!
-  ) {
-    createEntitiesFromPrismaSchema(data: $data, file: $file) {
-      entities {
-        name
-        displayName
-        pluralDisplayName
-        description
-        fields {
-          name
-          displayName
-          dataType
-        }
-      }
-      actionLog {
-        id
-        createdAt
-        steps {
-          id
-          name
-          createdAt
-          message
-          status
-          completedAt
-          logs {
-            id
-            createdAt
-            message
-            meta
-            level
-          }
-        }
-      }
-    }
-  }
-`;

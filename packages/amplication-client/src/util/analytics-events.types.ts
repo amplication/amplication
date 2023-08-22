@@ -64,6 +64,7 @@ export enum AnalyticsEventNames {
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
   ImportPrismaSchemaClick = "importPrismaSchemaClick",
+  ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
 
   // message broker
@@ -95,7 +96,6 @@ export enum AnalyticsEventNames {
 
   // GitHub
   GitHubAuthResourceStart = "startAuthResourceWithGitHub",
-  GitHubAuthResourceComplete = "completeAuthResourceWithGitHub",
   GitHubRepositoryCreate = "createGitRepository",
   GithubRepositoryChange = "changeGithubRepository",
   GithubOpenPullRequest = "openGithubPullRequest",

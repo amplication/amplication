@@ -129,6 +129,12 @@ export interface CreateServerDockerComposeDBParams extends EventParams {
   outputFileName: string;
 }
 
+export interface CreateServerDockerComposeDevParams extends EventParams {
+  fileContent: string;
+  updateProperties: { [key: string]: any }[];
+  outputFileName: string;
+}
+
 export type CreateSchemaFieldResult = (ScalarField | ObjectField)[];
 
 export type CreateSchemaFieldHandler = (
@@ -169,6 +175,10 @@ export interface CreateServerAppModuleParams extends EventParams {
   modulesFiles: ModuleMap;
   template: namedTypes.File;
   templateMapping: { [key: string]: any };
+}
+
+export interface CreateConnectMicroservicesParams extends EventParams {
+  template: namedTypes.File;
 }
 
 export interface CreateEntityModuleParams extends EventParams {

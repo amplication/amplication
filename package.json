@@ -1,6 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.7.8",
+  "version": "1.8.6",
   "scripts": {
     "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
@@ -29,7 +29,7 @@
     ]
   },
   "dependencies": {
-    "@amplication/opentelemetry-nestjs": "^4.2.1",
+    "@amplication/opentelemetry-nestjs": "^4.3.7",
     "@amplication/react-compound-timer": "^2.1.0",
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
@@ -69,12 +69,10 @@
     "@octokit/rest": "^19.0.5",
     "@octokit/webhooks": "^10.6.2",
     "@octokit/webhooks-types": "^6.9.0",
-    "@opentelemetry/exporter-metrics-otlp-grpc": "^0.40.0",
-    "@opentelemetry/exporter-trace-otlp-grpc": "^0.40.0",
+    "@opentelemetry/exporter-trace-otlp-grpc": "^0.41.2",
     "@opentelemetry/id-generator-aws-xray": "^1.1.2",
     "@opentelemetry/instrumentation-aws-sdk": "^0.34.3",
     "@opentelemetry/propagator-aws-xray": "^1.2.1",
-    "@opentelemetry/sdk-trace-base": "^1.14.0",
     "@primer/react": "^35.14.1",
     "@prisma/client": "^4.16.2",
     "@prisma/instrumentation": "^4.16.2",
@@ -107,6 +105,7 @@
     "docker-names": "^1.2.1",
     "dotenv": "^16.3.1",
     "download": "^8.0.0",
+    "elkjs": "^0.8.2",
     "eventsource": "^2.0.2",
     "express": "^4.18.1",
     "express-openid-connect": "^2.15.0",
@@ -166,6 +165,7 @@
     "react-tracking": "^9.2.1",
     "react-use-localstorage": "^3.5.3",
     "react-xarrows": "^1.7.2",
+    "reactflow": "^11.7.4",
     "recast": "0.20.5",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.11",
@@ -179,12 +179,12 @@
     "tar-stream": "^2.2.0",
     "ts-morph": "^17.0.1",
     "tslib": "^2.5.0",
+    "type-fest": "^3.13.0",
     "use-debounce": "^3.4.3",
     "uuid": "^8.3.2",
     "winston": "3.8.2",
     "winston-cloud-logging": "^1.0.2",
-    "yaml": "2.2.2",
-    "type-fest": "^3.13.0"
+    "yaml": "2.2.2"
   },
   "devDependencies": {
     "@babel/core": "7.12.13",
@@ -260,6 +260,7 @@
     "@types/supertest": "^2.0.12",
     "@types/tar-stream": "^2.2.2",
     "@types/triple-beam": "^1.3.2",
+    "@types/uuid": "^9.0.2",
     "@types/yargs": "^17.0.24",
     "@typescript-eslint/eslint-plugin": "^5.60.1",
     "@typescript-eslint/parser": "^5.39.0",

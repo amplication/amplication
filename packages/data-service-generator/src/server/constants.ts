@@ -11,4 +11,4 @@ export const ENV_VARIABLES: VariableDictionary = [
 ];
 
 export const DOCKER_COMPOSE_FILE_NAME = "docker-compose.template.yml";
-export const DOCKER_COMPOSE_DB_FILE_NAME = "docker-compose.db.template.yml";
+export const DOCKER_COMPOSE_DEV_FILE_NAME = "docker-compose.dev.template.yml";
