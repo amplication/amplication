@@ -22,7 +22,6 @@ import * as classTransformerUtil from "./class-transformer.util";
 import {
   IS_BOOLEAN_ID,
   IS_DATE_ID,
-  IS_DECIMAL_ID,
   IS_ENUM_ID,
   IS_INT_ID,
   IS_JSON_VALUE_ID,
@@ -31,7 +30,11 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { DECIMAL_VALUE, INPUT_JSON_VALUE_KEY } from "./constants";
+import {
+  DECIMAL_VALUE,
+  BIG_INT_VALUE,
+  INPUT_JSON_VALUE_KEY,
+} from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
@@ -60,7 +63,9 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Decimal]: builders.tsTypeReference(
     builders.identifier(DECIMAL_VALUE)
   ),
-  [ScalarType.BigInt]: builders.tsNumberKeyword(),
+  [ScalarType.BigInt]: builders.tsTypeReference(
+    builders.identifier(BIG_INT_VALUE)
+  ),
 };
 
 const PRISMA_SCALAR_TO_QUERY_TYPE: {
@@ -119,12 +124,13 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.Int]: IS_INT_ID,
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: IS_JSON_VALUE_ID,
-  [ScalarType.Decimal]: IS_DECIMAL_ID,
+  [ScalarType.Decimal]: IS_NUMBER_ID,
   [ScalarType.BigInt]: IS_INT_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
-export const DECIMAL_ID = builders.identifier("Decimal");
+export const FLOAT_ID = builders.identifier("Float");
+export const INT_ID = builders.identifier("Int");
 export const STRING_ID = builders.identifier("String");
 const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
@@ -136,7 +142,7 @@ const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [ScalarType.Int]: NUMBER_ID,
   [ScalarType.String]: STRING_ID,
   [ScalarType.Json]: null,
-  [ScalarType.Decimal]: DECIMAL_ID,
+  [ScalarType.Decimal]: NUMBER_ID,
   [ScalarType.BigInt]: NUMBER_ID,
 };
 export const EACH_ID = builders.identifier("each");
