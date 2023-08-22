@@ -6,6 +6,7 @@ import { HealthModule } from "./health/health.module";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { Env } from "./env";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { ControllerInjector } from "@amplication/opentelemetry-nestjs";
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { TracingModule } from "@amplication/util/nestjs/tracing";
     }),
     TracingModule.forRoot({
       serviceName: Env.SERVICE_NAME,
+      traceAutoInjectors: [ControllerInjector],
     }),
     HealthModule,
     BuildRunnerModule,

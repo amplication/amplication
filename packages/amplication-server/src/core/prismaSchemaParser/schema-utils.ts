@@ -10,6 +10,7 @@ import {
   Func,
   Enum,
   Enumerator,
+  ConcretePrismaSchemaBuilder,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
@@ -24,11 +25,15 @@ import {
   ENUMERATOR_TYPE_NAME,
   OBJECT_KIND_NAME,
   FUNCTION_ARG_TYPE_NAME,
+  ID_FIELD_NAME,
+  ID_ATTRIBUTE_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
+  findOriginalModelName,
   formatDisplayName,
   formatModelName,
+  lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
 import { CreateBulkFieldsInput } from "../entity/entity.service";
@@ -36,6 +41,7 @@ import { EnumDataType } from "../../enums/EnumDataType";
 import { EnumActionLogLevel } from "../action/dto";
 import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
+import { camelCase } from "lodash";
 
 /**
  * create the common properties of one entity field from model field
@@ -419,4 +425,217 @@ export function handleEnumMapAttribute(
     }
   }
   return enumOptions;
+}
+
+export function addIdFieldIfNotExists(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  actionContext: ActionContext
+) {
+  builder
+    .model(model.name)
+    .field(ID_FIELD_NAME, "String")
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `id field was added to model "${model.name}"`,
+    EnumActionLogLevel.Warning
+  );
+}
+
+export function convertUniqueFieldNamedIdToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  uniqueFieldNamedId: Field,
+  actionContext: ActionContext
+) {
+  builder
+    .model(model.name)
+    .field(uniqueFieldNamedId.name)
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+}
+
+export function convertUniqueFieldNotNamedIdToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  uniqueFieldAsIdField: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  addMapAttributeToField(
+    builder,
+    schema,
+    model,
+    uniqueFieldAsIdField,
+    actionContext
+  );
+
+  builder
+    .model(model.name)
+    .field(uniqueFieldAsIdField.name)
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [uniqueFieldAsIdField.name]: {
+        originalName: uniqueFieldAsIdField.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
+
+  void actionContext.onEmitUserActionLog(
+    `field ${uniqueFieldAsIdField.name} was renamed to ${ID_FIELD_NAME}`,
+    EnumActionLogLevel.Info
+  );
+
+  builder
+    .model(model.name)
+    .field(uniqueFieldAsIdField.name)
+    .then<Field>((field) => {
+      field.name = ID_FIELD_NAME;
+    });
+}
+
+export function handleIdFieldNotNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  void actionContext.onEmitUserActionLog(
+    `field name "${field.name}" on model name ${model.name} was changed to "id"`,
+    EnumActionLogLevel.Info
+  );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
+
+  addMapAttributeToField(builder, schema, model, field, actionContext);
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .then<Field>((field) => {
+      field.name = ID_FIELD_NAME;
+    });
+}
+
+export function handleNotIdFieldNotUniqueNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  void actionContext.onEmitUserActionLog(
+    `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
+    EnumActionLogLevel.Info
+  );
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: `${model.name}Id`,
+      },
+    },
+  };
+
+  addMapAttributeToField(builder, schema, model, field, actionContext);
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .then<Field>((field) => {
+      field.name = `${camelCase(model.name)}Id`;
+    });
+}
+
+// add map attribute to model if the model was formatted and if the map attribute is not already exists
+export function addMapAttributeToModel(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  actionContext: ActionContext
+) {
+  const modelAttributes = model.properties.filter(
+    (prop) =>
+      prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
+  ) as BlockAttribute[];
+
+  const hasMapAttribute = modelAttributes?.some(
+    (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+  );
+
+  if (!hasMapAttribute) {
+    builder.model(model.name).blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
+
+    void actionContext.onEmitUserActionLog(
+      `attribute "@@map" was added to the model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
+}
+
+// add map attribute to field if the field was formatted and if the map attribute is not already exists and if the field is not a lookup field
+export function addMapAttributeToField(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  actionContext: ActionContext
+) {
+  const fieldAttributes = field.attributes?.filter(
+    (attr) => attr.type === ATTRIBUTE_TYPE_NAME
+  ) as Attribute[];
+
+  const hasMapAttribute = fieldAttributes?.find(
+    (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+  );
+
+  const shouldAddMapAttribute = !hasMapAttribute && !lookupField(schema, field);
+
+  if (shouldAddMapAttribute) {
+    builder
+      .model(model.name)
+      .field(field.name)
+      .attribute(MAP_ATTRIBUTE_NAME, [`"${field.name}"`]);
+
+    void actionContext.onEmitUserActionLog(
+      `attribute "@map" was added to the field "${field.name}" on model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
 }
