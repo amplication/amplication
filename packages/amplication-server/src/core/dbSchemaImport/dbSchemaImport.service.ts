@@ -56,7 +56,7 @@ export class DBSchemaImportService {
     };
 
     await this.kafkaProducerService.emitMessage(
-      this.configService.get(KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC),
+      KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC,
       dbSchemaImportEvent
     );
 
@@ -101,7 +101,7 @@ export class DBSchemaImportService {
         const actionContext = this.actionService.createActionContext(
           dbSchemaImportAction.id,
           step,
-          this.configService.get(KAFKA_TOPICS.USER_ACTION_LOG_TOPIC)
+          KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
         );
 
         await this.entityService.createEntitiesFromPrismaSchema(

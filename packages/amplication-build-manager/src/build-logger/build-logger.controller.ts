@@ -21,7 +21,7 @@ export class BuildLoggerController {
       value: logEntry,
     };
     await this.producerService.emitMessage(
-      this.configService.get(KAFKA_TOPICS.DSG_LOG_TOPIC),
+      KAFKA_TOPICS.DSG_LOG_TOPIC,
       logEvent
     );
   }

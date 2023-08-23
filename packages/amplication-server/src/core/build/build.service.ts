@@ -372,7 +372,7 @@ export class BuildService {
         };
 
         await this.kafkaProducerService.emitMessage(
-          this.configService.get(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC),
+          KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC,
           codeGenerationEvent
         );
 
@@ -694,7 +694,7 @@ export class BuildService {
             value: createPullRequestMessage,
           };
           await this.kafkaProducerService.emitMessage(
-            this.configService.get(KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC),
+            KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC,
             createPullRequestEvent
           );
         } catch (error) {

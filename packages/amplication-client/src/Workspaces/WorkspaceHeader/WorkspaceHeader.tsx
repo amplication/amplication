@@ -30,6 +30,12 @@ import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
+import {
+  NovuProvider,
+  PopoverNotificationCenter,
+  NotificationBell,
+  IMessage,
+} from "@novu/notification-center";
 import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
 
 const CLASS_NAME = "workspace-header";
@@ -117,6 +123,13 @@ const WorkspaceHeader: React.FC<{}> = () => {
 
     window.location.replace(NX_REACT_APP_AUTH_LOGOUT_URI);
   }, [history, apolloClient]);
+
+  const onNotificationClick = useCallback((message: IMessage) => {
+    // your logic to handle the notification click
+    if (message?.cta?.data?.url) {
+      window.location.href = message.cta.data.url;
+    }
+  }, []);
 
   const handleUpgradeClick = useCallback(() => {
     history.push(`/${currentWorkspace.id}/purchase`, {
@@ -349,6 +362,22 @@ const WorkspaceHeader: React.FC<{}> = () => {
                 </SelectMenuList>
               </SelectMenuModal>
             </SelectMenu>
+          </div>
+          <hr className={`${CLASS_NAME}__vertical_border`} />
+          <div className={`${CLASS_NAME}__notification_bell`}>
+            <NovuProvider
+              subscriberId={"USER_ID"} /// get the subscriber id from user (hash id + email)
+              applicationIdentifier={"gY2CIIdnBCc1"}
+            >
+              <PopoverNotificationCenter
+                colorScheme={"dark"}
+                onNotificationClick={onNotificationClick}
+              >
+                {({ unseenCount }) => (
+                  <NotificationBell unseenCount={unseenCount} />
+                )}
+              </PopoverNotificationCenter>
+            </NovuProvider>
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
           <div

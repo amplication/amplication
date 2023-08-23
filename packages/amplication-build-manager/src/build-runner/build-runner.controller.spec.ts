@@ -140,7 +140,7 @@ describe("BuildRunnerController", () => {
     ).rejects.toThrow(errorMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -166,7 +166,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -257,7 +257,7 @@ describe("BuildRunnerController", () => {
     );
   });
 
-  it("On code generation rqeuest with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
+  it("On code generation request with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
     const codeGenerationRequestDTOMock: CodeGenerationRequestDto = {
       resourceId: "resourceId",
@@ -283,7 +283,7 @@ describe("BuildRunnerController", () => {
 
     expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();

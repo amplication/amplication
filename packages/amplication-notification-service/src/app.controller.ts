@@ -7,9 +7,14 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @EventPattern("/^[a-zA-Z0-9.]+$/")
-  getHello(@Payload() message) {
+  subscribeNotification(@Payload() message) {
     // validate message
-    console.log(message.value);
-    return this.appService.getHello();
+
+    return this.appService.notificationService(message.value);
   }
 }
+
+/// hash user to create notificationId
+/// on signup => register user
+/// on signin => register user
+/// on build => send notification
