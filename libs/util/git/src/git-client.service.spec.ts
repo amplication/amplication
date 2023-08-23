@@ -37,8 +37,6 @@ describe("GitClientService", () => {
   const gitDiffMock = jest.fn();
   const gitLogMock = jest.fn();
   const gitGetFirstCommitShaMock = jest.fn();
-  const cherryPickMock = jest.fn();
-  const cherryPickAbortMock = jest.fn();
 
   const gitCliMock: GitCli = {
     gitAuthorUser: amplicationGitUserAuthor,
@@ -48,8 +46,6 @@ describe("GitClientService", () => {
     push: jest.fn(),
     resetState: jest.fn(),
     diff: gitDiffMock,
-    cherryPick: cherryPickMock,
-    cherryPickAbort: cherryPickAbortMock,
     getFirstCommitSha: gitGetFirstCommitShaMock,
   } as unknown as GitCli;
 
@@ -141,6 +137,7 @@ describe("GitClientService", () => {
       await service.preCommitProcess({
         branchName: "amplication",
         gitCli: gitCliMock,
+        useBeforeLastCommit: false,
       });
 
       expect(gitLogMock).toBeCalledTimes(1);
@@ -178,6 +175,7 @@ describe("GitClientService", () => {
       await service.preCommitProcess({
         branchName: "amplication",
         gitCli: gitCliMock,
+        useBeforeLastCommit: false,
       });
 
       expect(gitLogMock).toBeCalledTimes(1);
@@ -188,6 +186,7 @@ describe("GitClientService", () => {
       await service.preCommitProcess({
         branchName: "amplication",
         gitCli: gitCliMock,
+        useBeforeLastCommit: false,
       });
 
       expect(gitLogMock).toHaveBeenCalledTimes(1);
@@ -232,8 +231,6 @@ describe("GitClientService", () => {
           latest: { hash: "commit-3" },
         });
 
-        cherryPickMock.mockResolvedValue(undefined);
-
         // Act
         const result = await service.restoreAmplicationBranchIfNotExists(args);
 
@@ -246,14 +243,13 @@ describe("GitClientService", () => {
           branchName: "new-branch",
           repositoryName: "repository",
           repositoryGroupName: "group",
-          pointingSha: "first-commit-sha",
+          pointingSha: "commit-3",
           baseBranchName: "base",
         });
         expect(gitLogMock).toHaveBeenCalledWith(
           [amplicationBotOrIntegrationApp.gitAuthor, amplicationGitUserAuthor],
-          -1
+          1
         );
-        expect(cherryPickMock).toHaveBeenCalledTimes(3);
       });
 
       it("should skip empty commits when it creates a new branch from the first commit with all the amplication authored commits from the default branch", async () => {
@@ -268,8 +264,6 @@ describe("GitClientService", () => {
           baseBranch: "base",
         };
         const emptyCommitSha = "commit-2";
-        const successfullCommitShas = [];
-
         getBranchMock.mockResolvedValueOnce(null);
 
         gitGetFirstCommitShaMock.mockResolvedValueOnce({
@@ -288,14 +282,6 @@ describe("GitClientService", () => {
           latest: { hash: "commit-3" },
         });
 
-        cherryPickMock.mockImplementation(async (sha) => {
-          if (sha === emptyCommitSha) {
-            throw new GitError();
-          }
-          successfullCommitShas.push(sha);
-          return;
-        });
-
         // Act
         const result = await service.restoreAmplicationBranchIfNotExists(args);
 
@@ -305,9 +291,6 @@ describe("GitClientService", () => {
         expect(gitGetFirstCommitShaMock).toHaveBeenCalledTimes(1);
         expect(gitProviderMock.createBranch).toHaveBeenCalledTimes(1);
         expect(gitLogMock).toHaveBeenCalledTimes(1);
-        expect(cherryPickMock).toHaveBeenCalledTimes(3);
-        expect(cherryPickAbortMock).toHaveBeenCalledTimes(1);
-        expect(successfullCommitShas).toEqual(["commit-1", "commit-3"]);
       });
     });
 
