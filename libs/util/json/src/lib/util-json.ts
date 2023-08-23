@@ -6,13 +6,14 @@ export const isValidJSON = (str: string) => {
   }
 };
 
-export const JsonFormatting = (json: string) => {
-  if (Object.prototype.toString.call(json) === "[object Object]") {
-    json = JSON.stringify(json);
+export const JsonFormatting = (data: any) => {
+  if (typeof data !== "string") {
+    return JSON.stringify(data, null, 2);
   }
-  const isValid = isValidJSON(json);
-  if (isValid) {
-    return JSON.stringify(JSON.parse(json!), null, "\t");
+  try {
+    let object = JSON.parse(data);
+    return JSON.stringify(object, null, 2);
+  } catch (e) {
+    return data;
   }
-  return json;
 };
