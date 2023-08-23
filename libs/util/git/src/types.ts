@@ -343,6 +343,7 @@ export interface CloneUrlArgs {
 export interface PreCommitProcessArgs {
   gitCli: GitCli;
   branchName: string;
+  useBeforeLastCommit: boolean;
 }
 
 export type PreCommitProcessResult = Promise<{

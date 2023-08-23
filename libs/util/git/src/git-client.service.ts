@@ -12,7 +12,6 @@ import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
 import { GitProvider } from "./git-provider.interface";
 import {
   Branch,
-  Commit,
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
@@ -37,7 +36,7 @@ import { isFolderEmpty } from "./utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-request";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
-import { GitError, LogResult } from "simple-git";
+import { LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
 import { isEmpty } from "lodash";
 import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
@@ -282,30 +281,41 @@ export class GitClientService {
       baseBranch,
     });
 
-    const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
-
-    const { diff } = await this.preCommitProcess({
+    // calculate diff on everything *already existing* on the amplication branch since last amplication build
+    const preCommitDiff = await this.preCommitProcess({
       branchName,
       gitCli,
+      useBeforeLastCommit: false,
     });
 
+    // now commit the new build
+    const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
     this.logger.debug("New commit added", { sha });
 
-    if (diff) {
-      const diffFolder = normalize(
-        join(
-          `.amplication/diffs`,
-          this.provider.name,
-          owner,
-          repositoryName,
-          v4()
-        )
+    // now calculate the diff (only) between the previous amplication build and the new one
+    const postCommitDiff = await this.preCommitProcess({
+      branchName,
+      gitCli,
+      useBeforeLastCommit: true,
+    });
+
+    // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
+    if (preCommitDiff.diff) {
+      await this.applyPostCommit(
+        preCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
       );
-      await this.postCommitProcess({
-        diffFolder,
-        diff,
-        gitCli,
-      });
+    }
+    // on top of the already existing changes, apply the diff between the previous amplication build and the new one
+    if (postCommitDiff.diff) {
+      await this.applyPostCommit(
+        postCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
+      );
     }
 
     const existingPullRequest = await this.provider.getPullRequest({
@@ -344,6 +354,25 @@ export class GitClientService {
     return pullRequest.url;
   }
 
+  private async applyPostCommit(diff, owner, repositoryName, gitCli) {
+    if (diff) {
+      const diffFolder = normalize(
+        join(
+          `.amplication/diffs`,
+          this.provider.name,
+          owner,
+          repositoryName,
+          v4()
+        )
+      );
+      await this.postCommitProcess({
+        diffFolder,
+        diff,
+        gitCli,
+      });
+    }
+  }
+
   /**
    * Returns git commits by amplication author
    * @param gitCli Git client
@@ -368,15 +397,24 @@ export class GitClientService {
   async preCommitProcess({
     gitCli,
     branchName,
+    useBeforeLastCommit,
   }: PreCommitProcessArgs): PreCommitProcessResult {
     this.logger.info("Pre commit process");
     await gitCli.checkout(branchName);
 
-    const gitLogs = await this.gitLog(gitCli, 2);
-
-    if (gitLogs.total > 0) {
-      const { hash } = gitLogs.all[0];
-
+    let hash = "";
+    if (useBeforeLastCommit) {
+      const gitLogs = await this.gitLog(gitCli, 2);
+      if (gitLogs.total > 0) {
+        hash = gitLogs.all[0].hash;
+      }
+    } else {
+      const gitLogs = await this.gitLog(gitCli, 1);
+      if (gitLogs.total > 0 && gitLogs.latest) {
+        hash = gitLogs.latest.hash;
+      }
+    }
+    if (hash != "") {
       const diff = await gitCli.diff(hash);
       if (!diff) {
         this.logger.warn("Diff returned empty");
