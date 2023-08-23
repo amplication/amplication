@@ -11,7 +11,7 @@ export const JsonFormatting = (data: any) => {
     return JSON.stringify(data, null, 2);
   }
   try {
-    let object = JSON.parse(data);
+    const object = JSON.parse(data);
     return JSON.stringify(object, null, 2);
   } catch (e) {
     return data;
