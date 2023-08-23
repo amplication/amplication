@@ -553,7 +553,7 @@ export class EntityService {
     if (existingEntities.length > 0) {
       existingEntities.forEach((entity) => {
         void actionContext.onEmitUserActionLog(
-          `Entity "${entity.name}" already exists`,
+          `Entity "${entity.name}" already exists in the service. To proceed with the import, please rename or remove the entity in your schema file or remove the conflicting entity from the service.`,
           EnumActionLogLevel.Error
         );
 
