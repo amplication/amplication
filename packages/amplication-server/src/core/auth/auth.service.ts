@@ -25,6 +25,7 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { UserAction } from "@amplication/schema-registry";
 
 export type AuthUser = User & {
   account: Account;
@@ -164,12 +165,12 @@ export class AuthService {
             firstName: account.firstName,
             lastName: account.lastName,
             email: account.email,
-            action: "signup",
+            action: UserAction.UserActionType.SIGNUP,
           },
         }
       )
       .catch((error) =>
-        this.logger.error(`Failed to que user ${account.id} aignup`, error)
+        this.logger.error(`Failed to que user ${account.id} signup`, error)
       );
 
     const user = await this.bootstrapUser(account, payload.workspaceName);
@@ -216,7 +217,7 @@ export class AuthService {
     this.kafkaProducerService
       .emitMessage(
         EnvironmentVariables.instance.get(Env.USER_ACTION_TOPIC, true),
-        {
+        <UserAction.KafkaEvent>{
           key: {},
           value: {
             userId: account.id,
@@ -224,7 +225,7 @@ export class AuthService {
             firstName: account.firstName,
             lastName: account.lastName,
             email: account.email,
-            action: "login",
+            action: UserAction.UserActionType.LOGIN,
           },
         }
       )

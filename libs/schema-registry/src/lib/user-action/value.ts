@@ -1,5 +1,12 @@
 import { IsString } from "class-validator";
 
+export enum UserActionType {
+  SIGNUP = "signup",
+  LOGIN = "login",
+  UPDATE = "update",
+  DELETE = "delete",
+}
+
 export class Value {
   @IsString()
   userId!: string;
@@ -17,5 +24,5 @@ export class Value {
   notificationId!: string;
 
   @IsString()
-  action!: "signup" | "login" | "update" | "delete";
+  action!: UserActionType;
 }
