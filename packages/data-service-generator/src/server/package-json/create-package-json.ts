@@ -11,6 +11,7 @@ import pluginWrapper from "../../plugin-wrapper";
 import { updatePackageJSONs } from "../../utils/update-package-jsons";
 import { paramCase } from "param-case";
 import { promises as fs } from "fs";
+import { addDecimalJSPackageIfNecessary } from "./decimaljs";
 
 const PACKAGE_JSON_ENCODING = "utf-8";
 const PACKAGE_JSON_FILE_NAME = "package.json";
@@ -47,6 +48,8 @@ async function createServerPackageJsonInternal({
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
   await moduleMap.set(packageJsonModule);
+
+  addDecimalJSPackageIfNecessary(updateProperties);
 
   const mutatedPackageJson = await updatePackageJSONs(
     moduleMap,
