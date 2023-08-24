@@ -52,6 +52,7 @@ async function createGraphQLBigInt(moduleMap: ModuleMap) {
   };
 
   await moduleMap.set(module);
+  await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
 
   return moduleMap;
 }
@@ -97,6 +98,8 @@ async function createBigIntFilters(moduleMap: ModuleMap) {
 
   await moduleMap.set(bigIntFilterModule);
   await moduleMap.set(bigIntNullableFilterModule);
+
+  await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
 
   return moduleMap;
 }
@@ -146,6 +149,8 @@ async function createDecimalFilters(moduleMap: ModuleMap) {
 
   await moduleMap.set(decimalFilterModule);
   await moduleMap.set(decimalNullableFilterModule);
+
+  await moduleMap.replaceModulesPath((path) => path.replace(".template", ""));
 
   return moduleMap;
 }
