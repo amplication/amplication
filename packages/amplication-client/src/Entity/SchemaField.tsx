@@ -1,7 +1,11 @@
 import { capitalCase } from "capital-case";
-import { ToggleField, TextField } from "@amplication/ui/design-system";
+import {
+  ToggleField,
+  TextField,
+  OptionItem,
+  SelectField,
+} from "@amplication/ui/design-system";
 import EntitySelectField from "../Components/EntitySelectField";
-import EnumSelectField from "../Components/EnumSelectField";
 import RelatedEntityFieldField from "./RelatedEntityFieldField";
 import RelationAllowMultipleField from "../Components/RelationAllowMultipleField";
 import { Schema } from "@amplication/code-gen-types";
@@ -9,8 +13,11 @@ import OptionSet from "../Entity/OptionSet";
 import { JSONSchema7 } from "json-schema";
 import RelationFkHolderField from "./RelationFkHolderField";
 import * as models from "../models";
+import { useMemo } from "react";
+import { ENTITY_FIELD_ENUM_MAPPER } from "./constants";
 
 type Props = {
+  fieldDataType: models.EnumDataType;
   propertyName: string;
   propertySchema: Schema;
   isDisabled?: boolean;
@@ -20,6 +27,7 @@ type Props = {
 };
 
 export const SchemaField = ({
+  fieldDataType,
   propertyName,
   propertySchema,
   resourceId,
@@ -28,14 +36,26 @@ export const SchemaField = ({
   const fieldName = `properties.${propertyName}`;
   const label = propertySchema.title || capitalCase(propertyName);
 
+  const enumOptions = useMemo((): OptionItem[] | null => {
+    if (propertySchema.enum) {
+      return (propertySchema.enum as string[]).map((item) => {
+        const labelByItem: { label: string; value: string } =
+          ENTITY_FIELD_ENUM_MAPPER[fieldDataType][propertyName].find(
+            (option) => option.value === item
+          );
+
+        return {
+          value: item,
+          label: labelByItem.label || item,
+        };
+      });
+    } else return null;
+  }, [fieldDataType, propertyName, propertySchema]);
+
   if (propertySchema.enum) {
     if (propertySchema.enum.every((item) => typeof item === "string")) {
       return (
-        <EnumSelectField
-          label={label}
-          name={fieldName}
-          options={propertySchema.enum as string[]}
-        />
+        <SelectField label={label} name={fieldName} options={enumOptions} />
       );
     } else {
       throw new Error(

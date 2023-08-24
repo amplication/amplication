@@ -13,6 +13,7 @@ import {
   Func,
   ConcretePrismaSchemaBuilder,
   BlockAttribute,
+  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -67,14 +68,25 @@ import {
   FIELD_TYPE_NAME,
   FUNCTION_ARG_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT,
+  ID_DEFAULT_VALUE_CUID,
+  ID_DEFAULT_VALUE_UUID,
   ID_FIELD_NAME,
+  ID_TYPE_AUTO_INCREMENT,
+  ID_TYPE_AUTO_INCREMENT_BIG_INT,
+  ID_TYPE_CUID,
+  ID_TYPE_UUID,
   INDEX_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
+  PRISMA_TYPE_BIG_INT,
+  PRISMA_TYPE_INT,
+  PRISMA_TYPE_STRING,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
-  idTypePropertyMap,
-  idTypePropertyMapByFieldType,
+  WholeNumberType,
+  DecimalNumberType,
+  idTypePropertyMapByPrismaFieldType,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -832,13 +844,18 @@ export class PrismaSchemaParserService {
           );
         }
 
-        const hasDefaultAttributeOnIdField =
+        const hasDefaultValueAttributeOnIdField =
           isIdField &&
           field.attributes?.some(
-            (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+            (attr) =>
+              attr.name === DEFAULT_ATTRIBUTE_NAME &&
+              attr.args.some(
+                (arg) =>
+                  (arg.value as AttributeArgument | Func).type !== "function"
+              )
           );
 
-        hasDefaultAttributeOnIdField &&
+        hasDefaultValueAttributeOnIdField &&
           builder
             .model(model.name)
             .field(field.name)
@@ -1208,6 +1225,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.DecimalNumber>{
+      databaseFieldType: DecimalNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
@@ -1248,6 +1266,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.WholeNumber>{
+      databaseFieldType: WholeNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
     };
@@ -1360,7 +1379,7 @@ export class PrismaSchemaParserService {
 
     if (!defaultIdAttribute) {
       const properties = <types.Id>{
-        idType: idTypePropertyMapByFieldType[field.fieldType as string],
+        idType: idTypePropertyMapByPrismaFieldType[field.fieldType as string],
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;
@@ -1368,9 +1387,27 @@ export class PrismaSchemaParserService {
     }
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
-      const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
+      let idType: types.Id["idType"];
+      const idTypeDefaultArg = (defaultIdAttribute.args[0].value as Func).name;
+      if (field.fieldType === PRISMA_TYPE_STRING) {
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_CUID) {
+          idType = ID_TYPE_CUID;
+        }
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_UUID) {
+          idType = ID_TYPE_UUID;
+        }
+      }
+      if (idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT) {
+        if (field.fieldType === PRISMA_TYPE_INT) {
+          idType = ID_TYPE_AUTO_INCREMENT;
+        }
+        if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+          idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
+        }
+      }
+
       const properties = <types.Id>{
-        idType: idTypePropertyMap[idType],
+        idType,
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;

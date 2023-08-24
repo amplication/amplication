@@ -6,6 +6,8 @@ export const OBJECT_TYPE_ID = builders.identifier("ObjectType");
 export const INPUT_TYPE_ID = builders.identifier("InputType");
 export const ARGS_TYPE_ID = builders.identifier("ArgsType");
 export const FIELD_ID = builders.identifier("Field");
+export const FLOAT_ID = builders.identifier("Float");
+export const INT_ID = builders.identifier("Int");
 
 export function isInputType(classDeclaration: ClassDeclaration): boolean {
   return (

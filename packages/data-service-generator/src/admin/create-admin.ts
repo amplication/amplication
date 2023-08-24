@@ -22,6 +22,7 @@ import pluginWrapper from "../plugin-wrapper";
 import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
 import { createGitIgnore } from "./gitignore/create-gitignore";
+import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -128,12 +129,13 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entityComponentsModules,
   ]);
   await tsModules.replaceModulesCode((code) => formatCode(code));
-
+  const typesRelatedFiles = await createTypesRelatedFiles();
   await context.logger.info("Finalizing admin creation...");
 
   const allModules = new ModuleMap(context.logger);
   await allModules.mergeMany([
     staticModules,
+    typesRelatedFiles,
     gitIgnore,
     packageJson,
     publicFilesModules,
