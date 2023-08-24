@@ -1,6 +1,8 @@
 import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
+// @ts-ignore
+// eslint-disable-next-line
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 // @ts-ignore
 // eslint-disable-next-line

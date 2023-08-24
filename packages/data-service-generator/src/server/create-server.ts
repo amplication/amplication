@@ -23,6 +23,7 @@ import { createAuthModules } from "./auth/create-auth";
 import { createGitIgnore } from "./gitignore/create-gitignore";
 import { createDockerComposeDevFile } from "./docker-compose/create-docker-compose-dev";
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
+import { createMainFile } from "./create-main/create-main-file";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -96,7 +97,7 @@ async function createServerInternal(
   await packageJsonModule.replaceModulesCode((code) => formatJson(code));
 
   const typesRelatedFiles = await createTypesRelatedFiles();
-
+  const mainFile = await createMainFile();
   await context.logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
@@ -127,6 +128,7 @@ async function createServerInternal(
     dockerComposeFile,
     dockerComposeDevFile,
     typesRelatedFiles,
+    mainFile,
   ]);
   return moduleMap;
 }
