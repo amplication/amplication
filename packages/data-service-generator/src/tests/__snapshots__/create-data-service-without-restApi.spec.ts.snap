@@ -3063,7 +3063,8 @@ services:
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"10.9.1\\",
     \\"type-fest\\": \\"0.13.1\\",
-    \\"validator\\": \\"^13.9.0\\"
+    \\"validator\\": \\"^13.9.0\\",
+    \\"decimal.js\\": \\"10.4.3\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3412,7 +3413,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field, Int, Float } from \\"@nestjs/graphql\\";
+import { ObjectType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3428,6 +3429,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { Decimal } from \\"decimal.js\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -3440,7 +3442,7 @@ class Customer {
     type: Number,
   })
   @IsInt()
-  @Field(() => Int)
+  @Field(() => Number)
   id!: number;
 
   @ApiProperty({
@@ -3528,7 +3530,7 @@ class Customer {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   favoriteNumber!: bigint | null;
@@ -3650,7 +3652,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Float, Int } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3666,6 +3668,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { Decimal } from \\"decimal.js\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -3742,7 +3745,7 @@ class CustomerCreateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   favoriteNumber?: bigint | null;
@@ -4195,7 +4198,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Float, Int } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4211,6 +4214,7 @@ import {
 
 import { Type } from \\"class-transformer\\";
 import { Decimal } from \\"decimal.js\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -4290,7 +4294,7 @@ class CustomerUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   favoriteNumber?: bigint | null;
@@ -4603,7 +4607,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Int } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
 import { Transform } from \\"class-transformer\\";
@@ -4618,7 +4622,7 @@ class CustomerWhereUniqueInput {
   @Transform((prop) => parseInt(prop.value), {
     toClassOnly: true,
   })
-  @Field(() => Int)
+  @Field(() => Number)
   id!: number;
 }
 
@@ -6000,6 +6004,8 @@ export class HealthService extends HealthServiceBase {
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
+// @ts-ignore
+// eslint-disable-next-line
 import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
@@ -6024,6 +6030,13 @@ async function main() {
       forbidUnknownValues: false,
     })
   );
+
+  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
 
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
@@ -8318,7 +8331,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field, Int } from \\"@nestjs/graphql\\";
+import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import {
   IsInt,
@@ -8337,7 +8350,7 @@ class Profile {
     type: Number,
   })
   @IsInt()
-  @Field(() => Int)
+  @Field(() => Number)
   id!: number;
 
   @ApiProperty({
@@ -8912,7 +8925,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Int } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
 import { Transform } from \\"class-transformer\\";
@@ -8927,7 +8940,7 @@ class ProfileWhereUniqueInput {
   @Transform((prop) => parseInt(prop.value), {
     toClassOnly: true,
   })
-  @Field(() => Int)
+  @Field(() => Number)
   id!: number;
 }
 
@@ -9636,7 +9649,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field, Int, Float } from \\"@nestjs/graphql\\";
+import { ObjectType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9698,7 +9711,7 @@ class User {
     type: Number,
   })
   @IsInt()
-  @Field(() => Int)
+  @Field(() => Number)
   age!: number;
 
   @ApiProperty({
@@ -9714,7 +9727,7 @@ class User {
     type: Number,
   })
   @IsNumber()
-  @Field(() => Float)
+  @Field(() => Number)
   score!: number;
 
   @ApiProperty({
@@ -9843,7 +9856,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Int, Float } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -9899,7 +9912,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsInt()
-  @Field(() => Int)
+  @Field(() => Number)
   age!: number;
 
   @ApiProperty({
@@ -9915,7 +9928,7 @@ class UserCreateInput {
     type: Number,
   })
   @IsNumber()
-  @Field(() => Float)
+  @Field(() => Number)
   score!: number;
 
   @ApiProperty({
@@ -10383,7 +10396,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field, Int, Float } from \\"@nestjs/graphql\\";
+import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -10449,7 +10462,7 @@ class UserUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => Number, {
     nullable: true,
   })
   age?: number;
@@ -10471,7 +10484,7 @@ class UserUpdateInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Float, {
+  @Field(() => Number, {
     nullable: true,
   })
   score?: number;
@@ -11146,10 +11159,12 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
-  "server/src/util/BigIntFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+  "server/src/util/BigIntFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+// @ts-ignore
+import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
 
 @InputType({
   isAbstract: true,
@@ -11161,7 +11176,7 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11172,7 +11187,7 @@ export class BigIntFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -11183,7 +11198,7 @@ export class BigIntFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -11194,7 +11209,7 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11205,7 +11220,7 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11216,7 +11231,7 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11227,7 +11242,7 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11238,17 +11253,19 @@ export class BigIntFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
   not?: bigint;
 }
 ",
-  "server/src/util/BigIntNullableFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
+  "server/src/util/BigIntNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
+// @ts-ignore
+import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
 
 @InputType({
   isAbstract: true,
@@ -11260,7 +11277,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11271,7 +11288,7 @@ export class BigIntNullableFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -11282,7 +11299,7 @@ export class BigIntNullableFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -11293,7 +11310,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11304,7 +11321,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11315,7 +11332,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11326,7 +11343,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -11337,7 +11354,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -12002,6 +12019,31 @@ export class FloatNullableFilter {
   @Type(() => Number)
   not?: number;
 }
+",
+  "server/src/util/GraphQLBigInt.ts": "import { GraphQLScalarType } from \\"graphql\\";
+
+const graphQLBigInt = new GraphQLScalarType({
+  name: \\"BigInt\\",
+  description: \\"GraphQL representation of BigInt\\",
+
+  parseValue(value: unknown): number | null {
+    return typeof value === \\"string\\" ||
+      typeof value === \\"number\\" ||
+      typeof value === \\"bigint\\"
+      ? Number(value)
+      : null;
+  },
+
+  serialize(value: unknown): string | null {
+    return typeof value === \\"string\\" ||
+      typeof value === \\"number\\" ||
+      typeof value === \\"bigint\\"
+      ? value.toString(10)
+      : null;
+  },
+});
+
+export { graphQLBigInt as GraphQLBigInt };
 ",
   "server/src/util/IntFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
