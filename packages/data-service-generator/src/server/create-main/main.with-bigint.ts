@@ -7,6 +7,9 @@ import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from "./app.module";
+// @ts-ignore
+// eslint-disable-next-line
+import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
@@ -48,6 +51,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
