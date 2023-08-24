@@ -19,8 +19,8 @@ import {
   GetRepositoriesArgs,
   GitProviderArgs,
   PostCommitProcessArgs,
-  PreCommitProcessArgs,
-  PreCommitProcessResult,
+  CalculateDiffAndResetBranchArgs,
+  CalculateDiffAndResetBranchResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -282,7 +282,7 @@ export class GitClientService {
     });
 
     // calculate diff on everything *already existing* on the amplication branch since last amplication build
-    const preCommitDiff = await this.preCommitProcess({
+    const preCommitDiff = await this.calculateDiffAndResetBranch({
       branchName,
       gitCli,
       useBeforeLastCommit: false,
@@ -293,7 +293,7 @@ export class GitClientService {
     this.logger.debug("New commit added", { sha });
 
     // now calculate the diff (only) between the previous amplication build and the new one
-    const postCommitDiff = await this.preCommitProcess({
+    const postCommitDiff = await this.calculateDiffAndResetBranch({
       branchName,
       gitCli,
       useBeforeLastCommit: true,
@@ -394,11 +394,11 @@ export class GitClientService {
    * Return the git diff of the latest amplication commit in the branchName.
    * Return null when no amplication commits are found in the branch.
    */
-  async preCommitProcess({
+  async calculateDiffAndResetBranch({
     gitCli,
     branchName,
     useBeforeLastCommit,
-  }: PreCommitProcessArgs): PreCommitProcessResult {
+  }: CalculateDiffAndResetBranchArgs): CalculateDiffAndResetBranchResult {
     this.logger.info("Pre commit process");
     await gitCli.checkout(branchName);
 

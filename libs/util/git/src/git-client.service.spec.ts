@@ -4,7 +4,6 @@ import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
 import { GitProvider } from "./git-provider.interface";
 import { Bot, EnumGitProvider } from "./types";
-import { GitError } from "simple-git";
 
 jest.mock("./providers/git-cli");
 jest.mock("simple-git");
@@ -134,7 +133,7 @@ describe("GitClientService", () => {
     });
 
     it("should return the diff of the latest commit of amplication[bot] (or amplication provider integration)", async () => {
-      await service.preCommitProcess({
+      await service.calculateDiffAndResetBranch({
         branchName: "amplication",
         gitCli: gitCliMock,
         useBeforeLastCommit: false,
@@ -172,7 +171,7 @@ describe("GitClientService", () => {
         },
       });
 
-      await service.preCommitProcess({
+      await service.calculateDiffAndResetBranch({
         branchName: "amplication",
         gitCli: gitCliMock,
         useBeforeLastCommit: false,
@@ -183,7 +182,7 @@ describe("GitClientService", () => {
     });
 
     it("should not call the gitlog for author amplication[bot] (or amplication provider integration)", async () => {
-      await service.preCommitProcess({
+      await service.calculateDiffAndResetBranch({
         branchName: "amplication",
         gitCli: gitCliMock,
         useBeforeLastCommit: false,
