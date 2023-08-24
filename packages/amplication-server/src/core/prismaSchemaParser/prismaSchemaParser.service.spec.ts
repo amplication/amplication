@@ -1496,7 +1496,7 @@ describe("prismaSchemaParser", () => {
           ];
           expect(result).toEqual(expectedEntitiesWithFields);
         });
-        it("should create a field type Int with the correct WholeNumber Properties", async () => {
+        it("should create a field type BigInt with the correct WholeNumber Properties", async () => {
           // arrange
           const prismaSchema = `datasource db {
             provider = "postgresql"
