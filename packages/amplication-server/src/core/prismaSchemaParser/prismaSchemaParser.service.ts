@@ -84,9 +84,9 @@ import {
   PRISMA_TYPE_STRING,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
-  decimalNumberMap,
-  idTypePropertyMapByFieldType,
-  wholeNumberMap,
+  WholeNumberType,
+  DecimalNumberType,
+  idTypePropertyMapByPrismaFieldType,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -1225,7 +1225,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.DecimalNumber>{
-      databaseFieldType: decimalNumberMap[field.fieldType as string],
+      databaseFieldType: DecimalNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
@@ -1266,7 +1266,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.WholeNumber>{
-      databaseFieldType: wholeNumberMap[field.fieldType as string],
+      databaseFieldType: WholeNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
     };
@@ -1379,7 +1379,7 @@ export class PrismaSchemaParserService {
 
     if (!defaultIdAttribute) {
       const properties = <types.Id>{
-        idType: idTypePropertyMapByFieldType[field.fieldType as string],
+        idType: idTypePropertyMapByPrismaFieldType[field.fieldType as string],
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;
