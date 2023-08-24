@@ -29,34 +29,23 @@ export const ID_TYPE_CUID = "CUID";
 export const ID_TYPE_UUID = "UUID";
 export const ID_TYPE_AUTO_INCREMENT = "AUTO_INCREMENT";
 export const ID_TYPE_AUTO_INCREMENT_BIG_INT = "AUTO_INCREMENT_BIG_INT";
-export const INT_TYPE = "INT";
-export const BIG_INT_TYPE = "BIG_INT";
-export const DECIMAL_TYPE = "DECIMAL";
-export const FLOAT_TYPE = "FLOAT";
 
 export const PRISMA_TYPE_STRING = "String";
 export const PRISMA_TYPE_INT = "Int";
 export const PRISMA_TYPE_BIG_INT = "BigInt";
 
-export const wholeNumberMap = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: INT_TYPE,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  BigInt: BIG_INT_TYPE,
-};
+export enum WholeNumberType {
+  Int = "INT",
+  BigInt = "BIG_INT",
+}
 
-export const decimalNumberMap = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Float: FLOAT_TYPE,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Decimal: DECIMAL_TYPE,
-};
+export enum DecimalNumberType {
+  Float = "FLOAT",
+  Decimal = "DECIMAL",
+}
 
-export const idTypePropertyMapByFieldType = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: ID_TYPE_AUTO_INCREMENT,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  String: ID_TYPE_CUID,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  BigInt: ID_TYPE_AUTO_INCREMENT_BIG_INT,
+export const idTypePropertyMapByPrismaFieldType = {
+  [PRISMA_TYPE_INT]: ID_TYPE_AUTO_INCREMENT,
+  [PRISMA_TYPE_STRING]: ID_TYPE_CUID,
+  [PRISMA_TYPE_BIG_INT]: ID_TYPE_AUTO_INCREMENT_BIG_INT,
 };
