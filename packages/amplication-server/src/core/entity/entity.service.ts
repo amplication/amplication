@@ -240,8 +240,6 @@ export class EntityService {
     });
 
     return entityVersions.map(({ entity, fields, permissions }) => {
-      this.addDBNumericTypesIfMissing(fields);
-
       return {
         ...entity,
         fields: this.addDBNumericTypesIfMissing(fields),
