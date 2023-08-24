@@ -127,7 +127,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Id,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
@@ -141,7 +141,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.CreatedAt,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -153,7 +153,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.SingleLineText,
                 required: true,
                 unique: true,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   maxLength: 256,
@@ -167,7 +167,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Json,
                 required: false,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -219,7 +219,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Id,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
@@ -233,7 +233,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.CreatedAt,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -245,7 +245,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.SingleLineText,
                 required: true,
                 unique: true,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   maxLength: 256,
@@ -259,7 +259,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Json,
                 required: false,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -351,7 +351,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Id,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
@@ -365,7 +365,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.CreatedAt,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -377,7 +377,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.SingleLineText,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   maxLength: 256,
@@ -469,7 +469,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Id,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   idType: "AUTO_INCREMENT",
@@ -483,7 +483,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.CreatedAt,
                 required: true,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -495,7 +495,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.SingleLineText,
                 required: true,
                 unique: true,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {
                   maxLength: 256,
@@ -509,7 +509,7 @@ describe("prismaSchemaParser", () => {
                 dataType: EnumDataType.Json,
                 required: false,
                 unique: false,
-                searchable: false,
+                searchable: true,
                 description: "",
                 properties: {},
                 customAttributes: "",
@@ -597,7 +597,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.CreatedAt,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -609,7 +609,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -623,7 +623,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Json,
                   required: false,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -635,7 +635,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -688,7 +688,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -702,7 +702,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.CreatedAt,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -714,7 +714,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Json,
                   required: false,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -765,7 +765,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -779,7 +779,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.CreatedAt,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -791,7 +791,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Json,
                   required: false,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {},
                   customAttributes: "",
@@ -841,7 +841,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -855,7 +855,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -908,7 +908,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: true,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -922,7 +922,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: true,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -936,7 +936,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1021,7 +1021,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1035,7 +1035,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1088,7 +1088,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1102,7 +1102,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -1116,7 +1116,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1174,7 +1174,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -1188,7 +1188,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -1214,7 +1214,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1228,7 +1228,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -1286,7 +1286,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1300,7 +1300,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1314,7 +1314,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.DecimalNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "DECIMAL",
@@ -1370,7 +1370,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1384,7 +1384,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1398,7 +1398,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.DecimalNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "FLOAT",
@@ -1454,7 +1454,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1468,7 +1468,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1482,7 +1482,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -1537,7 +1537,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1551,7 +1551,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1565,7 +1565,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "BIG_INT",
@@ -1620,7 +1620,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1671,7 +1671,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "UUID",
@@ -1722,7 +1722,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -1773,7 +1773,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT_BIG_INT",
@@ -1829,7 +1829,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1843,7 +1843,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -1859,7 +1859,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1915,7 +1915,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -1929,7 +1929,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -1943,7 +1943,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2023,7 +2023,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -2037,7 +2037,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -2051,7 +2051,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.SingleLineText,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     maxLength: 256,
@@ -2076,7 +2076,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2090,7 +2090,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2137,7 +2137,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2151,7 +2151,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.OptionSet,
                   required: false,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     options: [
@@ -2168,7 +2168,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2243,7 +2243,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2257,7 +2257,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2304,7 +2304,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2318,7 +2318,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.OptionSet,
                   required: false,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     options: [
@@ -2335,7 +2335,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2392,7 +2392,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "AUTO_INCREMENT",
@@ -2406,7 +2406,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.WholeNumber,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     databaseFieldType: "INT",
@@ -2467,7 +2467,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2511,7 +2511,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2600,7 +2600,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2644,7 +2644,7 @@ describe("prismaSchemaParser", () => {
                   dataType: EnumDataType.Id,
                   required: true,
                   unique: false,
-                  searchable: false,
+                  searchable: true,
                   description: "",
                   properties: {
                     idType: "CUID",
@@ -2738,7 +2738,7 @@ describe("prismaSchemaParser", () => {
                     dataType: EnumDataType.Id,
                     required: true,
                     unique: false,
-                    searchable: false,
+                    searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
@@ -2782,7 +2782,7 @@ describe("prismaSchemaParser", () => {
                     dataType: EnumDataType.Id,
                     required: true,
                     unique: false,
-                    searchable: false,
+                    searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
@@ -2839,7 +2839,7 @@ describe("prismaSchemaParser", () => {
                     dataType: EnumDataType.Id,
                     required: true,
                     unique: false,
-                    searchable: false,
+                    searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
@@ -2883,7 +2883,7 @@ describe("prismaSchemaParser", () => {
                     dataType: EnumDataType.Id,
                     required: true,
                     unique: false,
-                    searchable: false,
+                    searchable: true,
                     description: "",
                     properties: {
                       idType: "CUID",
