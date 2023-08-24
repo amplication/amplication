@@ -6685,21 +6685,13 @@ export class HealthService extends HealthServiceBase {
   "server/src/main.ts": "import { ValidationPipe } from \\"@nestjs/common\\";
 import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { connectMicroservices } from \\"./connectMicroservices\\";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
-  // eslint-disable-next-line
 } from \\"./swagger\\";
 
 const { PORT = 3000 } = process.env;
@@ -13346,7 +13338,6 @@ export class UserService extends UserServiceBase {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-// @ts-ignore
 import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
 
 @InputType({
@@ -13447,7 +13438,6 @@ export class BigIntFilter {
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
 import { Type } from \\"class-transformer\\";
-// @ts-ignore
 import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
 
 @InputType({
