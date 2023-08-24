@@ -26,4 +26,5 @@ export enum KAFKA_TOPICS {
   CHECK_USER_ACCESS_TOPIC = "authorization.internal.can-access-build.request.0",
   DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",
   USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
+  USER_ACTION_TOPIC = "user-action.internal.1",
 }
