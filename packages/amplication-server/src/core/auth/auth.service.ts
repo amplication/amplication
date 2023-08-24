@@ -21,6 +21,10 @@ import { FindOneArgs } from "../../dto";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { EnvironmentVariables } from "@amplication/util/kafka";
+import { Env } from "../../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 export type AuthUser = User & {
   account: Account;
@@ -53,6 +57,8 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
+    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
@@ -147,6 +153,25 @@ export class AuthService {
       IDENTITY_PROVIDER_MANUAL
     );
 
+    this.kafkaProducerService
+      .emitMessage(
+        EnvironmentVariables.instance.get(Env.USER_ACTION_TOPIC, true),
+        {
+          key: {},
+          value: {
+            userId: account.id,
+            notificationId: account.notificationId,
+            firstName: account.firstName,
+            lastName: account.lastName,
+            email: account.email,
+            action: "signup",
+          },
+        }
+      )
+      .catch((error) =>
+        this.logger.error(`Failed to que user ${account.id} aignup`, error)
+      );
+
     const user = await this.bootstrapUser(account, payload.workspaceName);
 
     return this.prepareToken(user);
@@ -187,6 +212,25 @@ export class AuthService {
     if (!passwordValid) {
       throw new AmplicationError("Invalid password");
     }
+
+    this.kafkaProducerService
+      .emitMessage(
+        EnvironmentVariables.instance.get(Env.USER_ACTION_TOPIC, true),
+        {
+          key: {},
+          value: {
+            userId: account.id,
+            notificationId: account.notificationId,
+            firstName: account.firstName,
+            lastName: account.lastName,
+            email: account.email,
+            action: "login",
+          },
+        }
+      )
+      .catch((error) =>
+        this.logger.error(`Failed to que user ${account.id} aignup`, error)
+      );
 
     return this.prepareToken(account.currentUser);
   }

@@ -18,17 +18,18 @@ datasource db {
 }
 
 model Account {
-  id            String   @id @default(cuid())
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  email         String   @unique(map: "Account.email_unique")
-  firstName     String
-  lastName      String
-  password      String
-  currentUserId String?  @unique(map: "Account.currentUserId_unique")
-  githubId      String?
-  currentUser   User?    @relation(fields: [currentUserId], references: [id])
-  users         User[]   @relation("AccountOnUser")
+  id             String   @id @default(cuid())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  email          String   @unique(map: "Account.email_unique")
+  firstName      String
+  lastName       String
+  password       String
+  currentUserId  String?  @unique(map: "Account.currentUserId_unique")
+  githubId       String?
+  currentUser    User?    @relation(fields: [currentUserId], references: [id])
+  users          User[]   @relation("AccountOnUser")
+  notificationId String?
 }
 
 model Workspace {
@@ -110,7 +111,6 @@ model User {
   deletedAt             DateTime?
   userAction            UserAction[]
   lastActive            DateTime?    @default(now())
-
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
