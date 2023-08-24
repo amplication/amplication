@@ -24,6 +24,7 @@ import { createGitIgnore } from "./gitignore/create-gitignore";
 import { createDockerComposeDevFile } from "./docker-compose/create-docker-compose-dev";
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
 import { createMainFile } from "./create-main/create-main-file";
+import { connectMicroservices } from "./connect-microservices/connect-microservices";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -106,6 +107,9 @@ async function createServerInternal(
     envVariables: ENV_VARIABLES,
   });
 
+  await context.logger.info("Creating connectMicroservices function...");
+  const connectMicroservicesModule = await connectMicroservices();
+
   await context.logger.info("Creating Docker compose configurations...");
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDevFile = await createDockerComposeDevFile();
@@ -129,6 +133,7 @@ async function createServerInternal(
     dockerComposeDevFile,
     typesRelatedFiles,
     mainFile,
+    connectMicroservicesModule,
   ]);
   return moduleMap;
 }

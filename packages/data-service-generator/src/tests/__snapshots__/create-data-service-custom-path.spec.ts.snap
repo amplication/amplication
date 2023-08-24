@@ -40,7 +40,7 @@ yarn-error.log*
     \\"pluralize\\": \\"8.0.0\\",
     \\"ra-data-graphql-amplication\\": \\"0.0.14\\",
     \\"react\\": \\"16.14.0\\",
-    \\"react-admin\\": \\"3.19.11\\",
+    \\"react-admin\\": \\"3.19.12\\",
     \\"react-dom\\": \\"16.14.0\\",
     \\"react-scripts\\": \\"5.0.0\\",
     \\"sass\\": \\"^1.39.0\\",
@@ -3367,6 +3367,13 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   ],
 })
 export class AppModule {}
+",
+  "test/src/connectMicroservices.ts": "import { INestApplication } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
+
+export async function connectMicroservices(app: INestApplication) {
+  const configService = app.get(ConfigService);
+}
 ",
   "test/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -6949,6 +6956,9 @@ import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
 // @ts-ignore
 // eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
+// @ts-ignore
+// eslint-disable-next-line
+import { connectMicroservices } from \\"./connectMicroservices\\";
 import {
   swaggerPath,
   swaggerDocumentOptions,
@@ -6990,6 +7000,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

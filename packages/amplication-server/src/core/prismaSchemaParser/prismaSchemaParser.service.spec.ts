@@ -268,7 +268,7 @@ describe("prismaSchemaParser", () => {
           },
         ];
         expect(result).toEqual(expectedEntitiesWithFields);
-        expect(actionContext.onEmitUserActionLog).toBeCalledTimes(7);
+        expect(actionContext.onEmitUserActionLog).toBeCalledTimes(8);
         expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
           1,
           "Starting Prisma Schema Validation",
@@ -286,21 +286,26 @@ describe("prismaSchemaParser", () => {
         );
         expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
           4,
-          `Model name "admin" was changed to "Admin"`,
+          `attribute "@@map" was added to the model "admin"`,
           EnumActionLogLevel.Info
         );
         expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
           5,
-          `Prepare Prisma Schema for import completed`,
+          `Model name "admin" was changed to "Admin"`,
           EnumActionLogLevel.Info
         );
         expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
           6,
-          `Create import objects from Prisma Schema`,
+          `Prepare Prisma Schema for import completed`,
           EnumActionLogLevel.Info
         );
         expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
           7,
+          `Create import objects from Prisma Schema`,
+          EnumActionLogLevel.Info
+        );
+        expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+          8,
           `Create import objects from Prisma Schema completed`,
           EnumActionLogLevel.Info
         );
@@ -689,6 +694,83 @@ describe("prismaSchemaParser", () => {
                     idType: "CUID",
                   },
                   customAttributes: '@db.VarChar(256) @map("username")',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "createdAt",
+                  displayName: "Created At",
+                  dataType: EnumDataType.CreatedAt,
+                  required: true,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {},
+                  customAttributes: "",
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "roles",
+                  displayName: "Roles",
+                  dataType: EnumDataType.Json,
+                  required: false,
+                  unique: false,
+                  searchable: false,
+                  description: "",
+                  properties: {},
+                  customAttributes: "",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
+        it("should rename a field to id if it is a unique field and its type is a valid id type and add the id and should NOT add the a map with the original name", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Admin {
+            username   String   @unique @db.VarChar(256) @map("username_123")
+            createdAt  DateTime @default(now())
+            roles      Json?
+          }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Admin",
+              displayName: "Admin",
+              pluralDisplayName: "Admins",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: true,
+                  searchable: false,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: '@db.VarChar(256) @map("username_123")',
                 },
                 {
                   permanentId: expect.any(String),

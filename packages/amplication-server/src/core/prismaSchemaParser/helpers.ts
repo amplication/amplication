@@ -14,6 +14,7 @@ import {
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { camelCase, upperFirst } from "lodash";
+import { Mapper } from "./types";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -216,4 +217,29 @@ export function jsonField(field: Field) {
   if (field.fieldType === ScalarType.Json) {
     return EnumDataType.Json;
   }
+}
+
+export function findOriginalModelName(
+  mapper: Mapper,
+  modelName: string
+): string {
+  return (
+    Object.values(mapper.modelNames).find((item) => item.newName === modelName)
+      ?.originalName || modelName
+  );
+}
+
+export function findOriginalFieldName(
+  mapper: Mapper,
+  fieldName: string
+): string {
+  for (const [, fields] of Object.entries(mapper.fieldNames)) {
+    const field = Object.values(fields).find(
+      (value) => value.newName === fieldName
+    );
+    if (field) {
+      return field.originalName;
+    }
+  }
+  return fieldName;
 }
