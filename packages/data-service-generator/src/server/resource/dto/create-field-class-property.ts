@@ -130,7 +130,7 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
 export const FLOAT_ID = builders.identifier("Float");
-export const INT_ID = builders.identifier("Int");
+export const GRAPHQL_BIGINT_ID = builders.identifier("GraphQLBigInt");
 export const STRING_ID = builders.identifier("String");
 const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [scalar in ScalarType]: namedTypes.Identifier | null;
