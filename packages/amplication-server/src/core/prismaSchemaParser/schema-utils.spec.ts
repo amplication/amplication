@@ -60,7 +60,7 @@ describe("schema-utils", () => {
         dataType: dataType,
         required: true,
         unique: false,
-        searchable: false,
+        searchable: true,
         description: "",
         properties: {},
         customAttributes: '@map("mock_field")',
