@@ -1,7 +1,9 @@
-import { Field, InputType, Int } from "@nestjs/graphql";
+import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
+// @ts-ignore
+import { GraphQLBigInt } from "./GraphQLBigInt";
 
 @InputType({
   isAbstract: true,
@@ -13,7 +15,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -24,7 +26,7 @@ export class BigIntNullableFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -35,7 +37,7 @@ export class BigIntNullableFilter {
     type: [Number],
   })
   @IsOptional()
-  @Field(() => [Int], {
+  @Field(() => [GraphQLBigInt], {
     nullable: true,
   })
   @Type(() => Number)
@@ -46,7 +48,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -57,7 +59,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -68,7 +70,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -79,7 +81,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
@@ -90,7 +92,7 @@ export class BigIntNullableFilter {
     type: Number,
   })
   @IsOptional()
-  @Field(() => Int, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
   @Type(() => Number)
