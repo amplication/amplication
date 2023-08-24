@@ -686,7 +686,7 @@ const CUSTOMER: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "AUTO_INCREMENT",
+        idType: "AUTO_INCREMENT_BIG_INT",
       },
       required: true,
       unique: false,
