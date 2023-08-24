@@ -19,7 +19,7 @@ export class AccountService {
     args: Prisma.AccountCreateArgs,
     identityProvider: string
   ): Promise<Account> {
-    args.data = { ...args.data, notificationId: cuid() };
+    args.data = { ...args.data, externalId: cuid() };
     const account = await this.prisma.account.create(args);
 
     const userData: IdentifyData = {

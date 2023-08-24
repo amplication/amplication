@@ -21,7 +21,7 @@ export class Value {
   lastName!: string;
 
   @IsString()
-  notificationId!: string;
+  externalId!: string;
 
   @IsString()
   action!: UserActionType;

@@ -161,7 +161,7 @@ export class AuthService {
           key: {},
           value: {
             userId: account.id,
-            notificationId: account.notificationId,
+            externalId: account.externalId,
             firstName: account.firstName,
             lastName: account.lastName,
             email: account.email,
@@ -221,7 +221,7 @@ export class AuthService {
           key: {},
           value: {
             userId: account.id,
-            notificationId: account.notificationId,
+            externalId: account.externalId,
             firstName: account.firstName,
             lastName: account.lastName,
             email: account.email,

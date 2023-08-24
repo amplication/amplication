@@ -5,7 +5,7 @@ async function main() {
   const client = new PrismaClient();
   await client.account.updateMany({
     data: {
-      notificationId: cuid(),
+      externalId: cuid(),
     },
   });
   await client.$disconnect();
