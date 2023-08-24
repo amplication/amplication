@@ -360,7 +360,7 @@ import { Organization } from \\"../organization/Organization\\";
 import { Order } from \\"../order/Order\\";
 
 export type Customer = {
-  id: number;
+  id: bigint;
   createdAt: Date;
   updatedAt: Date;
   email: string;
@@ -472,7 +472,7 @@ export type CustomerUpdateInput = {
   orders?: OrderUpdateManyWithoutCustomersInput;
 };
 ",
-  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
+  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { BigIntFilter } from \\"../../util/BigIntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
@@ -484,7 +484,7 @@ import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWher
 import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type CustomerWhereInput = {
-  id?: IntFilter;
+  id?: BigIntFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
@@ -503,7 +503,7 @@ export type CustomerWhereInput = {
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
-  id: number;
+  id: bigint;
 };
 ",
   "admin-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -3138,7 +3138,7 @@ model Order {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   customer   Customer        @relation(fields: [customerId], references: [id])
-  customerId Int
+  customerId BigInt
   status     EnumOrderStatus
   label      EnumOrderLabel?
 }
@@ -3154,7 +3154,7 @@ model Organization {
 }
 
 model Customer {
-  id                Int                          @id @default(autoincrement())
+  id                BigInt                       @id @default(autoincrement())
   createdAt         DateTime                     @default(now())
   updatedAt         DateTime                     @updatedAt
   email             String
@@ -3434,9 +3434,9 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { Type } from \\"class-transformer\\";
 import { Decimal } from \\"decimal.js\\";
-import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -3449,8 +3449,8 @@ class Customer {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
-  id!: number;
+  @Field(() => GraphQLBigInt)
+  id!: bigint;
 
   @ApiProperty({
     required: true,
@@ -4405,7 +4405,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IntFilter } from \\"../../util/IntFilter\\";
+import { BigIntFilter } from \\"../../util/BigIntFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
@@ -4423,14 +4423,14 @@ import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFil
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
-    type: IntFilter,
+    type: BigIntFilter,
   })
-  @Type(() => IntFilter)
+  @Type(() => BigIntFilter)
   @IsOptional()
-  @Field(() => IntFilter, {
+  @Field(() => BigIntFilter, {
     nullable: true,
   })
-  id?: IntFilter;
+  id?: BigIntFilter;
 
   @ApiProperty({
     required: false,
@@ -4617,7 +4617,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
-import { Transform } from \\"class-transformer\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 
 @InputType()
 class CustomerWhereUniqueInput {
@@ -4626,11 +4626,8 @@ class CustomerWhereUniqueInput {
     type: Number,
   })
   @IsInt()
-  @Transform((prop) => parseInt(prop.value), {
-    toClassOnly: true,
-  })
-  @Field(() => Number)
-  id!: number;
+  @Field(() => GraphQLBigInt)
+  id!: bigint;
 }
 
 export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };
@@ -4852,7 +4849,6 @@ import { CustomerService } from \\"../customer.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -4864,7 +4860,6 @@ const CREATE_INPUT = {
   comments: \\"exampleComments\\",
 };
 const CREATE_RESULT = {
-  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -4877,7 +4872,6 @@ const CREATE_RESULT = {
 };
 const FIND_MANY_RESULT = [
   {
-    id: 42,
     createdAt: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
@@ -4890,7 +4884,6 @@ const FIND_MANY_RESULT = [
   },
 ];
 const FIND_ONE_RESULT = {
-  id: 42,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
