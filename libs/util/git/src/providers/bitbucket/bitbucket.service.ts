@@ -57,6 +57,8 @@ export class BitBucketService implements GitProvider {
     accessToken: string;
     refreshToken: string;
     expiresAt: number;
+    tokenType: string;
+    scopes: string[];
   };
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
@@ -72,10 +74,10 @@ export class BitBucketService implements GitProvider {
         className: BitBucketService.name,
       },
     });
-    const { accessToken, refreshToken, expiresAt } =
+    const { accessToken, refreshToken, expiresAt, tokenType, scopes } =
       providerOrganizationProperties;
 
-    this.auth = { accessToken, refreshToken, expiresAt };
+    this.auth = { accessToken, refreshToken, expiresAt, tokenType, scopes };
     const { clientId, clientSecret } = providerConfiguration;
 
     if (!clientId || !clientSecret) {
@@ -102,6 +104,12 @@ export class BitBucketService implements GitProvider {
       authorizationCode
     );
 
+    this.auth.accessToken = authData.access_token;
+    this.auth.refreshToken = authData.refresh_token;
+    this.auth.expiresAt = Date.now() + authData.expires_in * 1000; // 7200 seconds = 2 hours
+    this.auth.tokenType = authData.token_type;
+    this.auth.scopes = authData.scopes.split(" ");
+
     this.logger.info("BitBucketService: getAccessToken");
 
     return {
@@ -113,7 +121,25 @@ export class BitBucketService implements GitProvider {
     };
   }
 
+  private shouldRefreshToken(): boolean {
+    this.logger.info("Token is going to be expired, refreshing...");
+    const timeInMsLeft = this.auth.expiresAt - Date.now();
+    this.logger.debug("Time left before token expires:", {
+      value: `${timeInMsLeft / 60000} minutes`,
+    });
+
+    if (timeInMsLeft > 5 * 60 * 1000) {
+      this.logger.debug("Token is still valid");
+      return false;
+    }
+    return true;
+  }
+
   async refreshAccessToken(): Promise<OAuthTokens> {
+    if (!this.shouldRefreshToken()) {
+      return this.auth;
+    }
+
     const newOAuthTokens = await refreshTokenRequest(
       this.clientId,
       this.clientSecret,
@@ -404,6 +430,8 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
+    await this.refreshAccessToken();
+
     const pullRequestData = {
       title: pullRequestTitle,
       description: pullRequestBody,
@@ -531,6 +559,9 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
+
+    await this.refreshAccessToken();
+
     await createCommentOnPrRequest(
       repositoryGroupName,
       repositoryName,
