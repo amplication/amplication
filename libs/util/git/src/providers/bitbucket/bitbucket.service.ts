@@ -53,13 +53,7 @@ import { BitbucketNotFoundError } from "./errors";
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private auth: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-    tokenType: string;
-    scopes: string[];
-  };
+  private auth: OAuthTokens;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
   private logger: ILogger;
