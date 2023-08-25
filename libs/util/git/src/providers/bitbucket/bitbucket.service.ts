@@ -99,10 +99,6 @@ export class BitBucketService implements GitProvider {
     );
 
     this.auth.accessToken = authData.access_token;
-    this.auth.refreshToken = authData.refresh_token;
-    this.auth.expiresAt = Date.now() + authData.expires_in * 1000; // 7200 seconds = 2 hours
-    this.auth.tokenType = authData.token_type;
-    this.auth.scopes = authData.scopes.split(" ");
 
     this.logger.info("BitBucketService: getAccessToken");
 
