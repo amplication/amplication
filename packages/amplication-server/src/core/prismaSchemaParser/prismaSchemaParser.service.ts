@@ -87,6 +87,7 @@ import {
   WholeNumberType,
   DecimalNumberType,
   idTypePropertyMapByPrismaFieldType,
+  MAP_ATTRIBUTE_NAME,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
