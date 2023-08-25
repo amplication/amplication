@@ -648,6 +648,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "createCommentOnPrRequest")
         .mockResolvedValue(mockedCreateCommentOnResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessToken")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       await service.createPullRequestComment({
         where: {
           issueNumber: 1,
@@ -658,6 +668,7 @@ describe("bitbucket.service", () => {
         data: { body: "this is my comment for the pull request" },
       });
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledTimes(1);
       expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledWith(
         "my-group",
@@ -1044,6 +1055,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "createPullRequestFromRequest")
         .mockResolvedValue(mockedCreatePullRequestResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessToken")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.createPullRequest({
         owner: "maccheroni",
         repositoryName: "best-repo",
@@ -1059,6 +1080,7 @@ describe("bitbucket.service", () => {
         number: 2,
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnCreatePullRequestFromRequest).toBeCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });
