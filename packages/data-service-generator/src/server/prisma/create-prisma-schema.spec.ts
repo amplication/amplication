@@ -241,7 +241,7 @@ describe("createPrismaFields", () => {
     [
       "WholeNumber",
       EnumDataType.WholeNumber,
-      {},
+      { databaseFieldType: "INT" },
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         PrismaSchemaDSLTypes.ScalarType.Int,
@@ -263,7 +263,7 @@ describe("createPrismaFields", () => {
     [
       "DecimalNumber",
       EnumDataType.DecimalNumber,
-      {},
+      { databaseFieldType: "FLOAT" },
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         PrismaSchemaDSLTypes.ScalarType.Float,
@@ -367,7 +367,7 @@ describe("createPrismaFields", () => {
     [
       "Id",
       EnumDataType.Id,
-      {},
+      { idType: "CUID" },
       PrismaSchemaDSL.createScalarField(
         EXAMPLE_ENTITY_FIELD_NAME,
         PrismaSchemaDSLTypes.ScalarType.String,

@@ -34,6 +34,7 @@ import {
   CreateDTOsParams,
   LoadStaticFilesParams,
   CreateServerDockerComposeDevParams,
+  CreateConnectMicroservicesParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -61,6 +62,7 @@ export type Events = {
   [EventNames.CreateServerPackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
   [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIPackageJsonParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
+  [EventNames.CreateConnectMicroservices]?: PluginEventType<CreateConnectMicroservicesParams>;
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
   [EventNames.CreateEntityResolver]?: PluginEventType<CreateEntityResolverParams>;
   [EventNames.CreateEntityResolverBase]?: PluginEventType<CreateEntityResolverBaseParams>;

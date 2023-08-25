@@ -59,6 +59,23 @@ export async function prepareContext(
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
 
+  context.hasDecimalFields = normalizedEntities.some((entity) => {
+    return entity.fields.some(
+      (field) =>
+        field.dataType === EnumDataType.DecimalNumber &&
+        (field.properties as types.DecimalNumber)?.databaseFieldType ===
+          "DECIMAL"
+    );
+  });
+
+  context.hasBigIntFields = normalizedEntities.some((entity) => {
+    return entity.fields.some(
+      (field) =>
+        field.dataType === EnumDataType.WholeNumber &&
+        (field.properties as types.WholeNumber)?.databaseFieldType === "BIG_INT"
+    );
+  });
+
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
   );

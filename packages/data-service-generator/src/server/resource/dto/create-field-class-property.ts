@@ -30,7 +30,11 @@ import {
   IS_STRING_ID,
   VALIDATE_NESTED_ID,
 } from "./class-validator.util";
-import { INPUT_JSON_VALUE_KEY } from "./constants";
+import {
+  DECIMAL_VALUE,
+  BIG_INT_VALUE,
+  INPUT_JSON_VALUE_KEY,
+} from "./constants";
 import { createEnumMembers } from "./create-enum-dto";
 import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
@@ -56,8 +60,12 @@ const PRISMA_SCALAR_TO_TYPE: {
   [ScalarType.Json]: builders.tsTypeReference(
     builders.identifier(INPUT_JSON_VALUE_KEY)
   ),
-  [ScalarType.Decimal]: builders.tsNumberKeyword(),
-  [ScalarType.BigInt]: builders.tsNumberKeyword(),
+  [ScalarType.Decimal]: builders.tsTypeReference(
+    builders.identifier(DECIMAL_VALUE)
+  ),
+  [ScalarType.BigInt]: builders.tsTypeReference(
+    builders.identifier(BIG_INT_VALUE)
+  ),
 };
 
 const PRISMA_SCALAR_TO_QUERY_TYPE: {
@@ -117,10 +125,12 @@ const PRISMA_SCALAR_TO_DECORATOR_ID: {
   [ScalarType.String]: IS_STRING_ID,
   [ScalarType.Json]: IS_JSON_VALUE_ID,
   [ScalarType.Decimal]: IS_NUMBER_ID,
-  [ScalarType.BigInt]: IS_NUMBER_ID,
+  [ScalarType.BigInt]: IS_INT_ID,
 };
 export const BOOLEAN_ID = builders.identifier("Boolean");
 export const NUMBER_ID = builders.identifier("Number");
+export const FLOAT_ID = builders.identifier("Float");
+export const GRAPHQL_BIGINT_ID = builders.identifier("GraphQLBigInt");
 export const STRING_ID = builders.identifier("String");
 const PRISMA_SCALAR_TO_SWAGGER_TYPE: {
   [scalar in ScalarType]: namedTypes.Identifier | null;

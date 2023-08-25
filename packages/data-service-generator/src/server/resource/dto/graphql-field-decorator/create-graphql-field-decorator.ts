@@ -16,9 +16,11 @@ import {
   DATE_ID,
   getFilterASTIdentifier,
   NULLABLE_ID,
-  NUMBER_ID,
+  FLOAT_ID,
+  GRAPHQL_BIGINT_ID,
   STRING_ID,
   TRUE_LITERAL,
+  NUMBER_ID,
 } from "../create-field-class-property";
 import { createWhereUniqueInputID } from "../create-where-unique-input";
 import { GRAPHQL_JSON_ID } from "../graphql-type-json.util";
@@ -100,10 +102,16 @@ function createGraphQLFieldType(
     return DATE_ID;
   }
   if (
-    prismaField.type === ScalarType.Float ||
-    prismaField.type === ScalarType.Int
+    prismaField.type === ScalarType.Int ||
+    prismaField.type === ScalarType.Float
   ) {
     return NUMBER_ID;
+  }
+  if (prismaField.type === ScalarType.Decimal) {
+    return FLOAT_ID;
+  }
+  if (prismaField.type === ScalarType.BigInt) {
+    return GRAPHQL_BIGINT_ID;
   }
   if (prismaField.type === ScalarType.String) {
     return STRING_ID;
