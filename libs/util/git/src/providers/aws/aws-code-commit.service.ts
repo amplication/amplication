@@ -107,9 +107,6 @@ export class AwsCodeCommitService implements GitProvider {
   async getOAuthTokens(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
-  async refreshAccessToken(): Promise<OAuthTokens> {
-    throw NotImplementedError;
-  }
   async getGitGroups(): Promise<PaginatedGitGroup> {
     throw NotImplementedError;
   }
