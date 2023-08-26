@@ -5,5 +5,5 @@ import { PluginInstallationUpdateInput } from "./PluginInstallationUpdateInput";
 @ArgsType()
 export class UpdatePluginInstallationArgs extends UpdateBlockArgs {
   @Field(() => PluginInstallationUpdateInput, { nullable: false })
-  data!: PluginInstallationUpdateInput;
+  declare data: PluginInstallationUpdateInput;
 }

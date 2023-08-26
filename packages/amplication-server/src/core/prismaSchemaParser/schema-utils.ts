@@ -58,9 +58,6 @@ export function createOneEntityFieldCommonProperties(
     field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
     false;
 
-  const isSearchableField =
-    fieldDataType === EnumDataType.Lookup ? true : false;
-
   const fieldAttributes = filterOutAmplicationAttributes(
     prepareFieldAttributes(field.attributes)
   )
@@ -81,7 +78,7 @@ export function createOneEntityFieldCommonProperties(
     dataType: fieldDataType,
     required: !field.optional || false,
     unique: isUniqueField,
-    searchable: isSearchableField,
+    searchable: true,
     description: "",
     properties: {},
     customAttributes: fieldAttributes,

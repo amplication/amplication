@@ -2,18 +2,12 @@ import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from "./app.module";
-// @ts-ignore
-// eslint-disable-next-line
 import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
-  // eslint-disable-next-line
 } from "./swagger";
 
 const { PORT = 3000 } = process.env;
