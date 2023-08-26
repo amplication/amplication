@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { gql, useQuery } from "@apollo/client";
 
 import * as models from "../models";
+import { AppContext } from "../context/appContext";
 
 const POLL_INTERVAL = 5000;
 /**
@@ -10,6 +11,8 @@ const POLL_INTERVAL = 5000;
 const useBuildWatchStatus = (
   build?: models.Build
 ): { data: { build?: models.Build } } => {
+  const { commitUtils } = useContext(AppContext);
+
   const { data, startPolling, stopPolling, refetch } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
@@ -17,6 +20,9 @@ const useBuildWatchStatus = (
       buildId: build?.id,
     },
     skip: !shouldReload(build),
+    onCompleted: (data) => {
+      commitUtils.updateBuildStatus(data.build);
+    },
   });
 
   //stop polling when build process completed
