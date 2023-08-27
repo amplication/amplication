@@ -36,6 +36,7 @@ describe("GitClientService", () => {
   const gitDiffMock = jest.fn();
   const gitLogMock = jest.fn();
   const gitGetFirstCommitShaMock = jest.fn();
+  const commitMock = jest.fn();
 
   const gitCliMock: GitCli = {
     gitAuthorUser: amplicationGitUserAuthor,
@@ -44,7 +45,10 @@ describe("GitClientService", () => {
     reset: jest.fn(),
     push: jest.fn(),
     resetState: jest.fn(),
+    clone: jest.fn(),
+    commit: commitMock,
     diff: gitDiffMock,
+    applyPatch: jest.fn(),
     getFirstCommitSha: gitGetFirstCommitShaMock,
   } as unknown as GitCli;
 
@@ -290,6 +294,61 @@ describe("GitClientService", () => {
         expect(gitGetFirstCommitShaMock).toHaveBeenCalledTimes(1);
         expect(gitProviderMock.createBranch).toHaveBeenCalledTimes(1);
         expect(gitLogMock).toHaveBeenCalledTimes(1);
+      });
+
+      it("should create two diffs and two patches if there are changes on the amplication branch", async () => {
+        // arrange
+        const file1 = {
+          path: "file1",
+          content: "some code",
+          skipIfExists: true,
+          deleted: false,
+        };
+        const file2 = {
+          path: "file2",
+          content: "some more code",
+          skipIfExists: true,
+          deleted: false,
+        };
+        const options = {
+          branchName: "new-branch",
+          owner: "owner",
+          repositoryName: "repository",
+          gitCli: gitCliMock,
+          repositoryGroupName: "group",
+          defaultBranch: "default",
+          baseBranch: "base",
+          commitMessage: "my new commit",
+          pullRequestBody: "my test commit",
+          preparedFiles: [file1, file2],
+        };
+        // prepare
+        const pullRequestURL = "https://githubtest.com/pull/555";
+        createPullRequestMock.mockResolvedValue({ url: pullRequestURL });
+        gitGetFirstCommitShaMock.mockResolvedValueOnce({
+          sha: "first-commit-sha",
+        });
+        createBranchMock.mockResolvedValueOnce({ name: "new-branch" });
+        gitLogMock.mockResolvedValue({
+          total: 3,
+          all: [
+            { hash: "commit-3" },
+            { hash: "commit-2" },
+            { hash: "commit-1" },
+          ],
+          latest: { hash: "commit-3" },
+        });
+        commitMock.mockResolvedValueOnce("cd54ff344");
+        gitDiffMock.mockResolvedValue("diffff");
+
+        // act
+        const result = await service.accumulativePullRequest(options);
+
+        // assert
+        expect(result).toEqual(pullRequestURL);
+        expect(gitDiffMock).toHaveBeenCalledTimes(2);
+        expect(gitCliMock.applyPatch).toBeCalledTimes(2);
+        expect(gitCliMock.commit).toBeCalledTimes(1);
       });
     });
 
