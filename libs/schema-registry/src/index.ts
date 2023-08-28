@@ -8,3 +8,4 @@ export * as CreatePrSuccess from "./lib/create-pr-success";
 export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
+export * as UserAction from "./lib/user-action";

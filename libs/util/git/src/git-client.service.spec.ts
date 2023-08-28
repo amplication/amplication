@@ -58,7 +58,6 @@ describe("GitClientService", () => {
   const getGitInstallationUrlMock = jest.fn();
   const getCurrentOAuthUserMock = jest.fn();
   const getOAuthTokensMock = jest.fn();
-  const refreshAccessTokenMock = jest.fn();
   const getGitGroupsMock = jest.fn();
   const getRepositoryMock = jest.fn();
   const getRepositoriesMock = jest.fn();
@@ -79,7 +78,6 @@ describe("GitClientService", () => {
     getGitInstallationUrl: getGitInstallationUrlMock,
     getCurrentOAuthUser: getCurrentOAuthUserMock,
     getOAuthTokens: getOAuthTokensMock,
-    refreshAccessToken: refreshAccessTokenMock,
     getGitGroups: getGitGroupsMock,
     getRepository: getRepositoryMock,
     getRepositories: getRepositoriesMock,

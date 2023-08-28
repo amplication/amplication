@@ -70,12 +70,6 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling refreshAccessToken()", async () => {
-    await expect(gitProvider.refreshAccessToken()).rejects.toThrowError(
-      "Method not implemented."
-    );
-  });
-
   it("should throw an error when calling getGitGroups()", async () => {
     await expect(gitProvider.getGitGroups()).rejects.toThrowError(
       "Method not implemented."
