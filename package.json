@@ -65,7 +65,7 @@
     "@octokit/core": "^4.1.0",
     "@octokit/oauth-app": "^4.2.0",
     "@octokit/oauth-authorization-url": "^5.0.0",
-    "@octokit/openapi-types": "^13.13.1",
+    "@octokit/openapi-types": "^18.0.0",
     "@octokit/rest": "^19.0.5",
     "@octokit/webhooks": "^10.6.2",
     "@octokit/webhooks-types": "^6.9.0",
