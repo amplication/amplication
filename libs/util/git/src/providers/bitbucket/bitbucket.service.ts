@@ -126,7 +126,7 @@ export class BitBucketService implements GitProvider {
     return true;
   }
 
-  async refreshAccessToken(): Promise<OAuthTokens> {
+  async refreshAccessTokenIfNeeded(): Promise<OAuthTokens> {
     if (!this.shouldRefreshToken()) {
       return this.auth;
     }
@@ -137,7 +137,7 @@ export class BitBucketService implements GitProvider {
       this.auth.refreshToken
     );
 
-    this.logger.info("BitBucketService: refreshAccessToken");
+    this.logger.info("BitBucketService: refreshAccessTokenIfNeeded");
     this.auth.accessToken = newOAuthTokens.access_token;
 
     return {
@@ -166,7 +166,7 @@ export class BitBucketService implements GitProvider {
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
       this.auth.accessToken
@@ -215,7 +215,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing groupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const repository = await repositoryRequest(
       groupName,
@@ -249,7 +249,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing groupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       groupName,
@@ -294,7 +294,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing groupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const newRepository = await repositoryCreateRequest(
       groupName,
@@ -346,7 +346,7 @@ export class BitBucketService implements GitProvider {
       gitReference = ref;
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const fileResponse = await getFileMetaRequest(
       repositoryGroupName,
@@ -399,7 +399,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const pullRequest = await getPullRequestByBranchNameRequest(
       repositoryGroupName,
@@ -449,7 +449,7 @@ export class BitBucketService implements GitProvider {
       },
     };
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const newPullRequest = await createPullRequestFromRequest(
       repositoryGroupName,
@@ -471,7 +471,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     try {
       const branch = await getBranchRequest(
@@ -500,7 +500,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     const branch = await createBranchRequest(
       repositoryGroupName,
@@ -523,7 +523,7 @@ export class BitBucketService implements GitProvider {
         throw new CustomError("Missing repositoryGroupName");
       }
 
-      await this.refreshAccessToken();
+      await this.refreshAccessTokenIfNeeded();
 
       const firstCommit = await getFirstCommitRequest(
         repositoryGroupName,
@@ -550,7 +550,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     return Promise.resolve(
       `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`
@@ -574,7 +574,7 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
-    await this.refreshAccessToken();
+    await this.refreshAccessTokenIfNeeded();
 
     await createCommentOnPrRequest(
       repositoryGroupName,
