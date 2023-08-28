@@ -5,5 +5,5 @@ import { PluginOrderUpdateInput } from "./PluginOrderUpdateInput";
 @ArgsType()
 export class UpdatePluginOrderArgs extends UpdateBlockArgs {
   @Field(() => PluginOrderUpdateInput, { nullable: false })
-  data!: PluginOrderUpdateInput;
+  declare data: PluginOrderUpdateInput;
 }

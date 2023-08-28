@@ -165,6 +165,7 @@ const EntityFieldForm = ({
             )}
 
             <SchemaFields
+              fieldDataType={formik.values.dataType}
               schema={schema}
               resourceId={resourceId}
               entity={entity}

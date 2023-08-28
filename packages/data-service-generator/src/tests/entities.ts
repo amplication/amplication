@@ -90,6 +90,10 @@ const USER: Entity = {
       unique: false,
       searchable: true,
       dataType: EnumDataType.WholeNumber,
+      properties: {
+        minimumValue: 0,
+        maximumValue: 120,
+      },
     },
     {
       id: "b491038d-f588-45e3-b97f-9074f3ed8c83",
@@ -111,6 +115,11 @@ const USER: Entity = {
       unique: false,
       searchable: false,
       dataType: EnumDataType.DecimalNumber,
+      properties: {
+        minimumValue: 1,
+        maximumValue: 999,
+        precision: 2,
+      },
     },
     //self referencing one-to-many (manager-employees)
     {
@@ -677,7 +686,7 @@ const CUSTOMER: Entity = {
       displayName: "Id",
       dataType: EnumDataType.Id,
       properties: {
-        idType: "AUTO_INCREMENT",
+        idType: "AUTO_INCREMENT_BIG_INT",
       },
       required: true,
       unique: false,
@@ -770,9 +779,10 @@ const CUSTOMER: Entity = {
       displayName: "Average Sale (-1500.00 - 1500.00)",
       dataType: EnumDataType.DecimalNumber,
       properties: {
-        minimumValue: 1500,
-        maximumValue: -1500,
-        precision: 2,
+        databaseFieldType: "DECIMAL",
+        minimumValue: 1,
+        maximumValue: 100,
+        precision: 8,
       },
       required: false,
       unique: false,
@@ -785,8 +795,9 @@ const CUSTOMER: Entity = {
       displayName: "Favorite Number (1 - 20)",
       dataType: EnumDataType.WholeNumber,
       properties: {
-        minimumValue: 1,
-        maximumValue: 20,
+        databaseFieldType: "BIG_INT",
+        minimumValue: 10,
+        maximumValue: Number.MAX_SAFE_INTEGER,
       },
       required: false,
       unique: false,
