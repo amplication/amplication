@@ -92,7 +92,9 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
-        onSyncNewGitOrganizationClick={() => {}}
+        onSyncNewGitOrganizationClick={() => {
+          window.open("https://amplication.com/contact-us");
+        }}
         disabled={!showAwsCodeCommitConnect.hasAccess}
       />
     </div>

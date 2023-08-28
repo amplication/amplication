@@ -12,8 +12,8 @@ import {
   RelationArray,
   Func,
   ConcretePrismaSchemaBuilder,
-  Attribute,
   BlockAttribute,
+  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -31,6 +31,9 @@ import {
   singleLineTextField,
   updateAtField,
   wholeNumberField,
+  findOriginalFieldName,
+  findOriginalModelName,
+  isValidIdFieldType,
 } from "./helpers";
 import {
   handleModelNamesCollision,
@@ -39,6 +42,13 @@ import {
   createOneEntityFieldCommonProperties,
   findRemoteRelatedModelAndField,
   handleEnumMapAttribute,
+  convertUniqueFieldNotNamedIdToIdField,
+  convertUniqueFieldNamedIdToIdField,
+  addIdFieldIfNotExists,
+  handleIdFieldNotNamedId,
+  handleNotIdFieldNotUniqueNamedId,
+  addMapAttributeToField,
+  addMapAttributeToModel,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -58,15 +68,25 @@ import {
   FIELD_TYPE_NAME,
   FUNCTION_ARG_TYPE_NAME,
   ID_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT,
+  ID_DEFAULT_VALUE_CUID,
+  ID_DEFAULT_VALUE_UUID,
   ID_FIELD_NAME,
+  ID_TYPE_AUTO_INCREMENT,
+  ID_TYPE_AUTO_INCREMENT_BIG_INT,
+  ID_TYPE_CUID,
+  ID_TYPE_UUID,
   INDEX_ATTRIBUTE_NAME,
-  MAP_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   OBJECT_KIND_NAME,
+  PRISMA_TYPE_BIG_INT,
+  PRISMA_TYPE_INT,
+  PRISMA_TYPE_STRING,
   RELATION_ATTRIBUTE_NAME,
   UNIQUE_ATTRIBUTE_NAME,
-  idTypePropertyMap,
-  idTypePropertyMapByFieldType,
+  WholeNumberType,
+  DecimalNumberType,
+  idTypePropertyMapByPrismaFieldType,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -387,15 +407,6 @@ export class PrismaSchemaParserService {
       (item) => item.type === MODEL_TYPE_NAME
     ) as Model[];
     modelList.map((model: Model) => {
-      const modelAttributes = model.properties.filter(
-        (prop) =>
-          prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
-      ) as BlockAttribute[];
-
-      const hasMapAttribute = modelAttributes?.some(
-        (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
-      );
-
       const formattedModelName = formatModelName(model.name);
 
       if (formattedModelName !== model.name) {
@@ -407,19 +418,16 @@ export class PrismaSchemaParserService {
         );
 
         mapper.modelNames[model.name] = {
-          oldName: model.name,
+          originalName: model.name,
           newName: newModelName,
         };
+
+        addMapAttributeToModel(builder, model, actionContext);
 
         void actionContext.onEmitUserActionLog(
           `Model name "${model.name}" was changed to "${newModelName}"`,
           EnumActionLogLevel.Info
         );
-
-        !hasMapAttribute &&
-          builder
-            .model(model.name)
-            .blockAttribute(MAP_ATTRIBUTE_NAME, model.name);
 
         builder.model(model.name).then<Model>((model) => {
           model.name = newModelName;
@@ -451,6 +459,8 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
     models.map((model: Model) => {
+      const originalModelName = findOriginalModelName(mapper, model.name);
+
       const modelFieldList = model.properties.filter(
         (property) =>
           property.type === FIELD_TYPE_NAME &&
@@ -462,17 +472,6 @@ export class PrismaSchemaParserService {
         // we are not renaming enum fields because we are not supporting custom attributes on enum fields
         if (this.isOptionSetField(schema, field)) return builder;
         if (this.isMultiSelectOptionSetField(schema, field)) return builder;
-
-        const fieldAttributes = field.attributes?.filter(
-          (attr) => attr.type === ATTRIBUTE_TYPE_NAME
-        ) as Attribute[];
-
-        const hasMapAttribute = fieldAttributes?.find(
-          (attribute: Attribute) => attribute.name === MAP_ATTRIBUTE_NAME
-        );
-
-        const shouldAddMapAttribute =
-          !hasMapAttribute && !this.isLookupField(schema, field);
 
         const formattedFieldName = formatFieldName(field.name);
 
@@ -486,9 +485,14 @@ export class PrismaSchemaParserService {
             ? `${formattedFieldName}Field`
             : formattedFieldName;
 
-          mapper.fieldNames[field.name] = {
-            oldName: field.name,
-            newName: newFieldName,
+          mapper.fieldNames = {
+            ...mapper.fieldNames,
+            [originalModelName]: {
+              [field.name]: {
+                originalName: field.name,
+                newName: newFieldName,
+              },
+            },
           };
 
           void actionContext.onEmitUserActionLog(
@@ -496,11 +500,7 @@ export class PrismaSchemaParserService {
             EnumActionLogLevel.Info
           );
 
-          shouldAddMapAttribute &&
-            builder
-              .model(model.name)
-              .field(field.name)
-              .attribute(MAP_ATTRIBUTE_NAME, [`"${field.name}"`]);
+          addMapAttributeToField(builder, schema, model, field, actionContext);
 
           builder
             .model(model.name)
@@ -534,16 +534,29 @@ export class PrismaSchemaParserService {
     const schema = builder.getSchema();
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
-    Object.entries(mapper.modelNames).map(([oldName, { newName }]) => {
+    Object.entries(mapper.modelNames).map(([originalName, { newName }]) => {
       models.map((model: Model) => {
+        const originalModelName = findOriginalModelName(mapper, model.name);
+        const originalFieldName = findOriginalFieldName(mapper, model.name);
         const fields = model.properties.filter(
           (property) => property.type === FIELD_TYPE_NAME
         ) as Field[];
         fields.map((field: Field) => {
-          if (field.fieldType === oldName) {
-            mapper.fieldTypes[field.fieldType] = {
-              oldName: field.fieldType,
-              newName,
+          if (field.fieldType === originalName) {
+            mapper.fieldTypes = {
+              ...mapper.fieldTypes,
+              [originalModelName]: {
+                ...(mapper.fieldTypes[originalModelName] ?? {}),
+                [originalFieldName]: {
+                  ...(mapper.fieldTypes[originalModelName]?.[
+                    originalFieldName
+                  ] ?? {}),
+                  [field.fieldType]: {
+                    originalName: field.fieldType,
+                    newName,
+                  },
+                },
+              },
             };
 
             void actionContext.onEmitUserActionLog(
@@ -574,7 +587,7 @@ export class PrismaSchemaParserService {
    * This function handle cases where the model doesn't have an id field (field with "@id" attribute),
    * but it has a composite id - unique identifier for a record in a database that is formed by combining multiple field values.
    * Model with composite id are decorated with `@@id` attribute on the model.
-   * In this cases, we rename the `@@id` attribute to `@@unique` and add id filed of type String with `@id` attribute to the model
+   * In this cases, we rename the `@@id` attribute to `@@unique`
    */
   private prepareModelIdAttribute({
     builder,
@@ -607,16 +620,7 @@ export class PrismaSchemaParserService {
         EnumActionLogLevel.Warning
       );
 
-      // add an id field with id attribute to the model
-      builder
-        .model(model.name)
-        .field(ID_FIELD_NAME, "String")
-        .attribute(ID_ATTRIBUTE_NAME);
-
-      void actionContext.onEmitUserActionLog(
-        `id field was added to model "${model.name}"`,
-        EnumActionLogLevel.Warning
-      );
+      // adding the id field to the model is done in the prepareIdField operation
     });
 
     return {
@@ -684,9 +688,14 @@ export class PrismaSchemaParserService {
                   rangeIndexAttribute.value as RelationArray
                 ).args as unknown as Array<Func>;
 
+                const originalModelName = findOriginalModelName(
+                  mapper,
+                  model.name
+                );
                 for (const arg of rangeIndexArgArr) {
                   if (typeof arg.name === "string") {
-                    const newFieldName = mapper.fieldNames[arg.name]?.newName;
+                    const newFieldName =
+                      mapper.fieldNames[originalModelName][arg.name]?.newName;
 
                     if (newFieldName) {
                       arg.name = newFieldName;
@@ -745,67 +754,108 @@ export class PrismaSchemaParserService {
     const models = schema.list.filter((item) => item.type === MODEL_TYPE_NAME);
 
     models.forEach((model: Model) => {
+      let uniqueFieldAsIdField: Field;
+
       const modelFields = model.properties.filter(
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
+
+      const hasIdField = modelFields.some(
+        (field) =>
+          field.attributes?.some((attr) => attr.name === ID_ATTRIBUTE_NAME) ??
+          false
+      );
+
+      // find the first unique field that can become an id field and its name is id
+      const uniqueFieldNamedId = modelFields.find(
+        (field) =>
+          isValidIdFieldType(field.fieldType as string) &&
+          field.name === ID_FIELD_NAME &&
+          field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)
+      );
+
+      if (!uniqueFieldNamedId) {
+        // find the first unique field that can become an id field and is not named id
+        uniqueFieldAsIdField = modelFields.find(
+          (field) =>
+            isValidIdFieldType(field.fieldType as string) &&
+            field.name !== ID_FIELD_NAME &&
+            field.attributes?.some(
+              (attr) => attr.name === UNIQUE_ATTRIBUTE_NAME
+            )
+        );
+      }
+
+      // if the model doesn't have any id or unique field that can be used as id filed, we add an id field
+      // The type is the default type for id field in Amplication - String
+      if (!hasIdField && !uniqueFieldNamedId && !uniqueFieldAsIdField) {
+        addIdFieldIfNotExists(builder, model, actionContext);
+      }
+
+      if (!hasIdField && uniqueFieldNamedId) {
+        convertUniqueFieldNamedIdToIdField(
+          builder,
+          model,
+          uniqueFieldNamedId,
+          actionContext
+        );
+      }
+
+      if (!hasIdField && uniqueFieldAsIdField) {
+        convertUniqueFieldNotNamedIdToIdField(
+          builder,
+          schema,
+          model,
+          uniqueFieldAsIdField,
+          mapper,
+          actionContext
+        );
+      }
 
       modelFields.forEach((field: Field) => {
         const isIdField = field.attributes?.some(
           (attr) => attr.name === ID_ATTRIBUTE_NAME
         );
 
-        if (!isIdField && field.name === ID_FIELD_NAME) {
-          void actionContext.onEmitUserActionLog(
-            `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
-            EnumActionLogLevel.Info
+        if (isIdField && this.isFkFieldOfARelation(schema, model, field)) {
+          throw new Error(
+            `Using the foreign key field as the primary key is not supported. The field "${field.name}" is a primary key on model "${model.name}" but also a foreign key on the related model. Please fix this issue and import the schema again.`
           );
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [`"${model.name}Id"`]);
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = `${model.name}Id`;
-            });
-
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `${model.name}Id`,
-          };
-        } else if (isIdField && field.name !== ID_FIELD_NAME) {
-          void actionContext.onEmitUserActionLog(
-            `field name "${field.name}" on model name ${model.name} was changed to "id"`,
-            EnumActionLogLevel.Info
-          );
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .attribute("map", [`"${field.name}"`]);
-
-          builder
-            .model(model.name)
-            .field(field.name)
-            .then<Field>((field) => {
-              field.name = ID_FIELD_NAME;
-            });
-
-          mapper.idFields[field.name] = {
-            oldName: field.name,
-            newName: `id`,
-          };
         }
 
-        const hasDefaultAttributeOnIdField =
+        if (!isIdField && field.name === ID_FIELD_NAME) {
+          // if the field is named "id" but it is not decorated with id, nor with @unique - we rename it to ${modelName}Id
+          handleNotIdFieldNotUniqueNamedId(
+            builder,
+            schema,
+            model,
+            field,
+            mapper,
+            actionContext
+          );
+        } else if (isIdField && field.name !== ID_FIELD_NAME) {
+          handleIdFieldNotNamedId(
+            builder,
+            schema,
+            model,
+            field,
+            mapper,
+            actionContext
+          );
+        }
+
+        const hasDefaultValueAttributeOnIdField =
           isIdField &&
           field.attributes?.some(
-            (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+            (attr) =>
+              attr.name === DEFAULT_ATTRIBUTE_NAME &&
+              attr.args.some(
+                (arg) =>
+                  (arg.value as AttributeArgument | Func).type !== "function"
+              )
           );
 
-        hasDefaultAttributeOnIdField &&
+        hasDefaultValueAttributeOnIdField &&
           builder
             .model(model.name)
             .field(field.name)
@@ -1175,6 +1225,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.DecimalNumber>{
+      databaseFieldType: DecimalNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
       precision: 8,
@@ -1215,6 +1266,7 @@ export class PrismaSchemaParserService {
     );
 
     const properties = <types.WholeNumber>{
+      databaseFieldType: WholeNumberType[field.fieldType as string],
       minimumValue: 0,
       maximumValue: 99999999999,
     };
@@ -1327,7 +1379,7 @@ export class PrismaSchemaParserService {
 
     if (!defaultIdAttribute) {
       const properties = <types.Id>{
-        idType: idTypePropertyMapByFieldType[field.fieldType as string],
+        idType: idTypePropertyMapByPrismaFieldType[field.fieldType as string],
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;
@@ -1335,9 +1387,27 @@ export class PrismaSchemaParserService {
     }
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
-      const idType = (defaultIdAttribute.args[0].value as Func).name || "cuid";
+      let idType: types.Id["idType"];
+      const idTypeDefaultArg = (defaultIdAttribute.args[0].value as Func).name;
+      if (field.fieldType === PRISMA_TYPE_STRING) {
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_CUID) {
+          idType = ID_TYPE_CUID;
+        }
+        if (idTypeDefaultArg === ID_DEFAULT_VALUE_UUID) {
+          idType = ID_TYPE_UUID;
+        }
+      }
+      if (idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT) {
+        if (field.fieldType === PRISMA_TYPE_INT) {
+          idType = ID_TYPE_AUTO_INCREMENT;
+        }
+        if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+          idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
+        }
+      }
+
       const properties = <types.Id>{
-        idType: idTypePropertyMap[idType],
+        idType,
       };
       entityField.properties = properties as unknown as {
         [key: string]: JsonValue;

@@ -239,6 +239,12 @@ function createFieldTestValueFromPrisma(
     case ScalarType.Float: {
       return builders.numericLiteral(42.42);
     }
+    case ScalarType.BigInt: {
+      return builders.numericLiteral(42242424);
+    }
+    case ScalarType.Decimal: {
+      return builders.numericLiteral(42.424242424);
+    }
     case ScalarType.Boolean: {
       return builders.literal("true");
     }

@@ -41,6 +41,9 @@ class DsgContext implements types.DsgContext {
   public clientDirectories!: clientDirectories;
   public serverDirectories!: serverDirectories;
 
+  public hasDecimalFields = false;
+  public hasBigIntFields = false;
+
   public userEntityName: string = USER_ENTITY_NAME;
   public userNameFieldName: string = USER_NAME_FIELD_NAME;
   public userPasswordFieldName: string = USER_PASSWORD_FIELD_NAME;

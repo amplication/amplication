@@ -10,7 +10,7 @@ import {
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
-import { get } from "lodash";
+import { get, isEmpty, trim } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
@@ -58,6 +58,23 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
+
+  context.hasDecimalFields = normalizedEntities.some((entity) => {
+    return entity.fields.some(
+      (field) =>
+        field.dataType === EnumDataType.DecimalNumber &&
+        (field.properties as types.DecimalNumber)?.databaseFieldType ===
+          "DECIMAL"
+    );
+  });
+
+  context.hasBigIntFields = normalizedEntities.some((entity) => {
+    return entity.fields.some(
+      (field) =>
+        field.dataType === EnumDataType.WholeNumber &&
+        (field.properties as types.WholeNumber)?.databaseFieldType === "BIG_INT"
+    );
+  });
 
   context.serverDirectories = dynamicServerPathCreator(
     get(appInfo, "settings.serverSettings.serverPath", "")
@@ -181,7 +198,9 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             relatedEntity,
             relatedField,
             isOneToOneWithoutForeignKey,
-            fkFieldName: fkFieldName || `${field.name}Id`,
+            fkFieldName: !isEmpty(trim(fkFieldName))
+              ? fkFieldName
+              : `${field.name}Id`,
           };
           return {
             ...field,
