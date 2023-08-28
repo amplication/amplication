@@ -32,6 +32,7 @@ const EXAMPLE_ACCOUNT: Account = {
   updatedAt: new Date(),
   currentUserId: null,
   githubId: null,
+  externalId: "dsdsdsdsdgfdfdg",
 };
 
 const EXAMPLE_PROJECT: Project = {
