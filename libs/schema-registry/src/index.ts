@@ -9,6 +9,7 @@ export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
 export * as UserAction from "./lib/user-action";
+export * as UserBuild from "./lib/user-build";
 
 export enum KAFKA_TOPICS {
   /// build-manager
@@ -28,4 +29,5 @@ export enum KAFKA_TOPICS {
   DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",
   USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
   USER_ACTION_TOPIC = "user-action.internal.1",
+  USER_BUILD_TOPIC = "user-build.internal.1",
 }

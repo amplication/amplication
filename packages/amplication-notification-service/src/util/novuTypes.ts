@@ -18,7 +18,7 @@ export interface NovuService {
     payload: UserDetails;
   }) => void;
   deleteSubscriber: (obj: { subscriberId: string }) => void;
-  riggerNotificationToSubscriber: (obj: {
+  triggerNotificationToSubscriber: (obj: {
     subscriberId: string;
     eventName: string;
     payload?: { [key: string]: any };
@@ -38,7 +38,7 @@ export interface NovuService {
 }
 
 export interface Notification {
-  notificationMethod: string;
+  notificationMethod: (obj: { [key: string]: any }) => void;
   subscriberId?: string | string[];
   eventName?: string;
   topicKey?: string;
@@ -46,7 +46,8 @@ export interface Notification {
 }
 
 export interface NotificationContext {
-  message: string;
+  message: { [key: string]: any };
+  topic: string;
   novuService: NovuService;
   amplicationLogger: AmplicationLogger;
   notifications: Notification[];

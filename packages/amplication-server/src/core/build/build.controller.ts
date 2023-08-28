@@ -17,11 +17,13 @@ import {
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 @Controller("generated-apps")
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
+    private readonly kafkaProducerService: KafkaProducerService,
     private readonly actionService: ActionService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
