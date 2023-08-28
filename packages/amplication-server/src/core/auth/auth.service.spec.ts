@@ -23,7 +23,7 @@ import { EnumTokenType } from "./dto";
 import { ProjectService } from "../project/project.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -190,7 +190,7 @@ describe("AuthService", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case Env.USER_ACTION_TOPIC:
+                case KAFKA_TOPICS.USER_ACTION_TOPIC:
                   return "user_action_topic";
                 default:
                   return "";

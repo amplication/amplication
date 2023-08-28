@@ -23,9 +23,8 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { UserAction } from "@amplication/schema-registry";
+import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
 
 export type AuthUser = User & {
   account: Account;
@@ -156,7 +155,7 @@ export class AuthService {
     );
 
     this.kafkaProducerService
-      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), {
+      .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, {
         key: {},
         value: {
           userId: account.id,
@@ -213,9 +212,7 @@ export class AuthService {
     }
 
     this.kafkaProducerService
-      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), <
-        UserAction.KafkaEvent
-      >{
+      .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, <UserAction.KafkaEvent>{
         key: {},
         value: {
           userId: account.id,
