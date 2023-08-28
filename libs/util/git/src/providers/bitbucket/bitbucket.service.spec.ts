@@ -78,7 +78,7 @@ describe("bitbucket.service", () => {
       } as unknown as PaginatedTreeEntry;
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -149,7 +149,7 @@ describe("bitbucket.service", () => {
         .mockResolvedValue(Buffer.from("Mocked content", "utf-8"));
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -284,7 +284,7 @@ describe("bitbucket.service", () => {
         .mockResolvedValue(mockedGetFirstCommitResponse);
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -323,7 +323,7 @@ describe("bitbucket.service", () => {
     });
     it("returns the clone url", async () => {
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -465,7 +465,7 @@ describe("bitbucket.service", () => {
         .mockResolvedValue(mockedGetBranchResponse);
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -608,7 +608,7 @@ describe("bitbucket.service", () => {
       } as unknown as Branch;
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -717,7 +717,7 @@ describe("bitbucket.service", () => {
         .mockResolvedValue(mockedCreateCommentOnResponse);
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -917,7 +917,7 @@ describe("bitbucket.service", () => {
       } as unknown as PaginatedPullRequest;
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
@@ -1135,7 +1135,7 @@ describe("bitbucket.service", () => {
         .mockResolvedValue(mockedCreatePullRequestResponse);
 
       const spyOnRefreshToken = jest
-        .spyOn(service, "refreshAccessToken")
+        .spyOn(service, "refreshAccessTokenIfNeeded")
         .mockResolvedValue({
           accessToken: "my-token",
           expiresAt: 3600,
