@@ -643,10 +643,6 @@ export class GithubService implements GitProvider {
     throw NotImplementedError;
   }
 
-  async refreshAccessToken(): Promise<OAuthTokens> {
-    throw NotImplementedError;
-  }
-
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     throw NotImplementedError;
   }
