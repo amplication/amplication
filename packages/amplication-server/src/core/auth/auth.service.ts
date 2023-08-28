@@ -1,6 +1,7 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
+import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
@@ -22,7 +23,6 @@ import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { UserAction } from "@amplication/schema-registry";
@@ -54,6 +54,7 @@ const WORKSPACE_INCLUDE = {
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
@@ -155,20 +156,17 @@ export class AuthService {
     );
 
     this.kafkaProducerService
-      .emitMessage(
-        EnvironmentVariables.instance.get(Env.USER_ACTION_TOPIC, true),
-        {
-          key: {},
-          value: {
-            userId: account.id,
-            externalId: account.externalId,
-            firstName: account.firstName,
-            lastName: account.lastName,
-            email: account.email,
-            action: UserAction.UserActionType.SIGNUP,
-          },
-        }
-      )
+      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), {
+        key: {},
+        value: {
+          userId: account.id,
+          externalId: account.externalId,
+          firstName: account.firstName,
+          lastName: account.lastName,
+          email: account.email,
+          action: UserAction.UserActionType.SIGNUP,
+        },
+      })
       .catch((error) =>
         this.logger.error(`Failed to que user ${account.id} signup`, error)
       );
@@ -215,22 +213,21 @@ export class AuthService {
     }
 
     this.kafkaProducerService
-      .emitMessage(
-        EnvironmentVariables.instance.get(Env.USER_ACTION_TOPIC, true),
-        <UserAction.KafkaEvent>{
-          key: {},
-          value: {
-            userId: account.id,
-            externalId: account.externalId,
-            firstName: account.firstName,
-            lastName: account.lastName,
-            email: account.email,
-            action: UserAction.UserActionType.LOGIN,
-          },
-        }
-      )
+      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), <
+        UserAction.KafkaEvent
+      >{
+        key: {},
+        value: {
+          userId: account.id,
+          externalId: account.externalId,
+          firstName: account.firstName,
+          lastName: account.lastName,
+          email: account.email,
+          action: UserAction.UserActionType.LOGIN,
+        },
+      })
       .catch((error) =>
-        this.logger.error(`Failed to que user ${account.id} aignup`, error)
+        this.logger.error(`Failed to que user ${account.id} signup`, error)
       );
 
     return this.prepareToken(account.currentUser);
