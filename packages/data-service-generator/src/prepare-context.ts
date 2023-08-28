@@ -10,7 +10,7 @@ import {
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
-import { get } from "lodash";
+import { get, isEmpty, trim } from "lodash";
 import { join } from "path";
 import pluralize from "pluralize";
 import { CLIENT_BASE_DIRECTORY } from "./admin/constants";
@@ -198,7 +198,9 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
             relatedEntity,
             relatedField,
             isOneToOneWithoutForeignKey,
-            fkFieldName: fkFieldName || `${field.name}Id`,
+            fkFieldName: !isEmpty(trim(fkFieldName))
+              ? fkFieldName
+              : `${field.name}Id`,
           };
           return {
             ...field,
