@@ -113,6 +113,7 @@ const initialContext: AppContextInterface = {
     ],
     refetchCommitsData: () => {},
     refetchLastCommit: () => {},
+    updateBuildStatus: (build: models.Build) => {},
     disableLoadMore: false,
   },
 };
