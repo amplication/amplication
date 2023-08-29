@@ -4,7 +4,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class NovuService {
-  static novuInstance = new Novu(process.env.NOVU_API_KEY);
+  static novuInstance = new Novu(process.env.NOVU_API_KEY as string);
 
   constructor(
     @Inject(AmplicationLogger)

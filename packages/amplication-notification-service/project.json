@@ -44,8 +44,7 @@
       "executor": "@nrwl/node:node",
       "options": {
         "buildTarget": "amplication-notification-service:build",
-        "inspect": true,
-        "port": 7010
+        "inspect": true
       },
       "configurations": {
         "production": {
