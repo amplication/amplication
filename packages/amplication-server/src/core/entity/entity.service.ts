@@ -86,6 +86,7 @@ import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ActionContext } from "../userAction/types";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -186,6 +187,7 @@ export class EntityService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly billingService: BillingService,
     private readonly prismaSchemaParserService: PrismaSchemaParserService,
+    private readonly serviceSettingsService: ServiceSettingsService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -734,6 +736,20 @@ export class EntityService {
         },
         include: { entityVersion: true },
       });
+
+      const serviceSettings =
+        await this.serviceSettingsService.getServiceSettingsValues(
+          {
+            where: { id: entity.resourceId },
+          },
+          user
+        );
+
+      if (serviceSettings.authEntityName === entity.name) {
+        throw new AmplicationError(
+          `cannot delete auth entity : ${entity.name}.`
+        );
+      }
 
       for (const relatedEntityField of relatedEntityFields) {
         await this.deleteField({ where: { id: relatedEntityField.id } }, user);
