@@ -6,6 +6,7 @@ import axios from "axios";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
+  CodeGenerationRequest,
   CodeGenerationSuccess,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -16,7 +17,6 @@ import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
-import { CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
 
 const { plainToInstance } = classTransformer;
 const spyOnPlainToInstance = jest.spyOn(classTransformer, "plainToInstance");
@@ -202,7 +202,7 @@ describe("BuildRunnerController", () => {
   });
 
   it("On code generation request save DSG resource data and send it to DSG runner", async () => {
-    const codeGenerationRequestDTOMock: CodeGenerationRequestDto = {
+    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
       dsgResourceData: {
@@ -212,7 +212,7 @@ describe("BuildRunnerController", () => {
       },
     };
     const args = plainToInstance(
-      CodeGenerationRequestDto,
+      CodeGenerationRequest.Value,
       codeGenerationRequestDTOMock
     );
 
@@ -227,7 +227,7 @@ describe("BuildRunnerController", () => {
 
     expect(loggerService.info).toBeCalled();
     expect(spyOnPlainToInstance).toBeCalledWith(
-      CodeGenerationRequestDto,
+      CodeGenerationRequest.Value,
       codeGenerationRequestDTOMock
     );
     expect(loggerService.debug).toBeCalled();
@@ -258,7 +258,7 @@ describe("BuildRunnerController", () => {
 
   it("On code generation rqeuest with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
-    const codeGenerationRequestDTOMock: CodeGenerationRequestDto = {
+    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
       dsgResourceData: {
