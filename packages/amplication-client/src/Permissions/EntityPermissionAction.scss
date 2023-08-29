@@ -1,0 +1,54 @@
+@import "../style/index.scss";
+
+$toggle-min-width: 250px;
+
+.entity-permissions-action {
+  margin-left: 0;
+  margin-right: 0;
+
+  &__header {
+    @include flexFullRow;
+    width: 100%;
+    h3 {
+      color: var(--black60);
+      margin: 0;
+    }
+
+    h4 {
+      @include body2;
+      color: var(--black40);
+      margin: 0;
+      margin-top: var(--default-spacing-small);
+      display: flex;
+      align-items: center;
+      .amp-icon {
+        margin-right: var(--default-spacing);
+      }
+
+      .entity-permissions-action__action-summary {
+        color: var(--black100);
+      }
+    }
+
+    &__title {
+      flex: 1;
+      padding: 0 var(--default-spacing);
+    }
+    .multi-state-toggle {
+      margin-bottom: 0;
+      min-width: $toggle-min-width;
+
+      label {
+        display: none;
+      }
+    }
+  }
+  &__action-name {
+    color: var(--black100);
+  }
+  .amp-panel-collapsible__body {
+    .panel-list .toggle-button label span {
+      border-radius: 25px;
+    }
+  }
+}

@@ -1,0 +1,95 @@
+@import "../../style/index.scss";
+
+$track-width: 38px;
+$track-height: 18px;
+
+$thumb-width: 14px;
+$thumb-height: 14px;
+$thumb-gap-from-track: 2px;
+$thumb-translate: $track-width - $thumb-width - ($thumb-gap-from-track * 2);
+$input-translate: -22px;
+
+$thumb-position-offset: -6px;
+
+@mixin state($thumb, $track) {
+  + .MuiSwitch-track {
+    background-color: $track;
+    opacity: 1;
+  }
+  .MuiSwitch-thumb {
+    background-color: $thumb;
+    border-color: $thumb;
+  }
+}
+
+.toggle-field {
+  display: inline-block;
+  margin-bottom: var(--default-spacing-small);
+
+  position: relative;
+  height: $track-height;
+
+  label {
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+    align-items: center;
+
+    .input-label-value {
+      @include label;
+      margin-left: var(--default-spacing);
+      margin-bottom: 0;
+      color: var(--black100);
+    }
+  }
+
+  .MuiSwitch-root {
+    width: auto;
+    height: auto;
+    padding: 0;
+
+    .MuiSwitch-switchBase {
+      top: $thumb-position-offset;
+      left: $thumb-position-offset;
+
+      &.Mui-checked {
+        @include state(var(--static-white), var(--primary));
+      }
+
+      &:not(.Mui-checked) {
+        @include state(var(--static-white), var(--black20));
+      }
+
+      + .MuiSwitch-track {
+        opacity: 1;
+        width: $track-width;
+        height: $track-height;
+        position: relative;
+        background: var(--toggle-track-background);
+        border-radius: ($thumb-height * 0.5) + 2;
+      }
+
+      .MuiSwitch-thumb {
+        box-shadow: none;
+        width: $thumb-width - 2;
+        height: $thumb-height - 2;
+        border: none;
+        border-radius: 50%;
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      .MuiTouchRipple-root {
+        display: none;
+      }
+
+      &.Mui-disabled {
+        opacity: 0.38;
+        + .MuiSwitch-track {
+          opacity: 0.38;
+        }
+      }
+    }
+  }
+}

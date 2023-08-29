@@ -1,0 +1,28 @@
+@import "../style/index.scss";
+
+.related-entity-field-field {
+  margin-top: var(--default-spacing);
+  label {
+    display: block;
+    font-size: var(--text-field-label-font-size);
+    color: var(--black60);
+
+    margin-bottom: 0;
+  }
+  &__highlight {
+    color: var(--black100);
+  }
+
+  &__error {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .amp-icon {
+      color: var(--negative);
+    }
+
+    > * {
+      margin-right: var(--default-spacing);
+    }
+  }
+}

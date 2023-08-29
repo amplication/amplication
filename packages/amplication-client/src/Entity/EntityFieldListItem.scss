@@ -1,0 +1,59 @@
+@import "../style/index.scss";
+
+.entity-field-list-item {
+  margin: 0;
+  margin-bottom: var(--default-spacing);
+
+  &__row {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &__description-row {
+    padding-bottom: var(--default-spacing);
+    border-bottom: 1px solid var(--black10);
+  }
+  &__title {
+    @include bold-14;
+  }
+  &__subtitle {
+    @include body4;
+    font-style: italic;
+    text-transform: capitalize;
+    font-weight: 400;
+    color: var(--dark-secondary-turquoise);
+  }
+  &__description {
+    @include body2;
+    color: var(--black100);
+    line-height: 18px;
+  }
+  &__property {
+    color: var(--positive-default);
+    border: 1px solid var(--positive-default);
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 var(--default-spacing);
+    background-color: rgba(49, 197, 135, 0.09);
+    .amp-icon {
+      margin-right: var(--default-spacing);
+    }
+  }
+
+  &__highlight {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    color: var(--black100);
+
+    .amp-icon {
+      margin-right: var(--icon-spacing);
+    }
+  }
+}

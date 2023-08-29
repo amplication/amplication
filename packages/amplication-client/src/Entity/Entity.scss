@@ -1,0 +1,23 @@
+@import "../style/index.scss";
+
+.amp-page-content.entity {
+  .amp-page-content__tabs {
+    .sub-list {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+
+      .new-entity-field {
+        .text-input label {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+}
+
+.entity-form {
+  &__permissions {
+    margin: 0;
+  }
+}

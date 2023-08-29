@@ -1,0 +1,92 @@
+@import "../style/index.scss";
+
+$order-badge-size: 14px;
+$install-width: 86px;
+$button-padding: 5px 12px;
+
+.plugins-catalog-item {
+  margin: 0;
+  margin-bottom: var(--default-spacing);
+
+  &__row {
+    display: flex;
+    margin-bottom: var(--default-spacing);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .toggle-field {
+    margin-right: auto;
+  }
+  &__enabled {
+    flex: 1;
+  }
+
+  &__main {
+    padding-top: var(--default-spacing-small);
+    padding-bottom: var(--default-spacing-small);
+  }
+
+  &__details {
+    margin-left: var(--large-spacing);
+    flex: 1;
+
+    &__title {
+      @include title-14;
+      color: var(--black100);
+    }
+    &__description {
+      @include regular-12;
+      color: var(--black80);
+    }
+  }
+
+  &__install {
+    padding: $button-padding;
+    min-width: $install-width;
+  }
+
+  &__repo a {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: var(--icon-spacing);
+
+    color: var(--black100);
+
+    &:hover,
+    &:active,
+    &:visited {
+      color: var(--black100);
+    }
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
+  }
+
+  &__order {
+    @include flexVerticalCenter;
+    margin-left: var(--large-spacing);
+
+    span {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      background-color: var(--black2);
+      padding: var(--icon-spacing);
+      border-radius: var(--small-border-radius);
+      width: $order-badge-size;
+      height: $order-badge-size;
+    }
+  }
+  .toggle-field {
+    margin-bottom: 0px;
+  }
+}

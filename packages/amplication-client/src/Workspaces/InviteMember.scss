@@ -1,0 +1,14 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.invite-member {
+  form {
+    display: flex;
+    flex-direction: row;
+
+    .text-input {
+      width: var(--form-field-long);
+      margin-right: var(--default-spacing);
+    }
+  }
+}

@@ -1,5 +1,5 @@
 import * as dotenv from "dotenv";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 import { customSeed } from "./customSeed";
 import { Salt, parseSalt } from "../src/auth/password.service";
 import { hash } from "bcrypt";

@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+.project-sidebar {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+
+  &__label {
+    @include regular-12;
+    margin-top: 0;
+    margin-bottom: var(--default-spacing-small);
+    color: var(--black80);
+  }
+
+  &__divider {
+    height: 1px;
+    background-color: var(--black5);
+    margin: var(--large-spacing) 0;
+    border: none;
+  }
+}

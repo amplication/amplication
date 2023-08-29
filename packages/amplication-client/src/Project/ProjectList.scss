@@ -1,0 +1,31 @@
+@import "../style/index.scss";
+
+.project-list {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+
+  &__items {
+    overflow-y: auto;
+    @include scrollbars(16px, var(--black60), transparent);
+    flex: 1;
+  }
+
+  & > .amp-button {
+    height: 36px;
+    padding: 8px;
+    margin-top: var(--default-spacing-small);
+    justify-content: flex-start;
+    gap: 8px;
+
+    &:hover {
+      color: var(--black100);
+      background-color: var(--black10);
+    }
+
+    .amp-button__icon {
+      margin: 0;
+    }
+  }
+}
