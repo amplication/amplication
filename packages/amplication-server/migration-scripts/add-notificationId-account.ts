@@ -1,4 +1,5 @@
 import { PrismaClient } from "../src/prisma";
+import md5 from "crypto-js/md5";
 import cuid from "cuid";
 
 async function main() {

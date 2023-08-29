@@ -10,6 +10,6 @@ export const novuPackage = async (notificationCtx: NotificationContext) => {
       await notificationMethod(restNotification);
     }
   } catch (error) {
-    notificationCtx.amplicationLogger.error(error.message, error);
+    await notificationCtx.amplicationLogger.error(error.message, error);
   }
 };

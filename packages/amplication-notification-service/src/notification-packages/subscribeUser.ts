@@ -18,6 +18,8 @@ export const subscribeUser = async (notificationCtx: NotificationContext) => {
 
     return notificationCtx;
   } catch (error) {
-    notificationCtx.amplicationLogger.error(error.message, error);
+    await notificationCtx.amplicationLogger.error(error.message, error);
+
+    return notificationCtx;
   }
 };

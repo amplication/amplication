@@ -21,6 +21,7 @@
     "serve:git": "nx run-many --parallel --target=serve --projects=amplication-git-pull-request-service",
     "serve:storage": "npx nx serve amplication-storage-gateway",
     "serve:plugins": "npx nx serve amplication-plugin-api",
+    "serve:notification": "npx nx serve amplication-notification",
     "debug:dsg": "npx nx generate-local-code data-service-generator"
   },
   "lint-staged": {
@@ -99,6 +100,7 @@
     "core-js": "^3.6.5",
     "cron": "^2.3.0",
     "cronstrue": "^1.125.0",
+    "crypto-js": "^4.1.1",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
     "deepdash": "^5.3.9",

@@ -6,6 +6,7 @@ import { Env } from "./env";
 import { TracingModule } from "@amplication/util/nestjs/tracing";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
+import { NovuService } from "./util/novuService";
 
 @Module({
   imports: [
@@ -22,6 +23,6 @@ import { AppService } from "./app.service";
     HealthModule,
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, NovuService],
 })
 export class AppModule {}

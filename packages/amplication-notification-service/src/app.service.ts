@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Inject, Injectable } from "@nestjs/common";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { NovuService } from "./util/novuService";
 import { novuPackage } from "./util/novuPackage";
@@ -8,18 +8,19 @@ import { buildCompleted } from "./notification-packages/buildCompleted";
 const compose =
   (...fns) =>
   (x) =>
-    fns.reduce((y, f) => f(y), x);
+    fns.reduce(async (y, f) => f(await y), x);
 
 @Injectable()
 export class AppService {
   constructor(
+    @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger,
     private readonly novuService: NovuService
   ) {}
   async notificationService(message: { [key: string]: any }, topic: string) {
-    return await compose(
+    return compose(
       subscribeUser,
-      buildCompleted,
+      // buildCompleted,
       novuPackage
     )({
       message,

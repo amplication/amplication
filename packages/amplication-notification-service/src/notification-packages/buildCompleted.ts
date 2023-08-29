@@ -7,7 +7,7 @@ export const buildCompleted = async (notificationCtx: NotificationContext) => {
       !notificationCtx.message &&
       notificationCtx.topic !== KAFKA_TOPICS.USER_BUILD_TOPIC
     )
-      return;
+      return notificationCtx;
 
     const { externalId, ...restParams } = notificationCtx.message;
     notificationCtx.notifications.push({
@@ -20,6 +20,8 @@ export const buildCompleted = async (notificationCtx: NotificationContext) => {
 
     return notificationCtx;
   } catch (error) {
-    notificationCtx.amplicationLogger.error(error.message, error);
+    await notificationCtx.amplicationLogger.error(error.message, error);
+
+    return notificationCtx;
   }
 };

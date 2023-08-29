@@ -57,7 +57,7 @@
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/build-manager:latest"],
+        "tags": ["amplication/notification:latest"],
         "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
       },
       "configurations": {

@@ -11,11 +11,23 @@ import { AppService } from "./app.service";
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
-  @EventPattern("/^[a-zA-Z0-9.]+$/")
+  @EventPattern("user-action.internal.1")
   subscribeNotification(
-    @Payload() message: string,
+    @Payload() message: { [key: string]: any },
     @Ctx() context: KafkaContext
   ) {
+    console.log("*******************", message, context.getTopic());
+    // validate message
+    const messageTopic = context.getTopic();
+    return this.appService.notificationService(message, messageTopic);
+  }
+
+  @EventPattern("user-build.internal.1")
+  notifyBuild(
+    @Payload() message: { [key: string]: any },
+    @Ctx() context: KafkaContext
+  ) {
+    console.log("*******************", message, context.getTopic());
     // validate message
     const messageTopic = context.getTopic();
     return this.appService.notificationService(message, messageTopic);

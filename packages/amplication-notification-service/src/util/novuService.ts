@@ -1,42 +1,52 @@
-import { Injectable } from "@nestjs/common";
-import { Novu } from "@novu/node";
+import { Inject, Injectable } from "@nestjs/common";
+import { ISubscriberPayload, Novu } from "@novu/node";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { UserDetails } from "./novuTypes";
 
 @Injectable()
 export class NovuService {
-  #novuInstance;
+  static novuInstance = new Novu(process.env.NOVU_API_KEY);
 
-  constructor(private readonly logger: AmplicationLogger) {
-    this.#novuInstance = new Novu(process.env.NOVU_API_KEY);
-  }
+  constructor(
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
+  ) {}
 
-  async createSubscriber(obj: { subscriberId: string; payload: UserDetails }) {
+  async createSubscriber(obj: {
+    subscriberId: string;
+    payload: ISubscriberPayload;
+  }) {
     try {
       const { subscriberId, payload } = obj;
       if (!subscriberId)
         throw Error("subscriberId is missing in createSubscriber !");
 
-      const createSubscriberRes = await this.#novuInstance.identify(
-        subscriberId,
-        payload
-      );
-      this.logger.info(createSubscriberRes.data);
+      const createSubscriberRes =
+        await NovuService.novuInstance.subscribers.identify(
+          subscriberId,
+          payload
+        );
+      console.log(createSubscriberRes.data);
+      // this.logger.info(createSubscriberRes.data);
     } catch (error) {
-      this.logger.error(error.message, error);
+      console.log(error.message);
+      // this.logger.error(error.message, error);
     }
   }
 
-  async updateSubscriber(obj: { subscriberId: string; payload: UserDetails }) {
+  async updateSubscriber(obj: {
+    subscriberId: string;
+    payload: ISubscriberPayload;
+  }) {
     try {
       const { subscriberId, payload } = obj;
       if (!subscriberId)
         throw Error("subscriberId is missing in updateSubscriber !");
 
-      const updateSubscriberRes = await this.#novuInstance.update(
-        subscriberId,
-        payload
-      );
+      const updateSubscriberRes =
+        await NovuService.novuInstance.subscribers.update(
+          subscriberId,
+          payload
+        );
       this.logger.info(updateSubscriberRes.data);
     } catch (error) {
       this.logger.error(error.message, error);
@@ -49,7 +59,8 @@ export class NovuService {
       if (!subscriberId)
         throw Error("subscriberId is missing in deleteSubscriber !");
 
-      const deleteSubscriberRes = await this.#novuInstance.delete(subscriberId);
+      const deleteSubscriberRes =
+        await NovuService.novuInstance.subscribers.delete(subscriberId);
       this.logger.info(deleteSubscriberRes.data);
     } catch (error) {
       this.logger.error(error.message, error);
@@ -69,7 +80,7 @@ export class NovuService {
       if (!eventName)
         throw Error("eventName is missing in triggerNotification !");
 
-      const triggerNotificationRes = await this.#novuInstance.trigger(
+      const triggerNotificationRes = await NovuService.novuInstance.trigger(
         eventName,
         {
           to: {
@@ -79,9 +90,11 @@ export class NovuService {
         }
       );
 
-      this.logger.info(triggerNotificationRes.data);
+      // console.log(triggerNotificationRes.data);
+      await this.logger.info(triggerNotificationRes.data);
     } catch (error) {
-      this.logger.error(error.message, error);
+      // console.log(error.message, error)
+      await this.logger.error(error.message, error);
     }
   }
 
@@ -94,7 +107,7 @@ export class NovuService {
       if (!eventName)
         throw Error("eventName is missing in broadCastEventToAll !");
 
-      const broadCastNotificationRes = await this.#novuInstance.broadcast(
+      const broadCastNotificationRes = await NovuService.novuInstance.broadcast(
         eventName,
         {
           payload,
@@ -116,14 +129,12 @@ export class NovuService {
       if (!topicKey)
         throw Error("topicKey is missing in addSubscribersToTopic !");
 
-      const addSubscribersRes = await this.#novuInstance.topics.addSubscribers(
-        topicKey,
-        {
+      const addSubscribersRes =
+        await NovuService.novuInstance.topics.addSubscribers(topicKey, {
           subscribers: subscribersIds,
-        }
-      );
+        });
 
-      this.logger.info(addSubscribersRes);
+      this.logger.info(addSubscribersRes.data);
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -139,10 +150,10 @@ export class NovuService {
         throw Error("topicKey is missing in removeSubscribersFromTopic !");
 
       const removeSubscribersRes =
-        await this.#novuInstance.topics.removeSubscribers(topicKey, {
+        await NovuService.novuInstance.topics.removeSubscribers(topicKey, {
           subscribers: subscribersIds,
         });
-      this.logger.info(removeSubscribersRes);
+      this.logger.info(removeSubscribersRes.data);
     } catch (error) {
       this.logger.error(error.message, error);
     }
