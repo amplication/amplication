@@ -14,12 +14,14 @@ import {
   CodeGenerationRequest,
   CodeGenerationSuccess,
 } from "@amplication/schema-registry";
+import { DsgCatalogService } from "./dsg-catalog.service";
 
 @Controller("build-runner")
 export class BuildRunnerController {
   constructor(
-    private readonly buildRunnerService: BuildRunnerService,
     private readonly configService: ConfigService<Env, true>,
+    private readonly buildRunnerService: BuildRunnerService,
+    private readonly dsgCatalogService: DsgCatalogService,
     private readonly producerService: KafkaProducerService,
     private readonly logger: AmplicationLogger
   ) {}
@@ -92,10 +94,17 @@ export class BuildRunnerController {
         message.buildId,
         message.dsgResourceData
       );
+
+      const containerImageTag = this.dsgCatalogService.getDsgVersion({
+        dsgVersion: message.dsgVersion,
+        dsgVersionOption: message.dsgVersionOption,
+      });
+
       const url = this.configService.get(Env.DSG_RUNNER_URL);
       await axios.post(url, {
         resourceId: message.resourceId,
         buildId: message.buildId,
+        containerImageTag,
       });
     } catch (error) {
       this.logger.error(error.message, error);
