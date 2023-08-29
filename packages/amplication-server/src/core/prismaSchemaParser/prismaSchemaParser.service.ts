@@ -87,6 +87,7 @@ import {
   WholeNumberType,
   DecimalNumberType,
   idTypePropertyMapByPrismaFieldType,
+  MAP_ATTRIBUTE_NAME,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -103,6 +104,7 @@ export class PrismaSchemaParserService {
     this.prepareModelIdAttribute,
     this.prepareModelCompositeTypeAttributes,
     this.prepareIdField,
+    this.prepareRelationReferenceFields,
   ];
 
   constructor(
@@ -870,6 +872,100 @@ export class PrismaSchemaParserService {
     };
   }
 
+  private prepareRelationReferenceFields({
+    builder,
+    existingEntities,
+    mapper,
+    actionContext,
+  }: PrepareOperationIO): PrepareOperationIO {
+    const schema = builder.getSchema();
+    const models = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+
+    models.forEach((model: Model) => {
+      const modelFields = model.properties.filter(
+        (property) => property.type === FIELD_TYPE_NAME
+      ) as Field[];
+
+      for (const field of modelFields) {
+        const annotatedRelationField = this.findAnnotatedRelationField(
+          schema,
+          field
+        );
+
+        if (!annotatedRelationField) continue;
+
+        const remoteModel = models.find(
+          (model: Model) =>
+            formatModelName(model.name) ===
+            formatModelName(field.fieldType as string)
+        );
+
+        if (!remoteModel) {
+          throw new Error(
+            `Remote model ${field.fieldType} not found for field ${field.name} on model ${model.name}`
+          );
+        }
+
+        const relatedModelIdField = remoteModel.properties.find(
+          (property) =>
+            property.type === FIELD_TYPE_NAME &&
+            property.attributes?.some(
+              (attr) => attr.name === ID_ATTRIBUTE_NAME
+            ) &&
+            property.name === ID_FIELD_NAME
+        ) as Field;
+
+        if (!relatedModelIdField) {
+          throw new Error(
+            `Related model "${remoteModel.name}" doesn't have an id field`
+          );
+        }
+
+        // find a map attribute on the relatedModelIdField and its value
+        const relatedModelIdFieldMapAttributeName =
+          relatedModelIdField.attributes?.find(
+            (attr) => attr.name === MAP_ATTRIBUTE_NAME
+          )?.name || "";
+
+        const annotatedRelationFieldReferenceArray =
+          annotatedRelationField.attributes
+            ?.find((attr) => attr.name === RELATION_ATTRIBUTE_NAME)
+            ?.args?.find((arg) => (arg.value as KeyValue).key === "references")
+            ?.value as RelationArray;
+
+        if (annotatedRelationFieldReferenceArray.args?.length > 1) {
+          throw new Error(
+            `The relation field "${annotatedRelationField.name}" on model "${model.name}" has more than one reference field. This is not supported.`
+          );
+        }
+
+        if (
+          annotatedRelationFieldReferenceArray &&
+          annotatedRelationFieldReferenceArray.args
+        ) {
+          for (const [
+            index,
+            arg,
+          ] of annotatedRelationFieldReferenceArray.args.entries()) {
+            if (arg[index] === relatedModelIdFieldMapAttributeName) {
+              annotatedRelationFieldReferenceArray[index] =
+                relatedModelIdField.name;
+            }
+          }
+        }
+      }
+    });
+
+    return {
+      builder,
+      existingEntities,
+      mapper,
+      actionContext,
+    };
+  }
+
   /************************
    * FIELD DATA TYPE CHECKS *
    ************************/
@@ -922,6 +1018,28 @@ export class PrismaSchemaParserService {
     return (
       multiSelectOptionSetField(schema, field) ===
       EnumDataType.MultiSelectOptionSet
+    );
+  }
+
+  private findAnnotatedRelationField(
+    schema: Schema,
+    field: Field
+  ): Field | null {
+    const hasRelationAttributeWithRelationNameAndWithoutReferenceField =
+      field.attributes?.some(
+        (attr) =>
+          attr.name === RELATION_ATTRIBUTE_NAME &&
+          !attr.args?.some((arg) => typeof arg.value === "string") &&
+          attr.args?.find(
+            (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+          )
+      ) ?? false;
+
+    // check if the field is a relation field AND it has the @relation attribute with reference field
+    return (
+      this.isLookupField(schema, field) &&
+      hasRelationAttributeWithRelationNameAndWithoutReferenceField &&
+      field
     );
   }
 
