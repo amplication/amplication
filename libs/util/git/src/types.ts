@@ -340,12 +340,13 @@ export interface CloneUrlArgs {
   repositoryGroupName?: string;
 }
 
-export interface PreCommitProcessArgs {
+export interface CalculateDiffAndResetBranchArgs {
   gitCli: GitCli;
   branchName: string;
+  useBeforeLastCommit: boolean;
 }
 
-export type PreCommitProcessResult = Promise<{
+export type CalculateDiffAndResetBranchResult = Promise<{
   diff: string | null;
 }>;
 
