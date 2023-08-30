@@ -5033,7 +5033,7 @@ describe(\\"Customer\\", () => {
   });
 
   test(\\"POST /customers existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/customers\\")
       .send(CREATE_INPUT)
@@ -6429,7 +6429,7 @@ describe(\\"Empty\\", () => {
   });
 
   test(\\"POST /empties existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/empties\\")
       .send(CREATE_INPUT)
@@ -6798,10 +6798,7 @@ export class NotFoundException extends common.NotFoundException {
   HttpStatus,
 } from \\"@nestjs/common\\";
 import { BaseExceptionFilter } from \\"@nestjs/core\\";
-import {
-  // @ts-ignore
-  Prisma,
-} from \\"@prisma/client\\";
+import { Prisma } from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -7910,7 +7907,7 @@ describe(\\"Order\\", () => {
   });
 
   test(\\"POST /orders existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/orders\\")
       .send(CREATE_INPUT)
@@ -9413,7 +9410,7 @@ describe(\\"Organization\\", () => {
   });
 
   test(\\"POST /organizations existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/organizations\\")
       .send(CREATE_INPUT)
@@ -11166,7 +11163,7 @@ describe(\\"Profile\\", () => {
   });
 
   test(\\"POST /profiles existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/profiles\\")
       .send(CREATE_INPUT)
@@ -13438,7 +13435,7 @@ describe(\\"User\\", () => {
   });
 
   test(\\"POST /users existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/users\\")
       .send(CREATE_INPUT)
@@ -15764,7 +15761,7 @@ describe(\\"IsJSONValue\\", () => {
 import isJSONValidator from \\"validator/lib/isJSON\\";
 
 export function IsJSONValue(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
       name: \\"IsJSONValue\\",
       target: object.constructor,
