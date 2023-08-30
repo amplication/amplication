@@ -29,7 +29,6 @@ model Account {
   githubId      String?
   currentUser   User?    @relation(fields: [currentUserId], references: [id])
   users         User[]   @relation("AccountOnUser")
-  externalId    String?
 }
 
 model Workspace {

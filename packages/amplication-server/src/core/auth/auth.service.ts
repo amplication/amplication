@@ -22,9 +22,7 @@ import { FindOneArgs } from "../../dto";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
-import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
 
 export type AuthUser = User & {
   account: Account;
@@ -58,7 +56,7 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
-    private readonly kafkaProducerService: KafkaProducerService,
+    // private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
@@ -154,22 +152,6 @@ export class AuthService {
       IDENTITY_PROVIDER_MANUAL
     );
 
-    this.kafkaProducerService
-      .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, {
-        key: {},
-        value: {
-          userId: account.id,
-          externalId: account.externalId,
-          firstName: account.firstName,
-          lastName: account.lastName,
-          email: account.email,
-          action: UserAction.UserActionType.SIGNUP,
-        },
-      })
-      .catch((error) =>
-        this.logger.error(`Failed to que user ${account.id} signup`, error)
-      );
-
     const user = await this.bootstrapUser(account, payload.workspaceName);
 
     return this.prepareToken(user);
@@ -210,22 +192,6 @@ export class AuthService {
     if (!passwordValid) {
       throw new AmplicationError("Invalid password");
     }
-
-    this.kafkaProducerService
-      .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, <UserAction.KafkaEvent>{
-        key: {},
-        value: {
-          userId: account.id,
-          externalId: account.externalId,
-          firstName: account.firstName,
-          lastName: account.lastName,
-          email: account.email,
-          action: UserAction.UserActionType.LOGIN,
-        },
-      })
-      .catch((error) =>
-        this.logger.error(`Failed to que user ${account.id} signup`, error)
-      );
 
     return this.prepareToken(account.currentUser);
   }

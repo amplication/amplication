@@ -20,7 +20,7 @@ export class AppService {
   async notificationService(message: { [key: string]: any }, topic: string) {
     return compose(
       subscribeUser,
-      // buildCompleted,
+      buildCompleted,
       novuPackage
     )({
       message,

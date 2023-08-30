@@ -1,15 +1,13 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import { ISubscriberPayload, Novu } from "@novu/node";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class NovuService {
   static novuInstance = new Novu(process.env.NOVU_API_KEY as string);
-
-  constructor(
-    @Inject(AmplicationLogger)
-    private readonly logger: AmplicationLogger
-  ) {}
+  static logger = new AmplicationLogger({
+    component: "notification-service",
+  });
 
   async createSubscriber(obj: {
     subscriberId: string;
@@ -25,11 +23,13 @@ export class NovuService {
           subscriberId,
           payload
         );
-      console.log(createSubscriberRes.data);
-      // this.logger.info(createSubscriberRes.data);
+
+      await NovuService.logger.info(
+        "createSubscriber",
+        createSubscriberRes.data
+      );
     } catch (error) {
-      console.log(error.message);
-      // this.logger.error(error.message, error);
+      await NovuService.logger.error("error createSubscriber", error);
     }
   }
 
@@ -47,9 +47,12 @@ export class NovuService {
           subscriberId,
           payload
         );
-      this.logger.info(updateSubscriberRes.data);
+      await NovuService.logger.info(
+        "updateSubscriber",
+        updateSubscriberRes.data
+      );
     } catch (error) {
-      this.logger.error(error.message, error);
+      await NovuService.logger.error("error updateSubscriber", error);
     }
   }
 
@@ -61,9 +64,13 @@ export class NovuService {
 
       const deleteSubscriberRes =
         await NovuService.novuInstance.subscribers.delete(subscriberId);
-      this.logger.info(deleteSubscriberRes.data);
+
+      await NovuService.logger.info(
+        "deleteSubscriber",
+        deleteSubscriberRes.data
+      );
     } catch (error) {
-      this.logger.error(error.message, error);
+      await NovuService.logger.error("error deleteSubscriber", error);
     }
   }
 
@@ -90,11 +97,15 @@ export class NovuService {
         }
       );
 
-      // console.log(triggerNotificationRes.data);
-      await this.logger.info(triggerNotificationRes.data);
+      await NovuService.logger.info(
+        "triggerNotificationToSubscriber",
+        triggerNotificationRes.data
+      );
     } catch (error) {
-      // console.log(error.message, error)
-      await this.logger.error(error.message, error);
+      await NovuService.logger.error(
+        "error triggerNotificationToSubscriber",
+        error
+      );
     }
   }
 
@@ -114,9 +125,12 @@ export class NovuService {
         }
       );
 
-      this.logger.info(broadCastNotificationRes.data);
+      await NovuService.logger.info(
+        "broadCastEventToAll",
+        broadCastNotificationRes.data
+      );
     } catch (error) {
-      this.logger.error(error.message, error);
+      await NovuService.logger.error("error broadCastEventToAll", error);
     }
   }
 
@@ -134,9 +148,12 @@ export class NovuService {
           subscribers: subscribersIds,
         });
 
-      this.logger.info(addSubscribersRes.data);
+      await NovuService.logger.info(
+        "addSubscribersToTopic",
+        addSubscribersRes.data
+      );
     } catch (error) {
-      this.logger.error(error.message, error);
+      await NovuService.logger.error("error addSubscribersToTopic", error);
     }
   }
 
@@ -153,9 +170,12 @@ export class NovuService {
         await NovuService.novuInstance.topics.removeSubscribers(topicKey, {
           subscribers: subscribersIds,
         });
-      this.logger.info(removeSubscribersRes.data);
+      await NovuService.logger.info(
+        "removeSubscribersFromTopic",
+        removeSubscribersRes.data
+      );
     } catch (error) {
-      this.logger.error(error.message, error);
+      await NovuService.logger.error("error removeSubscribersFromTopic", error);
     }
   }
 }

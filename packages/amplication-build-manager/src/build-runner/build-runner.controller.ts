@@ -41,7 +41,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
@@ -53,7 +53,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }
@@ -70,7 +70,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     } catch (error) {
@@ -105,7 +105,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }

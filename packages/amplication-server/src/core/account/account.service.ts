@@ -7,7 +7,6 @@ import {
   EnumEventType,
   IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import md5 from "crypto-js/md5";
 
 @Injectable()
 export class AccountService {
@@ -20,7 +19,6 @@ export class AccountService {
     args: Prisma.AccountCreateArgs,
     identityProvider: string
   ): Promise<Account> {
-    args.data = { ...args.data, externalId: md5(args.data.id).toString() };
     const account = await this.prisma.account.create(args);
 
     const userData: IdentifyData = {

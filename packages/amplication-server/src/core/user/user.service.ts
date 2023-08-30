@@ -2,10 +2,18 @@ import { Prisma, PrismaService } from "../../prisma";
 import { ConflictException, Injectable } from "@nestjs/common";
 import { Account, User, UserRole } from "../../models";
 import { UserRoleArgs } from "./dto";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
+import { encryptString } from "../../util/encryptionUtil";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class UserService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly logger: AmplicationLogger,
+    private readonly prisma: PrismaService
+  ) {}
 
   findUser(
     args: Prisma.UserFindUniqueArgs,
@@ -138,5 +146,26 @@ export class UserService {
         lastActive,
       },
     });
+  }
+
+  async setNotificationRegistry(user: User) {
+    const externalId = encryptString(user.account.id);
+    this.kafkaProducerService
+      .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, <UserAction.KafkaEvent>{
+        key: {},
+        value: {
+          userId: user.account.id,
+          externalId,
+          firstName: user.account.firstName,
+          lastName: user.account.lastName,
+          email: user.account.email,
+          action: UserAction.UserActionType.CURRENT_WORKSPACE,
+        },
+      })
+      .catch((error) =>
+        this.logger.error(`Failed to que user ${user.account.id} signup`, error)
+      );
+
+    return externalId;
   }
 }

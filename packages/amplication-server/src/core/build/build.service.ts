@@ -58,6 +58,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
 };
+import { encryptString } from "../../util/encryptionUtil";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -337,15 +338,7 @@ export class BuildService {
       include: {
         commit: {
           include: {
-            user: {
-              include: {
-                account: {
-                  select: {
-                    externalId: true,
-                  },
-                },
-              },
-            },
+            user: true,
             project: true,
           },
         },
@@ -362,7 +355,7 @@ export class BuildService {
           workspaceId: commitWithAccount.commit.project.workspaceId,
           projectId: commitWithAccount.commit.projectId,
           buildId: buildId,
-          externalId: commitWithAccount.commit.user.account.externalId,
+          externalId: encryptString(commitWithAccount.commit.user.id),
         },
       })
       .catch((error) =>

@@ -16,7 +16,6 @@ export class AppController {
     @Payload() message: { [key: string]: any },
     @Ctx() context: KafkaContext
   ) {
-    console.log("*******************", message, context.getTopic());
     // validate message
     const messageTopic = context.getTopic();
     return this.appService.notificationService(message, messageTopic);
@@ -27,7 +26,6 @@ export class AppController {
     @Payload() message: { [key: string]: any },
     @Ctx() context: KafkaContext
   ) {
-    console.log("*******************", message, context.getTopic());
     // validate message
     const messageTopic = context.getTopic();
     return this.appService.notificationService(message, messageTopic);
