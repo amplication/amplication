@@ -5851,9 +5851,7 @@ export class NotFoundException extends common.NotFoundException {
   HttpStatus,
 } from \\"@nestjs/common\\";
 import { BaseExceptionFilter } from \\"@nestjs/core\\";
-import {
-  Prisma,
-} from \\"@prisma/client\\";
+import { Prisma } from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
