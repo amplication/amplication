@@ -95,10 +95,14 @@ export class BuildRunnerController {
         message.dsgResourceData
       );
 
-      const containerImageTag = this.dsgCatalogService.getDsgVersion({
-        dsgVersion: message.dsgVersion,
-        dsgVersionOption: message.dsgVersionOption,
-      });
+      let containerImageTag: string;
+
+      if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
+        containerImageTag = await this.dsgCatalogService.getDsgVersion({
+          dsgVersion: message.dsgVersion,
+          dsgVersionOption: message.dsgVersionOption,
+        });
+      }
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);
       await axios.post(url, {
