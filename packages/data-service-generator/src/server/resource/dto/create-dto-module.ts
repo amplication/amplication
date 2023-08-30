@@ -34,6 +34,7 @@ import {
   INPUT_TYPE_ID,
   ARGS_TYPE_ID,
   FIELD_ID,
+  FLOAT_ID,
 } from "./nestjs-graphql.util";
 import {
   GRAPHQL_TYPE_JSON_MODULE,
@@ -45,9 +46,10 @@ import {
   SCALAR_FILTER_TO_MODULE_AND_TYPE,
 } from "./filters.util";
 import { SORT_ORDER_ID, SORT_ORDER_MODULE } from "./sort-order.util";
-import { INPUT_JSON_VALUE_KEY } from "./constants";
+import { GRAPHQL_BIGINT_VALUE, INPUT_JSON_VALUE_KEY } from "./constants";
 import DsgContext from "../../../dsg-context";
 import { logger } from "../../../logging";
+import { DECIMAL_JS_MODULE, DECIMAL_VALUE_ID } from "./decimal-js";
 
 const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   Object.values(EnumScalarFiltersTypes).map((filter) => {
@@ -58,32 +60,48 @@ const FILTERS_IMPORTABLE_NAMES = Object.fromEntries(
   })
 );
 
-export const IMPORTABLE_NAMES: Record<string, namedTypes.Identifier[]> = {
-  [CLASS_VALIDATOR_MODULE]: [
-    IS_BOOLEAN_ID,
-    IS_DATE_ID,
-    IS_NUMBER_ID,
-    IS_INT_ID,
-    IS_STRING_ID,
-    IS_OPTIONAL_ID,
-    IS_ENUM_ID,
-    VALIDATE_NESTED_ID,
-  ],
-  [CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE]: [IS_JSON_VALUE_ID],
-  [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
-  [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
-  [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
-  [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_ID],
-  [NESTJS_GRAPHQL_MODULE]: [
-    OBJECT_TYPE_ID,
-    INPUT_TYPE_ID,
-    ARGS_TYPE_ID,
-    FIELD_ID,
-  ],
-  [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
-  "../../types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
-  ...FILTERS_IMPORTABLE_NAMES,
-};
+export function getImportableNames() {
+  const { hasDecimalFields, hasBigIntFields } = DsgContext.getInstance;
+
+  const importableNames: Record<string, namedTypes.Identifier[]> = {
+    [CLASS_VALIDATOR_MODULE]: [
+      IS_BOOLEAN_ID,
+      IS_DATE_ID,
+      IS_NUMBER_ID,
+      IS_INT_ID,
+      IS_STRING_ID,
+      IS_OPTIONAL_ID,
+      IS_ENUM_ID,
+      VALIDATE_NESTED_ID,
+    ],
+    [CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE]: [IS_JSON_VALUE_ID],
+    [CLASS_TRANSFORMER_MODULE]: [TYPE_ID, TRANSFORM_ID],
+    [NESTJS_SWAGGER_MODULE]: [API_PROPERTY_ID],
+    [TYPE_FEST_MODULE]: [JSON_VALUE_ID],
+    [GRAPHQL_TYPE_JSON_MODULE]: [GRAPHQL_JSON_ID],
+    [NESTJS_GRAPHQL_MODULE]: [
+      OBJECT_TYPE_ID,
+      INPUT_TYPE_ID,
+      ARGS_TYPE_ID,
+      FIELD_ID,
+      FLOAT_ID,
+    ],
+    [SORT_ORDER_MODULE]: [SORT_ORDER_ID],
+    "../../types": [builders.identifier(INPUT_JSON_VALUE_KEY)],
+    ...FILTERS_IMPORTABLE_NAMES,
+  };
+
+  if (hasDecimalFields) {
+    importableNames[DECIMAL_JS_MODULE] = [DECIMAL_VALUE_ID];
+  }
+  if (hasBigIntFields) {
+    importableNames["../../util/GraphQLBigInt"] = [
+      builders.identifier(GRAPHQL_BIGINT_VALUE),
+    ];
+  }
+
+  return importableNames;
+}
 
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
@@ -114,7 +132,7 @@ export function createDTOFile(
       : [builders.exportNamedDeclaration(dto)];
   const file = builders.file(builders.program(statements));
   const moduleToIds = {
-    ...IMPORTABLE_NAMES,
+    ...getImportableNames(),
     ...getImportableDTOs(modulePath, dtoNameToPath),
   };
 

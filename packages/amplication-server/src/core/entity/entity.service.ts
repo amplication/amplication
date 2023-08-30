@@ -86,6 +86,7 @@ import { EnumActionLogLevel, EnumActionStepStatus } from "../action/dto";
 import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ActionContext } from "../userAction/types";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -186,6 +187,7 @@ export class EntityService {
     private readonly analytics: SegmentAnalyticsService,
     private readonly billingService: BillingService,
     private readonly prismaSchemaParserService: PrismaSchemaParserService,
+    private readonly serviceSettingsService: ServiceSettingsService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -242,7 +244,7 @@ export class EntityService {
     return entityVersions.map(({ entity, fields, permissions }) => {
       return {
         ...entity,
-        fields: fields,
+        fields: this.addDBNumericTypesIfMissing(fields),
         permissions: permissions,
       };
     });
@@ -553,7 +555,7 @@ export class EntityService {
     if (existingEntities.length > 0) {
       existingEntities.forEach((entity) => {
         void actionContext.onEmitUserActionLog(
-          `Entity "${entity.name}" already exists`,
+          `Entity "${entity.name}" already exists in the service. To proceed with the import, please rename or remove the entity in your schema file or remove the conflicting entity from the service.`,
           EnumActionLogLevel.Error
         );
 
@@ -734,6 +736,20 @@ export class EntityService {
         },
         include: { entityVersion: true },
       });
+
+      const serviceSettings =
+        await this.serviceSettingsService.getServiceSettingsValues(
+          {
+            where: { id: entity.resourceId },
+          },
+          user
+        );
+
+      if (serviceSettings.authEntityName === entity.name) {
+        throw new AmplicationError(
+          `cannot delete auth entity : ${entity.name}.`
+        );
+      }
 
       for (const relatedEntityField of relatedEntityFields) {
         await this.deleteField({ where: { id: relatedEntityField.id } }, user);
@@ -989,7 +1005,7 @@ export class EntityService {
     versionNumber: number,
     args: Prisma.EntityFieldFindManyArgs
   ): Promise<EntityField[]> {
-    return await this.prisma.entityField.findMany({
+    const entityFields = await this.prisma.entityField.findMany({
       ...args,
       where: {
         ...args.where,
@@ -998,6 +1014,36 @@ export class EntityService {
           versionNumber: versionNumber,
         },
       },
+    });
+
+    return this.addDBNumericTypesIfMissing(entityFields);
+  }
+
+  /**
+   * add missing databaseFieldType to numeric types for backward compatibility
+   * INT for WholeNumber and type FLOAT for DecimalNumber
+   * */
+  addDBNumericTypesIfMissing(entityFields: EntityField[]) {
+    return entityFields.map((field) => {
+      if (field.dataType === EnumDataType.WholeNumber) {
+        if (
+          !(field.properties as unknown as types.WholeNumber)?.databaseFieldType
+        ) {
+          (field.properties as unknown as types.WholeNumber).databaseFieldType =
+            "INT";
+        }
+      }
+      if (field.dataType === EnumDataType.DecimalNumber) {
+        if (
+          !(field.properties as unknown as types.DecimalNumber)
+            ?.databaseFieldType
+        ) {
+          (
+            field.properties as unknown as types.DecimalNumber
+          ).databaseFieldType = "FLOAT";
+        }
+      }
+      return field;
     });
   }
 

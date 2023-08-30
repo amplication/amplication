@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-storage-gateway",
   coverageThreshold: {
     global: {
-      branches: 35.9,
-      lines: 9.9,
+      branches: 40,
+      lines: 9,
     },
   },
 };

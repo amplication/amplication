@@ -77,11 +77,22 @@ describe("bitbucket.service", () => {
         ],
       } as unknown as PaginatedTreeEntry;
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const spyOnGetFileRequest = jest
         .spyOn(requests, "getFileMetaRequest")
         .mockResolvedValue(mockedGetFileMetaResponse);
 
-      expect.assertions(2);
+      expect.assertions(3);
+
       try {
         await service.getFile({
           path: "tests/",
@@ -95,6 +106,8 @@ describe("bitbucket.service", () => {
           "Path points to a directory, please provide a file path"
         );
       }
+
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetFileRequest).toHaveBeenCalledTimes(1);
     });
 
@@ -135,6 +148,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "getFileRequest")
         .mockResolvedValue(Buffer.from("Mocked content", "utf-8"));
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.getFile({
         path: "tests/__init__.py",
         owner: "mr-bucket",
@@ -151,6 +174,7 @@ describe("bitbucket.service", () => {
         path: mockedGetFileResponse.path,
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetFileMetaRequest).toHaveBeenCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });
@@ -259,6 +283,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "getFirstCommitRequest")
         .mockResolvedValue(mockedGetFirstCommitResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.getFirstCommitOnBranch({
         owner: "maccheroni",
         branchName: "master",
@@ -269,6 +303,7 @@ describe("bitbucket.service", () => {
 
       const expected = { sha: mockedGetFirstCommitResponse.hash };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetFirstCommitRequest).toHaveBeenCalledTimes(1);
       expect(result).toEqual(expected);
     });
@@ -287,12 +322,23 @@ describe("bitbucket.service", () => {
       }
     });
     it("returns the clone url", async () => {
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.getCloneUrl({
         owner: "maccheroni",
         repositoryName: "myrepo",
         repositoryGroupName: "mygroup",
       });
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(result).toEqual(
         "https://x-token-auth:my-token@bitbucket.org/mygroup/myrepo.git"
       );
@@ -418,6 +464,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "getBranchRequest")
         .mockResolvedValue(mockedGetBranchResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.getBranch({
         owner: "maccheroni",
         branchName: "master",
@@ -430,6 +486,7 @@ describe("bitbucket.service", () => {
         sha: "bbfe95276c624e76c50aa640e7dba4af31b84961",
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetBranchRequest).toBeCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });
@@ -550,6 +607,16 @@ describe("bitbucket.service", () => {
         default_merge_strategy: "merge_commit",
       } as unknown as Branch;
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const spyOnGetBranchRequest = jest
         .spyOn(requests, "createBranchRequest")
         .mockResolvedValue(mockedCreateBranchResponse);
@@ -568,6 +635,7 @@ describe("bitbucket.service", () => {
         sha: mockedCreateBranchResponse.target.hash,
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetBranchRequest).toBeCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });
@@ -648,6 +716,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "createCommentOnPrRequest")
         .mockResolvedValue(mockedCreateCommentOnResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       await service.createPullRequestComment({
         where: {
           issueNumber: 1,
@@ -658,6 +736,7 @@ describe("bitbucket.service", () => {
         data: { body: "this is my comment for the pull request" },
       });
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledTimes(1);
       expect(spyOnCreateCommentOnPrRequest).toHaveBeenCalledWith(
         "my-group",
@@ -837,6 +916,16 @@ describe("bitbucket.service", () => {
         page: 1,
       } as unknown as PaginatedPullRequest;
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const spyOnGetPullRequestByBranchNameRequest = jest
         .spyOn(requests, "getPullRequestByBranchNameRequest")
         .mockResolvedValue(mockedGetPullRequestResponse);
@@ -855,6 +944,7 @@ describe("bitbucket.service", () => {
         number: 1,
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnGetPullRequestByBranchNameRequest).toBeCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });
@@ -1044,6 +1134,16 @@ describe("bitbucket.service", () => {
         .spyOn(requests, "createPullRequestFromRequest")
         .mockResolvedValue(mockedCreatePullRequestResponse);
 
+      const spyOnRefreshToken = jest
+        .spyOn(service, "refreshAccessTokenIfNeeded")
+        .mockResolvedValue({
+          accessToken: "my-token",
+          expiresAt: 3600,
+          refreshToken: "my-refresh-token",
+          scopes: ["repository:write", "pullrequest:write"],
+          tokenType: "bearer",
+        });
+
       const result = await service.createPullRequest({
         owner: "maccheroni",
         repositoryName: "best-repo",
@@ -1059,6 +1159,7 @@ describe("bitbucket.service", () => {
         number: 2,
       };
 
+      expect(spyOnRefreshToken).toHaveBeenCalledTimes(1);
       expect(spyOnCreatePullRequestFromRequest).toBeCalledTimes(1);
       expect(result).toEqual(expectedResult);
     });

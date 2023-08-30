@@ -5,5 +5,5 @@ import { TopicUpdateInput } from "./TopicUpdateInput";
 @ArgsType()
 export class UpdateTopicArgs extends UpdateBlockArgs {
   @Field(() => TopicUpdateInput, { nullable: false })
-  data!: TopicUpdateInput;
+  declare data: TopicUpdateInput;
 }

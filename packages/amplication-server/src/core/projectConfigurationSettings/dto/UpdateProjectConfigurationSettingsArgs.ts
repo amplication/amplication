@@ -5,5 +5,5 @@ import { ProjectConfigurationSettingsUpdateInput } from "./ProjectConfigurationS
 @ArgsType()
 export class UpdateProjectConfigurationSettingsArgs extends UpdateBlockArgs {
   @Field(() => ProjectConfigurationSettingsUpdateInput, { nullable: false })
-  data!: ProjectConfigurationSettingsUpdateInput;
+  declare data: ProjectConfigurationSettingsUpdateInput;
 }
