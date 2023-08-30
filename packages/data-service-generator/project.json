@@ -102,6 +102,19 @@
       }
     },
     "package:container": {
+      "executor": "nx:run-commands",
+      "dependsOn": ["build"],
+      "options": {
+        "command": "npx nx internal:package:container data-service-generator"
+      },
+      "configurations": {
+        "production": {
+          "command": "export IMAGE_TAG=$(cat ./dist/packages/data-service-generator/package.json | jq -r '.version') && export INPUT_TAGS=\"{args.imageRepo}:$IMAGE_TAG,{args.imageRepo}:sha-$GIT_SHA\" && npx nx internal:package:container data-service-generator --prod",
+          "args": "--imageRepo=439403303254.dkr.ecr.us-east-1.amazonaws.com/data-service-generator"
+        }
+      }
+    },
+    "internal:package:container": {
       "executor": "@nx-tools/nx-container:build",
       "dependsOn": ["build"],
       "options": {
