@@ -5033,7 +5033,7 @@ describe(\\"Customer\\", () => {
   });
 
   test(\\"POST /customers existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/customers\\")
       .send(CREATE_INPUT)
@@ -6239,7 +6239,7 @@ describe(\\"Empty\\", () => {
   });
 
   test(\\"POST /empties existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/empties\\")
       .send(CREATE_INPUT)
@@ -7637,7 +7637,7 @@ describe(\\"Order\\", () => {
   });
 
   test(\\"POST /orders existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/orders\\")
       .send(CREATE_INPUT)
@@ -8997,7 +8997,7 @@ describe(\\"Organization\\", () => {
   });
 
   test(\\"POST /organizations existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/organizations\\")
       .send(CREATE_INPUT)
@@ -10591,7 +10591,7 @@ describe(\\"Profile\\", () => {
   });
 
   test(\\"POST /profiles existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/profiles\\")
       .send(CREATE_INPUT)
@@ -12718,7 +12718,7 @@ describe(\\"User\\", () => {
   });
 
   test(\\"POST /users existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/users\\")
       .send(CREATE_INPUT)
