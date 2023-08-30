@@ -161,4 +161,3 @@ jobs:
     with:
       nx-head: "${{ github.ref }}"
       nx-base: "${{ needs.preparation.outputs.base_tag }}"
-      nx-force-all: true
