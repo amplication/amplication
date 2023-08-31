@@ -18,7 +18,7 @@
     "serve:server": "npx nx serve amplication-server",
     "serve:client": "npx nx serve amplication-client",
     "serve:dsg": "nx run-many --parallel --target=serve --projects=amplication-build-manager,local-data-service-generator-controller",
-    "serve:git": "nx run-many --parallel --target=serve --projects=amplication-git-sync-manager",
+    "serve:git": "nx run-many --parallel --target=serve --projects=git-sync-manager",
     "serve:storage": "npx nx serve amplication-storage-gateway",
     "serve:plugins": "npx nx serve amplication-plugin-api",
     "debug:dsg": "npx nx generate-local-code data-service-generator"
