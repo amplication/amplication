@@ -11,11 +11,22 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsDate, IsOptional, IsBoolean, IsString } from "class-validator";
+import { IsString, IsOptional, IsDate, IsBoolean } from "class-validator";
 import { Type } from "class-transformer";
 
 @InputType()
 class VersionCreateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  changelog?: string | null;
+
   @ApiProperty({
     required: false,
   })
@@ -37,17 +48,6 @@ class VersionCreateInput {
     nullable: true,
   })
   deprecated?: boolean | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  description?: string | null;
 
   @ApiProperty({
     required: false,

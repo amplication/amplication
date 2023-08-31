@@ -1,6 +1,6 @@
 export type VersionCreateInput = {
+  changelog?: string | null;
   deletedAt?: Date | null;
   deprecated?: boolean | null;
-  description?: string | null;
   name?: string | null;
 };

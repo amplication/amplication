@@ -50,10 +50,10 @@ export class VersionControllerBase {
     return await this.service.create({
       data: data,
       select: {
+        changelog: true,
         createdAt: true,
         deletedAt: true,
         deprecated: true,
-        description: true,
         id: true,
         name: true,
         updatedAt: true,
@@ -73,10 +73,10 @@ export class VersionControllerBase {
     return this.service.findMany({
       ...args,
       select: {
+        changelog: true,
         createdAt: true,
         deletedAt: true,
         deprecated: true,
-        description: true,
         id: true,
         name: true,
         updatedAt: true,
@@ -97,10 +97,10 @@ export class VersionControllerBase {
     const result = await this.service.findOne({
       where: params,
       select: {
+        changelog: true,
         createdAt: true,
         deletedAt: true,
         deprecated: true,
-        description: true,
         id: true,
         name: true,
         updatedAt: true,
@@ -135,10 +135,10 @@ export class VersionControllerBase {
         where: params,
         data: data,
         select: {
+          changelog: true,
           createdAt: true,
           deletedAt: true,
           deprecated: true,
-          description: true,
           id: true,
           name: true,
           updatedAt: true,
@@ -172,10 +172,10 @@ export class VersionControllerBase {
       return await this.service.delete({
         where: params,
         select: {
+          changelog: true,
           createdAt: true,
           deletedAt: true,
           deprecated: true,
-          description: true,
           id: true,
           name: true,
           updatedAt: true,

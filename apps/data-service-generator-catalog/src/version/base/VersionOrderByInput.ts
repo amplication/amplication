@@ -28,6 +28,17 @@ class VersionOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  changelog?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   createdAt?: SortOrder;
 
   @ApiProperty({
@@ -51,17 +62,6 @@ class VersionOrderByInput {
     nullable: true,
   })
   deprecated?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  description?: SortOrder;
 
   @ApiProperty({
     required: false,

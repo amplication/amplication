@@ -1,6 +1,6 @@
 export type VersionUpdateInput = {
+  changelog?: string | null;
   deletedAt?: Date | null;
   deprecated?: boolean | null;
-  description?: string | null;
   name?: string | null;
 };

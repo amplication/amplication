@@ -3,18 +3,18 @@ import {
   Edit,
   SimpleForm,
   EditProps,
+  TextInput,
   DateTimeInput,
   BooleanInput,
-  TextInput,
 } from "react-admin";
 
 export const VersionEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Changelog" multiline source="changelog" />
         <DateTimeInput label="DeletedAt" source="deletedAt" />
         <BooleanInput label="Deprecated" source="deprecated" />
-        <TextInput label="Description" multiline source="description" />
         <TextInput label="Name" source="name" />
       </SimpleForm>
     </Edit>

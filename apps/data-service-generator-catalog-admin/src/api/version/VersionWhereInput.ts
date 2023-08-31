@@ -1,12 +1,12 @@
+import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
 import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
 import { StringFilter } from "../../util/StringFilter";
 
 export type VersionWhereInput = {
+  changelog?: StringNullableFilter;
   deletedAt?: DateTimeNullableFilter;
   deprecated?: BooleanNullableFilter;
-  description?: StringNullableFilter;
   id?: StringFilter;
   name?: StringNullableFilter;
 };

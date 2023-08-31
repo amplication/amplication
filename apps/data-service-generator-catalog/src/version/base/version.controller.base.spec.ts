@@ -19,39 +19,39 @@ import { VersionService } from "../version.service";
 const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
+  changelog: "exampleChangelog",
   createdAt: new Date(),
   deletedAt: new Date(),
   deprecated: "true",
-  description: "exampleDescription",
   id: "exampleId",
   name: "exampleName",
   updatedAt: new Date(),
 };
 const CREATE_RESULT = {
+  changelog: "exampleChangelog",
   createdAt: new Date(),
   deletedAt: new Date(),
   deprecated: "true",
-  description: "exampleDescription",
   id: "exampleId",
   name: "exampleName",
   updatedAt: new Date(),
 };
 const FIND_MANY_RESULT = [
   {
+    changelog: "exampleChangelog",
     createdAt: new Date(),
     deletedAt: new Date(),
     deprecated: "true",
-    description: "exampleDescription",
     id: "exampleId",
     name: "exampleName",
     updatedAt: new Date(),
   },
 ];
 const FIND_ONE_RESULT = {
+  changelog: "exampleChangelog",
   createdAt: new Date(),
   deletedAt: new Date(),
   deprecated: "true",
-  description: "exampleDescription",
   id: "exampleId",
   name: "exampleName",
   updatedAt: new Date(),
