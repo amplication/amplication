@@ -11,6 +11,7 @@ export interface UserDetails {
 export interface NovuService {
   createSubscriber: (obj: {
     subscriberId: string;
+    enableUser: boolean;
     payload: UserDetails;
   }) => void;
   updateSubscriber: (obj: {

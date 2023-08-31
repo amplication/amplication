@@ -26,4 +26,7 @@ export class Value {
 
   @IsString()
   action!: UserActionType;
+
+  @IsString()
+  enableUser!: boolean;
 }

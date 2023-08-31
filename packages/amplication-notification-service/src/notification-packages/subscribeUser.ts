@@ -9,9 +9,11 @@ export const subscribeUser = async (notificationCtx: NotificationContext) => {
     )
       return notificationCtx;
 
-    const { externalId, ...restAccount } = notificationCtx.message;
+    const { externalId, enableUser, ...restAccount } = notificationCtx.message;
     notificationCtx.notifications.push({
-      notificationMethod: notificationCtx.novuService.createSubscriber,
+      notificationMethod: enableUser
+        ? notificationCtx.novuService.createSubscriber
+        : notificationCtx.novuService.deleteSubscriber,
       subscriberId: externalId,
       payload: restAccount,
     });

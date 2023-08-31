@@ -6,12 +6,15 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { KAFKA_TOPICS, UserAction } from "@amplication/schema-registry";
 import { encryptString } from "../../util/encryptionUtil";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingService } from "../billing/billing.service";
+import { BillingFeature } from "../billing/billing.types";
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
+    private readonly billingService: BillingService,
     private readonly prisma: PrismaService
   ) {}
 
@@ -150,6 +153,13 @@ export class UserService {
 
   async setNotificationRegistry(user: User) {
     const externalId = encryptString(user.account.id);
+    const booleanEntityUserNotification =
+      await this.billingService.getBooleanEntitlement(
+        user.workspace.id,
+        BillingFeature.ChangeGitBaseBranch
+      );
+    const canShowUserNotification = booleanEntityUserNotification.hasAccess;
+
     this.kafkaProducerService
       .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, <UserAction.KafkaEvent>{
         key: {},
@@ -160,6 +170,7 @@ export class UserService {
           lastName: user.account.lastName,
           email: user.account.email,
           action: UserAction.UserActionType.CURRENT_WORKSPACE,
+          enableUser: canShowUserNotification,
         },
       })
       .catch((error) =>
