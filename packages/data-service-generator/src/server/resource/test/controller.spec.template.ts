@@ -163,7 +163,7 @@ describe(TEST_NAME, () => {
   });
 
   test(`POST ${CREATE_PATHNAME} existing resource`, async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(CREATE_PATHNAME)
       .send(CREATE_INPUT)

@@ -21,21 +21,31 @@ export const ID_FIELD_NAME = "id";
 export const NOW_FUNCTION_NAME = "now";
 export const ARG_KEY_FIELD_NAME = "fields";
 
+export const ID_DEFAULT_VALUE_CUID = "cuid";
+export const ID_DEFAULT_VALUE_UUID = "uuid";
+export const ID_DEFAULT_VALUE_AUTO_INCREMENT = "autoincrement";
+
 export const ID_TYPE_CUID = "CUID";
 export const ID_TYPE_UUID = "UUID";
-export const ID_TYPE_AUTOINCREMENT = "AUTO_INCREMENT";
+export const ID_TYPE_AUTO_INCREMENT = "AUTO_INCREMENT";
+export const ID_TYPE_AUTO_INCREMENT_BIG_INT = "AUTO_INCREMENT_BIG_INT";
 
-export const idTypePropertyMap = {
-  autoincrement: ID_TYPE_AUTOINCREMENT,
-  cuid: ID_TYPE_CUID,
-  uuid: ID_TYPE_UUID,
-};
+export const PRISMA_TYPE_STRING = "String";
+export const PRISMA_TYPE_INT = "Int";
+export const PRISMA_TYPE_BIG_INT = "BigInt";
 
-export const idTypePropertyMapByFieldType = {
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  Int: ID_TYPE_AUTOINCREMENT,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  String: ID_TYPE_CUID,
-  // eslint-disable-next-line @typescript-eslint/naming-convention
-  BigInt: ID_TYPE_AUTOINCREMENT,
+export enum WholeNumberType {
+  Int = "INT",
+  BigInt = "BIG_INT",
+}
+
+export enum DecimalNumberType {
+  Float = "FLOAT",
+  Decimal = "DECIMAL",
+}
+
+export const idTypePropertyMapByPrismaFieldType = {
+  [PRISMA_TYPE_INT]: ID_TYPE_AUTO_INCREMENT,
+  [PRISMA_TYPE_STRING]: ID_TYPE_CUID,
+  [PRISMA_TYPE_BIG_INT]: ID_TYPE_AUTO_INCREMENT_BIG_INT,
 };

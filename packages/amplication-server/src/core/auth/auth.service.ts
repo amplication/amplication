@@ -1,6 +1,7 @@
 import { Injectable, forwardRef, Inject } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
 import { subDays } from "date-fns";
+import { ConfigService } from "@nestjs/config";
 import cuid from "cuid";
 import { Prisma, PrismaService } from "../../prisma";
 import { Profile as GitHubProfile } from "passport-github2";
@@ -21,6 +22,10 @@ import { FindOneArgs } from "../../dto";
 import { CompleteInvitationArgs } from "../workspace/dto";
 import { ProjectService } from "../project/project.service";
 import { AuthProfile } from "./types";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { Env } from "../../env";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { UserAction } from "@amplication/schema-registry";
 
 export type AuthUser = User & {
   account: Account;
@@ -49,10 +54,13 @@ const WORKSPACE_INCLUDE = {
 @Injectable()
 export class AuthService {
   constructor(
+    private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
+    private readonly kafkaProducerService: KafkaProducerService,
+    private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))
     private readonly workspaceService: WorkspaceService,
@@ -147,6 +155,22 @@ export class AuthService {
       IDENTITY_PROVIDER_MANUAL
     );
 
+    this.kafkaProducerService
+      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), {
+        key: {},
+        value: {
+          userId: account.id,
+          externalId: account.externalId,
+          firstName: account.firstName,
+          lastName: account.lastName,
+          email: account.email,
+          action: UserAction.UserActionType.SIGNUP,
+        },
+      })
+      .catch((error) =>
+        this.logger.error(`Failed to que user ${account.id} signup`, error)
+      );
+
     const user = await this.bootstrapUser(account, payload.workspaceName);
 
     return this.prepareToken(user);
@@ -187,6 +211,24 @@ export class AuthService {
     if (!passwordValid) {
       throw new AmplicationError("Invalid password");
     }
+
+    this.kafkaProducerService
+      .emitMessage(this.configService.get(Env.USER_ACTION_TOPIC), <
+        UserAction.KafkaEvent
+      >{
+        key: {},
+        value: {
+          userId: account.id,
+          externalId: account.externalId,
+          firstName: account.firstName,
+          lastName: account.lastName,
+          email: account.email,
+          action: UserAction.UserActionType.LOGIN,
+        },
+      })
+      .catch((error) =>
+        this.logger.error(`Failed to que user ${account.id} signup`, error)
+      );
 
     return this.prepareToken(account.currentUser);
   }

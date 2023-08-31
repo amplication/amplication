@@ -9,7 +9,7 @@ import {
   MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
-  idTypePropertyMapByFieldType,
+  idTypePropertyMapByPrismaFieldType,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
@@ -106,7 +106,7 @@ export function idField(field: Field) {
 }
 
 export function isValidIdFieldType(fieldType: string) {
-  return idTypePropertyMapByFieldType.hasOwnProperty(fieldType);
+  return idTypePropertyMapByPrismaFieldType.hasOwnProperty(fieldType);
 }
 
 export function lookupField(schema: Schema, field: Field) {

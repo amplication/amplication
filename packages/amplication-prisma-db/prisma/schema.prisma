@@ -29,6 +29,7 @@ model Account {
   githubId      String?
   currentUser   User?    @relation(fields: [currentUserId], references: [id])
   users         User[]   @relation("AccountOnUser")
+  externalId    String?
 }
 
 model Workspace {
@@ -110,7 +111,6 @@ model User {
   deletedAt             DateTime?
   userAction            UserAction[]
   lastActive            DateTime?    @default(now())
-
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
