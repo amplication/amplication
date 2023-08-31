@@ -1,4 +1,4 @@
-name: Update apps version
+name: Tag Version
 
 on:
   workflow_dispatch:
@@ -41,6 +41,7 @@ jobs:
   update-version:
     name: Commit version changes
     runs-on: ubuntu-20.04
+    needs: check-version
     permissions:
       contents: write
 
@@ -49,10 +50,12 @@ jobs:
         with:
           fetch-depth: 0
       
-      - id: update-version-ts          
+      - id: update-version-ts
+        name: Update apps version.ts
         run: |
-          VERSION=${{ github.event.inputs.version:1 }}
-          npx nx affected --target=update-version --args="--version=$VERSION"
+          VERSION=${{ github.event.inputs.version }}
+          APP_VERSION=${VERSION:1}
+          npx nx affected --target=update-version --args="--version=$APP_VERSION"
 
       # Commit all changed files back to the repository
       - uses: stefanzweifel/git-auto-commit-action@v4
