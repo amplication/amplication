@@ -56,7 +56,6 @@ export class AuthService {
     private readonly passwordService: PasswordService,
     private readonly prismaService: PrismaService,
     private readonly accountService: AccountService,
-    // private readonly kafkaProducerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
     private readonly userService: UserService,
     @Inject(forwardRef(() => WorkspaceService))

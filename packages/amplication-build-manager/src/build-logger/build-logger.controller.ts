@@ -1,16 +1,12 @@
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Body, Controller, Post } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 
 @Controller("build-logger")
 export class BuildLoggerController {
-  constructor(
-    private readonly configService: ConfigService<Env, true>,
-    private readonly producerService: KafkaProducerService
-  ) {}
+  constructor(private readonly producerService: KafkaProducerService) {}
 
   @Post("create-log")
   async onCodeGenerationLog(
