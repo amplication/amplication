@@ -8,7 +8,6 @@
     "amplication-git-pull-request-service": "packages/amplication-git-pull-request-service",
     "amplication-git-pull-service": "ee/packages/amplication-git-pull-service",
     "amplication-git-push-webhook-service": "ee/packages/amplication-git-push-webhook-service",
-    "amplication-notification": "packages/amplication-notification-service",
     "amplication-notification-service": "packages/amplication-notification-service",
     "amplication-plugin-api": "packages/amplication-plugin-api",
     "amplication-prisma-db": "packages/amplication-prisma-db",
