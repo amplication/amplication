@@ -7,7 +7,7 @@
   ],
   "ignorePatterns": ["!**/*"],
   "parserOptions": {
-    "project": ["packages/git-sync-manager/tsconfig.*?.json"]
+    "project": ["ee/packages/git-sync-manager/tsconfig.*?.json"]
   },
   "rules": {
     "@typescript-eslint/explicit-module-boundary-types": "off",
