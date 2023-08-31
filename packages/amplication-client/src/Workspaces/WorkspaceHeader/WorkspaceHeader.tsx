@@ -37,6 +37,8 @@ import {
   IMessage,
 } from "@novu/notification-center";
 import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../../util/BillingFeature";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -79,6 +81,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   } = useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
+  const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
   const isProjectRoute = useRouteMatch(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
@@ -113,6 +116,10 @@ const WorkspaceHeader: React.FC<{}> = () => {
     isResourceRoute,
     currentProjectConfiguration,
   ]);
+
+  const canShowNotification = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ImportDBSchema,
+  }).hasAccess;
 
   const [showProfileFormDialog, setShowProfileFormDialog] =
     useState<boolean>(false);
@@ -363,22 +370,26 @@ const WorkspaceHeader: React.FC<{}> = () => {
               </SelectMenuModal>
             </SelectMenu>
           </div>
-          <hr className={`${CLASS_NAME}__vertical_border`} />
-          <div className={`${CLASS_NAME}__notification_bell`}>
-            <NovuProvider
-              subscriberId={currentWorkspace.externalId}
-              applicationIdentifier={"gY2CIIdnBCc1"}
-            >
-              <PopoverNotificationCenter
-                colorScheme={"dark"}
-                onNotificationClick={onNotificationClick}
-              >
-                {({ unseenCount }) => (
-                  <NotificationBell unseenCount={unseenCount} />
-                )}
-              </PopoverNotificationCenter>
-            </NovuProvider>
-          </div>
+          {canShowNotification && (
+            <>
+              <hr className={`${CLASS_NAME}__vertical_border`} />
+              <div className={`${CLASS_NAME}__notification_bell`}>
+                <NovuProvider
+                  subscriberId={currentWorkspace.externalId}
+                  applicationIdentifier={"gY2CIIdnBCc1"}
+                >
+                  <PopoverNotificationCenter
+                    colorScheme={"dark"}
+                    onNotificationClick={onNotificationClick}
+                  >
+                    {({ unseenCount }) => (
+                      <NotificationBell unseenCount={unseenCount} />
+                    )}
+                  </PopoverNotificationCenter>
+                </NovuProvider>
+              </div>
+            </>
+          )}
           <hr className={`${CLASS_NAME}__vertical_border`} />
           <div
             className={`${CLASS_NAME}__user_badge_wrapper`}
