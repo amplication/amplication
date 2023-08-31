@@ -12,9 +12,14 @@ on:
         required: false
         default: false
         description: Check this ONLY if you want to re-run the workflow for the same version.
+      nx-force-all:
+        type: boolean
+        description: Forces Nx to consider all projects as affected when running the update-version target.
+        default: false
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
 
 permissions:
   contents: write
@@ -83,7 +88,7 @@ jobs:
         run: |
           VERSION=${{ github.event.inputs.version }}
           APP_VERSION=${VERSION:1}
-          npx nx affected --target=update-version --args="--version=$APP_VERSION"
+          npx nx affected --target=update-version $NX_FORCE_ALL --args="--version=$APP_VERSION"
 
       # Commit all changed files back to the repository
       - name: Commit changes
