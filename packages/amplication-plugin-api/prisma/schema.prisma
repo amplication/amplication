@@ -1,4 +1,4 @@
-datasource postgres {
+datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }

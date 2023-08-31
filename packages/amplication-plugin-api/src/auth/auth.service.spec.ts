@@ -1,14 +1,10 @@
 import { Test, TestingModule } from "@nestjs/testing";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from "../user/user.service";
 import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
+import { UserService } from "../user/user.service";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
@@ -30,7 +26,7 @@ const USER: any = {
 
 const SIGN_TOKEN = "SIGN_TOKEN";
 
-const userService = {
+const authEntityService = {
   findOne(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
@@ -59,7 +55,7 @@ describe("AuthService", () => {
       providers: [
         {
           provide: UserService,
-          useValue: userService,
+          useValue: authEntityService,
         },
         {
           provide: PasswordService,
