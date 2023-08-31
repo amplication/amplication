@@ -21,7 +21,8 @@ jobs:
     name: Check version syntax
     runs-on: ubuntu-20.04
     steps:
-      - run: |
+      - name: Check version is SemVer
+        run: |
           if ! [[ "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
             echo "Invalid version '${{ github.event.inputs.version }}'."
             echo "Version must be a valid semver version."
@@ -29,7 +30,8 @@ jobs:
             exit 1
           fi
         shell: bash
-      - id: validate-version-unique
+      - name: Check version is unique
+        id: validate-version-unique
         run: |
           if git tag --list | grep -q "${{ github.event.inputs.version }}"; then
             echo "Version '${{ github.event.inputs.version }}' already exists."
