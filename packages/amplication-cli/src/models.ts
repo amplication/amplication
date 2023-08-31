@@ -2211,6 +2211,7 @@ export type WhereUniqueInput = {
 
 export type Workspace = {
   createdAt: Scalars['DateTime']['output'];
+  externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];

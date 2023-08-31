@@ -366,7 +366,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           <hr className={`${CLASS_NAME}__vertical_border`} />
           <div className={`${CLASS_NAME}__notification_bell`}>
             <NovuProvider
-              subscriberId={"USER_ID"} /// get the subscriber id from user (hash id + email)
+              subscriberId={currentWorkspace.externalId}
               applicationIdentifier={"gY2CIIdnBCc1"}
             >
               <PopoverNotificationCenter
