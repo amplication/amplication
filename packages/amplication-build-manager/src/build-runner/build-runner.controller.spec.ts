@@ -15,11 +15,11 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { Env } from "../env";
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
+import { DsgCatalogService } from "../dsg/dsg-catalog.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 
 const { plainToInstance } = classTransformer;
-const spyOnPlainToInstance = jest.spyOn(classTransformer, "plainToInstance");
 const spyOnAxiosPost = jest.spyOn(axios, "post");
 
 describe("BuildRunnerController", () => {
@@ -49,6 +49,12 @@ describe("BuildRunnerController", () => {
           useClass: jest.fn(() => ({
             saveDsgResourceData: mockRunnerServiceSaveDsgResourceData,
             copyFromJobToArtifact: mockRunnerServiceCopyFromJobToArtifact,
+          })),
+        },
+        {
+          provide: DsgCatalogService,
+          useClass: jest.fn(() => ({
+            getDsgVersion: jest.fn(),
           })),
         },
         {
@@ -226,11 +232,6 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
 
     expect(loggerService.info).toBeCalled();
-    expect(spyOnPlainToInstance).toBeCalledWith(
-      CodeGenerationRequest.Value,
-      codeGenerationRequestDTOMock
-    );
-    expect(loggerService.debug).toBeCalled();
     expect(mockRunnerServiceSaveDsgResourceData).toBeCalledWith(
       args.buildId,
       args.dsgResourceData

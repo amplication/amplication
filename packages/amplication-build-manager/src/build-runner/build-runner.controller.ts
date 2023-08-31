@@ -14,7 +14,7 @@ import {
   CodeGenerationRequest,
   CodeGenerationSuccess,
 } from "@amplication/schema-registry";
-import { DsgCatalogService } from "./dsg-catalog.service";
+import { DsgCatalogService } from "../dsg/dsg-catalog.service";
 
 @Controller("build-runner")
 export class BuildRunnerController {

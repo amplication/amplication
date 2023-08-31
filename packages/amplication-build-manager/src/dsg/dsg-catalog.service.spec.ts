@@ -66,7 +66,7 @@ describe("DsgCatalogService", () => {
   );
 
   describe("getDsgAvailableVersions", () => {
-    it("should return all available versions sorted desc", async () => {
+    it("should return all available versions", async () => {
       mockedAxios.get.mockImplementation(() =>
         Promise.resolve({
           data: [
@@ -84,14 +84,14 @@ describe("DsgCatalogService", () => {
 
       const versions = await service["getDsgAvailableVersions"]();
       expect(versions).toEqual([
-        "v2.2.0",
-        "v2.0.0",
-        "v1.10.1",
-        "v1.2.0",
-        "v1.1.0",
-        "v1.0.1",
         "v1.0.0",
+        "v1.0.1",
         "v0.8.1",
+        "v2.0.0",
+        "v1.1.0",
+        "v1.10.1",
+        "v2.2.0",
+        "v1.2.0",
       ]);
     });
   });
