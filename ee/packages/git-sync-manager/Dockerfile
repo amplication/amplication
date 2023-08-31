@@ -6,11 +6,11 @@ RUN apk update \
     && apk add --no-cache git \
     && rm /var/cache/apk/*
 
-COPY ./dist/packages/git-sync-manager/package.json .
+COPY ./dist/ee/packages/git-sync-manager/package.json .
 
 RUN npm i --omit=dev
 
-COPY ./dist/packages/git-sync-manager .
+COPY ./dist/ee/packages/git-sync-manager .
 
 ENV PORT=3333
 EXPOSE $PORT
