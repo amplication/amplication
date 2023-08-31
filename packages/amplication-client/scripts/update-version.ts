@@ -1,19 +1,28 @@
+/* eslint-disable no-console */
 import { join } from "path";
 import fs from "fs";
-import { version } from "../../../package.json";
 import * as prettier from "prettier";
 
 if (require.main === module) {
-  void updateVersion().catch((error) => {
+  const version = process.argv[2];
+  if (!version || !version.match(/^\d+\.\d+\.\d+$/)) {
+    console.error(
+      "Version argument is invalid. Please provide a version like 1.0.0, 1.0.1, etc."
+    );
+    process.exit(1);
+  }
+
+  void updateVersion(process.argv[2]).catch((error) => {
     console.error(error);
     process.exit(1);
   });
 }
 
-async function updateVersion(): Promise<void> {
+async function updateVersion(version: string): Promise<void> {
   const versionFilePath = join(__dirname + "/../src/util/version.ts");
 
-  const src = prettier.format(`export const version = '${version}';`, {
+  const code = `export const version = '${version}';`;
+  const src = prettier.format(code, {
     parser: "typescript",
   });
 

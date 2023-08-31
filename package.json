@@ -1,6 +1,5 @@
 {
   "name": "amplication",
-  "version": "1.8.10",
   "scripts": {
     "format:check": "npx nx format:check --all",
     "format:write": "npx nx format:write --all",

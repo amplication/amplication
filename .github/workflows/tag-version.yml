@@ -1,0 +1,83 @@
+name: Update apps version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version: 
+        type: string
+        required: true
+        description: Version used to update apps version.ts and create a release the commit. i.e. v1.0.0, v1.1.2, v2.0.1
+      re-run: 
+        type: boolean
+        required: false
+        default: false
+        description: Check this ONLY if you want to re-run the workflow for the same version.
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  check-version:
+    name: Check version syntax
+    runs-on: ubuntu-20.04
+    steps:
+      - run: |
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "Invalid version '${{ github.event.inputs.version }}'."
+            echo "Version must be a valid semver version."
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
+        shell: bash
+      - id: validate-version-unique
+        run: |
+          if git tag --list | grep -q "${{ github.event.inputs.version }}"; then
+            echo "Version '${{ github.event.inputs.version }}' already exists."
+            echo "Please use a different version."
+            exit 1
+          fi
+        shell: bash
+
+  update-version:
+    name: Commit version changes
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      
+      - id: update-version-ts          
+        run: |
+          VERSION=${{ github.event.inputs.version:1 }}
+          npx nx affected --target=update-version --args="--version=$VERSION"
+
+      # Commit all changed files back to the repository
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        continue-on-error:  ${{ github.event.inputs.re-run }}
+        with:
+          commit_message: "chore: update apps version.ts"
+          branch: ${{ github.event.repository.default_branch }}
+          commit_user_name: amplication[bot]
+          commit_user_email: bot@amplication.com
+          commit_author: Author <actions@github.com> # defaults to author of the commit that triggered the run
+          tagging_message: ${{ github.event.inputs.version }}
+
+  generate-release:
+    name: Create release
+    runs-on: ubuntu-latest
+    needs: update-version
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            *
+          tag_name: ${{ github.event.inputs.version }}
+          release_name: ${{ github.event.inputs.version }}
+          draft: true
+          generate_release_notes: true

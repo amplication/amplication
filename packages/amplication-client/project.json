@@ -4,12 +4,12 @@
   "sourceRoot": "packages/amplication-client/src",
   "projectType": "application",
   "targets": {
-    "prebuild": {
+    "update-version": {
       "executor": "nx:run-commands",
       "inputs": ["{workspaceRoot}/package.json"],
       "outputs": ["{projectRoot}/src/util/version.ts"],
       "options": {
-        "command": "ts-node ./scripts/update-version.ts",
+        "command": "ts-node ./scripts/update-version.ts {args.version}",
         "cwd": "packages/amplication-client"
       }
     },
