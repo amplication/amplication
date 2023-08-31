@@ -37,26 +37,24 @@ After configuration of the server the next step would be to run the application.
 ```sh
 # installation of the dependencies
 $ npm install
-```
-```sh
+
 # generate the prisma client
 $ npm run prisma:generate
-```
-```sh
-# start the database where the server component will connect to
-$ npm run docker:db
-```
-```sh
-# initialize the database
-$ npm run db:init
 ```
 
 ## Step 2.2: Scripts - local development
 
-```shell
+```sh
+# start the database where the server component will connect to
+$ npm run docker:dev
+
+# initialize the database
+$ npm run db:init
+
 # start the server component
-$ npm run install
+$ npm run start
 ```
+By default, your app comes with one user with the username "admin" and password "admin".
 
 ## Step 2.2: Scripts - container based development
 

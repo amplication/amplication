@@ -1,14 +1,14 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { JWT_SECRET_KEY } from "../../constants";
-import { UserService } from "../../user/user.service";
 import { JwtStrategyBase } from "./base/jwt.strategy.base";
+import { UserService } from "../../user/user.service";
 
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase {
   constructor(
-    protected readonly userService: UserService,
-    @Inject(JWT_SECRET_KEY) secretOrKey: string
+    @Inject(JWT_SECRET_KEY) secretOrKey: string,
+    protected readonly userService: UserService
   ) {
-    super(userService, secretOrKey);
+    super(secretOrKey, userService);
   }
 }
