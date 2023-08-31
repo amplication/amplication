@@ -1,6 +1,5 @@
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { Body, Controller, Post } from "@nestjs/common";
-import { Env } from "../env";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 
