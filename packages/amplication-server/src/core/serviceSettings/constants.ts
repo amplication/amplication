@@ -2,7 +2,7 @@ import { ServiceSettings } from "./dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { BlockValues, BlockValuesExtended } from "../block/types";
-import { CodeGeneratorVersionStrategy } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "./dto/EnumCodeGeneratorVersionStrategy";
 
 export type ServiceSettingsValues = BlockValues<ServiceSettingsValuesExtended>;
 
@@ -27,6 +27,6 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
   },
   codeGeneratorVersionOptions: {
     version: null,
-    selectionStrategy: CodeGeneratorVersionStrategy.LATEST_MAJOR,
+    selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
 };

@@ -40,7 +40,6 @@ import {
   CanUserAccessBuild,
   CodeGenerationLog,
   CodeGenerationRequest,
-  CodeGeneratorVersionStrategy,
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
@@ -368,10 +367,6 @@ export class BuildService {
             resourceId,
             buildId,
             dsgResourceData,
-            codeGeneratorVersionOptions: {
-              version: build.codeGeneratorVersion,
-              selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
-            },
           },
         };
 
