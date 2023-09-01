@@ -67,4 +67,7 @@ export class Build {
 
   @Field(() => String)
   commitId!: string;
+
+  @Field(() => String)
+  codeGeneratorVersion?: string;
 }
