@@ -253,7 +253,7 @@ describe("BuildRunnerController", () => {
       },
       codeGeneratorVersionOptions: {
         version: expectedCodeGeneratorVersion,
-        selectionStrategy: CodeGeneratorVersionStrategy.SPECIFIC,
+        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
       },
     };
     const args = plainToInstance(
@@ -315,7 +315,7 @@ describe("BuildRunnerController", () => {
       },
       codeGeneratorVersionOptions: {
         version: "v1.0.1",
-        selectionStrategy: CodeGeneratorVersionStrategy.SPECIFIC,
+        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
       },
     };
 
