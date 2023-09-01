@@ -4,8 +4,7 @@ import { IBlock } from "../../../models";
 import { AdminUISettings } from "./AdminUISettings";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettings } from "./ServerSettings";
-import { CodeGeneratorVersionStrategy } from "@amplication/schema-registry";
-import { registerEnumType } from "@nestjs/graphql";
+import { CodeGeneratorVersionOptions } from "./CodeGeneratorVersionOptions";
 
 @ObjectType({
   implements: IBlock,
@@ -37,22 +36,3 @@ export class ServiceSettings extends IBlock {
   })
   codeGeneratorVersionOptions!: CodeGeneratorVersionOptions & JsonValue;
 }
-
-@ObjectType({
-  isAbstract: true,
-})
-export class CodeGeneratorVersionOptions {
-  @Field(() => String, {
-    nullable: true,
-  })
-  version?: string;
-
-  @Field(() => CodeGeneratorVersionStrategy, {
-    nullable: true,
-  })
-  selectionStrategy?: CodeGeneratorVersionStrategy;
-}
-
-registerEnumType(CodeGeneratorVersionStrategy, {
-  name: "CodeGeneratorVersionStrategy",
-});
