@@ -1,5 +1,5 @@
-export enum DsgVersionOption {
-  LATEST = "latest",
+export enum CodeGenerationVersionStrategy {
+  LATEST_MAJOR = "latest",
   LATEST_MINOR = "latest-minor",
   SPECIFIC = "specific",
 }

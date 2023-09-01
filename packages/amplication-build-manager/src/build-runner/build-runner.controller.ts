@@ -99,8 +99,9 @@ export class BuildRunnerController {
 
       if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
         containerImageTag = await this.dsgCatalogService.getDsgVersion({
-          dsgVersion: message.dsgVersion,
-          dsgVersionOption: message.dsgVersionOption,
+          dsgVersion: message.codeGenerationVersionOptions.version,
+          dsgVersionOption:
+            message.codeGenerationVersionOptions.selectionStrategy,
         });
       }
 

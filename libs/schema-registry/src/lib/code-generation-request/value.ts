@@ -1,6 +1,6 @@
 import { DSGResourceData } from "@amplication/code-gen-types";
-import { IsEnum, IsString, ValidateNested } from "class-validator";
-import { DsgVersionOption } from "../types";
+import { IsString, ValidateNested } from "class-validator";
+import { CodeGenerationVersionStrategy } from "../types";
 
 export class Value {
   @IsString()
@@ -10,9 +10,9 @@ export class Value {
   @ValidateNested()
   dsgResourceData!: DSGResourceData;
 
-  @IsString()
-  dsgVersion?: string;
-
-  @IsEnum(DsgVersionOption)
-  dsgVersionOption?: DsgVersionOption;
+  @ValidateNested()
+  codeGenerationVersionOptions!: {
+    version?: string;
+    selectionStrategy?: CodeGenerationVersionStrategy;
+  };
 }

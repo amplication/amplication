@@ -3,7 +3,7 @@ import { DsgCatalogService } from "./dsg-catalog.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
 import axios from "axios";
-import { DsgVersionOption } from "@amplication/schema-registry";
+import { CodeGenerationVersionStrategy } from "@amplication/schema-registry";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
@@ -42,12 +42,12 @@ describe("DsgCatalogService", () => {
   });
 
   it.each([
-    ["v1.0.1", DsgVersionOption.SPECIFIC],
-    ["v2.1.1", DsgVersionOption.LATEST],
-    ["v1.2.0", DsgVersionOption.LATEST_MINOR],
+    ["v1.0.1", CodeGenerationVersionStrategy.SPECIFIC],
+    ["v2.1.1", CodeGenerationVersionStrategy.LATEST_MAJOR],
+    ["v1.2.0", CodeGenerationVersionStrategy.LATEST_MINOR],
   ])(
     `should return version %s when %s is selected`,
-    async (expected: string, option: DsgVersionOption) => {
+    async (expected: string, option: CodeGenerationVersionStrategy) => {
       const selectedVersion = "v1.0.1";
 
       mockedAxios.get.mockImplementation(() =>

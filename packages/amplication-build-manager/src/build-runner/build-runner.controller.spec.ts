@@ -8,6 +8,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
+  CodeGenerationVersionStrategy,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
@@ -216,6 +217,7 @@ describe("BuildRunnerController", () => {
         buildId: "12345",
         pluginInstallations: [],
       },
+      codeGenerationVersionOptions: {},
     };
     const args = plainToInstance(
       CodeGenerationRequest.Value,
@@ -266,6 +268,10 @@ describe("BuildRunnerController", () => {
         resourceType: "Service",
         buildId: "12345",
         pluginInstallations: [],
+      },
+      codeGenerationVersionOptions: {
+        version: "v1.0.1",
+        selectionStrategy: CodeGenerationVersionStrategy.SPECIFIC,
       },
     };
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {

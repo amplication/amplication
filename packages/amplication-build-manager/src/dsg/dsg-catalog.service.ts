@@ -2,7 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
-import { DsgVersionOption } from "@amplication/schema-registry";
+import { CodeGenerationVersionStrategy } from "@amplication/schema-registry";
 import axios from "axios";
 
 @Traceable()
@@ -82,23 +82,23 @@ export class DsgCatalogService {
     dsgVersionOption,
   }: {
     dsgVersion?: string;
-    dsgVersionOption?: DsgVersionOption;
+    dsgVersionOption?: CodeGenerationVersionStrategy;
   }): Promise<string | undefined> {
     if (!dsgVersion) {
       return;
     }
 
     const versions =
-      dsgVersionOption !== DsgVersionOption.SPECIFIC
+      dsgVersionOption !== CodeGenerationVersionStrategy.SPECIFIC
         ? await this.getDsgAvailableVersions()
         : [];
 
     switch (dsgVersionOption) {
-      case DsgVersionOption.SPECIFIC:
+      case CodeGenerationVersionStrategy.SPECIFIC:
         return dsgVersion;
-      case DsgVersionOption.LATEST_MINOR:
+      case CodeGenerationVersionStrategy.LATEST_MINOR:
         return this.getLatestVersion(versions, dsgVersion);
-      case DsgVersionOption.LATEST:
+      case CodeGenerationVersionStrategy.LATEST_MAJOR:
       default:
         return this.getLatestVersion(versions);
     }
