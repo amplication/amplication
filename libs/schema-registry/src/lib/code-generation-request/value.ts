@@ -1,6 +1,6 @@
 import { DSGResourceData } from "@amplication/code-gen-types";
 import { IsString, ValidateNested } from "class-validator";
-import { CodeGenerationVersionStrategy } from "../types";
+import { CodeGeneratorVersionStrategy } from "../types";
 
 export class Value {
   @IsString()
@@ -11,8 +11,8 @@ export class Value {
   dsgResourceData!: DSGResourceData;
 
   @ValidateNested()
-  codeGenerationVersionOptions!: {
+  codeGeneratorVersionOptions!: {
     version?: string;
-    selectionStrategy?: CodeGenerationVersionStrategy;
+    selectionStrategy?: CodeGeneratorVersionStrategy;
   };
 }

@@ -2,12 +2,12 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
-import { CodeGenerationVersionStrategy } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "@amplication/schema-registry";
 import axios from "axios";
 
 @Traceable()
 @Injectable()
-export class DsgCatalogService {
+export class CodeGeneratorService {
   constructor(private readonly configService: ConfigService<Env, true>) {}
 
   private sortVersions(versions: string[]): string[] {
@@ -39,7 +39,7 @@ export class DsgCatalogService {
     });
   }
 
-  private async getDsgAvailableVersions(): Promise<string[]> {
+  private async getCodeGeneratorAvailableVersions(): Promise<string[]> {
     const catalogServiceUrl = this.configService.get(
       Env.DSG_CATALOG_SERVICE_URL
     );
@@ -77,28 +77,28 @@ export class DsgCatalogService {
     return latestMinorVersion;
   }
 
-  async getDsgVersion({
-    dsgVersion,
-    dsgVersionOption,
+  async getCodeGeneratorVersion({
+    codeGeneratorVersion,
+    codeGeneratorVersionOption,
   }: {
-    dsgVersion?: string;
-    dsgVersionOption?: CodeGenerationVersionStrategy;
+    codeGeneratorVersion?: string;
+    codeGeneratorVersionOption?: CodeGeneratorVersionStrategy;
   }): Promise<string | undefined> {
-    if (!dsgVersion) {
+    if (!codeGeneratorVersion) {
       return;
     }
 
     const versions =
-      dsgVersionOption !== CodeGenerationVersionStrategy.SPECIFIC
-        ? await this.getDsgAvailableVersions()
+      codeGeneratorVersionOption !== CodeGeneratorVersionStrategy.SPECIFIC
+        ? await this.getCodeGeneratorAvailableVersions()
         : [];
 
-    switch (dsgVersionOption) {
-      case CodeGenerationVersionStrategy.SPECIFIC:
-        return dsgVersion;
-      case CodeGenerationVersionStrategy.LATEST_MINOR:
-        return this.getLatestVersion(versions, dsgVersion);
-      case CodeGenerationVersionStrategy.LATEST_MAJOR:
+    switch (codeGeneratorVersionOption) {
+      case CodeGeneratorVersionStrategy.SPECIFIC:
+        return codeGeneratorVersion;
+      case CodeGeneratorVersionStrategy.LATEST_MINOR:
+        return this.getLatestVersion(versions, codeGeneratorVersion);
+      case CodeGeneratorVersionStrategy.LATEST_MAJOR:
       default:
         return this.getLatestVersion(versions);
     }

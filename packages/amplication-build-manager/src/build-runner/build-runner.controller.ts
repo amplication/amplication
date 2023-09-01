@@ -14,14 +14,14 @@ import {
   CodeGenerationRequest,
   CodeGenerationSuccess,
 } from "@amplication/schema-registry";
-import { DsgCatalogService } from "../dsg/dsg-catalog.service";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
 @Controller("build-runner")
 export class BuildRunnerController {
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly buildRunnerService: BuildRunnerService,
-    private readonly dsgCatalogService: DsgCatalogService,
+    private readonly CodeGeneratorService: CodeGeneratorService,
     private readonly producerService: KafkaProducerService,
     private readonly logger: AmplicationLogger
   ) {}
@@ -98,11 +98,12 @@ export class BuildRunnerController {
       let containerImageTag: string;
 
       if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
-        containerImageTag = await this.dsgCatalogService.getDsgVersion({
-          dsgVersion: message.codeGenerationVersionOptions.version,
-          dsgVersionOption:
-            message.codeGenerationVersionOptions.selectionStrategy,
-        });
+        containerImageTag =
+          await this.CodeGeneratorService.getCodeGeneratorVersion({
+            codeGeneratorVersion: message.codeGeneratorVersionOptions.version,
+            codeGeneratorVersionOption:
+              message.codeGeneratorVersionOptions.selectionStrategy,
+          });
       }
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);

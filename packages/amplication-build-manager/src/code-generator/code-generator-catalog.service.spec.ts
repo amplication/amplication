@@ -1,15 +1,15 @@
 import { ConfigService } from "@nestjs/config";
-import { DsgCatalogService } from "./dsg-catalog.service";
+import { CodeGeneratorService } from "./code-generator-catalog.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
 import axios from "axios";
-import { CodeGenerationVersionStrategy } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "@amplication/schema-registry";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-describe("DsgCatalogService", () => {
-  let service: DsgCatalogService;
+describe("CodeGeneratorService", () => {
+  let service: CodeGeneratorService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -30,11 +30,11 @@ describe("DsgCatalogService", () => {
             },
           },
         },
-        DsgCatalogService,
+        CodeGeneratorService,
       ],
     }).compile();
 
-    service = module.get<DsgCatalogService>(DsgCatalogService);
+    service = module.get<CodeGeneratorService>(CodeGeneratorService);
   });
 
   it("should be defined", () => {
@@ -42,12 +42,12 @@ describe("DsgCatalogService", () => {
   });
 
   it.each([
-    ["v1.0.1", CodeGenerationVersionStrategy.SPECIFIC],
-    ["v2.1.1", CodeGenerationVersionStrategy.LATEST_MAJOR],
-    ["v1.2.0", CodeGenerationVersionStrategy.LATEST_MINOR],
+    ["v1.0.1", CodeGeneratorVersionStrategy.SPECIFIC],
+    ["v2.1.1", CodeGeneratorVersionStrategy.LATEST_MAJOR],
+    ["v1.2.0", CodeGeneratorVersionStrategy.LATEST_MINOR],
   ])(
     `should return version %s when %s is selected`,
-    async (expected: string, option: CodeGenerationVersionStrategy) => {
+    async (expected: string, option: CodeGeneratorVersionStrategy) => {
       const selectedVersion = "v1.0.1";
 
       mockedAxios.get.mockImplementation(() =>
@@ -56,16 +56,16 @@ describe("DsgCatalogService", () => {
         })
       );
 
-      const result = await service.getDsgVersion({
-        dsgVersion: selectedVersion,
-        dsgVersionOption: option,
+      const result = await service.getCodeGeneratorVersion({
+        codeGeneratorVersion: selectedVersion,
+        codeGeneratorVersionOption: option,
       });
 
       expect(result).toEqual(expected);
     }
   );
 
-  describe("getDsgAvailableVersions", () => {
+  describe("getCodeGeneratorAvailableVersions", () => {
     it("should return all available versions", async () => {
       mockedAxios.get.mockImplementation(() =>
         Promise.resolve({
@@ -82,7 +82,7 @@ describe("DsgCatalogService", () => {
         })
       );
 
-      const versions = await service["getDsgAvailableVersions"]();
+      const versions = await service["getCodeGeneratorAvailableVersions"]();
       expect(versions).toEqual([
         "v1.0.0",
         "v1.0.1",

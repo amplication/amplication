@@ -8,7 +8,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
-  CodeGenerationVersionStrategy,
+  CodeGeneratorVersionStrategy,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
@@ -16,7 +16,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { Env } from "../env";
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
-import { DsgCatalogService } from "../dsg/dsg-catalog.service";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 
@@ -53,9 +53,9 @@ describe("BuildRunnerController", () => {
           })),
         },
         {
-          provide: DsgCatalogService,
+          provide: CodeGeneratorService,
           useClass: jest.fn(() => ({
-            getDsgVersion: jest.fn(),
+            getCodeGeneratorVersion: jest.fn(),
           })),
         },
         {
@@ -217,7 +217,7 @@ describe("BuildRunnerController", () => {
         buildId: "12345",
         pluginInstallations: [],
       },
-      codeGenerationVersionOptions: {},
+      codeGeneratorVersionOptions: {},
     };
     const args = plainToInstance(
       CodeGenerationRequest.Value,
@@ -269,9 +269,9 @@ describe("BuildRunnerController", () => {
         buildId: "12345",
         pluginInstallations: [],
       },
-      codeGenerationVersionOptions: {
+      codeGeneratorVersionOptions: {
         version: "v1.0.1",
-        selectionStrategy: CodeGenerationVersionStrategy.SPECIFIC,
+        selectionStrategy: CodeGeneratorVersionStrategy.SPECIFIC,
       },
     };
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
