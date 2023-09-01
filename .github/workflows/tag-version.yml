@@ -17,6 +17,11 @@ on:
         type: boolean
         description: Forces Nx to consider all projects as affected when running the update-version target.
         default: false
+      draft-release:
+        type: boolean
+        description: Create a draft release instead of a published release.
+        required: false
+        default: false
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -39,15 +44,7 @@ jobs:
             exit 1
           fi
         shell: bash
-      - name: Check version is unique
-        id: validate-version-unique
-        run: |
-          if git tag --list | grep -q "${{ github.event.inputs.version }}"; then
-            echo "Version '${{ github.event.inputs.version }}' already exists."
-            echo "Please use a different version."
-            exit 1
-          fi
-        shell: bash
+
 
   generate-release:
     name: Commit version changes
@@ -64,6 +61,16 @@ jobs:
       - uses: nrwl/nx-set-shas@v3
         with:
           main-branch-name: ${{ github.event.repository.default_branch }}
+
+      - name: Check version is unique
+        id: validate-version-unique
+        run: |
+          if git tag --list | grep -q "${{ github.event.inputs.version }}"; then
+            echo "Version '${{ github.event.inputs.version }}' already exists."
+            echo "Please use a different version."
+            exit 1
+          fi
+        shell: bash
 
       - uses: actions/setup-node@v3
         with:
@@ -110,5 +117,5 @@ jobs:
             *
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
-          draft: true
+          draft: ${{ github.event.inputs.draft-release }} 
           generate_release_notes: true
