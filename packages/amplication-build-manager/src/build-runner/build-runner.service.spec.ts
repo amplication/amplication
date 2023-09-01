@@ -74,8 +74,13 @@ describe("BuildRunnerService", () => {
       resourceType: "Service",
       pluginInstallations: [],
     };
+    const codeGeneratorVersion = "v1.0.0";
 
-    await service.saveDsgResourceData(buildId, dsgResourceDataMock);
+    await service.saveDsgResourceData(
+      buildId,
+      dsgResourceDataMock,
+      codeGeneratorVersion
+    );
 
     const savePath = join(
       configService.get(Env.DSG_JOBS_BASE_FOLDER),
@@ -91,10 +96,13 @@ describe("BuildRunnerService", () => {
 
     expect(spyOnWriteFile).toBeCalledWith(
       savePath,
-      JSON.stringify(dsgResourceDataMock)
+      JSON.stringify({ ...dsgResourceDataMock, codeGeneratorVersion })
     );
     await expect(
-      promises.writeFile(savePath, JSON.stringify(dsgResourceDataMock))
+      promises.writeFile(
+        savePath,
+        JSON.stringify({ ...dsgResourceDataMock, codeGeneratorVersion })
+      )
     ).resolves.not.toThrow();
   });
 

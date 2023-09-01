@@ -21,7 +21,7 @@ export class BuildRunnerController {
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly buildRunnerService: BuildRunnerService,
-    private readonly CodeGeneratorService: CodeGeneratorService,
+    private readonly codeGeneratorService: CodeGeneratorService,
     private readonly producerService: KafkaProducerService,
     private readonly logger: AmplicationLogger
   ) {}
@@ -30,6 +30,9 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
+    const codeGeneratorVersion =
+      await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
+
     try {
       await this.buildRunnerService.copyFromJobToArtifact(
         dto.resourceId,
@@ -38,7 +41,7 @@ export class BuildRunnerController {
 
       const successEvent: CodeGenerationSuccess.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId },
+        value: { buildId: dto.buildId, codeGeneratorVersion },
       };
 
       await this.producerService.emitMessage(
@@ -50,7 +53,7 @@ export class BuildRunnerController {
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId, error },
+        value: { buildId: dto.buildId, error, codeGeneratorVersion },
       };
 
       await this.producerService.emitMessage(
@@ -65,9 +68,12 @@ export class BuildRunnerController {
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
     try {
+      const codeGeneratorVersion =
+        await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
+
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId, error: dto.error },
+        value: { buildId: dto.buildId, error: dto.error, codeGeneratorVersion },
       };
 
       await this.producerService.emitMessage(
@@ -89,22 +95,23 @@ export class BuildRunnerController {
       buildId: message.buildId,
       resourceId: message.resourceId,
     });
+
+    let containerImageTag: string;
+    if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
+      containerImageTag =
+        await this.codeGeneratorService.getCodeGeneratorVersion({
+          codeGeneratorVersion: message.codeGeneratorVersionOptions.version,
+          codeGeneratorVersionOption:
+            message.codeGeneratorVersionOptions.selectionStrategy,
+        });
+    }
+
     try {
       await this.buildRunnerService.saveDsgResourceData(
         message.buildId,
-        message.dsgResourceData
+        message.dsgResourceData,
+        containerImageTag ?? null
       );
-
-      let containerImageTag: string;
-
-      if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
-        containerImageTag =
-          await this.CodeGeneratorService.getCodeGeneratorVersion({
-            codeGeneratorVersion: message.codeGeneratorVersionOptions.version,
-            codeGeneratorVersionOption:
-              message.codeGeneratorVersionOptions.selectionStrategy,
-          });
-      }
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);
       await axios.post(url, {
@@ -117,7 +124,11 @@ export class BuildRunnerController {
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
-        value: { buildId: message.buildId, error },
+        value: {
+          buildId: message.buildId,
+          error,
+          codeGeneratorVersion: containerImageTag,
+        },
       };
 
       await this.producerService.emitMessage(
