@@ -1,5 +1,5 @@
-name: Tag Version
-run-name: Tag Version ${{ github.event.inputs.version }}
+name: Release Production
+run-name: Release Version ${{ github.event.inputs.version }}
 
 on:
   workflow_dispatch:
