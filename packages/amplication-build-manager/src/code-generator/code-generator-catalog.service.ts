@@ -89,16 +89,16 @@ export class CodeGeneratorService {
     }
 
     const versions =
-      codeGeneratorVersionOption !== CodeGeneratorVersionStrategy.SPECIFIC
+      codeGeneratorVersionOption !== CodeGeneratorVersionStrategy.Specific
         ? await this.getCodeGeneratorAvailableVersions()
         : [];
 
     switch (codeGeneratorVersionOption) {
-      case CodeGeneratorVersionStrategy.SPECIFIC:
+      case CodeGeneratorVersionStrategy.Specific:
         return codeGeneratorVersion;
-      case CodeGeneratorVersionStrategy.LATEST_MINOR:
+      case CodeGeneratorVersionStrategy.LatestMinor:
         return this.getLatestVersion(versions, codeGeneratorVersion);
-      case CodeGeneratorVersionStrategy.LATEST_MAJOR:
+      case CodeGeneratorVersionStrategy.LatestMajor:
       default:
         return this.getLatestVersion(versions);
     }

@@ -42,9 +42,9 @@ describe("CodeGeneratorService", () => {
   });
 
   it.each([
-    ["v1.0.1", CodeGeneratorVersionStrategy.SPECIFIC],
-    ["v2.1.1", CodeGeneratorVersionStrategy.LATEST_MAJOR],
-    ["v1.2.0", CodeGeneratorVersionStrategy.LATEST_MINOR],
+    ["v1.0.1", CodeGeneratorVersionStrategy.Specific],
+    ["v2.1.1", CodeGeneratorVersionStrategy.LatestMajor],
+    ["v1.2.0", CodeGeneratorVersionStrategy.LatestMinor],
   ])(
     `should return version %s when %s is selected`,
     async (expected: string, option: CodeGeneratorVersionStrategy) => {

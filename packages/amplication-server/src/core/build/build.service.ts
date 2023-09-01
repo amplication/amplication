@@ -370,7 +370,7 @@ export class BuildService {
             dsgResourceData,
             codeGeneratorVersionOptions: {
               version: build.codeGeneratorVersion,
-              selectionStrategy: CodeGeneratorVersionStrategy.LATEST_MAJOR,
+              selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
             },
           },
         };
