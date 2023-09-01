@@ -98,7 +98,7 @@
         "packages/amplication-cli/src/models.ts",
         "packages/amplication-client/src/models.ts",
         "packages/amplication-code-gen-types/src/models.ts",
-        "packages/git-sync-manager/src/models.ts",
+        "ee/packages/git-sync-manager/src/models.ts",
         "packages/amplication-git-pull-request-service/src/models.ts",
         "packages/data-service-generator/src/models.ts"
       ],
