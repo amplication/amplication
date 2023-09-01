@@ -166,6 +166,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String!
+  codeGeneratorVersion: String!
   commit: Commit!
   commitId: String!
   createdAt: DateTime!
@@ -207,6 +208,22 @@ input BuildWhereInput {
 input ChangePasswordInput {
   newPassword: String!
   oldPassword: String!
+}
+
+type CodeGeneratorVersionOptions {
+  selectionStrategy: CodeGeneratorVersionStrategy
+  version: String
+}
+
+input CodeGeneratorVersionOptionsInput {
+  selectionStrategy: CodeGeneratorVersionStrategy
+  version: String
+}
+
+enum CodeGeneratorVersionStrategy {
+  LatestMajor
+  LatestMinor
+  Specific
 }
 
 type Commit {
@@ -1381,6 +1398,7 @@ type ServiceSettings implements IBlock {
   authEntityName: String
   authProvider: EnumAuthProviderType!
   blockType: EnumBlockType!
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptions!
   createdAt: DateTime!
   description: String
   displayName: String!
@@ -1400,6 +1418,7 @@ input ServiceSettingsUpdateInput {
   adminUISettings: AdminUISettingsUpdateInput!
   authEntityName: String
   authProvider: EnumAuthProviderType!
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput!
   description: String
   displayName: String
   serverSettings: ServerSettingsUpdateInput!
