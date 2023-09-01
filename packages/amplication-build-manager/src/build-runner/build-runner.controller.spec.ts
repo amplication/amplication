@@ -8,8 +8,8 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
-  CodeGeneratorVersionStrategy,
 } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
@@ -19,6 +19,7 @@ import { BuildRunnerService } from "./build-runner.service";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
+import { AppInfo, ServiceSettings } from "@amplication/code-gen-types";
 
 const { plainToInstance } = classTransformer;
 const spyOnAxiosPost = jest.spyOn(axios, "post");
@@ -250,10 +251,14 @@ describe("BuildRunnerController", () => {
         resourceType: "Service",
         buildId: "12345",
         pluginInstallations: [],
-      },
-      codeGeneratorVersionOptions: {
-        version: expectedCodeGeneratorVersion,
-        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+        resourceInfo: {
+          settings: {
+            codeGeneratorVersionOptions: {
+              version: expectedCodeGeneratorVersion,
+              selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+            },
+          } as unknown as ServiceSettings,
+        } as unknown as AppInfo,
       },
     };
     const args = plainToInstance(
@@ -312,10 +317,14 @@ describe("BuildRunnerController", () => {
         resourceType: "Service",
         buildId: "12345",
         pluginInstallations: [],
-      },
-      codeGeneratorVersionOptions: {
-        version: "v1.0.1",
-        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+        resourceInfo: {
+          settings: {
+            codeGeneratorVersionOptions: {
+              version: "v1.0.1",
+              selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+            },
+          } as unknown as ServiceSettings,
+        } as unknown as AppInfo,
       },
     };
 
@@ -325,14 +334,16 @@ describe("BuildRunnerController", () => {
         buildId: codeGenerationRequestDTOMock.buildId,
         error: errorMock,
         codeGeneratorVersion:
-          codeGenerationRequestDTOMock.codeGeneratorVersionOptions.version,
+          codeGenerationRequestDTOMock.dsgResourceData.resourceInfo.settings
+            .codeGeneratorVersionOptions.version,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
     mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
     mockRunnerServiceSaveDsgResourceData.mockRejectedValue(errorMock);
     mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
-      codeGenerationRequestDTOMock.codeGeneratorVersionOptions.version
+      codeGenerationRequestDTOMock.dsgResourceData.resourceInfo.settings
+        .codeGeneratorVersionOptions.version
     );
 
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);

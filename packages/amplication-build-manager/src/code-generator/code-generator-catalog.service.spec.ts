@@ -3,7 +3,7 @@ import { CodeGeneratorService } from "./code-generator-catalog.service";
 import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
 import axios from "axios";
-import { CodeGeneratorVersionStrategy } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
