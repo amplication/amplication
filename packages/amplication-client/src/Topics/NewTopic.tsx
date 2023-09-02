@@ -49,7 +49,9 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
 
   const [createTopic, { error, loading }] = useMutation(CREATE_TOPIC, {
     update(cache, { data }) {
-      if (!data) return;
+      if (!data) {
+        return;
+      }
 
       const newTopic = data.createTopic;
 
