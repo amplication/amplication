@@ -382,7 +382,7 @@ export class GitClientService {
       authors.push(amplicationBot.gitAuthor);
     }
     authors.push(gitCli.gitAuthorUser);
-    authors.push(gitCli.gitAuthorOldUser);
+    authors.push(gitCli.gitOldAuthorUser);
 
     return gitCli.log(authors, maxCount);
   }
