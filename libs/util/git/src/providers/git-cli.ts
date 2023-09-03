@@ -19,6 +19,8 @@ export class GitCli {
   private gitAuthorUserName = "amplication[bot]";
   private gitAuthorUserEmail = "bot@amplication.com";
   public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
+  public gitAuthorOldUser =
+    "100755160+amplication[bot]@users.noreply.github.com";
   private gitConflictsResolverAuthor = `amplication[branch whisperer] <${this.gitAuthorUserEmail}>`;
 
   constructor(
