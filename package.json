@@ -144,7 +144,7 @@
     "pluralize": "^8.0.0",
     "prettier": "^2.7.1",
     "prisma-schema-dsl": "^2.1.5",
-    "prisma-schema-dsl-types": "^1.1.1",
+    "prisma-schema-dsl-types": "^1.1.2",
     "query-string": "^7.1.1",
     "rc": "^1.2.8",
     "react-animate-height": "^3.0.4",
