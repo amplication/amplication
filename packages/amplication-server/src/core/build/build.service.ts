@@ -678,6 +678,7 @@ export class BuildService {
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
+            resourceName: resource.name,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {

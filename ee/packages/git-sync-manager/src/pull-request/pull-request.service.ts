@@ -60,6 +60,7 @@ export class PullRequestService {
 
   async createPullRequest({
     resourceId,
+    resourceName,
     oldBuildId,
     newBuildId,
     gitProvider,
@@ -76,7 +77,7 @@ export class PullRequestService {
     const { body, title } = commit;
     const head =
       pullRequestMode === EnumPullRequestMode.Accumulative
-        ? "amplication"
+        ? `amplication-${resourceName}`
         : `amplication-build-${newBuildId}`;
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,

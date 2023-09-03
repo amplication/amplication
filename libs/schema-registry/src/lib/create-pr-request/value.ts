@@ -17,6 +17,8 @@ export class Value {
   @IsString()
   resourceId!: string;
   @IsString()
+  resourceName!: string;
+  @IsString()
   @IsOptional()
   oldBuildId?: string | undefined;
   @IsString()
