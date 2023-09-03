@@ -420,7 +420,7 @@ export class BitBucketService implements GitProvider {
 
   async createPullRequest(
     createPullRequestArgs: GitProviderCreatePullRequestArgs
-  ): Promise<PullRequest> {
+  ): Promise<PullRequest | null> {
     const {
       repositoryGroupName,
       repositoryName,

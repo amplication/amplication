@@ -6,7 +6,9 @@ import axios from "axios";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
+  CodeGenerationRequest,
   CodeGenerationSuccess,
+  CodeGeneratorVersionStrategy,
 } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
@@ -14,12 +16,11 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { Env } from "../env";
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
-import { CodeGenerationRequestDto } from "./dto/CodeGenerationRequest";
 
 const { plainToInstance } = classTransformer;
-const spyOnPlainToInstance = jest.spyOn(classTransformer, "plainToInstance");
 const spyOnAxiosPost = jest.spyOn(axios, "post");
 
 describe("BuildRunnerController", () => {
@@ -29,6 +30,8 @@ describe("BuildRunnerController", () => {
 
   const mockRunnerServiceCopyFromJobToArtifact = jest.fn();
   const mockRunnerServiceSaveDsgResourceData = jest.fn();
+  const mockRunnerServiceGetCodeGeneratorVersion = jest.fn();
+  const mockCodeGeneratorServiceGetCodeGeneratorVersion = jest.fn();
   const mockKafkaServiceEmitMessage = jest.fn();
 
   beforeEach(async () => {
@@ -49,6 +52,14 @@ describe("BuildRunnerController", () => {
           useClass: jest.fn(() => ({
             saveDsgResourceData: mockRunnerServiceSaveDsgResourceData,
             copyFromJobToArtifact: mockRunnerServiceCopyFromJobToArtifact,
+            getCodeGeneratorVersion: mockRunnerServiceGetCodeGeneratorVersion,
+          })),
+        },
+        {
+          provide: CodeGeneratorService,
+          useClass: jest.fn(() => ({
+            getCodeGeneratorVersion:
+              mockCodeGeneratorServiceGetCodeGeneratorVersion,
           })),
         },
         {
@@ -62,6 +73,8 @@ describe("BuildRunnerController", () => {
                   return "code_generation_failure_topic";
                 case Env.DSG_RUNNER_URL:
                   return "http://runner.url/";
+                case Env.DSG_CATALOG_SERVICE_URL:
+                  return "http://catalog.url/";
                 default:
                   return "";
               }
@@ -86,9 +99,18 @@ describe("BuildRunnerController", () => {
       resourceId: "resourceId",
       buildId: "buildId",
     };
+
+    const expectedCodeGeneratorVersion = "v1.2.2";
+    mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
+      expectedCodeGeneratorVersion
+    );
+
     const kafkaSuccessEventMock: CodeGenerationSuccess.KafkaEvent = {
       key: null,
-      value: { buildId: codeGenerationSuccessDTOMock.buildId },
+      value: {
+        buildId: codeGenerationSuccessDTOMock.buildId,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      },
     };
 
     mockRunnerServiceCopyFromJobToArtifact.mockResolvedValue(undefined);
@@ -117,11 +139,17 @@ describe("BuildRunnerController", () => {
       resourceId: "resourceId",
       buildId: "buildId",
     };
+    const expectedCodeGeneratorVersion = "v1.2.2";
+    mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
+      expectedCodeGeneratorVersion
+    );
+
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
       key: null,
-      value: {
+      value: <CodeGenerationFailure.Value>{
         buildId: codeGenerationSuccessDTOMock.buildId,
         error: errorMock,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
@@ -152,11 +180,17 @@ describe("BuildRunnerController", () => {
       buildId: "buildId",
       error: errorMock,
     };
+    const expectedCodeGeneratorVersion = "v1.2.2";
+    mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
+      expectedCodeGeneratorVersion
+    );
+
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
       key: null,
-      value: {
+      value: <CodeGenerationFailure.Value>{
         buildId: codeGenerationFailureDTOMock.buildId,
         error: errorMock,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
@@ -178,11 +212,17 @@ describe("BuildRunnerController", () => {
       buildId: "buildId",
       error: errorMock,
     };
+    const expectedCodeGeneratorVersion = "v1.2.2";
+    mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
+      expectedCodeGeneratorVersion
+    );
+
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
       key: null,
       value: {
         buildId: codeGenerationFailureDTOMock.buildId,
         error: errorMock,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
@@ -202,7 +242,8 @@ describe("BuildRunnerController", () => {
   });
 
   it("On code generation request save DSG resource data and send it to DSG runner", async () => {
-    const codeGenerationRequestDTOMock: CodeGenerationRequestDto = {
+    const expectedCodeGeneratorVersion = "v1.2.2";
+    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
       dsgResourceData: {
@@ -210,9 +251,13 @@ describe("BuildRunnerController", () => {
         buildId: "12345",
         pluginInstallations: [],
       },
+      codeGeneratorVersionOptions: {
+        version: expectedCodeGeneratorVersion,
+        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+      },
     };
     const args = plainToInstance(
-      CodeGenerationRequestDto,
+      CodeGenerationRequest.Value,
       codeGenerationRequestDTOMock
     );
 
@@ -223,29 +268,31 @@ describe("BuildRunnerController", () => {
       },
     });
 
+    mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
+      expectedCodeGeneratorVersion
+    );
+
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
 
     expect(loggerService.info).toBeCalled();
-    expect(spyOnPlainToInstance).toBeCalledWith(
-      CodeGenerationRequestDto,
-      codeGenerationRequestDTOMock
-    );
-    expect(loggerService.debug).toBeCalled();
     expect(mockRunnerServiceSaveDsgResourceData).toBeCalledWith(
       args.buildId,
-      args.dsgResourceData
+      args.dsgResourceData,
+      expectedCodeGeneratorVersion
     );
     expect(spyOnAxiosPost).toBeCalledWith(
       configService.get(Env.DSG_RUNNER_URL),
       {
         resourceId: args.resourceId,
         buildId: args.buildId,
+        containerImageTag: expectedCodeGeneratorVersion,
       }
     );
     await expect(
       axios.post(configService.get(Env.DSG_RUNNER_URL), {
         resourceId: args.resourceId,
         buildId: args.buildId,
+        containerImageTag: expectedCodeGeneratorVersion,
       })
     ).resolves.toEqual(
       expect.objectContaining({
@@ -256,9 +303,9 @@ describe("BuildRunnerController", () => {
     );
   });
 
-  it("On code generation rqeuest with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
+  it("On code generation request with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
-    const codeGenerationRequestDTOMock: CodeGenerationRequestDto = {
+    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
       dsgResourceData: {
@@ -266,17 +313,27 @@ describe("BuildRunnerController", () => {
         buildId: "12345",
         pluginInstallations: [],
       },
+      codeGeneratorVersionOptions: {
+        version: "v1.0.1",
+        selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+      },
     };
+
     const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
       key: null,
-      value: {
+      value: <CodeGenerationFailure.Value>{
         buildId: codeGenerationRequestDTOMock.buildId,
         error: errorMock,
+        codeGeneratorVersion:
+          codeGenerationRequestDTOMock.codeGeneratorVersionOptions.version,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
     mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
     mockRunnerServiceSaveDsgResourceData.mockRejectedValue(errorMock);
+    mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
+      codeGenerationRequestDTOMock.codeGeneratorVersionOptions.version
+    );
 
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
 
