@@ -40,6 +40,7 @@ import {
   CanUserAccessBuild,
   CodeGenerationLog,
   CodeGenerationRequest,
+  CodeGeneratorVersionStrategy,
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
@@ -367,6 +368,9 @@ export class BuildService {
             resourceId,
             buildId,
             dsgResourceData,
+            codeGeneratorVersionOptions: {
+              selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
+            },
           },
         };
 
@@ -674,6 +678,7 @@ export class BuildService {
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
+            resourceName: resource.name,
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
