@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+$search-field-width: 220px;
+
+.entity-field-list {
+  &__header {
+    @include flexFullRowWithSpacing;
+    border-bottom: 1px solid var(--black5);
+    margin-bottom: var(--large-spacing);
+    padding-bottom: var(--large-spacing);
+    .search-field input {
+      width: $search-field-width;
+    }
+  }
+  &__title {
+    @include body2;
+    margin-bottom: var(--large-spacing);
+  }
+  &__add-button {
+    min-width: 0;
+  }
+}

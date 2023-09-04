@@ -1,0 +1,34 @@
+@import "../style/index.scss";
+
+.faq {
+  display: flex;
+  flex-direction: column;
+
+  width: 1050px;
+
+  margin-top: 50px;
+  color: white;
+
+  &__header {
+    font-size: 24px;
+    font-weight: 600;
+    margin-bottom: var(--double-spacing);
+
+    align-self: center;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--icon-spacing);
+  }
+
+  a.mail-link {
+    color: var(--primary);
+    text-decoration: underline;
+  }
+
+  span.bold {
+    font-weight: 600;
+  }
+}

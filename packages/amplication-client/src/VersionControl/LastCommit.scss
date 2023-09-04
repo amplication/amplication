@@ -1,0 +1,71 @@
+@import "../style/index.scss";
+
+.last-commit {
+  margin-top: auto;
+
+  &__title {
+    font-size: 14px;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__status {
+    display: grid;
+    align-items: center;
+    margin: var(--large-spacing) 0;
+  }
+
+  .build-status-icons__status {
+    .amp-icon {
+      margin-left: 0;
+    }
+  }
+
+  &__divider {
+    border: none;
+    background-color: var(--black10);
+    height: 1px;
+    margin: 0;
+  }
+
+  &__skeleton {
+    padding: var(--large-spacing) 0;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    padding: var(--large-spacing);
+  }
+
+  .clickable-id {
+    @include regular-12;
+    color: var(--black80);
+    margin-right: var(--icon-spacing);
+    a {
+      color: var(--black100);
+    }
+  }
+  .user-and-time {
+    margin-left: var(--default-spacing-small);
+  }
+
+  .build-summary {
+    margin-left: auto;
+  }
+
+  .build-header {
+    margin-left: var(--double-spacing);
+  }
+
+  &__message {
+    color: var(--black60);
+  }
+
+  .amp-button.amp-button--secondary {
+    @include regular-14;
+    width: 100%;
+  }
+}

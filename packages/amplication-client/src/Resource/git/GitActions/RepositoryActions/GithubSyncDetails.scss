@@ -1,0 +1,24 @@
+@import "../../../../style/index.scss";
+
+.git-repo-details {
+  width: 100%;
+  &__body {
+    @include flexFullRowWithSpacing;
+  }
+
+  &__name {
+    @include title1;
+    padding-bottom: var(--default-spacing-small);
+  }
+
+  &__status {
+    margin-top: var(--default-spacing);
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    .amp-icon {
+      margin-right: var(--default-spacing-small);
+      color: var(--positive-default);
+    }
+  }
+}

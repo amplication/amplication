@@ -1,0 +1,70 @@
+@import "../style/index.scss";
+
+$before-spacing-left: 10px;
+$before-spacing: -6px;
+
+.pending-change {
+  margin-left: 0;
+  margin-right: var(--default-spacing-small);
+  margin-bottom: var(--default-spacing);
+  position: relative;
+  @include flexFullRow;
+
+  &:last-child {
+    margin-bottom: var(--large-spacing);
+  }
+
+  &__spacer {
+    flex: 1;
+  }
+  &__action {
+    height: var(--large-spacing);
+    width: var(--large-spacing);
+    font-size: var(--text-field-label-font-size);
+    min-width: var(--medium-spacing);
+    min-height: var(--medium-spacing);
+    border-radius: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--static-white);
+    margin-bottom: 0;
+    margin-left: var(--double-spacing);
+    margin-right: var(--user-badge-spacing);
+
+    &:before {
+      content: "";
+      position: absolute;
+      display: block;
+      left: $before-spacing-left;
+      border-right: 1px solid var(--black10);
+      top: $before-spacing;
+      bottom: $before-spacing;
+    }
+
+    &.update {
+      background-color: var(--secondary-light-blue);
+    }
+    &.delete {
+      background-color: var(--negative);
+    }
+    &.create {
+      background-color: var(--positive-default);
+    }
+  }
+  &__version {
+    font-weight: 500;
+  }
+  &__tooltip_deleted:after {
+    border: 1px solid var(--negative);
+    background-color: var(--black10);
+    color: var(--black100);
+  }
+  &__deleted {
+    color: var(--black80);
+    cursor: pointer;
+  }
+  .tooltipped-ne:before {
+    border-top-color: var(--negative) !important;
+  }
+}

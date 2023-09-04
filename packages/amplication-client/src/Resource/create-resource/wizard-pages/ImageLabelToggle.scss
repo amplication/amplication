@@ -1,0 +1,37 @@
+@import "../../../style/index.scss";
+
+.image-label-toggle {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--large-spacing);
+
+  border: 1px solid var(--black10);
+  border-radius: 8px;
+
+  height: 160px;
+  min-width: 250px;
+  max-width: 250px;
+
+  &:hover {
+    cursor: pointer;
+  }
+
+  .toggle-field {
+    .MuiSwitch-root {
+      .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
+        background-color: #31c587;
+      }
+    }
+  }
+
+  label {
+    @include title-18;
+
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}

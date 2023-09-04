@@ -1,0 +1,10 @@
+@import "../style/index.scss";
+
+.amp-form {
+  &--children-as-blocks {
+    > * {
+      display: block;
+      margin-bottom: var(--large-spacing);
+    }
+  }
+}

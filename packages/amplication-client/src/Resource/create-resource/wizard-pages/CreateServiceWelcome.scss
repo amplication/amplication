@@ -1,0 +1,35 @@
+@use "sass:math";
+@import "../../../style/index.scss";
+
+$max-width: 700px;
+
+.create-service-welcome {
+  justify-content: center;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--black2);
+  flex: 1;
+  gap: 16px;
+  align-items: center;
+
+  &__welcome {
+    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  &__start_btn {
+    text-align: center;
+  }
+  h1 {
+    font-size: 32px;
+    font-weight: 600;
+  }
+
+  h3 {
+    font-size: 24px;
+    font-weight: 500;
+    margin: 1rem;
+  }
+}

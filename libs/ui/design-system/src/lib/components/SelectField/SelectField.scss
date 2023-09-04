@@ -1,0 +1,89 @@
+@import "../../style/index.scss";
+
+.select-field {
+  max-width: var(--form-field-long);
+  label {
+    @include label;
+  }
+
+  &__menu-list {
+    background-color: var(--white);
+    padding: 0;
+  }
+
+  .select-field__container {
+    font-size: var(--normal-font-size);
+
+    input {
+      color: white !important;
+    }
+  }
+  /**@todo: convert all class selector for component child elements to "& &__child" */
+  .select-field__control {
+    @include textField;
+    padding: 0;
+
+    &--is-focused,
+    &:hover {
+      border-color: var(--primary);
+      box-shadow: none;
+      transition: border-color 0.2s ease-in, color 0.2s ease-in;
+
+      .select-field__single-value {
+        color: var(--black100);
+      }
+    }
+    .select-field__input {
+      input {
+        &:focus,
+        &:hover,
+        &:active {
+          border: none !important;
+        }
+      }
+    }
+  }
+  .select-field--is-disabled {
+    .select-field__control {
+      @include textField--disabled;
+    }
+  }
+
+  .select-field__single-value {
+    color: var(--black60);
+  }
+
+  &--has-error {
+    .select-field__control {
+      border-color: var(--negative);
+
+      &:active,
+      &:hover,
+      &:focus {
+        border-color: var(--negative);
+      }
+    }
+  }
+
+  .select-field__option {
+    color: var(--black60);
+    background-color: var(--white);
+    @include flexFullRow;
+    justify-content: flex-start;
+    padding: var(--default-spacing-small);
+
+    i {
+      padding-right: var(--default-spacing);
+    }
+    &:hover {
+      background-color: var(--black5);
+    }
+    &--is-focused {
+      background-color: var(--black5);
+    }
+    &--is-selected {
+      color: var(--primary);
+      font-weight: 500;
+    }
+  }
+}

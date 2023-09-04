@@ -1,0 +1,44 @@
+@import "../../../style/index.scss";
+
+.create-git-sync {
+  display: flex;
+  flex: 1;
+
+  &__demo {
+    padding-top: var(--double-spacing);
+    width: 100%;
+    @include flexFullRow;
+
+    &__tooltip {
+      @include body2;
+      padding-right: var(--default-spacing-small);
+    }
+
+    .toggle-field {
+      width: 100%;
+      margin-bottom: 0;
+
+      label .input-label-value {
+        @include body2;
+        order: 1;
+        margin-right: auto;
+        margin-left: 0;
+      }
+    }
+  }
+  &__description {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  &__github_box {
+    width: 70%;
+  }
+
+  &__right {
+    display: flex;
+    flex: 1;
+    background: var(--white);
+  }
+}
