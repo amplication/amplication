@@ -614,7 +614,7 @@ describe("AwsCodeCommit", () => {
         expect(result).toEqual(<PullRequest>{
           number: 10,
           url: `https://${awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${
-            getPullRequestArgs.branchName
+            getPullRequestArgs.repositoryName
           }/pull-requests/${10}/details`,
         });
       });
