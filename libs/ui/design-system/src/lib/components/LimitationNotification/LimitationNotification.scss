@@ -1,0 +1,17 @@
+.limitation-notification {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23444B66FF' stroke-width='1' stroke-dasharray='6%2c6' stroke-dashoffset='0' stroke-linecap='butt'/%3e%3c/svg%3e");
+  border-radius: 8px;
+  color: var(--black80);
+  min-height: 42px;
+}
+
+.upgrade-link,
+.contact-us-link {
+  color: #53dbee;
+  text-decoration: underline;
+  font-weight: 500;
+  margin-left: 4px;
+}

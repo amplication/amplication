@@ -1,0 +1,48 @@
+{
+  "name": "amplication-code-gen-types",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": ["packages/amplication-code-gen-types/src"],
+  "projectType": "library",
+  "targets": {
+    "prebuild": {
+      "executor": "nx:run-commands",
+      "outputs": ["{projectRoot}/src/types"],
+      "options": {
+        "command": "ts-node -P tsconfig.lib.json ./scripts/generate-types",
+        "cwd": "packages/amplication-code-gen-types"
+      }
+    },
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "outputPath": "dist/packages/amplication-code-gen-types",
+        "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
+        "packageJson": "packages/amplication-code-gen-types/package.json",
+        "updateBuildableProjectDepsInPackageJson": true,
+        "main": "packages/amplication-code-gen-types/src/index.ts",
+        "assets": ["packages/amplication-code-gen-types/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/amplication-code-gen-types/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/packages/amplication-code-gen-types"
+      ],
+      "dependsOn": ["prebuild"],
+      "options": {
+        "jestConfig": "packages/amplication-code-gen-types/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

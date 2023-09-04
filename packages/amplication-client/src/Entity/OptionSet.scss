@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+$option-action-margin-top: 18px;
+
+.option-set {
+  &__option {
+    @include flexFullRowWithSpacing;
+    align-items: flex-start;
+
+    .text-input {
+      flex: 1;
+    }
+
+    &__action {
+      margin-top: $option-action-margin-top;
+    }
+  }
+
+  &__error-message {
+    @include errorMessage;
+  }
+}

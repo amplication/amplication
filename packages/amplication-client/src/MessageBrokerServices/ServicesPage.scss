@@ -1,0 +1,34 @@
+.services-page {
+  &__header {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+
+    &__top {
+      display: flex;
+      align-items: center;
+      gap: var(--default-spacing-small);
+
+      &__title {
+        font-size: 18px;
+        font-weight: 600;
+      }
+    }
+
+    &__description {
+      font-weight: 400;
+      font-size: 14px;
+      color: white;
+    }
+  }
+
+  .amp-horizontal-rule {
+    margin: 24px 0;
+  }
+
+  &__list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+  }
+}

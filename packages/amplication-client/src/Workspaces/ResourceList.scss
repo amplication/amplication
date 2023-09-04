@@ -1,0 +1,39 @@
+@import "../style/index.scss";
+$empty-state-image-size: 120px;
+
+.resource-list {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+
+  .limitation-notification {
+    margin-bottom: 8px;
+  }
+
+  &__header {
+    @include flexFullRowWithSpacing;
+
+    .search-field {
+      width: var(--form-field-long);
+    }
+  }
+
+  &__separator {
+    margin: var(--large-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+
+  &__title {
+    @include body2;
+    margin-bottom: var(--default-spacing-small);
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    gap: var(--large-spacing);
+    flex: 1;
+  }
+}

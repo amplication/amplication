@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.create-resource-button-item {
+  display: grid;
+  grid-template: 1fr 1fr / repeat(6, 1fr);
+  align-items: center;
+  width: 100%;
+
+  & > .circle-badge {
+    grid-row: span 2;
+    margin: 0;
+
+    & ~ span {
+      grid-column: span 5;
+      margin: 0;
+
+      &:first-of-type {
+        color: var(--black100);
+      }
+
+      &:nth-of-type(2) {
+        font-size: var(--text-field-label-font-size);
+        line-height: 12px;
+      }
+    }
+  }
+}

@@ -1,0 +1,26 @@
+@import "../../style/index.scss";
+
+.input-tooltip {
+  display: inline-block;
+
+  &__icon {
+    color: var(--black60);
+    padding: 0 var(--icon-spacing);
+  }
+}
+
+.input-tooltip__popover {
+  .amp-popover {
+    &__content {
+      background: var(--white) !important;
+
+      padding: var(--default-spacing) !important;
+      border: 1px solid var(--black60);
+      color: var(--black90);
+    }
+
+    &__arrow {
+      color: var(--black60) !important;
+    }
+  }
+}

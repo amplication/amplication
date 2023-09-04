@@ -1,0 +1,11 @@
+@font-face {
+  font-family: "amplicationicon";
+  src: url("./amplicationicon.eot?89k4uc");
+  src: url("./amplicationicon.eot?89k4uc#iefix") format("embedded-opentype"),
+    url("./amplicationicon.ttf?89k4uc") format("truetype"),
+    url("./amplicationicon.woff?89k4uc") format("woff"),
+    url("./amplicationicon.svg?89k4uc#amplicationicon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+  font-display: block;
+}
