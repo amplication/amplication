@@ -55,6 +55,7 @@ export function getGitRepositoryDetails({
   const gitRepositoryUrlMap = {
     [EnumGitProvider.Github]: `${GITHUB_URL}/${repositoryFullName}`,
     [EnumGitProvider.Bitbucket]: `${BITBUCKET_URL}/${repositoryFullName}`,
+    [EnumGitProvider.AwsCodeCommit]: `https://console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryFullName}/browse`,
   };
 
   return {
