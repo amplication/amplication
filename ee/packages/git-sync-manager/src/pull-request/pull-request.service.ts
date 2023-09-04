@@ -76,11 +76,19 @@ export class PullRequestService {
   }: CreatePrRequest.Value): Promise<string> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
-    const head =
-      pullRequestMode === EnumPullRequestMode.Accumulative &&
-      isBranchPerResource
-        ? `amplication-${resourceName}`
-        : `amplication-build-${newBuildId}`;
+
+    let head = null;
+
+    if (pullRequestMode === EnumPullRequestMode.Accumulative) {
+      if (isBranchPerResource) {
+        head = `amplication-${resourceName}`;
+      } else {
+        head = `amplication`;
+      }
+    } else {
+      head = `amplication-build-${newBuildId}`;
+    }
+
     const changedFiles = await this.diffService.listOfChangedFiles(
       resourceId,
       oldBuildId,
