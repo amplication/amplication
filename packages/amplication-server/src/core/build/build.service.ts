@@ -51,6 +51,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BuildUpdateArgs } from "../build/dto/BuildUpdateArgs";
+import { kebabCase } from "lodash";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
@@ -685,9 +686,16 @@ export class BuildService {
               )
             : false;
 
+          const branchPerResourceEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.BranchPerResource
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
+            resourceName: kebabCase(resource.name),
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
@@ -698,6 +706,9 @@ export class BuildService {
               smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
+            isBranchPerResource:
+              branchPerResourceEntitlement &&
+              branchPerResourceEntitlement.hasAccess,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {

@@ -13,6 +13,7 @@ import "./BuildSteps.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { AppContext } from "../context/appContext";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { gitProviderName } from "../Resource/git/gitProviderDisplayName";
 
 const CLASS_NAME = "build-steps";
 
@@ -97,19 +98,13 @@ const BuildSteps = ({ build }: Props) => {
           panelStyle={EnumPanelStyle.Bordered}
         >
           <Icon icon={gitProviderIconMap[providerName]} />
-          <span>{`Push Changes to ${providerName}`}</span>
+          <span>{`Push Changes to ${gitProviderName[providerName]}`}</span>
           <BuildStepsStatus status={stepGithub.status} />
           <span className="spacer" />
           {gitUrl && (
             <a
               href={gitUrl}
-              target={
-                providerName === models.EnumGitProvider.Github
-                  ? "github"
-                  : models.EnumGitProvider.Bitbucket
-                  ? "bitbucket"
-                  : "_blank"
-              }
+              target={providerName?.toLocaleLowerCase() || "_blank"}
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}
