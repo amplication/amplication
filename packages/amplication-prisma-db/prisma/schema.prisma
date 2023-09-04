@@ -394,6 +394,7 @@ model Build {
   deployments              Deployment[]
   blockVersions            BlockVersion[]
   entityVersions           EntityVersion[]
+  codeGeneratorVersion     String?
 
   @@unique([resourceId, version], map: "Build.resourceId_version_unique")
 }
