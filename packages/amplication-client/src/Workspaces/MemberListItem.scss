@@ -1,0 +1,33 @@
+@import "../style/index.scss";
+
+.member-list-item {
+  margin: 0;
+  margin-bottom: var(--default-spacing);
+
+  &__row {
+    @include flexFullRowWithSpacing;
+    margin-bottom: var(--default-spacing);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+  &__title {
+    @include body1;
+    color: var(--black100);
+    line-height: 32px;
+  }
+  &__description {
+    @include body2;
+    color: var(--dark-secondary-turquoise);
+  }
+
+  &__property {
+    @include regular-12;
+    color: var(--dark-carrot-color);
+
+    .amp-icon {
+      margin-right: var(--default-spacing);
+    }
+  }
+}

@@ -1,0 +1,38 @@
+#amplication-chat {
+  position: absolute;
+  bottom: 100px;
+  right: 10px;
+  width: 376px;
+  border-radius: 8px;
+  border: transparent;
+  box-shadow: 0 5px 20px rgb(0 0 0 / 10%);
+  height: 530px;
+  z-index: 2000;
+}
+
+#hubspot-conversations-inline-iframe {
+  width: 376px;
+  border-radius: 8px;
+  box-shadow: 0 5px 20px rgb(0 0 0 / 10%);
+  height: 530px;
+}
+.hubspot-close-btn {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  background-color: #7950ed;
+  width: 35px;
+  height: 35px;
+  border-radius: 50%;
+  margin: 0px 0px 10px 5px;
+  cursor: pointer;
+  & i {
+    width: 18px;
+    height: 18px;
+    margin-top: 23%;
+    margin-right: 2px;
+  }
+}
+.hubspot-close-btn:hover {
+  background-color: #6032ea;
+}

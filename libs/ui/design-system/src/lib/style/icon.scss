@@ -1,0 +1,48 @@
+$icon-font-size-xsmall: 16px;
+$icon-font-size-small: 19px;
+$icon-font-size-medium: 24px;
+$icon-font-size-large: 28px;
+$icon-font-size-xlarge: 32px;
+
+.amp-icon {
+  /* use !important to prevent issues with browser extensions that change fonts */
+  font-family: "amplicationicon" !important;
+  speak: never;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+  font-size: $icon-font-size-small;
+  display: inline-block;
+
+  /* Enable Ligatures ================ */
+  letter-spacing: 0;
+  -webkit-font-feature-settings: "liga";
+  -moz-font-feature-settings: "liga=1";
+  -moz-font-feature-settings: "liga";
+  -ms-font-feature-settings: "liga" 1;
+  font-feature-settings: "liga";
+  -webkit-font-variant-ligatures: discretionary-ligatures;
+  font-variant-ligatures: discretionary-ligatures;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &--size-xsmall {
+    font-size: $icon-font-size-xsmall;
+  }
+  &--size-small {
+    font-size: $icon-font-size-small;
+  }
+  &--size-medium {
+    font-size: $icon-font-size-medium;
+  }
+  &--size-large {
+    font-size: $icon-font-size-large;
+  }
+  &--size-xlarge {
+    font-size: $icon-font-size-xlarge;
+  }
+}

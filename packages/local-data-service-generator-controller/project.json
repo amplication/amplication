@@ -1,0 +1,57 @@
+{
+  "name": "local-data-service-generator-controller",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/local-data-service-generator-controller/src",
+  "projectType": "application",
+  "implicitDependencies": ["data-service-generator"],
+  "targets": {
+    "build": {
+      "executor": "@nrwl/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/local-data-service-generator-controller",
+        "main": "packages/local-data-service-generator-controller/src/main.ts",
+        "tsConfig": "packages/local-data-service-generator-controller/tsconfig.app.json"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "local-data-service-generator-controller:build"
+      },
+      "dependsOn": ["^package:container"],
+      "configurations": {
+        "production": {
+          "buildTarget": "local-data-service-generator-controller:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "packages/local-data-service-generator-controller/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/local-data-service-generator-controller/jest.config.ts",
+        "passWithNoTests": true
+      }
+    }
+  },
+  "tags": []
+}

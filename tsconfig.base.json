@@ -1,0 +1,65 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "rootDir": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "esModuleInterop": true,
+    "importHelpers": true,
+    "target": "ES2022",
+    "module": "esnext",
+    "lib": ["ESNext", "dom"],
+    "skipLibCheck": true,
+    "skipDefaultLibCheck": true,
+    "baseUrl": ".",
+    "paths": {
+      "@amplication/code-gen-types": [
+        "packages/amplication-code-gen-types/src/index.ts"
+      ],
+      "@amplication/code-gen-types/*": [
+        "packages/amplication-code-gen-types/src/*"
+      ],
+      "@amplication/code-gen-utils": ["libs/util/code-gen-utils/src/index.ts"],
+      "@amplication/kafka/*": ["packages/amplication-kafka/src/*"],
+      "@amplication/nest-logger-module/*": [
+        "packages/amplication-nest-logger-module/src/*"
+      ],
+      "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
+      "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
+      "@amplication/schema-registry": ["libs/schema-registry/src/index.ts"],
+      "@amplication/ui/design-system": [
+        "libs/ui/design-system/src/lib/index.ts"
+      ],
+      "@amplication/ui/design-system/icons": [
+        "libs/ui/design-system/src/lib/icons"
+      ],
+      "@amplication/util/git": ["libs/util/git/src/index.ts"],
+      "@amplication/util/json": ["libs/util/json/src/index.ts"],
+      "@amplication/util/kafka": ["libs/util/kafka/src/index.ts"],
+      "@amplication/util/logging": ["libs/util/logging/src/index.ts"],
+      "@amplication/util/logging/test-utils": [
+        "libs/util/logging/tests/utils/index.ts"
+      ],
+      "@amplication/util/nestjs/kafka": ["libs/util/nestjs/kafka/src/index.ts"],
+      "@amplication/util/nestjs/logging": [
+        "libs/util/nestjs/logging/src/index.ts"
+      ],
+      "@amplication/util/nestjs/logging/test-utils": [
+        "libs/util/nestjs/logging/tests/utils/index.ts"
+      ],
+      "@amplication/util/nestjs/tracing": [
+        "libs/util/nestjs/tracing/src/index.ts"
+      ],
+      "@primer/react/deprecated": ["node_modules/@primer/react/lib/deprecated"]
+    }
+  },
+  "ts-node": {
+    "compilerOptions": {
+      "module": "commonjs"
+    }
+  },
+  "exclude": ["node_modules", "tmp"]
+}

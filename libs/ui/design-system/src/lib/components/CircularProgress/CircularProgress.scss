@@ -1,0 +1,17 @@
+@import "../../style/index.scss";
+
+.amp-circular-progress {
+  display: flex;
+
+  .MuiCircularProgress-root {
+    color: var(--primary);
+  }
+
+  &--center-to-parent {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+  }
+}

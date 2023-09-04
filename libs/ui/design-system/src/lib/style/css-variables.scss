@@ -1,0 +1,147 @@
+:root {
+  --surface: #ffffff; //solid white on the background
+  --white: #ffffff; //main white
+  --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
+  --static-black: #121242; //static black stays black on dark mode, to be used on button and other color elements
+
+  --primary-font-family: "Poppins", -apple-system, BlinkMacSystemFont,
+    "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans",
+    "Droid Sans", "Helvetica Neue", sans-serif;
+
+  --primary: #7950ed;
+  --secondary: #a787ff;
+  --dark-purple: #6032ea; /** @todo rename */
+  --raised-button-fill: #6032ea;
+  --mdc-theme-primary: var(--primary);
+  --mdc-theme-secondary: (--dark-purple);
+  --mdc-typography-body2-font-family: var(--primary-font-family);
+  --mdc-typography-subtitle2-font-family: var(
+    --mdc-typography-body2-font-family
+  );
+
+  --black100: #121242;
+  --black90: #2a2a55;
+  --black80: #414168;
+  --black60: #71718e;
+  --black40: #a0a0b3;
+  --black30: #b8b8c6;
+  --black20: #d0d0d9;
+  --black10: #e7e7ec;
+  --black5: #f4f4f7;
+  --black2: #f9f9fa;
+
+  /* Secondary green */
+  --secondary1: #f5a2f9;
+  /* Secondary green */
+  --secondary2: #59c4a9;
+
+  --secondary-turquoise: #32c9e5;
+  --dark-secondary-turquoise: #53dbee;
+  --secondary-light-blue: #20a4f3;
+  --secondary-blue: #144bc1;
+
+  --positive-default: #31c587;
+  --warning-default: #f6aa50;
+  --negative: #e93c51;
+
+  --negative-dark: #d41a30;
+  --tooltip-background: #1b1f23;
+
+  --panel-background: var(--white);
+  --panel-hover-background: var(--black5);
+
+  --toggle-track-background: #e3ddf6;
+
+  --form-horizontal-width: 700px;
+  --form-horizontal-label-width: 300px;
+  --large-icon-font-size: 18px;
+  --title1-font-size: 16px;
+  --title2-font-size: 12px;
+  --title3-font-size: 18px;
+  --title4-font-size: 24px;
+  --icon-font-size: 16px;
+  --title5-font-size: 14px;
+  --normal-font-size: 12px;
+  --text-field-label-font-size: 10px;
+  --text-field-label-horizontal-font-size: var(--normal-font-size);
+
+  --mdc-typography-body2-font-size: var(--normal-font-size);
+
+  --icon-size-xxsmall: 16px;
+  --icon-size-xsmall: 20px;
+  --icon-size-small: 24px;
+  --icon-size-medium: 32px;
+  --icon-size-large: 44px;
+  --icon-size-xlarge: 54px;
+  --icon-size-xxlarge: 64px;
+
+  --icon-spacing: 4px;
+  --default-spacing: 12px;
+  --default-spacing-small: 8px;
+  --medium-spacing: 14px;
+  --large-spacing: 16px;
+  --double-spacing: 24px;
+  --triple-spacing: 36px;
+  --form-field-spacing: 16px;
+
+  --user-badge-spacing: 6px;
+
+  --form-field-long: 320px;
+  --form-field-normal: 200px;
+  --grid-row-gap: 8px;
+  --grid-row-height: 48px;
+  --textarea-height-small: 60px;
+
+  --field-height: 34px;
+  --textarea-height: 130px;
+
+  --modal-min-width: 470px;
+  --button-min-width: 16px;
+
+  --header-height: 50px;
+  --footer-height: 35px;
+  --header-spacing: 50px;
+  --menu-width: var(--header-height);
+  --menu-width-expanded: 230px;
+  --menu-item-width: 32px;
+  --menu-item-height: var(--menu-item-width);
+  --small-menu-item-width: 20px;
+  --small-menu-item-height: var(--small-menu-item-width);
+  --menu-expand-animation-duration: 0.2s;
+
+  --menu-item-color: #a3a8b8;
+  --menu-item-active-background: #515873;
+  --menu-item-active-color: #ffffff;
+
+  --changes-menu-width: 261px;
+  --application-card-width: 390px;
+  --application-card-height: 210px;
+
+  --default-border-radius: 8px;
+  --small-border-radius: 4px;
+  --xxlarge-border-radius: 35px;
+  --scrollbar-radius: 20px;
+  --form-elements-border-radius: var(--default-border-radius);
+  --form-permission-type-radius: var(--small-border-radius);
+
+  --default-page-padding: calc(var(--default-spacing-small) * 3);
+  --side-bar-width: 440px;
+  --side-bar-large-width: 640px;
+  --side-bar-min-width: 30vw;
+
+  --default-button-height: 32px;
+  --default-button-radius: 4px;
+
+  --medium-button-height: 28px;
+  --medium-button-radius: var(--default-button-radius);
+
+  --time-since-height: 24px;
+
+  --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
+  --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
+  --floating-box-shadow: 0 4px 7px rgba(79, 65, 116, 0.03);
+  --menu-box-shadow: 4px 0 12px rgba(79, 65, 116, 0.08);
+
+  --dark-carrot-color: #ffbd70;
+}

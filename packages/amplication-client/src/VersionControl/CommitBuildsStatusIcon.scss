@@ -1,0 +1,32 @@
+@import "../style/index.scss";
+
+.build-status-icon {
+  &__status {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    .amp-icon {
+      color: var(--black80);
+      font-size: var(--icon-font-size);
+    }
+  }
+
+  &--completed {
+    i {
+      color: var(--positive-default) !important;
+    }
+  }
+
+  &--failed {
+    i {
+      color: var(--negative) !important;
+    }
+  }
+
+  &--running {
+    i {
+      color: var(--black20) !important;
+    }
+  }
+}
