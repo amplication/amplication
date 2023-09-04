@@ -14,6 +14,7 @@
     "amplication-storage-gateway": "packages/amplication-storage-gateway",
     "data-service-generator": "packages/data-service-generator",
     "data-service-generator-catalog": "packages/data-service-generator-catalog",
+    "data-service-generator-catalog-admin": "packages/data-service-generator-catalog-admin",
     "git-sync-manager": "ee/packages/git-sync-manager",
     "local-data-service-generator-controller": "packages/local-data-service-generator-controller",
     "schema-registry": "libs/schema-registry",
