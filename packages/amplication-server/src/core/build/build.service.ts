@@ -285,7 +285,7 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  async update(args: BuildUpdateArgs) {
+  private async update(args: BuildUpdateArgs) {
     try {
       await this.prisma.build.update(args);
     } catch (error) {
