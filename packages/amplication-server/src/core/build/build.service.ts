@@ -675,6 +675,12 @@ export class BuildService {
               )
             : false;
 
+          const branchPerResourceEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.BranchPerResource
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
@@ -689,6 +695,11 @@ export class BuildService {
               smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
+            isBranchPerResource:
+              branchPerResourceEntitlement &&
+              branchPerResourceEntitlement.hasAccess
+                ? true
+                : false,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
