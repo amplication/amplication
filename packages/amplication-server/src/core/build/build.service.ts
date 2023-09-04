@@ -51,6 +51,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { kebabCase } from "lodash";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
@@ -684,7 +685,7 @@ export class BuildService {
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
-            resourceName: resource.name,
+            resourceName: kebabCase(resource.name),
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
