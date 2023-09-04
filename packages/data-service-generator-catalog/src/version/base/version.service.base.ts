@@ -29,7 +29,7 @@ export class VersionServiceBase {
   async findOne<T extends Prisma.VersionFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionFindUniqueArgs>
   ): Promise<Version | null> {
-    return this.prisma.version.findUnique(args);
+    return await this.prisma.version.findUnique(args);
   }
   async create<T extends Prisma.VersionCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.VersionCreateArgs>

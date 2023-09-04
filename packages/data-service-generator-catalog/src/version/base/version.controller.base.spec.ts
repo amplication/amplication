@@ -116,7 +116,7 @@ describe("Version", () => {
         },
       ],
       controllers: [VersionController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [MorganModule, ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
