@@ -55,7 +55,8 @@ export class BuildController {
     const args = plainToInstance(CodeGenerationSuccess.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
-      EnumActionStepStatus.Success
+      EnumActionStepStatus.Success,
+      args.codeGeneratorVersion
     );
     await this.buildService.saveToGitProvider(args.buildId);
   }
@@ -69,7 +70,8 @@ export class BuildController {
     const args = plainToInstance(CodeGenerationFailure.Value, message);
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
-      EnumActionStepStatus.Failed
+      EnumActionStepStatus.Failed,
+      args.codeGeneratorVersion
     );
   }
 

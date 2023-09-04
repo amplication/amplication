@@ -50,6 +50,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BuildUpdateArgs } from "../build/dto/BuildUpdateArgs";
 import { kebabCase } from "lodash";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
@@ -285,6 +286,14 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
+  private async update(args: BuildUpdateArgs) {
+    try {
+      await this.prisma.build.update(args);
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
   async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
@@ -324,13 +333,18 @@ export class BuildService {
 
   async completeCodeGenerationStep(
     buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+    codeGeneratorVersion: string
   ): Promise<void> {
     const step = await this.getGenerateCodeStep(buildId);
     if (!step) {
       throw new Error("Could not find generate code step");
     }
     await this.actionService.complete(step, status);
+    await this.update({
+      where: { id: buildId },
+      data: { codeGeneratorVersion },
+    });
   }
 
   /**
