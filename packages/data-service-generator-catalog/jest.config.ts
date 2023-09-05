@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/data-service-generator-catalog",
+  coverageThreshold: {
+    global: {
+      branches: 47,
+      lines: 27,
+    },
+  },
 };
