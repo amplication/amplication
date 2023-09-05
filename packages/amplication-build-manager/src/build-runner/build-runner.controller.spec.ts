@@ -129,7 +129,7 @@ describe("BuildRunnerController", () => {
     ).resolves.not.toThrow();
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
       kafkaSuccessEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -233,7 +233,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(
