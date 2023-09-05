@@ -3,7 +3,6 @@ import { BlockUpdateInput } from "../../block/dto/BlockUpdateInput";
 import { AdminUISettingsUpdateInput } from "./AdminUISettingsUpdateInput";
 import { EnumAuthProviderType } from "./EnumAuthenticationProviderType";
 import { ServerSettingsUpdateInput } from "./ServerSettingsUpdateInput";
-import { CodeGeneratorVersionOptionsInput } from "./CodeGeneratorVersionOptionsInput";
 
 @InputType({
   isAbstract: true,
@@ -28,9 +27,4 @@ export class ServiceSettingsUpdateInput extends BlockUpdateInput {
     nullable: true,
   })
   authEntityName?: string;
-
-  @Field(() => CodeGeneratorVersionOptionsInput, {
-    nullable: false,
-  })
-  codeGeneratorVersionOptions!: CodeGeneratorVersionOptionsInput;
 }
