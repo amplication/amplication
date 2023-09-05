@@ -28,8 +28,8 @@ import { TemplateFindUniqueArgs } from "./TemplateFindUniqueArgs";
 import { Template } from "./Template";
 import { MessageFindManyArgs } from "../../message/base/MessageFindManyArgs";
 import { Message } from "../../message/base/Message";
-import { MessageTypeFindManyArgs } from "../../messageType/base/MessageTypeFindManyArgs";
-import { MessageType } from "../../messageType/base/MessageType";
+import { ConversationTypeFindManyArgs } from "../../conversationType/base/ConversationTypeFindManyArgs";
+import { ConversationType } from "../../conversationType/base/ConversationType";
 import { Model } from "../../model/base/Model";
 import { TemplateService } from "../template.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
@@ -180,16 +180,16 @@ export class TemplateResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.ResolveField(() => [MessageType], { name: "messageTypes" })
+  @graphql.ResolveField(() => [ConversationType], { name: "messageTypes" })
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "read",
     possession: "any",
   })
   async resolveFieldMessageTypes(
     @graphql.Parent() parent: Template,
-    @graphql.Args() args: MessageTypeFindManyArgs
-  ): Promise<MessageType[]> {
+    @graphql.Args() args: ConversationTypeFindManyArgs
+  ): Promise<ConversationType[]> {
     const results = await this.service.findMessageTypes(parent.id, args);
 
     if (!results) {

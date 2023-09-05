@@ -11,23 +11,12 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { IsString, IsOptional, ValidateNested } from "class-validator";
 import { TemplateWhereUniqueInput } from "../../template/base/TemplateWhereUniqueInput";
+import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
 
 @InputType()
-class MessageTypeUpdateInput {
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  key?: string;
-
+class ConversationTypeWhereInput {
   @ApiProperty({
     required: false,
     type: () => TemplateWhereUniqueInput,
@@ -38,7 +27,7 @@ class MessageTypeUpdateInput {
   @Field(() => TemplateWhereUniqueInput, {
     nullable: true,
   })
-  template?: TemplateWhereUniqueInput | null;
+  template?: TemplateWhereUniqueInput;
 }
 
-export { MessageTypeUpdateInput as MessageTypeUpdateInput };
+export { ConversationTypeWhereInput as ConversationTypeWhereInput };

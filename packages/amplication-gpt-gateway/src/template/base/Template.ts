@@ -14,7 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { IsDate, IsString, ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
 import { Message } from "../../message/base/Message";
-import { MessageType } from "../../messageType/base/MessageType";
+import { ConversationType } from "../../conversationType/base/ConversationType";
 import { Model } from "../../model/base/Model";
 
 @ObjectType()
@@ -46,12 +46,12 @@ class Template {
 
   @ApiProperty({
     required: false,
-    type: () => [MessageType],
+    type: () => [ConversationType],
   })
   @ValidateNested()
-  @Type(() => MessageType)
+  @Type(() => ConversationType)
   @IsOptional()
-  messageTypes?: Array<MessageType>;
+  messageTypes?: Array<ConversationType>;
 
   @ApiProperty({
     required: true,

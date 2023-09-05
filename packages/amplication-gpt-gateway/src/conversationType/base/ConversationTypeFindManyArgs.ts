@@ -11,32 +11,32 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageTypeWhereInput } from "./MessageTypeWhereInput";
+import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
 import { IsOptional, ValidateNested, IsInt } from "class-validator";
 import { Type } from "class-transformer";
-import { MessageTypeOrderByInput } from "./MessageTypeOrderByInput";
+import { ConversationTypeOrderByInput } from "./ConversationTypeOrderByInput";
 
 @ArgsType()
-class MessageTypeFindManyArgs {
+class ConversationTypeFindManyArgs {
   @ApiProperty({
     required: false,
-    type: () => MessageTypeWhereInput,
+    type: () => ConversationTypeWhereInput,
   })
   @IsOptional()
   @ValidateNested()
-  @Field(() => MessageTypeWhereInput, { nullable: true })
-  @Type(() => MessageTypeWhereInput)
-  where?: MessageTypeWhereInput;
+  @Field(() => ConversationTypeWhereInput, { nullable: true })
+  @Type(() => ConversationTypeWhereInput)
+  where?: ConversationTypeWhereInput;
 
   @ApiProperty({
     required: false,
-    type: [MessageTypeOrderByInput],
+    type: [ConversationTypeOrderByInput],
   })
   @IsOptional()
   @ValidateNested({ each: true })
-  @Field(() => [MessageTypeOrderByInput], { nullable: true })
-  @Type(() => MessageTypeOrderByInput)
-  orderBy?: Array<MessageTypeOrderByInput>;
+  @Field(() => [ConversationTypeOrderByInput], { nullable: true })
+  @Type(() => ConversationTypeOrderByInput)
+  orderBy?: Array<ConversationTypeOrderByInput>;
 
   @ApiProperty({
     required: false,
@@ -59,4 +59,4 @@ class MessageTypeFindManyArgs {
   take?: number;
 }
 
-export { MessageTypeFindManyArgs as MessageTypeFindManyArgs };
+export { ConversationTypeFindManyArgs as ConversationTypeFindManyArgs };

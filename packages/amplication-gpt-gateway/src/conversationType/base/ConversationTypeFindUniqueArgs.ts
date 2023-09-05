@@ -11,18 +11,20 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageTypeWhereInput } from "./MessageTypeWhereInput";
+import { ConversationTypeWhereUniqueInput } from "./ConversationTypeWhereUniqueInput";
+import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
 
 @ArgsType()
-class MessageTypeCountArgs {
+class ConversationTypeFindUniqueArgs {
   @ApiProperty({
-    required: false,
-    type: () => MessageTypeWhereInput,
+    required: true,
+    type: () => ConversationTypeWhereUniqueInput,
   })
-  @Field(() => MessageTypeWhereInput, { nullable: true })
-  @Type(() => MessageTypeWhereInput)
-  where?: MessageTypeWhereInput;
+  @ValidateNested()
+  @Type(() => ConversationTypeWhereUniqueInput)
+  @Field(() => ConversationTypeWhereUniqueInput, { nullable: false })
+  where!: ConversationTypeWhereUniqueInput;
 }
 
-export { MessageTypeCountArgs as MessageTypeCountArgs };
+export { ConversationTypeFindUniqueArgs as ConversationTypeFindUniqueArgs };

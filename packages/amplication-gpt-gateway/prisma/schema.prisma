@@ -26,7 +26,7 @@ model Model {
   updatedAt DateTime   @updatedAt
 }
 
-model MessageType {
+model ConversationType {
   createdAt  DateTime  @default(now())
   id         String    @id @default(cuid())
   key        String    @unique
@@ -36,15 +36,15 @@ model MessageType {
 }
 
 model Template {
-  createdAt    DateTime      @default(now())
-  id           String        @id @default(cuid())
+  createdAt    DateTime           @default(now())
+  id           String             @id @default(cuid())
   messages     Message[]
-  messageTypes MessageType[]
-  model        Model         @relation(fields: [modelId], references: [id])
+  messageTypes ConversationType[]
+  model        Model              @relation(fields: [modelId], references: [id])
   modelId      String
-  name         String        @unique
+  name         String             @unique
   params       String?
-  updatedAt    DateTime      @updatedAt
+  updatedAt    DateTime           @updatedAt
 }
 
 model Message {

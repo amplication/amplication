@@ -16,7 +16,7 @@ import { Type } from "class-transformer";
 import { Template } from "../../template/base/Template";
 
 @ObjectType()
-class MessageType {
+class ConversationType {
   @ApiProperty({
     required: true,
   })
@@ -59,4 +59,4 @@ class MessageType {
   updatedAt!: Date;
 }
 
-export { MessageType as MessageType };
+export { ConversationType as ConversationType };

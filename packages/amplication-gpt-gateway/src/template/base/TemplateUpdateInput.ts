@@ -14,7 +14,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { MessageUpdateManyWithoutTemplatesInput } from "./MessageUpdateManyWithoutTemplatesInput";
 import { ValidateNested, IsOptional, IsString } from "class-validator";
 import { Type } from "class-transformer";
-import { MessageTypeUpdateManyWithoutTemplatesInput } from "./MessageTypeUpdateManyWithoutTemplatesInput";
+import { ConversationTypeUpdateManyWithoutTemplatesInput } from "./ConversationTypeUpdateManyWithoutTemplatesInput";
 import { ModelWhereUniqueInput } from "../../model/base/ModelWhereUniqueInput";
 
 @InputType()
@@ -33,15 +33,15 @@ class TemplateUpdateInput {
 
   @ApiProperty({
     required: false,
-    type: () => MessageTypeUpdateManyWithoutTemplatesInput,
+    type: () => ConversationTypeUpdateManyWithoutTemplatesInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeUpdateManyWithoutTemplatesInput)
+  @Type(() => ConversationTypeUpdateManyWithoutTemplatesInput)
   @IsOptional()
-  @Field(() => MessageTypeUpdateManyWithoutTemplatesInput, {
+  @Field(() => ConversationTypeUpdateManyWithoutTemplatesInput, {
     nullable: true,
   })
-  messageTypes?: MessageTypeUpdateManyWithoutTemplatesInput;
+  messageTypes?: ConversationTypeUpdateManyWithoutTemplatesInput;
 
   @ApiProperty({
     required: false,

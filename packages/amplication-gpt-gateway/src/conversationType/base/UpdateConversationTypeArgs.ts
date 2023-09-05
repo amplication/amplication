@@ -11,30 +11,30 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { ArgsType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageTypeWhereUniqueInput } from "./MessageTypeWhereUniqueInput";
+import { ConversationTypeWhereUniqueInput } from "./ConversationTypeWhereUniqueInput";
 import { ValidateNested } from "class-validator";
 import { Type } from "class-transformer";
-import { MessageTypeUpdateInput } from "./MessageTypeUpdateInput";
+import { ConversationTypeUpdateInput } from "./ConversationTypeUpdateInput";
 
 @ArgsType()
-class UpdateMessageTypeArgs {
+class UpdateConversationTypeArgs {
   @ApiProperty({
     required: true,
-    type: () => MessageTypeWhereUniqueInput,
+    type: () => ConversationTypeWhereUniqueInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeWhereUniqueInput)
-  @Field(() => MessageTypeWhereUniqueInput, { nullable: false })
-  where!: MessageTypeWhereUniqueInput;
+  @Type(() => ConversationTypeWhereUniqueInput)
+  @Field(() => ConversationTypeWhereUniqueInput, { nullable: false })
+  where!: ConversationTypeWhereUniqueInput;
 
   @ApiProperty({
     required: true,
-    type: () => MessageTypeUpdateInput,
+    type: () => ConversationTypeUpdateInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeUpdateInput)
-  @Field(() => MessageTypeUpdateInput, { nullable: false })
-  data!: MessageTypeUpdateInput;
+  @Type(() => ConversationTypeUpdateInput)
+  @Field(() => ConversationTypeUpdateInput, { nullable: false })
+  data!: ConversationTypeUpdateInput;
 }
 
-export { UpdateMessageTypeArgs as UpdateMessageTypeArgs };
+export { UpdateConversationTypeArgs as UpdateConversationTypeArgs };

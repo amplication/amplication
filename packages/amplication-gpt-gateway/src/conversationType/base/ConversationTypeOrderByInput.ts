@@ -18,7 +18,7 @@ import { SortOrder } from "../../util/SortOrder";
   isAbstract: true,
   description: undefined,
 })
-class MessageTypeOrderByInput {
+class ConversationTypeOrderByInput {
   @ApiProperty({
     required: false,
     enum: ["asc", "desc"],
@@ -75,4 +75,4 @@ class MessageTypeOrderByInput {
   updatedAt?: SortOrder;
 }
 
-export { MessageTypeOrderByInput as MessageTypeOrderByInput };
+export { ConversationTypeOrderByInput as ConversationTypeOrderByInput };

@@ -11,46 +11,46 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
-import { MessageTypeWhereInput } from "./MessageTypeWhereInput";
+import { ConversationTypeWhereInput } from "./ConversationTypeWhereInput";
 import { ValidateNested, IsOptional } from "class-validator";
 import { Type } from "class-transformer";
 
 @InputType()
-class MessageTypeListRelationFilter {
+class ConversationTypeListRelationFilter {
   @ApiProperty({
     required: false,
-    type: () => MessageTypeWhereInput,
+    type: () => ConversationTypeWhereInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeWhereInput)
+  @Type(() => ConversationTypeWhereInput)
   @IsOptional()
-  @Field(() => MessageTypeWhereInput, {
+  @Field(() => ConversationTypeWhereInput, {
     nullable: true,
   })
-  every?: MessageTypeWhereInput;
+  every?: ConversationTypeWhereInput;
 
   @ApiProperty({
     required: false,
-    type: () => MessageTypeWhereInput,
+    type: () => ConversationTypeWhereInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeWhereInput)
+  @Type(() => ConversationTypeWhereInput)
   @IsOptional()
-  @Field(() => MessageTypeWhereInput, {
+  @Field(() => ConversationTypeWhereInput, {
     nullable: true,
   })
-  some?: MessageTypeWhereInput;
+  some?: ConversationTypeWhereInput;
 
   @ApiProperty({
     required: false,
-    type: () => MessageTypeWhereInput,
+    type: () => ConversationTypeWhereInput,
   })
   @ValidateNested()
-  @Type(() => MessageTypeWhereInput)
+  @Type(() => ConversationTypeWhereInput)
   @IsOptional()
-  @Field(() => MessageTypeWhereInput, {
+  @Field(() => ConversationTypeWhereInput, {
     nullable: true,
   })
-  none?: MessageTypeWhereInput;
+  none?: ConversationTypeWhereInput;
 }
-export { MessageTypeListRelationFilter as MessageTypeListRelationFilter };
+export { ConversationTypeListRelationFilter as ConversationTypeListRelationFilter };

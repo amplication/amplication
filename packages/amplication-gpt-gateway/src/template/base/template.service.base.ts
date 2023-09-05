@@ -10,7 +10,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Template, Message, MessageType, Model } from "@prisma/client";
+import {
+  Prisma,
+  Template,
+  Message,
+  ConversationType,
+  Model,
+} from "@prisma/client";
 
 export class TemplateServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -60,8 +66,8 @@ export class TemplateServiceBase {
 
   async findMessageTypes(
     parentId: string,
-    args: Prisma.MessageTypeFindManyArgs
-  ): Promise<MessageType[]> {
+    args: Prisma.ConversationTypeFindManyArgs
+  ): Promise<ConversationType[]> {
     return this.prisma.template
       .findUniqueOrThrow({
         where: { id: parentId },

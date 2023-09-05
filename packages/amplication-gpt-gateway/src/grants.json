@@ -61,31 +61,31 @@
   },
   {
     "role": "user",
-    "resource": "MessageType",
+    "resource": "ConversationType",
     "action": "read:own",
     "attributes": "*"
   },
   {
     "role": "user",
-    "resource": "MessageType",
+    "resource": "ConversationType",
     "action": "create:any",
     "attributes": "*"
   },
   {
     "role": "user",
-    "resource": "MessageType",
+    "resource": "ConversationType",
     "action": "update:any",
     "attributes": "*"
   },
   {
     "role": "user",
-    "resource": "MessageType",
+    "resource": "ConversationType",
     "action": "delete:any",
     "attributes": "*"
   },
   {
     "role": "user",
-    "resource": "MessageType",
+    "resource": "ConversationType",
     "action": "read:any",
     "attributes": "*"
   },

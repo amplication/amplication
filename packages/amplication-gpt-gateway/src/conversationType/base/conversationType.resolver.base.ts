@@ -19,31 +19,31 @@ import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
 import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
-import { CreateMessageTypeArgs } from "./CreateMessageTypeArgs";
-import { UpdateMessageTypeArgs } from "./UpdateMessageTypeArgs";
-import { DeleteMessageTypeArgs } from "./DeleteMessageTypeArgs";
-import { MessageTypeCountArgs } from "./MessageTypeCountArgs";
-import { MessageTypeFindManyArgs } from "./MessageTypeFindManyArgs";
-import { MessageTypeFindUniqueArgs } from "./MessageTypeFindUniqueArgs";
-import { MessageType } from "./MessageType";
+import { CreateConversationTypeArgs } from "./CreateConversationTypeArgs";
+import { UpdateConversationTypeArgs } from "./UpdateConversationTypeArgs";
+import { DeleteConversationTypeArgs } from "./DeleteConversationTypeArgs";
+import { ConversationTypeCountArgs } from "./ConversationTypeCountArgs";
+import { ConversationTypeFindManyArgs } from "./ConversationTypeFindManyArgs";
+import { ConversationTypeFindUniqueArgs } from "./ConversationTypeFindUniqueArgs";
+import { ConversationType } from "./ConversationType";
 import { Template } from "../../template/base/Template";
-import { MessageTypeService } from "../messageType.service";
+import { ConversationTypeService } from "../conversationType.service";
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-@graphql.Resolver(() => MessageType)
-export class MessageTypeResolverBase {
+@graphql.Resolver(() => ConversationType)
+export class ConversationTypeResolverBase {
   constructor(
-    protected readonly service: MessageTypeService,
+    protected readonly service: ConversationTypeService,
     protected readonly rolesBuilder: nestAccessControl.RolesBuilder
   ) {}
 
   @graphql.Query(() => MetaQueryPayload)
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "read",
     possession: "any",
   })
-  async _messageTypesMeta(
-    @graphql.Args() args: MessageTypeCountArgs
+  async _conversationTypesMeta(
+    @graphql.Args() args: ConversationTypeCountArgs
   ): Promise<MetaQueryPayload> {
     const result = await this.service.count(args);
     return {
@@ -52,28 +52,28 @@ export class MessageTypeResolverBase {
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => [MessageType])
+  @graphql.Query(() => [ConversationType])
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "read",
     possession: "any",
   })
-  async messageTypes(
-    @graphql.Args() args: MessageTypeFindManyArgs
-  ): Promise<MessageType[]> {
+  async conversationTypes(
+    @graphql.Args() args: ConversationTypeFindManyArgs
+  ): Promise<ConversationType[]> {
     return this.service.findMany(args);
   }
 
   @common.UseInterceptors(AclFilterResponseInterceptor)
-  @graphql.Query(() => MessageType, { nullable: true })
+  @graphql.Query(() => ConversationType, { nullable: true })
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "read",
     possession: "own",
   })
-  async messageType(
-    @graphql.Args() args: MessageTypeFindUniqueArgs
-  ): Promise<MessageType | null> {
+  async conversationType(
+    @graphql.Args() args: ConversationTypeFindUniqueArgs
+  ): Promise<ConversationType | null> {
     const result = await this.service.findOne(args);
     if (result === null) {
       return null;
@@ -82,15 +82,15 @@ export class MessageTypeResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => MessageType)
+  @graphql.Mutation(() => ConversationType)
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "create",
     possession: "any",
   })
-  async createMessageType(
-    @graphql.Args() args: CreateMessageTypeArgs
-  ): Promise<MessageType> {
+  async createConversationType(
+    @graphql.Args() args: CreateConversationTypeArgs
+  ): Promise<ConversationType> {
     return await this.service.create({
       ...args,
       data: {
@@ -106,15 +106,15 @@ export class MessageTypeResolverBase {
   }
 
   @common.UseInterceptors(AclValidateRequestInterceptor)
-  @graphql.Mutation(() => MessageType)
+  @graphql.Mutation(() => ConversationType)
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "update",
     possession: "any",
   })
-  async updateMessageType(
-    @graphql.Args() args: UpdateMessageTypeArgs
-  ): Promise<MessageType | null> {
+  async updateConversationType(
+    @graphql.Args() args: UpdateConversationTypeArgs
+  ): Promise<ConversationType | null> {
     try {
       return await this.service.update({
         ...args,
@@ -138,15 +138,15 @@ export class MessageTypeResolverBase {
     }
   }
 
-  @graphql.Mutation(() => MessageType)
+  @graphql.Mutation(() => ConversationType)
   @nestAccessControl.UseRoles({
-    resource: "MessageType",
+    resource: "ConversationType",
     action: "delete",
     possession: "any",
   })
-  async deleteMessageType(
-    @graphql.Args() args: DeleteMessageTypeArgs
-  ): Promise<MessageType | null> {
+  async deleteConversationType(
+    @graphql.Args() args: DeleteConversationTypeArgs
+  ): Promise<ConversationType | null> {
     try {
       return await this.service.delete(args);
     } catch (error) {
@@ -170,7 +170,7 @@ export class MessageTypeResolverBase {
     possession: "any",
   })
   async resolveFieldTemplate(
-    @graphql.Parent() parent: MessageType
+    @graphql.Parent() parent: ConversationType
   ): Promise<Template | null> {
     const result = await this.service.getTemplate(parent.id);
 

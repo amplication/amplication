@@ -16,4 +16,4 @@ import { ACLModule } from "../../auth/acl.module";
   imports: [ACLModule, MorganModule],
   exports: [ACLModule, MorganModule],
 })
-export class MessageTypeModuleBase {}
+export class ConversationTypeModuleBase {}

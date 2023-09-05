@@ -10,19 +10,18 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { InputType, Field } from "@nestjs/graphql";
-import { MessageTypeWhereUniqueInput } from "../../messageType/base/MessageTypeWhereUniqueInput";
 import { ApiProperty } from "@nestjs/swagger";
+import { IsString } from "class-validator";
 
 @InputType()
-class MessageTypeCreateNestedManyWithoutTemplatesInput {
-  @Field(() => [MessageTypeWhereUniqueInput], {
-    nullable: true,
-  })
+class ConversationTypeWhereUniqueInput {
   @ApiProperty({
-    required: false,
-    type: () => [MessageTypeWhereUniqueInput],
+    required: true,
+    type: String,
   })
-  connect?: Array<MessageTypeWhereUniqueInput>;
+  @IsString()
+  @Field(() => String)
+  id!: string;
 }
 
-export { MessageTypeCreateNestedManyWithoutTemplatesInput as MessageTypeCreateNestedManyWithoutTemplatesInput };
+export { ConversationTypeWhereUniqueInput as ConversationTypeWhereUniqueInput };

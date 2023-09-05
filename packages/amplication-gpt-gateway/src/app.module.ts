@@ -3,7 +3,7 @@ import { APP_INTERCEPTOR } from "@nestjs/core";
 import { MorganInterceptor, MorganModule } from "nest-morgan";
 import { UserModule } from "./user/user.module";
 import { ModelModule } from "./model/model.module";
-import { MessageTypeModule } from "./messageType/messageType.module";
+import { ConversationTypeModule } from "./conversationType/conversationType.module";
 import { TemplateModule } from "./template/template.module";
 import { MessageModule } from "./message/message.module";
 import { HealthModule } from "./health/health.module";
@@ -26,7 +26,7 @@ import { AuthModule } from "./auth/auth.module";
     AuthModule,
     UserModule,
     ModelModule,
-    MessageTypeModule,
+    ConversationTypeModule,
     TemplateModule,
     MessageModule,
     HealthModule,
