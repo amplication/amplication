@@ -14,7 +14,8 @@ export const VersionCreate = (props: CreateProps): React.ReactElement => {
       <SimpleForm>
         <TextInput label="Changelog" multiline source="changelog" />
         <DateTimeInput label="DeletedAt" source="deletedAt" />
-        <BooleanInput label="Deprecated" source="deprecated" />
+        <BooleanInput label="IsActive" source="isActive" />
+        <BooleanInput label="IsDeprecated" source="isDeprecated" />
         <TextInput label="Name" source="name" />
       </SimpleForm>
     </Create>

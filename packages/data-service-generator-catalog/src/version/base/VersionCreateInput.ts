@@ -39,6 +39,14 @@ class VersionCreateInput {
   deletedAt?: Date | null;
 
   @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @Field(() => Boolean)
+  isActive!: boolean;
+
+  @ApiProperty({
     required: false,
     type: Boolean,
   })
@@ -47,7 +55,7 @@ class VersionCreateInput {
   @Field(() => Boolean, {
     nullable: true,
   })
-  deprecated?: boolean | null;
+  isDeprecated?: boolean | null;
 
   @ApiProperty({
     required: false,

@@ -4,8 +4,9 @@ export type VersionOrderByInput = {
   changelog?: SortOrder;
   createdAt?: SortOrder;
   deletedAt?: SortOrder;
-  deprecated?: SortOrder;
   id?: SortOrder;
+  isActive?: SortOrder;
+  isDeprecated?: SortOrder;
   name?: SortOrder;
   updatedAt?: SortOrder;
 };

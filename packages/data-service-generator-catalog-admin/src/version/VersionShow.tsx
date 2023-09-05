@@ -15,8 +15,9 @@ export const VersionShow = (props: ShowProps): React.ReactElement => {
         <TextField label="Changelog" source="changelog" />
         <DateField source="createdAt" label="Created At" />
         <TextField label="DeletedAt" source="deletedAt" />
-        <BooleanField label="Deprecated" source="deprecated" />
         <TextField label="ID" source="id" />
+        <BooleanField label="IsActive" source="isActive" />
+        <BooleanField label="IsDeprecated" source="isDeprecated" />
         <TextField label="Name" source="name" />
         <DateField source="updatedAt" label="Updated At" />
       </SimpleShowLayout>

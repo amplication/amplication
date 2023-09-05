@@ -17,8 +17,9 @@ CREATE TABLE "Version" (
     "changelog" TEXT,
     "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "deletedAt" TIMESTAMP(3),
-    "deprecated" BOOLEAN,
     "id" TEXT NOT NULL,
+    "isActive" BOOLEAN NOT NULL,
+    "isDeprecated" BOOLEAN,
     "name" TEXT,
     "updatedAt" TIMESTAMP(3) NOT NULL,
 
