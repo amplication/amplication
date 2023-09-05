@@ -3,6 +3,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Role } from "../../enums/Role";
 import { Account, User, UserRole } from "../../models";
 import { UserService } from "./user.service";
+import { BillingService } from "../billing/billing.service";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
@@ -99,6 +100,10 @@ describe("UserService", () => {
               delete: prismaUserRoleDeleteMock,
             },
           })),
+        },
+        {
+          provide: BillingService,
+          useClass: jest.fn(),
         },
       ],
     }).compile();
