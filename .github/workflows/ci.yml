@@ -33,7 +33,7 @@ env:
 
 jobs:
   ci:
-    name: Continuous Integration
+    name: Continuous Integration 2
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
