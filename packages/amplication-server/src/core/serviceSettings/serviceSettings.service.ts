@@ -24,13 +24,8 @@ export class ServiceSettingsService {
     args: FindOneArgs,
     user: User
   ): Promise<ServiceSettingsValues> {
-    const {
-      authProvider,
-      serverSettings,
-      adminUISettings,
-      authEntityName,
-      codeGeneratorVersionOptions,
-    } = await this.getServiceSettingsBlock(args, user);
+    const { authProvider, serverSettings, adminUISettings, authEntityName } =
+      await this.getServiceSettingsBlock(args, user);
 
     return {
       resourceId: args.where.id,
@@ -38,7 +33,6 @@ export class ServiceSettingsService {
       serverSettings,
       adminUISettings,
       authEntityName,
-      codeGeneratorVersionOptions,
     };
   }
 
