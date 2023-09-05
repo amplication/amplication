@@ -101,11 +101,11 @@ export class BuildRunnerController {
       containerImageTag =
         await this.codeGeneratorService.getCodeGeneratorVersion({
           codeGeneratorVersion:
-            message.dsgResourceData.resourceInfo.settings
-              .codeGeneratorVersionOptions.version,
-          codeGeneratorVersionOption:
-            message.dsgResourceData.resourceInfo.settings
-              .codeGeneratorVersionOptions.selectionStrategy,
+            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+              .codeGeneratorVersion,
+          codeGeneratorStrategy:
+            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+              .codeGeneratorStrategy,
         });
     }
 

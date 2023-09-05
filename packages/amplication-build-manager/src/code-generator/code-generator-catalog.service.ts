@@ -79,21 +79,21 @@ export class CodeGeneratorService {
 
   async getCodeGeneratorVersion({
     codeGeneratorVersion,
-    codeGeneratorVersionOption,
+    codeGeneratorStrategy,
   }: {
     codeGeneratorVersion?: string;
-    codeGeneratorVersionOption?: CodeGeneratorVersionStrategy;
+    codeGeneratorStrategy?: CodeGeneratorVersionStrategy;
   }): Promise<string | undefined> {
     if (!codeGeneratorVersion) {
       return;
     }
 
     const versions =
-      codeGeneratorVersionOption !== CodeGeneratorVersionStrategy.Specific
+      codeGeneratorStrategy !== CodeGeneratorVersionStrategy.Specific
         ? await this.getCodeGeneratorAvailableVersions()
         : [];
 
-    switch (codeGeneratorVersionOption) {
+    switch (codeGeneratorStrategy) {
       case CodeGeneratorVersionStrategy.Specific:
         return codeGeneratorVersion;
       case CodeGeneratorVersionStrategy.LatestMinor:

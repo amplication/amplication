@@ -8,10 +8,10 @@ export class CodeGeneratorVersionOptionsInput {
   @Field(() => String, {
     nullable: true,
   })
-  version?: string;
+  codeGeneratorVersion?: string;
 
   @Field(() => CodeGeneratorVersionStrategy, {
     nullable: true,
   })
-  selectionStrategy?: CodeGeneratorVersionStrategy;
+  codeGeneratorStrategy?: CodeGeneratorVersionStrategy;
 }

@@ -89,7 +89,6 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettingsUpdateInput = {
     generateRestApi: true,
     serverPath: "",
   },
-  codeGeneratorVersionOptions: {},
 };
 
 const EXAMPLE_GIT_ORGANISATION: GitOrganization = {
@@ -347,7 +346,6 @@ const EXAMPLE_APP_SETTINGS: ServiceSettings = {
   inputParameters: [],
   outputParameters: [],
   authEntityName: USER_ENTITY_NAME,
-  codeGeneratorVersionOptions: {},
 };
 
 const EXAMPLE_CREATE_RESOURCE_RESULTS: ResourceCreateWithEntitiesResult = {

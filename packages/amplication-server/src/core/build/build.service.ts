@@ -50,8 +50,8 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
-import { BuildUpdateArgs } from "../build/dto/BuildUpdateArgs";
 import { kebabCase } from "lodash";
+import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
@@ -286,9 +286,25 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
-  private async update(args: BuildUpdateArgs) {
+  private async updateCodeGeneratorVersion(
+    buildId: string,
+    codeGeneratorVersion: string
+  ): Promise<void> {
     try {
-      await this.prisma.build.update(args);
+      const build = await this.findOne({
+        where: {
+          id: buildId,
+        },
+      });
+
+      if (!build) {
+        throw new Error(`Could not find build with id ${buildId}`);
+      }
+
+      await this.prisma.build.update({
+        where: { id: buildId },
+        data: { codeGeneratorVersion },
+      });
     } catch (error) {
       this.logger.error(error.message, error);
     }
@@ -341,10 +357,7 @@ export class BuildService {
       throw new Error("Could not find generate code step");
     }
     await this.actionService.complete(step, status);
-    await this.update({
-      where: { id: buildId },
-      data: { codeGeneratorVersion },
-    });
+    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
   }
 
   /**
@@ -830,6 +843,12 @@ export class BuildService {
         id: resourceId,
         url,
         settings: serviceSettings,
+        codeGeneratorVersionOptions: {
+          codeGeneratorVersion: resource.codeGeneratorVersion,
+          codeGeneratorStrategy:
+            // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
+            CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
+        },
       },
       otherResources,
     };

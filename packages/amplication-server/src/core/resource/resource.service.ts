@@ -28,6 +28,7 @@ import {
   ResourceCreateWithEntitiesInput,
   UpdateOneResourceArgs,
   ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
 } from "./dto";
 import { ReservedEntityNameError } from "./ReservedEntityNameError";
 import { ProjectConfigurationExistError } from "./errors/ProjectConfigurationExistError";
@@ -235,6 +236,30 @@ export class ResourceService {
         ...args.data,
         gitRepository: gitRepository,
         gitRepositoryOverride: gitRepositoryToCreate?.isOverrideGitRepository,
+      },
+    });
+  }
+
+  async updateCodeGeneratorVersion(
+    args: UpdateCodeGeneratorVersionArgs
+  ): Promise<Resource | null> {
+    const resource = await this.resource({
+      where: {
+        id: args.where.id,
+      },
+    });
+
+    if (isEmpty(resource)) {
+      throw new Error(INVALID_RESOURCE_ID);
+    }
+
+    return this.prisma.resource.update({
+      where: args.where,
+      data: {
+        codeGeneratorVersion:
+          args.data.codeGeneratorVersionOptions.codeGeneratorVersion,
+        codeGeneratorStrategy:
+          args.data.codeGeneratorVersionOptions.codeGeneratorStrategy,
       },
     });
   }

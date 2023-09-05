@@ -32,9 +32,9 @@ export const resourceInfo: AppInfo = {
       generateAdminUI: true,
       adminUIPath: "",
     },
-    codeGeneratorVersionOptions: {
-      version: null,
-      selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
-    },
+  },
+  codeGeneratorVersionOptions: {
+    codeGeneratorVersion: null,
+    codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
 };
