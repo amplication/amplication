@@ -13,4 +13,10 @@ export default {
   },
   moduleFileExtensions: ["ts", "js", "html"],
   coverageDirectory: "../../coverage/packages/amplication-gpt-gateway",
+  coverageThreshold: {
+    global: {
+      branches: 47,
+      lines: 27,
+    },
+  },
 };
