@@ -1,0 +1,50 @@
+@import "../style/index.scss";
+
+$progress-bar-height: 4px;
+
+.amp-progress-bar {
+  margin-top: var(--default-spacing);
+  margin-bottom: var(--default-spacing);
+  width: 100%;
+
+  &__details {
+    @include flexFullRowWithSpacing;
+    align-items: flex-start;
+  }
+
+  &__message {
+    color: var(--black80);
+  }
+
+  &__progress {
+    margin-top: var(--default-spacing);
+    width: 100%;
+    height: $progress-bar-height;
+    background: var(--black10);
+    position: relative;
+    overflow: hidden;
+    position: relative;
+
+    &:after {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      background: var(--primary);
+      animation: progress-bar 4.5s linear infinite;
+      border-radius: $progress-bar-height * 0.5;
+    }
+  }
+
+  @keyframes progress-bar {
+    0% {
+      left: -110%;
+    }
+
+    100% {
+      left: 100%;
+    }
+  }
+}

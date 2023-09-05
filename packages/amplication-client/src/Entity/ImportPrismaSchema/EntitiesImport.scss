@@ -1,0 +1,66 @@
+@import "../../style/index.scss";
+
+$header-image-size: 100px;
+$header-image-size-large: 150px;
+$max-width: 700px;
+
+.entities-import {
+  &__beta-wrapper {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    &__header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: var(--header-height);
+
+      h2 {
+        margin-top: var(--double-spacing);
+        font-size: var(--title4-font-size);
+        @include bold;
+      }
+      .svg-theme-image {
+        height: $header-image-size-large;
+        background-position: center;
+      }
+    }
+
+    &__feature {
+      @include body1;
+      line-height: 1.5;
+      color: var(--black100);
+      margin-bottom: var(--triple-spacing);
+      max-width: $max-width;
+      text-align: center;
+    }
+  }
+
+  &__header {
+    margin: var(--double-spacing);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .svg-theme-image {
+      height: $header-image-size;
+      background-position: center;
+    }
+  }
+
+  &__content {
+    padding: var(--double-spacing);
+  }
+
+  &__message {
+    @include body1;
+    line-height: 1.5;
+    color: var(--black80);
+    margin-bottom: var(--triple-spacing);
+    max-width: $max-width;
+    text-align: center;
+    margin: var(--default-spacing);
+  }
+}

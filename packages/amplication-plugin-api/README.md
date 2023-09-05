@@ -1,66 +1,68 @@
-<p align="right">
-  <a href="https://amplication.com" target="_blank">
-    <img alt="amplication-logo" height="70" alt="Amplication Logo" src="https://amplication.com/images/amplication-logo-purple.svg"/>
-  </a>
-</p>
+# Amplication Plugin Api
 
-# Introduction
+Amplication Plugin is the component that process the amplication plugin catalog and serve the amplication client with the required information about them.
 
-This service was generated with Amplication. The server-side of the generated project. This component provides the different backend services - i.e., REST API, GraphQL API, authentication, authorization, logging, data validation and the connection to the database. Additional information about the server component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site.
+## Setup
 
-# Getting started
+Amplication is using a mono-repo with multiple packages. To initialize all the packages on a local development environment, follow the [Getting Started With Local Development](/README.md#getting-started-with-local-development) section to do that in a few quick steps.
 
-## Step 1: Configuration
+### How to run locally
 
-Configuration for the server component can be provided through the use of environment variables. These can be passed to the application via the use of the `.env` file in the base directory of the generated service. Below a table can be found which show the different variables that can be passed - these are the variables which exist by default, through the use of plugins additional integrations could require additional values. These values are provided default values after generation, change them to the desired values.
-
-| Variable             | Description                                  | Value                                                               |
-| -------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
-| BCRYPT_SALT          | the string used for hashing                  | [random-string]                                                     |
-| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp_[service-identifier]                                            |
-| PORT                 | the port on which to run the server          | 3000                                                                |
-| DB_URL               | the connection url for the database          | [db-provider]://[username]:[password]@localhost:[db-port]/[db-name] |
-| DB_PORT              | the port used by the database instance       | [db-provider-port]                                                  |
-| DB_USER              | the username used to connect to the database | [username]                                                          |
-| DB_PASSWORD          | the password used to connect to the database | [password]                                                          |
-| DB_NAME              | the name of the database                     | [service-name] / [project-name]                                     |
-| JWT_SECRET_KEY       | the secret used to sign the json-web token   | [secret]                                                            |
-| JWT_EXPIRATION       | the expiration time for the json-web token   | 2d                                                                  |
-
-> **Note**
-> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
-
-## Step 2.1: Scripts - pre-requisites
-
-After configuration of the server the next step would be to run the application. Before running the server side of the component, make sure that the different pre-requisites are met - i.e., node.js [^16.x], npm, docker. After the setup of the pre-requisites the server component can be started.
+In order run the plugin api locally and populate the plugin cache (stored in a SQL db), the following two commands need to be run
 
 ```sh
-# installation of the dependencies
-$ npm install
-```
-```sh
-# generate the prisma client
-$ npm run prisma:generate
-```
-```sh
-# start the database where the server component will connect to
-$ npm run docker:db
-```
-```sh
-# initialize the database
-$ npm run db:init
+# To initialise the plugin api db
+npx nx db:init amplication-plugin-api
+
+# To serve the service
+npx nx serve amplication-plugin-api
+
+# To populate the plugin api db from the plugin catalog
+npx nx refresh:plugins amplication-plugin-api
 ```
 
-## Step 2.2: Scripts - local development
+## Useful Targets
 
-```shell
-# start the server component
-$ npm run install
+Targets can be run using Nx Workspaces. You can read more about targets in the [Nx Documentation](https://nx.dev/reference/project-configuration).
+
+You can find a full list of targets in the [project.json](/Users/arielweinberger/Development/amplication/amplication/packages/amplication-plugin-api/project.json) file.
+
+### `test`
+
+Executes tests.
+
+```
+npx nx test amplication-plugin-api
 ```
 
-## Step 2.2: Scripts - container based development
+### `lint`
 
-```shell
-# start the server component as a docker container
-$ npm run compose:up
+Performs a linting check using ESLint.
+
+```
+npx nx lint amplication-plugin-api
+```
+
+### `build`
+
+Builds the app for production. The distributable is expored to the `dist` folder in the repository's root folder.<br />
+
+```
+npx nx build amplication-plugin-api
+```
+
+### `serve`
+
+Runs the app in development mode.
+
+```
+npx nx serve amplication-plugin-api
+```
+
+### `refresh:plugins`
+
+Runs a curl GraphQL request targeting the running `amplication-plugin-api` service to trigger the collection and storage of new plugin from the plugin catalog and new plugin versions from npmjs. 
+
+```
+npx nx refresh:plugins amplication-plugin-api
 ```

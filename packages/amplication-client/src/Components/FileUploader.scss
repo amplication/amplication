@@ -1,0 +1,41 @@
+@import "../style/index.scss";
+
+$max-width: 700px;
+$dropzone-height: 250px;
+$options-max-width: 1000px;
+
+.file-uploader {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: stretch;
+  align-items: stretch;
+
+  &__dropzone {
+    @include body1;
+    height: $dropzone-height;
+    max-width: $options-max-width;
+    margin: auto;
+
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    border-radius: var(--default-border-radius);
+    border: $border-black10;
+    border-style: dashed;
+    background-color: var(--white);
+    color: var(--black80);
+    outline: none;
+    transition: border 0.1s ease-in-out;
+    cursor: pointer;
+
+    &:hover,
+    &--active {
+      border-color: var(--primary);
+      background-color: var(--black5);
+    }
+  }
+}

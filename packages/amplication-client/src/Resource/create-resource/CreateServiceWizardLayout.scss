@@ -1,0 +1,62 @@
+@import "../../style/index.scss";
+
+.create-service-wizard-layout {
+  display: flex;
+  flex: 1;
+
+  &__split {
+    display: flex;
+    flex: 1;
+  }
+
+  &__right,
+  &__left {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  &__right {
+    background: var(--white);
+    width: 80%;
+    padding-top: 100px;
+  }
+
+  &__description {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    font-size: 14px;
+    width: 73%;
+
+    &__header {
+      @include title-24;
+      font-size: 1.5em;
+      line-height: 1.5em;
+      margin-bottom: var(--large-spacing);
+    }
+
+    &__text {
+      @include regular-14;
+      font-size: 1em;
+      line-height: 1.5em;
+      white-space: pre-line;
+    }
+
+    &__paragraph {
+      @include regular-14;
+    }
+  }
+
+  &__selector_wrapper {
+    flex: 1;
+    display: flex;
+    flex-wrap: wrap;
+    align-content: center;
+    align-self: center;
+    gap: var(--large-spacing);
+    width: 520px;
+  }
+}

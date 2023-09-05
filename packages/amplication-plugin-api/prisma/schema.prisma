@@ -4,7 +4,9 @@ datasource postgres {
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  output        = "./generated-prisma-client"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
 }
 
 model User {
@@ -33,7 +35,6 @@ model Plugin {
 }
 
 model PluginVersion {
-  configurations  Json?
   createdAt       DateTime @default(now())
   deprecated      String?
   id              String   @id @default(cuid())
@@ -41,6 +42,7 @@ model PluginVersion {
   pluginId        String?
   pluginIdVersion String   @unique
   settings        Json?
+  configurations  Json?
   updatedAt       DateTime @updatedAt
   version         String?
 }

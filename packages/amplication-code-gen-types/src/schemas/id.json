@@ -1,0 +1,15 @@
+{
+  "$id": "https://amplication.com/schema/entityfield/properties/id.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "id",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["idType"],
+  "properties": {
+    "idType": {
+      "type": "string",
+      "enum": ["CUID", "UUID", "AUTO_INCREMENT", "AUTO_INCREMENT_BIG_INT"],
+      "default": "CUID"
+    }
+  }
+}
