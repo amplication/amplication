@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * Clean all the tables and types created by Prisma in the database
  */
