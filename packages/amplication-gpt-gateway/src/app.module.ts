@@ -14,9 +14,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { GraphQLModule } from "@nestjs/graphql";
-
+import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ACLModule } from "./auth/acl.module";
 import { AuthModule } from "./auth/auth.module";
+import { join } from "path";
 
 @Module({
   controllers: [],
@@ -37,15 +38,20 @@ import { AuthModule } from "./auth/auth.module";
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
-    GraphQLModule.forRootAsync({
-      useFactory: (configService) => {
-        const playground = configService.get("GRAPHQL_PLAYGROUND");
-        const introspection = configService.get("GRAPHQL_INTROSPECTION");
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      useFactory: async (configService: ConfigService) => {
         return {
-          autoSchemaFile: "schema.graphql",
+          autoSchemaFile:
+            configService.get("GRAPHQL_SCHEMA_DEST") ||
+            join(process.cwd(), "src", "schema.graphql"),
           sortSchema: true,
-          playground,
-          introspection: playground || introspection,
+          debug: configService.get("GRAPHQL_DEBUG") === "1",
+          playground: configService.get("PLAYGROUND_ENABLE") === "1",
+          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
+          context: ({ req }: { req: Request }) => ({
+            req,
+          }),
         };
       },
       inject: [ConfigService],
