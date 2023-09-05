@@ -1,0 +1,89 @@
+{
+  "name": "amplication-git-push-webhook-service",
+  "$schema": "../../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "ee/packages/amplication-git-push-webhook-service/src",
+  "projectType": "application",
+  "implicitDependencies": ["amplication-prisma-db"],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": [
+          "ee/packages/amplication-git-push-webhook-service/**/*.ts"
+        ]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": [
+        "{workspaceRoot}/coverage/ee/packages/amplication-git-push-webhook-service"
+      ],
+      "options": {
+        "jestConfig": "ee/packages/amplication-git-push-webhook-service/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/ee/packages/amplication-git-push-webhook-service",
+        "main": "ee/packages/amplication-git-push-webhook-service/src/main.ts",
+        "tsConfig": "ee/packages/amplication-git-push-webhook-service/tsconfig.app.json",
+        "generatePackageJson": true,
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/amplication-prisma-db",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-prisma-db/prisma",
+            "output": "./"
+          }
+        ]
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-git-push-webhook-service:build",
+        "inspect": true,
+        "port": 7015
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-git-push-webhook-service:build:production"
+        }
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-push-webhook-service:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    }
+  },
+  "tags": []
+}

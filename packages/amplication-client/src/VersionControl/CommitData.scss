@@ -1,0 +1,29 @@
+@import "../style/index.scss";
+
+.commit-data {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+
+  &__metadata {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+    margin: 0 var(--default-spacing-small);
+
+    &__message {
+      @include regular-12;
+      color: var(--black100);
+      white-space: nowrap;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+
+    &__created {
+      @include regular-10;
+      color: var(--black80);
+    }
+  }
+}

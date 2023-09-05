@@ -1,0 +1,169 @@
+{
+  "name": "amplication-plugin-api",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-plugin-api/src",
+  "projectType": "application",
+  "implicitDependencies": [],
+  "targets": {
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/amplication-plugin-api/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["coverage/packages/amplication-plugin-api"],
+      "options": {
+        "jestConfig": "packages/amplication-plugin-api/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "build": {
+      "executor": "@nrwl/node:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/packages/amplication-plugin-api",
+        "main": "packages/amplication-plugin-api/src/main.ts",
+        "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/amplication-plugin-api",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/amplication-plugin-api/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-plugin-api/prisma",
+            "output": "./"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false,
+          "fileReplacements": [
+            {
+              "replace": "packages/amplication-plugin-api/src/environments/environment.ts",
+              "with": "packages/amplication-plugin-api/src/environments/environment.prod.ts"
+            }
+          ]
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/node:node",
+      "options": {
+        "buildTarget": "amplication-plugin-api:build",
+        "inspect": true,
+        "port": 7005
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-plugin-api:build-nx:production"
+        }
+      }
+    },
+    "refresh:plugins": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "curl --location --request POST 'http://localhost:3005/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'",
+        "envFile": "packages/amplication-plugin-api/.env"
+      },
+      "configurations": {
+        "production": {
+          "command": "curl --location --request POST 'https://plugin-api.amplication.com/graphql' --header 'Content-Type: application/json' --data-raw '{\"query\":\"mutation ProcessPluginCatalog {processPluginCatalog {  name  npm  versions {    version    updatedAt    deprecated  }}}\"}'"
+        }
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/prisma/schema.prisma"],
+      "outputs": ["{projectRoot}/prisma/generated-prisma-client"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev amplication-plugin-api",
+          "nx db:migrate:deploy amplication-plugin-api",
+          "nx db:seed amplication-plugin-api"
+        ],
+        "parallel": false,
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "packages/amplication-plugin-api"
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/git-plugin-api:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}

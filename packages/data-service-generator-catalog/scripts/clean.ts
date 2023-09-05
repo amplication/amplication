@@ -1,8 +1,9 @@
+/* eslint-disable no-console */
 /**
  * Clean all the tables and types created by Prisma in the database
  */
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient } from "../prisma/generated-prisma-client";
 
 if (require.main === module) {
   clean().catch((error) => {

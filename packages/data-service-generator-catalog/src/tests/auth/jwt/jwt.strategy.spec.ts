@@ -5,7 +5,7 @@ import { TEST_USER } from "../constants";
 import { UserService } from "../../../user/user.service";
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategyBase(userService, "Secrete");
+  const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
     userService.findOne.mockClear();
   });

@@ -1,0 +1,22 @@
+@import "../style/index.scss";
+
+.clickable-id {
+  @include body2;
+  @include semiBold;
+  color: var(--black100);
+
+  a {
+    color: var(--primary);
+
+    &:hover,
+    &:active,
+    &:visited {
+      color: var(--primary);
+    }
+
+    &:hover,
+    &:active {
+      text-decoration: underline;
+    }
+  }
+}

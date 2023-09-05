@@ -1,0 +1,27 @@
+@import "../style/index.scss";
+
+.workspace-form {
+  h1 {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  hr {
+    border: none;
+    border-top: $border-black10;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
+  &__separator {
+    margin: var(--medium-spacing) 0;
+    height: 1px;
+    border: none;
+    background-color: var(--black5);
+  }
+
+  &__label {
+    margin-top: var(--medium-spacing);
+    @include label;
+  }
+}

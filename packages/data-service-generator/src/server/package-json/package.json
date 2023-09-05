@@ -1,0 +1,71 @@
+{
+  "name": "server-template",
+  "version": "0.16.1",
+  "private": true,
+  "scripts": {
+    "start": "nest start",
+    "start:watch": "nest start --watch",
+    "start:debug": "nest start --debug --watch",
+    "build": "nest build",
+    "test": "jest",
+    "seed": "ts-node scripts/seed.ts",
+    "db:migrate-save": "prisma migrate dev",
+    "db:migrate-up": "prisma migrate deploy",
+    "db:clean": "ts-node scripts/clean.ts",
+    "db:init": "run-s \"db:migrate-save -- --name 'initial version'\" db:migrate-up seed",
+    "prisma:generate": "prisma generate",
+    "docker:dev": "docker-compose -f docker-compose.dev.yml up -d",
+    "package:container": "docker build .",
+    "compose:up": "docker-compose up -d",
+    "compose:down": "docker-compose down --volumes"
+  },
+  "dependencies": {
+    "@nestjs/common": "8.4.7",
+    "@nestjs/config": "1.1.5",
+    "@nestjs/core": "8.4.7",
+    "@nestjs/graphql": "9.1.2",
+    "@nestjs/platform-express": "8.4.7",
+    "@nestjs/serve-static": "2.2.2",
+    "@nestjs/swagger": "5.1.5",
+    "@types/bcrypt": "5.0.0",
+    "@prisma/client": "4.6.1",
+    "apollo-server-express": "3.6.1",
+    "bcrypt": "5.0.1",
+    "class-transformer": "0.5.1",
+    "class-validator": "0.14.0",
+    "dotenv": "^16.1.4",
+    "graphql": "15.7.2",
+    "graphql-type-json": "0.3.2",
+    "nest-access-control": "2.0.3",
+    "nest-morgan": "1.0.1",
+    "npm-run-all": "4.1.5",
+    "reflect-metadata": "0.1.13",
+    "swagger-ui-express": "4.3.0",
+    "ts-node": "10.9.1",
+    "type-fest": "0.13.1",
+    "validator": "^13.9.0"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "8.2.5",
+    "@nestjs/testing": "8.4.7",
+    "@types/express": "4.17.9",
+    "@types/graphql-type-json": "0.3.2",
+    "@types/jest": "26.0.19",
+    "@types/normalize-path": "3.0.0",
+    "@types/supertest": "2.0.11",
+    "@types/validator": "^13.7.15",
+    "jest": "27.0.6",
+    "jest-mock-extended": "^2.0.4",
+    "prisma": "4.6.1",
+    "supertest": "4.0.2",
+    "ts-jest": "27.0.3",
+    "typescript": "4.3.5"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "modulePathIgnorePatterns": [
+      "<rootDir>/dist/"
+    ]
+  }
+}

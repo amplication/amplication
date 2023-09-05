@@ -116,7 +116,7 @@ describe("User", () => {
         },
       ],
       controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [MorganModule, ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
