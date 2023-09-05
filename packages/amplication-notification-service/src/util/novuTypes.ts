@@ -1,41 +1,33 @@
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-
-export interface UserDetails {
-  email?: string;
-  firstName?: string;
-  lastName?: string;
-  phone?: string;
-  data?: { [key: string]: string };
-}
+import { ISubscriberPayload } from "@novu/node";
 
 export interface NovuService {
   createSubscriber: (obj: {
     subscriberId: string;
-    enableUser: boolean;
-    payload: UserDetails;
-  }) => void;
+    payload: ISubscriberPayload;
+  }) => Promise<void>;
   updateSubscriber: (obj: {
     subscriberId: string;
-    payload: UserDetails;
-  }) => void;
+    payload: ISubscriberPayload;
+  }) => Promise<void>;
   deleteSubscriber: (obj: { subscriberId: string }) => void;
   triggerNotificationToSubscriber: (obj: {
     subscriberId: string;
     eventName: string;
     payload?: { [key: string]: any };
-  }) => void;
+  }) => Promise<void>;
   broadCastEventToAll: (obj: {
     eventName: string;
     payload?: { [key: string]: any };
-  }) => void;
+  }) => Promise<void>;
   addSubscribersToTopic: (obj: {
     topicKey: string;
     subscribersIds: string[];
-  }) => void;
+  }) => Promise<void>;
   removeSubscribersFromTopic: (obj: {
     topicKey: string;
-    subscriberId: string[];
-  }) => void;
+    subscribersIds: string[];
+  }) => Promise<void>;
 }
 
 export interface Notification {
@@ -43,7 +35,7 @@ export interface Notification {
   subscriberId?: string | string[];
   eventName?: string;
   topicKey?: string;
-  payload?: { [key: string]: any } | UserDetails;
+  payload?: { [key: string]: any } | ISubscriberPayload;
 }
 
 export interface NotificationContext {
