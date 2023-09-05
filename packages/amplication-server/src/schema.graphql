@@ -210,20 +210,19 @@ input ChangePasswordInput {
   oldPassword: String!
 }
 
-type CodeGeneratorVersionOptions {
-  selectionStrategy: CodeGeneratorVersionStrategy
-  version: String
-}
-
 input CodeGeneratorVersionOptionsInput {
-  selectionStrategy: CodeGeneratorVersionStrategy
-  version: String
+  codeGeneratorStrategy: CodeGeneratorVersionStrategy
+  codeGeneratorVersion: String
 }
 
 enum CodeGeneratorVersionStrategy {
   LatestMajor
   LatestMinor
   Specific
+}
+
+input CodeGeneratorVersionUpdateInput {
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput!
 }
 
 type Commit {
@@ -943,6 +942,7 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
   updateAccount(data: UpdateAccountInput!): Account!
+  updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -1247,6 +1247,8 @@ type RemoteGitRepository {
 
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  codeGeneratorStrategy: CodeGeneratorVersionStrategy
+  codeGeneratorVersion: String
   createdAt: DateTime!
   description: String!
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
@@ -1398,7 +1400,6 @@ type ServiceSettings implements IBlock {
   authEntityName: String
   authProvider: EnumAuthProviderType!
   blockType: EnumBlockType!
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptions!
   createdAt: DateTime!
   description: String
   displayName: String!
@@ -1418,7 +1419,6 @@ input ServiceSettingsUpdateInput {
   adminUISettings: AdminUISettingsUpdateInput!
   authEntityName: String
   authProvider: EnumAuthProviderType!
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput!
   description: String
   displayName: String
   serverSettings: ServerSettingsUpdateInput!

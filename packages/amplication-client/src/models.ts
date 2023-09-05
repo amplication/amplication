@@ -238,14 +238,9 @@ export type ChangePasswordInput = {
   oldPassword: Scalars['String']['input'];
 };
 
-export type CodeGeneratorVersionOptions = {
-  selectionStrategy?: Maybe<CodeGeneratorVersionStrategy>;
-  version?: Maybe<Scalars['String']['output']>;
-};
-
 export type CodeGeneratorVersionOptionsInput = {
-  selectionStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
-  version?: InputMaybe<Scalars['String']['input']>;
+  codeGeneratorStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum CodeGeneratorVersionStrategy {
@@ -253,6 +248,10 @@ export enum CodeGeneratorVersionStrategy {
   LatestMinor = 'LatestMinor',
   Specific = 'Specific'
 }
+
+export type CodeGeneratorVersionUpdateInput = {
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
+};
 
 export type Commit = {
   builds?: Maybe<Array<Build>>;
@@ -976,6 +975,7 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   updateAccount: Account;
+  updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
@@ -1270,6 +1270,12 @@ export type MutationSignupArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateCodeGeneratorVersionArgs = {
+  data: CodeGeneratorVersionUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1839,6 +1845,8 @@ export type RemoteGitRepository = {
 
 export type Resource = {
   builds: Array<Build>;
+  codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   entities: Array<Entity>;
@@ -2006,7 +2014,6 @@ export type ServiceSettings = IBlock & {
   authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptions;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
@@ -2026,7 +2033,6 @@ export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;
