@@ -47,6 +47,22 @@ class Version {
   deletedAt!: Date | null;
 
   @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @Field(() => Boolean)
+  isActive!: boolean;
+
+  @ApiProperty({
     required: false,
     type: Boolean,
   })
@@ -55,15 +71,7 @@ class Version {
   @Field(() => Boolean, {
     nullable: true,
   })
-  deprecated!: boolean | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  id!: string;
+  isDeprecated!: boolean | null;
 
   @ApiProperty({
     required: false,

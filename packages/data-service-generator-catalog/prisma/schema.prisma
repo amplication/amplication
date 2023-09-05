@@ -19,11 +19,12 @@ model User {
 }
 
 model Version {
-  changelog  String?
-  createdAt  DateTime  @default(now())
-  deletedAt  DateTime?
-  deprecated Boolean?
-  id         String    @id @default(cuid())
-  name       String?
-  updatedAt  DateTime  @updatedAt
+  changelog    String?
+  createdAt    DateTime  @default(now())
+  deletedAt    DateTime?
+  id           String    @id @default(cuid())
+  isActive     Boolean
+  isDeprecated Boolean?
+  name         String?
+  updatedAt    DateTime  @updatedAt
 }

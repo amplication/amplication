@@ -47,7 +47,18 @@ class VersionUpdateInput {
   @Field(() => Boolean, {
     nullable: true,
   })
-  deprecated?: boolean | null;
+  isActive?: boolean;
+
+  @ApiProperty({
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  isDeprecated?: boolean | null;
 
   @ApiProperty({
     required: false,
