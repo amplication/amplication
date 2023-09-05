@@ -33,7 +33,7 @@ export class ModelServiceBase {
   async findOne<T extends Prisma.ModelFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelFindUniqueArgs>
   ): Promise<Model | null> {
-    return this.prisma.model.findUnique(args);
+    return await this.prisma.model.findUnique(args);
   }
   async create<T extends Prisma.ModelCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ModelCreateArgs>

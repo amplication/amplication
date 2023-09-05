@@ -35,7 +35,7 @@ export class TemplateServiceBase {
   async findOne<T extends Prisma.TemplateFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateFindUniqueArgs>
   ): Promise<Template | null> {
-    return this.prisma.template.findUnique(args);
+    return await this.prisma.template.findUnique(args);
   }
   async create<T extends Prisma.TemplateCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.TemplateCreateArgs>
