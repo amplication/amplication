@@ -4,11 +4,16 @@ import { NovuService } from "./util/novuService";
 import { novuPackage } from "./util/novuPackage";
 import { subscribeUser } from "./notification-packages/subscribeUser";
 import { buildCompleted } from "./notification-packages/buildCompleted";
+import { NotificationContext } from "./util/novuTypes";
+
+type NotificationPackageFunc = (
+  ctx: NotificationContext
+) => Promise<typeof ctx> | Promise<void>;
 
 const compose =
-  (...fns) =>
-  (x) =>
-    fns.reduce(async (y, f) => f(await y), x);
+  (...fns: NotificationPackageFunc[]) =>
+  (x: NotificationContext) =>
+    fns.reduce(async (y, f) => f(await y), Promise.resolve(x));
 
 @Injectable()
 export class AppService {
