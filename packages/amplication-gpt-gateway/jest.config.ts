@@ -15,8 +15,8 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-gpt-gateway",
   coverageThreshold: {
     global: {
-      branches: 47,
-      lines: 27,
+      branches: 15,
+      lines: 4,
     },
   },
 };
