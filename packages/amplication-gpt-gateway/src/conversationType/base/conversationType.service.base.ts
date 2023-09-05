@@ -10,7 +10,11 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, ConversationType, Template } from "@prisma/client";
+import {
+  Prisma,
+  ConversationType,
+  Template,
+} from "../../../prisma/generated-prisma-client";
 
 export class ConversationTypeServiceBase {
   constructor(protected readonly prisma: PrismaService) {}

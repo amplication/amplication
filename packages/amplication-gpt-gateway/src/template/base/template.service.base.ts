@@ -16,7 +16,7 @@ import {
   Message,
   ConversationType,
   Model,
-} from "@prisma/client";
+} from "../../../prisma/generated-prisma-client";
 
 export class TemplateServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
