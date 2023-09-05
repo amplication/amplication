@@ -152,7 +152,7 @@
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"],
+        "tags": ["amplication/git-plugin-api:latest"],
         "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
       },
       "configurations": {
