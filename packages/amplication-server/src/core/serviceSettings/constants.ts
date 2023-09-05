@@ -2,6 +2,7 @@ import { ServiceSettings } from "./dto";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { EnumAuthProviderType } from "./dto/EnumAuthenticationProviderType";
 import { BlockValues, BlockValuesExtended } from "../block/types";
+import { CodeGeneratorVersionStrategy } from "./dto/EnumCodeGeneratorVersionStrategy";
 
 export type ServiceSettingsValues = BlockValues<ServiceSettingsValuesExtended>;
 
@@ -23,5 +24,9 @@ export const DEFAULT_SERVICE_SETTINGS: ServiceSettingsValuesExtended = {
   adminUISettings: {
     generateAdminUI: true,
     adminUIPath: "",
+  },
+  codeGeneratorVersionOptions: {
+    version: null,
+    selectionStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
 };

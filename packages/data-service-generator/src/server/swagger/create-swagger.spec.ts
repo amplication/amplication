@@ -24,6 +24,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
       generateAdminUI: false,
       adminUIPath: "",
     },
+    codeGeneratorVersionOptions: {},
   },
 };
 

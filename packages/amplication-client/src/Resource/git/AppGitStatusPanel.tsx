@@ -71,14 +71,10 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
               className={`${CLASS_NAME}__git-link`}
               href={gitRepositoryUrl}
               target={
-                gitRepositoryOrganizationProvider ===
-                models.EnumGitProvider.Github
-                  ? "github"
-                  : gitRepositoryOrganizationProvider ===
-                    models.EnumGitProvider.Bitbucket
-                  ? "bitbucket"
-                  : "_blank"
+                gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
+                "_blank"
               }
+              rel="noreferrer"
             >
               <Button
                 buttonStyle={EnumButtonStyle.Text}

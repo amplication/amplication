@@ -110,6 +110,12 @@ export const EntityListItem = ({
 
     const authEntity = resourceSettings?.serviceSettings?.authEntityName;
 
+    deleteEntity({
+      variables: {
+        entityId: entity.id,
+      },
+    }).catch(onError);
+
     if (authEntity === entity.name) {
       const updateServiceSettings = {
         ...resourceSettings?.serviceSettings,
@@ -117,12 +123,6 @@ export const EntityListItem = ({
       };
       handleSubmit(updateServiceSettings);
     }
-
-    deleteEntity({
-      variables: {
-        entityId: entity.id,
-      },
-    }).catch(onError);
   }, [entity, deleteEntity, onError]);
 
   const handleRowClick = useCallback(() => {

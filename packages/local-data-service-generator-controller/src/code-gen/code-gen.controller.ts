@@ -5,6 +5,8 @@ import { CodeGenerationRequest } from "./types";
 function generateCode(req: Request, res: Response) {
   const { resourceId, buildId } = req.body as CodeGenerationRequest;
 
+  console.log("generateCode", req.body);
+
   const imageName = "amplication/data-service-generator";
   const containerName = `dsg-controller-${buildId}`;
 

@@ -194,6 +194,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
+  codeGeneratorVersion: Scalars['String']['output'];
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -236,6 +237,22 @@ export type ChangePasswordInput = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
 };
+
+export type CodeGeneratorVersionOptions = {
+  selectionStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  version?: Maybe<Scalars['String']['output']>;
+};
+
+export type CodeGeneratorVersionOptionsInput = {
+  selectionStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
+  version?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum CodeGeneratorVersionStrategy {
+  LatestMajor = 'LatestMajor',
+  LatestMinor = 'LatestMinor',
+  Specific = 'Specific'
+}
 
 export type Commit = {
   builds?: Maybe<Array<Build>>;
@@ -1989,6 +2006,7 @@ export type ServiceSettings = IBlock & {
   authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptions;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
@@ -2008,6 +2026,7 @@ export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;
