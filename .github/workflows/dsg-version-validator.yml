@@ -1,0 +1,53 @@
+name: DSG Version Validator
+
+on:
+  pull_request:
+    branches:
+      - main
+      - master
+
+env:
+  DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+jobs:
+  nx:
+    name: Nx
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: "${{ github.ref }}"
+      nx-base: "${{ github.event.repository.default_branch }}"
+
+  dsg-version-validator:
+    name: Validate DSG Version Bump
+    runs-on: ubuntu-latest
+    needs: nx
+    if: ${{ contains(needs.nx.outputs.affected-package-container, 'data-service-generator') }}
+    steps:
+      - name: Checkout current branch
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - id: get-version
+        name: Get current package.json version
+        run: |
+          echo "::set-output name=version::$(cat $DSG_PACKAGE_JSON  | jq -r '.version')"
+      - name: Checkout target branch
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.base_ref }}
+          fetch-depth: 0
+      - id: get-version-target
+        name: Get package.json version from target branch
+        run: |
+          echo "::set-output name=version::$(cat $DSG_PACKAGE_JSON | jq -r '.version')"
+      - name: Check if versions are equal
+        id: check-version
+        run: |
+          if [ "${{ steps.get-version.outputs.version }}" == "${{ steps.get-version-target.outputs.version }}" ]; then
+            echo "❌ Versions are equal. Please bump the version in $DSG_PACKAGE_JSON 😵"
+            exit 1
+          else
+            echo "✅ Versions are not equal. All good"
+            exit 0
+          fi
+

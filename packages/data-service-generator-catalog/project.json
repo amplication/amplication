@@ -1,0 +1,151 @@
+{
+  "name": "data-service-generator-catalog",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/data-service-generator-catalog/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/data-service-generator-catalog",
+        "main": "packages/data-service-generator-catalog/src/main.ts",
+        "tsConfig": "packages/data-service-generator-catalog/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/data-service-generator-catalog",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/data-service-generator-catalog/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/data-service-generator-catalog/prisma",
+            "output": "./"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "data-service-generator-catalog:build",
+        "inspect": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "data-service-generator-catalog:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/data-service-generator-catalog/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/data-service-generator-catalog/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/prisma/schema.prisma"],
+      "outputs": ["{projectRoot}/prisma/generated-prisma-client"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev data-service-generator-catalog",
+          "nx db:migrate:deploy data-service-generator-catalog",
+          "nx db:seed data-service-generator-catalog"
+        ],
+        "parallel": false,
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "packages/data-service-generator-catalog"
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/data-service-generator-catalog:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}
