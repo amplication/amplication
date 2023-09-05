@@ -16,7 +16,7 @@ on:
       nx-force-all:
         type: boolean
         description: Forces Nx to consider all projects as affected when running the update-version target.
-        default: false
+        default: true
       draft-release:
         type: boolean
         description: Create a draft release instead of a published release.
