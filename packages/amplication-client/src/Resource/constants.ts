@@ -142,7 +142,6 @@ export function prepareServiceObject(
           serverPath: serverDir,
         },
         authProvider: EnumAuthProviderType.Jwt,
-        codeGeneratorVersionOptions: {},
       },
       gitRepository: gitRepository,
     },
