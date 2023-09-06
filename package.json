@@ -33,6 +33,7 @@
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
     "@aws-sdk/client-codecommit": "^3.362.0",
+    "@aws-sdk/client-ecr": "^3.405.0",
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.11.0",
@@ -134,6 +135,7 @@
     "normalize-path": "^3.0.0",
     "octokit": "^1.8.1",
     "octokit-plugin-create-pull-request": "^3.13.1",
+    "openai": "^3.3.0",
     "opentelemetry-instrumentation-kafkajs": "^0.35.0",
     "ora": "5.4.0",
     "pacote": "^15.0.8",
@@ -186,8 +188,7 @@
     "uuid": "^8.3.2",
     "winston": "3.8.2",
     "winston-cloud-logging": "^1.0.2",
-    "yaml": "2.2.2",
-    "openai": "^3.3.0"
+    "yaml": "2.2.2"
   },
   "devDependencies": {
     "@babel/core": "7.12.13",
