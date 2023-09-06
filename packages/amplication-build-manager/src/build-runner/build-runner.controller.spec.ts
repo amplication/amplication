@@ -8,6 +8,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -68,9 +69,9 @@ describe("BuildRunnerController", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case Env.CODE_GENERATION_SUCCESS_TOPIC:
+                case KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC:
                   return "code_generation_success_topic";
-                case Env.CODE_GENERATION_FAILURE_TOPIC:
+                case KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC:
                   return "code_generation_failure_topic";
                 case Env.DSG_RUNNER_URL:
                   return "http://runner.url/";
@@ -128,7 +129,7 @@ describe("BuildRunnerController", () => {
     ).resolves.not.toThrow();
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
       kafkaSuccessEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -168,7 +169,7 @@ describe("BuildRunnerController", () => {
     ).rejects.toThrow(errorMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -200,7 +201,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -232,7 +233,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(
@@ -344,7 +345,7 @@ describe("BuildRunnerController", () => {
 
     expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();

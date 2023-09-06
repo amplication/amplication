@@ -1,9 +1,6 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, MessagePattern, Payload } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
-import { CHECK_USER_ACCESS_TOPIC } from "../../constants";
-import { Env } from "../../env";
 import { ActionService } from "../action/action.service";
 import { EnumActionStepStatus } from "../action/dto";
 import { ReplyResultMessage } from "./dto/ReplyResultMessage";
@@ -16,22 +13,23 @@ import {
   CodeGenerationSuccess,
   CreatePrFailure,
   CreatePrSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 
 @Controller("generated-apps")
 export class BuildController {
   constructor(
     private readonly buildService: BuildService,
+    private readonly kafkaProducerService: KafkaProducerService,
     private readonly actionService: ActionService,
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
-  @MessagePattern(
-    EnvironmentVariables.instance.get(CHECK_USER_ACCESS_TOPIC, true)
-  )
+  @MessagePattern(KAFKA_TOPICS.CHECK_USER_ACCESS_TOPIC)
   async checkUserAccess(
     @Payload() message: CanUserAccessBuild.Value
   ): Promise<{ value: ReplyResultMessage<boolean> }> {
@@ -46,9 +44,7 @@ export class BuildController {
     };
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CODE_GENERATION_SUCCESS_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC)
   async onCodeGenerationSuccess(
     @Payload() message: CodeGenerationSuccess.Value
   ): Promise<void> {
@@ -61,9 +57,7 @@ export class BuildController {
     await this.buildService.saveToGitProvider(args.buildId);
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CODE_GENERATION_FAILURE_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC)
   async onCodeGenerationFailure(
     @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
@@ -75,9 +69,7 @@ export class BuildController {
     );
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CREATE_PR_SUCCESS_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC)
   async onPullRequestCreated(
     @Payload() message: CreatePrSuccess.Value
   ): Promise<void> {
@@ -89,9 +81,7 @@ export class BuildController {
     }
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CREATE_PR_FAILURE_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CREATE_PR_FAILURE_TOPIC)
   async onPullRequestFailure(
     @Payload() message: CreatePrFailure.Value
   ): Promise<void> {
@@ -103,7 +93,7 @@ export class BuildController {
     }
   }
 
-  @EventPattern(EnvironmentVariables.instance.get(Env.DSG_LOG_TOPIC, true))
+  @EventPattern(KAFKA_TOPICS.DSG_LOG_TOPIC)
   async onDsgLog(@Payload() message: CodeGenerationLog.Value): Promise<void> {
     const logEntry = plainToInstance(CodeGenerationLog.Value, message);
     await this.buildService.onDsgLog(logEntry);

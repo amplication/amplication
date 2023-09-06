@@ -21,7 +21,6 @@ const EXAMPLE_ACCOUNT: Account = {
   password: EXAMPLE_PASSWORD,
   currentUserId: EXAMPLE_CURRENT_USER_ID,
   githubId: null,
-  externalId: "hsfdywuwolkcmcp",
 };
 
 const segmentAnalyticsIdentifyMock = jest.fn(() => {

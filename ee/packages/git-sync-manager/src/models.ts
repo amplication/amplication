@@ -2030,6 +2030,7 @@ export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;
@@ -2236,6 +2237,7 @@ export type WhereUniqueInput = {
 
 export type Workspace = {
   createdAt: Scalars['DateTime']['output'];
+  externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];

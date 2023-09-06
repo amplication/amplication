@@ -9,3 +9,25 @@ export * as CanUserAccessBuild from "./lib/can-user-access-build";
 export * as DBSchemaImportRequest from "./lib/db-schema-import-request";
 export * as UserActionLog from "./lib/user-action-log";
 export * as UserAction from "./lib/user-action";
+export * as UserBuild from "./lib/user-build";
+
+export enum KAFKA_TOPICS {
+  /// build-manager
+  CREATE_PR_REQUEST_TOPIC = "git.internal.create-pr.request.2",
+  CODE_GENERATION_REQUEST_TOPIC = "build.internal.code-generation.request.1",
+  CODE_GENERATION_SUCCESS_TOPIC = "build.internal.code-generation.success.1",
+  CODE_GENERATION_FAILURE_TOPIC = "build.internal.code-generation.failure.1",
+  DSG_LOG_TOPIC = "build.internal.dsg-log.1",
+  /// git-pull-request
+  CREATE_PULL_REQUEST_COMPLETED_TOPIC = "git.internal.pull-request.completed.1",
+  GENERATE_PULL_REQUEST_TOPIC = "git.internal.pull-request.request.1",
+  CREATE_PR_SUCCESS_TOPIC = "git.internal.create-pr.success.1",
+  CREATE_PR_FAILURE_TOPIC = "git.internal.create-pr.failure.1",
+  KAFKA_REPOSITORY_PUSH_QUEUE = "git.external.push.event.0",
+  /// amplication-server
+  CHECK_USER_ACCESS_TOPIC = "authorization.internal.can-access-build.request.0",
+  DB_SCHEMA_IMPORT_TOPIC = "user-action.internal.db-schema-import.request.1",
+  USER_ACTION_LOG_TOPIC = "user-action.internal.action-log.1",
+  USER_ACTION_TOPIC = "user-action.internal.1",
+  USER_BUILD_TOPIC = "user-build.internal.1",
+}

@@ -5,6 +5,7 @@ export enum UserActionType {
   LOGIN = "login",
   UPDATE = "update",
   DELETE = "delete",
+  CURRENT_WORKSPACE = "currentWorkspace",
 }
 
 export class Value {
@@ -25,4 +26,7 @@ export class Value {
 
   @IsString()
   action!: UserActionType;
+
+  @IsString()
+  enableUser!: boolean;
 }

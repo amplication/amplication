@@ -19,5 +19,6 @@ export enum BillingFeature {
   Bitbucket = "feature-bitbucket",
   ImportDBSchema = "feature-import-db-schema",
   ChangeGitBaseBranch = "feature-change-git-base-branch",
+  Notification = "feature-notifications",
   BranchPerResource = "feature-branch-per-resource",
 }

@@ -1,4 +1,3 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
@@ -13,6 +12,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
@@ -45,7 +45,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
@@ -57,7 +57,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }
@@ -77,7 +77,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     } catch (error) {
@@ -85,9 +85,7 @@ export class BuildRunnerController {
     }
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC)
   async onCodeGenerationRequest(
     @Payload() message: CodeGenerationRequest.Value
   ): Promise<void> {
@@ -145,7 +143,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }

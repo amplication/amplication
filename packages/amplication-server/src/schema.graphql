@@ -1628,6 +1628,7 @@ input WhereUniqueInput {
 
 type Workspace {
   createdAt: DateTime!
+  externalId: String
   gitOrganizations: [GitOrganization!]
   id: String!
   name: String!
