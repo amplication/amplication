@@ -91,8 +91,8 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
         
-      - id: update-version-ts
-        name: Update apps version.ts
+      - name: Update apps version.ts
+        id: update-version-ts
         run: |
           VERSION=${{ github.event.inputs.version }}
           APP_VERSION=${VERSION:1}
