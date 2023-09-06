@@ -235,14 +235,9 @@ export type ChangePasswordInput = {
   oldPassword: Scalars['String']['input'];
 };
 
-export type CodeGeneratorVersionOptions = {
-  selectionStrategy?: Maybe<CodeGeneratorVersionStrategy>;
-  version?: Maybe<Scalars['String']['output']>;
-};
-
 export type CodeGeneratorVersionOptionsInput = {
-  selectionStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
-  version?: InputMaybe<Scalars['String']['input']>;
+  codeGeneratorStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: InputMaybe<Scalars['String']['input']>;
 };
 
 export enum CodeGeneratorVersionStrategy {
@@ -250,6 +245,10 @@ export enum CodeGeneratorVersionStrategy {
   LatestMinor = 'LatestMinor',
   Specific = 'Specific'
 }
+
+export type CodeGeneratorVersionUpdateInput = {
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
+};
 
 export type Commit = {
   builds?: Maybe<Array<Build>>;
@@ -973,6 +972,7 @@ export type Mutation = {
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   updateAccount: Account;
+  updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
@@ -1267,6 +1267,12 @@ export type MutationSignupArgs = {
 
 export type MutationUpdateAccountArgs = {
   data: UpdateAccountInput;
+};
+
+
+export type MutationUpdateCodeGeneratorVersionArgs = {
+  data: CodeGeneratorVersionUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1836,6 +1842,8 @@ export type RemoteGitRepository = {
 
 export type Resource = {
   builds: Array<Build>;
+  codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   entities: Array<Entity>;

@@ -49,7 +49,6 @@ const EXAMPLE_SERVICE_SETTINGS: ServiceSettings = {
     generateAdminUI: true,
     adminUIPath: "",
   },
-  codeGeneratorVersionOptions: {},
   resourceId: EXAMPLE_RESOURCE_ID,
 };
 

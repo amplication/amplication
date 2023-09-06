@@ -47,7 +47,7 @@ describe("CodeGeneratorService", () => {
     ["v1.2.0", CodeGeneratorVersionStrategy.LatestMinor],
   ])(
     `should return version %s when %s is selected`,
-    async (expected: string, option: CodeGeneratorVersionStrategy) => {
+    async (expected: string, strategy: CodeGeneratorVersionStrategy) => {
       const selectedVersion = "v1.0.1";
 
       mockedAxios.get.mockImplementation(() =>
@@ -58,7 +58,7 @@ describe("CodeGeneratorService", () => {
 
       const result = await service.getCodeGeneratorVersion({
         codeGeneratorVersion: selectedVersion,
-        codeGeneratorVersionOption: option,
+        codeGeneratorStrategy: strategy,
       });
 
       expect(result).toEqual(expected);

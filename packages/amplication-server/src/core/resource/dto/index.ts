@@ -22,3 +22,7 @@ export {
   ResourceValidationResult,
   ResourceValidationErrorTypes,
 } from "./ResourceValidationResult";
+export { UpdateCodeGeneratorVersionArgs } from "./UpdateCodeGeneratorVersionArgs";
+export { CodeGeneratorVersionUpdateInput } from "./CodeGeneratorVersionUpdateInput";
+export { CodeGeneratorVersionOptionsInput } from "./CodeGeneratorVersionOptionsInput";
+export { CodeGeneratorVersionStrategy } from "./EnumCodeGeneratorVersionStrategy";
