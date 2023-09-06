@@ -30,7 +30,7 @@ export class CodeGeneratorService {
         }
       );
 
-      return response.data.name;
+      return (<Version>response.data).name;
     } catch (error) {
       throw new Error(error.message, {
         cause: {

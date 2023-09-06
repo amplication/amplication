@@ -4,7 +4,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Env } from "../env";
 import axios from "axios";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
-import { Version } from "./version.interface";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
