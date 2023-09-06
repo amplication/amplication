@@ -27,7 +27,7 @@ export class TemplateService extends TemplateServiceBase {
     }, {} as Record<string, string>);
 
     let output = message;
-    for (let key in paramsObj) {
+    for (const key in paramsObj) {
       const placeholder = `{{${key}}}`;
       const value = paramsObj[key];
       while (output.includes(placeholder)) {
