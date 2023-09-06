@@ -13,6 +13,7 @@ import { UserService } from "../user/user.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { ActionService } from "../action/action.service";
 import { Env } from "../../env";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
 
 describe("DbSchemaImportService", () => {
   let service: DBSchemaImportService;
@@ -150,7 +151,7 @@ describe("DbSchemaImportService", () => {
 
     expect(kafkaProducerService.emitMessage).toBeCalledTimes(1);
     expect(kafkaProducerService.emitMessage).toBeCalledWith(
-      configService.get(Env.DB_SCHEMA_IMPORT_TOPIC),
+      KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC,
       dbSchemaImportEvent
     );
   });
