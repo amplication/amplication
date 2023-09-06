@@ -2011,7 +2011,6 @@ export type ServiceSettings = IBlock & {
   authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptions;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
