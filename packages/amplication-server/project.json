@@ -34,10 +34,24 @@
         "runInBand": true
       }
     },
+    "update-version": {
+      "executor": "nx:run-commands",
+      "inputs": ["{workspaceRoot}/package.json"],
+      "outputs": ["{projectRoot}/src/util/version.ts"],
+      "options": {
+        "command": "ts-node ./scripts/update-version.ts {args.version}",
+        "cwd": "packages/amplication-server"
+      }
+    },
     "build": {
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
-      "dependsOn": ["graphql:schema:generate", "graphql:models:generate"],
+      "dependsOn": [
+        "^build",
+        "prebuild",
+        "graphql:schema:generate",
+        "graphql:models:generate"
+      ],
       "options": {
         "outputPath": "dist/packages/amplication-server",
         "main": "packages/amplication-server/src/main.ts",
