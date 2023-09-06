@@ -21,7 +21,7 @@ on:
         type: boolean
         description: Create a draft release instead of a published release.
         required: false
-        default: false
+        default: true
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
