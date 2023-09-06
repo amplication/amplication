@@ -68,30 +68,89 @@ describe("VersionService", () => {
   );
 
   describe("getCodeGeneratorAvailableVersions", () => {
-    it("should return all available versions", async () => {
+    beforeEach(async () => {
       mockVersionFindMany.mockResolvedValue([
+        { name: "v2.2.0" },
         { name: "v1.0.0" },
         { name: "v1.0.1" },
         { name: "v0.8.1" },
         { name: "v2.0.0" },
         { name: "v1.1.0" },
         { name: "v1.10.1" },
-        { name: "v2.2.0" },
-        { name: "v1.2.0" },
-      ]);
-
-      const versions = await service.findMany({});
-      expect(versions).toEqual([
-        { name: "v1.0.0" },
-        { name: "v1.0.1" },
-        { name: "v0.8.1" },
-        { name: "v2.0.0" },
-        { name: "v1.1.0" },
-        { name: "v1.10.1" },
-        { name: "v2.2.0" },
         { name: "v1.2.0" },
       ]);
     });
+
+    it("should return all available versions", async () => {
+      const versions = await service.findMany({});
+      expect(versions).toEqual([
+        { name: "v2.2.0" },
+        { name: "v1.0.0" },
+        { name: "v1.0.1" },
+        { name: "v0.8.1" },
+        { name: "v2.0.0" },
+        { name: "v1.1.0" },
+        { name: "v1.10.1" },
+        { name: "v1.2.0" },
+      ]);
+    });
+
+    it.each([["next"], ["master"]])(
+      "should return %s version with all available versions when env variable DEV_VERSION_TAG=%s",
+      async (devVersion: string) => {
+        const module: TestingModule = await Test.createTestingModule({
+          imports: [],
+          providers: [
+            {
+              provide: ConfigService,
+              useValue: {
+                get: (variable) => {
+                  switch (variable) {
+                    case "DEV_VERSION_TAG":
+                      return devVersion;
+                    default:
+                      return "";
+                  }
+                },
+              },
+            },
+            {
+              provide: PrismaService,
+              useValue: {
+                version: {
+                  findMany: mockVersionFindMany,
+                },
+              },
+            },
+            VersionService,
+          ],
+        }).compile();
+
+        service = module.get<VersionService>(VersionService);
+
+        const versions = await service.findMany({});
+        expect(versions).toEqual([
+          {
+            id: devVersion,
+            name: devVersion,
+            isActive: true,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            changelog: `Latest development version from ${devVersion}`,
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          { name: "v2.2.0" },
+          { name: "v1.0.0" },
+          { name: "v1.0.1" },
+          { name: "v0.8.1" },
+          { name: "v2.0.0" },
+          { name: "v1.1.0" },
+          { name: "v1.10.1" },
+          { name: "v1.2.0" },
+        ]);
+      }
+    );
   });
 
   describe("getLatestVersion", () => {
@@ -111,7 +170,7 @@ describe("VersionService", () => {
 
       const selectedVersion = "v1.0.1";
 
-      const selected = await service["getLatestVersion"](
+      const selected = await service["getLatestMinorVersion"](
         versions,
         selectedVersion
       );

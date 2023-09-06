@@ -4,11 +4,19 @@ import { VersionServiceBase } from "./base/version.service.base";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { ConfigService } from "@nestjs/config";
+import { Prisma } from "../../prisma/generated-prisma-client";
 
 @Injectable()
 export class VersionService extends VersionServiceBase {
-  constructor(protected readonly prisma: PrismaService) {
+  private readonly includeDevVersion: string;
+
+  constructor(
+    protected readonly prisma: PrismaService,
+    configService: ConfigService
+  ) {
     super(prisma);
+    this.includeDevVersion = configService.get<string>("DEV_VERSION_TAG");
   }
 
   private sortVersions(versions: string[]): string[] {
@@ -40,15 +48,18 @@ export class VersionService extends VersionServiceBase {
     });
   }
 
-  private async getLatestVersion(
+  private getLatestVersion(versions: string[]): string {
+    if (this.includeDevVersion) {
+      return this.includeDevVersion;
+    }
+    return this.sortVersions(versions)[0];
+  }
+
+  private async getLatestMinorVersion(
     versions: string[],
-    specificVersion?: string
+    specificVersion: string
   ): Promise<string> {
     const sortedVersions = this.sortVersions(versions);
-    if (!specificVersion) {
-      // return the most recent version
-      return sortedVersions[0];
-    }
     const specificVersionParts = specificVersion.replace("v", "").split(".");
     const specificVersionMajor = specificVersionParts[0];
 
@@ -97,22 +108,42 @@ export class VersionService extends VersionServiceBase {
     });
 
     let selectedVersion: string;
+    const activeVersionsTag = activeVersions.map((version) => version.name);
 
     switch (codeGeneratorStrategy) {
       case CodeGeneratorVersionStrategy.LatestMinor:
-        selectedVersion = await this.getLatestVersion(
-          activeVersions.map((version) => version.name),
+        selectedVersion = await this.getLatestMinorVersion(
+          activeVersionsTag,
           codeGeneratorVersion
         );
         break;
       case CodeGeneratorVersionStrategy.LatestMajor:
       default:
-        selectedVersion = await this.getLatestVersion(
-          activeVersions.map((version) => version.name)
-        );
+        selectedVersion = await this.getLatestVersion(activeVersionsTag);
         break;
     }
 
     return activeVersions.find((version) => version.name === selectedVersion);
+  }
+
+  async findMany<T extends Prisma.VersionFindManyArgs>(
+    args: Prisma.SelectSubset<T, Prisma.VersionFindManyArgs>
+  ): Promise<Version[]> {
+    const result: Version[] = [];
+
+    if (this.includeDevVersion) {
+      result.push({
+        id: this.includeDevVersion,
+        name: this.includeDevVersion,
+        isActive: true,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        changelog: `Latest development version from ${this.includeDevVersion}`,
+        deletedAt: null,
+        isDeprecated: false,
+      });
+    }
+    result.push(...(await super.findMany(args)));
+    return result;
   }
 }
