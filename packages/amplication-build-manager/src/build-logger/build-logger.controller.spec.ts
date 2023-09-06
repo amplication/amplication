@@ -8,7 +8,6 @@ import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
-  let configService: ConfigService;
   const mockServiceEmitMessage = jest
     .fn()
     .mockImplementation(
@@ -46,7 +45,6 @@ describe("Build Logger Controller", () => {
     }).compile();
 
     controller = module.get<BuildLoggerController>(BuildLoggerController);
-    configService = module.get<ConfigService>(ConfigService);
   });
 
   it("should be defined", () => {
@@ -68,7 +66,7 @@ describe("Build Logger Controller", () => {
     await controller.onCodeGenerationLog(mockRequestLogDOT);
 
     expect(mockServiceEmitMessage).toBeCalledWith(
-      configService.get(KAFKA_TOPICS.DSG_LOG_TOPIC),
+      KAFKA_TOPICS.DSG_LOG_TOPIC,
       logEvent
     );
     await expect(mockServiceEmitMessage()).resolves.not.toThrow();
