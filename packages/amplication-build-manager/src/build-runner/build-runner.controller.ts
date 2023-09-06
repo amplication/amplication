@@ -97,19 +97,19 @@ export class BuildRunnerController {
     });
 
     let containerImageTag: string;
-    if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
-      containerImageTag =
-        await this.codeGeneratorService.getCodeGeneratorVersion({
-          codeGeneratorVersion:
-            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
-              .codeGeneratorVersion,
-          codeGeneratorStrategy:
-            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
-              .codeGeneratorStrategy,
-        });
-    }
-
     try {
+      if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
+        containerImageTag =
+          await this.codeGeneratorService.getCodeGeneratorVersion({
+            codeGeneratorVersion:
+              message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+                .codeGeneratorVersion,
+            codeGeneratorStrategy:
+              message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+                .codeGeneratorStrategy,
+          });
+      }
+
       await this.buildRunnerService.saveDsgResourceData(
         message.buildId,
         message.dsgResourceData,
@@ -117,11 +117,21 @@ export class BuildRunnerController {
       );
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);
-      await axios.post(url, {
-        resourceId: message.resourceId,
-        buildId: message.buildId,
-        containerImageTag,
-      });
+      try {
+        await axios.post(url, {
+          resourceId: message.resourceId,
+          buildId: message.buildId,
+          containerImageTag,
+        });
+      } catch (error) {
+        throw new Error(error.message, {
+          cause: {
+            code: error.response?.status,
+            message: error.response?.data?.message,
+            data: error.config?.data,
+          },
+        });
+      }
     } catch (error) {
       this.logger.error(error.message, error);
 
@@ -130,7 +140,7 @@ export class BuildRunnerController {
         value: {
           buildId: message.buildId,
           error,
-          codeGeneratorVersion: containerImageTag,
+          codeGeneratorVersion: containerImageTag ?? null,
         },
       };
 

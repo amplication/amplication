@@ -308,6 +308,7 @@ describe("BuildRunnerController", () => {
 
   it("On code generation request with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
+    const expectedCodeGeneratorVersion = "v1.2.2";
     const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
@@ -317,7 +318,7 @@ describe("BuildRunnerController", () => {
         pluginInstallations: [],
         resourceInfo: {
           codeGeneratorVersionOptions: {
-            version: "v1.0.1",
+            version: expectedCodeGeneratorVersion,
             selectionStrategy: CodeGeneratorVersionStrategy.Specific,
           },
         } as unknown as AppInfo,
@@ -329,17 +330,14 @@ describe("BuildRunnerController", () => {
       value: <CodeGenerationFailure.Value>{
         buildId: codeGenerationRequestDTOMock.buildId,
         error: errorMock,
-        codeGeneratorVersion:
-          codeGenerationRequestDTOMock.dsgResourceData.resourceInfo
-            .codeGeneratorVersionOptions.codeGeneratorVersion,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
     mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
     mockRunnerServiceSaveDsgResourceData.mockRejectedValue(errorMock);
     mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
-      codeGenerationRequestDTOMock.dsgResourceData.resourceInfo
-        .codeGeneratorVersionOptions.codeGeneratorStrategy
+      expectedCodeGeneratorVersion
     );
 
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
