@@ -1,6 +1,6 @@
 {
-  "short_name": "amplication-gpt-gateway",
-  "name": "amplication-gpt-gateway",
+  "short_name": "gpt-gateway",
+  "name": "gpt-gateway",
   "icons": [
     {
       "src": "favicon.ico",

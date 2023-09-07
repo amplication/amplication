@@ -17,7 +17,7 @@ Configuration for the server component can be provided through the use of enviro
 | Variable             | Description                                  | Value                                                               |
 | -------------------- | -------------------------------------------- | ------------------------------------------------------------------- |
 | BCRYPT_SALT          | the string used for hashing                  | [random-string]                                                     |
-| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp_[service-identifier]                                            |
+| COMPOSE_PROJECT_NAME | the identifier of the service plus prefix    | amp\_[service-identifier]                                           |
 | PORT                 | the port on which to run the server          | 3000                                                                |
 | DB_URL               | the connection url for the database          | [db-provider]://[username]:[password]@localhost:[db-port]/[db-name] |
 | DB_PORT              | the port used by the database instance       | [db-provider-port]                                                  |
@@ -28,7 +28,7 @@ Configuration for the server component can be provided through the use of enviro
 | JWT_EXPIRATION       | the expiration time for the json-web token   | 2d                                                                  |
 
 > **Note**
-> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production. 
+> Amplication generates default values and stores them under the .env file. It is advised to use some form of secrets manager/vault solution when using in production.
 
 ## Step 2.1: Scripts - pre-requisites
 
@@ -54,6 +54,7 @@ $ npm run db:init
 # start the server component
 $ npm run start
 ```
+
 By default, your app comes with one user with the username "admin" and password "admin".
 
 ## Step 2.2: Scripts - container based development

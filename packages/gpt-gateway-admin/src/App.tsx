@@ -44,7 +44,7 @@ const App = (): React.ReactElement => {
   return (
     <div className="App">
       <Admin
-        title={"amplication-gpt-gateway"}
+        title={"gpt-gateway"}
         dataProvider={dataProvider}
         authProvider={jwtAuthProvider}
         theme={theme}

@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: "amplication-gpt-gateway",
+  displayName: "gpt-gateway",
   preset: "../../jest.preset.js",
   globals: {
     "ts-jest": {
@@ -12,7 +12,7 @@ export default {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/packages/amplication-gpt-gateway",
+  coverageDirectory: "../../coverage/packages/gpt-gateway",
   coverageThreshold: {
     global: {
       branches: 15,
