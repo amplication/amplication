@@ -6,6 +6,7 @@ import { Version } from "./base/Version";
 import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";
 import { Prisma } from "../../prisma/generated-prisma-client";
+import { AwsEcrService } from "../aws/aws-ecr.service";
 
 @Injectable()
 export class VersionService extends VersionServiceBase {
@@ -13,7 +14,8 @@ export class VersionService extends VersionServiceBase {
 
   constructor(
     protected readonly prisma: PrismaService,
-    configService: ConfigService
+    configService: ConfigService,
+    private readonly awsEcrService: AwsEcrService
   ) {
     super(prisma);
     this.includeDevVersion = configService.get<string>("DEV_VERSION_TAG");
@@ -145,5 +147,32 @@ export class VersionService extends VersionServiceBase {
     }
     result.push(...(await super.findMany(args)));
     return result;
+  }
+
+  async syncVersions(): Promise<void> {
+    const tags = await this.awsEcrService.getTags();
+    const versions = tags.map((tag) => ({
+      id: tag.imageTags[0],
+      name: tag.imageTags[0],
+      isActive: true,
+      createdAt: tag.imagePushedAt,
+      updatedAt: new Date(),
+      changelog: "",
+      deletedAt: null,
+      isDeprecated: false,
+    }));
+
+    const storedVersions = await this.findMany({});
+
+    const newVersions = versions.filter(
+      (version) =>
+        !storedVersions.some(
+          (storedVersion) => storedVersion.name === version.name
+        )
+    );
+
+    await this.prisma.version.createMany({
+      data: newVersions,
+    });
   }
 }

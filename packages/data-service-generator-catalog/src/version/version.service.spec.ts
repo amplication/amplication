@@ -3,10 +3,17 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { VersionService } from "./version.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { AwsEcrService } from "../aws/aws-ecr.service";
+import { AwsEcrModule } from "../aws/aws-ecr.module";
 
 describe("VersionService", () => {
   let service: VersionService;
   const mockVersionFindMany = jest.fn();
+  const mockGetTagsAwsEcrService = jest
+    .fn()
+    .mockImplementation((token: string) => {
+      return Promise.resolve([]);
+    });
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -31,6 +38,12 @@ describe("VersionService", () => {
             version: {
               findMany: mockVersionFindMany,
             },
+          },
+        },
+        {
+          provide: AwsEcrService,
+          useValue: {
+            getTags: mockGetTagsAwsEcrService,
           },
         },
         VersionService,
@@ -99,7 +112,7 @@ describe("VersionService", () => {
       "should return %s version with all available versions when env variable DEV_VERSION_TAG=%s",
       async (devVersion: string) => {
         const module: TestingModule = await Test.createTestingModule({
-          imports: [],
+          imports: [AwsEcrModule],
           providers: [
             {
               provide: ConfigService,
@@ -195,5 +208,9 @@ describe("VersionService", () => {
 
       expect(selected).toEqual("v2.2.0");
     });
+  });
+
+  describe("syncVersions", () => {
+    // *
   });
 });

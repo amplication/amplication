@@ -22,12 +22,16 @@ export class VersionController extends VersionControllerBase {
   @Public()
   @common.Post("/code-generator-version")
   @swagger.ApiOkResponse({ type: [Version] })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async getCodeGeneratorVersion(
     @common.Body() params: GetCodeGeneratorVersionInput
   ): Promise<Version> {
     return this.service.getCodeGeneratorVersion(params);
+  }
+
+  @Public()
+  @common.Post("/sync")
+  @swagger.ApiOkResponse({ type: [null] })
+  async sync(): Promise<void> {
+    return this.service.syncVersions();
   }
 }
