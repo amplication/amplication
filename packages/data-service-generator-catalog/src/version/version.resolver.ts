@@ -7,7 +7,7 @@ import { VersionResolverBase } from "./base/version.resolver.base";
 import { Version } from "./base/Version";
 import { VersionService } from "./version.service";
 import { Public } from "../decorators/public.decorator";
-import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { boolean } from "@amplication/code-gen-types/schemas";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)

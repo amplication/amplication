@@ -9,7 +9,8 @@ import { AwsEcrModule } from "../aws/aws-ecr.module";
 describe("VersionService", () => {
   let service: VersionService;
   const mockVersionFindMany = jest.fn();
-  const mockGetTagsAwsEcrService = jest
+  const mockVersionCreateMany = jest.fn();
+  const mockAwsEcrServiceGetTags = jest
     .fn()
     .mockImplementation((token: string) => {
       return Promise.resolve([]);
@@ -37,13 +38,15 @@ describe("VersionService", () => {
           useValue: {
             version: {
               findMany: mockVersionFindMany,
+              createMany: mockVersionCreateMany,
+              updateMany: jest.fn(),
             },
           },
         },
         {
           provide: AwsEcrService,
           useValue: {
-            getTags: mockGetTagsAwsEcrService,
+            getTags: mockAwsEcrServiceGetTags,
           },
         },
         VersionService,
@@ -211,6 +214,64 @@ describe("VersionService", () => {
   });
 
   describe("syncVersions", () => {
-    // *
+    it("should sync versions", async () => {
+      const pushedDate = new Date();
+      mockAwsEcrServiceGetTags.mockResolvedValue([
+        {
+          imageTags: ["v1.0.0"],
+          imagePushedAt: pushedDate,
+        },
+        {
+          imageTags: ["v1.0.1"],
+          imagePushedAt: pushedDate,
+        },
+        {
+          imageTags: ["v2.0.0"],
+          imagePushedAt: pushedDate,
+        },
+      ]);
+      mockVersionFindMany.mockResolvedValue([]);
+
+      await service.syncVersions();
+
+      expect(mockVersionFindMany).toBeCalledTimes(1);
+      expect(mockVersionFindMany).toBeCalledWith({});
+      expect(mockVersionCreateMany).toBeCalledTimes(1);
+      expect(mockVersionCreateMany).toBeCalledWith({
+        data: [
+          {
+            id: "v1.0.0",
+            name: "v1.0.0",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          {
+            id: "v1.0.1",
+            name: "v1.0.1",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          {
+            id: "v2.0.0",
+            name: "v2.0.0",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+
+            isDeprecated: false,
+          },
+        ],
+      });
+    });
   });
 });

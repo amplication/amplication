@@ -3,7 +3,7 @@ import * as swagger from "@nestjs/swagger";
 import * as nestAccessControl from "nest-access-control";
 import { VersionService } from "./version.service";
 import { VersionControllerBase } from "./base/version.controller.base";
-import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { Public } from "../decorators/public.decorator";
 import * as errors from "../errors";
 import { Version } from "./base/Version";

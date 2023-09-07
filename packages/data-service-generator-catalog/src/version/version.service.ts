@@ -3,7 +3,7 @@ import { PrismaService } from "../prisma/prisma.service";
 import { VersionServiceBase } from "./base/version.service.base";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { Version } from "./base/Version";
-import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { ConfigService } from "@nestjs/config";
 import { Prisma } from "../../prisma/generated-prisma-client";
 import { AwsEcrService } from "../aws/aws-ecr.service";
@@ -179,17 +179,19 @@ export class VersionService extends VersionServiceBase {
       (storedVersion) =>
         !versions.some((version) => version.name === storedVersion.name)
     );
-    await this.prisma.version.updateMany({
-      data: {
-        deletedAt: new Date(),
-        isActive: false,
-        isDeprecated: true,
-      },
-      where: {
-        id: {
-          in: deletedVersions.map((version) => version.id),
+    if (deletedVersions.length > 0) {
+      await this.prisma.version.updateMany({
+        data: {
+          deletedAt: new Date(),
+          isActive: false,
+          isDeprecated: true,
         },
-      },
-    });
+        where: {
+          id: {
+            in: deletedVersions.map((version) => version.id),
+          },
+        },
+      });
+    }
   }
 }
