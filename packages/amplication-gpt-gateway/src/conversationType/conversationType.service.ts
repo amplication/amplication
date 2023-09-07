@@ -47,7 +47,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       }
 
       await this.kafkaService.emitMessage(
-        MyMessageBrokerTopics.Completegptchatcompletion,
+        MyMessageBrokerTopics.GptConversationComplete,
         { key: requestUniqueId, value: result }
       );
     } catch (error) {

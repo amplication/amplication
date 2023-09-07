@@ -13,8 +13,8 @@ export class KafkaController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern("triggergptchatcompletion")
-  async onTriggergptchatcompletion(
+  @EventPattern("GptConversationStart")
+  async onGptConversationStart(
     @Payload()
     message: KafkaMessage
   ): Promise<void> {
