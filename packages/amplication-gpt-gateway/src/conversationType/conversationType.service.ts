@@ -20,8 +20,9 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
   }
 
   async startConversion(message: StartConversationInput): Promise<void> {
+    const { messageTypeKey, params, requestUniqueId } = message;
+
     try {
-      const { messageTypeKey, params, requestUniqueId } = message;
       const messageType = await this.prisma.conversationType.findUnique({
         where: {
           key: messageTypeKey,
@@ -29,29 +30,41 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
       });
 
       if (!messageType || !messageType.templateId) {
-        this.logger.error(
+        throw Error(
           `Template not found for messageType: ${messageType}. process abort`
         );
-        return;
       }
 
       const result = await this.templateService.processTemplateMessage({
         templateId: messageType.templateId,
         params,
       });
-      if (!result) {
-        this.logger.error(
-          `Template not found for messageType: ${messageType}. process abort`
-        );
-        return;
-      }
 
-      await this.kafkaService.emitMessage(
-        MyMessageBrokerTopics.GptConversationComplete,
-        { key: requestUniqueId, value: result }
-      );
+      this.emitGptKafkaMessage(true, requestUniqueId, result);
     } catch (error) {
-      this.logger.error(`Something went wrong: ${error}.`);
+      this.emitGptKafkaMessage(false, requestUniqueId, error.message);
     }
+  }
+
+  emitGptKafkaMessage(
+    isCompleted: boolean,
+    requestUniqueId: string,
+    result: string
+  ): void {
+    this.kafkaService
+      .emitMessage(MyMessageBrokerTopics.GptConversationComplete, {
+        key: requestUniqueId,
+        value: {
+          isGptConversionCompleted: isCompleted,
+          ...(isCompleted ? { result } : { errorMessage: result }),
+          requestUniqueId,
+        },
+      })
+      .catch((error) => {
+        this.logger.error(
+          `Failed to emit Gpt kafka message: ${requestUniqueId}`,
+          error
+        );
+      });
   }
 }
