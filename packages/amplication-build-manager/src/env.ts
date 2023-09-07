@@ -24,5 +24,7 @@ export class Env {
   static readonly DSG_JOBS_CODE_FOLDER = "DSG_JOBS_CODE_FOLDER";
   static readonly DSG_JOBS_RESOURCE_DATA_FILE = "DSG_JOBS_RESOURCE_DATA_FILE";
 
+  static readonly DSG_CATALOG_SERVICE_URL = "DSG_CATALOG_SERVICE_URL";
+
   static readonly SERVICE_NAME = "amplication-build-manager";
 }
