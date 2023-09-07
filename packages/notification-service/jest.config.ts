@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-  displayName: "amplication-notification-service",
+  displayName: "notification-service",
   preset: "../../jest.preset.js",
   globals: {
     "ts-jest": {
@@ -12,7 +12,7 @@ export default {
     "^.+\\.[tj]s$": "ts-jest",
   },
   moduleFileExtensions: ["ts", "js", "html"],
-  coverageDirectory: "../../coverage/packages/amplication-notification-service",
+  coverageDirectory: "../../coverage/packages/notification-service",
   coverageThreshold: {
     global: {
       branches: 70,

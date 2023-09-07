@@ -1,5 +1,5 @@
 {
-  "name": "@amplication-gpt-gateway/admin",
+  "name": "@gpt-gateway/admin",
   "private": true,
   "dependencies": {
     "@apollo/client": "3.6.9",

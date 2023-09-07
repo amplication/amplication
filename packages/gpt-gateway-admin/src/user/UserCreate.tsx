@@ -9,7 +9,7 @@ import {
   SelectArrayInput,
 } from "react-admin";
 
-import { ROLES_OPTIONS } from "../user/RolesOptions";
+import { ROLES_OPTIONS } from "./RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (

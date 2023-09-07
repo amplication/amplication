@@ -2,11 +2,11 @@ FROM node:18.12.1-alpine AS base
 
 WORKDIR /app
 
-COPY ./dist/packages/amplication-notification-service/package.json .
+COPY ./dist/packages/notification-service/package.json .
 
 RUN npm i --omit=dev
 
-COPY ./dist/packages/amplication-notification-service .
+COPY ./dist/packages/notification-service .
 
 ENV PORT=3333
 EXPOSE $PORT

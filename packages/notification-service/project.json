@@ -1,25 +1,21 @@
 {
-  "name": "amplication-notification-service",
+  "name": "notification-service",
   "$schema": "../../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": "packages/amplication-notification-service/src",
+  "sourceRoot": "packages/notification-service/src",
   "projectType": "application",
   "targets": {
     "lint": {
       "executor": "@nrwl/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": [
-          "packages/amplication-notification-service/**/*.ts"
-        ]
+        "lintFilePatterns": ["packages/notification-service/**/*.ts"]
       }
     },
     "test": {
       "executor": "@nrwl/jest:jest",
-      "outputs": [
-        "{workspaceRoot}/coverage/packages/amplication-notification-service"
-      ],
+      "outputs": ["{workspaceRoot}/coverage/packages/notification-service"],
       "options": {
-        "jestConfig": "packages/amplication-notification-service/jest.config.ts",
+        "jestConfig": "packages/notification-service/jest.config.ts",
         "passWithNoTests": true
       }
     },
@@ -27,9 +23,9 @@
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "outputPath": "dist/packages/amplication-notification-service",
-        "main": "packages/amplication-notification-service/src/main.ts",
-        "tsConfig": "packages/amplication-notification-service/tsconfig.app.json",
+        "outputPath": "dist/packages/notification-service",
+        "main": "packages/notification-service/src/main.ts",
+        "tsConfig": "packages/notification-service/tsconfig.app.json",
         "generatePackageJson": true
       },
       "configurations": {
@@ -43,12 +39,12 @@
     "serve": {
       "executor": "@nrwl/node:node",
       "options": {
-        "buildTarget": "amplication-notification-service:build",
+        "buildTarget": "notification-service:build",
         "inspect": true
       },
       "configurations": {
         "production": {
-          "buildTarget": "amplication-notification-service:build:production"
+          "buildTarget": "notification-service:build:production"
         }
       }
     },
