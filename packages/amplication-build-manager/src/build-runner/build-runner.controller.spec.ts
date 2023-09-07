@@ -8,6 +8,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -68,9 +69,9 @@ describe("BuildRunnerController", () => {
           useValue: {
             get: (variable) => {
               switch (variable) {
-                case Env.CODE_GENERATION_SUCCESS_TOPIC:
+                case KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC:
                   return "code_generation_success_topic";
-                case Env.CODE_GENERATION_FAILURE_TOPIC:
+                case KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC:
                   return "code_generation_failure_topic";
                 case Env.DSG_RUNNER_URL:
                   return "http://runner.url/";
@@ -128,7 +129,7 @@ describe("BuildRunnerController", () => {
     ).resolves.not.toThrow();
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
       kafkaSuccessEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -168,7 +169,7 @@ describe("BuildRunnerController", () => {
     ).rejects.toThrow(errorMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -200,7 +201,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
@@ -232,7 +233,7 @@ describe("BuildRunnerController", () => {
     await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
 
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(
@@ -308,6 +309,7 @@ describe("BuildRunnerController", () => {
 
   it("On code generation request with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
+    const expectedCodeGeneratorVersion = "v1.2.2";
     const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
       resourceId: "resourceId",
       buildId: "buildId",
@@ -317,7 +319,7 @@ describe("BuildRunnerController", () => {
         pluginInstallations: [],
         resourceInfo: {
           codeGeneratorVersionOptions: {
-            version: "v1.0.1",
+            version: expectedCodeGeneratorVersion,
             selectionStrategy: CodeGeneratorVersionStrategy.Specific,
           },
         } as unknown as AppInfo,
@@ -329,24 +331,21 @@ describe("BuildRunnerController", () => {
       value: <CodeGenerationFailure.Value>{
         buildId: codeGenerationRequestDTOMock.buildId,
         error: errorMock,
-        codeGeneratorVersion:
-          codeGenerationRequestDTOMock.dsgResourceData.resourceInfo
-            .codeGeneratorVersionOptions.codeGeneratorVersion,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
       },
     } as unknown as CodeGenerationFailure.KafkaEvent;
 
     mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
     mockRunnerServiceSaveDsgResourceData.mockRejectedValue(errorMock);
     mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
-      codeGenerationRequestDTOMock.dsgResourceData.resourceInfo
-        .codeGeneratorVersionOptions.codeGeneratorStrategy
+      expectedCodeGeneratorVersion
     );
 
     await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
 
     expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
     expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();

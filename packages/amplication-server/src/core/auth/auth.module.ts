@@ -26,7 +26,6 @@ import { GoogleSecretsManagerService } from "../../services/googleSecretsManager
 import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
-import { KafkaModule } from "@amplication/util/nestjs/kafka";
 
 @Module({
   imports: [
@@ -40,7 +39,6 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
     }),
     AccountModule,
     PrismaModule,
-    KafkaModule,
     PermissionsModule,
     ExceptionFiltersModule,
     WorkspaceModule,

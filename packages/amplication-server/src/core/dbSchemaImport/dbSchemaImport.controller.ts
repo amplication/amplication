@@ -1,8 +1,9 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
-import { DBSchemaImportRequest } from "@amplication/schema-registry";
-import { Env } from "../../env";
+import {
+  DBSchemaImportRequest,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 import { plainToInstance } from "class-transformer";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { DBSchemaImportService } from "./dbSchemaImport.service";
@@ -15,9 +16,7 @@ export class DBSchemaImportController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.DB_SCHEMA_IMPORT_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC)
   async onDBSchemaImportRequest(
     @Payload() message: DBSchemaImportRequest.KafkaEvent
   ): Promise<void> {

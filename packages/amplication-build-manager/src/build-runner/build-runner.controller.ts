@@ -1,4 +1,3 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
@@ -13,6 +12,7 @@ import {
   CodeGenerationFailure,
   CodeGenerationRequest,
   CodeGenerationSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
@@ -45,7 +45,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_SUCCESS_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
@@ -57,7 +57,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }
@@ -77,7 +77,7 @@ export class BuildRunnerController {
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     } catch (error) {
@@ -85,9 +85,7 @@ export class BuildRunnerController {
     }
   }
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.CODE_GENERATION_REQUEST_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC)
   async onCodeGenerationRequest(
     @Payload() message: CodeGenerationRequest.Value
   ): Promise<void> {
@@ -97,19 +95,19 @@ export class BuildRunnerController {
     });
 
     let containerImageTag: string;
-    if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
-      containerImageTag =
-        await this.codeGeneratorService.getCodeGeneratorVersion({
-          codeGeneratorVersion:
-            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
-              .codeGeneratorVersion,
-          codeGeneratorStrategy:
-            message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
-              .codeGeneratorStrategy,
-        });
-    }
-
     try {
+      if (this.configService.get(Env.DSG_CATALOG_SERVICE_URL)) {
+        containerImageTag =
+          await this.codeGeneratorService.getCodeGeneratorVersion({
+            codeGeneratorVersion:
+              message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+                .codeGeneratorVersion,
+            codeGeneratorStrategy:
+              message.dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+                .codeGeneratorStrategy,
+          });
+      }
+
       await this.buildRunnerService.saveDsgResourceData(
         message.buildId,
         message.dsgResourceData,
@@ -117,11 +115,21 @@ export class BuildRunnerController {
       );
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);
-      await axios.post(url, {
-        resourceId: message.resourceId,
-        buildId: message.buildId,
-        containerImageTag,
-      });
+      try {
+        await axios.post(url, {
+          resourceId: message.resourceId,
+          buildId: message.buildId,
+          containerImageTag,
+        });
+      } catch (error) {
+        throw new Error(error.message, {
+          cause: {
+            code: error.response?.status,
+            message: error.response?.data?.message,
+            data: error.config?.data,
+          },
+        });
+      }
     } catch (error) {
       this.logger.error(error.message, error);
 
@@ -130,12 +138,12 @@ export class BuildRunnerController {
         value: {
           buildId: message.buildId,
           error,
-          codeGeneratorVersion: containerImageTag,
+          codeGeneratorVersion: containerImageTag ?? null,
         },
       };
 
       await this.producerService.emitMessage(
-        this.configService.get(Env.CODE_GENERATION_FAILURE_TOPIC),
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
     }

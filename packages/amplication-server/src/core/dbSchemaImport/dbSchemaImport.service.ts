@@ -1,10 +1,12 @@
 import { Inject, Injectable } from "@nestjs/common";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { DBSchemaImportRequest } from "@amplication/schema-registry";
+import {
+  DBSchemaImportRequest,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 import { User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { ConfigService } from "@nestjs/config";
-import { Env } from "../../env";
 import { EntityService, UserService } from "..";
 import { EnumUserActionType } from "../userAction/types";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -54,7 +56,7 @@ export class DBSchemaImportService {
     };
 
     await this.kafkaProducerService.emitMessage(
-      this.configService.get(Env.DB_SCHEMA_IMPORT_TOPIC),
+      KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC,
       dbSchemaImportEvent
     );
 
@@ -99,7 +101,7 @@ export class DBSchemaImportService {
         const actionContext = this.actionService.createActionContext(
           dbSchemaImportAction.id,
           step,
-          this.configService.get(Env.USER_ACTION_LOG_TOPIC)
+          KAFKA_TOPICS.USER_ACTION_LOG_TOPIC
         );
 
         await this.entityService.createEntitiesFromPrismaSchema(

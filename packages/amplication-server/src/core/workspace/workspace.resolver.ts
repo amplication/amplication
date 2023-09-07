@@ -74,8 +74,11 @@ export class WorkspaceResolver {
       event: EnumEventType.WorkspaceSelected,
     });
     await this.userService.setLastActivity(currentUser.id);
+    const externalId = await this.userService.setNotificationRegistry(
+      currentUser
+    );
 
-    return currentUser.workspace;
+    return { ...currentUser.workspace, externalId };
   }
 
   @ResolveField(() => [Project])

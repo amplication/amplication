@@ -104,9 +104,12 @@ jobs:
         uses: mikefarah/yq@v4.30.8
 
       - name: Replace image tag
+        env:
+          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
         run: |
           nx=${{ needs.nx.outputs.affected-package-container }}
           array=$(echo $nx | sed -e 's/\[//g' -e 's/\]//g' -e 's/\,/ /g')
+          DSG_LATEST_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
@@ -114,7 +117,7 @@ jobs:
               yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
             elif [[ "$project" == "data-service-generator" ]]; then
-              yq -i '.job.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
+              yq -i '.job.image.tag = "$DSG_LATEST_VERSION"' charts/applications/$project/values/production.yaml
               git add charts/applications/$project/values/production.yaml
             fi;
           done
@@ -161,4 +164,3 @@ jobs:
     with:
       nx-head: "${{ github.ref }}"
       nx-base: "${{ needs.preparation.outputs.base_tag }}"
-      nx-force-all: true
