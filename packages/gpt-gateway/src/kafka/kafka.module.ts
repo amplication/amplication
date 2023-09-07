@@ -4,10 +4,11 @@ import { generateKafkaClientOptions } from "./generateKafkaClientOptions";
 import { KafkaProducerService } from "./kafka.producer.service";
 import { KafkaController } from "./kafka.controller";
 import { ConfigService } from "@nestjs/config";
+import { ConversationTypeModule } from "../conversationType/conversationType.module";
 
 @Global()
 @Module({
-  imports: [],
+  imports: [ConversationTypeModule],
   providers: [
     {
       provide: "KAFKA_CLIENT",
