@@ -11,7 +11,7 @@ class MessageInput {
   @Field(() => String, {
     nullable: true,
   })
-  messageTypeId!: string;
+  messageTypeKey!: string;
 
   @Field(() => [MessageParam])
   params!: MessageParam[];
