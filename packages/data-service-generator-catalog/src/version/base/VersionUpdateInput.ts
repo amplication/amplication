@@ -69,7 +69,7 @@ class VersionUpdateInput {
   @Field(() => String, {
     nullable: true,
   })
-  name?: string | null;
+  name?: string;
 }
 
 export { VersionUpdateInput as VersionUpdateInput };
