@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { MessageInput } from "../dto/MessageInput";
+import { StartConversationInput } from "../dto/StartConversationInput";
 import { KafkaProducerService } from "../kafka/kafka.producer.service";
 import { MyMessageBrokerTopics } from "../kafka/topics";
 import { PrismaService } from "../prisma/prisma.service";
@@ -16,8 +16,8 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     super(prisma);
   }
 
-  async startConversion(message: MessageInput): Promise<void> {
-    const { messageTypeId, params, requestUniqueId } = message;
+  async startConversion(message: StartConversationInput): Promise<void> {
+    const { messageTypeKey, params, requestUniqueId } = message;
     const messageType = await this.prisma.conversationType.findUnique({
       where: {
         key: messageTypeKey,

@@ -1,5 +1,5 @@
 import { Field, InputType } from "@nestjs/graphql";
-import { MessageParam } from "../dto/MessageParam";
+import { MessageParam } from "./MessageParam";
 
 @InputType()
 class StartConversationInput {
@@ -17,4 +17,4 @@ class StartConversationInput {
   params!: MessageParam[];
 }
 
-export { MessageInput };
+export { StartConversationInput };

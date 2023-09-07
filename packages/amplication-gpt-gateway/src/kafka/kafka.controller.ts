@@ -1,7 +1,7 @@
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { KafkaMessage } from "./KafkaMessage";
 import { Controller } from "@nestjs/common";
-import { MessageInput } from "../dto/MessageInput";
+import { StartConversationInput } from "../dto/StartConversationInput";
 import { ConversationTypeService } from "../conversationType/conversationType.service";
 
 @Controller("kafka-controller")
@@ -13,7 +13,9 @@ export class KafkaController {
     @Payload()
     message: KafkaMessage
   ): Promise<void> {
-    const messageInput: MessageInput = JSON.parse(message.value.toString());
+    const messageInput: StartConversationInput = JSON.parse(
+      message.value.toString()
+    );
     this.conversationType.startConversion(messageInput);
   }
 }
