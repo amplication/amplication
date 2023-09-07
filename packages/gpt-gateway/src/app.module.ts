@@ -40,7 +40,7 @@ import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
       useClass: ServeStaticOptionsService,
     }),
     AmplicationLoggerModule.forRoot({
-      component: "amplication-gpt-gateway", //Env.SERVICE_NAME,
+      component: "gpt-gateway",
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
