@@ -2,7 +2,7 @@ import { Field, InputType } from "@nestjs/graphql";
 import { MessageParam } from "../dto/MessageParam";
 
 @InputType()
-class MessageInput {
+class StartConversationInput {
   @Field(() => String, {
     nullable: true,
   })
