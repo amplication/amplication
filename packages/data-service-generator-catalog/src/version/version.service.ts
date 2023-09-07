@@ -174,5 +174,22 @@ export class VersionService extends VersionServiceBase {
     await this.prisma.version.createMany({
       data: newVersions,
     });
+
+    const deletedVersions = storedVersions.filter(
+      (storedVersion) =>
+        !versions.some((version) => version.name === storedVersion.name)
+    );
+    await this.prisma.version.updateMany({
+      data: {
+        deletedAt: new Date(),
+        isActive: false,
+        isDeprecated: true,
+      },
+      where: {
+        id: {
+          in: deletedVersions.map((version) => version.id),
+        },
+      },
+    });
   }
 }
