@@ -20,7 +20,7 @@ export class ConversationTypeService extends ConversationTypeServiceBase {
     const { messageTypeId, params, requestUniqueId } = message;
     const messageType = await this.prisma.conversationType.findUnique({
       where: {
-        id: messageTypeId,
+        key: messageTypeKey,
       },
     });
 
