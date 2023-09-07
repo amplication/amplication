@@ -15,6 +15,9 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 import { ACLModule } from "./auth/acl.module";
 import { AuthModule } from "./auth/auth.module";
 import { join } from "path";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
+import { SERVICE_NAME } from "./constants";
+import { TracingModule } from "@amplication/util/nestjs/tracing";
 
 @Module({
   controllers: [],
@@ -48,6 +51,12 @@ import { join } from "path";
         };
       },
       inject: [ConfigService],
+    }),
+    AmplicationLoggerModule.forRoot({
+      component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: SERVICE_NAME,
     }),
   ],
   providers: [

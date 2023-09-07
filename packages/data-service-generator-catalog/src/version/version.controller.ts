@@ -3,7 +3,7 @@ import * as swagger from "@nestjs/swagger";
 import * as nestAccessControl from "nest-access-control";
 import { VersionService } from "./version.service";
 import { VersionControllerBase } from "./base/version.controller.base";
-import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { Public } from "../decorators/public.decorator";
 import * as errors from "../errors";
 import { Version } from "./base/Version";
@@ -22,12 +22,16 @@ export class VersionController extends VersionControllerBase {
   @Public()
   @common.Post("/code-generator-version")
   @swagger.ApiOkResponse({ type: [Version] })
-  @swagger.ApiForbiddenResponse({
-    type: errors.ForbiddenException,
-  })
   async getCodeGeneratorVersion(
     @common.Body() params: GetCodeGeneratorVersionInput
   ): Promise<Version> {
     return this.service.getCodeGeneratorVersion(params);
+  }
+
+  @Public()
+  @common.Post("/sync")
+  @swagger.ApiOkResponse({ type: [null] })
+  async sync(): Promise<void> {
+    return this.service.syncVersions();
   }
 }

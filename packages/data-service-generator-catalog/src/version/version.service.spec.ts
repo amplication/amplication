@@ -3,10 +3,18 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 import { VersionService } from "./version.service";
 import { PrismaService } from "../prisma/prisma.service";
+import { AwsEcrService } from "../aws/aws-ecr.service";
+import { AwsEcrModule } from "../aws/aws-ecr.module";
 
 describe("VersionService", () => {
   let service: VersionService;
   const mockVersionFindMany = jest.fn();
+  const mockVersionCreateMany = jest.fn();
+  const mockAwsEcrServiceGetTags = jest
+    .fn()
+    .mockImplementation((token: string) => {
+      return Promise.resolve([]);
+    });
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -30,7 +38,15 @@ describe("VersionService", () => {
           useValue: {
             version: {
               findMany: mockVersionFindMany,
+              createMany: mockVersionCreateMany,
+              updateMany: jest.fn(),
             },
+          },
+        },
+        {
+          provide: AwsEcrService,
+          useValue: {
+            getTags: mockAwsEcrServiceGetTags,
           },
         },
         VersionService,
@@ -68,30 +84,89 @@ describe("VersionService", () => {
   );
 
   describe("getCodeGeneratorAvailableVersions", () => {
-    it("should return all available versions", async () => {
+    beforeEach(async () => {
       mockVersionFindMany.mockResolvedValue([
+        { name: "v2.2.0" },
         { name: "v1.0.0" },
         { name: "v1.0.1" },
         { name: "v0.8.1" },
         { name: "v2.0.0" },
         { name: "v1.1.0" },
         { name: "v1.10.1" },
-        { name: "v2.2.0" },
-        { name: "v1.2.0" },
-      ]);
-
-      const versions = await service.findMany({});
-      expect(versions).toEqual([
-        { name: "v1.0.0" },
-        { name: "v1.0.1" },
-        { name: "v0.8.1" },
-        { name: "v2.0.0" },
-        { name: "v1.1.0" },
-        { name: "v1.10.1" },
-        { name: "v2.2.0" },
         { name: "v1.2.0" },
       ]);
     });
+
+    it("should return all available versions", async () => {
+      const versions = await service.findMany({});
+      expect(versions).toEqual([
+        { name: "v2.2.0" },
+        { name: "v1.0.0" },
+        { name: "v1.0.1" },
+        { name: "v0.8.1" },
+        { name: "v2.0.0" },
+        { name: "v1.1.0" },
+        { name: "v1.10.1" },
+        { name: "v1.2.0" },
+      ]);
+    });
+
+    it.each([["next"], ["master"]])(
+      "should return %s version with all available versions when env variable DEV_VERSION_TAG=%s",
+      async (devVersion: string) => {
+        const module: TestingModule = await Test.createTestingModule({
+          imports: [AwsEcrModule],
+          providers: [
+            {
+              provide: ConfigService,
+              useValue: {
+                get: (variable) => {
+                  switch (variable) {
+                    case "DEV_VERSION_TAG":
+                      return devVersion;
+                    default:
+                      return "";
+                  }
+                },
+              },
+            },
+            {
+              provide: PrismaService,
+              useValue: {
+                version: {
+                  findMany: mockVersionFindMany,
+                },
+              },
+            },
+            VersionService,
+          ],
+        }).compile();
+
+        service = module.get<VersionService>(VersionService);
+
+        const versions = await service.findMany({});
+        expect(versions).toEqual([
+          {
+            id: devVersion,
+            name: devVersion,
+            isActive: true,
+            createdAt: expect.any(Date),
+            updatedAt: expect.any(Date),
+            changelog: `Latest development version from ${devVersion}`,
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          { name: "v2.2.0" },
+          { name: "v1.0.0" },
+          { name: "v1.0.1" },
+          { name: "v0.8.1" },
+          { name: "v2.0.0" },
+          { name: "v1.1.0" },
+          { name: "v1.10.1" },
+          { name: "v1.2.0" },
+        ]);
+      }
+    );
   });
 
   describe("getLatestVersion", () => {
@@ -111,7 +186,7 @@ describe("VersionService", () => {
 
       const selectedVersion = "v1.0.1";
 
-      const selected = await service["getLatestVersion"](
+      const selected = await service["getLatestMinorVersion"](
         versions,
         selectedVersion
       );
@@ -135,6 +210,68 @@ describe("VersionService", () => {
       const selected = await service["getLatestVersion"](versions);
 
       expect(selected).toEqual("v2.2.0");
+    });
+  });
+
+  describe("syncVersions", () => {
+    it("should sync versions", async () => {
+      const pushedDate = new Date();
+      mockAwsEcrServiceGetTags.mockResolvedValue([
+        {
+          imageTags: ["v1.0.0"],
+          imagePushedAt: pushedDate,
+        },
+        {
+          imageTags: ["v1.0.1"],
+          imagePushedAt: pushedDate,
+        },
+        {
+          imageTags: ["v2.0.0"],
+          imagePushedAt: pushedDate,
+        },
+      ]);
+      mockVersionFindMany.mockResolvedValue([]);
+
+      await service.syncVersions();
+
+      expect(mockVersionFindMany).toBeCalledTimes(1);
+      expect(mockVersionFindMany).toBeCalledWith({});
+      expect(mockVersionCreateMany).toBeCalledTimes(1);
+      expect(mockVersionCreateMany).toBeCalledWith({
+        data: [
+          {
+            id: "v1.0.0",
+            name: "v1.0.0",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          {
+            id: "v1.0.1",
+            name: "v1.0.1",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+            isDeprecated: false,
+          },
+          {
+            id: "v2.0.0",
+            name: "v2.0.0",
+            isActive: true,
+            createdAt: pushedDate,
+            updatedAt: expect.anything(),
+            changelog: "",
+            deletedAt: null,
+
+            isDeprecated: false,
+          },
+        ],
+      });
     });
   });
 });

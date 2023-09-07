@@ -7,7 +7,8 @@ import { VersionResolverBase } from "./base/version.resolver.base";
 import { Version } from "./base/Version";
 import { VersionService } from "./version.service";
 import { Public } from "../decorators/public.decorator";
-import { GetCodeGeneratorVersionInput } from "./GetCodeGeneratorVersionInput";
+import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
+import { boolean } from "@amplication/code-gen-types/schemas";
 
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
 @graphql.Resolver(() => Version)
@@ -28,5 +29,12 @@ export class VersionResolver extends VersionResolverBase {
   ): Promise<Version> {
     const res = await this.service.getCodeGeneratorVersion(args);
     return res;
+  }
+
+  @Public()
+  @graphql.Mutation(() => Boolean)
+  async sync(): Promise<boolean> {
+    await this.service.syncVersions();
+    return true;
   }
 }
