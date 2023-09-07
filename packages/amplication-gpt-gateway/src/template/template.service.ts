@@ -54,7 +54,7 @@ export class TemplateService extends TemplateServiceBase {
     });
 
     if (!template) {
-      throw new Error("Template not found");
+      throw new Error(`Template not found for template id: ${args.templateId}`);
     }
 
     const messages = template.messages.map((message) => ({
