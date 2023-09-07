@@ -7,7 +7,7 @@
   ],
   "ignorePatterns": ["!**/*", "scripts/**/*"],
   "parserOptions": {
-    "project": ["packages/amplication-notification-service/tsconfig.*?.json"]
+    "project": ["packages/notification-service/tsconfig.*?.json"]
   },
   "rules": {
     "no-console": "error",

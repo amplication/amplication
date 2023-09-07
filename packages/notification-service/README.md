@@ -1,6 +1,6 @@
 ## Amplication Notification Service
 
- Amplication notification service is the engine behind Amplication notification. it works as a package runner. it consume the event and run all the notification packages one by one and return the notification triggered by each package.
+Amplication notification service is the engine behind Amplication notification. it works as a package runner. it consume the event and run all the notification packages one by one and return the notification triggered by each package.
 
 ### Installation
 
