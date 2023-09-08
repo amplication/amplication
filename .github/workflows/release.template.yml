@@ -51,6 +51,7 @@ jobs:
     strategy:
       matrix:
         project: ${{ fromJson(inputs.affected-package-container) }}
+        fail-fast: false
     steps:
       - uses: actions/checkout@v3
         with:
