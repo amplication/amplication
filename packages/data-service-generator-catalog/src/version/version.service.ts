@@ -7,6 +7,7 @@ import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput
 import { ConfigService } from "@nestjs/config";
 import { Prisma } from "../../prisma/generated-prisma-client";
 import { AwsEcrService } from "../aws/aws-ecr.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Injectable()
 export class VersionService extends VersionServiceBase {
@@ -15,7 +16,8 @@ export class VersionService extends VersionServiceBase {
   constructor(
     protected readonly prisma: PrismaService,
     configService: ConfigService,
-    private readonly awsEcrService: AwsEcrService
+    private readonly awsEcrService: AwsEcrService,
+    protected readonly logger: AmplicationLogger
   ) {
     super(prisma);
     this.includeDevVersion = configService.get<string>("DEV_VERSION_TAG");
@@ -150,48 +152,58 @@ export class VersionService extends VersionServiceBase {
   }
 
   async syncVersions(): Promise<void> {
-    const tags = await this.awsEcrService.getTags();
-    const versions = tags.map((tag) => ({
-      id: tag.imageTags[0],
-      name: tag.imageTags[0],
-      isActive: true,
-      createdAt: tag.imagePushedAt,
-      updatedAt: new Date(),
-      changelog: "",
-      deletedAt: null,
-      isDeprecated: false,
-    }));
+    this.logger.info("Syncing versions");
 
-    const storedVersions = await this.findMany({});
+    try {
+      const tags = await this.awsEcrService.getTags();
+      const versions = tags.map((tag) => ({
+        id: tag.imageTags[0],
+        name: tag.imageTags[0],
+        isActive: false,
+        createdAt: tag.imagePushedAt,
+        updatedAt: new Date(),
+        changelog: "",
+        deletedAt: null,
+        isDeprecated: false,
+      }));
 
-    const newVersions = versions.filter(
-      (version) =>
-        !storedVersions.some(
-          (storedVersion) => storedVersion.name === version.name
-        )
-    );
+      const storedVersions = await this.findMany({});
 
-    await this.prisma.version.createMany({
-      data: newVersions,
-    });
+      const newVersions = versions.filter(
+        (version) =>
+          !storedVersions.some(
+            (storedVersion) => storedVersion.name === version.name
+          )
+      );
 
-    const deletedVersions = storedVersions.filter(
-      (storedVersion) =>
-        !versions.some((version) => version.name === storedVersion.name)
-    );
-    if (deletedVersions.length > 0) {
-      await this.prisma.version.updateMany({
-        data: {
-          deletedAt: new Date(),
-          isActive: false,
-          isDeprecated: true,
-        },
-        where: {
-          id: {
-            in: deletedVersions.map((version) => version.id),
-          },
-        },
+      await this.prisma.version.createMany({
+        data: newVersions,
       });
+
+      const deletedVersions = storedVersions.filter(
+        (storedVersion) =>
+          !versions.some((version) => version.name === storedVersion.name)
+      );
+      if (deletedVersions.length > 0) {
+        await this.prisma.version.updateMany({
+          data: {
+            deletedAt: new Date(),
+            isActive: false,
+            isDeprecated: true,
+          },
+          where: {
+            id: {
+              in: deletedVersions.map((version) => version.id),
+            },
+          },
+        });
+      }
+      this.logger.info("Synced versions successfully");
+    } catch (error) {
+      this.logger.error("Failed to sync versions", error, {
+        stack: error.stack,
+      });
+      throw error;
     }
   }
 }

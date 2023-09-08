@@ -32,7 +32,7 @@ export class VersionResolver extends VersionResolverBase {
   }
 
   @Public()
-  @graphql.Mutation(() => Boolean)
+  @graphql.Query(() => Boolean)
   async sync(): Promise<boolean> {
     await this.service.syncVersions();
     return true;

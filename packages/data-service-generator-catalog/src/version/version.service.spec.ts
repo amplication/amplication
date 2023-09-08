@@ -5,6 +5,7 @@ import { VersionService } from "./version.service";
 import { PrismaService } from "../prisma/prisma.service";
 import { AwsEcrService } from "../aws/aws-ecr.service";
 import { AwsEcrModule } from "../aws/aws-ecr.module";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 describe("VersionService", () => {
   let service: VersionService;
@@ -49,6 +50,7 @@ describe("VersionService", () => {
             getTags: mockAwsEcrServiceGetTags,
           },
         },
+        MockedAmplicationLoggerProvider,
         VersionService,
       ],
     }).compile();
@@ -138,6 +140,7 @@ describe("VersionService", () => {
                 },
               },
             },
+            MockedAmplicationLoggerProvider,
             VersionService,
           ],
         }).compile();
@@ -242,7 +245,7 @@ describe("VersionService", () => {
           {
             id: "v1.0.0",
             name: "v1.0.0",
-            isActive: true,
+            isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
             changelog: "",
@@ -252,7 +255,7 @@ describe("VersionService", () => {
           {
             id: "v1.0.1",
             name: "v1.0.1",
-            isActive: true,
+            isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
             changelog: "",
@@ -262,7 +265,7 @@ describe("VersionService", () => {
           {
             id: "v2.0.0",
             name: "v2.0.0",
-            isActive: true,
+            isActive: false,
             createdAt: pushedDate,
             updatedAt: expect.anything(),
             changelog: "",

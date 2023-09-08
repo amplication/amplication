@@ -5,7 +5,6 @@ import { VersionService } from "./version.service";
 import { VersionControllerBase } from "./base/version.controller.base";
 import { GetCodeGeneratorVersionInput } from "./dto/GetCodeGeneratorVersionInput";
 import { Public } from "../decorators/public.decorator";
-import * as errors from "../errors";
 import { Version } from "./base/Version";
 
 @swagger.ApiTags("versions")
@@ -31,7 +30,8 @@ export class VersionController extends VersionControllerBase {
   @Public()
   @common.Post("/sync")
   @swagger.ApiOkResponse({ type: [null] })
-  async sync(): Promise<void> {
-    return this.service.syncVersions();
+  async sync(): Promise<boolean> {
+    await this.service.syncVersions();
+    return true;
   }
 }
