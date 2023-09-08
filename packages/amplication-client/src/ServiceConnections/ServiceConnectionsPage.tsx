@@ -15,6 +15,7 @@ import {
   EnumButtonStyle,
   EnumIconPosition,
 } from "@amplication/ui/design-system";
+import "./ServiceConnectionsPage.scss";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -95,7 +96,7 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
             iconPosition={EnumIconPosition.Left}
             iconSize="xsmall"
           >
-            <span style={{ color: "var(--black100)" }}>Add Message Broker</span>
+            <span className={"add-broker__label"}>Add Message Broker</span>
           </Button>
         </EmptyState>
       )}
