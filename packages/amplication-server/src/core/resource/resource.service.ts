@@ -241,7 +241,8 @@ export class ResourceService {
   }
 
   async updateCodeGeneratorVersion(
-    args: UpdateCodeGeneratorVersionArgs
+    args: UpdateCodeGeneratorVersionArgs,
+    user: User
   ): Promise<Resource | null> {
     const resource = await this.resource({
       where: {
@@ -252,6 +253,35 @@ export class ResourceService {
     if (isEmpty(resource)) {
       throw new Error(INVALID_RESOURCE_ID);
     }
+
+    const resourceWithProject = await this.prisma.resource.findUnique({
+      where: {
+        id: resource.id,
+      },
+      include: {
+        project: true,
+      },
+    });
+
+    const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
+      resourceWithProject.project.workspaceId,
+      BillingFeature.CodeGeneratorVersion
+    );
+
+    if (codeGeneratorUpdate && !codeGeneratorUpdate.hasAccess)
+      throw new AmplicationError(
+        "Feature Unavailable. Please upgrade your plan to access this feature."
+      );
+
+    await this.analytics.track({
+      userId: user.account.id,
+      properties: {
+        resourceId: resource.id,
+        projectId: resourceWithProject.projectId,
+        workspaceId: resourceWithProject.project.workspaceId,
+      },
+      event: EnumEventType.CodeGeneratorVersionUpdate,
+    });
 
     return this.prisma.resource.update({
       where: args.where,
