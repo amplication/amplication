@@ -254,17 +254,8 @@ export class ResourceService {
       throw new Error(INVALID_RESOURCE_ID);
     }
 
-    const resourceWithProject = await this.prisma.resource.findUnique({
-      where: {
-        id: resource.id,
-      },
-      include: {
-        project: true,
-      },
-    });
-
     const codeGeneratorUpdate = await this.billingService.getBooleanEntitlement(
-      resourceWithProject.project.workspaceId,
+      user.workspace.id,
       BillingFeature.CodeGeneratorVersion
     );
 
@@ -277,8 +268,8 @@ export class ResourceService {
       userId: user.account.id,
       properties: {
         resourceId: resource.id,
-        projectId: resourceWithProject.projectId,
-        workspaceId: resourceWithProject.project.workspaceId,
+        projectId: resource.projectId,
+        workspaceId: user.workspace.id,
       },
       event: EnumEventType.CodeGeneratorVersionUpdate,
     });
