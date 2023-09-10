@@ -49,9 +49,9 @@ jobs:
     name: Package
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
         project: ${{ fromJson(inputs.affected-package-container) }}
-        fail-fast: false
     steps:
       - uses: actions/checkout@v3
         with:
