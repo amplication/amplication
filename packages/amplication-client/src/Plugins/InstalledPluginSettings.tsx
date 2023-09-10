@@ -60,6 +60,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const [selectedVersion, setSelectedVersion] = useState(
     pluginInstallation?.PluginInstallation.version
   );
+  const [value, setEditorValue] = useState<string>(
+    JsonFormatting(pluginInstallation?.PluginInstallation.settings)
+  );
 
   useEffect(() => {
     editorRef.current = JSON.stringify(
@@ -89,6 +92,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
     ev: monaco.editor.IModelContentChangedEvent
   ) => {
     const validateChange = isValidJSON(value);
+    if (validateChange) {
+      setEditorValue(JsonFormatting(value));
+    }
     editorRef.current = validateChange ? value : undefined;
     setIsValid(!validateChange);
   };
@@ -189,6 +195,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
             defaultValue={JsonFormatting(
               pluginInstallation?.PluginInstallation.settings
             )}
+            value={value}
             resetKey={resetKey}
             onChange={onEditorChange}
             defaultLanguage={"json"}
