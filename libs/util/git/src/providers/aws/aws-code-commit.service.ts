@@ -272,7 +272,7 @@ export class AwsCodeCommitService implements GitProvider {
           ) {
             return {
               number: Number(pullRequest.pullRequestId),
-              url: `https://${this.awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${branchName}/pull-requests/${pullRequest.pullRequestId}/details`,
+              url: `https://${this.awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${repositoryName}/pull-requests/${pullRequest.pullRequestId}/details`,
             };
           }
         }

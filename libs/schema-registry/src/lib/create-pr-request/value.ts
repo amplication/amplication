@@ -4,7 +4,13 @@ import {
   GitProviderProperties,
   GitResourceMeta,
 } from "@amplication/util/git";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 class Commit {
   @IsString()
@@ -43,4 +49,6 @@ export class Value {
   @IsString()
   @IsOptional()
   baseBranchName?: string;
+  @IsBoolean()
+  isBranchPerResource!: boolean;
 }
