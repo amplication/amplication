@@ -1,9 +1,4 @@
-import {
-  Panel,
-  SelectField,
-  Toggle,
-  ToggleField,
-} from "@amplication/ui/design-system";
+import { Panel, SelectField, ToggleField } from "@amplication/ui/design-system";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
 import * as models from "../../models";
@@ -11,11 +6,6 @@ import { Formik } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
 
 const CLASS_NAME = "code-generator-version-form";
-
-// type CodeGenerationProps = Pick<
-//   models.Resource,
-//   "codeGeneratorVersion" | "codeGeneratorStrategy"
-// >;
 
 export type CodeGenerationVersionSettings = {
   useSpecificVersion: boolean;
