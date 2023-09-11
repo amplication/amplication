@@ -5,6 +5,7 @@ import { ThemeProvider } from "@material-ui/styles";
 import { createTheme } from "@material-ui/core/styles";
 import { Button } from "@material-ui/core";
 import "./login.scss";
+import { REACT_APP_SERVER_URL } from "./env";
 
 const CLASS_NAME = "login-page";
 
@@ -13,7 +14,7 @@ const Login = ({ theme }: any) => {
   const [password, setPassword] = useState("");
   const login = useLogin();
   const notify = useNotify();
-  const BASE_URI = process.env.REACT_APP_SERVER_URL;
+  const BASE_URI = REACT_APP_SERVER_URL;
   const submit = (e: any) => {
     e.preventDefault();
     login({ username, password }).catch(() =>
