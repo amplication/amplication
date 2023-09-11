@@ -8,7 +8,9 @@ import {
 } from "./queries";
 import { useQuery } from "@apollo/client";
 import { useCallback, useMemo, useState } from "react";
-import { de } from "date-fns/locale";
+import "./CodeGeneratorVersion.scss";
+
+const CLASS_NAME = "code-generator-version";
 
 export type CodeGeneratorVersionData = {
   name: string;
@@ -85,6 +87,9 @@ const CodeGeneratorVersion = () => {
 
   return (
     <div>
+      <div className={`${CLASS_NAME}__title`}>
+        <h3>Code Generator Version Settings</h3>
+      </div>
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
         defaultValues={defaultValues}

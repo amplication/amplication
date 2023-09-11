@@ -3,6 +3,7 @@ import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
+import "./CodeGeneratorVersionForm.scss";
 
 const CLASS_NAME = "code-generator-version-form";
 
