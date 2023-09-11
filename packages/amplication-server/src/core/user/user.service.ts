@@ -156,7 +156,7 @@ export class UserService {
     const booleanEntityUserNotification =
       await this.billingService.getBooleanEntitlement(
         user.workspace.id,
-        BillingFeature.ChangeGitBaseBranch
+        BillingFeature.Notification
       );
     const canShowUserNotification = booleanEntityUserNotification.hasAccess;
 
