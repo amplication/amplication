@@ -90,18 +90,23 @@ export class VersionService extends VersionServiceBase {
             CodeGeneratorVersionStrategy.LatestMinor)) ||
       !codeGeneratorStrategy
     ) {
-      throw new BadRequestException();
+      throw new BadRequestException(
+        "codeGeneratorVersion is required when codeGeneratorStrategy is 'Specific' or 'LatestMinor'"
+      );
     }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
-      return (
-        await this.findMany({
-          where: {
-            name: codeGeneratorVersion,
-          },
-          take: 1,
-        })
-      )[0];
+      const foundVersion = await this.findOne({
+        where: {
+          id: codeGeneratorVersion,
+        },
+      });
+      if (foundVersion?.name !== codeGeneratorVersion) {
+        throw new BadRequestException(
+          `Version ${codeGeneratorVersion} not found`
+        );
+      }
+      return foundVersion;
     }
 
     const activeVersions = await this.findMany({

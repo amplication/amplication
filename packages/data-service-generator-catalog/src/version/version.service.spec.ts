@@ -9,6 +9,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 
 describe("VersionService", () => {
   let service: VersionService;
+  const mockVersionFindUnique = jest.fn();
   const mockVersionFindMany = jest.fn();
   const mockVersionCreateMany = jest.fn();
   const mockAwsEcrServiceGetTags = jest
@@ -39,6 +40,7 @@ describe("VersionService", () => {
           useValue: {
             version: {
               findMany: mockVersionFindMany,
+              findUnique: mockVersionFindUnique,
               createMany: mockVersionCreateMany,
               updateMany: jest.fn(),
             },
@@ -74,6 +76,12 @@ describe("VersionService", () => {
     ) => {
       const selectedVersion = "v1.0.1";
 
+      mockVersionFindUnique.mockImplementationOnce((args) => {
+        if (args.where.id === selectedVersion) {
+          return { name: selectedVersion };
+        }
+        return null;
+      });
       mockVersionFindMany.mockResolvedValue([{ name: expected }]);
 
       const result = await service.getCodeGeneratorVersion({

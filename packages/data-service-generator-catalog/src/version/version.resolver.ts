@@ -22,7 +22,7 @@ export class VersionResolver extends VersionResolverBase {
   }
 
   @Public()
-  @graphql.Mutation(() => Version)
+  @graphql.Query(() => Version)
   async getCodeGeneratorVersion(
     @graphql.Args("GetCodeGeneratorVersionInput")
     args: GetCodeGeneratorVersionInput
@@ -32,7 +32,7 @@ export class VersionResolver extends VersionResolverBase {
   }
 
   @Public()
-  @graphql.Query(() => Boolean)
+  @graphql.Mutation(() => Boolean)
   async sync(): Promise<boolean> {
     await this.service.syncVersions();
     return true;
