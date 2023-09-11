@@ -7,69 +7,91 @@ import {
   GET_CODE_GENERATOR_VERSIONS,
 } from "./queries";
 import { useQuery } from "@apollo/client";
-import { useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
+import { de } from "date-fns/locale";
 
-export type TCodeGeneratorVersionData = {
+export type CodeGeneratorVersionData = {
   name: string;
   changelog: string;
   isDeprecated: boolean;
 };
 
+export type TCodeGeneratorVersion = {
+  getCodeGeneratorVersion: CodeGeneratorVersionData;
+};
+
+export type TCodeGeneratorVersionListData = {
+  versions: CodeGeneratorVersionData[];
+};
+
 const DEFAULT_VALUES: CodeGenerationVersionSettings = {
-  version: "1.0.0",
+  version: "1.8.10",
   useSpecificVersion: false,
   autoUseLatestMinorVersion: false,
 };
 
 const CodeGeneratorVersion = () => {
-  const handleOnSubmit = (data) => {
-    console.log(data, "handleOnSubmit");
-  };
+  const [defaultValues, setDefaultValues] =
+    useState<CodeGenerationVersionSettings>(DEFAULT_VALUES);
 
-  const { data: latestCodeGeneratorVersion } =
-    useQuery<TCodeGeneratorVersionData>(GET_CODE_GENERATOR_VERSION, {
+  const handleSubmit = useCallback((data) => {
+    console.log(data, handleSubmit);
+  }, []);
+
+  const { data: latestCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
+    GET_CODE_GENERATOR_VERSION,
+    {
       context: {
         clientName: "codeGeneratorCatalogHttpLink",
       },
       variables: {
-        codeGeneratorStrategy: models.CodeGeneratorVersionStrategy.LatestMajor,
+        getCodeGeneratorVersionInput: {
+          codeGeneratorStrategy:
+            models.CodeGeneratorVersionStrategy.LatestMajor,
+        },
+      },
+      onCompleted: (data) => {
+        setDefaultValues({
+          ...DEFAULT_VALUES,
+          version: data.getCodeGeneratorVersion.name,
+        });
+      },
+    }
+  );
+
+  const { data: codeGeneratorVersionList } =
+    useQuery<TCodeGeneratorVersionListData>(GET_CODE_GENERATOR_VERSIONS, {
+      context: {
+        clientName: "codeGeneratorCatalogHttpLink",
+      },
+      variables: {
+        codeGeneratorStrategy: models.CodeGeneratorVersionStrategy.Specific,
+        where: {
+          isActive: {
+            equals: true,
+          },
+        },
+        orderBy: [
+          {
+            createdAt: "Desc",
+          },
+        ],
       },
     });
 
-  console.log(latestCodeGeneratorVersion, "latestCodeGeneratorVersion");
-
-  const { data: codeGeneratorVersionList } = useQuery<
-    TCodeGeneratorVersionData[]
-  >(GET_CODE_GENERATOR_VERSIONS, {
-    context: {
-      clientName: "codeGeneratorCatalogHttpLink",
-    },
-    variables: {
-      codeGeneratorStrategy: models.CodeGeneratorVersionStrategy.Specific,
-      where: {
-        isActive: {
-          equals: true,
-        },
-      },
-      orderBy: [
-        {
-          createdAt: "Desc",
-        },
-      ],
-    },
-  });
-
   const codeGeneratorVersionNameList = useMemo(() => {
-    return codeGeneratorVersionList?.map(({ name }) => name);
+    return codeGeneratorVersionList?.versions.map((version) => version.name);
   }, [codeGeneratorVersionList]);
 
   return (
     <div>
       <CodeGeneratorVersionForm
-        onSubmit={handleOnSubmit}
-        defaultValues={DEFAULT_VALUES}
+        onSubmit={handleSubmit}
+        defaultValues={defaultValues}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
-        latestMajorVersion={latestCodeGeneratorVersion?.name}
+        latestMajorVersion={
+          latestCodeGeneratorVersion?.getCodeGeneratorVersion.name
+        }
       />
     </div>
   );
