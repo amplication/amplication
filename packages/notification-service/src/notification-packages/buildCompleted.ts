@@ -4,7 +4,7 @@ import { NotificationContext } from "../util/novuTypes";
 export const buildCompleted = async (notificationCtx: NotificationContext) => {
   try {
     if (
-      !notificationCtx.message &&
+      !notificationCtx.message ||
       notificationCtx.topic !== KAFKA_TOPICS.USER_BUILD_TOPIC
     )
       return notificationCtx;
@@ -15,7 +15,7 @@ export const buildCompleted = async (notificationCtx: NotificationContext) => {
         notificationCtx.novuService.triggerNotificationToSubscriber,
       subscriberId: externalId,
       eventName: "build-completed",
-      payload: restParams,
+      payload: { payload: restParams },
     });
 
     return notificationCtx;

@@ -152,7 +152,7 @@ export class UserService {
   }
 
   async setNotificationRegistry(user: User) {
-    const externalId = encryptString(user.account.id);
+    const externalId = encryptString(user.id);
     const booleanEntityUserNotification =
       await this.billingService.getBooleanEntitlement(
         user.workspace.id,

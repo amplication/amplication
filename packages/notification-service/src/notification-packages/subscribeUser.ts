@@ -4,7 +4,7 @@ import { NotificationContext } from "../util/novuTypes";
 export const subscribeUser = async (notificationCtx: NotificationContext) => {
   try {
     if (
-      !notificationCtx.message &&
+      !notificationCtx.message ||
       notificationCtx.topic !== KAFKA_TOPICS.USER_ACTION_TOPIC
     )
       return notificationCtx;

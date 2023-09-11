@@ -19,7 +19,7 @@
     "serve:git": "nx run-many --parallel --target=serve --projects=git-sync-manager",
     "serve:storage": "npx nx serve amplication-storage-gateway",
     "serve:plugins": "npx nx serve amplication-plugin-api",
-    "serve:notification": "npx nx serve amplication-notification",
+    "serve:notification": "npx nx serve notification-service",
     "debug:dsg": "npx nx generate-local-code data-service-generator"
   },
   "lint-staged": {
