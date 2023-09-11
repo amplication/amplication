@@ -372,22 +372,24 @@ export class BuildService {
       },
     });
 
-    this.kafkaProducerService
-      .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
-        key: {},
-        value: {
-          commitId: commitWithAccount.commit.id,
-          commitMessage: commitWithAccount.commit.message,
-          resourceId: commitWithAccount.resourceId,
-          workspaceId: commitWithAccount.commit.project.workspaceId,
-          projectId: commitWithAccount.commit.projectId,
-          buildId: buildId,
-          externalId: encryptString(commitWithAccount.commit.user.id),
-        },
-      })
-      .catch((error) =>
-        this.logger.error(`Failed to que user build ${buildId}`, error)
-      );
+    if (status === EnumActionStepStatus.Success) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
+          key: {},
+          value: {
+            commitId: commitWithAccount.commit.id,
+            commitMessage: commitWithAccount.commit.message,
+            resourceId: commitWithAccount.resourceId,
+            workspaceId: commitWithAccount.commit.project.workspaceId,
+            projectId: commitWithAccount.commit.projectId,
+            buildId: buildId,
+            externalId: encryptString(commitWithAccount.commit.user.id),
+          },
+        })
+        .catch((error) =>
+          this.logger.error(`Failed to que user build ${buildId}`, error)
+        );
+    }
 
     await this.actionService.complete(step, status);
     await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
