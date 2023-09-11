@@ -118,7 +118,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
   ]);
 
   const canShowNotification = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.ImportDBSchema,
+    featureId: BillingFeature.Notification,
   }).hasAccess;
 
   const [showProfileFormDialog, setShowProfileFormDialog] =
