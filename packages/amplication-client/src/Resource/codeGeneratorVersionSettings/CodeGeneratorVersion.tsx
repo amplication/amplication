@@ -12,6 +12,7 @@ import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
 import { Button, EnumButtonStyle, Panel } from "@amplication/ui/design-system";
+import { DSGCatalog } from "./Catalog";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -188,6 +189,15 @@ const CodeGeneratorVersion = () => {
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
       />
+      <hr className={`${CLASS_NAME}__divider`} />
+
+      <div className={`${CLASS_NAME}__catalog`}>
+        <h3>Versions Catalog</h3>
+        {codeGeneratorVersionList?.versions.length &&
+          codeGeneratorVersionList.versions.map((version) => (
+            <DSGCatalog name={version.name} changelog={version.changelog} />
+          ))}
+      </div>
     </div>
   );
 };
