@@ -104,7 +104,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                             className={`${CLASS_NAME}__tooltip__window__info`}
                           >
                             <span>
-                              This feature requires an Enterprise plan.
+                              This feature requires Pro plan.
                               <br />
                               For more information,
                             </span>{" "}
