@@ -22,8 +22,16 @@
   },
   "nx": {
     "targets": {
-      "build": {},
-      "serve": {}
+      "build": {
+        "dependsOn": [
+          "install"
+        ]
+      },
+      "serve": {
+        "dependsOn": [
+          "install"
+        ]
+      }
     }
   },
   "scripts": {
