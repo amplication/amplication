@@ -45,6 +45,38 @@ export type TUpdateCodeGeneratorVersion = {
   };
 };
 
+const resourceCodeGeneratorDataToCodeGeneratorVersionSettings = {
+  [models.CodeGeneratorVersionStrategy.LatestMajor]: {
+    useSpecificVersion: false,
+    autoUseLatestMinorVersion: false,
+  },
+  [models.CodeGeneratorVersionStrategy.LatestMinor]: {
+    useSpecificVersion: true,
+    autoUseLatestMinorVersion: true,
+  },
+  [models.CodeGeneratorVersionStrategy.Specific]: {
+    useSpecificVersion: true,
+    autoUseLatestMinorVersion: false,
+  },
+};
+
+const defaultValues = (
+  resource: models.Resource
+): CodeGenerationVersionSettings => {
+  const defaultValues: CodeGenerationVersionSettings = {
+    version: resource?.codeGeneratorVersion,
+    useSpecificVersion: false,
+    autoUseLatestMinorVersion: false,
+  };
+
+  return {
+    ...defaultValues,
+    ...resourceCodeGeneratorDataToCodeGeneratorVersionSettings[
+      resource?.codeGeneratorStrategy
+    ],
+  };
+};
+
 const CodeGeneratorVersion = () => {
   const { currentResource } = useContext(AppContext);
 
@@ -153,38 +185,6 @@ const CodeGeneratorVersion = () => {
       />
     </div>
   );
-};
-
-const defaultValues = (
-  resource: models.Resource
-): CodeGenerationVersionSettings => {
-  const defaultValues: CodeGenerationVersionSettings = {
-    version: resource?.codeGeneratorVersion,
-    useSpecificVersion: false,
-    autoUseLatestMinorVersion: false,
-  };
-  if (
-    resource?.codeGeneratorStrategy ===
-    models.CodeGeneratorVersionStrategy.LatestMinor
-  ) {
-    return {
-      ...defaultValues,
-      useSpecificVersion: true,
-      autoUseLatestMinorVersion: true,
-    };
-  }
-  if (
-    resource?.codeGeneratorStrategy ===
-    models.CodeGeneratorVersionStrategy.Specific
-  ) {
-    return {
-      ...defaultValues,
-      useSpecificVersion: true,
-      autoUseLatestMinorVersion: false,
-    };
-  }
-
-  return defaultValues;
 };
 
 export default CodeGeneratorVersion;
