@@ -2,9 +2,21 @@
 
 .code-generator-version-form {
   .toggle-field {
-    margin-bottom: var(--double-spacing);
+    margin-bottom: var(--default-spacing);
     span {
       @include regular-12();
     }
+
+    .input-label {
+      margin-right: var(--icon-spacing);
+    }
+  }
+
+  .select-field {
+    margin: var(--double-spacing) 0;
+  }
+
+  &__latest-minor {
+    @include body2;
   }
 }

@@ -3,7 +3,6 @@ import CodeGeneratorVersionForm, {
 } from "./CodeGeneratorVersionForm";
 import * as models from "../../models";
 import {
-  GET_CODE_GENERATOR_VERSION,
   GET_CODE_GENERATOR_VERSIONS,
   GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD,
   UPDATE_CODE_GENERATOR_VERSION,
@@ -12,7 +11,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
-import { Panel } from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle, Panel } from "@amplication/ui/design-system";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -80,21 +79,6 @@ const defaultValues = (
 
 const CodeGeneratorVersion = () => {
   const { currentResource } = useContext(AppContext);
-
-  const { data: latestCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
-    GET_CODE_GENERATOR_VERSION,
-    {
-      context: {
-        clientName: "codeGeneratorCatalogHttpLink",
-      },
-      variables: {
-        getCodeGeneratorVersionInput: {
-          codeGeneratorStrategy:
-            models.CodeGeneratorVersionStrategy.LatestMajor,
-        },
-      },
-    }
-  );
 
   const { data: codeGeneratorVersionLastBuild } =
     useQuery<TCodeGeneratorVersionLastBuild>(
@@ -174,26 +158,29 @@ const CodeGeneratorVersion = () => {
       <div className={`${CLASS_NAME}__header`}>
         <h3>Code Generator Version Settings</h3>
         <Panel>
-          <div>
+          <div className={`${CLASS_NAME}__message`}>
             <p>
-              Code generator version used for the latest build:{" "}
-              {codeGeneratorVersionLastBuild?.resource?.builds[0]
-                ?.codeGeneratorVersion ??
-                latestCodeGeneratorVersion?.getCodeGeneratorVersion.name}{" "}
+              Code Generator Version Used For The Latest Build:{" "}
+              <Button buttonStyle={EnumButtonStyle.Clear}>
+                {codeGeneratorVersionLastBuild?.resource?.builds[0]
+                  ?.codeGeneratorVersion ?? "N/A"}
+              </Button>
             </p>
 
-            <div>
+            <div className={`${CLASS_NAME}__explanation`}>
               You can control the version of the code generator to be used when
-              generating the code. New major versions may include breaking
-              changes and updates to major version of core frameworks like
-              Node.js, NestJS, Prisma, etc.
+              generating the code.
+              <br />
+              New major versions may include breaking changes and updates to
+              major version of core frameworks like NodeJS, NestJS, Prisma, etc.
             </div>
+
+            <p>
+              In case you are not ready to upgrade to a new major version, you
+              can select a specific Code Generator version
+            </p>
           </div>
         </Panel>
-        <p>
-          In case you are not ready to upgrade to a new major version, you can
-          select a specific Code Generator version
-        </p>
       </div>
 
       <CodeGeneratorVersionForm

@@ -87,9 +87,9 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
             <FormikAutoSave debounceMS={200} />
             <div className={CLASS_NAME}>
               <div>
-                <div>
+                <>
                   <ToggleField
-                    label="I want to select a specific version of the code generator."
+                    label="I want to select a specific version of the code generator"
                     name={"useSpecificVersion"}
                     disabled={!canChooseCodeGeneratorVersion}
                   />
@@ -125,7 +125,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                       />
                     </WarningTooltip>
                   )}
-                </div>
+                </>
                 {formik.values.useSpecificVersion && (
                   <div>
                     <SelectField
@@ -142,10 +142,12 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                     />
                     <ToggleField
                       disabled={
-                        !canChooseCodeGeneratorVersion &&
-                        !formik.values.useSpecificVersion
+                        !canChooseCodeGeneratorVersion ||
+                        !formik.values.useSpecificVersion ||
+                        (formik.values.useSpecificVersion &&
+                          !formik.values.version)
                       }
-                      label="Automatically use new minor version when available."
+                      label="Automatically use new minor version when available"
                       name={"autoUseLatestMinorVersion"}
                     />
                   </div>

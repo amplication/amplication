@@ -11,21 +11,6 @@ export const GET_CODE_GENERATOR_VERSIONS = gql`
   }
 `;
 
-// get the current latest dsg version
-export const GET_CODE_GENERATOR_VERSION = gql`
-  query GetCodeGeneratorVersion(
-    $getCodeGeneratorVersionInput: GetCodeGeneratorVersionInput!
-  ) {
-    getCodeGeneratorVersion(
-      GetCodeGeneratorVersionInput: $getCodeGeneratorVersionInput
-    ) {
-      name
-      changelog
-      isDeprecated
-    }
-  }
-`;
-
 export const GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD = gql`
   query Resource(
     $where: WhereUniqueInput!
