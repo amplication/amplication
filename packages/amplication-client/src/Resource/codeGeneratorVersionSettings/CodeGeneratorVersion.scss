@@ -23,10 +23,6 @@
     @include regular-14();
     margin-bottom: var(--double-spacing);
 
-    // p:first-of-type {
-    //   @include body1;
-    // }
-
     p:first-of-type,
     p:last-of-type {
       @include title-14;
