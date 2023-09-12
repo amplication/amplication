@@ -84,6 +84,7 @@ export class BlockService {
 
     [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Module]: ALLOW_NO_PARENT_ONLY,
   };
 
   private async resolveParentBlock(

@@ -23,6 +23,7 @@ import { TopicModule } from "./topic/topic.module";
 import { ServiceTopicsModule } from "./serviceTopics/serviceTopics.module";
 import { UserActionModule } from "./userAction/userActionModule";
 import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
+import { ModuleModule } from "./module/module.module";
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
     ServiceTopicsModule,
     UserActionModule,
     DBSchemaImportModule,
+    ModuleModule,
   ],
   exports: [
     AccountModule,
@@ -76,6 +78,7 @@ import { DBSchemaImportModule } from "./dbSchemaImport/dbSchemaImport.module";
     ServiceTopicsModule,
     UserActionModule,
     DBSchemaImportModule,
+    ModuleModule,
   ],
 })
 export class CoreModule {}

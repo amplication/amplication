@@ -497,6 +497,7 @@ enum EnumBlockType {
   ServiceTopics
   PluginInstallation
   PluginOrder
+  Module
 }
 
 enum ActionStepStatus {

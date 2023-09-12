@@ -601,6 +601,7 @@ enum EnumAuthProviderType {
 }
 
 enum EnumBlockType {
+  Module
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -887,6 +888,61 @@ input MessagePatternCreateInput {
   type: EnumMessagePatternConnectionOptions!
 }
 
+type Module implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  entityId: String
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  lockedAt: DateTime
+  lockedByUserId: String
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleCreateInput {
+  description: String
+  displayName: String!
+  entityId: String
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+}
+
+input ModuleOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input ModuleUpdateInput {
+  description: String
+  displayName: String
+  entityId: String
+  name: String
+}
+
+input ModuleWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 type Mutation {
   addEntityPermissionField(data: EntityAddPermissionFieldInput!): EntityPermissionField!
   changePassword(data: ChangePasswordInput!): Account!
@@ -904,6 +960,7 @@ type Mutation {
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   createMessageBroker(data: ResourceCreateInput!): Resource!
+  createModule(data: ModuleCreateInput!): Module!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -921,6 +978,7 @@ type Mutation {
   deleteEntityPermissionField(where: EntityPermissionFieldWhereUniqueInput!): EntityPermissionField!
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   deleteGitRepository(gitRepositoryId: String!): Resource!
+  deleteModule(where: WhereUniqueInput!): Module!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -949,6 +1007,7 @@ type Mutation {
   updateEntityPermissionFieldRoles(data: EntityUpdatePermissionFieldRolesInput!): EntityPermissionField!
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
   updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
+  updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1172,6 +1231,8 @@ type ProvisionSubscriptionResult {
 }
 
 type Query {
+  Module(where: WhereUniqueInput!): Module
+  Modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!
   ServiceTopics(where: WhereUniqueInput!): ServiceTopics
