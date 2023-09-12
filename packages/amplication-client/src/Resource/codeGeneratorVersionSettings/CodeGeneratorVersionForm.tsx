@@ -1,6 +1,7 @@
 import {
+  ContactUsLinkForEnterprise,
   Form,
-  Panel,
+  Icon,
   SelectField,
   ToggleField,
 } from "@amplication/ui/design-system";
@@ -10,8 +11,30 @@ import { Formik } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";
 import FormikAutoSave from "../../util/formikAutoSave";
+import { styled } from "@mui/material/styles";
+import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 
 const CLASS_NAME = "code-generator-version-form";
+
+const contactUsLink = "https://amplication.com/contact-us";
+const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
+  <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+  [`& .${tooltipClasses.arrow}`]: {
+    color: "#F85B6E",
+  },
+  [`& .${tooltipClasses.tooltip}`]: {
+    backgroundColor: "#15192C",
+    color: "#ffffff",
+    maxWidth: 360,
+    border: "1px solid #F85B6E",
+    borderRadius: "4px",
+    padding: "6px",
+    fontFamily: "unset",
+    fontSize: "10px",
+    fontWeight: "unset",
+  },
+}));
 
 export type CodeGenerationVersionSettings = {
   useSpecificVersion: boolean;
@@ -21,7 +44,6 @@ export type CodeGenerationVersionSettings = {
 
 type Props = {
   defaultValues: CodeGenerationVersionSettings;
-  latestMajorVersion: string;
   codeGeneratorVersionList: string[];
   onSubmit: (values: CodeGenerationVersionSettings) => void;
 };
@@ -44,7 +66,6 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
   onSubmit,
   defaultValues,
   codeGeneratorVersionList,
-  latestMajorVersion,
 }) => {
   const { stigg } = useStiggContext();
   const canChooseCodeGeneratorVersion = stigg.getBooleanEntitlement({
@@ -65,51 +86,71 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
           <Form>
             <FormikAutoSave debounceMS={200} />
             <div className={CLASS_NAME}>
-              <Panel>
-                <div>
-                  <p>
-                    Code generator version used for the latest build:{" "}
-                    {latestMajorVersion}{" "}
-                  </p>
-
-                  <div>
-                    You can control the version of the code generator to be used
-                    when generating the code. New major versions may include
-                    breaking changes and updates to major version of core
-                    frameworks like Node.js, NestJS, Prisma, etc.
-                  </div>
-                </div>
-              </Panel>
-              <p>
-                In case you are not ready to upgrade to a new major version, you
-                can select a specific Code Generator version
-              </p>
-              {canChooseCodeGeneratorVersion && (
+              <div>
                 <div>
                   <ToggleField
                     label="I want to select a specific version of the code generator."
                     name={"useSpecificVersion"}
+                    disabled={!canChooseCodeGeneratorVersion}
                   />
-                  {formik.values.useSpecificVersion && (
-                    <div>
-                      <SelectField
-                        disabled={!formik.values.useSpecificVersion}
-                        label={"select version"}
-                        name={"version"}
-                        options={codeGeneratorVersionList.map((version) => ({
-                          label: version,
-                          value: version,
-                        }))}
+                  {!canChooseCodeGeneratorVersion && (
+                    <WarningTooltip
+                      arrow
+                      placement="top-start"
+                      title={
+                        <div className={`${CLASS_NAME}__tooltip__window`}>
+                          <Icon icon="info_circle" />
+                          <div
+                            className={`${CLASS_NAME}__tooltip__window__info`}
+                          >
+                            <span>
+                              This feature requires an Enterprise plan.
+                              <br />
+                              For more information,
+                            </span>{" "}
+                            <ContactUsLinkForEnterprise
+                              link={contactUsLink}
+                              handleClick={() => {
+                                window.open(contactUsLink, "_blank");
+                              }}
+                            />
+                          </div>
+                        </div>
+                      }
+                    >
+                      <img
+                        className={`${CLASS_NAME}__lock`}
+                        src={`../../../../assets/images/lock.svg`}
+                        alt=""
                       />
-                      <ToggleField
-                        disabled={!formik.values.useSpecificVersion}
-                        label="Automatically use new minor version when available."
-                        name={"autoUseLatestMinorVersion"}
-                      />
-                    </div>
+                    </WarningTooltip>
                   )}
                 </div>
-              )}
+                {formik.values.useSpecificVersion && (
+                  <div>
+                    <SelectField
+                      disabled={
+                        !canChooseCodeGeneratorVersion &&
+                        !formik.values.useSpecificVersion
+                      }
+                      label={"select version"}
+                      name={"version"}
+                      options={codeGeneratorVersionList.map((version) => ({
+                        label: version,
+                        value: version,
+                      }))}
+                    />
+                    <ToggleField
+                      disabled={
+                        !canChooseCodeGeneratorVersion &&
+                        !formik.values.useSpecificVersion
+                      }
+                      label="Automatically use new minor version when available."
+                      name={"autoUseLatestMinorVersion"}
+                    />
+                  </div>
+                )}
+              </div>
             </div>
           </Form>
         );

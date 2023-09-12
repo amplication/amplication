@@ -12,6 +12,7 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
+import { Panel } from "@amplication/ui/design-system";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -170,18 +171,35 @@ const CodeGeneratorVersion = () => {
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__title`}>
+      <div className={`${CLASS_NAME}__header`}>
         <h3>Code Generator Version Settings</h3>
+        <Panel>
+          <div>
+            <p>
+              Code generator version used for the latest build:{" "}
+              {codeGeneratorVersionLastBuild?.resource?.builds[0]
+                ?.codeGeneratorVersion ??
+                latestCodeGeneratorVersion?.getCodeGeneratorVersion.name}{" "}
+            </p>
+
+            <div>
+              You can control the version of the code generator to be used when
+              generating the code. New major versions may include breaking
+              changes and updates to major version of core frameworks like
+              Node.js, NestJS, Prisma, etc.
+            </div>
+          </div>
+        </Panel>
+        <p>
+          In case you are not ready to upgrade to a new major version, you can
+          select a specific Code Generator version
+        </p>
       </div>
+
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
-        latestMajorVersion={
-          codeGeneratorVersionLastBuild?.resource?.builds[0]
-            ?.codeGeneratorVersion ??
-          latestCodeGeneratorVersion?.getCodeGeneratorVersion.name
-        }
       />
     </div>
   );
