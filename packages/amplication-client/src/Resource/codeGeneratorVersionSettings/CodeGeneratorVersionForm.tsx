@@ -1,5 +1,4 @@
 import {
-  ContactUsLinkForEnterprise,
   Form,
   Icon,
   SelectField,
@@ -13,10 +12,10 @@ import "./CodeGeneratorVersionForm.scss";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { styled } from "@mui/material/styles";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
+import { Link } from "react-router-dom";
 
 const CLASS_NAME = "code-generator-version-form";
 
-const contactUsLink = "https://amplication.com/contact-us";
 const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
@@ -46,6 +45,7 @@ type Props = {
   defaultValues: CodeGenerationVersionSettings;
   codeGeneratorVersionList: string[];
   onSubmit: (values: CodeGenerationVersionSettings) => void;
+  onViewPlansClick: () => void;
 };
 
 const FORM_SCHEMA = {
@@ -64,6 +64,7 @@ const FORM_SCHEMA = {
 
 const CodeGeneratorVersionForm: React.FC<Props> = ({
   onSubmit,
+  onViewPlansClick,
   defaultValues,
   codeGeneratorVersionList,
 }) => {
@@ -103,17 +104,14 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                           <div
                             className={`${CLASS_NAME}__tooltip__window__info`}
                           >
-                            <span>
-                              This feature requires an Enterprise plan.
-                              <br />
-                              For more information,
-                            </span>{" "}
-                            <ContactUsLinkForEnterprise
-                              link={contactUsLink}
-                              handleClick={() => {
-                                window.open(contactUsLink, "_blank");
-                              }}
-                            />
+                            <span>This feature requires a Pro plan.</span>{" "}
+                            <Link
+                              onClick={onViewPlansClick}
+                              className={`${CLASS_NAME}__view_plans_link`}
+                              to={{}}
+                            >
+                              View Plans
+                            </Link>
                           </div>
                         </div>
                       }
