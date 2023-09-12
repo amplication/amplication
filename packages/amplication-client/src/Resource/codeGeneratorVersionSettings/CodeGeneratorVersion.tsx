@@ -178,8 +178,8 @@ const CodeGeneratorVersion = () => {
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
         latestMajorVersion={
-          codeGeneratorVersionLastBuild?.resource.builds[0]
-            .codeGeneratorVersion ??
+          codeGeneratorVersionLastBuild?.resource?.builds[0]
+            ?.codeGeneratorVersion ??
           latestCodeGeneratorVersion?.getCodeGeneratorVersion.name
         }
       />
