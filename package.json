@@ -241,7 +241,7 @@
     "@types/jsonwebtoken": "^9.0.0",
     "@types/lodash": "^4.14.192",
     "@types/minimatch": "^3.0.5",
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.17.1",
     "@types/node-fetch": "^2.6.2",
     "@types/normalize-path": "^3.0.0",
     "@types/pacote": "^11.1.5",
@@ -326,8 +326,8 @@
     "yup": "^0.32.11"
   },
   "engines": {
-    "node": "^18.3.0 || ^16.3.0",
-    "npm": "^8.1.0 || ^7.3.0"
+    "node": "^18.12.1",
+    "npm": "^9.0.0"
   },
   "bugs": {
     "url": "https://github.com/amplication/amplication/issues"
