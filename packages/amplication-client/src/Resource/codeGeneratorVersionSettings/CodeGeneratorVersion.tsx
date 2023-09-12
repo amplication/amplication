@@ -5,10 +5,13 @@ import * as models from "../../models";
 import {
   GET_CODE_GENERATOR_VERSION,
   GET_CODE_GENERATOR_VERSIONS,
+  GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD,
+  UPDATE_CODE_GENERATOR_VERSION,
 } from "./queries";
-import { useQuery } from "@apollo/client";
-import { useCallback, useMemo, useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
+import { AppContext } from "../../context/appContext";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -26,19 +29,24 @@ export type TCodeGeneratorVersionListData = {
   versions: CodeGeneratorVersionData[];
 };
 
-const DEFAULT_VALUES: CodeGenerationVersionSettings = {
-  version: "1.8.10",
-  useSpecificVersion: false,
-  autoUseLatestMinorVersion: false,
+export type TCodeGeneratorVersionLastBuild = {
+  resource: {
+    builds: {
+      id: string;
+      codeGeneratorVersion: string | null;
+    }[];
+  };
+};
+
+export type TUpdateCodeGeneratorVersion = {
+  updateCodeGeneratorVersion: {
+    codeGeneratorStrategy: models.CodeGeneratorVersionStrategy | null;
+    codeGeneratorVersion: string | null;
+  };
 };
 
 const CodeGeneratorVersion = () => {
-  const [defaultValues, setDefaultValues] =
-    useState<CodeGenerationVersionSettings>(DEFAULT_VALUES);
-
-  const handleSubmit = useCallback((data) => {
-    console.log(data, handleSubmit);
-  }, []);
+  const { currentResource } = useContext(AppContext);
 
   const { data: latestCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
     GET_CODE_GENERATOR_VERSION,
@@ -52,14 +60,24 @@ const CodeGeneratorVersion = () => {
             models.CodeGeneratorVersionStrategy.LatestMajor,
         },
       },
-      onCompleted: (data) => {
-        setDefaultValues({
-          ...DEFAULT_VALUES,
-          version: data.getCodeGeneratorVersion.name,
-        });
-      },
     }
   );
+
+  const { data: codeGeneratorVersionLastBuild } =
+    useQuery<TCodeGeneratorVersionLastBuild>(
+      GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD,
+      {
+        variables: {
+          where: {
+            id: currentResource?.id,
+          },
+          orderBy: {
+            createdAt: "Desc",
+          },
+          take: 1,
+        },
+      }
+    );
 
   const { data: codeGeneratorVersionList } =
     useQuery<TCodeGeneratorVersionListData>(GET_CODE_GENERATOR_VERSIONS, {
@@ -81,7 +99,40 @@ const CodeGeneratorVersion = () => {
       },
     });
 
+  // use mutation to update code generator version
+  const [updateCodeGeneratorVersion] = useMutation<TUpdateCodeGeneratorVersion>(
+    UPDATE_CODE_GENERATOR_VERSION
+  );
+
+  const handleSubmit = useCallback((data: CodeGenerationVersionSettings) => {
+    let CodeGeneratorVersionStrategy =
+      models.CodeGeneratorVersionStrategy.LatestMajor;
+    let version = null;
+
+    if (data.useSpecificVersion) {
+      CodeGeneratorVersionStrategy = data.autoUseLatestMinorVersion
+        ? models.CodeGeneratorVersionStrategy.LatestMinor
+        : models.CodeGeneratorVersionStrategy.Specific;
+      version = data.version;
+    }
+
+    updateCodeGeneratorVersion({
+      variables: {
+        data: {
+          codeGeneratorVersionOptions: {
+            codeGeneratorStrategy: CodeGeneratorVersionStrategy,
+            codeGeneratorVersion: version,
+          },
+        },
+        where: {
+          id: currentResource?.id,
+        },
+      },
+    });
+  }, []);
+
   const codeGeneratorVersionNameList = useMemo(() => {
+    if (!codeGeneratorVersionList) return [];
     return codeGeneratorVersionList?.versions.map((version) => version.name);
   }, [codeGeneratorVersionList]);
 
@@ -92,14 +143,48 @@ const CodeGeneratorVersion = () => {
       </div>
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
-        defaultValues={defaultValues}
+        defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
         latestMajorVersion={
+          codeGeneratorVersionLastBuild?.resource.builds[0]
+            .codeGeneratorVersion ??
           latestCodeGeneratorVersion?.getCodeGeneratorVersion.name
         }
       />
     </div>
   );
+};
+
+const defaultValues = (
+  resource: models.Resource
+): CodeGenerationVersionSettings => {
+  const defaultValues: CodeGenerationVersionSettings = {
+    version: resource?.codeGeneratorVersion,
+    useSpecificVersion: false,
+    autoUseLatestMinorVersion: false,
+  };
+  if (
+    resource?.codeGeneratorStrategy ===
+    models.CodeGeneratorVersionStrategy.LatestMinor
+  ) {
+    return {
+      ...defaultValues,
+      useSpecificVersion: true,
+      autoUseLatestMinorVersion: true,
+    };
+  }
+  if (
+    resource?.codeGeneratorStrategy ===
+    models.CodeGeneratorVersionStrategy.Specific
+  ) {
+    return {
+      ...defaultValues,
+      useSpecificVersion: true,
+      autoUseLatestMinorVersion: false,
+    };
+  }
+
+  return defaultValues;
 };
 
 export default CodeGeneratorVersion;

@@ -26,6 +26,22 @@ export const GET_CODE_GENERATOR_VERSION = gql`
   }
 `;
 
+export const GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD = gql`
+  query Resource(
+    $where: WhereUniqueInput!
+    $orderBy: BuildOrderByInput
+    $take: Int
+  ) {
+    resource(where: $where) {
+      builds(orderBy: $orderBy, take: $take) {
+        id
+        codeGeneratorVersion
+      }
+    }
+  }
+`;
+
+// update code generator version
 export const UPDATE_CODE_GENERATOR_VERSION = gql`
   mutation UpdateCodeGeneratorVersion(
     $data: CodeGeneratorVersionUpdateInput!
