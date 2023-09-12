@@ -28,12 +28,12 @@
     .amp-icon {
       color: #f85b6e;
     }
+  }
 
-    &__info {
-      .upgrade-link,
-      .contact-us-link {
-        font-weight: 600;
-      }
-    }
+  &__view_plans_link {
+    color: #53dbee;
+    text-decoration: underline;
+    font-weight: 500;
+    margin-left: 4px;
   }
 }

@@ -12,6 +12,9 @@ import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
 import { Button, EnumButtonStyle, Panel } from "@amplication/ui/design-system";
+import { useHistory } from "react-router-dom";
+import { useTracking } from "react-tracking";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -78,7 +81,19 @@ const defaultValues = (
 };
 
 const CodeGeneratorVersion = () => {
-  const { currentResource } = useContext(AppContext);
+  const { currentResource, currentWorkspace } = useContext(AppContext);
+  const history = useHistory();
+  const { trackEvent } = useTracking();
+
+  const handleViewPlansClick = useCallback(() => {
+    history.push(`/${currentWorkspace.id}/purchase`, {
+      from: { pathname: window.location.pathname },
+    });
+    trackEvent({
+      eventName: AnalyticsEventNames.UpgradeFromCodeGeneratorVersionClick,
+      workspace: currentWorkspace.id,
+    });
+  }, [currentWorkspace, window.location.pathname]);
 
   const { data: codeGeneratorVersionLastBuild } =
     useQuery<TCodeGeneratorVersionLastBuild>(
@@ -185,6 +200,7 @@ const CodeGeneratorVersion = () => {
 
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
+        onViewPlansClick={handleViewPlansClick}
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
       />
