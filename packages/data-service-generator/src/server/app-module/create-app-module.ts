@@ -37,7 +37,7 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 );
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
-type TemplateMappingOptions = {
+type CodeGenerationOptions = {
   createGraphQLModule: boolean;
 };
 
@@ -102,7 +102,14 @@ export async function createAppModuleInternal({
   template,
   templateMapping,
 }: CreateServerAppModuleParams): Promise<ModuleMap> {
-  const { serverDirectories } = DsgContext.getInstance;
+  const {
+    serverDirectories,
+    appInfo: {
+      settings: {
+        serverSettings: { generateGraphQL },
+      },
+    },
+  } = DsgContext.getInstance;
 
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
   const nestModules = modulesFiles
@@ -125,15 +132,19 @@ export async function createAppModuleInternal({
 
   interpolate(template, templateMapping);
 
-  addImports(template, [
+  const defaultImports = [
     ...moduleImports,
     importDeclaration`import { ${PRISMA_MODULE_ID} } from "./prisma/prisma.module"`,
     importDeclaration`import { ${MORGAN_MODULE_ID} } from "nest-morgan"`,
-    importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
     importDeclaration`import { ${SERVE_STATIC_MODULE_ID} } from "@nestjs/serve-static"`,
     importDeclaration`import { ${SERVE_STATIC_OPTIONS_SERVICE_ID} } from "./serveStaticOptions.service"`,
-    importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,
-  ]);
+  ];
+
+  const imports = addCustomModuleImports(defaultImports, {
+    createGraphQLModule: generateGraphQL,
+  });
+
+  addImports(template, imports);
   removeTSIgnoreComments(template);
   removeESLintComments(template);
   removeTSVariableDeclares(template);
@@ -147,6 +158,10 @@ export async function createAppModuleInternal({
   return appModuleMap;
 }
 
+/**
+ * create an array expression from the given modules and add custom modules if needed.
+ * For example, the GraphQL module will be added if the app uses GraphQL
+ */
 function createModuleImportsArrayExpression(
   modules: (
     | namedTypes.Identifier
@@ -154,7 +169,7 @@ function createModuleImportsArrayExpression(
     | namedTypes.TSTypeParameter
     | namedTypes.CallExpression
   )[],
-  { createGraphQLModule = true }: TemplateMappingOptions
+  { createGraphQLModule = true }: CodeGenerationOptions
 ) {
   if (createGraphQLModule) {
     const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
@@ -176,4 +191,25 @@ function createModuleImportsArrayExpression(
   }
 
   return builders.arrayExpression(modules);
+}
+
+/**
+ * add imports statements for modules that can be excluded from the app module.
+ * For example, the GraphQL module imports will be added if the app uses GraphQL
+ */
+function addCustomModuleImports(
+  defaultImports: namedTypes.ImportDeclaration[],
+  { createGraphQLModule }: CodeGenerationOptions
+): namedTypes.ImportDeclaration[] {
+  if (createGraphQLModule) {
+    defaultImports.push(
+      importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
+      importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`
+    );
+  } else {
+    defaultImports.push(
+      importDeclaration`import { ${CONFIG_MODULE_ID} } from "@nestjs/config"`
+    );
+  }
+  return defaultImports;
 }
