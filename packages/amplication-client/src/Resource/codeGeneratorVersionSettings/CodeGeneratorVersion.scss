@@ -35,6 +35,14 @@
     }
   }
 
+  &__tag {
+    background-color: transparent;
+    color: var(--black100);
+    padding: var(--icon-spacing) var(--default-spacing);
+    border: $border-black20;
+    background-color: var(--black10);
+  }
+
   &__explanation {
     @include body1;
     padding: var(--double-spacing) 0;

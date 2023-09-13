@@ -11,13 +11,14 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
-import { Button, EnumButtonStyle, Panel } from "@amplication/ui/design-system";
+import { Panel } from "@amplication/ui/design-system";
 import { useHistory } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { DSGCatalog } from "./Catalog";
 
 const CLASS_NAME = "code-generator-version";
+const CODE_GENERATOR_VERSION_PLACEHOLDER = "N/A";
 
 export type CodeGeneratorVersionData = {
   name: string;
@@ -179,7 +180,7 @@ const CodeGeneratorVersion = () => {
               Code generator version used for the latest build:{" "}
               <span className={`${CLASS_NAME}__tag`}>
                 {codeGeneratorVersionLastBuild?.resource?.builds[0]
-                  ?.codeGeneratorVersion ?? "N/A"}
+                  ?.codeGeneratorVersion ?? CODE_GENERATOR_VERSION_PLACEHOLDER}
               </span>
             </div>
 
