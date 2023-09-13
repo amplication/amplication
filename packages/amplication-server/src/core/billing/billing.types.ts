@@ -21,4 +21,5 @@ export enum BillingFeature {
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",
   BranchPerResource = "feature-branch-per-resource",
+  CodeGeneratorVersion = "feature-code-generator-version",
 }
