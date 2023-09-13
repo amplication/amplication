@@ -93,6 +93,63 @@ describe("VersionService", () => {
     }
   );
 
+  it.each([
+    [CodeGeneratorVersionStrategy.LatestMajor],
+    [CodeGeneratorVersionStrategy.LatestMinor],
+    [CodeGeneratorVersionStrategy.Specific],
+  ])(
+    "should return the dev version if setup when requesting a %s version",
+    async (codeGeneratorStrategy) => {
+      const devVersion = "next";
+      const module: TestingModule = await Test.createTestingModule({
+        imports: [AwsEcrModule],
+        providers: [
+          {
+            provide: ConfigService,
+            useValue: {
+              get: (variable) => {
+                switch (variable) {
+                  case "DEV_VERSION_TAG":
+                    return devVersion;
+                  default:
+                    return "";
+                }
+              },
+            },
+          },
+          {
+            provide: PrismaService,
+            useValue: {
+              version: {
+                findMany: mockVersionFindMany,
+              },
+            },
+          },
+          MockedAmplicationLoggerProvider,
+          VersionService,
+        ],
+      }).compile();
+
+      service = module.get<VersionService>(VersionService);
+
+      const result = await service.getCodeGeneratorVersion({
+        codeGeneratorVersion: devVersion,
+        codeGeneratorStrategy,
+      });
+
+      expect(result).toEqual({
+        id: devVersion,
+        name: devVersion,
+        isActive: true,
+        createdAt: expect.any(Date),
+        updatedAt: expect.any(Date),
+        changelog: `Latest development version from ${devVersion}`,
+        deletedAt: null,
+        isDeprecated: false,
+      });
+    }
+  );
+
   describe("getCodeGeneratorAvailableVersions", () => {
     beforeEach(async () => {
       mockVersionFindMany.mockResolvedValue([
