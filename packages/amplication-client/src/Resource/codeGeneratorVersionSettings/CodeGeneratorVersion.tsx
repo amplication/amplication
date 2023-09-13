@@ -17,7 +17,6 @@ import { useTracking } from "react-tracking";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 
 const CLASS_NAME = "code-generator-version";
-const CODE_GENERATOR_VERSION_PLACEHOLDER = "N/A";
 
 export type CodeGeneratorVersionData = {
   name: string;
@@ -169,6 +168,13 @@ const CodeGeneratorVersion = () => {
     return codeGeneratorVersionList?.versions.map((version) => version.name);
   }, [codeGeneratorVersionList]);
 
+  const codeGeneratorVersionLastBuildName = useMemo(() => {
+    return (
+      codeGeneratorVersionLastBuild?.resource?.builds[0]
+        ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]
+    );
+  }, [codeGeneratorVersionLastBuild, codeGeneratorVersionNameList]);
+
   return (
     <div>
       <div className={`${CLASS_NAME}__header`}>
@@ -178,8 +184,7 @@ const CodeGeneratorVersion = () => {
             <div className={`${CLASS_NAME}__title`}>
               Code generator version used for the latest build:{" "}
               <span className={`${CLASS_NAME}__tag`}>
-                {codeGeneratorVersionLastBuild?.resource?.builds[0]
-                  ?.codeGeneratorVersion ?? CODE_GENERATOR_VERSION_PLACEHOLDER}
+                {codeGeneratorVersionLastBuildName}
               </span>
             </div>
 
