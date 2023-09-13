@@ -44,12 +44,14 @@ type CodeGenerationOptions = {
 export async function createAppModule(
   modulesFiles: ModuleMap
 ): Promise<ModuleMap> {
-  const { appInfo } = DsgContext.getInstance;
   const {
-    settings: {
-      serverSettings: { generateGraphQL },
+    appInfo: {
+      settings: {
+        serverSettings: { generateGraphQL },
+      },
     },
-  } = appInfo;
+  } = DsgContext.getInstance;
+
   const template = await readFile(appModuleTemplatePath);
   const nestModules = modulesFiles
     .modules()
