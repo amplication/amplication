@@ -76,9 +76,13 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
   return (
     <Formik
       initialValues={defaultValues}
-      validate={(values: CodeGenerationVersionSettings) =>
-        validate(values, FORM_SCHEMA)
-      }
+      validate={(values: CodeGenerationVersionSettings) => {
+        const errors = validate(values, FORM_SCHEMA);
+        if (errors.version) {
+          errors.version = "Please select a version";
+        }
+        return errors;
+      }}
       enableReinitialize
       onSubmit={onSubmit}
     >
@@ -131,7 +135,7 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                         !canChooseCodeGeneratorVersion &&
                         !formik.values.useSpecificVersion
                       }
-                      label={"select version"}
+                      label={"Select a version"}
                       name={"version"}
                       options={codeGeneratorVersionList.map((version) => ({
                         label: version,

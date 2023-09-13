@@ -5,9 +5,9 @@ import * as models from "../../models";
 import {
   GET_CODE_GENERATOR_VERSIONS,
   GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD,
-  UPDATE_CODE_GENERATOR_VERSION,
+  GET_CURRENT_CODE_GENERATOR_VERSION,
 } from "./queries";
-import { useMutation, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo } from "react";
 import "./CodeGeneratorVersion.scss";
 import { AppContext } from "../../context/appContext";
@@ -25,7 +25,7 @@ export type CodeGeneratorVersionData = {
 };
 
 export type TCodeGeneratorVersion = {
-  getCodeGeneratorVersion: CodeGeneratorVersionData;
+  getCodeGeneratorVersion: Pick<CodeGeneratorVersionData, "name">;
 };
 
 export type TCodeGeneratorVersionListData = {
@@ -38,13 +38,6 @@ export type TCodeGeneratorVersionLastBuild = {
       id: string;
       codeGeneratorVersion: string | null;
     }[];
-  };
-};
-
-export type TUpdateCodeGeneratorVersion = {
-  updateCodeGeneratorVersion: {
-    codeGeneratorStrategy: models.CodeGeneratorVersionStrategy | null;
-    codeGeneratorVersion: string | null;
   };
 };
 
@@ -81,7 +74,9 @@ const defaultValues = (
 };
 
 const CodeGeneratorVersion = () => {
-  const { currentResource, currentWorkspace } = useContext(AppContext);
+  const { currentResource, currentWorkspace, updateCodeGeneratorVersion } =
+    useContext(AppContext);
+
   const history = useHistory();
   const { trackEvent } = useTracking();
 
@@ -94,6 +89,22 @@ const CodeGeneratorVersion = () => {
       workspace: currentWorkspace.id,
     });
   }, [currentWorkspace, window.location.pathname]);
+
+  const { data: currentCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
+    GET_CURRENT_CODE_GENERATOR_VERSION,
+    {
+      context: {
+        clientName: "codeGeneratorCatalogHttpLink",
+      },
+      variables: {
+        getCodeGeneratorVersionInput: {
+          codeGeneratorStrategy: currentResource?.codeGeneratorStrategy,
+          codeGeneratorVersion: currentResource?.codeGeneratorVersion,
+        },
+      },
+      skip: !currentResource,
+    }
+  );
 
   const { data: codeGeneratorVersionLastBuild } =
     useQuery<TCodeGeneratorVersionLastBuild>(
@@ -131,34 +142,21 @@ const CodeGeneratorVersion = () => {
       },
     });
 
-  // use mutation to update code generator version
-  const [updateCodeGeneratorVersion] = useMutation<TUpdateCodeGeneratorVersion>(
-    UPDATE_CODE_GENERATOR_VERSION
-  );
-
   const handleSubmit = useCallback((data: CodeGenerationVersionSettings) => {
-    let CodeGeneratorVersionStrategy =
-      models.CodeGeneratorVersionStrategy.LatestMajor;
-    let version = null;
+    let codeGeneratorStrategy = models.CodeGeneratorVersionStrategy.LatestMajor;
+    let codeGeneratorVersion;
 
     if (data.useSpecificVersion) {
-      CodeGeneratorVersionStrategy = data.autoUseLatestMinorVersion
+      codeGeneratorStrategy = data.autoUseLatestMinorVersion
         ? models.CodeGeneratorVersionStrategy.LatestMinor
         : models.CodeGeneratorVersionStrategy.Specific;
-      version = data.version;
+      codeGeneratorVersion = data.version;
     }
 
     updateCodeGeneratorVersion({
-      variables: {
-        data: {
-          codeGeneratorVersionOptions: {
-            codeGeneratorStrategy: CodeGeneratorVersionStrategy,
-            codeGeneratorVersion: version,
-          },
-        },
-        where: {
-          id: currentResource?.id,
-        },
+      updateCodeGeneratorVersion: {
+        codeGeneratorStrategy,
+        codeGeneratorVersion,
       },
     });
   }, []);
@@ -168,13 +166,6 @@ const CodeGeneratorVersion = () => {
     return codeGeneratorVersionList?.versions.map((version) => version.name);
   }, [codeGeneratorVersionList]);
 
-  const codeGeneratorVersionLastBuildName = useMemo(() => {
-    return (
-      codeGeneratorVersionLastBuild?.resource?.builds[0]
-        ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]
-    );
-  }, [codeGeneratorVersionLastBuild, codeGeneratorVersionNameList]);
-
   return (
     <div>
       <div className={`${CLASS_NAME}__header`}>
@@ -182,10 +173,22 @@ const CodeGeneratorVersion = () => {
         <Panel>
           <div className={`${CLASS_NAME}__message`}>
             <div className={`${CLASS_NAME}__title`}>
-              Code generator version used for the latest build:{" "}
-              <span className={`${CLASS_NAME}__tag`}>
-                {codeGeneratorVersionLastBuildName}
-              </span>
+              Code generator version used for:
+              <ul>
+                <li>
+                  your last build:&nbsp;
+                  <strong>
+                    {codeGeneratorVersionLastBuild?.resource?.builds[0]
+                      ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]}
+                  </strong>
+                </li>
+                <li>
+                  current next build:&nbsp;
+                  <strong>
+                    {currentCodeGeneratorVersion?.getCodeGeneratorVersion?.name}
+                  </strong>
+                </li>
+              </ul>
             </div>
 
             <div className={`${CLASS_NAME}__explanation`}>

@@ -26,6 +26,18 @@ export const GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD = gql`
   }
 `;
 
+export const GET_CURRENT_CODE_GENERATOR_VERSION = gql`
+  query GetCodeGeneratorVersion(
+    $getCodeGeneratorVersionInput: GetCodeGeneratorVersionInput!
+  ) {
+    getCodeGeneratorVersion(
+      GetCodeGeneratorVersionInput: $getCodeGeneratorVersionInput
+    ) {
+      name
+    }
+  }
+`;
+
 // update code generator version
 export const UPDATE_CODE_GENERATOR_VERSION = gql`
   mutation UpdateCodeGeneratorVersion(
