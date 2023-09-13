@@ -5,7 +5,7 @@ import {
   removeTSVariableDeclares,
   removeTSIgnoreComments,
 } from "@amplication/code-gen-utils";
-import { builders } from "ast-types";
+import { builders, namedTypes } from "ast-types";
 import {
   EventNames,
   Module,
@@ -37,9 +37,19 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
 );
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
 
+type TemplateMappingOptions = {
+  createGraphQLModule: boolean;
+};
+
 export async function createAppModule(
   modulesFiles: ModuleMap
 ): Promise<ModuleMap> {
+  const { appInfo } = DsgContext.getInstance;
+  const {
+    settings: {
+      serverSettings: { generateGraphQL },
+    },
+  } = appInfo;
   const template = await readFile(appModuleTemplatePath);
   const nestModules = modulesFiles
     .modules()
@@ -55,30 +65,25 @@ export async function createAppModule(
     ({ exports }) => exports
   );
 
+  const importModules = [
+    ...nestModulesIds,
+    MORGAN_MODULE_ID,
+    callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
+    callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
+    useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
+  })`,
+  ];
+
+  const moduleImportsArrayExpression = createModuleImportsArrayExpression(
+    importModules,
+    {
+      createGraphQLModule: generateGraphQL,
+    }
+  );
+
   //@TODO: allow some env variable to override the autoSchemaFile: "schema.graphql" (e.g. GQL_SCHEMA_EXPORT_PATH)
   const templateMapping = {
-    MODULES: builders.arrayExpression([
-      ...nestModulesIds,
-      MORGAN_MODULE_ID,
-      callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
-      callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
-      useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
-    })`,
-      callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
-      useFactory: (configService) => {
-        const playground = configService.get("GRAPHQL_PLAYGROUND");
-        const introspection = configService.get("GRAPHQL_INTROSPECTION");
-        return {
-          autoSchemaFile: "schema.graphql",
-          sortSchema: true,
-          playground,
-          introspection: playground || introspection
-        }
-      },
-      inject: [${CONFIG_SERVICE_ID}],
-      imports: [${CONFIG_MODULE_ID}],
-    })`,
-    ]),
+    MODULES: moduleImportsArrayExpression,
   };
 
   return pluginWrapper(
@@ -98,6 +103,7 @@ export async function createAppModuleInternal({
   templateMapping,
 }: CreateServerAppModuleParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
+
   const MODULE_PATH = `${serverDirectories.srcDirectory}/app.module.ts`;
   const nestModules = modulesFiles
     .modules()
@@ -139,4 +145,35 @@ export async function createAppModuleInternal({
   const appModuleMap = new ModuleMap(DsgContext.getInstance.logger);
   await appModuleMap.set(appModule);
   return appModuleMap;
+}
+
+function createModuleImportsArrayExpression(
+  modules: (
+    | namedTypes.Identifier
+    | namedTypes.JSXIdentifier
+    | namedTypes.TSTypeParameter
+    | namedTypes.CallExpression
+  )[],
+  { createGraphQLModule = true }: TemplateMappingOptions
+) {
+  if (createGraphQLModule) {
+    const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
+      useFactory: (configService) => {
+        const playground = configService.get("GRAPHQL_PLAYGROUND");
+        const introspection = configService.get("GRAPHQL_INTROSPECTION");
+        return {
+          autoSchemaFile: "schema.graphql",
+          sortSchema: true,
+          playground,
+          introspection: playground || introspection
+        }
+      },
+      inject: [${CONFIG_SERVICE_ID}],
+      imports: [${CONFIG_MODULE_ID}],
+    })`;
+
+    modules.push(graphqlCallExpression);
+  }
+
+  return builders.arrayExpression(modules);
 }
