@@ -64,13 +64,13 @@ const EXAMPLE_ENTITY: Entity = {
   permissions: [],
 };
 
-describe("createUserObjectCustomProperties", () => {
-  test("creates custom object properties", () => {
+describe("createAuthEntityObjectCustomProperties", () => {
+  test("creates custom object properties", async () => {
     const userEntity = {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
     };
-    expect(createAuthEntityObjectCustomProperties(userEntity)).toEqual([
+    expect(await createAuthEntityObjectCustomProperties(userEntity)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
         // @ts-ignore
