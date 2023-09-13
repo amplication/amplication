@@ -92,12 +92,12 @@ export async function createSeed(): Promise<ModuleMap> {
   const fileDir = serverDirectories.scriptsDirectory;
   const outputFileName = "seed.ts";
 
-  const userEntity = entities.find(
+  const authEntity = entities.find(
     (entity) => entity.name === resourceInfo.settings.authEntityName
   );
   const customProperties =
-    userEntity &&
-    (await createUserObjectCustomProperties(userEntity as Entity));
+    authEntity &&
+    (await createAuthEntityObjectCustomProperties(authEntity as Entity));
 
   const template = await readFile(seedTemplatePath);
   const seedingProperties = customProperties
@@ -153,17 +153,17 @@ async function createSeedInternal({
   return moduleMap;
 }
 
-export async function createUserObjectCustomProperties(
-  userEntity: Entity
+export async function createAuthEntityObjectCustomProperties(
+  authEntity: Entity
 ): Promise<namedTypes.ObjectProperty[]> {
   const { logger } = DsgContext.getInstance;
 
   try {
-    return userEntity.fields
+    return authEntity.fields
       .filter((field) => field.required)
       .map((field): [EntityField, namedTypes.Expression | null] => [
         field,
-        createDefaultValue(field, userEntity),
+        createDefaultValue(field, authEntity),
       ])
       .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
       .map(([field, value]) =>
