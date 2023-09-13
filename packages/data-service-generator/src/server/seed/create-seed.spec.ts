@@ -70,7 +70,7 @@ describe("createAuthEntityObjectCustomProperties", () => {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
     };
-    expect(await createAuthEntityObjectCustomProperties(userEntity)).toEqual([
+    expect(createAuthEntityObjectCustomProperties(userEntity)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
         // @ts-ignore

@@ -96,8 +96,7 @@ export async function createSeed(): Promise<ModuleMap> {
     (entity) => entity.name === resourceInfo.settings.authEntityName
   );
   const customProperties =
-    authEntity &&
-    (await createAuthEntityObjectCustomProperties(authEntity as Entity));
+    authEntity && createAuthEntityObjectCustomProperties(authEntity as Entity);
 
   const template = await readFile(seedTemplatePath);
   const seedingProperties = customProperties
@@ -153,29 +152,23 @@ async function createSeedInternal({
   return moduleMap;
 }
 
-export async function createAuthEntityObjectCustomProperties(
+export function createAuthEntityObjectCustomProperties(
   authEntity: Entity
-): Promise<namedTypes.ObjectProperty[]> {
-  const { logger } = DsgContext.getInstance;
-
-  try {
-    return authEntity.fields
-      .filter((field) => field.required)
-      .map((field): [EntityField, namedTypes.Expression | null] => [
-        field,
-        createDefaultValue(field, authEntity),
-      ])
-      .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
-      .map(([field, value]) =>
-        builders.objectProperty(
-          builders.identifier(field.name),
-          // @ts-ignore
-          value
-        )
-      );
-  } catch (error) {
-    await logger.info(error.message);
-  }
+): namedTypes.ObjectProperty[] {
+  return authEntity.fields
+    .filter((field) => field.required)
+    .map((field): [EntityField, namedTypes.Expression | null] => [
+      field,
+      createDefaultValue(field, authEntity),
+    ])
+    .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
+    .map(([field, value]) =>
+      builders.objectProperty(
+        builders.identifier(field.name),
+        // @ts-ignore
+        value
+      )
+    );
 }
 
 export function createDefaultValue(
