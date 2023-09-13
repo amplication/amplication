@@ -65,7 +65,7 @@ const EXAMPLE_ENTITY: Entity = {
 };
 
 describe("createAuthEntityObjectCustomProperties", () => {
-  test("creates custom object properties", async () => {
+  test("creates custom object properties", () => {
     const userEntity = {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
