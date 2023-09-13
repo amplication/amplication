@@ -212,7 +212,7 @@ const CodeGeneratorVersion = () => {
       <hr className={`${CLASS_NAME}__divider`} />
 
       <div className={`${CLASS_NAME}__catalog`}>
-        <h3>Versions Catalog</h3>
+        <h3>Versions History</h3>
         {codeGeneratorVersionList?.versions.length &&
           codeGeneratorVersionList.versions.map((version) => (
             <DSGCatalog name={version.name} changelog={version.changelog} />
