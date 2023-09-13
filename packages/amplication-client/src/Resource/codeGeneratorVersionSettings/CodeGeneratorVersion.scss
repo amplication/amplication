@@ -16,18 +16,13 @@
 
     .amp-panel {
       margin-left: 0;
+      margin-bottom: 0;
     }
   }
 
   &__message {
     @include regular-14();
     margin-bottom: var(--double-spacing);
-
-    p:first-of-type,
-    p:last-of-type {
-      @include title-14;
-      margin-top: var(--double-spacing);
-    }
 
     .amp-button--clear {
       background-color: var(--black10);
@@ -42,5 +37,6 @@
 
   &__explanation {
     @include body1;
+    padding: var(--double-spacing) 0;
   }
 }

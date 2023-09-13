@@ -174,26 +174,30 @@ const CodeGeneratorVersion = () => {
         <h3>Code Generator Version Settings</h3>
         <Panel>
           <div className={`${CLASS_NAME}__message`}>
-            <p>
-              Code Generator Version Used For The Latest Build:{" "}
-              <Button buttonStyle={EnumButtonStyle.Clear}>
+            <div className={`${CLASS_NAME}__title`}>
+              Code generator version used for the latest build:{" "}
+              <span className={`${CLASS_NAME}__tag`}>
                 {codeGeneratorVersionLastBuild?.resource?.builds[0]
                   ?.codeGeneratorVersion ?? "N/A"}
-              </Button>
-            </p>
-
-            <div className={`${CLASS_NAME}__explanation`}>
-              You can control the version of the code generator to be used when
-              generating the code.
-              <br />
-              New major versions may include breaking changes and updates to
-              major version of core frameworks like NodeJS, NestJS, Prisma, etc.
+              </span>
             </div>
 
-            <p>
+            <div className={`${CLASS_NAME}__explanation`}>
+              <div>
+                You can control the version of the code generator to be used
+                when generating the code.
+              </div>
+              <div>
+                New major versions may include breaking changes and updates to
+                major version of core frameworks like NodeJS, NestJS, Prisma,
+                etc.
+              </div>
+            </div>
+
+            <div className={`${CLASS_NAME}__instructions`}>
               In case you are not ready to upgrade to a new major version, you
               can select a specific Code Generator version
-            </p>
+            </div>
           </div>
         </Panel>
       </div>
