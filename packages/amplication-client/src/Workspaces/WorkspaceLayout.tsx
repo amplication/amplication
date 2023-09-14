@@ -93,6 +93,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
     createServiceWithEntitiesResult,
+    updateCodeGeneratorVersion,
+    loadingUpdateCodeGeneratorVersion,
+    errorUpdateCodeGeneratorVersion,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   useEffect(() => {
@@ -176,6 +179,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         openHubSpotChat,
         createServiceWithEntitiesResult,
         commitUtils,
+        updateCodeGeneratorVersion,
+        loadingUpdateCodeGeneratorVersion,
+        errorUpdateCodeGeneratorVersion,
       }}
     >
       {isMobileOnly ? (

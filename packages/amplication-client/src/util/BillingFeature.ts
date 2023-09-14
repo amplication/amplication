@@ -12,4 +12,5 @@ export enum BillingFeature {
   ImportDBSchema = "feature-import-db-schema",
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",
+  CodeGeneratorVersion = "feature-code-generator-version",
 }

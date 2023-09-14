@@ -120,6 +120,7 @@ export enum AnalyticsEventNames {
   UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
+  UpgradeFromCodeGeneratorVersionClick = "UpgradeFromCodeGeneratorVersionClick",
   ContactUsButtonClick = "ContactUsButtonClick",
   UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
 
