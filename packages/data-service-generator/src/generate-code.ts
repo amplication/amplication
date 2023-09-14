@@ -88,8 +88,18 @@ export const generateCode = async (): Promise<void> => {
   });
 
   try {
+    const start = Date.now();
     const resourceData = await readInputJson(buildSpecPath);
+    const end = Date.now();
+    console.log(`readInputJson Execution time: ${end - start} ms`);
+    const start2 = Date.now();
     await generateCodeByResourceData(resourceData, buildOutputPath);
+    const end2 = Date.now();
+    console.log(
+      `generateCodeByResourceData readInputJson Execution time: ${
+        end2 - start2
+      } ms`
+    );
     await buildManagerNotifier.success();
   } catch (error) {
     await buildManagerNotifier.failure();

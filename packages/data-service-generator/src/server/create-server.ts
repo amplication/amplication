@@ -55,9 +55,19 @@ async function createServerInternal(
   const packageJsonModule = await createServerPackageJson();
 
   await context.logger.info("Creating DTOs...");
+  const start = new Date();
   const dtos = await createDTOs(context.entities);
+  const end = new Date();
+  console.log(
+    `createDTOs Execution time: ${end.getTime() - start.getTime()} ms`
+  );
   context.DTOs = dtos;
+  const start1 = new Date();
   const dtoModules = await createDTOModules(dtos);
+  const end1 = new Date();
+  console.log(
+    `createDTOModules Execution time: ${end1.getTime() - start1.getTime()} ms`
+  );
 
   await context.logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(entities);
