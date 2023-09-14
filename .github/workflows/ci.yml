@@ -89,6 +89,10 @@ jobs:
           npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+        
       - name: Test
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
