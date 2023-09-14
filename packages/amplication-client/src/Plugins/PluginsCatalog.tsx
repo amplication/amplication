@@ -182,7 +182,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
             variables: {
               data: {
                 displayName: plugin.name,
-                pluginId: plugin.id,
+                pluginId: plugin.pluginId,
                 enabled: true,
                 npm: plugin.npm,
                 version: pluginVersion.version,

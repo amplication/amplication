@@ -32,15 +32,13 @@ const createGitRepositoryFullName = (
   if (!gitRepository && !gitRepository?.gitOrganization)
     return "Connect to Git Provider";
 
-  if (provider === models.EnumGitProvider.Github) {
-    return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
-  }
-
-  if (
-    provider === models.EnumGitProvider.Bitbucket &&
-    gitRepository?.groupName
-  ) {
-    return `${gitRepository.groupName}/${gitRepository.name}`;
+  switch (provider) {
+    case models.EnumGitProvider.Github:
+      return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
+    case models.EnumGitProvider.Bitbucket:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
+    case models.EnumGitProvider.AwsCodeCommit:
+      return `${gitRepository.name}`;
   }
 };
 

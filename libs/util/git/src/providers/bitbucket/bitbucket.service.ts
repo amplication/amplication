@@ -53,11 +53,7 @@ import { BitbucketNotFoundError } from "./errors";
 export class BitBucketService implements GitProvider {
   private clientId: string;
   private clientSecret: string;
-  private auth: {
-    accessToken: string;
-    refreshToken: string;
-    expiresAt: number;
-  };
+  private auth: OAuthTokens;
   public readonly name = EnumGitProvider.Bitbucket;
   public readonly domain = "bitbucket.com";
   private logger: ILogger;
@@ -72,10 +68,10 @@ export class BitBucketService implements GitProvider {
         className: BitBucketService.name,
       },
     });
-    const { accessToken, refreshToken, expiresAt } =
+    const { accessToken, refreshToken, expiresAt, tokenType, scopes } =
       providerOrganizationProperties;
 
-    this.auth = { accessToken, refreshToken, expiresAt };
+    this.auth = { accessToken, refreshToken, expiresAt, tokenType, scopes };
     const { clientId, clientSecret } = providerConfiguration;
 
     if (!clientId || !clientSecret) {
@@ -102,6 +98,8 @@ export class BitBucketService implements GitProvider {
       authorizationCode
     );
 
+    this.auth.accessToken = authData.access_token;
+
     this.logger.info("BitBucketService: getAccessToken");
 
     return {
@@ -113,14 +111,33 @@ export class BitBucketService implements GitProvider {
     };
   }
 
-  async refreshAccessToken(): Promise<OAuthTokens> {
+  private shouldRefreshToken(): boolean {
+    const timeInMsLeft = this.auth.expiresAt - Date.now();
+    this.logger.debug("Time left before token expires:", {
+      value: `${timeInMsLeft / 60000} minutes`,
+    });
+
+    if (timeInMsLeft > 5 * 60 * 1000) {
+      this.logger.debug("Token is still valid");
+      return false;
+    }
+
+    this.logger.info("Token is going to be expired, refreshing...");
+    return true;
+  }
+
+  async refreshAccessTokenIfNeeded(): Promise<OAuthTokens> {
+    if (!this.shouldRefreshToken()) {
+      return this.auth;
+    }
+
     const newOAuthTokens = await refreshTokenRequest(
       this.clientId,
       this.clientSecret,
       this.auth.refreshToken
     );
 
-    this.logger.info("BitBucketService: refreshAccessToken");
+    this.logger.info("BitBucketService: refreshAccessTokenIfNeeded");
     this.auth.accessToken = newOAuthTokens.access_token;
 
     return {
@@ -134,8 +151,8 @@ export class BitBucketService implements GitProvider {
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
     const currentUser = await currentUserRequest(accessToken);
-
     const { links, display_name, username, uuid } = currentUser;
+
     this.logger.info("BitBucketService getCurrentUser");
     return {
       links: {
@@ -149,6 +166,8 @@ export class BitBucketService implements GitProvider {
   }
 
   async getGitGroups(): Promise<PaginatedGitGroup> {
+    await this.refreshAccessTokenIfNeeded();
+
     const paginatedWorkspaceMembership = await currentUserWorkspacesRequest(
       this.auth.accessToken
     );
@@ -196,6 +215,8 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing groupName");
     }
 
+    await this.refreshAccessTokenIfNeeded();
+
     const repository = await repositoryRequest(
       groupName,
       repositoryName,
@@ -227,6 +248,8 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing groupName");
       throw new CustomError("Missing groupName");
     }
+
+    await this.refreshAccessTokenIfNeeded();
 
     const repositoriesInWorkspace = await repositoriesInWorkspaceRequest(
       groupName,
@@ -271,6 +294,8 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing groupName");
     }
 
+    await this.refreshAccessTokenIfNeeded();
+
     const newRepository = await repositoryCreateRequest(
       groupName,
       repositoryName,
@@ -295,7 +320,7 @@ export class BitBucketService implements GitProvider {
 
   deleteGitOrganization(): Promise<boolean> {
     // Nothing bitbucket integration works on authentication on behalf of user.
-    // There is nothing to uninstall/delete when an organisation is deleted.
+    // There is nothing to uninstall/delete when an organization is deleted.
     return new Promise(() => true);
   }
 
@@ -320,6 +345,8 @@ export class BitBucketService implements GitProvider {
     } else {
       gitReference = ref;
     }
+
+    await this.refreshAccessTokenIfNeeded();
 
     const fileResponse = await getFileMetaRequest(
       repositoryGroupName,
@@ -371,6 +398,9 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
+
+    await this.refreshAccessTokenIfNeeded();
+
     const pullRequest = await getPullRequestByBranchNameRequest(
       repositoryGroupName,
       repositoryName,
@@ -390,7 +420,7 @@ export class BitBucketService implements GitProvider {
 
   async createPullRequest(
     createPullRequestArgs: GitProviderCreatePullRequestArgs
-  ): Promise<PullRequest> {
+  ): Promise<PullRequest | null> {
     const {
       repositoryGroupName,
       repositoryName,
@@ -419,6 +449,8 @@ export class BitBucketService implements GitProvider {
       },
     };
 
+    await this.refreshAccessTokenIfNeeded();
+
     const newPullRequest = await createPullRequestFromRequest(
       repositoryGroupName,
       repositoryName,
@@ -438,6 +470,8 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
+
+    await this.refreshAccessTokenIfNeeded();
 
     try {
       const branch = await getBranchRequest(
@@ -466,6 +500,8 @@ export class BitBucketService implements GitProvider {
       throw new CustomError("Missing repositoryGroupName");
     }
 
+    await this.refreshAccessTokenIfNeeded();
+
     const branch = await createBranchRequest(
       repositoryGroupName,
       repositoryName,
@@ -486,6 +522,9 @@ export class BitBucketService implements GitProvider {
         this.logger.error("Missing repositoryGroupName");
         throw new CustomError("Missing repositoryGroupName");
       }
+
+      await this.refreshAccessTokenIfNeeded();
+
       const firstCommit = await getFirstCommitRequest(
         repositoryGroupName,
         repositoryName,
@@ -510,6 +549,9 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
+
+    await this.refreshAccessTokenIfNeeded();
+
     return Promise.resolve(
       `https://x-token-auth:${this.auth.accessToken}@bitbucket.org/${repositoryGroupName}/${repositoryName}.git`
     );
@@ -531,6 +573,9 @@ export class BitBucketService implements GitProvider {
       this.logger.error("Missing repositoryGroupName");
       throw new CustomError("Missing repositoryGroupName");
     }
+
+    await this.refreshAccessTokenIfNeeded();
+
     await createCommentOnPrRequest(
       repositoryGroupName,
       repositoryName,

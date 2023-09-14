@@ -38,6 +38,7 @@ import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/loggin
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
+import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -428,6 +429,14 @@ describe("EntityService", () => {
           provide: BillingService,
           useClass: jest.fn(() => ({
             getMeteredEntitlement: jest.fn(() => {
+              return {};
+            }),
+          })),
+        },
+        {
+          provide: ServiceSettingsService,
+          useClass: jest.fn(() => ({
+            getServiceSettingsValues: jest.fn(() => {
               return {};
             }),
           })),

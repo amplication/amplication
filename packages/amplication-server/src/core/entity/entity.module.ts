@@ -9,6 +9,7 @@ import { UserModule } from "../user/user.module";
 import { PrismaModule } from "../../prisma";
 import { PrismaSchemaParserModule } from "../prismaSchemaParser/prismaSchemaParser.module";
 import { BillingModule } from "../billing/billing.module";
+import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { BillingModule } from "../billing/billing.module";
     DiffModule,
     PrismaSchemaParserModule,
     BillingModule,
+    ServiceSettingsModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
   exports: [EntityService, EntityResolver, EntityVersionResolver],

@@ -442,16 +442,25 @@ export class GithubService implements GitProvider {
     pullRequestTitle,
     pullRequestBody,
     baseBranchName,
-  }: GitProviderCreatePullRequestArgs): Promise<PullRequest> {
-    const { data: pullRequest } = await this.octokit.rest.pulls.create({
-      owner,
-      repo: repositoryName,
-      title: pullRequestTitle,
-      body: pullRequestBody,
-      head: branchName,
-      base: baseBranchName,
-    });
-    return { url: pullRequest.html_url, number: pullRequest.number };
+  }: GitProviderCreatePullRequestArgs): Promise<PullRequest | null> {
+    try {
+      const { data: pullRequest } = await this.octokit.rest.pulls.create({
+        owner,
+        repo: repositoryName,
+        title: pullRequestTitle,
+        body: pullRequestBody,
+        head: branchName,
+        base: baseBranchName,
+      });
+      return { url: pullRequest.html_url, number: pullRequest.number };
+    } catch (error) {
+      if (error.status === 422) {
+        throw new Error(
+          `Hey there! Looks like your code hasn't changed since the last build. We skipped creating a new pull request to keep things tidy.`
+        );
+      }
+    }
+    return null;
   }
 
   async getBranch({
@@ -640,10 +649,6 @@ export class GithubService implements GitProvider {
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
-    throw NotImplementedError;
-  }
-
-  async refreshAccessToken(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 

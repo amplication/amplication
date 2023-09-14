@@ -86,7 +86,7 @@ yarn-error.log*
     \\"@types/react\\": \\"16.14.11\\",
     \\"@types/react-dom\\": \\"17.0.0\\",
     \\"type-fest\\": \\"0.13.1\\",
-    \\"typescript\\": \\"4.2.4\\"
+    \\"typescript\\": \\"4.3.5\\"
   }
 }",
   "test-ui/public/manifest.json": "{
@@ -1716,7 +1716,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
 export const CustomerTitle = (record: TCustomer): string => {
-  return record.firstName || String(record.id);
+  return record.firstName?.toString() || String(record.id);
 };
 ",
   "test-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1822,7 +1822,7 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
 export const EmptyTitle = (record: TEmpty): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "test-ui/src/index.tsx": "import React from \\"react\\";
@@ -2011,7 +2011,7 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 export const ORDER_TITLE_FIELD = \\"id\\";
 
 export const OrderTitle = (record: TOrder): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "test-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -2263,7 +2263,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
 export const OrganizationTitle = (record: TOrganization): string => {
-  return record.name || String(record.id);
+  return record.name?.toString() || String(record.id);
 };
 ",
   "test-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -2407,7 +2407,7 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
 export const PROFILE_TITLE_FIELD = \\"id\\";
 
 export const ProfileTitle = (record: TProfile): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "test-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -2753,7 +2753,7 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 export const USER_TITLE_FIELD = \\"name\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name || String(record.id);
+  return record.name?.toString() || String(record.id);
 };
 ",
   "test-ui/src/user/roles.ts": "export const ROLES = [
@@ -3080,7 +3080,7 @@ services:
     \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
-    \\"typescript\\": \\"4.2.3\\"
+    \\"typescript\\": \\"4.3.5\\"
   },
   \\"jest\\": {
     \\"preset\\": \\"ts-jest\\",
@@ -5033,7 +5033,7 @@ describe(\\"Customer\\", () => {
   });
 
   test(\\"POST /customers existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/customers\\")
       .send(CREATE_INPUT)
@@ -6429,7 +6429,7 @@ describe(\\"Empty\\", () => {
   });
 
   test(\\"POST /empties existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/empties\\")
       .send(CREATE_INPUT)
@@ -6798,10 +6798,7 @@ export class NotFoundException extends common.NotFoundException {
   HttpStatus,
 } from \\"@nestjs/common\\";
 import { BaseExceptionFilter } from \\"@nestjs/core\\";
-import {
-  // @ts-ignore
-  Prisma,
-} from \\"@prisma/client\\";
+import { Prisma } from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -7910,7 +7907,7 @@ describe(\\"Order\\", () => {
   });
 
   test(\\"POST /orders existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/orders\\")
       .send(CREATE_INPUT)
@@ -9413,7 +9410,7 @@ describe(\\"Organization\\", () => {
   });
 
   test(\\"POST /organizations existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/organizations\\")
       .send(CREATE_INPUT)
@@ -11166,7 +11163,7 @@ describe(\\"Profile\\", () => {
   });
 
   test(\\"POST /profiles existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/profiles\\")
       .send(CREATE_INPUT)
@@ -13438,7 +13435,7 @@ describe(\\"User\\", () => {
   });
 
   test(\\"POST /users existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/users\\")
       .send(CREATE_INPUT)
@@ -15764,7 +15761,7 @@ describe(\\"IsJSONValue\\", () => {
 import isJSONValidator from \\"validator/lib/isJSON\\";
 
 export function IsJSONValue(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
       name: \\"IsJSONValue\\",
       target: object.constructor,
