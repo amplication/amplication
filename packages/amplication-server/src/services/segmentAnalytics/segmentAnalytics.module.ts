@@ -4,7 +4,6 @@ import {
   SegmentAnalyticsAsyncOptions,
   SegmentAnalyticsOptionsFactory,
 } from "./segmentAnalytics.interfaces";
-import { GoogleSecretsManagerModule } from "../googleSecretsManager.module";
 
 @Global()
 @Module({})
@@ -19,7 +18,7 @@ export class SegmentAnalyticsModule {
   ): DynamicModule {
     return {
       module: SegmentAnalyticsModule,
-      imports: [GoogleSecretsManagerModule],
+      imports: [],
       providers: [
         SegmentAnalyticsService,
         ...this.createConnectProviders(options),
