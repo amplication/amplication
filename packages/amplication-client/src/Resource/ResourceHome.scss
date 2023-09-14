@@ -31,6 +31,7 @@ $circle-badge-border: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
+    padding: 0 var(--default-spacing-small);
   }
   &__header:hover::before {
     z-index: 1;
