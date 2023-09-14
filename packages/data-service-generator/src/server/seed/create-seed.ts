@@ -83,18 +83,20 @@ export async function createSeed(): Promise<ModuleMap> {
   const {
     serverDirectories,
     entities,
-    userEntityName,
     userNameFieldName,
     userPasswordFieldName,
     userRolesFieldName,
+    resourceInfo,
   } = DsgContext.getInstance;
 
   const fileDir = serverDirectories.scriptsDirectory;
   const outputFileName = "seed.ts";
 
-  const userEntity = entities.find((entity) => entity.name === userEntityName);
+  const authEntity = entities.find(
+    (entity) => entity.name === resourceInfo.settings.authEntityName
+  );
   const customProperties =
-    userEntity && createUserObjectCustomProperties(userEntity as Entity);
+    authEntity && createAuthEntityObjectCustomProperties(authEntity as Entity);
 
   const template = await readFile(seedTemplatePath);
   const seedingProperties = customProperties
@@ -150,14 +152,14 @@ async function createSeedInternal({
   return moduleMap;
 }
 
-export function createUserObjectCustomProperties(
-  userEntity: Entity
+export function createAuthEntityObjectCustomProperties(
+  authEntity: Entity
 ): namedTypes.ObjectProperty[] {
-  return userEntity.fields
+  return authEntity.fields
     .filter((field) => field.required)
     .map((field): [EntityField, namedTypes.Expression | null] => [
       field,
-      createDefaultValue(field, userEntity),
+      createDefaultValue(field, authEntity),
     ])
     .filter(([field, value]) => !AUTH_FIELD_NAMES.has(field.name) && value)
     .map(([field, value]) =>
@@ -219,9 +221,7 @@ export function createDefaultValue(
       return null;
     }
     case EnumDataType.Lookup: {
-      throw new Error(
-        "Cannot create seed user value for a field with Lookup data type"
-      );
+      return null;
     }
     default: {
       throw new Error(`Unexpected data type: ${field.dataType}`);
