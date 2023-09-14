@@ -194,7 +194,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
-  codeGeneratorVersion: Scalars['String']['output'];
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];

@@ -191,7 +191,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
-  codeGeneratorVersion: Scalars['String']['output'];
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -2030,7 +2030,6 @@ export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;

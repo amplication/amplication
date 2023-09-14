@@ -166,7 +166,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String!
-  codeGeneratorVersion: String!
+  codeGeneratorVersion: String
   commit: Commit!
   commitId: String!
   createdAt: DateTime!
