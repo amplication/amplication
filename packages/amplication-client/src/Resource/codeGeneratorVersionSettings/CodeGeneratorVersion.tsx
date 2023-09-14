@@ -15,6 +15,7 @@ import { Panel } from "@amplication/ui/design-system";
 import { useHistory } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { DSGCatalog } from "./Catalog";
 
 const CLASS_NAME = "code-generator-version";
 
@@ -217,6 +218,15 @@ const CodeGeneratorVersion = () => {
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
       />
+      <hr className={`${CLASS_NAME}__divider`} />
+
+      <div className={`${CLASS_NAME}__catalog`}>
+        <h3>Versions History</h3>
+        {codeGeneratorVersionList?.versions.length &&
+          codeGeneratorVersionList.versions.map((version) => (
+            <DSGCatalog name={version.name} changelog={version.changelog} />
+          ))}
+      </div>
     </div>
   );
 };

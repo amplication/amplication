@@ -47,4 +47,19 @@
     @include body1;
     padding: var(--double-spacing) 0;
   }
+
+  &__divider {
+    height: 1px;
+    background-color: var(--black5);
+    margin: var(--large-spacing) 0;
+    border: none;
+  }
+
+  &__catalog {
+    h3 {
+      margin: 0;
+      margin-bottom: var(--default-spacing);
+      @include title-18;
+    }
+  }
 }
