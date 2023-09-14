@@ -46,7 +46,7 @@
     "@monaco-editor/react": "^4.5.1",
     "@mrleebo/prisma-ast": "^0.6.0",
     "@mui/lab": "^5.0.0-alpha.123",
-    "@mui/material": "^5.13.5",
+    "@mui/material": "^5.14.8",
     "@mui/system": "^5.10.7",
     "@nestjs/apollo": "^10.2.0",
     "@nestjs/common": "^9.4.0",
