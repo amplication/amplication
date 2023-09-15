@@ -99,7 +99,7 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
         ) : (
           <div className={`${CLASS_NAME}__git-disconnected`}>
             <Icon
-              icon="git-sync"
+              icon="pending_changes"
               size="small"
               className={`${CLASS_NAME}__git-icon`}
             />
