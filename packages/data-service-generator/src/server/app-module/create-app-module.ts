@@ -36,6 +36,9 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
   "ServeStaticOptionsService"
 );
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
+const APOLLO_DRIVER_MODULE_ID = builders.identifier("ApolloDriver");
+const APOLLO_DRIVER_CONFIG_MODULE_ID =
+  builders.identifier("ApolloDriverConfig");
 
 type CodeGenerationOptions = {
   createGraphQLModule: boolean;
@@ -174,7 +177,8 @@ function createModuleImportsArrayExpression(
   { createGraphQLModule = true }: CodeGenerationOptions
 ) {
   if (createGraphQLModule) {
-    const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
+    const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync<${APOLLO_DRIVER_CONFIG_MODULE_ID}>({
+      driver: ${APOLLO_DRIVER_MODULE_ID},
       useFactory: (configService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
@@ -206,7 +210,8 @@ function addCustomModuleImports(
   if (createGraphQLModule) {
     defaultImports.push(
       importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
-      importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`
+      importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,
+      importDeclaration`import { ${APOLLO_DRIVER_MODULE_ID}, ${APOLLO_DRIVER_CONFIG_MODULE_ID} } from "@nestjs/apollo"`
     );
   } else {
     defaultImports.push(
