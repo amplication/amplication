@@ -3060,7 +3060,6 @@ services:
     \\"dotenv\\": \\"16.3.1\\",
     \\"graphql\\": \\"16.8.0\\",
     \\"graphql-type-json\\": \\"0.3.2\\",
-    \\"nest-morgan\\": \\"1.0.1\\",
     \\"npm-run-all\\": \\"4.1.5\\",
     \\"passport\\": \\"0.6.0\\",
     \\"passport-http\\": \\"0.3.0\\",
@@ -3319,7 +3318,6 @@ async function seed() {
 ",
   "server/src/app.module.ts": "import { Module, Scope } from \\"@nestjs/common\\";
 import { APP_INTERCEPTOR } from \\"@nestjs/core\\";
-import { MorganInterceptor, MorganModule } from \\"nest-morgan\\";
 import { UserModule } from \\"./user/user.module\\";
 import { ProfileModule } from \\"./profile/profile.module\\";
 import { OrderModule } from \\"./order/order.module\\";
@@ -3345,19 +3343,12 @@ import { ConfigModule } from \\"@nestjs/config\\";
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
-    MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
   ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor(\\"combined\\"),
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}
 ",
@@ -4829,7 +4820,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -4959,7 +4949,7 @@ describe(\\"Customer\\", () => {
         },
       ],
       controllers: [CustomerController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -5427,11 +5417,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class CustomerModuleBase {}
 ",
@@ -6074,7 +6063,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -6168,7 +6156,7 @@ describe(\\"Empty\\", () => {
         },
       ],
       controllers: [EmptyController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -6401,11 +6389,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class EmptyModuleBase {}
 ",
@@ -7472,7 +7459,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -7566,7 +7552,7 @@ describe(\\"Order\\", () => {
         },
       ],
       controllers: [OrderController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -7862,11 +7848,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrderModuleBase {}
 ",
@@ -8828,7 +8813,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -8926,7 +8910,7 @@ describe(\\"Organization\\", () => {
         },
       ],
       controllers: [OrganizationController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -9462,11 +9446,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrganizationModuleBase {}
 ",
@@ -10401,7 +10384,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -10507,7 +10489,7 @@ describe(\\"Profile\\", () => {
         },
       ],
       controllers: [ProfileController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -10809,11 +10791,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class ProfileModuleBase {}
 ",
@@ -12525,7 +12506,6 @@ import {
   CallHandler,
 } from \\"@nestjs/common\\";
 import request from \\"supertest\\";
-import { MorganModule } from \\"nest-morgan\\";
 import { ACGuard } from \\"nest-access-control\\";
 import { DefaultAuthGuard } from \\"../../auth/defaultAuth.guard\\";
 import { ACLModule } from \\"../../auth/acl.module\\";
@@ -12643,7 +12623,7 @@ describe(\\"User\\", () => {
         },
       ],
       controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -13184,11 +13164,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from \\"@nestjs/common\\";
-import { MorganModule } from \\"nest-morgan\\";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class UserModuleBase {}
 ",
