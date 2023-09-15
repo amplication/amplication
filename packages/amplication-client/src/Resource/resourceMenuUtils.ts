@@ -5,6 +5,7 @@ export type MenuItemLinks = "entities" | "roles" | "git" | "settings";
 export const resourceMenuLayout: { [key: string]: string[] } = {
   [EnumResourceType.Service]: [
     "entities",
+    "modules",
     "roles",
     "connections",
     "git",
@@ -20,6 +21,11 @@ export const linksMap = {
     title: "Entities",
     icon: "entity_outline",
     to: "/entities",
+  },
+  modules: {
+    title: "Modules",
+    icon: "box",
+    to: "/modules",
   },
   roles: {
     title: "Roles",

@@ -65,6 +65,24 @@ const resourceRoutes = [
     ],
   },
   {
+    path: "/:workspace/:project/:resource/modules",
+    Component: lazy(() => import("../Modules/ModulesPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: [
+      {
+        path: "/:workspace/:project/:resource/modules/:moduleId",
+        Component: lazy(() => import("../Modules/Module")),
+        moduleName: "",
+        routeTrackType: "",
+        exactPath: true,
+        routes: [],
+        isAnalytics: true,
+      },
+    ],
+  },
+  {
     path: "/:workspace/:project/:resource/Services",
     Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
     moduleName: "",
