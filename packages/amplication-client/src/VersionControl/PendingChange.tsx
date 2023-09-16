@@ -70,7 +70,7 @@ const PendingChange = ({ change, linkToOrigin = false }: Props) => {
         <Tooltip
           wrap
           direction={TOOLTIP_DIRECTION}
-          aria-label="The entity has been deleted"
+          aria-label="The item has been deleted"
           className={`${CLASS_NAME}__tooltip_deleted`}
         >
           <div className={classNames(`${CLASS_NAME}__deleted`)}>{content}</div>
