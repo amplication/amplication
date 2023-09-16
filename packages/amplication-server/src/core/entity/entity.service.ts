@@ -916,7 +916,6 @@ export class EntityService {
     args: UpdateOneEntityArgs,
     user: User
   ): Promise<Entity | null> {
-    /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
     return await this.useLocking(args.where.id, user, async (entity) => {
       const newName =
         args.data.name?.toLowerCase().trim() ||
@@ -963,6 +962,16 @@ export class EntityService {
         },
         event: EnumEventType.EntityUpdate,
       });
+
+      await this.moduleService.updateDefaultModuleForEntity(
+        {
+          name: args.data.name,
+          displayName: args.data.name,
+        },
+        entity.resourceId,
+        entity.id,
+        user
+      );
 
       return this.prisma.entity.update({
         where: { ...args.where },
