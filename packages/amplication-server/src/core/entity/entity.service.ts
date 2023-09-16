@@ -696,40 +696,37 @@ export class EntityService {
     user: User
   ): Promise<Entity[]> {
     return await Promise.all(
-      DEFAULT_ENTITIES.map((entity) => {
-        const names = pick(entity, [
-          "name",
-          "displayName",
-          "pluralDisplayName",
-          "customAttributes",
-          "description",
-        ]);
-        return this.prisma.entity.create({
-          data: {
-            ...names,
-            resource: { connect: { id: resourceId } },
-            lockedAt: new Date(),
-            lockedByUser: {
-              connect: {
-                id: user.id,
-              },
+      DEFAULT_ENTITIES.map(async (entity) => {
+        const { fields, ...rest } = entity;
+        const newEntity = await this.createOneEntity(
+          {
+            data: {
+              ...rest,
+              resource: { connect: { id: resourceId } },
             },
-            versions: {
-              create: {
-                ...names,
-                commit: undefined,
-                versionNumber: CURRENT_VERSION_NUMBER,
-                permissions: {
-                  create: DEFAULT_PERMISSIONS,
-                },
+          },
+          user,
+          false,
+          false,
+          false
+        );
 
-                fields: {
-                  create: entity.fields,
-                },
-              },
+        await this.prisma.entityVersion.update({
+          where: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: newEntity.id,
+              versionNumber: CURRENT_VERSION_NUMBER,
+            },
+          },
+          data: {
+            fields: {
+              create: fields,
             },
           },
         });
+
+        return newEntity;
       })
     );
   }
