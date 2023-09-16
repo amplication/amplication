@@ -107,12 +107,7 @@ export const ModuleList = React.memo(
                 icon="modules"
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${module.id}`}
               >
-                <span>{module.displayName}</span>--
-                <span>
-                  {module.description === null
-                    ? "undefined"
-                    : module.description}
-                </span>
+                <span>{module.displayName}</span>
               </InnerTabLink>
             </div>
           ))}

@@ -38,11 +38,12 @@ const Module = () => {
   } = useModule();
 
   useEffect(() => {
+    if (!moduleId) return;
     getModule({
       variables: {
         moduleId,
       },
-    });
+    }).catch(console.error);
   }, [moduleId, getModule]);
 
   useEffect(() => {

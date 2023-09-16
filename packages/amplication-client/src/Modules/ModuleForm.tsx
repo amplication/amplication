@@ -40,7 +40,6 @@ const FORM_SCHEMA = {
 
 const ModuleForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
-    console.log("defaultValues", defaultValues);
     const sanitizedDefaultValues = omit(
       defaultValues,
       NON_INPUT_GRAPHQL_PROPERTIES
