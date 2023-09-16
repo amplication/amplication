@@ -880,11 +880,9 @@ export class EntityService {
         : EnumPendingChangeAction.Create;
 
       //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        entity.name = changedVersion.name;
-        entity.displayName = changedVersion.displayName;
-        entity.pluralDisplayName = changedVersion.pluralDisplayName;
-      }
+      entity.name = changedVersion.name;
+      entity.displayName = changedVersion.displayName;
+      entity.pluralDisplayName = changedVersion.pluralDisplayName;
 
       return {
         originId: entity.id,

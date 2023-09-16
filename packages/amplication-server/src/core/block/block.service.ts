@@ -731,9 +731,7 @@ export class BlockService {
         : EnumPendingChangeAction.Create;
 
       //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        block.displayName = changedVersion.displayName;
-      }
+      block.displayName = changedVersion.displayName;
 
       return {
         originId: block.id,
