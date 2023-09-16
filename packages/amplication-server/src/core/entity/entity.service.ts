@@ -772,6 +772,12 @@ export class EntityService {
         await this.deleteField({ where: { id: relatedEntityField.id } }, user);
       }
 
+      await this.moduleService.deleteDefaultModuleForEntity(
+        entity.resourceId,
+        entity.id,
+        user
+      );
+
       return this.prisma.entity.update({
         where: args.where,
         data: {
