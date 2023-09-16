@@ -12,6 +12,7 @@ import NameField from "../Components/NameField";
 type Props = {
   onSubmit: (values: models.Module) => void;
   defaultValues?: models.Module;
+  disabled?: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -38,7 +39,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const ModuleForm = ({ onSubmit, defaultValues }: Props) => {
+const ModuleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -58,9 +59,15 @@ const ModuleForm = ({ onSubmit, defaultValues }: Props) => {
       onSubmit={onSubmit}
     >
       <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
-        <NameField label="Name" name="name" />
-        <TextField name="description" label="Description" textarea rows={3} />
+        {!disabled && <FormikAutoSave debounceMS={1000} />}
+        <NameField label="Name" name="name" disabled={disabled} />
+        <TextField
+          name="description"
+          label="Description"
+          textarea
+          rows={3}
+          disabled={disabled}
+        />
       </Form>
     </Formik>
   );

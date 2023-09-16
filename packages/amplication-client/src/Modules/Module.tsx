@@ -7,6 +7,7 @@ import { DeleteModule } from "./DeleteModule";
 import "./Module.scss";
 import ModuleForm from "./ModuleForm";
 import useModule from "./hooks/useModule";
+import { isEmpty } from "lodash";
 
 const CLASS_NAME = "module";
 
@@ -83,18 +84,25 @@ const Module = () => {
     );
   }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
 
+  const isEntityModule =
+    data?.Module && !isEmpty(data.Module.entityId) ? true : false;
+
   return (
     <>
       <div className={`${CLASS_NAME}__header`}>
         <h3>Module Settings</h3>
-        {data?.Module && (
+        {data?.Module && !isEntityModule && (
           <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
         )}
       </div>
-
       <HorizontalRule />
+
       {!loading && (
-        <ModuleForm onSubmit={handleSubmit} defaultValues={data?.Module} />
+        <ModuleForm
+          disabled={isEntityModule}
+          onSubmit={handleSubmit}
+          defaultValues={data?.Module}
+        />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>

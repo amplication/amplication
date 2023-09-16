@@ -6,6 +6,7 @@ export const MODULE_FIELDS_FRAGMENT = gql`
     name
     displayName
     description
+    entityId
   }
 `;
 

@@ -87,6 +87,7 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ActionContext } from "../userAction/types";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ModuleService } from "../module/module.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -188,6 +189,7 @@ export class EntityService {
     private readonly billingService: BillingService,
     private readonly prismaSchemaParserService: PrismaSchemaParserService,
     private readonly serviceSettingsService: ServiceSettingsService,
+    private readonly moduleService: ModuleService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -257,6 +259,7 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = true
   ): Promise<Entity> {
+    const resourceId = args.data.resource.connect.id;
     if (
       args.data?.name?.toLowerCase().trim() ===
       args.data?.pluralDisplayName?.toLowerCase().trim()
@@ -347,10 +350,27 @@ export class EntityService {
         },
       });
     }
+
+    await this.moduleService.createDefaultModuleForEntity(
+      {
+        data: {
+          name: args.data.name,
+          displayName: args.data.name,
+          resource: {
+            connect: {
+              id: resourceId,
+            },
+          },
+        },
+      },
+      newEntity.id,
+      user
+    );
+
     if (trackEvent) {
       const resourceWithProject = await this.prisma.resource.findUnique({
         where: {
-          id: args.data.resource.connect.id,
+          id: resourceId,
         },
         include: {
           project: true,
@@ -360,7 +380,7 @@ export class EntityService {
       await this.analytics.track({
         userId: user.account.id,
         properties: {
-          resourceId: args.data.resource.connect.id,
+          resourceId: resourceId,
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,

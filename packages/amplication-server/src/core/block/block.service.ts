@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import type { JsonObject } from "type-fest";
-import { pick, head, last } from "lodash";
+import { pick, head, last, mergeWith, isArray } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -434,10 +434,28 @@ export class BlockService {
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
+    const existingVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
+    });
+
+    // merge the existing settings with the new settings. use deep merge but do not merge arrays
+    const allSettings = mergeWith(
+      {},
+      existingVersion.settings,
+      settings,
+      (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
+    );
+
     return await this.useLocking(args.where.id, user, async () => {
       const version = await this.prisma.blockVersion.update({
         data: {
-          settings: settings,
+          settings: allSettings,
           block: {
             update: {
               displayName,
