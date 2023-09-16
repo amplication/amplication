@@ -112,7 +112,7 @@ export class BlockService {
     const block = await this.prisma.block.findFirst({
       where: {
         id: args.where.id,
-        //deletedAt: null
+        deletedAt: null,
       },
     });
 
@@ -279,12 +279,13 @@ export class BlockService {
   }
 
   async findOne<T extends IBlock>(args: FindOneArgs): Promise<T | null> {
-    const version = await this.prisma.blockVersion.findUnique({
+    const version = await this.prisma.blockVersion.findFirst({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
+        blockId: args.where.id,
+        versionNumber: CURRENT_VERSION_NUMBER,
+        block: {
+          deletedAt: null,
         },
       },
       include: {
@@ -309,7 +310,13 @@ export class BlockService {
   /**@todo: convert versionToIBlock */
   /**@todo: return latest version number */
   async findMany(args: FindManyBlockArgs): Promise<Block[]> {
-    return this.prisma.block.findMany(args);
+    return this.prisma.block.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null,
+      },
+    });
   }
 
   /**@todo: return latest version number */
@@ -480,6 +487,10 @@ export class BlockService {
         },
       },
     });
+
+    if (blockVersion.block.deletedAt !== null) {
+      throw new Error(`Block ${args.where.id} is already deleted`);
+    }
 
     if (!blockVersion) {
       throw new Error(`Block ${args.where.id} is not exist`);

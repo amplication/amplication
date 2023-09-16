@@ -76,7 +76,7 @@ const Module = () => {
 
   const errorMessage = formatError(error) || formatError(updateModuleError);
 
-  const handleDeleteField = useCallback(() => {
+  const handleDeleteModule = useCallback(() => {
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
     );
@@ -87,7 +87,7 @@ const Module = () => {
       <div className={`${CLASS_NAME}__header`}>
         <h3>Module Settings</h3>
         {data?.Module && (
-          <DeleteModule module={data?.Module} onDelete={handleDeleteField} />
+          <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
         )}
       </div>
 
