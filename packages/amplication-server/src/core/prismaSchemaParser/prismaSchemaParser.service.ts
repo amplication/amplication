@@ -1181,7 +1181,10 @@ export class PrismaSchemaParserService {
       id: cuid(), // creating here the entity id because we need it for the relation
       name: model.name,
       displayName: modelDisplayName,
-      pluralDisplayName: entityPluralDisplayName,
+      pluralDisplayName:
+        entityPluralDisplayName === model.name
+          ? `${entityPluralDisplayName} Items`
+          : entityPluralDisplayName,
       description: "",
       customAttributes: entityAttributes,
       fields: [],
