@@ -97,7 +97,7 @@ jobs:
       - name: Checkout manifest repository
         uses: actions/checkout@v3
         with:
-          repository: "amplication/amplication-manifests"
+          repository: "amplication/amplication-cluster-configuration"
           token: "${{ secrets.PAT }}"
           fetch-depth: '0'
 
@@ -115,27 +115,27 @@ jobs:
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
             if [[ "$project" != "data-service-generator" ]]; then
-              yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
-              git add charts/applications/$project/values/production.yaml
+              yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
+              git add production/applications/$project/values.yaml
             elif [[ "$project" == "data-service-generator" ]]; then
-              yq -i '.job.image.tag = "$DSG_LATEST_VERSION"' charts/applications/$project/values/production.yaml
-              git add charts/applications/$project/values/production.yaml
+              yq -i '.$project.events.sensor.image.tag = "$DSG_LATEST_VERSION"' production/applications/$project/values.yaml
+              git add production/applications/$project/values.yaml
             fi;
           done
 
-      - name: Create pull request on manifest repository
+      - name: Create pull request on cluster-configuration repository
         uses: peter-evans/create-pull-request@v4.2.3
         with:
           token: "${{ secrets.PAT }}"
-          commit-message: "feat: image.tag bump to ${{ github.ref_name }}"
+          commit-message: "feat: image tag bump to ${{ github.ref_name }}"
           branch: "release/${{ github.ref_name }}"
           title: "Release: bump version of production environment to `${{ github.ref_name }}`"
           body: |
-            This pull request was generated as a result of the `tag.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
+            This pull request was generated as a result of the `deployment.production.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
 
             Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
 
-            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `production-applications`. 
+            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `applications`. 
 
             Releases: https://github.com/amplication/amplication/releases
           labels: "release"
