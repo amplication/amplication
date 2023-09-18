@@ -6,6 +6,9 @@ ROOT_DIR=$SCRIPT_DIR/../../../
 
 cd $ROOT_DIR
 
+export GIT_REF_NAME=${GIT_REF_NAME:-"latest-local"}
+export GIT_SHA=${GIT_SHA:-"🦄-sha"}
+
 if [[ $PRODUCTION_TAGS = "true" ]]; then
     echo "Production deployment detected"
     echo "Overriding INPUT_TAGS with data-service-generator package version"
@@ -14,7 +17,7 @@ if [[ $PRODUCTION_TAGS = "true" ]]; then
     # prefix with `v` to match other container image tags
     IMAGE_TAG="v$PACKAGE_VERSION"
     export INPUT_TAGS="$IMAGE_REPO:$IMAGE_TAG,$IMAGE_REPO:sha-$GIT_SHA"
-    
+
     npx nx internal:package:container data-service-generator --prod
 else
     npx nx internal:package:container data-service-generator 
