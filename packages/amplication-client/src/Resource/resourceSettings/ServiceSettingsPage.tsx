@@ -11,9 +11,10 @@ const CLASS_NAME = "service-settings";
 const ServiceSettingsPage: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
+
   const { stigg } = useStiggContext();
-  const canChooseCodeGeneratorVersion = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.CodeGeneratorVersion,
+  const showCodeGeneratorVersion = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ShowCodeGeneratorVersion,
   }).hasAccess;
 
   return (
@@ -58,7 +59,7 @@ const ServiceSettingsPage: React.FC<{}> = () => {
           API Tokens
         </InnerTabLink>
       </div>
-      {canChooseCodeGeneratorVersion && (
+      {showCodeGeneratorVersion && (
         <div>
           <InnerTabLink
             to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version/update`}
