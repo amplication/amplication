@@ -87,6 +87,7 @@ jobs:
           INPUT_PUSH: true
           GIT_REF_NAME: ${{ github.ref_name }}
           GIT_SHA: ${{ github.sha }}
+          PRODUCTION_TAGS: true
 
   deployment-container:
     name: Deployment container
