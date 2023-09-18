@@ -561,11 +561,6 @@ export class PrismaSchemaParserService {
               },
             };
 
-            void actionContext.onEmitUserActionLog(
-              `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
-              EnumActionLogLevel.Info
-            );
-
             builder
               .model(model.name)
               .field(field.name)
