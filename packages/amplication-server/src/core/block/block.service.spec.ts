@@ -153,6 +153,7 @@ describe("BlockService", () => {
               create: prismaBlockVersionCreateMock,
               findMany: prismaBlockVersionFindManyMock,
               findUnique: prismaBlockVersionFindOneMock,
+              findFirst: prismaBlockVersionFindOneMock,
               update: prismaBlockVersionUpdateMock,
             },
           })),
@@ -248,10 +249,10 @@ describe("BlockService", () => {
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledTimes(1);
     expect(prismaBlockVersionFindOneMock).toHaveBeenCalledWith({
       where: {
-        // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: EXAMPLE_BLOCK.id,
-          versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+        blockId: EXAMPLE_BLOCK.id,
+        versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
+        block: {
+          deletedAt: null,
         },
       },
       include: {
@@ -382,10 +383,18 @@ describe("BlockService", () => {
   });
 
   it("should find many blocks", async () => {
-    const args = {};
+    const args = {
+      where: undefined,
+    };
     expect(await service.findMany(args)).toEqual([EXAMPLE_BLOCK]);
     expect(prismaBlockFindManyMock).toBeCalledTimes(1);
-    expect(prismaBlockFindManyMock).toBeCalledWith(args);
+    expect(prismaBlockFindManyMock).toBeCalledWith({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null,
+      },
+    });
   });
 
   it("should find many blocks by block type", async () => {
