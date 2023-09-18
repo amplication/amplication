@@ -27,6 +27,7 @@ export type TUpdateCodeGeneratorVersion = {
     codeGeneratorStrategy: models.CodeGeneratorVersionStrategy | null;
     codeGeneratorVersion: string | null;
   };
+  resourceId: string;
 };
 
 type TCreateMessageBroker = {
@@ -146,7 +147,7 @@ const useResources = (
           },
         },
         where: {
-          id: currentResource?.id,
+          id: input.resourceId,
         },
       },
     });

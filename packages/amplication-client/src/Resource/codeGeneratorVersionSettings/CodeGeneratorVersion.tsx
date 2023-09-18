@@ -160,6 +160,7 @@ const CodeGeneratorVersion = () => {
         codeGeneratorStrategy,
         codeGeneratorVersion,
       },
+      resourceId: currentResource?.id,
     });
   }, []);
 
