@@ -6,14 +6,7 @@ ROOT_DIR=$SCRIPT_DIR/../../../
 
 cd $ROOT_DIR
 
-if [[ $INPUT_TAGS == *":next"* ]] || [[ $INPUT_TAGS == *":master"* ]]; then
-    echo "Sandbox / Staging deployment detected"
-    # check if INPUT_TAGS contains a `next` or `master` tag
-    echo "Skipping container build for next or master branch"
-    npx nx internal:package:container data-service-generator --prod
-    exit 0
-    
-elif [[ $PRODUCTION_TAGS = "true" ]]; then
+if [[ $PRODUCTION_TAGS = "true" ]]; then
     echo "Production deployment detected"
     echo "Overriding INPUT_TAGS with data-service-generator package version"
 
@@ -21,11 +14,8 @@ elif [[ $PRODUCTION_TAGS = "true" ]]; then
     # prefix with `v` to match other container image tags
     IMAGE_TAG="v$PACKAGE_VERSION"
     export INPUT_TAGS="$IMAGE_REPO:$IMAGE_TAG,$IMAGE_REPO:sha-$GIT_SHA"
+    
     npx nx internal:package:container data-service-generator --prod
-    exit 0
+else
+    npx nx internal:package:container data-service-generator 
 fi
-
-echo "Local environment detected"
-
-echo "INPUT_TAGS not set, skipping container build"
-npx nx internal:package:container data-service-generator
