@@ -12,7 +12,6 @@ import { NoCommitOnBranch } from "./errors/NoCommitOnBranch";
 import { GitProvider } from "./git-provider.interface";
 import {
   Branch,
-  Commit,
   CreateBranchIfNotExistsArgs,
   CreatePullRequestArgs,
   CreateRepositoryArgs,
@@ -20,8 +19,8 @@ import {
   GetRepositoriesArgs,
   GitProviderArgs,
   PostCommitProcessArgs,
-  PreCommitProcessArgs,
-  PreCommitProcessResult,
+  CalculateDiffAndResetBranchArgs,
+  CalculateDiffAndResetBranchResult,
   RemoteGitOrganization,
   RemoteGitRepos,
   RemoteGitRepository,
@@ -37,7 +36,7 @@ import { isFolderEmpty } from "./utils/is-folder-empty";
 import { prepareFilesForPullRequest } from "./utils/prepare-files-for-pull-request";
 import { GitCli } from "./providers/git-cli";
 import { GitFactory } from "./git-factory";
-import { GitError, LogResult } from "simple-git";
+import { LogResult } from "simple-git";
 import { TraceWrapper } from "@amplication/opentelemetry-nestjs";
 import { isEmpty } from "lodash";
 import { InvalidBaseBranch } from "./errors/InvalidBaseBranch";
@@ -66,10 +65,6 @@ export class GitClientService {
 
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     return this.provider.getOAuthTokens(authorizationCode);
-  }
-
-  async refreshAccessToken(): Promise<OAuthTokens> {
-    return this.provider.refreshAccessToken();
   }
 
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
@@ -282,29 +277,41 @@ export class GitClientService {
       baseBranch,
     });
 
-    const { diff } = await this.preCommitProcess({
+    // calculate diff on everything *already existing* on the amplication branch since last amplication build
+    const preCommitDiff = await this.calculateDiffAndResetBranch({
       branchName,
       gitCli,
+      useBeforeLastCommit: false,
     });
 
+    // now commit the new build
     const sha = await gitCli.commit(branchName, commitMessage, preparedFiles);
     this.logger.debug("New commit added", { sha });
 
-    if (diff) {
-      const diffFolder = normalize(
-        join(
-          `.amplication/diffs`,
-          this.provider.name,
-          owner,
-          repositoryName,
-          v4()
-        )
+    // now calculate the diff (only) between the previous amplication build and the new one
+    const postCommitDiff = await this.calculateDiffAndResetBranch({
+      branchName,
+      gitCli,
+      useBeforeLastCommit: true,
+    });
+
+    // On top of the previous amplication build, apply the patch for the already existing changes that have been in this branch
+    if (preCommitDiff.diff) {
+      await this.applyPostCommit(
+        preCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
       );
-      await this.postCommitProcess({
-        diffFolder,
-        diff,
-        gitCli,
-      });
+    }
+    // on top of the already existing changes, apply the diff between the previous amplication build and the new one
+    if (postCommitDiff.diff) {
+      await this.applyPostCommit(
+        postCommitDiff.diff,
+        owner,
+        repositoryName,
+        gitCli
+      );
     }
 
     const existingPullRequest = await this.provider.getPullRequest({
@@ -343,6 +350,25 @@ export class GitClientService {
     return pullRequest.url;
   }
 
+  private async applyPostCommit(diff, owner, repositoryName, gitCli) {
+    if (diff) {
+      const diffFolder = normalize(
+        join(
+          `.amplication/diffs`,
+          this.provider.name,
+          owner,
+          repositoryName,
+          v4()
+        )
+      );
+      await this.postCommitProcess({
+        diffFolder,
+        diff,
+        gitCli,
+      });
+    }
+  }
+
   /**
    * Returns git commits by amplication author
    * @param gitCli Git client
@@ -356,6 +382,7 @@ export class GitClientService {
       authors.push(amplicationBot.gitAuthor);
     }
     authors.push(gitCli.gitAuthorUser);
+    authors.push(gitCli.gitOldAuthorUser);
 
     return gitCli.log(authors, maxCount);
   }
@@ -364,18 +391,27 @@ export class GitClientService {
    * Return the git diff of the latest amplication commit in the branchName.
    * Return null when no amplication commits are found in the branch.
    */
-  async preCommitProcess({
+  async calculateDiffAndResetBranch({
     gitCli,
     branchName,
-  }: PreCommitProcessArgs): PreCommitProcessResult {
+    useBeforeLastCommit,
+  }: CalculateDiffAndResetBranchArgs): CalculateDiffAndResetBranchResult {
     this.logger.info("Pre commit process");
     await gitCli.checkout(branchName);
 
-    const gitLogs = await this.gitLog(gitCli, 1);
-
-    if (gitLogs.total > 0 && gitLogs.latest) {
-      const { hash } = gitLogs.latest;
-
+    let hash = "";
+    if (useBeforeLastCommit) {
+      const gitLogs = await this.gitLog(gitCli, 2);
+      if (gitLogs.total > 0) {
+        hash = gitLogs.all[0].hash;
+      }
+    } else {
+      const gitLogs = await this.gitLog(gitCli, 1);
+      if (gitLogs.total > 0 && gitLogs.latest) {
+        hash = gitLogs.latest.hash;
+      }
+    }
+    if (hash != "") {
       const diff = await gitCli.diff(hash);
       if (!diff) {
         this.logger.warn("Diff returned empty");
@@ -383,6 +419,7 @@ export class GitClientService {
       }
 
       // Reset the branch to the latest commit of the user / bot
+      this.logger.debug("preCommit - resetting branch ", { branchName, hash });
       await gitCli.reset([hash]);
       await gitCli.push(["--force"]);
       this.logger.info("Diff returned");
@@ -443,57 +480,24 @@ export class GitClientService {
       throw new NoCommitOnBranch(baseBranch);
     }
 
+    let hash = firstCommitOnBaseBranch.sha;
+
+    await gitCli.checkout(baseBranch);
+    const gitLogs = await this.gitLog(gitCli, 1);
+    if (gitLogs.total > 0 && gitLogs.latest) {
+      hash = gitLogs.latest.hash;
+    }
+
     const newBranch = await this.provider.createBranch({
       owner,
       branchName,
       repositoryName,
       repositoryGroupName,
-      pointingSha: firstCommitOnBaseBranch.sha,
+      pointingSha: hash,
       baseBranchName: baseBranch,
     });
 
-    // Cherry pick all amplication authored commits from the base branch to the new branch
-    await gitCli.checkout(baseBranch);
-    const gitLogs = await this.gitLog(gitCli);
-    await gitCli.resetState();
-    await gitCli.checkout(newBranch.name);
-
-    await this.cherryPickCommits(
-      gitLogs,
-      gitCli,
-      branchName,
-      firstCommitOnBaseBranch
-    );
     return newBranch;
-  }
-
-  private async cherryPickCommits(
-    commitsFromLatest: LogResult,
-    gitCli: GitCli,
-    branchName: string,
-    firstCommitOnBaseBranch: Commit
-  ) {
-    for (let index = commitsFromLatest.total - 1; index >= 0; index--) {
-      const commit = commitsFromLatest.all[index];
-      if (firstCommitOnBaseBranch.sha === commit.hash) {
-        continue;
-      }
-      try {
-        await gitCli.cherryPick(commit.hash);
-      } catch (error) {
-        if (error instanceof GitError) {
-          this.logger.error(
-            `Failed to cherry pick commit ${commit.hash} on branch ${branchName}`,
-            error
-          );
-          await gitCli.cherryPickAbort();
-          await gitCli.resetState();
-          continue;
-        }
-      }
-    }
-
-    await gitCli.push();
   }
 
   private async manageAmplicationIgnoreFile(

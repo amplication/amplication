@@ -43,6 +43,7 @@ import { RequestContextModule } from "nestjs-request-context";
           sortSchema: true,
           debug: configService.get("GRAPHQL_DEBUG") === "1",
           playground: configService.get("PLAYGROUND_ENABLE") === "1",
+          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
           context: ({ req }: { req: Request }) => ({
             req,
           }),

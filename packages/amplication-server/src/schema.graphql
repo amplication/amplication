@@ -166,6 +166,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String!
+  codeGeneratorVersion: String
   commit: Commit!
   commitId: String!
   createdAt: DateTime!
@@ -207,6 +208,21 @@ input BuildWhereInput {
 input ChangePasswordInput {
   newPassword: String!
   oldPassword: String!
+}
+
+input CodeGeneratorVersionOptionsInput {
+  codeGeneratorStrategy: CodeGeneratorVersionStrategy
+  codeGeneratorVersion: String
+}
+
+enum CodeGeneratorVersionStrategy {
+  LatestMajor
+  LatestMinor
+  Specific
+}
+
+input CodeGeneratorVersionUpdateInput {
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput!
 }
 
 type Commit {
@@ -926,6 +942,7 @@ type Mutation {
   setPluginOrder(data: PluginSetOrderInput!, where: WhereUniqueInput!): PluginOrder
   signup(data: SignupInput!): Auth!
   updateAccount(data: UpdateAccountInput!): Account!
+  updateCodeGeneratorVersion(data: CodeGeneratorVersionUpdateInput!, where: WhereUniqueInput!): Resource
   updateEntity(data: EntityUpdateInput!, where: WhereUniqueInput!): Entity
   updateEntityField(data: EntityFieldUpdateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   updateEntityPermission(data: EntityUpdatePermissionInput!, where: WhereUniqueInput!): EntityPermission!
@@ -1230,6 +1247,8 @@ type RemoteGitRepository {
 
 type Resource {
   builds(orderBy: BuildOrderByInput, skip: Int, take: Int, where: BuildWhereInput): [Build!]!
+  codeGeneratorStrategy: CodeGeneratorVersionStrategy
+  codeGeneratorVersion: String
   createdAt: DateTime!
   description: String!
   entities(orderBy: EntityOrderByInput, skip: Int, take: Int, where: EntityWhereInput): [Entity!]!
@@ -1609,6 +1628,7 @@ input WhereUniqueInput {
 
 type Workspace {
   createdAt: DateTime!
+  externalId: String
   gitOrganizations: [GitOrganization!]
   id: String!
   name: String!

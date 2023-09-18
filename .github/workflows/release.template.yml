@@ -1,4 +1,4 @@
-name: Release
+name: Reusable Release template
 
 on:
   workflow_call:
@@ -49,6 +49,7 @@ jobs:
     name: Package
     runs-on: ubuntu-20.04
     strategy:
+      fail-fast: false
       matrix:
         project: ${{ fromJson(inputs.affected-package-container) }}
     steps:
@@ -86,6 +87,7 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
+          mask-password: 'true'
           registries: "439403303254"
 
       # https://github.com/docker/metadata-action

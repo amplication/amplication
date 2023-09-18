@@ -18,6 +18,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { TopicsTile } from "./TopicsTile";
 import { ServicesTile } from "./ServicesTile";
+import EllipsisText from "../Components/EllipsisText";
 import ResourceNameField from "./ResourceNameField";
 
 type Props = AppRouteProps & {
@@ -50,6 +51,18 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
+            <EllipsisText
+              text={currentResource?.name}
+              maxLength={30}
+              maxHeight={180}
+            />
+            <CircleBadge
+              name={currentResource?.name || ""}
+              color={
+                resourceThemeMap[currentResource?.resourceType].color ||
+                "transparent"
+              }
+            />
             <ResourceNameField
               currentResource={currentResource}
               resourceId={resourceId}

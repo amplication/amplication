@@ -1,5 +1,6 @@
 import { AppInfo } from "@amplication/code-gen-types";
 import { EnumAuthProviderType } from "../models";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
 
 export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".ts",
@@ -28,5 +29,9 @@ export const appInfo: AppInfo = {
       generateAdminUI: true,
       adminUIPath: "",
     },
+  },
+  codeGeneratorVersionOptions: {
+    codeGeneratorVersion: null,
+    codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
 };

@@ -5,6 +5,7 @@ import { Environment } from "../core/environment/dto/Environment";
 import { GitRepository } from "./GitRepository";
 import { EnumResourceType } from "../core/resource/dto/EnumResourceType";
 import { Project } from "./Project";
+import { CodeGeneratorVersionStrategy } from "../core/resource/dto";
 
 @ObjectType({
   isAbstract: true,
@@ -81,6 +82,16 @@ export class Resource {
     nullable: false,
   })
   gitRepositoryOverride!: boolean;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  codeGeneratorVersion?: string;
+
+  @Field(() => CodeGeneratorVersionStrategy, {
+    nullable: true,
+  })
+  codeGeneratorStrategy?: keyof typeof CodeGeneratorVersionStrategy;
 
   // no need to expose to GraphQL
   deletedAt?: Date;

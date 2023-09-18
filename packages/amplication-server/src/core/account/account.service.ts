@@ -7,6 +7,7 @@ import {
   EnumEventType,
   IdentifyData,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+
 @Injectable()
 export class AccountService {
   constructor(

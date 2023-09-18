@@ -4,6 +4,7 @@ import * as models from "../models";
 import { PendingChangeItem } from "../Workspaces/hooks/usePendingChanges";
 import { CreateWorkspaceType } from "../Workspaces/hooks/workspace";
 import { CommitUtils } from "../VersionControl/hooks/useCommits";
+import { TUpdateCodeGeneratorVersion } from "../Workspaces/hooks/useResources";
 
 export interface AppContextInterface {
   currentWorkspace: models.Workspace | undefined;
@@ -55,6 +56,9 @@ export interface AppContextInterface {
   openHubSpotChat: () => void;
   createServiceWithEntitiesResult: models.ResourceCreateWithEntitiesResult;
   commitUtils: CommitUtils;
+  updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => void;
+  loadingUpdateCodeGeneratorVersion: boolean;
+  errorUpdateCodeGeneratorVersion: ApolloError | undefined;
 }
 
 const initialContext: AppContextInterface = {
@@ -113,8 +117,12 @@ const initialContext: AppContextInterface = {
     ],
     refetchCommitsData: () => {},
     refetchLastCommit: () => {},
+    updateBuildStatus: (build: models.Build) => {},
     disableLoadMore: false,
   },
+  updateCodeGeneratorVersion: (input: TUpdateCodeGeneratorVersion) => {},
+  loadingUpdateCodeGeneratorVersion: false,
+  errorUpdateCodeGeneratorVersion: undefined,
 };
 
 export const AppContext =

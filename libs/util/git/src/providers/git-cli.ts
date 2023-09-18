@@ -18,7 +18,11 @@ export class GitCli {
 
   private gitAuthorUserName = "amplication[bot]";
   private gitAuthorUserEmail = "bot@amplication.com";
+  private gitAuthorUserOldEmail =
+    "100755160+amplication[bot]@users.noreply.github.com";
   public gitAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserEmail}>`;
+  public gitOldAuthorUser = `${this.gitAuthorUserName} <${this.gitAuthorUserOldEmail}>`;
+
   private gitConflictsResolverAuthor = `amplication[branch whisperer] <${this.gitAuthorUserEmail}>`;
 
   constructor(
@@ -174,13 +178,18 @@ export class GitCli {
     return this.git.diff(["--full-index", ref]);
   }
 
-  async getFirstCommitSha(branchName: string): Promise<Commit | null> {
+  async getEdgeCommitSha(
+    branchName: string,
+    firstCommit: boolean
+  ): Promise<Commit | null> {
     const originalStatus = await this.git.status();
 
     await this.checkout(branchName);
     let commit: string | undefined;
     try {
-      const log = await this.git.log(["--reverse"]);
+      const log = firstCommit
+        ? await this.git.log(["--reverse"])
+        : await this.git.log();
       commit = log.latest?.hash;
     } catch (error) {
       // If there are no commits in the branch, the log command will fail
@@ -196,6 +205,14 @@ export class GitCli {
       });
     }
     return commit ? { sha: commit } : null;
+  }
+
+  async getFirstCommitSha(branchName: string): Promise<Commit | null> {
+    return await this.getEdgeCommitSha(branchName, true);
+  }
+
+  async getLastCommitSha(branchName: string): Promise<Commit | null> {
+    return await this.getEdgeCommitSha(branchName, false);
   }
 
   /**

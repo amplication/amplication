@@ -9,11 +9,12 @@ import {
   MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
-  idTypePropertyMapByFieldType,
+  idTypePropertyMapByPrismaFieldType,
 } from "./constants";
 import { EnumDataType } from "../../prisma";
 import { ScalarType } from "prisma-schema-dsl-types";
 import { camelCase, upperFirst } from "lodash";
+import { Mapper } from "./types";
 
 export function capitalizeFirstLetter(string): string {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -37,7 +38,8 @@ export function filterOutAmplicationAttributes(attributes): string[] {
       !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@unique") &&
-      !attribute.startsWith("@relation")
+      !attribute.startsWith("@relation") &&
+      !attribute.startsWith("@db.ObjectId")
   );
 }
 
@@ -105,7 +107,7 @@ export function idField(field: Field) {
 }
 
 export function isValidIdFieldType(fieldType: string) {
-  return idTypePropertyMapByFieldType.hasOwnProperty(fieldType);
+  return idTypePropertyMapByPrismaFieldType.hasOwnProperty(fieldType);
 }
 
 export function lookupField(schema: Schema, field: Field) {
@@ -216,4 +218,29 @@ export function jsonField(field: Field) {
   if (field.fieldType === ScalarType.Json) {
     return EnumDataType.Json;
   }
+}
+
+export function findOriginalModelName(
+  mapper: Mapper,
+  modelName: string
+): string {
+  return (
+    Object.values(mapper.modelNames).find((item) => item.newName === modelName)
+      ?.originalName || modelName
+  );
+}
+
+export function findOriginalFieldName(
+  mapper: Mapper,
+  fieldName: string
+): string {
+  for (const [, fields] of Object.entries(mapper.fieldNames)) {
+    const field = Object.values(fields).find(
+      (value) => value.newName === fieldName
+    );
+    if (field) {
+      return field.originalName;
+    }
+  }
+  return fieldName;
 }

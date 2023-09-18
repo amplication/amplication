@@ -43,6 +43,8 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
+  KAFKA_TOPICS,
+  UserBuild,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -50,12 +52,15 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { kebabCase } from "lodash";
+import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
 };
+import { encryptString } from "../../util/encryptionUtil";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -284,6 +289,30 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
+  private async updateCodeGeneratorVersion(
+    buildId: string,
+    codeGeneratorVersion: string
+  ): Promise<void> {
+    try {
+      const build = await this.findOne({
+        where: {
+          id: buildId,
+        },
+      });
+
+      if (!build) {
+        throw new Error(`Could not find build with id ${buildId}`);
+      }
+
+      await this.prisma.build.update({
+        where: { id: buildId },
+        data: { codeGeneratorVersion },
+      });
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
   async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
@@ -323,13 +352,47 @@ export class BuildService {
 
   async completeCodeGenerationStep(
     buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+    codeGeneratorVersion: string
   ): Promise<void> {
     const step = await this.getGenerateCodeStep(buildId);
     if (!step) {
       throw new Error("Could not find generate code step");
     }
+
+    const commitWithAccount = await this.prisma.build.findUnique({
+      where: { id: buildId },
+      include: {
+        commit: {
+          include: {
+            user: true,
+            project: true,
+          },
+        },
+      },
+    });
+
+    if (status === EnumActionStepStatus.Success) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
+          key: {},
+          value: {
+            commitId: commitWithAccount.commit.id,
+            commitMessage: commitWithAccount.commit.message,
+            resourceId: commitWithAccount.resourceId,
+            workspaceId: commitWithAccount.commit.project.workspaceId,
+            projectId: commitWithAccount.commit.projectId,
+            buildId: buildId,
+            externalId: encryptString(commitWithAccount.commit.user.id),
+          },
+        })
+        .catch((error) =>
+          this.logger.error(`Failed to que user build ${buildId}`, error)
+        );
+    }
+
     await this.actionService.complete(step, status);
+    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
   }
 
   /**
@@ -371,7 +434,7 @@ export class BuildService {
         };
 
         await this.kafkaProducerService.emitMessage(
-          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC,
           codeGenerationEvent
         );
 
@@ -671,9 +734,16 @@ export class BuildService {
               )
             : false;
 
+          const branchPerResourceEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.BranchPerResource
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
+            resourceName: kebabCase(resource.name),
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
@@ -684,6 +754,9 @@ export class BuildService {
               smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
+            isBranchPerResource:
+              branchPerResourceEntitlement &&
+              branchPerResourceEntitlement.hasAccess,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
@@ -693,7 +766,7 @@ export class BuildService {
             value: createPullRequestMessage,
           };
           await this.kafkaProducerService.emitMessage(
-            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC,
             createPullRequestEvent
           );
         } catch (error) {
@@ -805,6 +878,12 @@ export class BuildService {
         id: resourceId,
         url,
         settings: serviceSettings,
+        codeGeneratorVersionOptions: {
+          codeGeneratorVersion: resource.codeGeneratorVersion,
+          codeGeneratorStrategy:
+            // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
+            CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
+        },
       },
       otherResources,
     };

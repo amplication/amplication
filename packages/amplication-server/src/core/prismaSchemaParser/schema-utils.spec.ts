@@ -60,7 +60,7 @@ describe("schema-utils", () => {
         dataType: dataType,
         required: true,
         unique: false,
-        searchable: false,
+        searchable: true,
         description: "",
         properties: {},
         customAttributes: '@map("mock_field")',
@@ -93,13 +93,13 @@ describe("schema-utils", () => {
       expect(result.required).toEqual(false);
     });
 
-    it("should mark Lookup field as searchable", () => {
+    it("should mark all field as searchable", () => {
       const field = {
         name: "testField",
         optional: false,
         attributes: [],
       } as unknown as Field;
-      const dataType = EnumDataType.Lookup;
+      const dataType = EnumDataType.Id;
 
       const result = createOneEntityFieldCommonProperties(field, dataType);
 

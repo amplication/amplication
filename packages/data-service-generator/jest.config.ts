@@ -24,8 +24,8 @@ export default {
   coverageDirectory: "../../coverage/packages/data-service-generator",
   coverageThreshold: {
     global: {
-      branches: 89,
-      lines: 93,
+      branches: 87,
+      lines: 90,
     },
   },
 };

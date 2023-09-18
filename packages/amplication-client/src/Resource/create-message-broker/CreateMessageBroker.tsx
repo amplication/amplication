@@ -40,7 +40,9 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const errorMessage = formatError(errorCreateMessageBroker);
 
   useEffect(() => {
-    if (!errorCreateMessageBroker) return;
+    if (!errorCreateMessageBroker) {
+      return;
+    }
 
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
   }, [errorCreateMessageBroker]);

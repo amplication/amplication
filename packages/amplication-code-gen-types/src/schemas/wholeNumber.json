@@ -6,6 +6,12 @@
   "additionalProperties": false,
   "required": ["minimumValue", "maximumValue"],
   "properties": {
+    "databaseFieldType": {
+      "type": "string",
+      "description": "The database field scalar typee",
+      "enum": ["INT", "BIG_INT"],
+      "default": "INT"
+    },
     "minimumValue": {
       "type": "integer",
       "description": "The minimum value",

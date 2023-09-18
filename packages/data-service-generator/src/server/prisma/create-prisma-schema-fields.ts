@@ -29,6 +29,38 @@ export const NOW_CALL_EXPRESSION: PrismaSchemaDSLTypes.CallExpression = {
   callee: PrismaSchemaDSLTypes.NOW,
 };
 
+export const idTypeToPrismaScalarType: {
+  [key in types.Id["idType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  AUTO_INCREMENT: PrismaSchemaDSLTypes.ScalarType.Int,
+  AUTO_INCREMENT_BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
+  CUID: PrismaSchemaDSLTypes.ScalarType.String,
+  UUID: PrismaSchemaDSLTypes.ScalarType.String,
+};
+
+export const idTypeToCallExpression: {
+  [key in types.Id["idType"]]: PrismaSchemaDSLTypes.CallExpression;
+} = {
+  AUTO_INCREMENT: INCREMENTAL_CALL_EXPRESSION,
+  AUTO_INCREMENT_BIG_INT: INCREMENTAL_CALL_EXPRESSION,
+  CUID: CUID_CALL_EXPRESSION,
+  UUID: UUID_CALL_EXPRESSION,
+};
+
+export const wholeNumberToPrismaScalarType: {
+  [key in types.WholeNumber["databaseFieldType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  INT: PrismaSchemaDSLTypes.ScalarType.Int,
+  BIG_INT: PrismaSchemaDSLTypes.ScalarType.BigInt,
+};
+
+export const decimalNumberToPrismaScalarType: {
+  [key in types.DecimalNumber["databaseFieldType"]]: PrismaSchemaDSLTypes.ScalarType;
+} = {
+  DECIMAL: PrismaSchemaDSLTypes.ScalarType.Decimal,
+  FLOAT: PrismaSchemaDSLTypes.ScalarType.Float,
+};
+
 export function createPrismaFields(
   field: EntityField,
   entity: Entity,
@@ -105,21 +137,26 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => [
-    PrismaSchemaDSL.createScalarField(
-      field.name,
-      PrismaSchemaDSLTypes.ScalarType.Int,
-      false,
-      field.required,
-      field.unique,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      field.customAttributes
-    ),
-  ],
+  ) => {
+    const databaseFieldType =
+      (field?.properties as types.WholeNumber)?.databaseFieldType ?? "INT";
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        field.name,
+        wholeNumberToPrismaScalarType[databaseFieldType],
+        false,
+        field.required,
+        field.unique,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
+      ),
+    ];
+  },
   [EnumDataType.DateTime]: (
     field: EntityField,
     entity: Entity,
@@ -143,21 +180,26 @@ export const createPrismaSchemaFieldsHandlers: {
     field: EntityField,
     entity: Entity,
     fieldNamesCount: Record<string, number> = {}
-  ) => [
-    PrismaSchemaDSL.createScalarField(
-      field.name,
-      PrismaSchemaDSLTypes.ScalarType.Float,
-      false,
-      field.required,
-      field.unique,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      undefined,
-      field.customAttributes
-    ),
-  ],
+  ) => {
+    const databaseFieldType =
+      (field?.properties as types.DecimalNumber)?.databaseFieldType ?? "FLOAT";
+
+    return [
+      PrismaSchemaDSL.createScalarField(
+        field.name,
+        decimalNumberToPrismaScalarType[databaseFieldType],
+        false,
+        field.required,
+        field.unique,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        undefined,
+        field.customAttributes
+      ),
+    ];
+  },
   [EnumDataType.Boolean]: (
     field: EntityField,
     entity: Entity,
@@ -263,9 +305,8 @@ export const createPrismaSchemaFieldsHandlers: {
       (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id
     );
 
-    const { idType } = (relatedEntityFiledId?.properties as types.Id) || {
-      idType: "CUID",
-    };
+    const idType =
+      (relatedEntityFiledId?.properties as types.Id)?.idType ?? "CUID";
 
     return [
       PrismaSchemaDSL.createObjectField(
@@ -286,9 +327,7 @@ export const createPrismaSchemaFieldsHandlers: {
       // Prisma Scalar Relation Field
       PrismaSchemaDSL.createScalarField(
         scalarRelationFieldName,
-        idType === "AUTO_INCREMENT"
-          ? PrismaSchemaDSLTypes.ScalarType.Int
-          : PrismaSchemaDSLTypes.ScalarType.String,
+        idTypeToPrismaScalarType[idType],
         false,
         field.required,
         !field.properties.allowMultipleSelection &&
@@ -300,7 +339,7 @@ export const createPrismaSchemaFieldsHandlers: {
         undefined,
         undefined,
         undefined,
-        undefined,
+        true,
         field.customAttributes
       ),
     ];
@@ -349,26 +388,18 @@ export const createPrismaSchemaFieldsHandlers: {
     fieldNamesCount: Record<string, number> = {}
   ) => {
     const { name, properties } = field;
-    const { idType } = (properties as types.Id) || { idType: "CUID" };
-    const isAutoIncremental = idType === "AUTO_INCREMENT";
-    const isUUID = idType === "UUID";
+    const idType = (properties as types.Id)?.idType ?? "CUID";
 
     return [
       PrismaSchemaDSL.createScalarField(
         name,
-        isAutoIncremental
-          ? PrismaSchemaDSLTypes.ScalarType.Int
-          : PrismaSchemaDSLTypes.ScalarType.String,
+        idTypeToPrismaScalarType[idType],
         false,
         field.required,
         false,
         true,
         false,
-        isAutoIncremental
-          ? INCREMENTAL_CALL_EXPRESSION
-          : isUUID
-          ? UUID_CALL_EXPRESSION
-          : CUID_CALL_EXPRESSION,
+        idTypeToCallExpression[idType],
         undefined,
         undefined,
         field.customAttributes
