@@ -1,0 +1,65 @@
+@import "../../style/index.scss";
+
+.code-generator-version {
+  margin-top: var(--default-spacing);
+
+  &__header {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: var(--large-spacing);
+
+    h3 {
+      margin: 0;
+      margin-bottom: var(--default-spacing);
+      @include title-18;
+    }
+
+    .amp-panel {
+      margin-left: 0;
+      margin-bottom: 0;
+    }
+  }
+
+  &__message {
+    @include regular-14();
+    margin-bottom: var(--double-spacing);
+
+    .amp-button--clear {
+      background-color: var(--black10);
+      border-color: none !important;
+      color: var(--black100);
+      min-width: 60px;
+      &:hover {
+        cursor: text;
+      }
+    }
+  }
+
+  &__tag {
+    background-color: transparent;
+    color: var(--black100);
+    padding: var(--icon-spacing) var(--default-spacing);
+    border: $border-black20;
+    background-color: var(--black10);
+  }
+
+  &__explanation {
+    @include body1;
+    padding: var(--double-spacing) 0;
+  }
+
+  &__divider {
+    height: 1px;
+    background-color: var(--black5);
+    margin: var(--large-spacing) 0;
+    border: none;
+  }
+
+  &__catalog {
+    h3 {
+      margin: 0;
+      margin-bottom: var(--default-spacing);
+      @include title-18;
+    }
+  }
+}

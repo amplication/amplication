@@ -3,6 +3,9 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { Role } from "../../enums/Role";
 import { Account, User, UserRole } from "../../models";
 import { UserService } from "./user.service";
+import { BillingService } from "../billing/billing.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 const EXAMPLE_USER_ID = "exampleUserId";
 const EXAMPLE_ROLE_ID = "exampleRoleId";
@@ -82,6 +85,10 @@ describe("UserService", () => {
     jest.clearAllMocks();
     const module: TestingModule = await Test.createTestingModule({
       providers: [
+        {
+          provide: KafkaProducerService,
+          useClass: jest.fn(),
+        },
         UserService,
         {
           provide: PrismaService,
@@ -100,6 +107,11 @@ describe("UserService", () => {
             },
           })),
         },
+        {
+          provide: BillingService,
+          useClass: jest.fn(),
+        },
+        MockedAmplicationLoggerProvider,
       ],
     }).compile();
 

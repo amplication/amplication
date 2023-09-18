@@ -20,13 +20,10 @@ import {
 } from "./auth.controller";
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
-import { GoogleSecretsManagerModule } from "../../services/googleSecretsManager.module";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { GoogleSecretsManagerService } from "../../services/googleSecretsManager.service";
 import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
-import { KafkaModule } from "@amplication/util/nestjs/kafka";
 
 @Module({
   imports: [
@@ -40,12 +37,10 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
     }),
     AccountModule,
     PrismaModule,
-    KafkaModule,
     PermissionsModule,
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    GoogleSecretsManagerModule,
     ProjectModule,
   ],
   providers: [
@@ -56,12 +51,10 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
       provide: "GitHubStrategy",
       useFactory: async (
         authService: AuthService,
-        configService: ConfigService,
-        googleSecretsManagerService: GoogleSecretsManagerService
+        configService: ConfigService
       ) => {
         const githubConfigService = new GitHubStrategyConfigService(
-          configService,
-          googleSecretsManagerService
+          configService
         );
         const options = await githubConfigService.getOptions();
 
@@ -71,7 +64,7 @@ import { KafkaModule } from "@amplication/util/nestjs/kafka";
 
         return new GitHubStrategy(authService, options);
       },
-      inject: [AuthService, ConfigService, GoogleSecretsManagerService],
+      inject: [AuthService, ConfigService],
     },
     GqlAuthGuard,
     AuthResolver,

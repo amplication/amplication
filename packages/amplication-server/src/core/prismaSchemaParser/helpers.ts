@@ -38,7 +38,8 @@ export function filterOutAmplicationAttributes(attributes): string[] {
       !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@unique") &&
-      !attribute.startsWith("@relation")
+      !attribute.startsWith("@relation") &&
+      !attribute.startsWith("@db.ObjectId")
   );
 }
 

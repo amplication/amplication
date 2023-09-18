@@ -1,0 +1,119 @@
+name: Release Production
+run-name: Release Version ${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version: 
+        type: string
+        required: true
+        description: Version used to update apps version.ts and create a release the commit. i.e. v1.0.0, v1.1.2, v2.0.1
+      re-run: 
+        type: boolean
+        required: false
+        default: false
+        description: Check this ONLY if you want to re-run the workflow for the same version.
+      nx-force-all:
+        type: boolean
+        description: Forces Nx to consider all projects as affected when running the update-version target.
+        default: true
+      draft-release:
+        type: boolean
+        description: Create a draft release instead of a published release.
+        required: false
+        default: true
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+
+permissions:
+  contents: write
+  
+jobs:
+  check-version:
+    name: Check version syntax
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Check version is SemVer
+        run: |
+          if ! [[ "${{ github.event.inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "Invalid version '${{ github.event.inputs.version }}'."
+            echo "Version must be a valid semver version."
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
+        shell: bash
+
+
+  generate-release:
+    name: Commit version changes
+    runs-on: ubuntu-20.04
+    needs: check-version
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - uses: nrwl/nx-set-shas@v3
+        with:
+          main-branch-name: ${{ github.event.repository.default_branch }}
+
+      - name: Check version is unique
+        id: validate-version-unique
+        run: |
+          if git tag --list | grep -q "${{ github.event.inputs.version }}"; then
+            echo "Version '${{ github.event.inputs.version }}' already exists."
+            echo "Please use a different version."
+            exit 1
+          fi
+        shell: bash
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+        
+      - name: Update apps version.ts
+        id: update-version-ts
+        run: |
+          VERSION=${{ github.event.inputs.version }}
+          APP_VERSION=${VERSION:1}
+          npx nx affected --target=update-version $NX_FORCE_ALL --args="--version=$APP_VERSION"
+
+      # Commit all changed files back to the repository
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        continue-on-error:  ${{ github.event.inputs.re-run }}
+        with:
+          commit_message: "chore: update apps version.ts"
+          branch: ${{ github.event.repository.default_branch }}
+          commit_user_name: amplication[bot]
+          commit_user_email: actions@github.com
+          commit_author: amplication <actions@github.com> # defaults to author of the commit that triggered the run
+          tagging_message: ${{ github.event.inputs.version }}
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          name: ${{ github.event.inputs.version }}
+          tag_name: ${{ github.event.inputs.version }}
+          draft: ${{ github.event.inputs.draft-release }} 
+          generate_release_notes: true

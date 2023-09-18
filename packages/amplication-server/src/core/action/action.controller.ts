@@ -1,10 +1,8 @@
-import { EnvironmentVariables } from "@amplication/util/kafka";
 import { Controller, Inject } from "@nestjs/common";
 import { EventPattern, Payload } from "@nestjs/microservices";
 import { plainToInstance } from "class-transformer";
-import { Env } from "../../env";
 import { ActionService } from "../action/action.service";
-import { UserActionLog } from "@amplication/schema-registry";
+import { KAFKA_TOPICS, UserActionLog } from "@amplication/schema-registry";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Controller("action")
@@ -15,9 +13,7 @@ export class UserActionController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(
-    EnvironmentVariables.instance.get(Env.USER_ACTION_LOG_TOPIC, true)
-  )
+  @EventPattern(KAFKA_TOPICS.USER_ACTION_LOG_TOPIC)
   async onUserActionLog(
     @Payload() message: UserActionLog.Value
   ): Promise<void> {

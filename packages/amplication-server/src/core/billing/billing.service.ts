@@ -6,8 +6,8 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
   ReportUsageAck,
+  SubscriptionStatus,
 } from "@stigg/node-server-sdk";
-import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
 import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";

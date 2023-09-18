@@ -561,11 +561,6 @@ export class PrismaSchemaParserService {
               },
             };
 
-            void actionContext.onEmitUserActionLog(
-              `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
-              EnumActionLogLevel.Info
-            );
-
             builder
               .model(model.name)
               .field(field.name)
@@ -1181,7 +1176,10 @@ export class PrismaSchemaParserService {
       id: cuid(), // creating here the entity id because we need it for the relation
       name: model.name,
       displayName: modelDisplayName,
-      pluralDisplayName: entityPluralDisplayName,
+      pluralDisplayName:
+        entityPluralDisplayName === model.name
+          ? `${entityPluralDisplayName} Items`
+          : entityPluralDisplayName,
       description: "",
       customAttributes: entityAttributes,
       fields: [],

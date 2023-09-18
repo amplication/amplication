@@ -35,4 +35,9 @@ export class Workspace {
 
   @Field(() => [User])
   users?: User[];
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  externalId?: string;
 }

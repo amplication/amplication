@@ -31,19 +31,7 @@ $circle-badge-border: 2px;
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-  &__header:hover::before {
-    z-index: 1;
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: var(--white-overlay-background);
-  }
-  .circle-badge-container {
-    z-index: 10;
+    padding: 0 var(--default-spacing-small);
   }
 
   .circle-badge {

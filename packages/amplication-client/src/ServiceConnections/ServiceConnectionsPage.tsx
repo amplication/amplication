@@ -1,5 +1,5 @@
 import React, { useContext, useMemo } from "react";
-import { match } from "react-router-dom";
+import { match, useHistory } from "react-router-dom";
 import * as models from "../models";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
@@ -10,6 +10,12 @@ import { AppRouteProps } from "../routes/routesUtil";
 import useServiceConnection from "./hooks/useServiceConnection";
 import { ServiceConnectionsList } from "./ServiceConnectionsList";
 import { isEmpty } from "lodash";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumIconPosition,
+} from "@amplication/ui/design-system";
+import "./ServiceConnectionsPage.scss";
 
 type MessageBrokerListItem = {
   resource: models.Resource;
@@ -32,7 +38,10 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
     errorServiceTopics: error,
   } = useServiceConnection(resourceId);
 
-  const { resources } = useContext(AppContext);
+  const history = useHistory();
+
+  const { resources, currentWorkspace, currentProject } =
+    useContext(AppContext);
 
   const messageBrokerList = useMemo((): MessageBrokerListItem[] => {
     return resources
@@ -74,7 +83,22 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
         <EmptyState
           message="There is no message broker to show."
           image={EnumImages.MessageBrokerEmptyState}
-        />
+        >
+          <Button
+            onClick={() =>
+              history.push(
+                `/${currentWorkspace?.id}/${currentProject?.id}/create-broker`
+              )
+            }
+            type="button"
+            buttonStyle={EnumButtonStyle.Secondary}
+            icon="plus"
+            iconPosition={EnumIconPosition.Left}
+            iconSize="xsmall"
+          >
+            <span className={"add-broker__label"}>Add Message Broker</span>
+          </Button>
+        </EmptyState>
       )}
     </PageContent>
   );
