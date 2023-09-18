@@ -3,6 +3,8 @@
 IMAGE_REPO='439403303254.dkr.ecr.us-east-1.amazonaws.com/data-service-generator'
 SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
 
+cd $SCRIPT_DIR/../../../
+
 if [[ -z "$INPUT_TAGS" ]]; then
     echo "Local environment detected"
 
