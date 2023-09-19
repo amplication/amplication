@@ -65,7 +65,7 @@ jobs:
       - name: Check version is unique
         id: validate-version-unique
         run: |
-          if git tag --list | grep -q -p "^${{ github.event.inputs.version }}"; then
+          if git tag --list | grep -q "^${{ github.event.inputs.version }}"; then
             echo "Version '${{ github.event.inputs.version }}' already exists."
             echo "Please use a different version."
             exit 1
