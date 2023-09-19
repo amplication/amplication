@@ -110,7 +110,6 @@ jobs:
           commit_user_email: engineering@amplication.com
           commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
           tagging_message: ${{ github.event.inputs.version }}
-          push_options: --force
 
       - name: Release
         uses: softprops/action-gh-release@v1
