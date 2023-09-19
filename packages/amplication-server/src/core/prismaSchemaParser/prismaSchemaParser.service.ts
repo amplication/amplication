@@ -13,7 +13,6 @@ import {
   Func,
   ConcretePrismaSchemaBuilder,
   BlockAttribute,
-  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -840,23 +839,6 @@ export class PrismaSchemaParserService {
             actionContext
           );
         }
-
-        const hasDefaultValueAttributeOnIdField =
-          isIdField &&
-          field.attributes?.some(
-            (attr) =>
-              attr.name === DEFAULT_ATTRIBUTE_NAME &&
-              attr.args.some(
-                (arg) =>
-                  (arg.value as AttributeArgument | Func).type !== "function"
-              )
-          );
-
-        hasDefaultValueAttributeOnIdField &&
-          builder
-            .model(model.name)
-            .field(field.name)
-            .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
     });
     return {
