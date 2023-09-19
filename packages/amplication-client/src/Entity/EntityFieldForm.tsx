@@ -173,7 +173,6 @@ const EntityFieldForm = ({
 
             <TextField
               autoComplete="off"
-              disabled={isSystemDataType}
               placeholder="Custom Prisma Attributes"
               inputToolTip={{
                 content: (
