@@ -32,6 +32,8 @@ export enum EnumEventType {
   CodeGenerationError = "codeGenerationError",
 
   CodeGeneratorVersionUpdate = "codeGeneratorVersionUpdate",
+
+  RedeemCoupon = "RedeemCoupon",
 }
 
 export type IdentifyData = {

@@ -107,6 +107,7 @@ model User {
   userRoles             UserRole[]
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
+  createdFromCoupon     Coupon?
   deletedAt             DateTime?
   userAction            UserAction[]
   lastActive            DateTime?    @default(now())
@@ -535,6 +536,19 @@ model Invitation {
   tokenExpiration DateTime
 
   @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
+}
+
+model Coupon {
+  id               String               @id @default(cuid())
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  newUserId        String?              @unique()
+  newUser          User?                @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  code             String               @default(cuid())
+  expiration       DateTime
+  subscriptionPlan EnumSubscriptionPlan @default(Pro)
+  durationMonths   Int                  @default(1)
+  redemptionAt     DateTime?
 }
 
 enum EnumSubscriptionPlan {

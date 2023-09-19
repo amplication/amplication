@@ -38,6 +38,7 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -190,5 +191,14 @@ export class WorkspaceResolver {
       ...args.data,
       userId: currentUser.account.id,
     });
+  }
+
+  @Mutation(() => Boolean)
+  @UseGuards(GqlAuthGuard)
+  async redeemCoupon(
+    @UserEntity() user: User,
+    @Args() args: RedeemCouponArgs
+  ): Promise<boolean> {
+    return this.workspaceService.redeemCoupon(user, args);
   }
 }
