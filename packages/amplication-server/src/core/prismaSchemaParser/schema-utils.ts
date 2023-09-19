@@ -182,11 +182,21 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
         if (isKeyValue(arg.value)) {
           if (isRelationArray(arg.value.value)) {
             return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else if (isFunction(arg.value.value)) {
+            const functionArgs =
+              arg.value.value.params && arg.value.value.params.length
+                ? arg.value.value.params.join(", ")
+                : "";
+            return `${arg.value.key}: ${arg.value.value.name}(${functionArgs})`;
           } else {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isFunction(arg.value)) {
-          return `${arg.value.name}()`;
+          const functionArgs =
+            arg.value.params && arg.value.params.length
+              ? arg.value.params.join(", ")
+              : "";
+          return `${arg.value.name}(${functionArgs})`;
         } else if (typeof arg.value === "string") {
           return arg.value;
         } else {
