@@ -61,7 +61,7 @@ export function createOneEntityFieldCommonProperties(
   const fieldAttributes = filterOutAmplicationAttributes(
     prepareFieldAttributes(field.attributes)
   )
-    // in some case we get "@default()" as an attribute, we want to filter it out
+    // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
     .join(" ");
 
