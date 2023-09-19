@@ -30,11 +30,7 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
 export function filterOutAmplicationAttributes(attributes): string[] {
   return attributes.filter(
     (attribute) =>
-      !attribute.startsWith("@id") &&
       !attribute.startsWith("@default(now())") &&
-      !attribute.startsWith("@default(cuid())") &&
-      !attribute.startsWith("@default(uuid())") &&
-      !attribute.startsWith("@default(autoincrement())") &&
       !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@unique") &&
