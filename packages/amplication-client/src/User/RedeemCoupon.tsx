@@ -7,12 +7,31 @@ import useLocalStorage from "react-use-localstorage";
 import { LOCAL_STORAGE_KEY_COUPON_CODE } from "../App";
 import { Dialog, PlanUpgradeConfirmation } from "@amplication/ui/design-system";
 import { formatError } from "../util/error";
-import e from "express";
+import * as models from "../models";
 
 type TData = {
-  redeemCoupon: {
-    token: string;
+  redeemCoupon: models.Coupon;
+};
+
+const couponContent: {
+  [key: string]: {
+    title: string;
+    subTitle: string;
+    message: string;
+    ctaText: string;
+    imageUrl: string;
+    imageAlt: string;
   };
+} = {
+  "hacktoberfest-2023": {
+    title: "Congratulations!",
+    subTitle: "You have successfully redeemed your Hacktoberfest coupon",
+    message: "We appreciate your open-source contribution.",
+    ctaText: "Let's start building",
+    imageUrl:
+      "https://raw.githubusercontent.com/amplication/public-assets/main/coupons/hacktoberfest-2023.png",
+    imageAlt: "Hacktoberfest 2023",
+  },
 };
 
 /**
@@ -35,16 +54,19 @@ const RedeemCoupon = () => {
     window.location.reload();
   }, []);
 
-  const [redeemCoupon, { loading, error }] = useMutation<TData>(REDEEM_COUPON, {
-    onCompleted: (data) => {
-      setCouponCode("");
-      setShowConfirmation(true);
-    },
-    onError: (error) => {
-      setCouponCode("");
-      setShowError(true);
-    },
-  });
+  const [redeemCoupon, { data, loading, error }] = useMutation<TData>(
+    REDEEM_COUPON,
+    {
+      onCompleted: (data) => {
+        setCouponCode("");
+        setShowConfirmation(true);
+      },
+      onError: (error) => {
+        setCouponCode("");
+        setShowError(true);
+      },
+    }
+  );
 
   useEffect(() => {
     if (!isEmpty(couponCode) && !loading && !redeemStarted) {
@@ -58,6 +80,8 @@ const RedeemCoupon = () => {
   }, [couponCode, history, redeemCoupon, loading]);
 
   const errorMessage = error && formatError(error);
+
+  const content = couponContent[data?.redeemCoupon?.couponType];
 
   if (showError) {
     return (
@@ -77,10 +101,12 @@ const RedeemCoupon = () => {
       isOpen={showConfirmation}
       onConfirm={onConfirmation}
       onDismiss={onConfirmation}
-      title="Congratulations!"
-      subTitle="You have successfully redeemed your Hacktoberfest coupon"
-      message="We appreciate your open-source contribution. You can now enjoy all the benefits of the Amplication Pro plan"
-      ctaText="Let's start building"
+      {...content}
+      graphics={
+        content?.imageUrl && (
+          <img src={content.imageUrl} alt={content.imageAlt} />
+        )
+      }
     />
   );
 };
@@ -89,6 +115,11 @@ export default RedeemCoupon;
 
 const REDEEM_COUPON = gql`
   mutation redeemCoupon($code: String!) {
-    redeemCoupon(data: { code: $code })
+    redeemCoupon(data: { code: $code }) {
+      id
+      couponType
+      durationMonths
+      code
+    }
   }
 `;

@@ -549,6 +549,7 @@ model Coupon {
   subscriptionPlan EnumSubscriptionPlan @default(Pro)
   durationMonths   Int                  @default(1)
   redemptionAt     DateTime?
+  couponType       String?
 }
 
 enum EnumSubscriptionPlan {

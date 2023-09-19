@@ -39,6 +39,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
+import { Coupon } from "./dto/Coupon";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -193,12 +194,12 @@ export class WorkspaceResolver {
     });
   }
 
-  @Mutation(() => Boolean)
+  @Mutation(() => Coupon)
   @UseGuards(GqlAuthGuard)
   async redeemCoupon(
     @UserEntity() user: User,
     @Args() args: RedeemCouponArgs
-  ): Promise<boolean> {
+  ): Promise<Coupon> {
     return this.workspaceService.redeemCoupon(user, args);
   }
 }

@@ -34,6 +34,7 @@ import { UserService } from "../user/user.service";
 import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { BillingPeriod } from "@stigg/node-server-sdk";
+import { Coupon } from "./dto/Coupon";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -345,7 +346,7 @@ export class WorkspaceService {
   async redeemCoupon(
     currentUser: User,
     args: RedeemCouponArgs
-  ): Promise<boolean> {
+  ): Promise<Coupon> {
     const { account } = currentUser;
 
     const coupons = await this.prisma.coupon.findMany({
@@ -410,7 +411,7 @@ export class WorkspaceService {
       },
     });
 
-    return true;
+    return coupon;
   }
 
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {
