@@ -380,10 +380,10 @@ export class WorkspaceService {
     //use stigg API to provision a new trial subscription
     await this.billingService.provisionSubscription({
       workspaceId: currentUser.workspace.id,
-      planId: "plan-amplication-pro-with-trial",
+      planId: BillingPlan.ProWithTrial,
       cancelUrl: "",
       successUrl: "",
-      userId: currentUser.account.id,
+      userId: account.id,
       billingPeriod: BillingPeriod.Monthly,
       intentionType: "UPGRADE_PLAN",
     });
