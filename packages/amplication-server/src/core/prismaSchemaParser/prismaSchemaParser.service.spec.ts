@@ -1131,6 +1131,72 @@ describe("prismaSchemaParser", () => {
           ];
           expect(result).toEqual(expectedEntitiesWithFields);
         });
+        it("should create the id attributes correctly", async () => {
+          // arrange
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Test {
+            id          String @id(map: "PK_123456789") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid
+            name        String @db.VarChar(255)
+        }`;
+          const existingEntities: ExistingEntitySelect[] = [];
+          // act
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+          // assert
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Test",
+              displayName: "Test",
+              pluralDisplayName: "Tests",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes:
+                    '@id(map: "PK_123456789") @default(dbgenerated("uuid_generate_v4()")) @db.Uuid',
+                },
+                {
+                  permanentId: expect.any(String),
+                  name: "name",
+                  displayName: "Name",
+                  dataType: EnumDataType.SingleLineText,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    maxLength: 256,
+                  },
+                  customAttributes: "@db.VarChar(255)",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
       });
 
       describe("when the field is a type of Number", () => {
