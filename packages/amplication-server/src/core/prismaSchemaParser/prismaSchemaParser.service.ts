@@ -90,6 +90,7 @@ import {
   ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE,
   ID_DEFAULT_VALUE_UUID_FUNCTION_VALUE,
   ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE,
+  prismaIdTypeToDefaultIdType,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -1501,24 +1502,32 @@ export class PrismaSchemaParserService {
           idTypeDefaultArg === ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE
         ) {
           idType = ID_TYPE_CUID;
-        }
-        if (
+        } else if (
           idTypeDefaultArg === ID_DEFAULT_VALUE_UUID ||
           idTypeDefaultArg === ID_DEFAULT_VALUE_UUID_FUNCTION_VALUE
         ) {
           idType = ID_TYPE_UUID;
+        } else {
+          idType = ID_TYPE_CUID;
         }
-      }
-      if (
-        idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
-        idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE
-      ) {
-        if (field.fieldType === PRISMA_TYPE_INT) {
+      } else if (field.fieldType === PRISMA_TYPE_INT) {
+        if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE
+        ) {
           idType = ID_TYPE_AUTO_INCREMENT;
         }
-        if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+      } else if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+        if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE
+        ) {
           idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
         }
+      }
+
+      if (!idType) {
+        idType = prismaIdTypeToDefaultIdType[field.fieldType as string];
       }
 
       const properties = <types.Id>{
