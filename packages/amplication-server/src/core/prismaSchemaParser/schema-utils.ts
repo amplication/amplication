@@ -201,6 +201,10 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
         ", "
       )})`;
     }
+    // if there's an attribute group but no args are present
+    else if (attributeGroup) {
+      return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}`;
+    }
     // if there's no attribute group but args are present
     else if (args.length > 0) {
       return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
