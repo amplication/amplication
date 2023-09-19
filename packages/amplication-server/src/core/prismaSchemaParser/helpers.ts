@@ -31,7 +31,6 @@ export function filterOutAmplicationAttributes(attributes): string[] {
   return attributes.filter(
     (attribute) =>
       !attribute.startsWith("@default(now())") &&
-      !attribute.startsWith("@relation") &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@unique") &&
       !attribute.startsWith("@relation") &&
