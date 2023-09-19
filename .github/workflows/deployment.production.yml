@@ -11,6 +11,13 @@ jobs:
   preparation:
     name: Preparation
     runs-on: ubuntu-20.04
+    outputs:
+      affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
+      affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
+      affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
       - name: Checkout source code repository
         uses: actions/checkout@v3
