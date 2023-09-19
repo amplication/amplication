@@ -19,7 +19,7 @@ jobs:
           fetch-depth: 0
 
       - name: Determine base tag
-        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
+        run: echo "tag=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
         id: base
         
       - uses: actions/setup-node@v3
