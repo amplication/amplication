@@ -27,6 +27,9 @@ import {
   FUNCTION_ARG_TYPE_NAME,
   ID_FIELD_NAME,
   ID_ATTRIBUTE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
+  prismaIdTypeToDefaultIdType,
+  ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -192,12 +195,19 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
       });
     }
 
-    if (attributeGroup) {
+    // if there's an attribute group and args are present
+    if (attributeGroup && args.length > 0) {
       return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
         ", "
       )})`;
-    } else {
+    }
+    // if there's no attribute group but args are present
+    else if (args.length > 0) {
       return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
+    }
+    // if no args are present (@id, @unique)
+    else {
+      return `${fieldAttrPrefix}${attribute.name}`;
     }
   });
 }
@@ -432,7 +442,8 @@ export function addIdFieldIfNotExists(
   builder
     .model(model.name)
     .field(ID_FIELD_NAME, "String")
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
@@ -446,10 +457,14 @@ export function convertUniqueFieldNamedIdToIdField(
   uniqueFieldNamedId: Field,
   actionContext: ActionContext
 ) {
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[uniqueFieldNamedId.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldNamedId.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
@@ -475,10 +490,14 @@ export function convertUniqueFieldNotNamedIdToIdField(
     actionContext
   );
 
+  const idDefaultType =
+    prismaIdTypeToDefaultIdType[uniqueFieldAsIdField.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
