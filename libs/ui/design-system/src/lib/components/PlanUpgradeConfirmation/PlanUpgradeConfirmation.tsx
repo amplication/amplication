@@ -13,13 +13,27 @@ export type Props = DialogProps & {
   isOpen: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
+  title?: string;
+  subTitle?: string;
+  message?: string;
+  ctaText?: string;
 };
 
 export const PlanUpgradeConfirmation = ({
   isOpen,
   onConfirm,
   onDismiss,
+  title,
+  subTitle,
+  message,
+  ctaText,
 }: Props) => {
+  const defaultTitle = "Your workspace was upgraded";
+  const defaultSubTitle = "Thank you for your purchase!";
+  const defaultMessage =
+    "An email with your order confirmation and order details is on its way to you";
+  const defaultCtaText = "Back to work";
+
   return (
     <Dialog
       title=""
@@ -30,17 +44,16 @@ export const PlanUpgradeConfirmation = ({
     >
       <div className={`${CLASS_NAME}__message`}>
         <div className={`${CLASS_NAME}__message__header`}>
-          Your workspace was upgraded
+          {title || defaultTitle}
         </div>
         <div className={`${CLASS_NAME}__message__animation`}>
           <Lottie animationData={animationFull} />
         </div>
         <div className={`${CLASS_NAME}__message__description_purchase`}>
-          Thank you for your purchase!
+          {subTitle || defaultSubTitle}
         </div>
         <div className={`${CLASS_NAME}__message__description_details`}>
-          An email with your order confirmation and order details is on its way
-          to you
+          {message || defaultMessage}
         </div>
       </div>
       <Button
@@ -48,7 +61,7 @@ export const PlanUpgradeConfirmation = ({
         buttonStyle={EnumButtonStyle.Primary}
         onClick={onConfirm}
       >
-        Back to work
+        {ctaText || defaultCtaText}
       </Button>
     </Dialog>
   );
