@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 
@@ -17,6 +17,7 @@ export type Props = DialogProps & {
   subTitle?: string;
   message?: string;
   ctaText?: string;
+  graphics?: ReactNode;
 };
 
 export const PlanUpgradeConfirmation = ({
@@ -27,12 +28,15 @@ export const PlanUpgradeConfirmation = ({
   subTitle,
   message,
   ctaText,
+  graphics,
 }: Props) => {
   const defaultTitle = "Your workspace was upgraded";
   const defaultSubTitle = "Thank you for your purchase!";
   const defaultMessage =
     "An email with your order confirmation and order details is on its way to you";
   const defaultCtaText = "Back to work";
+
+  const defaultGraphics = <Lottie animationData={animationFull} />;
 
   return (
     <Dialog
@@ -47,7 +51,7 @@ export const PlanUpgradeConfirmation = ({
           {title || defaultTitle}
         </div>
         <div className={`${CLASS_NAME}__message__animation`}>
-          <Lottie animationData={animationFull} />
+          {graphics || defaultGraphics}
         </div>
         <div className={`${CLASS_NAME}__message__description_purchase`}>
           {subTitle || defaultSubTitle}
