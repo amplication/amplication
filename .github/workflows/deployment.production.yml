@@ -26,7 +26,10 @@ jobs:
           fetch-depth: 0
 
       - name: Determine base tag
-        run: echo "tag=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
+        run: |
+          TAG=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "Base tag used for calculating the affected projects: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
         id: base
         
       - uses: actions/setup-node@v3
@@ -141,22 +144,14 @@ jobs:
         uses: mikefarah/yq@v4.30.8
 
       - name: Replace image tag
-        env:
-          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
         run: |
-          nx=${{ needs.preparation.outputs.affected-package-container }}
+          nx=${{ needs.preparation.outputs.affected-deploy-container }}
           array=$(echo $nx | sed -e 's/\[//g' -e 's/\]//g' -e 's/\,/ /g')
-          DSG_LATEST_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            if [[ "$project" != "data-service-generator" ]]; then
-              yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
-              git add production/applications/$project/values.yaml
-            elif [[ "$project" == "data-service-generator" ]]; then
-              yq -i '.$project.events.sensor.image.tag = "$DSG_LATEST_VERSION"' production/applications/$project/values.yaml
-              git add production/applications/$project/values.yaml
-            fi;
+            yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
+            git add production/applications/$project/values.yaml
           done
 
       - name: Create pull request on cluster-configuration repository
