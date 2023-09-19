@@ -106,10 +106,11 @@ jobs:
         with:
           commit_message: "chore: update apps version.ts"
           branch: ${{ github.event.repository.default_branch }}
-          commit_user_name: amplication[bot]
-          commit_user_email: actions@github.com
-          commit_author: amplication <actions@github.com> # defaults to author of the commit that triggered the run
+          commit_user_name: amplication-engineering
+          commit_user_email: engineering@amplication.com
+          commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
           tagging_message: ${{ github.event.inputs.version }}
+          push_options: --force
 
       - name: Release
         uses: softprops/action-gh-release@v1
