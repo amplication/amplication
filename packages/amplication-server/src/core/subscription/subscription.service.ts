@@ -48,17 +48,34 @@ export class SubscriptionService {
   ): Promise<Subscription | null> {
     const sub = await this.prisma.subscription.findFirst({
       where: {
-        workspaceId: workspaceId,
-        status: PrismaEnumSubscriptionStatus.Active,
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        OR: [
+        AND: [
           {
-            cancellationEffectiveDate: {
-              gt: new Date(),
-            },
+            workspaceId: workspaceId,
           },
           {
-            cancellationEffectiveDate: null,
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                status: PrismaEnumSubscriptionStatus.Active,
+              },
+              {
+                status: PrismaEnumSubscriptionStatus.Trailing,
+              },
+            ],
+          },
+          {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            OR: [
+              {
+                cancellationEffectiveDate: {
+                  gt: new Date(),
+                },
+              },
+              {
+                cancellationEffectiveDate: null,
+              },
+            ],
           },
         ],
       },

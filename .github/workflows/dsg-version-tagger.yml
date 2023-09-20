@@ -2,6 +2,9 @@ name: DSG Version Tagger
 
 on:
   push:
+    branches:
+      - main
+      - master
     paths:
       - packages/data-service-generator/package.json
 

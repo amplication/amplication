@@ -14,7 +14,9 @@ const useTopic = (topicId: string) => {
     DELETE_TOPIC,
     {
       update(cache, { data }) {
-        if (!data || data === undefined) return;
+        if (!data) {
+          return;
+        }
         const deletedTopicId = data.deleteTopic.id;
         cache.modify({
           fields: {

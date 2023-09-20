@@ -22,7 +22,8 @@
       "dependsOn": ["graphql:schema:check"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.config.ts",
-        "passWithNoTests": true
+        "passWithNoTests": true,
+        "maxWorkers": "50%"
       }
     },
     "e2e": {

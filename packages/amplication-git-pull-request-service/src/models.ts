@@ -191,7 +191,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
-  codeGeneratorVersion: Scalars['String']['output'];
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -302,6 +302,14 @@ export type ConnectGitRepositoryInput = {
   isOverrideGitRepository?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   resourceId: Scalars['String']['input'];
+};
+
+export type Coupon = {
+  code: Scalars['String']['output'];
+  couponType?: Maybe<Scalars['String']['output']>;
+  durationMonths: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  subscriptionPlan: EnumSubscriptionPlan;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -1024,6 +1032,7 @@ export type Mutation = {
   lockEntity?: Maybe<Entity>;
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
+  redeemCoupon: Coupon;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
@@ -1305,6 +1314,11 @@ export type MutationLoginArgs = {
 
 export type MutationProvisionSubscriptionArgs = {
   data: ProvisionSubscriptionInput;
+};
+
+
+export type MutationRedeemCouponArgs = {
+  data: RedeemCouponInput;
 };
 
 
@@ -1903,6 +1917,10 @@ export enum QueryMode {
   Default = 'Default',
   Insensitive = 'Insensitive'
 }
+
+export type RedeemCouponInput = {
+  code: Scalars['String']['input'];
+};
 
 export type RemoteGitRepos = {
   pagination: Pagination;

@@ -1,24 +1,24 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import { CircleBadge } from "@amplication/ui/design-system";
 import { gql } from "@apollo/client";
-import React, { useContext } from "react";
+import { useContext } from "react";
 import { match } from "react-router-dom";
-import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import { resourceThemeMap } from "./constants";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
 import OverviewTile from "./OverviewTile";
 import "./ResourceHome.scss";
 import ResourceMenu from "./ResourceMenu";
-import RolesTile from "./RolesTile";
-import SyncWithGithubTile from "./SyncWithGithubTile";
-import ViewCodeViewTile from "./ViewCodeViewTile";
-import { TopicsTile } from "./TopicsTile";
-import { ServicesTile } from "./ServicesTile";
 import ResourceNameField from "./ResourceNameField";
+import RolesTile from "./RolesTile";
+import { ServicesTile } from "./ServicesTile";
+import SyncWithGithubTile from "./SyncWithGithubTile";
+import { TopicsTile } from "./TopicsTile";
+import ViewCodeViewTile from "./ViewCodeViewTile";
+import { resourceThemeMap } from "./constants";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -50,19 +50,17 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
                 resourceThemeMap[currentResource?.resourceType].color,
             }}
           >
+            <CircleBadge
+              name={currentResource?.name || ""}
+              color={
+                resourceThemeMap[currentResource?.resourceType].color ||
+                "transparent"
+              }
+            />
             <ResourceNameField
               currentResource={currentResource}
               resourceId={resourceId}
             />
-            <div className="circle-badge-container">
-              <CircleBadge
-                name={currentResource?.name || ""}
-                color={
-                  resourceThemeMap[currentResource?.resourceType].color ||
-                  "transparent"
-                }
-              />
-            </div>
           </div>
           <div className={`${CLASS_NAME}__tiles`}>
             {currentResource?.resourceType === EnumResourceType.Service && (

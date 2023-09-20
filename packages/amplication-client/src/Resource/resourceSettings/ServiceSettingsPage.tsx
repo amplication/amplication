@@ -2,6 +2,8 @@ import React, { useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
 import "./ServiceSettingsPage.scss";
+import { BillingFeature } from "../../util/BillingFeature";
+import { useStiggContext } from "@stigg/react-sdk";
 
 const CLASS_NAME = "service-settings";
 
@@ -9,6 +11,11 @@ const CLASS_NAME = "service-settings";
 const ServiceSettingsPage: React.FC<{}> = () => {
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
+
+  const { stigg } = useStiggContext();
+  const showCodeGeneratorVersion = stigg.getBooleanEntitlement({
+    featureId: BillingFeature.ShowCodeGeneratorVersion,
+  }).hasAccess;
 
   return (
     <div className={CLASS_NAME}>
@@ -52,6 +59,16 @@ const ServiceSettingsPage: React.FC<{}> = () => {
           API Tokens
         </InnerTabLink>
       </div>
+      {showCodeGeneratorVersion && (
+        <div>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version/update`}
+            icon="code"
+          >
+            Code Generator Version
+          </InnerTabLink>
+        </div>
+      )}
     </div>
   );
 };
