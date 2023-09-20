@@ -26,9 +26,6 @@ on:
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
-
-permissions:
-  contents: write
   
 jobs:
   check-version:
@@ -47,7 +44,7 @@ jobs:
 
 
   generate-release:
-    name: Commit version changes
+    name: Create a release for amplication platform
     runs-on: ubuntu-20.04
     needs: check-version
     permissions:
@@ -59,9 +56,13 @@ jobs:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
 
-      - uses: nrwl/nx-set-shas@v3
-        with:
-          main-branch-name: ${{ github.event.repository.default_branch }}
+      - name: Determine previous tag
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG (used to detect the affected projects)"
+
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+        id: base
 
       - name: Check version is unique
         id: validate-version-unique
@@ -97,7 +98,7 @@ jobs:
         run: |
           VERSION=${{ github.event.inputs.version }}
           APP_VERSION=${VERSION:1}
-          npx nx affected --target=update-version $NX_FORCE_ALL --args="--version=$APP_VERSION"
+          npx nx affected --target=update-version --base=$PREVIOUS_TAG $NX_FORCE_ALL --args="--version=$APP_VERSION"
 
       # Commit all changed files back to the repository
       - name: Commit changes
@@ -111,10 +112,97 @@ jobs:
           commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
           tagging_message: ${{ github.event.inputs.version }}
 
-      - name: Release
+      - name: "Build amplication Changelog"
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@{latest-release}
+        with:
+          configurationJson: |
+            {
+              "template": "#{{CHANGELOG}}\n\n<details>\n<summary>Uncategorized</summary>\n\n#{{UNCATEGORIZED}}\n</details>",
+              "ignore_labels": [
+                "ignore-for-release"
+              ],"categories": [
+                {
+                    "title": "## [ `amplication platform` ] Changes 👾",
+                    "labels": ["*"],
+                    "exclude_labels": ["data-service-generator"],
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          
+      - name: Release amplication
+        id: release
         uses: softprops/action-gh-release@v1
         with:
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
           draft: ${{ github.event.inputs.draft-release }} 
-          generate_release_notes: true
+          body: ${{ steps.changelog.outputs.changelog }}
+
+  generate-dsg-release:
+    name: Create a release for data-service-generator
+    runs-on: ubuntu-20.04
+    needs: check-version
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+      
+      - name: Determine previous tag
+        run: |
+          DSG_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
+          NEW_TAG="dsg/v$DSG_VERSION"
+          echo "🏷️ NEW_TAG=$PREVIOUS_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A 1 ^$NEW_TAG | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG"
+
+          echo "PREVIOUS_TAG=$PREVIOUS_TAG" >> $GITHUB_ENV
+          echo "NEW_TAG=$NEW_TAG" >> $GITHUB_ENV
+        id: base
+        env:
+          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+      - name: Check data-service-generator is affected
+        id: validate-dsg-affected
+        run: |
+          if [[ $(npx nx print-affected --type=app --base=$PREVIOUS_TAG | jq -c .projects) == *"data-service-generator"* ]]; then
+            echo "dsg-affected=true" >> $GITHUB_OUTPUT
+          else
+            echo "dsg-affected=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: "Build data-service-generator Changelog"
+        id: changelog
+        if: ${{ steps.validate-dsg-affected.outputs.dsg-affected == 'true' }}
+        uses: mikepenz/release-changelog-builder-action@{latest-release}
+        with:
+          configurationJson: |
+            {
+              "ignore_labels": [
+                "ignore-for-release"
+              ],"categories": [
+                {
+                    "title": "## [`data-service-generator`] Changes 🛠",
+                    "labels": ["data-service-generator"],
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release data-service-generator
+        id: release
+        if: ${{ steps.validate-dsg-affected.outputs.dsg-affected == 'true' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "(`data-service-generator`) ${{ github.event.inputs.version }}"
+          tag_name: ${{ github.event.inputs.version }}
+          draft: ${{ github.event.inputs.draft-release }} 
+          body: ${{ steps.changelog.outputs.changelog }}
