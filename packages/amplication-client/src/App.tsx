@@ -25,6 +25,7 @@ declare global {
 
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
 
+const fakeChange = true;
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
   source: "amplication-client",
