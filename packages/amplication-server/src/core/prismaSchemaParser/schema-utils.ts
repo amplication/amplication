@@ -29,7 +29,7 @@ import {
   ID_ATTRIBUTE_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   prismaIdTypeToDefaultIdType,
-  ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -457,7 +457,7 @@ export function addIdFieldIfNotExists(
     .model(model.name)
     .field(ID_FIELD_NAME, "String")
     .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE]);
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,

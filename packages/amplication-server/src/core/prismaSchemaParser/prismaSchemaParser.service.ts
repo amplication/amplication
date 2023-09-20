@@ -87,9 +87,9 @@ import {
   DecimalNumberType,
   idTypePropertyMapByPrismaFieldType,
   MAP_ATTRIBUTE_NAME,
-  ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE,
-  ID_DEFAULT_VALUE_UUID_FUNCTION_VALUE,
-  ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
+  ID_DEFAULT_VALUE_UUID_FUNCTION,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
   prismaIdTypeToDefaultIdType,
 } from "./constants";
 import { isValidSchema } from "./validators";
@@ -1499,12 +1499,12 @@ export class PrismaSchemaParserService {
       if (field.fieldType === PRISMA_TYPE_STRING) {
         if (
           idTypeDefaultArg === ID_DEFAULT_VALUE_CUID ||
-          idTypeDefaultArg === ID_DEFAULT_VALUE_CUID_FUNCTION_VALUE
+          idTypeDefaultArg === ID_DEFAULT_VALUE_CUID_FUNCTION
         ) {
           idType = ID_TYPE_CUID;
         } else if (
           idTypeDefaultArg === ID_DEFAULT_VALUE_UUID ||
-          idTypeDefaultArg === ID_DEFAULT_VALUE_UUID_FUNCTION_VALUE
+          idTypeDefaultArg === ID_DEFAULT_VALUE_UUID_FUNCTION
         ) {
           idType = ID_TYPE_UUID;
         } else {
@@ -1513,14 +1513,14 @@ export class PrismaSchemaParserService {
       } else if (field.fieldType === PRISMA_TYPE_INT) {
         if (
           idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
-          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION
         ) {
           idType = ID_TYPE_AUTO_INCREMENT;
         }
       } else if (field.fieldType === PRISMA_TYPE_BIG_INT) {
         if (
           idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
-          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION_VALUE
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION
         ) {
           idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
         }
