@@ -158,7 +158,7 @@ export class UserService {
         user.workspace.id,
         BillingFeature.Notification
       );
-    const canShowUserNotification = booleanEntityUserNotification.hasAccess;
+    const canShowUserNotification = booleanEntityUserNotification?.hasAccess;
 
     this.kafkaProducerService
       .emitMessage(KAFKA_TOPICS.USER_ACTION_TOPIC, <UserAction.KafkaEvent>{
