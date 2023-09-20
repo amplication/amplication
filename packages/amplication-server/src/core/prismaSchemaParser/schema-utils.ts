@@ -241,13 +241,18 @@ export function findRemoteRelatedModelAndField(
 
     if (relationAttribute) {
       relationAttributeStringArgument = attr.args?.find(
-        (arg) => typeof arg.value === "string"
+        (arg) =>
+          ((arg.value as KeyValue)?.key === "name" &&
+            typeof (arg.value as KeyValue)?.value === "string") ||
+          typeof arg.value === "string"
       );
     }
 
     relationAttributeName =
-      relationAttributeStringArgument &&
-      (relationAttributeStringArgument.value as string);
+      (relationAttributeStringArgument &&
+        ((relationAttributeStringArgument.value as KeyValue)
+          ?.value as string)) ||
+      (relationAttributeStringArgument?.value as string);
   });
 
   const remoteModel = schema.list.find(
@@ -268,11 +273,21 @@ export function findRemoteRelatedModelAndField(
 
   if (relationAttributeName) {
     // find the remote field in the remote model that has the relation attribute with the name we found
-    remoteField = remoteModelFields.find((field: Field) => {
-      return field.attributes?.some(
-        (attr) =>
-          attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.find((arg) => arg.value === relationAttributeName)
+    // and make sure that the field is not the current field because we don't want to return the current field
+    // in cases where the relation is self relation
+    remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
+      return (
+        field.name !== fieldOnRelatedModel.name &&
+        fieldOnRelatedModel.attributes?.some(
+          (attr) =>
+            attr.name === RELATION_ATTRIBUTE_NAME &&
+            attr.args?.find(
+              (arg) =>
+                ((arg.value as KeyValue)?.key === "name" &&
+                  (arg.value as KeyValue)?.value === relationAttributeName) ||
+                arg.value === relationAttributeName
+            )
+        )
       );
     });
   } else {
@@ -317,7 +332,9 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
   }
 
   const fieldsArgs = relationAttribute.args?.find(
-    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+    (arg) =>
+      (arg.value as KeyValue).key &&
+      (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
   if (!fieldsArgs) {
