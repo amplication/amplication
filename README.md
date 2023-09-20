@@ -97,7 +97,7 @@ To be able to start development on amplication make sure that you have the follo
 
 ###
 
-- Node.js v16 or above
+- Node.js
 - Docker
 - Git
 </details>

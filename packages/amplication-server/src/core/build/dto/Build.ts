@@ -68,6 +68,6 @@ export class Build {
   @Field(() => String)
   commitId!: string;
 
-  @Field(() => String)
+  @Field(() => String, { nullable: true })
   codeGeneratorVersion?: string;
 }

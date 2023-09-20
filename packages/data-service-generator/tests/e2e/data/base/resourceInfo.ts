@@ -32,6 +32,7 @@ export const resourceInfo: AppInfo = {
       generateAdminUI: true,
       adminUIPath: "",
     },
+    authEntityName: "User",
   },
   codeGeneratorVersionOptions: {
     codeGeneratorVersion: null,

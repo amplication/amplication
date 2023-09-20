@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useRef, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import * as models from "../models";
@@ -7,17 +7,19 @@ import { Button, EnumButtonStyle } from "../Components/Button";
 import "./ResourceListItem.scss";
 import {
   ConfirmationDialog,
-  EnumPanelStyle,
-  UserAndTime,
-  Panel,
-  HorizontalRule,
   EnumHorizontalRuleStyle,
+  EnumPanelStyle,
+  HorizontalRule,
   Icon,
+  Panel,
+  UserAndTime,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import classNames from "classnames";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import useTextOffsetHeight from "../util/useTextOffsetHeight";
+import EllipsisText from "../Components/EllipsisText";
 
 type Props = {
   resource: models.Resource;
@@ -27,12 +29,15 @@ type Props = {
 const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
+const LINE_HEIGHT = 35;
 
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
   const { id, name, description, gitRepository, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
+  const headerRowRef = useRef(null);
+  const isTitleOverflow = useTextOffsetHeight(headerRowRef, LINE_HEIGHT);
 
   const handleDelete = useCallback(
     (event) => {
@@ -92,10 +97,14 @@ function ResourceListItem({ resource, onDelete }: Props) {
           onClick={handleClick}
           panelStyle={EnumPanelStyle.Bordered}
         >
-          <div className={`${CLASS_NAME}__row`}>
+          <div
+            ref={headerRowRef}
+            className={`${CLASS_NAME}__row`}
+            style={{ alignItems: isTitleOverflow ? "flex-start" : "center" }}
+          >
             <ResourceCircleBadge type={resource.resourceType} />
 
-            <span className={`${CLASS_NAME}__title`}>{name}</span>
+            <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
 
             <span className="spacer" />
             {onDelete && (
@@ -107,7 +116,11 @@ function ResourceListItem({ resource, onDelete }: Props) {
             )}
           </div>
           <div className={`${CLASS_NAME}__row`}>
-            <span className={`${CLASS_NAME}__description`}>{description}</span>
+            <EllipsisText
+              className={`${CLASS_NAME}__description`}
+              text={description}
+              maxLength={350}
+            />
           </div>
           <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
           <div className={`${CLASS_NAME}__row`}>
