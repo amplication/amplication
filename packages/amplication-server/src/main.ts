@@ -25,6 +25,7 @@ async function bootstrap() {
     sendServerLoadEvent();
   }
 
+  const fakeChange= true;
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 
