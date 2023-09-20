@@ -68,12 +68,6 @@ export function createOneEntityFieldCommonProperties(
     .filter((attr) => attr !== "@default()")
     .join(" ");
 
-  if (fieldDataType === EnumDataType.Lookup && fieldAttributes !== "") {
-    throw new Error(
-      `Custom attributes are not allowed on relation fields. Only @relation attribute is allowed`
-    );
-  }
-
   return {
     permanentId: cuid(),
     name: field.name,
