@@ -2,7 +2,7 @@ import { builders, namedTypes } from "ast-types";
 import { EntityField, EnumDataType, Entity } from "@amplication/code-gen-types";
 import {
   createDefaultValue,
-  createUserObjectCustomProperties,
+  createAuthEntityObjectCustomProperties,
   DEFAULT_ADDRESS_LITERAL,
   DEFAULT_BOOLEAN_LITERAL,
   DEFAULT_EMAIL_LITERAL,
@@ -64,13 +64,13 @@ const EXAMPLE_ENTITY: Entity = {
   permissions: [],
 };
 
-describe("createUserObjectCustomProperties", () => {
+describe("createAuthEntityObjectCustomProperties", () => {
   test("creates custom object properties", () => {
     const userEntity = {
       ...DEFAULT_USER_ENTITY,
       fields: [...DEFAULT_USER_ENTITY.fields, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
     };
-    expect(createUserObjectCustomProperties(userEntity)).toEqual([
+    expect(createAuthEntityObjectCustomProperties(userEntity)).toEqual([
       builders.objectProperty(
         builders.identifier(EXAMPLE_ENTITY_FIELD_NAME),
         // @ts-ignore

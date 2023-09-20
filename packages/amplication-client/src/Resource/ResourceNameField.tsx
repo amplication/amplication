@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from "react";
-import { Field, Form, Formik } from "formik";
-import FormikAutoSave from "../util/formikAutoSave";
 import { Icon, Tooltip } from "@amplication/ui/design-system";
-import { validate } from "../util/formikValidateJsonSchema";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useTracking } from "react-tracking";
 import { useMutation } from "@apollo/client";
-import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
+import { Field, Form, Formik } from "formik";
+import { useCallback } from "react";
+import { useTracking } from "react-tracking";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
+import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import * as models from "../models";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
 import "./ResourceNameField.scss";
 
 type Props = {
@@ -34,10 +34,6 @@ const FORM_SCHEMA = {
   },
 };
 const ResourceNameField = ({ currentResource, resourceId }: Props) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [showTick, setShowTick] = useState(false);
-  const [hovered, setHovered] = useState(false);
-
   const { trackEvent } = useTracking();
   const [updateResource] = useMutation<TData>(UPDATE_RESOURCE, {
     refetchQueries: [
@@ -46,14 +42,6 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
       },
     ],
   });
-
-  const handleBlur = (isValid: boolean) => {
-    if (isValid) {
-      setIsEditing(false);
-      setShowTick(false);
-      setHovered(false);
-    }
-  };
 
   const handleSubmit = useCallback(
     (data) => {
@@ -69,21 +57,10 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
           resourceId: resourceId,
         },
       }).catch(console.error);
-      setShowTick(true);
-      setTimeout(() => {
-        setShowTick(false);
-      }, 3000);
     },
     [updateResource, resourceId, trackEvent]
   );
 
-  const handleMouseEnter = () => {
-    setHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setHovered(false);
-  };
   return (
     <div className={`${CLASS_NAME}__input__container`}>
       <Formik
@@ -95,56 +72,29 @@ const ResourceNameField = ({ currentResource, resourceId }: Props) => {
         {({ errors, isValid }) => {
           return (
             <div className={`${CLASS_NAME}__form`}>
-              {isEditing ? (
-                <Form>
-                  <FormikAutoSave debounceMS={1000} />
-                  <Field
-                    autoFocus={true}
-                    className={`${CLASS_NAME}__input`}
-                    name="name"
-                    as="input"
-                    onBlur={() => handleBlur(isValid)}
-                  />
-                  {isValid ? (
-                    showTick && (
-                      <Icon
-                        className={`${CLASS_NAME}__saved`}
-                        icon="check"
-                        size="medium"
-                      />
-                    )
-                  ) : (
-                    <Tooltip
-                      noDelay
-                      direction="nw"
-                      aria-label={"Error: Unsupported character"}
-                      className={`${CLASS_NAME}__tooltip_invalid`}
-                    >
-                      <Icon
-                        icon="info_circle"
-                        size="small"
-                        className={`${CLASS_NAME}__invalid`}
-                      />
-                    </Tooltip>
-                  )}
-                </Form>
-              ) : (
-                <div
-                  className={`${CLASS_NAME}__edit`}
-                  onMouseEnter={handleMouseEnter}
-                  onMouseLeave={handleMouseLeave}
-                >
-                  <span className={`${CLASS_NAME}__text`}>
-                    {currentResource?.name}
-                  </span>
-                  <div
-                    onClick={() => setIsEditing(true)}
-                    className={`${CLASS_NAME}__edit_icon`}
+              <Form>
+                <FormikAutoSave debounceMS={1000} />
+                <Field
+                  autoFocus={true}
+                  className={`${CLASS_NAME}__input`}
+                  name="name"
+                  as="input"
+                />
+                {!isValid && (
+                  <Tooltip
+                    noDelay
+                    direction="nw"
+                    aria-label={"Error: Unsupported character"}
+                    className={`${CLASS_NAME}__tooltip_invalid`}
                   >
-                    {hovered && <Icon icon="edit_2" size="medium" />}
-                  </div>
-                </div>
-              )}
+                    <Icon
+                      icon="info_circle"
+                      size="small"
+                      className={`${CLASS_NAME}__invalid`}
+                    />
+                  </Tooltip>
+                )}
+              </Form>
             </div>
           );
         }}

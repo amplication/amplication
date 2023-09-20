@@ -2,6 +2,7 @@ export enum BillingPlan {
   Free = "plan-amplication-free",
   Pro = "plan-amplication-pro",
   Enterprise = "plan-amplication-enterprise",
+  ProWithTrial = "plan-amplication-pro-with-trial",
 }
 
 export enum BillingFeature {
@@ -21,4 +22,5 @@ export enum BillingFeature {
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",
   BranchPerResource = "feature-branch-per-resource",
+  CodeGeneratorVersion = "feature-code-generator-version",
 }

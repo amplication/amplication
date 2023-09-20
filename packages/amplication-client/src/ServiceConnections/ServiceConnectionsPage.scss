@@ -1,0 +1,9 @@
+@import "../style/index.scss";
+
+.topics {
+  .add-broker {
+    &__label {
+      color: var(--black100);
+    }
+  }
+}
