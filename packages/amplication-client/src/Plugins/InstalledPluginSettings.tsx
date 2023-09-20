@@ -192,9 +192,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           </div>
           <HorizontalRule />
           <CodeEditor
-            defaultValue={JsonFormatting(
-              pluginInstallation?.PluginInstallation.settings
-            )}
+            defaultValue={pluginInstallation?.PluginInstallation.settings}
             value={value}
             resetKey={resetKey}
             onChange={onEditorChange}

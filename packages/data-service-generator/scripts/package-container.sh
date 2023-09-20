@@ -16,7 +16,7 @@ if [[ $PRODUCTION_TAGS = "true" ]]; then
     PACKAGE_VERSION=$(cat $SCRIPT_DIR/../package.json | jq -r '.version')
     # prefix with `v` to match other container image tags
     IMAGE_TAG="v$PACKAGE_VERSION"
-    export INPUT_TAGS="$IMAGE_REPO:$IMAGE_TAG,$IMAGE_REPO:sha-$GIT_SHA"
+    export INPUT_TAGS="$IMAGE_REPO:$IMAGE_TAG,$IMAGE_REPO:sha-${GIT_SHA:0:7}"
 
     npx nx internal:package:container data-service-generator --prod
 else

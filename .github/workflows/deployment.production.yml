@@ -12,7 +12,12 @@ jobs:
     name: Preparation
     runs-on: ubuntu-20.04
     outputs:
-      base_tag: "${{ steps.base.outputs.tag }}"
+      affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
+      affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
+      affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
       - name: Checkout source code repository
         uses: actions/checkout@v3
@@ -21,16 +26,49 @@ jobs:
           fetch-depth: 0
 
       - name: Determine base tag
-        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
+        run: |
+          TAG=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "Base tag used for calculating the affected projects: $TAG"
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
         id: base
+        
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
 
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+        
+      - name: Evaluate affected projects
+        id: configure-nx
+        run: |
+          echo affected-apps=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-lib=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT | grep affected
+  
   package:
     name: Package
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-package-container) }}
-    needs: nx
+        project: ${{ fromJson(needs.preparation.outputs.affected-package-container) }}
+    needs: preparation
     steps:
       - name: Checkout source code repository
         uses: actions/checkout@v3
@@ -93,7 +131,7 @@ jobs:
     name: Deployment container
     runs-on: ubuntu-20.04
     environment: "production"
-    needs: [preparation, nx, package]
+    needs: [preparation, package]
     steps:
       - name: Checkout manifest repository
         uses: actions/checkout@v3
@@ -106,22 +144,14 @@ jobs:
         uses: mikefarah/yq@v4.30.8
 
       - name: Replace image tag
-        env:
-          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
         run: |
-          nx=${{ needs.nx.outputs.affected-package-container }}
+          nx=${{ needs.preparation.outputs.affected-deploy-container }}
           array=$(echo $nx | sed -e 's/\[//g' -e 's/\]//g' -e 's/\,/ /g')
-          DSG_LATEST_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            if [[ "$project" != "data-service-generator" ]]; then
-              yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
-              git add production/applications/$project/values.yaml
-            elif [[ "$project" == "data-service-generator" ]]; then
-              yq -i '.$project.events.sensor.image.tag = "$DSG_LATEST_VERSION"' production/applications/$project/values.yaml
-              git add production/applications/$project/values.yaml
-            fi;
+            yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
+            git add production/applications/$project/values.yaml
           done
 
       - name: Create pull request on cluster-configuration repository
@@ -144,11 +174,11 @@ jobs:
 
   deployment-static:
     name: Deployment static
-    needs: nx
-    if: ${{ needs.nx.outputs.affected-deploy-static != '[]' && needs.nx.outputs.affected-deploy-static != ''}}
+    needs: preparation
+    if: ${{ needs.preparation.outputs.affected-deploy-static != '[]' && needs.preparation.outputs.affected-deploy-static != ''}}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-deploy-static) }}
+        project: ${{ fromJson(needs.preparation.outputs.affected-deploy-static) }}
     uses: ./.github/workflows/deployment.static.template.yml
     with:
       environment-name: "production"
@@ -158,11 +188,3 @@ jobs:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  nx:
-    name: Nx
-    needs: preparation
-    uses: ./.github/workflows/nx.template.yml
-    with:
-      nx-head: "${{ github.ref }}"
-      nx-base: "${{ needs.preparation.outputs.base_tag }}"
