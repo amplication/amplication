@@ -1,0 +1,110 @@
+name: Release `data-service-generator` hotfix
+run-name: Release `data-service-generator` hotfix ${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version: 
+        type: string
+        required: true
+        description: Amplication platform new version used to update apps version.ts and create a release the commit. i.e. v1.0.0, v1.1.2, v2.0.1
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  generate-dsg-release:
+    name: Create an hotfix release for data-service-generator
+    runs-on: ubuntu-20.04
+    needs: check-version
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: 'package.json'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+        
+      - name: Create new tag and determine previous tag
+        run: |
+          DSG_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
+          NEW_TAG=dsg/v$DSG_VERSION
+          echo "🏷️ NEW_TAG=$PREVIOUS_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+    
+          if ! git tag --list | grep -q "^$NEW_TAG"; then
+            # create temporary tag to get the previous tag
+            git tag $NEW_TAG
+          fi
+
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A 1 ^$NEW_TAG | tail -n 1)
+
+          echo "🏷️ NEW_TAG=$NEW_TAG"
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG "
+
+          echo "previous-tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+          echo "new-tag=$NEW_TAG" >> $GITHUB_OUTPUT
+          echo "new-dsg-version=v$DSG_VERSION" >> $GITHUB_OUTPUT
+        id: base
+        env:
+          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+      - name: Check data-service-generator is affected
+        id: validate-dsg-affected
+        run: |
+          if [[ $(npx nx print-affected --type=app --base=${{ steps.base.outputs.previous-tag }} | jq -c .projects) == *"data-service-generator"* ]]; then
+            echo "dsg-affected=true" >> $GITHUB_OUTPUT
+          else
+            echo "dsg-affected=false" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
+      - name: "Build data-service-generator Changelog"
+        id: changelog
+        if: ${{ steps.validate-dsg-affected.outputs.dsg-affected == 'true' }}
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: "${{ steps.base.outputs.previous-tag }}"
+          toTag: "${{ github.sha }}"
+          configurationJson: |
+            {
+              "ignore_labels": [
+                "ignore-for-release"
+              ],
+              "categories": [
+                {
+                  "title": "## [`data-service-generator`] Changes 🛠",
+                  "labels": ["data-service-generator"]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Release data-service-generator
+        id: release
+        if: ${{ steps.validate-dsg-affected.outputs.dsg-affected == 'true' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          name: "(`data-service-generator`) ${{ steps.base.outputs.new-tag }}"
+          tag_name: "${{ steps.base.outputs.new-tag }}"
+          draft: false
+          body: ${{ steps.changelog.outputs.changelog }}

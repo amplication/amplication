@@ -1,0 +1,33 @@
+name: Pull Request Labeler
+
+# This workflows works in conjunction with the release.production.yml workflow to automate release notes based on labels. 
+
+on:
+  pull_request:
+    
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  
+jobs:
+  nx:
+    name: Nx
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: ${{ github.head_ref || github.ref_name }}
+      nx-base: ${{ github.base_ref || github.event.repository.default_branch }}
+
+  triage-dsg:
+    name: Triage data-service-generator PRs
+    if: contains(needs.nx.outputs.affected-apps, '"data-service-generator"')
+    needs: nx
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/labeler@v4
+        with:
+          configuration-path: .github/dsg-labeler.yml
+          dot: true
+
+# TODO add triage for release PRs i.e. merge next to master and vice versa adding the `ignore-for-release` label
