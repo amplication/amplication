@@ -1730,8 +1730,8 @@ export class PrismaSchemaParserService {
       });
 
       void actionContext.onEmitUserActionLog(
-        EnumActionLogLevel.Error,
-        error.message
+        error.message,
+        EnumActionLogLevel.Error
       );
       throw error;
     }
