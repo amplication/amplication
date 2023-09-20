@@ -684,6 +684,10 @@ export class EntityService {
             field: field.name,
             entity: entity.name,
           });
+          void actionContext.onEmitUserActionLog(
+            `Failed to create entity field "${field.name}" on entity "${entity.name}". ${error.message}`,
+            EnumActionLogLevel.Error
+          );
         }
       }
     }

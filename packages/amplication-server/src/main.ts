@@ -25,16 +25,6 @@ async function bootstrap() {
     sendServerLoadEvent();
   }
 
-  /**
-   * Cloud Tracing @see https://cloud.google.com/trace/docs
-   */
-  if (process.env.ENABLE_CLOUD_TRACING) {
-    const traceAgent = await import("@google-cloud/trace-agent");
-    traceAgent.start();
-    // eslint-disable-next-line no-console
-    console.info("Cloud tracing is enabled");
-  }
-
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
   app.useLogger(app.get(AmplicationLogger));
 

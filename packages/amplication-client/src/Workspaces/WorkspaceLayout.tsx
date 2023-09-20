@@ -25,6 +25,7 @@ import WorkspaceFooter from "./WorkspaceFooter";
 import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
 import "./WorkspaceLayout.scss";
 import useCommits from "../VersionControl/hooks/useCommits";
+import RedeemCoupon from "../User/RedeemCoupon";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -93,6 +94,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
     errorCreateMessageBroker,
     loadingCreateMessageBroker,
     createServiceWithEntitiesResult,
+    updateCodeGeneratorVersion,
+    loadingUpdateCodeGeneratorVersion,
+    errorUpdateCodeGeneratorVersion,
   } = useResources(currentWorkspace, currentProject, addBlock, addEntity);
 
   useEffect(() => {
@@ -176,6 +180,9 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
         openHubSpotChat,
         createServiceWithEntitiesResult,
         commitUtils,
+        updateCodeGeneratorVersion,
+        loadingUpdateCodeGeneratorVersion,
+        errorUpdateCodeGeneratorVersion,
       }}
     >
       {isMobileOnly ? (
@@ -189,6 +196,7 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
             <div className={moduleClass}>
               <WorkspaceHeader />
               <CompleteInvitation />
+              <RedeemCoupon />
               <div className={`${moduleClass}__page_content`}>
                 <div className={`${moduleClass}__main_content`}>
                   {projectsList.length ? innerRoutes : <ProjectEmptyState />}

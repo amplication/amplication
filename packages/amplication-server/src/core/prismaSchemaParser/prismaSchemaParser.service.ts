@@ -13,7 +13,6 @@ import {
   Func,
   ConcretePrismaSchemaBuilder,
   BlockAttribute,
-  AttributeArgument,
 } from "@mrleebo/prisma-ast";
 import {
   booleanField,
@@ -88,6 +87,10 @@ import {
   DecimalNumberType,
   idTypePropertyMapByPrismaFieldType,
   MAP_ATTRIBUTE_NAME,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
+  ID_DEFAULT_VALUE_UUID_FUNCTION,
+  ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
+  prismaIdTypeToDefaultIdType,
 } from "./constants";
 import { isValidSchema } from "./validators";
 import { EnumDataType } from "../../enums/EnumDataType";
@@ -561,11 +564,6 @@ export class PrismaSchemaParserService {
               },
             };
 
-            void actionContext.onEmitUserActionLog(
-              `field type "${field.fieldType}" on model "${model.name}" was changed to "${newName}"`,
-              EnumActionLogLevel.Info
-            );
-
             builder
               .model(model.name)
               .field(field.name)
@@ -845,23 +843,6 @@ export class PrismaSchemaParserService {
             actionContext
           );
         }
-
-        const hasDefaultValueAttributeOnIdField =
-          isIdField &&
-          field.attributes?.some(
-            (attr) =>
-              attr.name === DEFAULT_ATTRIBUTE_NAME &&
-              attr.args.some(
-                (arg) =>
-                  (arg.value as AttributeArgument | Func).type !== "function"
-              )
-          );
-
-        hasDefaultValueAttributeOnIdField &&
-          builder
-            .model(model.name)
-            .field(field.name)
-            .removeAttribute(DEFAULT_ATTRIBUTE_NAME);
       });
     });
     return {
@@ -1181,7 +1162,10 @@ export class PrismaSchemaParserService {
       id: cuid(), // creating here the entity id because we need it for the relation
       name: model.name,
       displayName: modelDisplayName,
-      pluralDisplayName: entityPluralDisplayName,
+      pluralDisplayName:
+        entityPluralDisplayName === model.name
+          ? `${entityPluralDisplayName} Items`
+          : entityPluralDisplayName,
       description: "",
       customAttributes: entityAttributes,
       fields: [],
@@ -1506,22 +1490,44 @@ export class PrismaSchemaParserService {
 
     if (defaultIdAttribute && defaultIdAttribute.args) {
       let idType: types.Id["idType"];
-      const idTypeDefaultArg = (defaultIdAttribute.args[0].value as Func).name;
+      const defaultValue = defaultIdAttribute.args[0].value;
+      const defaultValueFunctionName = (defaultValue as Func).name;
+      const idTypeDefaultArg =
+        typeof defaultValue === "string"
+          ? defaultValue
+          : defaultValueFunctionName;
       if (field.fieldType === PRISMA_TYPE_STRING) {
-        if (idTypeDefaultArg === ID_DEFAULT_VALUE_CUID) {
+        if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_CUID ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_CUID_FUNCTION
+        ) {
+          idType = ID_TYPE_CUID;
+        } else if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_UUID ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_UUID_FUNCTION
+        ) {
+          idType = ID_TYPE_UUID;
+        } else {
           idType = ID_TYPE_CUID;
         }
-        if (idTypeDefaultArg === ID_DEFAULT_VALUE_UUID) {
-          idType = ID_TYPE_UUID;
-        }
-      }
-      if (idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT) {
-        if (field.fieldType === PRISMA_TYPE_INT) {
+      } else if (field.fieldType === PRISMA_TYPE_INT) {
+        if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION
+        ) {
           idType = ID_TYPE_AUTO_INCREMENT;
         }
-        if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+      } else if (field.fieldType === PRISMA_TYPE_BIG_INT) {
+        if (
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT ||
+          idTypeDefaultArg === ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION
+        ) {
           idType = ID_TYPE_AUTO_INCREMENT_BIG_INT;
         }
+      }
+
+      if (!idType) {
+        idType = prismaIdTypeToDefaultIdType[field.fieldType as string];
       }
 
       const properties = <types.Id>{

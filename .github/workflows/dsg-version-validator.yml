@@ -31,6 +31,15 @@ jobs:
         name: Get current package.json version
         run: |
           echo "::set-output name=version::$(cat $DSG_PACKAGE_JSON  | jq -r '.version')"
+      - name: Check version is SemVer
+        shell: bash
+        run: |
+          if ! [[ "${{ steps.get-version.outputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$ ]]; then
+            echo "Invalid version '${{ steps.get-version.outputs.version }}'."
+            echo "Version must be a valid semver version. i.e. 1.0.0, 1.0.0-alpha.1, 1.0.0-build.1"
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
       - name: Checkout target branch
         uses: actions/checkout@v3
         with:

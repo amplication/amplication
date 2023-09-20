@@ -1,4 +1,4 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Dialog, Props as DialogProps } from "../Dialog/Dialog";
 import { Button, EnumButtonStyle } from "../Button/Button";
 
@@ -13,13 +13,31 @@ export type Props = DialogProps & {
   isOpen: boolean;
   onConfirm: () => void;
   onDismiss: () => void;
+  title?: string;
+  subTitle?: string;
+  message?: string;
+  ctaText?: string;
+  graphics?: ReactNode;
 };
 
 export const PlanUpgradeConfirmation = ({
   isOpen,
   onConfirm,
   onDismiss,
+  title,
+  subTitle,
+  message,
+  ctaText,
+  graphics,
 }: Props) => {
+  const defaultTitle = "Your workspace was upgraded";
+  const defaultSubTitle = "Thank you for your purchase!";
+  const defaultMessage =
+    "An email with your order confirmation and order details is on its way to you";
+  const defaultCtaText = "Back to work";
+
+  const defaultGraphics = <Lottie animationData={animationFull} />;
+
   return (
     <Dialog
       title=""
@@ -30,17 +48,16 @@ export const PlanUpgradeConfirmation = ({
     >
       <div className={`${CLASS_NAME}__message`}>
         <div className={`${CLASS_NAME}__message__header`}>
-          Your workspace was upgraded
+          {title || defaultTitle}
         </div>
         <div className={`${CLASS_NAME}__message__animation`}>
-          <Lottie animationData={animationFull} />
+          {graphics || defaultGraphics}
         </div>
         <div className={`${CLASS_NAME}__message__description_purchase`}>
-          Thank you for your purchase!
+          {subTitle || defaultSubTitle}
         </div>
         <div className={`${CLASS_NAME}__message__description_details`}>
-          An email with your order confirmation and order details is on its way
-          to you
+          {message || defaultMessage}
         </div>
       </div>
       <Button
@@ -48,7 +65,7 @@ export const PlanUpgradeConfirmation = ({
         buttonStyle={EnumButtonStyle.Primary}
         onClick={onConfirm}
       >
-        Back to work
+        {ctaText || defaultCtaText}
       </Button>
     </Dialog>
   );
