@@ -259,6 +259,10 @@ export class PrismaSchemaParserService {
           continue;
         }
 
+        /** we want to skip fields that are not annotated - meaning they don't have a relation attribute 
+         OR that they only have a name relation attribute: @relation(name: "someName") / @relation("someName")
+         we also skip many to many relation because these fields are handled in the convertPrismaManyToManyToEntityField function
+         look at isLookupField function for more details) */
         if (this.isNotAnnotatedRelationField(schema, field) && !isManyToMany) {
           continue;
         }
@@ -1065,8 +1069,13 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field
   ): boolean {
-    // at this point we know that the field a lookup field
-    if (field.array && this.isNotAnnotatedRelationField(schema, field)) {
+    // check if the current field is a relation field that is not annotated and it is an array
+    const isRelationArrayField =
+      this.isLookupField(schema, field) &&
+      this.isNotAnnotatedRelationField(schema, field) &&
+      field.array;
+
+    if (isRelationArrayField) {
       const modelList = schema.list.filter(
         (item) => item.type === MODEL_TYPE_NAME
       ) as Model[];
@@ -1087,24 +1096,63 @@ export class PrismaSchemaParserService {
         (property) => property.type === FIELD_TYPE_NAME
       ) as Field[];
 
-      const theOtherSide = remoteModelFields.find(
+      // from the remote model fields, find the fields that are relations to the current model (it can be more than one field)
+      const remoteRelatedFields = remoteModelFields.filter(
         (fieldItem: Field) =>
           formatModelName(model.name) ===
           formatModelName(fieldItem.fieldType as string)
       );
 
-      if (!theOtherSide) {
+      if (!remoteRelatedFields.length) {
         throw new Error(
           `The other side of the relation not found for field ${field.name} on model ${model.name}`
         );
       }
 
-      if (
-        this.isLookupField(schema, theOtherSide) &&
-        this.isNotAnnotatedRelationField(schema, theOtherSide) &&
-        theOtherSide.array
-      ) {
-        return true;
+      if (remoteRelatedFields.length === 1) {
+        if (
+          this.isLookupField(schema, remoteRelatedFields[0]) &&
+          this.isNotAnnotatedRelationField(schema, remoteRelatedFields[0]) &&
+          remoteRelatedFields[0].array
+        ) {
+          return true;
+        }
+      } else {
+        // remoteRelatedFields.length > 1
+        // compare between the relation name of the two sides
+        const relationName = field.attributes
+          ?.find((attr) => attr.name === RELATION_ATTRIBUTE_NAME)
+          ?.args?.find(
+            (arg) =>
+              ((arg.value as KeyValue)?.key === "name" &&
+                typeof (arg.value as KeyValue)?.value === "string") ||
+              typeof arg.value === "string"
+          )?.value;
+
+        // loop over the otherSide array, for each field find the relation name and compare it to the relation name of the field
+        // if they are equal, it means that we found the other side of the relation
+        for (const [index, fieldItem] of remoteRelatedFields.entries()) {
+          const relationNameOfTheOtherSide = fieldItem.attributes
+            ?.find((attr) => attr.name === RELATION_ATTRIBUTE_NAME)
+            ?.args?.find(
+              (arg) =>
+                ((arg.value as KeyValue)?.key === "name" &&
+                  typeof (arg.value as KeyValue)?.value === "string") ||
+                typeof arg.value === "string"
+            )?.value;
+
+          if (
+            relationName === relationNameOfTheOtherSide &&
+            this.isLookupField(schema, remoteRelatedFields[index]) &&
+            this.isNotAnnotatedRelationField(
+              schema,
+              remoteRelatedFields[index]
+            ) &&
+            remoteRelatedFields[index].array
+          ) {
+            return true;
+          }
+        }
       }
     }
     return false;
