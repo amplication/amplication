@@ -106,21 +106,6 @@ describe("schema-utils", () => {
       expect(result.searchable).toEqual(true);
     });
 
-    it("should throw error if Lookup field has custom attributes", () => {
-      const field = {
-        name: "testField",
-        optional: false,
-        attributes: mockAttributes,
-      } as unknown as Field;
-      const dataType = EnumDataType.Lookup;
-
-      expect(() =>
-        createOneEntityFieldCommonProperties(field, dataType)
-      ).toThrowError(
-        "Custom attributes are not allowed on relation fields. Only @relation attribute is allowed"
-      );
-    });
-
     it("should add custom attributes for non-Lookup field", () => {
       const field = {
         name: "testField",

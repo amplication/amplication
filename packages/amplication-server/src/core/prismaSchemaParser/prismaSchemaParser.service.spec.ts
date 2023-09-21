@@ -2648,6 +2648,80 @@ describe("prismaSchemaParser", () => {
           );
         });
 
+        it("should create self relation", async () => {
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Feature {
+            id                   String                 @id @default(cuid())
+            parentId             String?                
+            feature              Feature?               @relation("featureToFeature", fields: [parentId], references: [id], onDelete: Cascade, onUpdate: NoAction, map: "FK_d4a28a8e70d450a412bf0cfb52a")
+            otherFeature        Feature[]               @relation("featureToFeature")          
+          }`;
+
+          const existingEntities: ExistingEntitySelect[] = [];
+          const customerFieldPermanentId = expect.any(String);
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Feature",
+              displayName: "Feature",
+              pluralDisplayName: "Features",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "CUID",
+                  },
+                  customAttributes: "@id @default(cuid())",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "feature",
+                  displayName: "Feature",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "parentId",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Other Feature",
+                  relatedFieldName: "otherFeature",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         describe("when the relation is many to many", () => {
           it("should rename the field but it should NOT add the @map attribute", async () => {
             // arrange

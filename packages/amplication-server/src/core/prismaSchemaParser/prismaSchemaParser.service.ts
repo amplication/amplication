@@ -1036,7 +1036,12 @@ export class PrismaSchemaParserService {
       field.attributes?.some(
         (attr) =>
           attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.some((arg) => typeof arg.value === "string") &&
+          attr.args?.some(
+            (arg) =>
+              ((arg.value as KeyValue)?.key === "name" &&
+                typeof (arg.value as KeyValue)?.value === "string") ||
+              typeof arg.value === "string"
+          ) &&
           !attr.args?.find(
             (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
           )
@@ -1730,8 +1735,8 @@ export class PrismaSchemaParserService {
       });
 
       void actionContext.onEmitUserActionLog(
-        EnumActionLogLevel.Error,
-        error.message
+        error.message,
+        EnumActionLogLevel.Error
       );
       throw error;
     }
