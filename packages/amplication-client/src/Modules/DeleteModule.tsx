@@ -44,7 +44,9 @@ export const DeleteModule = ({ module, onDelete }: Props) => {
           id: module.id,
         },
       },
-    }).catch();
+    })
+      .then(onDelete)
+      .catch(console.error);
   }, [deleteModule, module]);
 
   return (

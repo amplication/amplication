@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import type { JsonObject } from "type-fest";
-import { pick, head, last } from "lodash";
+import { pick, head, last, mergeWith, isArray } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -112,7 +112,7 @@ export class BlockService {
     const block = await this.prisma.block.findFirst({
       where: {
         id: args.where.id,
-        //deletedAt: null
+        deletedAt: null,
       },
     });
 
@@ -279,12 +279,13 @@ export class BlockService {
   }
 
   async findOne<T extends IBlock>(args: FindOneArgs): Promise<T | null> {
-    const version = await this.prisma.blockVersion.findUnique({
+    const version = await this.prisma.blockVersion.findFirst({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
+        blockId: args.where.id,
+        versionNumber: CURRENT_VERSION_NUMBER,
+        block: {
+          deletedAt: null,
         },
       },
       include: {
@@ -309,7 +310,13 @@ export class BlockService {
   /**@todo: convert versionToIBlock */
   /**@todo: return latest version number */
   async findMany(args: FindManyBlockArgs): Promise<Block[]> {
-    return this.prisma.block.findMany(args);
+    return this.prisma.block.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null,
+      },
+    });
   }
 
   /**@todo: return latest version number */
@@ -427,10 +434,28 @@ export class BlockService {
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
+    const existingVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
+    });
+
+    // merge the existing settings with the new settings. use deep merge but do not merge arrays
+    const allSettings = mergeWith(
+      {},
+      existingVersion.settings,
+      settings,
+      (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
+    );
+
     return await this.useLocking(args.where.id, user, async () => {
       const version = await this.prisma.blockVersion.update({
         data: {
-          settings: settings,
+          settings: allSettings,
           block: {
             update: {
               displayName,
@@ -480,6 +505,10 @@ export class BlockService {
         },
       },
     });
+
+    if (blockVersion.block.deletedAt !== null) {
+      throw new Error(`Block ${args.where.id} is already deleted`);
+    }
 
     if (!blockVersion) {
       throw new Error(`Block ${args.where.id} is not exist`);
@@ -720,9 +749,7 @@ export class BlockService {
         : EnumPendingChangeAction.Create;
 
       //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        block.displayName = changedVersion.displayName;
-      }
+      block.displayName = changedVersion.displayName;
 
       return {
         originId: block.id,

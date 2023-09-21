@@ -7,6 +7,7 @@ import { DeleteModule } from "./DeleteModule";
 import "./Module.scss";
 import ModuleForm from "./ModuleForm";
 import useModule from "./hooks/useModule";
+import { isEmpty } from "lodash";
 
 const CLASS_NAME = "module";
 
@@ -38,11 +39,12 @@ const Module = () => {
   } = useModule();
 
   useEffect(() => {
+    if (!moduleId) return;
     getModule({
       variables: {
         moduleId,
       },
-    });
+    }).catch(console.error);
   }, [moduleId, getModule]);
 
   useEffect(() => {
@@ -76,24 +78,31 @@ const Module = () => {
 
   const errorMessage = formatError(error) || formatError(updateModuleError);
 
-  const handleDeleteField = useCallback(() => {
+  const handleDeleteModule = useCallback(() => {
     history.push(
       `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
     );
   }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
 
+  const isEntityModule =
+    data?.Module && !isEmpty(data.Module.entityId) ? true : false;
+
   return (
     <>
       <div className={`${CLASS_NAME}__header`}>
         <h3>Module Settings</h3>
-        {data?.Module && (
-          <DeleteModule module={data?.Module} onDelete={handleDeleteField} />
+        {data?.Module && !isEntityModule && (
+          <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
         )}
       </div>
-
       <HorizontalRule />
+
       {!loading && (
-        <ModuleForm onSubmit={handleSubmit} defaultValues={data?.Module} />
+        <ModuleForm
+          disabled={isEntityModule}
+          onSubmit={handleSubmit}
+          defaultValues={data?.Module}
+        />
       )}
       <Snackbar open={hasError} message={errorMessage} />
     </>

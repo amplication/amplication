@@ -9,9 +9,4 @@ export class ModuleUpdateInput extends BlockUpdateInput {
     nullable: true,
   })
   name!: string | null;
-
-  @Field(() => String, {
-    nullable: true,
-  })
-  entityId?: string;
 }
