@@ -220,6 +220,26 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
   });
 }
 
+export function findRelationAttributeName(
+  relationAttribute: Attribute
+): string | undefined {
+  if (!relationAttribute.args) {
+    throw new Error(
+      `Missing args attribute on relation attribute on field ${relationAttribute.name}`
+    );
+  }
+
+  const keyRelationAttributeName = relationAttribute.args.find(
+    (arg) => (arg.value as KeyValue)?.key === "name"
+  )?.value as string;
+
+  const valueRelationAttributeName = relationAttribute.args.find(
+    (arg) => typeof arg.value === "string"
+  )?.value as string;
+
+  return valueRelationAttributeName || keyRelationAttributeName;
+}
+
 /**
  * Find the related field in the remote model and return it
  * @param schema the whole processed schema
@@ -233,27 +253,15 @@ export function findRemoteRelatedModelAndField(
 ): { remoteModel: Model; remoteField: Field } | undefined {
   let relationAttributeName: string | undefined;
   let remoteField: Field | undefined;
-  let relationAttributeStringArgument: AttributeArgument | undefined;
 
-  // in the main relation, check if the relation annotation has a name
-  field.attributes?.find((attr) => {
-    const relationAttribute = attr.name === RELATION_ATTRIBUTE_NAME;
+  const relationAttribute = field.attributes?.find(
+    (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+  );
 
-    if (relationAttribute) {
-      relationAttributeStringArgument = attr.args?.find(
-        (arg) =>
-          ((arg.value as KeyValue)?.key === "name" &&
-            typeof (arg.value as KeyValue)?.value === "string") ||
-          typeof arg.value === "string"
-      );
-    }
-
-    relationAttributeName =
-      (relationAttributeStringArgument &&
-        ((relationAttributeStringArgument.value as KeyValue)
-          ?.value as string)) ||
-      (relationAttributeStringArgument?.value as string);
-  });
+  if (relationAttribute) {
+    // in the main relation, check if the relation annotation has a name
+    relationAttributeName = findRelationAttributeName(relationAttribute);
+  }
 
   const remoteModel = schema.list.find(
     (item) =>
@@ -278,39 +286,32 @@ export function findRemoteRelatedModelAndField(
     remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
       return (
         field.name !== fieldOnRelatedModel.name &&
-        fieldOnRelatedModel.attributes?.some(
+        fieldOnRelatedModel.attributes?.find(
           (attr) =>
             attr.name === RELATION_ATTRIBUTE_NAME &&
-            attr.args?.find(
-              (arg) =>
-                ((arg.value as KeyValue)?.key === "name" &&
-                  (arg.value as KeyValue)?.value === relationAttributeName) ||
-                arg.value === relationAttributeName
-            )
+            findRelationAttributeName(attr) === relationAttributeName
         )
       );
     });
   } else {
-    const remoteFields = remoteModelFields.filter((remoteField: Field) => {
-      const hasRelationAttribute = remoteField.attributes?.some(
+    const remoteRelatedFields = remoteModelFields.filter(
+      (fieldOnRelatedModel: Field) =>
+        formatModelName(fieldOnRelatedModel.fieldType as string) ===
+        formatModelName(model.name)
+    );
+
+    remoteRelatedFields.find((fieldOnRelatedModel: Field) => {
+      // find the field that doesn't have the relation attribute with the name we found
+      const relationAttribute = fieldOnRelatedModel.attributes?.find(
         (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
-
-      return (
-        formatModelName(remoteField.fieldType as string) ===
-          formatModelName(model.name) && !hasRelationAttribute
-      );
+      if (
+        !relationAttribute ||
+        (relationAttribute && !findRelationAttributeName(relationAttribute))
+      ) {
+        remoteField = fieldOnRelatedModel;
+      }
     });
-
-    if (remoteFields.length > 1) {
-      throw new Error(
-        `Multiple fields found in model ${remoteModel.name} that reference ${model.name}`
-      );
-    }
-
-    if (remoteFields.length === 1) {
-      remoteField = remoteFields[0];
-    }
   }
 
   if (!remoteField) {
@@ -327,11 +328,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
     (attr) => attr.name === RELATION_ATTRIBUTE_NAME
   );
 
-  if (!relationAttribute) {
-    throw new Error(`Missing relation attribute on field ${field.name}`);
-  }
-
-  const fieldsArgs = relationAttribute.args?.find(
+  const fieldsArgs = relationAttribute?.args?.find(
     (arg) =>
       (arg.value as KeyValue).key &&
       (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
