@@ -39,6 +39,7 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ModuleService } from "../module/module.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -437,6 +438,20 @@ describe("EntityService", () => {
           provide: ServiceSettingsService,
           useClass: jest.fn(() => ({
             getServiceSettingsValues: jest.fn(() => {
+              return {};
+            }),
+          })),
+        },
+        {
+          provide: ModuleService,
+          useClass: jest.fn(() => ({
+            createDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            deleteDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            updateDefaultModuleForEntity: jest.fn(() => {
               return {};
             }),
           })),

@@ -87,6 +87,7 @@ import { BillingService } from "../billing/billing.service";
 import { BillingFeature } from "../billing/billing.types";
 import { ActionContext } from "../userAction/types";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ModuleService } from "../module/module.service";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -188,6 +189,7 @@ export class EntityService {
     private readonly billingService: BillingService,
     private readonly prismaSchemaParserService: PrismaSchemaParserService,
     private readonly serviceSettingsService: ServiceSettingsService,
+    private readonly moduleService: ModuleService,
     @Inject(AmplicationLogger) private readonly logger: AmplicationLogger
   ) {}
 
@@ -257,6 +259,7 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = true
   ): Promise<Entity> {
+    const resourceId = args.data.resource.connect.id;
     if (
       args.data?.name?.toLowerCase().trim() ===
       args.data?.pluralDisplayName?.toLowerCase().trim()
@@ -347,10 +350,27 @@ export class EntityService {
         },
       });
     }
+
+    await this.moduleService.createDefaultModuleForEntity(
+      {
+        data: {
+          name: args.data.name,
+          displayName: args.data.name,
+          resource: {
+            connect: {
+              id: resourceId,
+            },
+          },
+        },
+      },
+      newEntity.id,
+      user
+    );
+
     if (trackEvent) {
       const resourceWithProject = await this.prisma.resource.findUnique({
         where: {
-          id: args.data.resource.connect.id,
+          id: resourceId,
         },
         include: {
           project: true,
@@ -360,7 +380,7 @@ export class EntityService {
       await this.analytics.track({
         userId: user.account.id,
         properties: {
-          resourceId: args.data.resource.connect.id,
+          resourceId: resourceId,
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
@@ -680,40 +700,37 @@ export class EntityService {
     user: User
   ): Promise<Entity[]> {
     return await Promise.all(
-      DEFAULT_ENTITIES.map((entity) => {
-        const names = pick(entity, [
-          "name",
-          "displayName",
-          "pluralDisplayName",
-          "customAttributes",
-          "description",
-        ]);
-        return this.prisma.entity.create({
-          data: {
-            ...names,
-            resource: { connect: { id: resourceId } },
-            lockedAt: new Date(),
-            lockedByUser: {
-              connect: {
-                id: user.id,
-              },
+      DEFAULT_ENTITIES.map(async (entity) => {
+        const { fields, ...rest } = entity;
+        const newEntity = await this.createOneEntity(
+          {
+            data: {
+              ...rest,
+              resource: { connect: { id: resourceId } },
             },
-            versions: {
-              create: {
-                ...names,
-                commit: undefined,
-                versionNumber: CURRENT_VERSION_NUMBER,
-                permissions: {
-                  create: DEFAULT_PERMISSIONS,
-                },
+          },
+          user,
+          false,
+          false,
+          false
+        );
 
-                fields: {
-                  create: entity.fields,
-                },
-              },
+        await this.prisma.entityVersion.update({
+          where: {
+            // eslint-disable-next-line @typescript-eslint/naming-convention
+            entityId_versionNumber: {
+              entityId: newEntity.id,
+              versionNumber: CURRENT_VERSION_NUMBER,
+            },
+          },
+          data: {
+            fields: {
+              create: fields,
             },
           },
         });
+
+        return newEntity;
       })
     );
   }
@@ -758,6 +775,12 @@ export class EntityService {
       for (const relatedEntityField of relatedEntityFields) {
         await this.deleteField({ where: { id: relatedEntityField.id } }, user);
       }
+
+      await this.moduleService.deleteDefaultModuleForEntity(
+        entity.resourceId,
+        entity.id,
+        user
+      );
 
       return this.prisma.entity.update({
         where: args.where,
@@ -903,7 +926,6 @@ export class EntityService {
     args: UpdateOneEntityArgs,
     user: User
   ): Promise<Entity | null> {
-    /**@todo: add validation on updated fields. most fields cannot be updated once the entity was deployed */
     return await this.useLocking(args.where.id, user, async (entity) => {
       const newName =
         args.data.name?.toLowerCase().trim() ||
@@ -950,6 +972,16 @@ export class EntityService {
         },
         event: EnumEventType.EntityUpdate,
       });
+
+      await this.moduleService.updateDefaultModuleForEntity(
+        {
+          name: args.data.name,
+          displayName: args.data.name,
+        },
+        entity.resourceId,
+        entity.id,
+        user
+      );
 
       return this.prisma.entity.update({
         where: { ...args.where },
