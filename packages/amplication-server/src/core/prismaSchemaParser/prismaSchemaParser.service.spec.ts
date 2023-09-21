@@ -2722,6 +2722,176 @@ describe("prismaSchemaParser", () => {
           expect(result).toEqual(expectedEntitiesWithFields);
         });
 
+        it("should create the models and fields properly when the models have more than one related field to the same model", async () => {
+          const prismaSchema = `datasource db {
+            provider = "postgresql"
+            url      = env("DB_URL")
+          }
+          
+          generator client {
+            provider = "prisma-client-js"
+          }
+          
+          model Event {
+            id          String   @id @default(uuid())
+            event2Id    String?  @unique
+            test789     Test[]    @relation("event3")
+            tests       Test[]    @relation("event1")
+            test456     Test?   @relation(references: [id], fields: [event2Id], map: "FK_event4_event_id")
+            test123     Test?    @relation("event2", fields: [event2Id], references: [id])
+          }
+          
+          
+          model Test {
+            id          String  @id @default(uuid())
+            event2      Event[]  @relation("event2")
+            event4      Event[]
+            event1      Event?  @relation("event1", fields: [event1Id], references: [id])
+            event3      Event?  @relation("event3", fields: [event1Id], references: [id], map: "FK_event3_event_id")
+            event1Id    String? @unique
+          }`;
+
+          const existingEntities: ExistingEntitySelect[] = [];
+          const customerFieldPermanentId = expect.any(String);
+          const result = await service.convertPrismaSchemaForImportObjects(
+            prismaSchema,
+            existingEntities,
+            actionContext
+          );
+
+          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+            {
+              id: expect.any(String),
+              name: "Event",
+              displayName: "Event",
+              pluralDisplayName: "Events",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "UUID",
+                  },
+                  customAttributes: "@id @default(uuid())",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "test456",
+                  displayName: "Test456",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "event2Id",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Event4",
+                  relatedFieldName: "event4",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "test123",
+                  displayName: "Test123",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "event2Id",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Event2",
+                  relatedFieldName: "event2",
+                },
+              ],
+            },
+            {
+              id: expect.any(String),
+              name: "Test",
+              displayName: "Test",
+              pluralDisplayName: "Tests",
+              description: "",
+              customAttributes: "",
+              fields: [
+                {
+                  permanentId: expect.any(String),
+                  name: "id",
+                  displayName: "Id",
+                  dataType: EnumDataType.Id,
+                  required: true,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    idType: "UUID",
+                  },
+                  customAttributes: "@id @default(uuid())",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "event1",
+                  displayName: "Event1",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "event1Id",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Tests",
+                  relatedFieldName: "tests",
+                },
+                {
+                  permanentId: customerFieldPermanentId,
+                  name: "event3",
+                  displayName: "Event3",
+                  dataType: EnumDataType.Lookup,
+                  required: false,
+                  unique: false,
+                  searchable: true,
+                  description: "",
+                  properties: {
+                    relatedEntityId: expect.any(String),
+                    allowMultipleSelection: false,
+                    fkHolder: customerFieldPermanentId,
+                    fkFieldName: "event1Id",
+                  },
+                  customAttributes: "",
+                  relatedFieldAllowMultipleSelection: true,
+                  relatedFieldDisplayName: "Test789",
+                  relatedFieldName: "test789",
+                },
+              ],
+            },
+          ];
+          expect(result).toEqual(expectedEntitiesWithFields);
+        });
+
         describe("when the relation is many to many", () => {
           it("should rename the field but it should NOT add the @map attribute", async () => {
             // arrange
