@@ -294,14 +294,18 @@ export function findRemoteRelatedModelAndField(
       );
     });
   } else {
+    // in this block the current field is a relation field that doesn't have a relation attribute with name
+    // but, because there could be more than one field in the remote model that reference the current model
+    // we still need to find the field that reference the current model and *doesn't* have a relation attribute with name
+    // it can still have a relation attribute *without* a name (for one to one relation for example) and this case is still valid,
+    // meaning it can be the remote field we are looking for
     const remoteRelatedFields = remoteModelFields.filter(
       (fieldOnRelatedModel: Field) =>
         formatModelName(fieldOnRelatedModel.fieldType as string) ===
         formatModelName(model.name)
     );
 
-    remoteRelatedFields.find((fieldOnRelatedModel: Field) => {
-      // find the field that doesn't have the relation attribute with the name we found
+    remoteField = remoteRelatedFields.find((fieldOnRelatedModel: Field) => {
       const relationAttribute = fieldOnRelatedModel.attributes?.find(
         (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
@@ -309,7 +313,7 @@ export function findRemoteRelatedModelAndField(
         !relationAttribute ||
         (relationAttribute && !findRelationAttributeName(relationAttribute))
       ) {
-        remoteField = fieldOnRelatedModel;
+        return fieldOnRelatedModel;
       }
     });
   }
