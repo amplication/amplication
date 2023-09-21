@@ -27,6 +27,9 @@ import {
   FUNCTION_ARG_TYPE_NAME,
   ID_FIELD_NAME,
   ID_ATTRIBUTE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
+  prismaIdTypeToDefaultIdType,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -61,15 +64,9 @@ export function createOneEntityFieldCommonProperties(
   const fieldAttributes = filterOutAmplicationAttributes(
     prepareFieldAttributes(field.attributes)
   )
-    // in some case we get "@default()" as an attribute, we want to filter it out
+    // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
     .join(" ");
-
-  if (fieldDataType === EnumDataType.Lookup && fieldAttributes !== "") {
-    throw new Error(
-      `Custom attributes are not allowed on relation fields. Only @relation attribute is allowed`
-    );
-  }
 
   return {
     permanentId: cuid(),
@@ -179,11 +176,21 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
         if (isKeyValue(arg.value)) {
           if (isRelationArray(arg.value.value)) {
             return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else if (isFunction(arg.value.value)) {
+            const functionArgs =
+              arg.value.value.params && arg.value.value.params.length
+                ? arg.value.value.params.join(", ")
+                : "";
+            return `${arg.value.key}: ${arg.value.value.name}(${functionArgs})`;
           } else {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isFunction(arg.value)) {
-          return `${arg.value.name}()`;
+          const functionArgs =
+            arg.value.params && arg.value.params.length
+              ? arg.value.params.join(", ")
+              : "";
+          return `${arg.value.name}(${functionArgs})`;
         } else if (typeof arg.value === "string") {
           return arg.value;
         } else {
@@ -192,12 +199,23 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
       });
     }
 
-    if (attributeGroup) {
+    // if there's an attribute group and args are present
+    if (attributeGroup && args.length > 0) {
       return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
         ", "
       )})`;
-    } else {
+    }
+    // if there's an attribute group but no args are present
+    else if (attributeGroup) {
+      return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}`;
+    }
+    // if there's no attribute group but args are present
+    else if (args.length > 0) {
       return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
+    }
+    // if no args are present (@id, @unique)
+    else {
+      return `${fieldAttrPrefix}${attribute.name}`;
     }
   });
 }
@@ -223,13 +241,18 @@ export function findRemoteRelatedModelAndField(
 
     if (relationAttribute) {
       relationAttributeStringArgument = attr.args?.find(
-        (arg) => typeof arg.value === "string"
+        (arg) =>
+          ((arg.value as KeyValue)?.key === "name" &&
+            typeof (arg.value as KeyValue)?.value === "string") ||
+          typeof arg.value === "string"
       );
     }
 
     relationAttributeName =
-      relationAttributeStringArgument &&
-      (relationAttributeStringArgument.value as string);
+      (relationAttributeStringArgument &&
+        ((relationAttributeStringArgument.value as KeyValue)
+          ?.value as string)) ||
+      (relationAttributeStringArgument?.value as string);
   });
 
   const remoteModel = schema.list.find(
@@ -250,11 +273,21 @@ export function findRemoteRelatedModelAndField(
 
   if (relationAttributeName) {
     // find the remote field in the remote model that has the relation attribute with the name we found
-    remoteField = remoteModelFields.find((field: Field) => {
-      return field.attributes?.some(
-        (attr) =>
-          attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.find((arg) => arg.value === relationAttributeName)
+    // and make sure that the field is not the current field because we don't want to return the current field
+    // in cases where the relation is self relation
+    remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
+      return (
+        field.name !== fieldOnRelatedModel.name &&
+        fieldOnRelatedModel.attributes?.some(
+          (attr) =>
+            attr.name === RELATION_ATTRIBUTE_NAME &&
+            attr.args?.find(
+              (arg) =>
+                ((arg.value as KeyValue)?.key === "name" &&
+                  (arg.value as KeyValue)?.value === relationAttributeName) ||
+                arg.value === relationAttributeName
+            )
+        )
       );
     });
   } else {
@@ -299,7 +332,9 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
   }
 
   const fieldsArgs = relationAttribute.args?.find(
-    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+    (arg) =>
+      (arg.value as KeyValue).key &&
+      (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
   if (!fieldsArgs) {
@@ -432,7 +467,8 @@ export function addIdFieldIfNotExists(
   builder
     .model(model.name)
     .field(ID_FIELD_NAME, "String")
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
@@ -446,10 +482,14 @@ export function convertUniqueFieldNamedIdToIdField(
   uniqueFieldNamedId: Field,
   actionContext: ActionContext
 ) {
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[uniqueFieldNamedId.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldNamedId.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
@@ -475,10 +515,14 @@ export function convertUniqueFieldNotNamedIdToIdField(
     actionContext
   );
 
+  const idDefaultType =
+    prismaIdTypeToDefaultIdType[uniqueFieldAsIdField.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,

@@ -381,6 +381,8 @@ export class BillingService {
         return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
         return EnumSubscriptionPlan.Pro;
+      case BillingPlan.ProWithTrial:
+        return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;
       default:

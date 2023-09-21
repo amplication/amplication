@@ -106,21 +106,6 @@ describe("schema-utils", () => {
       expect(result.searchable).toEqual(true);
     });
 
-    it("should throw error if Lookup field has custom attributes", () => {
-      const field = {
-        name: "testField",
-        optional: false,
-        attributes: mockAttributes,
-      } as unknown as Field;
-      const dataType = EnumDataType.Lookup;
-
-      expect(() =>
-        createOneEntityFieldCommonProperties(field, dataType)
-      ).toThrowError(
-        "Custom attributes are not allowed on relation fields. Only @relation attribute is allowed"
-      );
-    });
-
     it("should add custom attributes for non-Lookup field", () => {
       const field = {
         name: "testField",
@@ -190,14 +175,26 @@ describe("schema-utils", () => {
     it("should return an array of field attributes as strings", () => {
       const mockAttributes = [
         { name: "mockFieldAttribute1", args: [] },
-        { name: "mockFieldAttribute2", args: [] },
+        {
+          name: "mockFieldAttribute2",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "function",
+                name: "dbgenerated",
+                params: ['"uuid_generate_v4()"'],
+              },
+            },
+          ],
+        },
       ] as unknown as Attribute[];
 
       const result = prepareFieldAttributes(mockAttributes);
 
       expect(result).toEqual([
-        "@mockFieldAttribute1()",
-        "@mockFieldAttribute2()",
+        "@mockFieldAttribute1",
+        '@mockFieldAttribute2(dbgenerated("uuid_generate_v4()"))',
       ]);
     });
 
@@ -298,7 +295,7 @@ describe("schema-utils", () => {
 
       expect(result).toEqual([
         '@relation(fields: [user_id], references: [id], onDelete: Cascade, map: "mockRelationValue")',
-        "@mockFieldAttribute2()",
+        "@mockFieldAttribute2",
       ]);
     });
 
