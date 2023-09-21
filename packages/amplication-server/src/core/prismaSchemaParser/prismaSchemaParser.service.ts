@@ -48,6 +48,7 @@ import {
   handleNotIdFieldNotUniqueNamedId,
   addMapAttributeToField,
   addMapAttributeToModel,
+  findRelationAttributeName,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -1032,20 +1033,16 @@ export class PrismaSchemaParserService {
     const modelList = schema.list.filter(
       (item) => item.type === MODEL_TYPE_NAME
     );
+
     const relationAttribute =
       field.attributes?.some((attr) => attr.name === RELATION_ATTRIBUTE_NAME) ??
       false;
 
-    const hasRelationAttributeWithRelationNameAndWithoutReferenceField =
+    const hasRelationAttributeNameAndWithoutReferenceField =
       field.attributes?.some(
         (attr) =>
           attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.some(
-            (arg) =>
-              ((arg.value as KeyValue)?.key === "name" &&
-                typeof (arg.value as KeyValue)?.value === "string") ||
-              typeof arg.value === "string"
-          ) &&
+          findRelationAttributeName(attr) &&
           !attr.args?.find(
             (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
           )
@@ -1059,8 +1056,7 @@ export class PrismaSchemaParserService {
     // or it has the @relation attribute but without reference field
     return (
       (fieldModelType && !relationAttribute) ||
-      (fieldModelType &&
-        hasRelationAttributeWithRelationNameAndWithoutReferenceField)
+      (fieldModelType && hasRelationAttributeNameAndWithoutReferenceField)
     );
   }
 
@@ -1120,29 +1116,33 @@ export class PrismaSchemaParserService {
       } else {
         // remoteRelatedFields.length > 1
         // compare between the relation name of the two sides
-        const relationName = field.attributes
-          ?.find((attr) => attr.name === RELATION_ATTRIBUTE_NAME)
-          ?.args?.find(
-            (arg) =>
-              ((arg.value as KeyValue)?.key === "name" &&
-                typeof (arg.value as KeyValue)?.value === "string") ||
-              typeof arg.value === "string"
-          )?.value;
+        let currentFieldRelationAttributeName = null;
+        let remoteFieldRelationAttributeName = null;
+        const relationAttribute = field.attributes?.find(
+          (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+        );
+
+        if (relationAttribute) {
+          currentFieldRelationAttributeName =
+            findRelationAttributeName(relationAttribute);
+        }
 
         // loop over the otherSide array, for each field find the relation name and compare it to the relation name of the field
         // if they are equal, it means that we found the other side of the relation
         for (const [index, fieldItem] of remoteRelatedFields.entries()) {
-          const relationNameOfTheOtherSide = fieldItem.attributes
-            ?.find((attr) => attr.name === RELATION_ATTRIBUTE_NAME)
-            ?.args?.find(
-              (arg) =>
-                ((arg.value as KeyValue)?.key === "name" &&
-                  typeof (arg.value as KeyValue)?.value === "string") ||
-                typeof arg.value === "string"
-            )?.value;
+          const relationAttributeOnRemoteField = fieldItem.attributes?.find(
+            (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+          );
+
+          if (relationAttributeOnRemoteField) {
+            remoteFieldRelationAttributeName = findRelationAttributeName(
+              relationAttributeOnRemoteField
+            );
+          }
 
           if (
-            relationName === relationNameOfTheOtherSide &&
+            currentFieldRelationAttributeName ===
+              remoteFieldRelationAttributeName &&
             this.isLookupField(schema, remoteRelatedFields[index]) &&
             this.isNotAnnotatedRelationField(
               schema,
@@ -1167,8 +1167,8 @@ export class PrismaSchemaParserService {
       (property) => property.type === FIELD_TYPE_NAME
     ) as Field[];
 
-    const relationFiledWithReference = modelFields.filter((modelField: Field) =>
-      modelField.attributes?.some(
+    const relationFiledWithReference = modelFields.find((modelField: Field) =>
+      modelField.attributes?.find(
         (attr) =>
           attr.name === "relation" &&
           attr.args?.some(
@@ -1181,7 +1181,7 @@ export class PrismaSchemaParserService {
       )
     );
 
-    return !!(relationFiledWithReference.length === 1);
+    return !!relationFiledWithReference;
   }
 
   /********************
