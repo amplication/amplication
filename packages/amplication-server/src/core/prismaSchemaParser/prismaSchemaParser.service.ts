@@ -1181,15 +1181,6 @@ export class PrismaSchemaParserService {
       )
     );
 
-    if (relationFiledWithReference.length > 1) {
-      this.logger.error(
-        `Field ${field.name} on model ${model.name} has more than one relation field`
-      );
-      this.logger.error(
-        `Field ${field.name} on model ${model.name} has more than one relation field`
-      );
-    }
-
     return !!(relationFiledWithReference.length === 1);
   }
 
