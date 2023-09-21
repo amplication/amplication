@@ -652,6 +652,7 @@ export enum EnumAuthProviderType {
 }
 
 export enum EnumBlockType {
+  Module = 'Module',
   PluginInstallation = 'PluginInstallation',
   PluginOrder = 'PluginOrder',
   ProjectConfigurationSettings = 'ProjectConfigurationSettings',
@@ -928,6 +929,61 @@ export type MessagePatternCreateInput = {
   type: EnumMessagePatternConnectionOptions;
 };
 
+export type Module = IBlock & {
+  blockType: EnumBlockType;
+  createdAt: Scalars['DateTime']['output'];
+  description?: Maybe<Scalars['String']['output']>;
+  displayName: Scalars['String']['output'];
+  entityId?: Maybe<Scalars['String']['output']>;
+  id: Scalars['String']['output'];
+  inputParameters: Array<BlockInputOutput>;
+  lockedAt?: Maybe<Scalars['DateTime']['output']>;
+  lockedByUserId?: Maybe<Scalars['String']['output']>;
+  name: Scalars['String']['output'];
+  outputParameters: Array<BlockInputOutput>;
+  parentBlock?: Maybe<Block>;
+  resourceId?: Maybe<Scalars['String']['output']>;
+  updatedAt: Scalars['DateTime']['output'];
+  versionNumber: Scalars['Float']['output'];
+};
+
+export type ModuleCreateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName: Scalars['String']['input'];
+  entityId?: InputMaybe<Scalars['String']['input']>;
+  inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  name?: InputMaybe<Scalars['String']['input']>;
+  outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
+  parentBlock?: InputMaybe<WhereParentIdInput>;
+  resource: WhereParentIdInput;
+};
+
+export type ModuleOrderByInput = {
+  blockType?: InputMaybe<SortOrder>;
+  createdAt?: InputMaybe<SortOrder>;
+  description?: InputMaybe<SortOrder>;
+  displayName?: InputMaybe<SortOrder>;
+  id?: InputMaybe<SortOrder>;
+  updatedAt?: InputMaybe<SortOrder>;
+};
+
+export type ModuleUpdateInput = {
+  description?: InputMaybe<Scalars['String']['input']>;
+  displayName?: InputMaybe<Scalars['String']['input']>;
+  entityId?: InputMaybe<Scalars['String']['input']>;
+  name?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type ModuleWhereInput = {
+  createdAt?: InputMaybe<DateTimeFilter>;
+  description?: InputMaybe<StringFilter>;
+  displayName?: InputMaybe<StringFilter>;
+  id?: InputMaybe<StringFilter>;
+  parentBlock?: InputMaybe<WhereUniqueInput>;
+  resource?: InputMaybe<ResourceWhereInput>;
+  updatedAt?: InputMaybe<DateTimeFilter>;
+};
+
 export type Mutation = {
   addEntityPermissionField: EntityPermissionField;
   changePassword: Account;
@@ -945,6 +1001,7 @@ export type Mutation = {
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
+  createModule: Module;
   createOneEntity: Entity;
   createOrganization: GitOrganization;
   createPluginInstallation: PluginInstallation;
@@ -962,6 +1019,7 @@ export type Mutation = {
   deleteEntityPermissionField: EntityPermissionField;
   deleteGitOrganization: Scalars['Boolean']['output'];
   deleteGitRepository: Resource;
+  deleteModule: Module;
   deletePluginInstallation: PluginInstallation;
   deleteProject?: Maybe<Project>;
   deleteResource?: Maybe<Resource>;
@@ -991,6 +1049,7 @@ export type Mutation = {
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
   updateGitRepository: GitRepository;
+  updateModule: Module;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1090,6 +1149,11 @@ export type MutationCreateMessageBrokerArgs = {
 };
 
 
+export type MutationCreateModuleArgs = {
+  data: ModuleCreateInput;
+};
+
+
 export type MutationCreateOneEntityArgs = {
   data: EntityCreateInput;
 };
@@ -1173,6 +1237,11 @@ export type MutationDeleteGitOrganizationArgs = {
 
 export type MutationDeleteGitRepositoryArgs = {
   gitRepositoryId: Scalars['String']['input'];
+};
+
+
+export type MutationDeleteModuleArgs = {
+  where: WhereUniqueInput;
 };
 
 
@@ -1326,6 +1395,12 @@ export type MutationUpdateEntityPermissionRolesArgs = {
 
 export type MutationUpdateGitRepositoryArgs = {
   data: GitRepositoryUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
+export type MutationUpdateModuleArgs = {
+  data: ModuleUpdateInput;
   where: WhereUniqueInput;
 };
 
@@ -1592,6 +1667,8 @@ export type ProvisionSubscriptionResult = {
 };
 
 export type Query = {
+  Module?: Maybe<Module>;
+  Modules: Array<Module>;
   PluginInstallation?: Maybe<PluginInstallation>;
   PluginInstallations: Array<PluginInstallation>;
   ServiceTopics?: Maybe<ServiceTopics>;
@@ -1630,6 +1707,19 @@ export type Query = {
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
   workspaces: Array<Workspace>;
+};
+
+
+export type QueryModuleArgs = {
+  where: WhereUniqueInput;
+};
+
+
+export type QueryModulesArgs = {
+  orderBy?: InputMaybe<ModuleOrderByInput>;
+  skip?: InputMaybe<Scalars['Int']['input']>;
+  take?: InputMaybe<Scalars['Int']['input']>;
+  where?: InputMaybe<ModuleWhereInput>;
 };
 
 
