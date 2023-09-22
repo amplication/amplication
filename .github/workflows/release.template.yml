@@ -1,4 +1,4 @@
-name: Reusable Release template
+name: _Reusable Release template
 
 on:
   workflow_call:
