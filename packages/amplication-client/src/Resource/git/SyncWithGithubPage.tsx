@@ -1,5 +1,5 @@
 import { Snackbar } from "@amplication/ui/design-system";
-import { gql, useQuery } from "@apollo/client";
+import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
@@ -10,9 +10,11 @@ import {
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
-import AuthResourceWithGit from "./AuthResourceWithGit";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
 import "./SyncWithGithubPage.scss";
+import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
+import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import AuthWithGitProvider from "./AuthWithGitProvider";
 
 const CLASS_NAME = "sync-with-git-page";
 
@@ -36,6 +38,8 @@ const SyncWithGithubPage: React.FC = () => {
     skip: !currentResource?.id,
   });
 
+  const [connectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
+
   const handleOnDone = useCallback(() => {
     refreshCurrentWorkspace();
     refetch();
@@ -45,6 +49,19 @@ const SyncWithGithubPage: React.FC = () => {
   const errorMessage = formatError(error);
   const isProjectConfiguration =
     data?.resource.resourceType === EnumResourceType.ProjectConfiguration;
+  const gitRepositorySelectedCb = useCallback(
+    (gitRepository: GitRepositorySelected) => {
+      connectGitRepository({
+        variables: {
+          name: gitRepository.repositoryName,
+          gitOrganizationId: gitRepository.gitOrganizationId,
+          resourceId: data?.resource.id,
+          groupName: gitRepository.groupName,
+        },
+      }).catch(console.error);
+    },
+    [connectGitRepository, data?.resource]
+  );
 
   return (
     <PageContent pageTitle={pageTitle}>
@@ -60,12 +77,20 @@ const SyncWithGithubPage: React.FC = () => {
           repository every time you commit your changes.
         </div>
         {data?.resource && isProjectConfiguration && (
-          <AuthResourceWithGit resource={data.resource} onDone={handleOnDone} />
+          <AuthWithGitProvider
+            type="resource"
+            resource={data.resource}
+            onDone={handleOnDone}
+            gitRepositorySelectedCb={gitRepositorySelectedCb}
+            gitRepositoryCreatedCb={handleOnDone}
+          />
         )}
         {!isProjectConfiguration && data?.resource && (
           <ServiceConfigurationGitSettings
             resource={data.resource}
             onDone={handleOnDone}
+            gitRepositorySelectedCb={gitRepositorySelectedCb}
+            gitRepositoryCreatedCb={handleOnDone}
           />
         )}
         <Snackbar open={Boolean(error)} message={errorMessage} />

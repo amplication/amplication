@@ -257,7 +257,7 @@ export const createPrismaSchemaFieldsHandlers: {
       ];
     }
 
-    const scalarRelationFieldName = `${name}Id`;
+    const scalarRelationFieldName = field.properties.fkFieldName;
 
     const relatedEntityFiledId = relatedEntity.fields?.find(
       (relatedEntityField) => relatedEntityField.dataType === EnumDataType.Id

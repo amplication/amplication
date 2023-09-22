@@ -38,6 +38,12 @@ describe("createCreateArgs", () => {
     );
     expect(createArgs && print(createArgs).code).toEqual(`@ArgsType()
 class ${createCreateArgsId(EXAMPLE_ENTITY.name).name} {
+  @ApiProperty({
+    required: true,
+    type: () => ${EXAMPLE_CREATE_INPUT.id.name},
+  })
+  @ValidateNested()
+  @Type(() => ${EXAMPLE_CREATE_INPUT.id.name})
   @Field(() => ${EXAMPLE_CREATE_INPUT.id.name}, { nullable: false })
   data!: ${EXAMPLE_CREATE_INPUT.id.name};
 }`);

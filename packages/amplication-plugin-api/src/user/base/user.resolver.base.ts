@@ -9,26 +9,26 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import * as common from "@nestjs/common";
 import * as graphql from "@nestjs/graphql";
 import * as apollo from "apollo-server-express";
-import * as nestAccessControl from "nest-access-control";
-import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
-import * as gqlACGuard from "../../auth/gqlAC.guard";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
+import * as nestAccessControl from "nest-access-control";
+import * as gqlACGuard from "../../auth/gqlAC.guard";
+import { GqlDefaultAuthGuard } from "../../auth/gqlDefaultAuth.guard";
+import * as common from "@nestjs/common";
 import { AclFilterResponseInterceptor } from "../../interceptors/aclFilterResponse.interceptor";
 import { AclValidateRequestInterceptor } from "../../interceptors/aclValidateRequest.interceptor";
 import { CreateUserArgs } from "./CreateUserArgs";
 import { UpdateUserArgs } from "./UpdateUserArgs";
 import { DeleteUserArgs } from "./DeleteUserArgs";
+import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
 import { User } from "./User";
 import { UserService } from "../user.service";
-
-@graphql.Resolver(() => User)
 @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
+@graphql.Resolver(() => User)
 export class UserResolverBase {
   constructor(
     protected readonly service: UserService,
@@ -42,15 +42,11 @@ export class UserResolverBase {
     possession: "any",
   })
   async _usersMeta(
-    @graphql.Args() args: UserFindManyArgs
+    @graphql.Args() args: UserCountArgs
   ): Promise<MetaQueryPayload> {
-    const results = await this.service.count({
-      ...args,
-      skip: undefined,
-      take: undefined,
-    });
+    const result = await this.service.count(args);
     return {
-      count: results,
+      count: result,
     };
   }
 

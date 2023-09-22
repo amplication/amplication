@@ -19,7 +19,7 @@ export class Logger implements ILogger {
     const format = this.getLoggerFormat();
     this.logger = createLogger({
       defaultMeta: {
-        component: options.serviceName,
+        component: options.component,
         ...options.metadata,
       },
       level: this.level,

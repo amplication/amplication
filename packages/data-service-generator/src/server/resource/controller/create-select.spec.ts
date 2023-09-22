@@ -26,6 +26,9 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD],
   permissions: [],
 };
+
+export const EXAMPLE_FK_FIELD_NAME = "EXAMPLE_FK_FIELD_NAME";
+
 const EXAMPLE_LOOKUP_FIELD: EntityField = {
   id: "EXAMPLE_LOOKUP_FIELD_ID",
   permanentId: "EXAMPLE_LOOKUP_PERMANENT_FIELD_ID",
@@ -38,6 +41,7 @@ const EXAMPLE_LOOKUP_FIELD: EntityField = {
   properties: {
     relatedEntityId: EXAMPLE_ENTITY.id,
     relatedEntity: EXAMPLE_ENTITY,
+    fkFieldName: EXAMPLE_FK_FIELD_NAME,
   },
 };
 const EXAMPLE_LOOKUP_ENTITY: Entity = {

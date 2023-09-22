@@ -2,7 +2,6 @@ import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
 import React, { useCallback, useState } from "react";
 import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
-import AuthResourceWithGit from "./AuthResourceWithGit";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { useMutation } from "@apollo/client";
 import * as models from "../../models";
@@ -13,12 +12,19 @@ import {
   UPDATE_RESOURCE,
 } from "../../Workspaces/queries/resourcesQueries";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import AuthWithGitProvider from "./AuthWithGitProvider";
+import {
+  GitRepositoryCreatedData,
+  GitRepositorySelected,
+} from "./dialogs/GitRepos/GithubRepos";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
 type Props = {
   resource: models.Resource;
   onDone: () => void;
+  gitRepositorySelectedCb: (data: GitRepositorySelected) => void;
+  gitRepositoryCreatedCb?: (data: GitRepositoryCreatedData) => void;
 };
 
 type TData = {
@@ -28,6 +34,8 @@ type TData = {
 const ServiceConfigurationGitSettings: React.FC<Props> = ({
   resource,
   onDone,
+  gitRepositorySelectedCb,
+  gitRepositoryCreatedCb,
 }) => {
   const [isOverride, setIsOverride] = useState<boolean>(
     resource.gitRepositoryOverride
@@ -115,7 +123,13 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
           {isOverride && (
             <div className={`${CLASS_NAME}__AuthWithGit`}>
               <hr />
-              <AuthResourceWithGit resource={resource} onDone={onDone} />
+              <AuthWithGitProvider
+                type="resource"
+                resource={resource}
+                onDone={onDone}
+                gitRepositorySelectedCb={gitRepositorySelectedCb}
+                gitRepositoryCreatedCb={gitRepositoryCreatedCb}
+              />
             </div>
           )}
         </Panel>

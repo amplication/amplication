@@ -1,13 +1,15 @@
 generator serverClient {
-  provider      = "prisma-client-js"
-  output        = "../../amplication-server/prisma/generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "../../amplication-server/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
 }
 
 generator pushWebhookServiceClient {
-  provider      = "prisma-client-js"
-  output        = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
-  binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  provider        = "prisma-client-js"
+  output          = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
 }
 
 datasource db {
@@ -42,15 +44,17 @@ model Workspace {
 }
 
 model Project {
-  id          String     @id @default(cuid())
-  name        String
-  workspaceId String
-  workspace   Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
-  resources   Resource[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
-  deletedAt   DateTime?
-  commits     Commit[]
+  id           String     @id @default(cuid())
+  name         String
+  workspaceId  String
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resources    Resource[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  commits      Commit[]
+  useDemoRepo  Boolean    @default(false)
+  demoRepoName String?
 
   @@unique([workspaceId, name])
 }
@@ -103,6 +107,7 @@ model User {
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
   deletedAt             DateTime?
+  lastActive            DateTime?    @default(now())
 
   @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
 }
@@ -546,6 +551,7 @@ enum EnumResourceType {
 enum EnumGitProvider {
   Github
   Bitbucket
+  AwsCodeCommit
 }
 
 enum EnumGitOrganizationType {

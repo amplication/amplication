@@ -24,7 +24,7 @@ let logOptions: LoggerOptions;
 describe("Logger", () => {
   beforeEach(() => {
     logOptions = {
-      serviceName: "maccheroni-service",
+      component: "maccheroni-service",
       logLevel: LogLevel.Debug,
       isProduction: false,
     };
@@ -34,7 +34,7 @@ describe("Logger", () => {
     jest.clearAllMocks();
   });
 
-  it("should configure a serviceName and minimal log level as per LoggerOptions", async () => {
+  it("should configure a component and minimal log level as per LoggerOptions", async () => {
     const spyOnCreateLogger = jest.spyOn(winston, "createLogger");
 
     const logger = new Logger(logOptions);
@@ -44,7 +44,7 @@ describe("Logger", () => {
     expect(spyOnCreateLogger).toBeCalledWith(
       expect.objectContaining({
         defaultMeta: {
-          component: logOptions.serviceName,
+          component: logOptions.component,
         },
       })
     );
@@ -55,7 +55,7 @@ describe("Logger", () => {
 
     expect(winston.createLogger).toHaveBeenCalledWith({
       defaultMeta: {
-        component: logOptions.serviceName,
+        component: logOptions.component,
         ...logOptions.metadata,
       },
       level: logOptions.logLevel,

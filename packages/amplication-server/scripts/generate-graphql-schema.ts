@@ -8,7 +8,7 @@ import { AppModule } from "../src/app.module";
 import { Logger } from "@amplication/util/logging";
 const logger = new Logger({
   isProduction: false,
-  serviceName: "generate-graphql-schema",
+  component: "generate-graphql-schema",
 });
 export default async function generateGraphQLSchema(): Promise<void> {
   // Override PrismaClient $connect to prevent connections to the database
