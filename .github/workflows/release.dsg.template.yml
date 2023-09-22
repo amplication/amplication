@@ -3,14 +3,23 @@ name: _Reusable DSG Release template
 on:
   workflow_call:
     inputs:
-      branch: 
+      branch:
         description: Name of the git branch
         required: true
         type: string
+      package-container:
+        description: If data-service-generator needs to be packaged too
+        required: false
+        default: false
+        type: boolean
     secrets:
       NX_CLOUD_ACCESS_TOKEN:
         required: true
       RELEASE_PRODUCTION_PAT:
+        required: true
+      ECR_AWS_ACCESS_KEY_ID:
+        required: true
+      ECR_AWS_SECRET_ACCESS_KEY:
         required: true
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -36,7 +45,7 @@ jobs:
           echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
 
           IS_NEW_VERSION="false"
-    
+
           # If the tag already exists, it means that was already released. So we skip it. 
           if git tag --list | grep -q "^$NEW_TAG"; then
             IS_NEW_VERSION="false"
@@ -68,7 +77,7 @@ jobs:
         if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         uses: mikepenz/release-changelog-builder-action@v4
         with:
-          fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
+          fromTag: '${{ steps.check-tag.outputs.previous-tag }}'
           toTag: HEAD # from actions/checkout@v3
           configurationJson: |
             {
@@ -79,7 +88,7 @@ jobs:
               "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})",
               "categories": [
                 {
-                  "title": "## [`data-service-generator`] Changes 🛠",
+                  "title": "## What's Changed? 🛠",
                   "exhaustive_rules": "true",
                   "rules": [
                     {
@@ -93,6 +102,38 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure AWS Credentials (operations account)
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR (operations account)
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+          registries: '439403303254'
+
+      - name: Get git references
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
+        id: git-details
+        run: |
+          GIT_SHA=$(git rev-parse HEAD)
+          echo "ref=${{ inputs.branch }}" >> $GITHUB_OUTPUT
+          echo "sha=$GIT_SHA" >> $GITHUB_OUTPUT
+
+      - name: Dockerize
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
+        run: npx nx package:container data-service-generator --prod
+        env:
+          INPUT_PUSH: true
+          # env variables substituted in the project.json docker target build-args
+          GIT_REF_NAME: ${{ steps.git-details.outputs.ref }}
+          GIT_SHA: ${{ steps.git-details.outputs.sha }}
 
       - name: Create data-service-generator git tag
         if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
@@ -109,7 +150,7 @@ jobs:
         if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         uses: actions/upload-artifact@v3
         with:
-          name: release-notes
+          name: data-service-generator release notes
           path: release-notes.md
 
       # - name: Release data-service-generator
