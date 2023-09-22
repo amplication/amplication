@@ -150,7 +150,7 @@ jobs:
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
+            yq -i ".$project.image.tag = \"${{ github.ref_name }}\"" production/applications/$project/values.yaml
             git add production/applications/$project/values.yaml
           done
 
