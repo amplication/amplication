@@ -1,8 +1,8 @@
 import { GET_COMMITS } from "./commitQueries";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Commit, PendingChange, SortOrder } from "../../models";
+import { Commit, PendingChange, SortOrder, Build } from "../../models";
 import { ApolloError, useLazyQuery } from "@apollo/client";
-import { groupBy } from "lodash";
+import { cloneDeep, groupBy } from "lodash";
 
 const MAX_ITEMS_PER_LOADING = 20;
 
@@ -22,6 +22,7 @@ export interface CommitUtils {
   }[];
   refetchCommitsData: (refetchFromStart?: boolean) => void;
   refetchLastCommit: () => void;
+  updateBuildStatus: (build: Build) => void;
   disableLoadMore: boolean;
 }
 
@@ -30,6 +31,31 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
   const [lastCommit, setLastCommit] = useState<Commit>();
   const [commitsCount, setCommitsCount] = useState(1);
   const [disableLoadMore, setDisableLoadMore] = useState(false);
+
+  const updateBuildStatus = useCallback(
+    (build: Build) => {
+      const clonedCommits = cloneDeep(commits);
+      //find the commit that contains the build
+      const commitIdx = getCommitIdx(clonedCommits, build.commitId);
+      if (commitIdx === -1) return;
+      const commit = clonedCommits[commitIdx];
+
+      //find the build in the commit
+      const buildIdx = commit.builds.findIndex((b) => b.id === build.id);
+      if (buildIdx === -1) return;
+      const builds = [...commit.builds];
+
+      //update the build status if it changed
+      if (builds[buildIdx].status === build.status) {
+        return;
+      }
+
+      builds[buildIdx].status = build.status;
+
+      setCommits(clonedCommits);
+    },
+    [commits, setCommits]
+  );
 
   const [
     getInitialCommits,
@@ -144,6 +170,7 @@ const useCommits = (currentProjectId: string, maxCommits?: number) => {
     refetchCommitsData,
     refetchLastCommit,
     disableLoadMore,
+    updateBuildStatus,
   };
 };
 

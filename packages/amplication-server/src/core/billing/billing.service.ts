@@ -6,10 +6,10 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
   ReportUsageAck,
+  SubscriptionStatus,
 } from "@stigg/node-server-sdk";
-import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
 import { Env } from "../../env";
-import { EnumSubscriptionPlan, SubscriptionData } from "../subscription/dto";
+import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
 import { BillingFeature, BillingPlan } from "./billing.types";
@@ -247,7 +247,6 @@ export class BillingService {
           ),
           createdAt: new Date(),
           updatedAt: new Date(),
-          subscriptionData: new SubscriptionData(),
         };
 
         return amplicationSub;
@@ -381,6 +380,8 @@ export class BillingService {
       case BillingPlan.Free:
         return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
+        return EnumSubscriptionPlan.Pro;
+      case BillingPlan.ProWithTrial:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;

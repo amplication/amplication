@@ -33,8 +33,6 @@ export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
 
 export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
   models.EnumDataType.Id,
-  models.EnumDataType.Username,
-  models.EnumDataType.Password,
   models.EnumDataType.Roles,
 ]);
 
@@ -118,4 +116,64 @@ export const DATA_TYPE_TO_LABEL_AND_ICON: {
     label: "Roles",
     icon: "users",
   },
+};
+
+export const ENTITY_FIELD_ENUM_MAPPER: {
+  [key in models.EnumDataType]: {
+    [key: string]: {
+      label: string;
+      value: string;
+    }[];
+  };
+} = {
+  /**@todo: update the icons for each type */
+  [models.EnumDataType.SingleLineText]: {},
+  [models.EnumDataType.MultiLineText]: {},
+  [models.EnumDataType.Email]: {},
+  [models.EnumDataType.WholeNumber]: {
+    databaseFieldType: [
+      {
+        label: "Integer",
+        value: "INT",
+      },
+      {
+        label: "Big Integer",
+        value: "BIG_INT",
+      },
+    ],
+  },
+  [models.EnumDataType.DecimalNumber]: {
+    databaseFieldType: [
+      { label: "Decimal", value: "DECIMAL" },
+      { label: "Float", value: "FLOAT" },
+    ],
+  },
+  [models.EnumDataType.DateTime]: {
+    timeZone: [
+      { label: "Local Time", value: "localTime" },
+      { label: "Server Time", value: "serverTime" },
+    ],
+  },
+  [models.EnumDataType.Lookup]: {},
+  [models.EnumDataType.Boolean]: {},
+  [models.EnumDataType.Json]: {},
+  [models.EnumDataType.OptionSet]: {},
+  [models.EnumDataType.MultiSelectOptionSet]: {},
+  [models.EnumDataType.GeographicLocation]: {},
+  [models.EnumDataType.CreatedAt]: {},
+  [models.EnumDataType.UpdatedAt]: {},
+  [models.EnumDataType.Id]: {
+    idType: [
+      { label: "UUID", value: "UUID" },
+      { label: "CUID", value: "CUID" },
+      { label: "Auto Increment Integer", value: "AUTO_INCREMENT" },
+      {
+        label: "Auto Increment Big Integer",
+        value: "AUTO_INCREMENT_BIG_INT",
+      },
+    ],
+  },
+  [models.EnumDataType.Username]: {},
+  [models.EnumDataType.Password]: {},
+  [models.EnumDataType.Roles]: {},
 };

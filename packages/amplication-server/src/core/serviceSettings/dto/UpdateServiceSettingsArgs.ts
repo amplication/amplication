@@ -5,5 +5,5 @@ import { ServiceSettingsUpdateInput } from "./ServiceSettingsUpdateInput";
 @ArgsType()
 export class UpdateServiceSettingsArgs extends UpdateBlockArgs {
   @Field(() => ServiceSettingsUpdateInput, { nullable: false })
-  data!: ServiceSettingsUpdateInput;
+  declare data: ServiceSettingsUpdateInput;
 }

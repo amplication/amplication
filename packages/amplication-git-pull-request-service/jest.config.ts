@@ -15,8 +15,8 @@ export default {
     "../../coverage/packages/amplication-git-pull-request-service",
   coverageThreshold: {
     global: {
-      branches: 30.2,
-      lines: 5,
+      branches: 48,
+      lines: 25,
     },
   },
 };

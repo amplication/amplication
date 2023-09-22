@@ -40,7 +40,7 @@ yarn-error.log*
     \\"pluralize\\": \\"8.0.0\\",
     \\"ra-data-graphql-amplication\\": \\"0.0.14\\",
     \\"react\\": \\"16.14.0\\",
-    \\"react-admin\\": \\"3.19.11\\",
+    \\"react-admin\\": \\"3.19.12\\",
     \\"react-dom\\": \\"16.14.0\\",
     \\"react-scripts\\": \\"5.0.0\\",
     \\"sass\\": \\"^1.39.0\\",
@@ -86,7 +86,7 @@ yarn-error.log*
     \\"@types/react\\": \\"16.14.11\\",
     \\"@types/react-dom\\": \\"17.0.0\\",
     \\"type-fest\\": \\"0.13.1\\",
-    \\"typescript\\": \\"4.2.4\\"
+    \\"typescript\\": \\"4.3.5\\"
   }
 }",
   "admin-ui/public/manifest.json": "{
@@ -355,11 +355,12 @@ export type CreateCustomerArgs = {
   data: CustomerCreateInput;
 };
 ",
-  "admin-ui/src/api/customer/Customer.ts": "import { Organization } from \\"../organization/Organization\\";
+  "admin-ui/src/api/customer/Customer.ts": "import { Decimal } from \\"decimal.js\\";
+import { Organization } from \\"../organization/Organization\\";
 import { Order } from \\"../order/Order\\";
 
 export type Customer = {
-  id: number;
+  id: bigint;
   createdAt: Date;
   updatedAt: Date;
   email: string;
@@ -367,8 +368,8 @@ export type Customer = {
   lastName: string | null;
   isVip: boolean | null;
   birthData: Date | null;
-  averageSale: number | null;
-  favoriteNumber: number | null;
+  averageSale: Decimal | null;
+  favoriteNumber: bigint | null;
   geoLocation: string | null;
   comments: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -384,7 +385,8 @@ export type CustomerCountArgs = {
   where?: CustomerWhereInput;
 };
 ",
-  "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { Decimal } from \\"decimal.js\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderCreateNestedManyWithoutCustomersInput } from \\"./OrderCreateNestedManyWithoutCustomersInput\\";
 
 export type CustomerCreateInput = {
@@ -393,8 +395,8 @@ export type CustomerCreateInput = {
   lastName?: string | null;
   isVip?: boolean | null;
   birthData?: Date | null;
-  averageSale?: number | null;
-  favoriteNumber?: number | null;
+  averageSale?: Decimal | null;
+  favoriteNumber?: bigint | null;
   geoLocation?: string | null;
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -449,7 +451,8 @@ export type CustomerOrderByInput = {
   vipOrganizationId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
+  "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { Decimal } from \\"decimal.js\\";
+import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderUpdateManyWithoutCustomersInput } from \\"./OrderUpdateManyWithoutCustomersInput\\";
 
 export type CustomerUpdateInput = {
@@ -458,8 +461,8 @@ export type CustomerUpdateInput = {
   lastName?: string | null;
   isVip?: boolean | null;
   birthData?: Date | null;
-  averageSale?: number | null;
-  favoriteNumber?: number | null;
+  averageSale?: Decimal | null;
+  favoriteNumber?: bigint | null;
   geoLocation?: string | null;
   comments?: string | null;
   favoriteColors?: Array<\\"red\\" | \\"green\\" | \\"purple\\" | \\"yellow\\">;
@@ -469,19 +472,19 @@ export type CustomerUpdateInput = {
   orders?: OrderUpdateManyWithoutCustomersInput;
 };
 ",
-  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { IntFilter } from \\"../../util/IntFilter\\";
+  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { BigIntFilter } from \\"../../util/BigIntFilter\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
 import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
-import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
-import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
+import { DecimalNullableFilter } from \\"../../util/DecimalNullableFilter\\";
+import { BigIntNullableFilter } from \\"../../util/BigIntNullableFilter\\";
 import { OrganizationWhereUniqueInput } from \\"../organization/OrganizationWhereUniqueInput\\";
 import { OrderListRelationFilter } from \\"../order/OrderListRelationFilter\\";
 
 export type CustomerWhereInput = {
-  id?: IntFilter;
+  id?: BigIntFilter;
   createdAt?: DateTimeFilter;
   updatedAt?: DateTimeFilter;
   email?: StringFilter;
@@ -489,8 +492,8 @@ export type CustomerWhereInput = {
   lastName?: StringNullableFilter;
   isVip?: BooleanNullableFilter;
   birthData?: DateTimeNullableFilter;
-  averageSale?: FloatNullableFilter;
-  favoriteNumber?: IntNullableFilter;
+  averageSale?: DecimalNullableFilter;
+  favoriteNumber?: BigIntNullableFilter;
   geoLocation?: StringNullableFilter;
   comments?: StringNullableFilter;
   customerType?: \\"platinum\\" | \\"gold\\" | \\"bronze\\" | \\"regular\\";
@@ -500,7 +503,7 @@ export type CustomerWhereInput = {
 };
 ",
   "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
-  id: number;
+  id: bigint;
 };
 ",
   "admin-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from \\"./CustomerWhereUniqueInput\\";
@@ -1713,7 +1716,7 @@ export const CustomerShow = (props: ShowProps): React.ReactElement => {
 export const CUSTOMER_TITLE_FIELD = \\"firstName\\";
 
 export const CustomerTitle = (record: TCustomer): string => {
-  return record.firstName || String(record.id);
+  return record.firstName?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from \\"ra-data-graphql-amplication\\";
@@ -1819,7 +1822,7 @@ export const EmptyShow = (props: ShowProps): React.ReactElement => {
 export const EMPTY_TITLE_FIELD = \\"id\\";
 
 export const EmptyTitle = (record: TEmpty): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/index.tsx": "import React from \\"react\\";
@@ -2008,7 +2011,7 @@ export const OrderShow = (props: ShowProps): React.ReactElement => {
 export const ORDER_TITLE_FIELD = \\"id\\";
 
 export const OrderTitle = (record: TOrder): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from \\"react\\";
@@ -2260,7 +2263,7 @@ export const OrganizationShow = (props: ShowProps): React.ReactElement => {
 export const ORGANIZATION_TITLE_FIELD = \\"name\\";
 
 export const OrganizationTitle = (record: TOrganization): string => {
-  return record.name || String(record.id);
+  return record.name?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/pages/Dashboard.tsx": "import * as React from \\"react\\";
@@ -2404,7 +2407,7 @@ export const ProfileShow = (props: ShowProps): React.ReactElement => {
 export const PROFILE_TITLE_FIELD = \\"id\\";
 
 export const ProfileTitle = (record: TProfile): string => {
-  return record.id || String(record.id);
+  return record.id?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from \\"web-vitals\\";
@@ -2750,7 +2753,7 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 export const USER_TITLE_FIELD = \\"name\\";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name || String(record.id);
+  return record.name?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -2767,6 +2770,28 @@ export const UserTitle = (record: TUser): string => {
     displayName: \\"Area Manager\\",
   },
 ];
+",
+  "admin-ui/src/util/BigIntFilter.ts": "export class BigIntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/BigIntNullableFilter.ts": "export class BigIntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
 ",
   "admin-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
   equals?: boolean;
@@ -2798,6 +2823,28 @@ export const UserTitle = (record: TUser): string => {
   gt?: Date;
   gte?: Date;
   not?: Date;
+}
+",
+  "admin-ui/src/util/DecimalFilter.ts": "export class DecimalFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/DecimalNullableFilter.ts": "export class DecimalNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
 }
 ",
   "admin-ui/src/util/FloatFilter.ts": "export class FloatFilter {
@@ -2934,7 +2981,7 @@ PORT=3000",
 /dist
 .DS_Store
 ",
-  "server/docker-compose.db.yml": "version: \\"3\\"
+  "server/docker-compose.dev.yml": "version: \\"3\\"
 ",
   "server/docker-compose.yml": "version: \\"3\\"
 services:
@@ -2987,7 +3034,7 @@ services:
     \\"db:clean\\": \\"ts-node scripts/clean.ts\\",
     \\"db:init\\": \\"run-s \\\\\\"db:migrate-save -- --name 'initial version'\\\\\\" db:migrate-up seed\\",
     \\"prisma:generate\\": \\"prisma generate\\",
-    \\"docker:db\\": \\"docker-compose -f docker-compose.db.yml up -d\\",
+    \\"docker:dev\\": \\"docker-compose -f docker-compose.dev.yml up -d\\",
     \\"package:container\\": \\"docker build .\\",
     \\"compose:up\\": \\"docker-compose up -d\\",
     \\"compose:down\\": \\"docker-compose down --volumes\\"
@@ -3016,7 +3063,8 @@ services:
     \\"swagger-ui-express\\": \\"4.3.0\\",
     \\"ts-node\\": \\"10.9.1\\",
     \\"type-fest\\": \\"0.13.1\\",
-    \\"validator\\": \\"^13.9.0\\"
+    \\"validator\\": \\"^13.9.0\\",
+    \\"decimal.js\\": \\"10.4.3\\"
   },
   \\"devDependencies\\": {
     \\"@nestjs/cli\\": \\"8.2.5\\",
@@ -3032,7 +3080,7 @@ services:
     \\"prisma\\": \\"4.6.1\\",
     \\"supertest\\": \\"4.0.2\\",
     \\"ts-jest\\": \\"27.0.3\\",
-    \\"typescript\\": \\"4.2.3\\"
+    \\"typescript\\": \\"4.3.5\\"
   },
   \\"jest\\": {
     \\"preset\\": \\"ts-jest\\",
@@ -3090,7 +3138,7 @@ model Order {
   createdAt  DateTime        @default(now())
   updatedAt  DateTime        @updatedAt
   customer   Customer        @relation(fields: [customerId], references: [id])
-  customerId Int
+  customerId BigInt
   status     EnumOrderStatus
   label      EnumOrderLabel?
 }
@@ -3106,7 +3154,7 @@ model Organization {
 }
 
 model Customer {
-  id                Int                          @id @default(autoincrement())
+  id                BigInt                       @id @default(autoincrement())
   createdAt         DateTime                     @default(now())
   updatedAt         DateTime                     @updatedAt
   email             String
@@ -3114,8 +3162,8 @@ model Customer {
   lastName          String?
   isVip             Boolean?
   birthData         DateTime?
-  averageSale       Float?
-  favoriteNumber    Int?
+  averageSale       Decimal?
+  favoriteNumber    BigInt?
   geoLocation       String?
   comments          String?
   favoriteColors    EnumCustomerFavoriteColors[]
@@ -3273,9 +3321,9 @@ import { EmptyModule } from \\"./empty/empty.module\\";
 import { HealthModule } from \\"./health/health.module\\";
 import { PrismaModule } from \\"./prisma/prisma.module\\";
 import { SecretsManagerModule } from \\"./providers/secrets/secretsManager.module\\";
-import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { ServeStaticModule } from \\"@nestjs/serve-static\\";
 import { ServeStaticOptionsService } from \\"./serveStaticOptions.service\\";
+import { ConfigModule, ConfigService } from \\"@nestjs/config\\";
 import { GraphQLModule } from \\"@nestjs/graphql\\";
 
 @Module({
@@ -3319,6 +3367,13 @@ import { GraphQLModule } from \\"@nestjs/graphql\\";
   ],
 })
 export class AppModule {}
+",
+  "server/src/connectMicroservices.ts": "import { INestApplication } from \\"@nestjs/common\\";
+import { ConfigService } from \\"@nestjs/config\\";
+
+export async function connectMicroservices(app: INestApplication) {
+  const configService = app.get(ConfigService);
+}
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = \\"JWT_SECRET_KEY\\";
 export const JWT_EXPIRATION = \\"JWT_EXPIRATION\\";
@@ -3365,7 +3420,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { ObjectType, Field } from \\"@nestjs/graphql\\";
+import { ObjectType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3379,7 +3434,9 @@ import {
   ValidateNested,
 } from \\"class-validator\\";
 
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { Organization } from \\"../../organization/base/Organization\\";
@@ -3392,8 +3449,8 @@ class Customer {
     type: Number,
   })
   @IsInt()
-  @Field(() => Number)
-  id!: number;
+  @Field(() => GraphQLBigInt)
+  id!: bigint;
 
   @ApiProperty({
     required: true,
@@ -3469,10 +3526,10 @@ class Customer {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Float, {
     nullable: true,
   })
-  averageSale!: number | null;
+  averageSale!: Decimal | null;
 
   @ApiProperty({
     required: false,
@@ -3480,10 +3537,10 @@ class Customer {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
-  favoriteNumber!: number | null;
+  favoriteNumber!: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -3602,7 +3659,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -3617,6 +3674,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -3682,10 +3741,10 @@ class CustomerCreateInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Float, {
     nullable: true,
   })
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
 
   @ApiProperty({
     required: false,
@@ -3693,10 +3752,10 @@ class CustomerCreateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -4146,7 +4205,7 @@ https://docs.amplication.com/how-to/custom-code
 
 ------------------------------------------------------------------------------
   */
-import { InputType, Field } from \\"@nestjs/graphql\\";
+import { InputType, Field, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 
 import {
@@ -4161,6 +4220,8 @@ import {
 } from \\"class-validator\\";
 
 import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 import { EnumCustomerFavoriteColors } from \\"./EnumCustomerFavoriteColors\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
@@ -4229,10 +4290,10 @@ class CustomerUpdateInput {
   })
   @IsNumber()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => Float, {
     nullable: true,
   })
-  averageSale?: number | null;
+  averageSale?: Decimal | null;
 
   @ApiProperty({
     required: false,
@@ -4240,10 +4301,10 @@ class CustomerUpdateInput {
   })
   @IsInt()
   @IsOptional()
-  @Field(() => Number, {
+  @Field(() => GraphQLBigInt, {
     nullable: true,
   })
-  favoriteNumber?: number | null;
+  favoriteNumber?: bigint | null;
 
   @ApiProperty({
     required: false,
@@ -4344,7 +4405,7 @@ https://docs.amplication.com/how-to/custom-code
   */
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
-import { IntFilter } from \\"../../util/IntFilter\\";
+import { BigIntFilter } from \\"../../util/BigIntFilter\\";
 import { Type } from \\"class-transformer\\";
 import { IsOptional, IsEnum, ValidateNested } from \\"class-validator\\";
 import { DateTimeFilter } from \\"../../util/DateTimeFilter\\";
@@ -4352,8 +4413,8 @@ import { StringFilter } from \\"../../util/StringFilter\\";
 import { StringNullableFilter } from \\"../../util/StringNullableFilter\\";
 import { BooleanNullableFilter } from \\"../../util/BooleanNullableFilter\\";
 import { DateTimeNullableFilter } from \\"../../util/DateTimeNullableFilter\\";
-import { FloatNullableFilter } from \\"../../util/FloatNullableFilter\\";
-import { IntNullableFilter } from \\"../../util/IntNullableFilter\\";
+import { DecimalNullableFilter } from \\"../../util/DecimalNullableFilter\\";
+import { BigIntNullableFilter } from \\"../../util/BigIntNullableFilter\\";
 import { EnumCustomerCustomerType } from \\"./EnumCustomerCustomerType\\";
 import { OrganizationWhereUniqueInput } from \\"../../organization/base/OrganizationWhereUniqueInput\\";
 import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFilter\\";
@@ -4362,14 +4423,14 @@ import { OrderListRelationFilter } from \\"../../order/base/OrderListRelationFil
 class CustomerWhereInput {
   @ApiProperty({
     required: false,
-    type: IntFilter,
+    type: BigIntFilter,
   })
-  @Type(() => IntFilter)
+  @Type(() => BigIntFilter)
   @IsOptional()
-  @Field(() => IntFilter, {
+  @Field(() => BigIntFilter, {
     nullable: true,
   })
-  id?: IntFilter;
+  id?: BigIntFilter;
 
   @ApiProperty({
     required: false,
@@ -4450,25 +4511,25 @@ class CustomerWhereInput {
 
   @ApiProperty({
     required: false,
-    type: FloatNullableFilter,
+    type: DecimalNullableFilter,
   })
-  @Type(() => FloatNullableFilter)
+  @Type(() => DecimalNullableFilter)
   @IsOptional()
-  @Field(() => FloatNullableFilter, {
+  @Field(() => DecimalNullableFilter, {
     nullable: true,
   })
-  averageSale?: FloatNullableFilter;
+  averageSale?: DecimalNullableFilter;
 
   @ApiProperty({
     required: false,
-    type: IntNullableFilter,
+    type: BigIntNullableFilter,
   })
-  @Type(() => IntNullableFilter)
+  @Type(() => BigIntNullableFilter)
   @IsOptional()
-  @Field(() => IntNullableFilter, {
+  @Field(() => BigIntNullableFilter, {
     nullable: true,
   })
-  favoriteNumber?: IntNullableFilter;
+  favoriteNumber?: BigIntNullableFilter;
 
   @ApiProperty({
     required: false,
@@ -4556,7 +4617,7 @@ https://docs.amplication.com/how-to/custom-code
 import { InputType, Field } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsInt } from \\"class-validator\\";
-import { Transform } from \\"class-transformer\\";
+import { GraphQLBigInt } from \\"../../util/GraphQLBigInt\\";
 
 @InputType()
 class CustomerWhereUniqueInput {
@@ -4565,11 +4626,8 @@ class CustomerWhereUniqueInput {
     type: Number,
   })
   @IsInt()
-  @Transform((prop) => parseInt(prop.value), {
-    toClassOnly: true,
-  })
-  @Field(() => Number)
-  id!: number;
+  @Field(() => GraphQLBigInt)
+  id!: bigint;
 }
 
 export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };
@@ -4791,7 +4849,7 @@ import { CustomerService } from \\"../customer.service\\";
 const nonExistingId = \\"nonExistingId\\";
 const existingId = \\"existingId\\";
 const CREATE_INPUT = {
-  id: 42,
+  id: 42242424,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -4799,13 +4857,13 @@ const CREATE_INPUT = {
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
   birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
 };
 const CREATE_RESULT = {
-  id: 42,
+  id: 42242424,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -4813,14 +4871,14 @@ const CREATE_RESULT = {
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
   birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
 };
 const FIND_MANY_RESULT = [
   {
-    id: 42,
+    id: 42242424,
     createdAt: new Date(),
     updatedAt: new Date(),
     email: \\"exampleEmail\\",
@@ -4828,14 +4886,14 @@ const FIND_MANY_RESULT = [
     lastName: \\"exampleLastName\\",
     isVip: \\"true\\",
     birthData: new Date(),
-    averageSale: 42.42,
-    favoriteNumber: 42,
+    averageSale: 42.424242424,
+    favoriteNumber: 42242424,
     geoLocation: \\"exampleGeoLocation\\",
     comments: \\"exampleComments\\",
   },
 ];
 const FIND_ONE_RESULT = {
-  id: 42,
+  id: 42242424,
   createdAt: new Date(),
   updatedAt: new Date(),
   email: \\"exampleEmail\\",
@@ -4843,8 +4901,8 @@ const FIND_ONE_RESULT = {
   lastName: \\"exampleLastName\\",
   isVip: \\"true\\",
   birthData: new Date(),
-  averageSale: 42.42,
-  favoriteNumber: 42,
+  averageSale: 42.424242424,
+  favoriteNumber: 42242424,
   geoLocation: \\"exampleGeoLocation\\",
   comments: \\"exampleComments\\",
 };
@@ -4975,7 +5033,7 @@ describe(\\"Customer\\", () => {
   });
 
   test(\\"POST /customers existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/customers\\")
       .send(CREATE_INPUT)
@@ -6371,7 +6429,7 @@ describe(\\"Empty\\", () => {
   });
 
   test(\\"POST /empties existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/empties\\")
       .send(CREATE_INPUT)
@@ -6740,10 +6798,7 @@ export class NotFoundException extends common.NotFoundException {
   HttpStatus,
 } from \\"@nestjs/common\\";
 import { BaseExceptionFilter } from \\"@nestjs/core\\";
-import {
-  // @ts-ignore
-  Prisma,
-} from \\"@prisma/client\\";
+import { Prisma } from \\"@prisma/client\\";
 import { Response } from \\"express\\";
 
 export type ErrorCodesStatusMapping = {
@@ -6898,15 +6953,12 @@ export class HealthService extends HealthServiceBase {
 import { HttpAdapterHost, NestFactory } from \\"@nestjs/core\\";
 import { OpenAPIObject, SwaggerModule } from \\"@nestjs/swagger\\";
 import { HttpExceptionFilter } from \\"./filters/HttpExceptions.filter\\";
-// @ts-ignore
-// eslint-disable-next-line
 import { AppModule } from \\"./app.module\\";
+import { connectMicroservices } from \\"./connectMicroservices\\";
 import {
   swaggerPath,
   swaggerDocumentOptions,
   swaggerSetupOptions,
-  // @ts-ignore
-  // eslint-disable-next-line
 } from \\"./swagger\\";
 
 const { PORT = 3000 } = process.env;
@@ -6922,6 +6974,13 @@ async function main() {
     })
   );
 
+  //This fix is based on https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/BigInt#use_within_json
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  BigInt.prototype.toJSON = function () {
+    return this.toString();
+  };
+
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
   /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
@@ -6935,6 +6994,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 
@@ -7849,7 +7911,7 @@ describe(\\"Order\\", () => {
   });
 
   test(\\"POST /orders existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/orders\\")
       .send(CREATE_INPUT)
@@ -9352,7 +9414,7 @@ describe(\\"Organization\\", () => {
   });
 
   test(\\"POST /organizations existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/organizations\\")
       .send(CREATE_INPUT)
@@ -11105,7 +11167,7 @@ describe(\\"Profile\\", () => {
   });
 
   test(\\"POST /profiles existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/profiles\\")
       .send(CREATE_INPUT)
@@ -13377,7 +13439,7 @@ describe(\\"User\\", () => {
   });
 
   test(\\"POST /users existing resource\\", async () => {
-    let agent = request(app.getHttpServer());
+    const agent = request(app.getHttpServer());
     await agent
       .post(\\"/users\\")
       .send(CREATE_INPUT)
@@ -14182,6 +14244,206 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
+  "server/src/util/BigIntFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class BigIntFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: bigint[];
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: bigint[];
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: bigint;
+}
+",
+  "server/src/util/BigIntNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { GraphQLBigInt } from \\"./GraphQLBigInt\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class BigIntNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: bigint | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: bigint[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [GraphQLBigInt], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: bigint[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: bigint;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => GraphQLBigInt, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: bigint;
+}
+",
   "server/src/util/BooleanFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
@@ -14443,6 +14705,206 @@ export class DateTimeNullableFilter {
   not?: Date;
 }
 ",
+  "server/src/util/DecimalFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class DecimalFilter {
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  equals?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => [Float], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: Decimal[];
+
+  @ApiProperty({
+    required: false,
+    type: [Number],
+  })
+  @IsOptional()
+  @Field(() => [Float], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  notIn?: Decimal[];
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  lte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  gte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Number,
+  })
+  @IsOptional()
+  @Field(() => Float, {
+    nullable: true,
+  })
+  @Type(() => Number)
+  not?: Decimal;
+}
+",
+  "server/src/util/DecimalNullableFilter.ts": "import { Field, InputType } from \\"@nestjs/graphql\\";
+import { ApiProperty } from \\"@nestjs/swagger\\";
+import { IsOptional } from \\"class-validator\\";
+import { Type } from \\"class-transformer\\";
+import { Decimal } from \\"decimal.js\\";
+
+@InputType({
+  isAbstract: true,
+  description: undefined,
+})
+export class DecimalNullableFilter {
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  equals?: Decimal | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Decimal],
+  })
+  @IsOptional()
+  @Field(() => [Number], {
+    nullable: true,
+  })
+  @Type(() => Number)
+  in?: Decimal[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: [Decimal],
+  })
+  @IsOptional()
+  @Field(() => [Number], {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  notIn?: Decimal[] | null;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  lt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  lte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  gt?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  gte?: Decimal;
+
+  @ApiProperty({
+    required: false,
+    type: Decimal,
+  })
+  @IsOptional()
+  @Field(() => Number, {
+    nullable: true,
+  })
+  @Type(() => Decimal)
+  not?: Decimal;
+}
+",
   "server/src/util/FloatFilter.ts": "import { Field, InputType, Float } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
 import { IsOptional } from \\"class-validator\\";
@@ -14640,6 +15102,31 @@ export class FloatNullableFilter {
   @Type(() => Number)
   not?: number;
 }
+",
+  "server/src/util/GraphQLBigInt.ts": "import { GraphQLScalarType } from \\"graphql\\";
+
+const graphQLBigInt = new GraphQLScalarType({
+  name: \\"BigInt\\",
+  description: \\"GraphQL representation of BigInt\\",
+
+  parseValue(value: unknown): number | null {
+    return typeof value === \\"string\\" ||
+      typeof value === \\"number\\" ||
+      typeof value === \\"bigint\\"
+      ? Number(value)
+      : null;
+  },
+
+  serialize(value: unknown): string | null {
+    return typeof value === \\"string\\" ||
+      typeof value === \\"number\\" ||
+      typeof value === \\"bigint\\"
+      ? value.toString(10)
+      : null;
+  },
+});
+
+export { graphQLBigInt as GraphQLBigInt };
 ",
   "server/src/util/IntFilter.ts": "import { Field, InputType, Int } from \\"@nestjs/graphql\\";
 import { ApiProperty } from \\"@nestjs/swagger\\";
@@ -15278,7 +15765,7 @@ describe(\\"IsJSONValue\\", () => {
 import isJSONValidator from \\"validator/lib/isJSON\\";
 
 export function IsJSONValue(validationOptions?: ValidationOptions) {
-  return function (object: Object, propertyName: string) {
+  return function (object: Record<string, any>, propertyName: string) {
     registerDecorator({
       name: \\"IsJSONValue\\",
       target: object.constructor,

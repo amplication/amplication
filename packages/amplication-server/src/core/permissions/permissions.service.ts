@@ -135,6 +135,19 @@ export class PermissionsService {
                 },
               },
             },
+            {
+              id: originId,
+              userAction: {
+                some: {
+                  resource: {
+                    deletedAt: null,
+                    project: {
+                      workspaceId: workspace.id,
+                    },
+                  },
+                },
+              },
+            },
           ],
         },
       });
@@ -206,6 +219,12 @@ export class PermissionsService {
     }
     if (originType === AuthorizableOriginParameter.BuildId) {
       const matching = await this.prisma.build.count(checkByResourceParameters);
+      return matching === 1;
+    }
+    if (originType === AuthorizableOriginParameter.UserActionId) {
+      const matching = await this.prisma.userAction.count(
+        checkByResourceParameters
+      );
       return matching === 1;
     }
     if (originType === AuthorizableOriginParameter.ResourceRoleId) {

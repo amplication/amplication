@@ -70,12 +70,6 @@ describe("AwsCodeCommit", () => {
     );
   });
 
-  it("should throw an error when calling refreshAccessToken()", async () => {
-    await expect(gitProvider.refreshAccessToken()).rejects.toThrowError(
-      "Method not implemented."
-    );
-  });
-
   it("should throw an error when calling getGitGroups()", async () => {
     await expect(gitProvider.getGitGroups()).rejects.toThrowError(
       "Method not implemented."
@@ -428,7 +422,7 @@ describe("AwsCodeCommit", () => {
     beforeEach(() => {
       createPullRequestArgs = {
         branchName: "branchName",
-        defaultBranchName: "defaultBranchName",
+        baseBranchName: "defaultBranchName",
         pullRequestTitle: "pullRequestTitle",
         pullRequestBody: "pullRequestBody",
         repositoryName: "repositoryName",
@@ -445,7 +439,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })
@@ -474,7 +468,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })
@@ -493,7 +487,7 @@ describe("AwsCodeCommit", () => {
             {
               repositoryName: createPullRequestArgs.repositoryName,
               sourceReference: createPullRequestArgs.branchName,
-              destinationReference: createPullRequestArgs.defaultBranchName,
+              destinationReference: createPullRequestArgs.baseBranchName,
             },
           ],
         })
@@ -620,7 +614,7 @@ describe("AwsCodeCommit", () => {
         expect(result).toEqual(<PullRequest>{
           number: 10,
           url: `https://${awsRegion}.console.aws.amazon.com/codesuite/codecommit/repositories/${
-            getPullRequestArgs.branchName
+            getPullRequestArgs.repositoryName
           }/pull-requests/${10}/details`,
         });
       });

@@ -48,6 +48,7 @@ const useSettingsHook = ({
     (data: models.ServiceSettings) => {
       const {
         authProvider,
+        authEntityName,
         adminUISettings: { generateAdminUI, adminUIPath },
         serverSettings: { generateRestApi, generateGraphQL, serverPath },
       } = data;
@@ -67,6 +68,7 @@ const useSettingsHook = ({
               generateGraphQL,
               serverPath: serverPath || "",
             },
+            authEntityName,
           },
           resourceId,
         },

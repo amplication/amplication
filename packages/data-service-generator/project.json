@@ -102,12 +102,18 @@
       }
     },
     "package:container": {
-      "executor": "@nx-tools/nx-container:build",
+      "executor": "nx:run-script",
       "dependsOn": ["build"],
+      "options": {
+        "script": "dsg:package:container"
+      }
+    },
+    "internal:package:container": {
+      "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
         "tags": ["amplication/data-service-generator:latest"],
-        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=🦄-sha"]
+        "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
       },
       "configurations": {
         "production": {

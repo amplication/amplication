@@ -24,7 +24,6 @@
       "executor": "@nrwl/node:webpack",
       "outputs": ["{options.outputPath}"],
       "options": {
-        "generatePackageJson": true,
         "outputPath": "dist/packages/amplication-plugin-api",
         "main": "packages/amplication-plugin-api/src/main.ts",
         "tsConfig": "packages/amplication-plugin-api/tsconfig.app.json",
@@ -33,8 +32,19 @@
             "glob": "prisma",
             "input": "packages/amplication-plugin-api",
             "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/amplication-plugin-api/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-plugin-api/prisma",
+            "output": "./"
           }
-        ]
+        ],
+        "generatePackageJson": true
       },
       "configurations": {
         "production": {
@@ -142,7 +152,7 @@
       "executor": "@nx-tools/nx-container:build",
       "options": {
         "push": false,
-        "tags": ["amplication/git-pull-service:latest"],
+        "tags": ["amplication/git-plugin-api:latest"],
         "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
       },
       "configurations": {

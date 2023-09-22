@@ -3,7 +3,6 @@ import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
 import { track, dispatch, init as initAnalytics } from "./util/analytics";
-import { init as initPaddle } from "./util/paddle";
 import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
@@ -25,6 +24,7 @@ declare global {
 }
 
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
+export const LOCAL_STORAGE_KEY_COUPON_CODE = "couponCode";
 
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
@@ -51,7 +51,6 @@ function App() {
 
   useEffect(() => {
     initAnalytics();
-    initPaddle();
   }, []);
 
   const handleTimeout = useCallback(() => {
@@ -63,15 +62,29 @@ function App() {
     undefined
   );
 
+  const [, setCouponCode] = useLocalStorage(
+    LOCAL_STORAGE_KEY_COUPON_CODE,
+    undefined
+  );
+
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {
       //save the invitation token in local storage to be validated by
       //<CompleteInvitation/> after signup or sign in
-      //we user local storage since github-passport does not support dynamic callback
+      //we use local storage since github-passport does not support dynamic callback
       setInvitationToken(params.invitation as string);
     }
   }, [setInvitationToken, location.search]);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params["coupon-code"]) {
+      //save the coupon code token in local storage to be validated by
+      //<CompleteCoupon/> after signup or sign in
+      setCouponCode(params["coupon-code"] as string);
+    }
+  }, [setCouponCode, location.search]);
 
   const [workspaceUpgradeConfirmation, setWorkspaceUpgradeConfirmation] =
     useState<boolean>(false);

@@ -38,6 +38,8 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
+import { Coupon } from "./dto/Coupon";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -74,8 +76,11 @@ export class WorkspaceResolver {
       event: EnumEventType.WorkspaceSelected,
     });
     await this.userService.setLastActivity(currentUser.id);
+    const externalId = await this.userService.setNotificationRegistry(
+      currentUser
+    );
 
-    return currentUser.workspace;
+    return { ...currentUser.workspace, externalId };
   }
 
   @ResolveField(() => [Project])
@@ -187,5 +192,14 @@ export class WorkspaceResolver {
       ...args.data,
       userId: currentUser.account.id,
     });
+  }
+
+  @Mutation(() => Coupon)
+  @UseGuards(GqlAuthGuard)
+  async redeemCoupon(
+    @UserEntity() user: User,
+    @Args() args: RedeemCouponArgs
+  ): Promise<Coupon> {
+    return this.workspaceService.redeemCoupon(user, args);
   }
 }

@@ -29,6 +29,7 @@ import {
   FindManyResourceArgs,
   UpdateOneResourceArgs,
   ResourceCreateWithEntitiesResult,
+  UpdateCodeGeneratorVersionArgs,
 } from "./dto";
 
 @Resolver(() => Resource)
@@ -156,6 +157,17 @@ export class ResourceResolver {
     @Args() args: UpdateOneResourceArgs
   ): Promise<Resource | null> {
     return this.resourceService.updateResource(args);
+  }
+
+  @Mutation(() => Resource, {
+    nullable: true,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.ResourceId, "where.id")
+  async updateCodeGeneratorVersion(
+    @Args() args: UpdateCodeGeneratorVersionArgs,
+    @UserEntity() user: User
+  ): Promise<Resource | null> {
+    return this.resourceService.updateCodeGeneratorVersion(args, user);
   }
 
   @ResolveField(() => GitRepository, { nullable: true })

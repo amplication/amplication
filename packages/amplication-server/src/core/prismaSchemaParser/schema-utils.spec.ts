@@ -16,7 +16,8 @@ import {
 } from "@mrleebo/prisma-ast";
 import { Mapper } from "./types";
 import { EnumDataType } from "../../enums/EnumDataType";
-import { ActionLog, EnumActionLogLevel } from "../action/dto";
+import { EnumActionLogLevel } from "../action/dto";
+import { ActionContext } from "../userAction/types";
 
 describe("schema-utils", () => {
   beforeEach(() => {
@@ -24,29 +25,98 @@ describe("schema-utils", () => {
   });
 
   describe("createOneEntityFieldCommonProperties", () => {
-    it("should return common properties of an entity field", () => {
-      const mockField = {
-        name: "mockField",
+    const mockAttributes = [
+      {
+        type: "attribute",
+        name: "map",
+        kind: "field",
+        args: [
+          {
+            type: "attributeArgument",
+            value: '"mock_field"',
+          },
+        ],
+      },
+    ] as unknown as Attribute[];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it("should create properties for a standard field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result).toEqual({
+        permanentId: expect.any(String),
+        name: "testField",
+        displayName: "Test Field",
+        dataType: dataType,
+        required: true,
+        unique: false,
+        searchable: true,
+        description: "",
+        properties: {},
+        customAttributes: '@map("mock_field")',
+      });
+    });
+
+    it("should handle unique attribute", () => {
+      const field = {
+        name: "testField",
         optional: false,
         attributes: [{ name: "unique" }],
       } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
 
-      const result = createOneEntityFieldCommonProperties(
-        mockField,
-        EnumDataType.SingleLineText
-      );
+      const result = createOneEntityFieldCommonProperties(field, dataType);
 
-      expect(result).toEqual({
-        name: "mockField",
-        displayName: "Mock Field",
-        dataType: EnumDataType.SingleLineText,
-        required: true,
-        unique: true,
-        searchable: false,
-        description: "",
-        properties: {},
-        customAttributes: "",
-      });
+      expect(result.unique).toEqual(true);
+    });
+
+    it("should handle optional field", () => {
+      const field = {
+        name: "testField",
+        optional: true,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.required).toEqual(false);
+    });
+
+    it("should mark all field as searchable", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: [],
+      } as unknown as Field;
+      const dataType = EnumDataType.Id;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.searchable).toEqual(true);
+    });
+
+    it("should add custom attributes for non-Lookup field", () => {
+      const field = {
+        name: "testField",
+        optional: false,
+        attributes: mockAttributes,
+      } as unknown as Field;
+      const dataType = EnumDataType.SingleLineText;
+
+      const result = createOneEntityFieldCommonProperties(field, dataType);
+
+      expect(result.customAttributes).toEqual('@map("mock_field")');
     });
   });
 
@@ -105,14 +175,26 @@ describe("schema-utils", () => {
     it("should return an array of field attributes as strings", () => {
       const mockAttributes = [
         { name: "mockFieldAttribute1", args: [] },
-        { name: "mockFieldAttribute2", args: [] },
+        {
+          name: "mockFieldAttribute2",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "function",
+                name: "dbgenerated",
+                params: ['"uuid_generate_v4()"'],
+              },
+            },
+          ],
+        },
       ] as unknown as Attribute[];
 
       const result = prepareFieldAttributes(mockAttributes);
 
       expect(result).toEqual([
-        "@mockFieldAttribute1()",
-        "@mockFieldAttribute2()",
+        "@mockFieldAttribute1",
+        '@mockFieldAttribute2(dbgenerated("uuid_generate_v4()"))',
       ]);
     });
 
@@ -213,31 +295,57 @@ describe("schema-utils", () => {
 
       expect(result).toEqual([
         '@relation(fields: [user_id], references: [id], onDelete: Cascade, map: "mockRelationValue")',
-        "@mockFieldAttribute2()",
+        "@mockFieldAttribute2",
+      ]);
+    });
+
+    it("should correctly format args that are arrays of functions", () => {
+      const mockAttributes = [
+        {
+          type: "attribute",
+          name: "mockModelAttribute",
+          kind: "object",
+          args: [
+            {
+              type: "attributeArgument",
+              value: {
+                type: "array",
+                args: [
+                  {
+                    type: "function",
+                    name: "value_1",
+                    params: [
+                      {
+                        type: "keyValue",
+                        key: "ops",
+                        value: "Int4BloomOps",
+                      },
+                    ],
+                  },
+                ],
+              },
+            },
+            {
+              type: "attributeArgument",
+              value: {
+                type: "keyValue",
+                key: "type",
+                value: "Brin",
+              },
+            },
+          ],
+        },
+      ] as unknown as BlockAttribute[];
+
+      const result = prepareModelAttributes(mockAttributes);
+
+      expect(result).toEqual([
+        "@@mockModelAttribute([value_1(ops: Int4BloomOps)], type: Brin)",
       ]);
     });
   });
 
   describe("findFkFieldNameOnAnnotatedField", () => {
-    it("should throw error if no relation attribute is found", () => {
-      const field = {
-        type: "field",
-        name: "testField",
-        attributes: [
-          {
-            type: "attribute-type",
-            kind: "kind",
-            name: "attribute",
-            args: [],
-          },
-        ],
-      } as unknown as Field;
-
-      expect(() => {
-        findFkFieldNameOnAnnotatedField(field);
-      }).toThrow(`Missing relation attribute on field ${field.name}`);
-    });
-
     it("should throw error if no fields attribute is found on relation attribute", () => {
       const field = {
         name: "testField",
@@ -359,6 +467,16 @@ describe("schema-utils", () => {
   });
 
   describe("handleEnumMapAttribute", () => {
+    jest.clearAllMocks();
+
+    let actionContext: ActionContext;
+
+    beforeEach(() => {
+      actionContext = {
+        onEmitUserActionLog: jest.fn(),
+      };
+    });
+
     it("should return array of options and log info message when only enumerators are present", () => {
       const enumOfTheField = {
         name: "TestEnum",
@@ -374,29 +492,23 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([
         { label: "enumerator1", value: "enumerator1" },
         { label: "enumerator2", value: "enumerator2" },
       ]);
 
-      expect(log).toHaveLength(2);
-      expect(log[0]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Info,
-          message:
-            "The option 'enumerator1' has been created in the enum 'TestEnum'",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(2);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        1,
+        "The option 'enumerator1' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
-      expect(log[1]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Info,
-          message:
-            "The option 'enumerator2' has been created in the enum 'TestEnum'",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        2,
+        "The option 'enumerator2' has been created in the enum 'TestEnum'",
+        EnumActionLogLevel.Info
       );
     });
 
@@ -412,19 +524,15 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
 
-      expect(log).toHaveLength(1);
-      expect(log[0]).toEqual(
-        expect.objectContaining({
-          level: EnumActionLogLevel.Warning,
-          message:
-            "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
-        })
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(1);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenNthCalledWith(
+        1,
+        "The enum 'TestEnum' has been created, but it has not been mapped. Mapping an enum name is not supported.",
+        EnumActionLogLevel.Warning
       );
     });
 
@@ -440,13 +548,10 @@ describe("schema-utils", () => {
         ],
       } as unknown as Enum;
 
-      const log: ActionLog[] = [];
-
-      const result = handleEnumMapAttribute(enumOfTheField, log);
+      const result = handleEnumMapAttribute(enumOfTheField, actionContext);
 
       expect(result).toEqual([]);
-
-      expect(log).toHaveLength(0);
+      expect(actionContext.onEmitUserActionLog).toHaveBeenCalledTimes(0);
     });
   });
 });

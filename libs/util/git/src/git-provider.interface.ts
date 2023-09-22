@@ -30,7 +30,6 @@ export interface GitProvider {
   getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string>;
   getCurrentOAuthUser(accessToken: string): Promise<CurrentUser>;
   getOAuthTokens(authorizationCode: string): Promise<OAuthTokens>;
-  refreshAccessToken(): Promise<OAuthTokens>;
   getGitGroups(): Promise<PaginatedGitGroup>;
   getRepository(
     getRepositoryArgs: GetRepositoryArgs
@@ -52,7 +51,7 @@ export interface GitProvider {
   ) => Promise<PullRequest | null>;
   createPullRequest: (
     createPullRequestArgs: GitProviderCreatePullRequestArgs
-  ) => Promise<PullRequest>;
+  ) => Promise<PullRequest | null>;
   getBranch: (args: GetBranchArgs) => Promise<Branch | null>;
   createBranch: (args: CreateBranchArgs) => Promise<Branch>;
   getCloneUrl: (args: CloneUrlArgs) => Promise<string>;

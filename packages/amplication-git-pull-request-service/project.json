@@ -50,22 +50,6 @@
           "buildTarget": "amplication-git-pull-request-service:build:production"
         }
       }
-    },
-    "package:container": {
-      "executor": "@nx-tools/nx-container:build",
-      "options": {
-        "push": false,
-        "tags": ["amplication/git-pull-request-service:latest"],
-        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
-      },
-      "configurations": {
-        "production": {
-          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
-        }
-      }
-    },
-    "deploy:container": {
-      "executor": "nx:run-commands"
     }
   },
   "tags": []

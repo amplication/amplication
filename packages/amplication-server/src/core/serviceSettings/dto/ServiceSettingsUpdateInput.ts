@@ -22,4 +22,9 @@ export class ServiceSettingsUpdateInput extends BlockUpdateInput {
     nullable: false,
   })
   serverSettings!: ServerSettingsUpdateInput;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  authEntityName?: string;
 }

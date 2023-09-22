@@ -17,11 +17,14 @@ import DsgContext from "../dsg-context";
 import { ENV_VARIABLES } from "./constants";
 import { createServerPackageJson } from "./package-json/create-package-json";
 import { createMessageBroker } from "./message-broker/create-service-message-broker-modules";
-import { createDockerComposeDBFile } from "./docker-compose/create-docker-compose-db";
 import { createDockerComposeFile } from "./docker-compose/create-docker-compose";
 import pluginWrapper from "../plugin-wrapper";
 import { createAuthModules } from "./auth/create-auth";
 import { createGitIgnore } from "./gitignore/create-gitignore";
+import { createDockerComposeDevFile } from "./docker-compose/create-docker-compose-dev";
+import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
+import { createMainFile } from "./create-main/create-main-file";
+import { connectMicroservices } from "./connect-microservices/connect-microservices";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -36,21 +39,10 @@ async function createServerInternal(
 
   const context = DsgContext.getInstance;
 
-  await context.logger.info("Creating DTOs...");
-
-  const dtos = await createDTOs(context.entities);
-  context.DTOs = dtos;
-
-  const { GIT_REF_NAME: gitRefName, GIT_SHA: gitSha } = process.env;
-
-  await context.logger.info(
-    `Running DSG version: ${gitRefName} <${gitSha?.substring(0, 6)}>`
-  );
-
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   await context.logger.info("Creating server...");
-  await context.logger.info("Copying static modules...");
 
+  await context.logger.info("Copying static modules...");
   const staticModules = await readStaticModules(
     STATIC_DIRECTORY,
     serverDirectories.baseDirectory
@@ -59,10 +51,15 @@ async function createServerInternal(
   await context.logger.info("Creating gitignore...");
   const gitIgnore = await createGitIgnore();
 
+  await context.logger.info("Creating package.json...");
   const packageJsonModule = await createServerPackageJson();
 
-  await context.logger.info("Creating resources...");
+  await context.logger.info("Creating DTOs...");
+  const dtos = await createDTOs(context.entities);
+  context.DTOs = dtos;
   const dtoModules = await createDTOModules(dtos);
+
+  await context.logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(entities);
 
   await context.logger.info("Creating auth module...");
@@ -74,7 +71,7 @@ async function createServerInternal(
   await context.logger.info("Creating seed script...");
   const seedModule = await createSeed();
 
-  await context.logger.info("Creating message broker modules...");
+  await context.logger.info("Creating message broker...");
   const messageBrokerModules = await createMessageBroker({});
 
   await context.logger.info("Creating application module...");
@@ -83,8 +80,46 @@ async function createServerInternal(
   await appModuleInputModules.mergeMany([resourcesModules, staticModules]);
   const appModule = await createAppModule(appModuleInputModules);
 
-  const createdModules = new ModuleMap(context.logger);
-  await createdModules.mergeMany([
+  await context.logger.info("Formatting resources code...");
+  await resourcesModules.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting dtos code...");
+  await dtoModules.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting swagger code...");
+  await swagger.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting application module code...");
+  await appModule.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting seed code...");
+  await seedModule.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting auth module code...");
+  await authModules.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting message broker code...");
+  await messageBrokerModules.replaceModulesCode((code) => formatCode(code));
+  await context.logger.info("Formatting package.json code...");
+  await packageJsonModule.replaceModulesCode((code) => formatJson(code));
+
+  const typesRelatedFiles = await createTypesRelatedFiles();
+  const mainFile = await createMainFile();
+  await context.logger.info("Creating Prisma schema...");
+  const prismaSchemaModule = await createPrismaSchemaModule(entities);
+
+  await context.logger.info("Creating Dot Env...");
+  const dotEnvModule = await createDotEnvModule({
+    envVariables: ENV_VARIABLES,
+  });
+
+  await context.logger.info("Creating connectMicroservices function...");
+  const connectMicroservicesModule = await connectMicroservices();
+
+  await context.logger.info("Creating Docker compose configurations...");
+  const dockerComposeFile = await createDockerComposeFile();
+  const dockerComposeDevFile = await createDockerComposeDevFile();
+
+  await context.logger.info("Finalizing server creation...");
+  const moduleMap = new ModuleMap(context.logger);
+  await moduleMap.mergeMany([
+    staticModules,
+    gitIgnore,
+    packageJsonModule,
     resourcesModules,
     dtoModules,
     swagger,
@@ -92,34 +127,13 @@ async function createServerInternal(
     seedModule,
     authModules,
     messageBrokerModules,
-  ]);
-
-  await context.logger.info("Formatting code...");
-  await createdModules.replaceModulesCode((code) => formatCode(code));
-  await packageJsonModule.replaceModulesCode((code) => formatJson(code));
-
-  await context.logger.info("Creating Prisma schema...");
-  const prismaSchemaModule = await createPrismaSchemaModule(entities);
-
-  await context.logger.info("Creating Dot Env...");
-
-  const dotEnvModule = await createDotEnvModule({
-    envVariables: ENV_VARIABLES,
-  });
-
-  const dockerComposeFile = await createDockerComposeFile();
-  const dockerComposeDBFile = await createDockerComposeDBFile();
-
-  const moduleMap = new ModuleMap(context.logger);
-  await moduleMap.mergeMany([
-    staticModules,
-    gitIgnore,
-    packageJsonModule,
-    createdModules,
     prismaSchemaModule,
     dotEnvModule,
     dockerComposeFile,
-    dockerComposeDBFile,
+    dockerComposeDevFile,
+    typesRelatedFiles,
+    mainFile,
+    connectMicroservicesModule,
   ]);
   return moduleMap;
 }

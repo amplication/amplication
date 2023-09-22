@@ -70,6 +70,7 @@ export class PullRequestService {
     gitResourceMeta,
     pullRequestMode,
     repositoryGroupName,
+    baseBranchName,
   }: CreatePrRequest.Value): Promise<string> {
     const logger = this.logger.child({ resourceId, buildId: newBuildId });
     const { body, title } = commit;
@@ -117,6 +118,7 @@ export class PullRequestService {
       files: PullRequestService.removeFirstSlashFromPath(changedFiles),
       resourceId,
       buildId: newBuildId,
+      baseBranchName,
     });
 
     logger.info("Opened a new pull request", { prUrl });

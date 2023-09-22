@@ -4,7 +4,13 @@ import {
   GitProviderProperties,
   GitResourceMeta,
 } from "@amplication/util/git";
-import { IsEnum, IsOptional, IsString, ValidateNested } from "class-validator";
+import {
+  IsBoolean,
+  IsEnum,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from "class-validator";
 
 class Commit {
   @IsString()
@@ -16,6 +22,8 @@ class Commit {
 export class Value {
   @IsString()
   resourceId!: string;
+  @IsString()
+  resourceName!: string;
   @IsString()
   @IsOptional()
   oldBuildId?: string | undefined;
@@ -38,4 +46,9 @@ export class Value {
   gitResourceMeta!: GitResourceMeta;
   @IsString()
   pullRequestMode!: EnumPullRequestMode;
+  @IsString()
+  @IsOptional()
+  baseBranchName?: string;
+  @IsBoolean()
+  isBranchPerResource!: boolean;
 }

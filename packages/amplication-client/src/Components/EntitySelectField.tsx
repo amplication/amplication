@@ -7,28 +7,31 @@ type TEntities = {
     {
       id: string;
       displayName: string;
+      name: string;
     }
   ];
 };
 
 type Props = Omit<SelectFieldProps, "options"> & {
   resourceId: string;
+  isValueId: boolean;
 };
 
-const EntitySelectField = ({ resourceId, ...props }: Props) => {
+const EntitySelectField = ({ resourceId, isValueId, ...props }: Props) => {
   const { data: entityList } = useQuery<TEntities>(
     GET_ENTITIES_FOR_ENTITY_SELECT_FIELD,
     {
       variables: {
         resourceId: resourceId,
       },
+      fetchPolicy: "no-cache",
     }
   );
 
   const entityListOptions = useMemo(() => {
     return entityList
       ? entityList.entities.map((entity) => ({
-          value: entity.id,
+          value: isValueId ? entity.id : entity.name,
           label: entity.displayName,
         }))
       : [];
@@ -44,6 +47,7 @@ export const GET_ENTITIES_FOR_ENTITY_SELECT_FIELD = gql`
     entities(where: { resource: { id: $resourceId } }) {
       id
       displayName
+      name
     }
   }
 `;

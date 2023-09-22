@@ -14,10 +14,13 @@ export const GET_RESOURCES = gql`
       resourceType
       githubLastSync
       gitRepositoryOverride
+      codeGeneratorStrategy
+      codeGeneratorVersion
       gitRepository {
         id
         name
         groupName
+        baseBranchName
         gitOrganization {
           id
           name
@@ -83,6 +86,7 @@ export const CREATE_SERVICE_WITH_ENTITIES = gql`
           id
           name
           groupName
+          baseBranchName
           gitOrganization {
             id
             name
@@ -149,6 +153,7 @@ export const DISCONNECT_GIT_REPOSITORY = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }
@@ -161,6 +166,7 @@ export const CONNECT_RESOURCE_PROJECT_REPO = gql`
       gitRepository {
         id
         groupName
+        baseBranchName
       }
     }
   }

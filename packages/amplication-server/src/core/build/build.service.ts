@@ -1,8 +1,7 @@
 import { Inject, Injectable, forwardRef } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { Prisma, PrismaService } from "../../prisma";
-import { LEVEL, MESSAGE, SPLAT } from "triple-beam";
-import { omit, orderBy } from "lodash";
+import { orderBy } from "lodash";
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { ResourceRole, User } from "../../models";
 import { Build } from "./dto/Build";
@@ -44,6 +43,8 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
+  KAFKA_TOPICS,
+  UserBuild,
 } from "@amplication/schema-registry";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { GitProviderService } from "../git/git.provider.service";
@@ -51,12 +52,15 @@ import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { kebabCase } from "lodash";
+import { CodeGeneratorVersionStrategy } from "../resource/dto";
 
 const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
 };
+import { encryptString } from "../../util/encryptionUtil";
 
 export const HOST_VAR = "HOST";
 export const CLIENT_HOST_VAR = "CLIENT_HOST";
@@ -87,6 +91,7 @@ export interface CreatePullRequestGitSettings {
   gitOrganizationName: string;
   gitRepositoryName: string;
   repositoryGroupName?: string;
+  baseBranchName: string;
   gitProvider: EnumGitProvider;
   gitProviderProperties: GitProviderProperties;
   commit: {
@@ -137,8 +142,6 @@ export const ACTION_LOG_LEVEL: {
   info: EnumActionLogLevel.Info,
   debug: EnumActionLogLevel.Debug,
 };
-
-const META_KEYS_TO_OMIT = [LEVEL, MESSAGE, SPLAT, "level"];
 
 const INITIAL_ONBOARDING_COMMIT_MESSAGE_BODY = `Congratulations on your first commit with Amplication! 
 We encourage you to continue exploring the many ways Amplication can supercharge your development. 
@@ -286,6 +289,30 @@ export class BuildService {
     return this.prisma.build.findUnique(args);
   }
 
+  private async updateCodeGeneratorVersion(
+    buildId: string,
+    codeGeneratorVersion: string
+  ): Promise<void> {
+    try {
+      const build = await this.findOne({
+        where: {
+          id: buildId,
+        },
+      });
+
+      if (!build) {
+        throw new Error(`Could not find build with id ${buildId}`);
+      }
+
+      await this.prisma.build.update({
+        where: { id: buildId },
+        data: { codeGeneratorVersion },
+      });
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
   async getGenerateCodeStep(buildId: string): Promise<ActionStep | undefined> {
     const [generateStep] = await this.prisma.build
       .findUnique({
@@ -325,13 +352,47 @@ export class BuildService {
 
   async completeCodeGenerationStep(
     buildId: string,
-    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed
+    status: EnumActionStepStatus.Success | EnumActionStepStatus.Failed,
+    codeGeneratorVersion: string
   ): Promise<void> {
     const step = await this.getGenerateCodeStep(buildId);
     if (!step) {
       throw new Error("Could not find generate code step");
     }
+
+    const commitWithAccount = await this.prisma.build.findUnique({
+      where: { id: buildId },
+      include: {
+        commit: {
+          include: {
+            user: true,
+            project: true,
+          },
+        },
+      },
+    });
+
+    if (status === EnumActionStepStatus.Success) {
+      this.kafkaProducerService
+        .emitMessage(KAFKA_TOPICS.USER_BUILD_TOPIC, <UserBuild.KafkaEvent>{
+          key: {},
+          value: {
+            commitId: commitWithAccount.commit.id,
+            commitMessage: commitWithAccount.commit.message,
+            resourceId: commitWithAccount.resourceId,
+            workspaceId: commitWithAccount.commit.project.workspaceId,
+            projectId: commitWithAccount.commit.projectId,
+            buildId: buildId,
+            externalId: encryptString(commitWithAccount.commit.user.id),
+          },
+        })
+        .catch((error) =>
+          this.logger.error(`Failed to que user build ${buildId}`, error)
+        );
+    }
+
     await this.actionService.complete(step, status);
+    await this.updateCodeGeneratorVersion(buildId, codeGeneratorVersion);
   }
 
   /**
@@ -373,7 +434,7 @@ export class BuildService {
         };
 
         await this.kafkaProducerService.emitMessage(
-          this.configService.get(Env.CODE_GENERATION_REQUEST_TOPIC),
+          KAFKA_TOPICS.CODE_GENERATION_REQUEST_TOPIC,
           codeGenerationEvent
         );
 
@@ -467,7 +528,11 @@ export class BuildService {
       step,
       PUSH_TO_GIT_STEP_FAILED_LOG(response.gitProvider)
     );
-    await this.actionService.logInfo(step, response.errorMessage);
+    await this.actionService.log(
+      step,
+      EnumActionLogLevel.Error,
+      response.errorMessage
+    );
     await this.actionService.complete(step, EnumActionStepStatus.Failed);
 
     await this.analytics.track({
@@ -581,6 +646,7 @@ export class BuildService {
         gitOrganizationName: organizationName,
         gitRepositoryName: project.demoRepoName,
         repositoryGroupName: "",
+        baseBranchName: "", //leave empty to use default branch
         gitProvider: EnumGitProvider.Github,
         gitProviderProperties: {
           installationId: installationId,
@@ -626,11 +692,20 @@ export class BuildService {
 
       const commitBody = `Amplication build # ${build.id}\n${commitMessage}\nBuild URL: ${buildLinkHTML}`;
 
+      const canUseCustomBaseBranch =
+        await this.billingService.getBooleanEntitlement(
+          project.workspaceId,
+          BillingFeature.ChangeGitBaseBranch
+        );
+
       const gitProviderArgs =
         await this.gitProviderService.getGitProviderProperties(gitOrganization);
       gitSettings = {
         gitOrganizationName: gitOrganization.name,
         gitRepositoryName: resourceRepository.name,
+        baseBranchName: canUseCustomBaseBranch
+          ? resourceRepository.baseBranchName
+          : "",
         repositoryGroupName: resourceRepository.groupName,
         gitProvider: gitProviderArgs.provider,
         gitProviderProperties: gitProviderArgs.providerOrganizationProperties,
@@ -659,9 +734,16 @@ export class BuildService {
               )
             : false;
 
+          const branchPerResourceEntitlement =
+            await this.billingService.getBooleanEntitlement(
+              project.workspaceId,
+              BillingFeature.BranchPerResource
+            );
+
           const createPullRequestMessage: CreatePrRequest.Value = {
             ...gitSettings,
             resourceId: resource.id,
+            resourceName: kebabCase(resource.name),
             newBuildId: build.id,
             oldBuildId: oldBuild?.id,
             gitResourceMeta: {
@@ -672,6 +754,9 @@ export class BuildService {
               smartGitSyncEntitlement && smartGitSyncEntitlement.hasAccess
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
+            isBranchPerResource:
+              branchPerResourceEntitlement &&
+              branchPerResourceEntitlement.hasAccess,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
@@ -681,7 +766,7 @@ export class BuildService {
             value: createPullRequestMessage,
           };
           await this.kafkaProducerService.emitMessage(
-            this.configService.get(Env.CREATE_PR_REQUEST_TOPIC),
+            KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC,
             createPullRequestEvent
           );
         } catch (error) {
@@ -690,17 +775,6 @@ export class BuildService {
       },
       true
     );
-  }
-
-  private async createLog(
-    step: ActionStep,
-    info: { message: string }
-  ): Promise<void> {
-    const { message, ...metaInfo } = info;
-    const level = ACTION_LOG_LEVEL[info[LEVEL]];
-    const meta = omit(metaInfo, META_KEYS_TO_OMIT);
-
-    await this.actionService.log(step, level, message, meta);
   }
 
   /**
@@ -804,6 +878,12 @@ export class BuildService {
         id: resourceId,
         url,
         settings: serviceSettings,
+        codeGeneratorVersionOptions: {
+          codeGeneratorVersion: resource.codeGeneratorVersion,
+          codeGeneratorStrategy:
+            // resource.codeGeneratorStrategy is the value and not the key, but as the key is the same as the value we can use it
+            CodeGeneratorVersionStrategy[resource.codeGeneratorStrategy],
+        },
       },
       otherResources,
     };

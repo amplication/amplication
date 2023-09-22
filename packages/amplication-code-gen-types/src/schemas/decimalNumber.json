@@ -6,6 +6,12 @@
   "additionalProperties": false,
   "required": ["minimumValue", "maximumValue", "precision"],
   "properties": {
+    "databaseFieldType": {
+      "type": "string",
+      "description": "The database field scalar type",
+      "enum": ["DECIMAL", "FLOAT"],
+      "default": "DECIMAL"
+    },
     "minimumValue": {
       "type": "integer",
       "description": "The minimum value",

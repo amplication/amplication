@@ -1,18 +1,20 @@
-import React from "react";
-import { EnumGitProvider, Resource } from "../../models";
 import { Dialog, EnumPanelStyle, Panel } from "@amplication/ui/design-system";
-import GitDialogsContainer from "./dialogs/GitDialogsContainer";
+import { isEmpty } from "lodash";
+import React, { useCallback } from "react";
+import { EnumGitProvider, Resource } from "../../models";
+import "./AuthWithGit.scss";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
+import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
+import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
+import RepositoryForm from "./GitActions/RepositoryActions/RepositoryForm";
+import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
+import GitDialogsContainer from "./dialogs/GitDialogsContainer";
 import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import useGitHook from "./useAuthWithGit";
-import { GitProviderConnectionList } from "./GitActions/GitProviderConnectionList";
-import { isEmpty } from "lodash";
-import WizardRepositoryActions from "./GitActions/RepositoryActions/WizardRepositoryActions";
-import RepositoryActions from "./GitActions/RepositoryActions/RepositoryActions";
-import "./AuthWithGit.scss";
+import * as models from "../../models";
 
 interface AuthWithGitProviderProps {
   type: "wizard" | "resource";
@@ -58,6 +60,7 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
     closeSelectRepoDialog,
     openCreateNewRepo,
     closeCreateNewRepo,
+    updateGitRepository,
   } = useGitHook({
     resource,
     gitRepositorySelected,
@@ -65,6 +68,13 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
     gitRepositoryCreatedCb,
     gitRepositorySelectedCb,
   });
+
+  const handleUpdateGitRepositorySubmit = useCallback(
+    (data: models.GitRepositoryUpdateInput) => {
+      updateGitRepository(resource?.gitRepository.id, data);
+    },
+    [updateGitRepository]
+  );
 
   return (
     <>
@@ -133,12 +143,22 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
                 selectedGitRepository={gitRepositorySelectedData}
               />
             ) : (
-              <RepositoryActions
-                onCreateRepository={openCreateNewRepo}
-                onSelectRepository={openSelectRepoDialog}
-                currentResourceWithGitRepository={resource}
-                selectedGitOrganization={gitOrganization}
-              />
+              <>
+                <RepositoryActions
+                  onCreateRepository={openCreateNewRepo}
+                  onSelectRepository={openSelectRepoDialog}
+                  currentResourceWithGitRepository={resource}
+                  selectedGitOrganization={gitOrganization}
+                />
+                {resource?.gitRepository && (
+                  <>
+                    <RepositoryForm
+                      defaultValues={resource?.gitRepository}
+                      onSubmit={handleUpdateGitRepositorySubmit}
+                    />
+                  </>
+                )}
+              </>
             )}
           </>
         )}

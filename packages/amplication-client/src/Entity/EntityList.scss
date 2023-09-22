@@ -22,6 +22,10 @@
 
   &__action-buttons {
     @include flexFullRowWithSpacing;
+
+    .toggle-field {
+      margin-bottom: 0 !important;
+    }
   }
 
   &__title {

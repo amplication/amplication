@@ -1,6 +1,7 @@
 import { ConcretePrismaSchemaBuilder } from "@mrleebo/prisma-ast";
 import { CreateBulkEntitiesInput } from "../entity/entity.service";
 import { ActionLog } from "../action/dto";
+import { ActionContext } from "../userAction/types";
 
 export type PrepareOperation = (
   prepareOperationIO: PrepareOperationIO
@@ -9,25 +10,41 @@ export type PrepareOperation = (
 export type PrepareOperationInput = {
   inputSchema: string;
   existingEntities: ExistingEntitySelect[];
-  log: ActionLog[];
+  actionContext: ActionContext;
 };
 
 export type PrepareOperationIO = {
   builder: ConcretePrismaSchemaBuilder;
   existingEntities: ExistingEntitySelect[];
   mapper: Mapper;
-  log: ActionLog[];
+  actionContext: ActionContext;
 };
 
+/**
+ * original model name
+ */
+type ModelName = string;
+/**
+ * Original field name
+ */
+type FieldName = string;
+/**
+ * original field type name
+ */
+type FieldTypeName = string;
+
 export type Mapper = {
-  modelNames: Record<string, MapperItem>;
-  fieldNames: Record<string, MapperItem>;
-  fieldTypes: Record<string, MapperItem>;
-  idFields: Record<string, MapperItem>;
+  modelNames: Record<ModelName, MapperItem>;
+  fieldNames: Record<ModelName, Record<FieldName, MapperItem>>;
+  fieldTypes: Record<
+    ModelName,
+    Record<ModelName, Record<FieldTypeName, MapperItem>>
+  >;
+  idFields: Record<ModelName, Record<FieldName, MapperItem>>;
 };
 
 export type MapperItem = {
-  oldName: string;
+  originalName: string;
   newName: string;
 };
 

@@ -55,8 +55,6 @@ export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVers
 
 export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.Id,
-  EnumDataType.Username,
-  EnumDataType.Password,
   EnumDataType.Roles,
 ]);
 
@@ -193,10 +191,12 @@ export const DATA_TYPE_TO_DEFAULT_PROPERTIES: {
   },
   [EnumDataType.Email]: {},
   [EnumDataType.WholeNumber]: {
+    databaseFieldType: "INT",
     minimumValue: -999999999,
     maximumValue: 999999999,
   },
   [EnumDataType.DecimalNumber]: {
+    databaseFieldType: "FLOAT",
     minimumValue: -999999999,
     maximumValue: 999999999,
     precision: 2,

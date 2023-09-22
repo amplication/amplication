@@ -1,14 +1,14 @@
-import React, { useCallback, useState } from "react";
-import { Field, Form, Formik } from "formik";
-import FormikAutoSave from "../util/formikAutoSave";
 import { Icon, Tooltip } from "@amplication/ui/design-system";
-import { validate } from "../util/formikValidateJsonSchema";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { useTracking } from "react-tracking";
 import { useMutation } from "@apollo/client";
-import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
+import { Field, Form, Formik } from "formik";
+import { useCallback } from "react";
+import { useTracking } from "react-tracking";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
+import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
 import * as models from "../models";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
 import "./ResourceNameField.scss";
 
 type Props = {

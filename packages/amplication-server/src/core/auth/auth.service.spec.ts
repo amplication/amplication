@@ -12,6 +12,7 @@ import { Role } from "../../enums/Role";
 import { AccountService } from "../account/account.service";
 import { PasswordService } from "../account/password.service";
 import { UserService } from "../user/user.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import {
   AuthService,
   AuthUser,
@@ -20,6 +21,9 @@ import {
 import { WorkspaceService } from "../workspace/workspace.service";
 import { EnumTokenType } from "./dto";
 import { ProjectService } from "../project/project.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { ConfigService } from "@nestjs/config";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
 const EXAMPLE_TOKEN = "EXAMPLE TOKEN";
 
 const EXAMPLE_ACCOUNT: Account = {
@@ -181,6 +185,19 @@ describe("AuthService", () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
+          provide: ConfigService,
+          useValue: {
+            get: (variable) => {
+              switch (variable) {
+                case KAFKA_TOPICS.USER_ACTION_TOPIC:
+                  return "user_action_topic";
+                default:
+                  return "";
+              }
+            },
+          },
+        },
+        {
           provide: AccountService,
           useClass: jest.fn(() => ({
             createAccount: createAccountMock,
@@ -207,6 +224,7 @@ describe("AuthService", () => {
             createWorkspace: createWorkspaceMock,
           })),
         },
+        MockedAmplicationLoggerProvider,
         {
           provide: JwtService,
           useClass: jest.fn(() => ({
@@ -217,6 +235,12 @@ describe("AuthService", () => {
           provide: ProjectService,
           useClass: jest.fn(() => ({
             createProject: jest.fn(),
+          })),
+        },
+        {
+          provide: KafkaProducerService,
+          useClass: jest.fn(() => ({
+            emitMessage: jest.fn(() => Promise.resolve("error")),
           })),
         },
         {
@@ -250,6 +274,7 @@ describe("AuthService", () => {
       lastName: EXAMPLE_ACCOUNT.lastName,
       workspaceName: EXAMPLE_WORKSPACE.name,
     });
+
     expect(result).toBe(EXAMPLE_TOKEN);
     expect(createAccountMock).toHaveBeenCalledTimes(1);
     expect(createAccountMock).toHaveBeenCalledWith(

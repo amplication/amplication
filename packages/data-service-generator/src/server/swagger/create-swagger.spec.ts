@@ -25,6 +25,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
       adminUIPath: "",
     },
   },
+  codeGeneratorVersionOptions: {},
 };
 
 describe("createDescription", () => {

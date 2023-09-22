@@ -89,7 +89,7 @@ To get started with Amplication, the hosted version of the product can be used. 
 
 Alternatively to using the hosted version of the product, Amplication can be ran local for code generation purposes or contributions - if so please refer to our [contributing](#contributing_anchor) section.
 
-<details>
+<details open>
 <summary>
 Pre-requisites
 </summary> <br />
@@ -97,23 +97,22 @@ To be able to start development on amplication make sure that you have the follo
 
 ###
 
-- Node.js v16 or above
+- Node.js
 - Docker
 - Git
 </details>
 
-<details>
+<details open>
 <summary>
-Scripts
+Running Amplication
 </summary> <br />
 
 > **Note**
-> : it is also possible to start development with GitHub Codespaces, when navigating to `< > Code`, select `Codespaces` instead of `Local`. Click on either the `+`-sign or the `Create codespace on master`-button.
+> It is also possible to start development with GitHub Codespaces, when navigating to `< > Code`, select `Codespaces` instead of `Local`. Click on either the `+`-sign or the `Create codespace on master`-button.
 
 Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple application and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
 
 ###
-
 
 1. Clone the repository and install dependencies:
 ```shell
@@ -161,11 +160,10 @@ npm run serve:plugins
 ```
 
 > **Note**
-> : in order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, aswell as additional component for development on a specific component.
+> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, aswell as additional component for development on a specific component.
 
 The development environment should now be set up. Additional information on the different application component can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
-
 
 ## Resources
 
@@ -260,7 +258,6 @@ change the height and width for each of the contributors from 80 to 50.
 <a href="https://github.com/goingdust"><img src="https://avatars.githubusercontent.com/u/87334449?v=4" title="goingdust" width="50" height="50"></a>
 
 [//]: contributor-faces
-
 
 ## License
 

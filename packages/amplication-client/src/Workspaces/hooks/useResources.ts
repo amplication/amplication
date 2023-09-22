@@ -12,6 +12,7 @@ import {
 } from "../queries/resourcesQueries";
 import { getGitRepositoryDetails } from "../../util/git-repository-details";
 import { GET_PROJECTS } from "../queries/projectQueries";
+import { UPDATE_CODE_GENERATOR_VERSION } from "../../Resource/codeGeneratorVersionSettings/queries";
 
 type TGetResources = {
   resources: models.Resource[];
@@ -19,6 +20,14 @@ type TGetResources = {
 
 type TCreateService = {
   createServiceWithEntities: models.ResourceCreateWithEntitiesResult;
+};
+
+export type TUpdateCodeGeneratorVersion = {
+  updateCodeGeneratorVersion: {
+    codeGeneratorStrategy: models.CodeGeneratorVersionStrategy | null;
+    codeGeneratorVersion: string | null;
+  };
+  resourceId: string;
 };
 
 type TCreateMessageBroker = {
@@ -32,15 +41,13 @@ const createGitRepositoryFullName = (
   if (!gitRepository && !gitRepository?.gitOrganization)
     return "Connect to Git Provider";
 
-  if (provider === models.EnumGitProvider.Github) {
-    return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
-  }
-
-  if (
-    provider === models.EnumGitProvider.Bitbucket &&
-    gitRepository?.groupName
-  ) {
-    return `${gitRepository.groupName}/${gitRepository.name}`;
+  switch (provider) {
+    case models.EnumGitProvider.Github:
+      return `${gitRepository?.gitOrganization?.name}/${gitRepository.name}`;
+    case models.EnumGitProvider.Bitbucket:
+      return `${gitRepository.groupName}/${gitRepository.name}`;
+    case models.EnumGitProvider.AwsCodeCommit:
+      return `${gitRepository.name}`;
   }
 };
 
@@ -129,6 +136,48 @@ const useResources = (
         query: GET_PROJECTS,
       },
     ],
+  });
+
+  const updateCodeGeneratorVersion = (input: TUpdateCodeGeneratorVersion) => {
+    updateCodeGeneratorVersionMutation({
+      variables: {
+        data: {
+          codeGeneratorVersionOptions: {
+            ...input.updateCodeGeneratorVersion,
+          },
+        },
+        where: {
+          id: input.resourceId,
+        },
+      },
+    });
+  };
+
+  const [
+    updateCodeGeneratorVersionMutation,
+    {
+      loading: loadingUpdateCodeGeneratorVersion,
+      error: errorUpdateCodeGeneratorVersion,
+    },
+  ] = useMutation<TUpdateCodeGeneratorVersion>(UPDATE_CODE_GENERATOR_VERSION, {
+    onCompleted: (data) => {
+      setResources((currentResources) => {
+        if (!currentResources) return currentResources;
+
+        return currentResources.map((resource) => {
+          if (resource.id === currentResource.id) {
+            return {
+              ...resource,
+              codeGeneratorVersion:
+                data.updateCodeGeneratorVersion.codeGeneratorVersion,
+              codeGeneratorStrategy:
+                data.updateCodeGeneratorVersion.codeGeneratorStrategy,
+            };
+          }
+          return resource;
+        });
+      });
+    },
   });
 
   const createService = (
@@ -291,6 +340,9 @@ const useResources = (
     gitRepositoryUrl,
     gitRepositoryOrganizationProvider,
     createServiceWithEntitiesResult,
+    updateCodeGeneratorVersion,
+    loadingUpdateCodeGeneratorVersion,
+    errorUpdateCodeGeneratorVersion,
   };
 };
 

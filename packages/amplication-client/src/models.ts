@@ -194,6 +194,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -235,6 +236,21 @@ export type BuildWhereInput = {
 export type ChangePasswordInput = {
   newPassword: Scalars['String']['input'];
   oldPassword: Scalars['String']['input'];
+};
+
+export type CodeGeneratorVersionOptionsInput = {
+  codeGeneratorStrategy?: InputMaybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: InputMaybe<Scalars['String']['input']>;
+};
+
+export enum CodeGeneratorVersionStrategy {
+  LatestMajor = 'LatestMajor',
+  LatestMinor = 'LatestMinor',
+  Specific = 'Specific'
+}
+
+export type CodeGeneratorVersionUpdateInput = {
+  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
 };
 
 export type Commit = {
@@ -291,13 +307,12 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
-export type CreateEntitiesFromPrismaSchemaInput = {
-  resourceId: Scalars['String']['input'];
-};
-
-export type CreateEntitiesFromPrismaSchemaResponse = {
-  actionLog: Action;
-  entities: Array<Entity>;
+export type Coupon = {
+  code: Scalars['String']['output'];
+  couponType?: Maybe<Scalars['String']['output']>;
+  durationMonths: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  subscriptionPlan: EnumSubscriptionPlan;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -319,6 +334,11 @@ export type CreateGitRepositoryInput = {
   isPublic: Scalars['Boolean']['input'];
   name: Scalars['String']['input'];
   resourceId?: InputMaybe<Scalars['String']['input']>;
+};
+
+export type DbSchemaImportCreateInput = {
+  resource: WhereParentIdInput;
+  userActionType: EnumUserActionType;
 };
 
 export type DateTimeFilter = {
@@ -752,6 +772,17 @@ export enum EnumSubscriptionStatus {
   Trailing = 'Trailing'
 }
 
+export enum EnumUserActionStatus {
+  Completed = 'Completed',
+  Failed = 'Failed',
+  Invalid = 'Invalid',
+  Running = 'Running'
+}
+
+export enum EnumUserActionType {
+  DbSchemaImport = 'DBSchemaImport'
+}
+
 export enum EnumWorkspaceMemberType {
   Invitation = 'Invitation',
   User = 'User'
@@ -828,6 +859,7 @@ export type GitOrganizationWhereInput = {
 };
 
 export type GitRepository = {
+  baseBranchName?: Maybe<Scalars['String']['output']>;
   createdAt?: Maybe<Scalars['DateTime']['output']>;
   gitOrganization: GitOrganization;
   gitOrganizationId: Scalars['String']['output'];
@@ -835,6 +867,10 @@ export type GitRepository = {
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   updatedAt?: Maybe<Scalars['DateTime']['output']>;
+};
+
+export type GitRepositoryUpdateInput = {
+  baseBranchName?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type IBlock = {
@@ -905,7 +941,7 @@ export type Mutation = {
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
   createDefaultRelatedField: EntityField;
-  createEntitiesFromPrismaSchema: CreateEntitiesFromPrismaSchemaResponse;
+  createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
   createMessageBroker: Resource;
@@ -941,17 +977,20 @@ export type Mutation = {
   lockEntity?: Maybe<Entity>;
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
+  redeemCoupon: Coupon;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
   setPluginOrder?: Maybe<PluginOrder>;
   signup: Auth;
   updateAccount: Account;
+  updateCodeGeneratorVersion?: Maybe<Resource>;
   updateEntity?: Maybe<Entity>;
   updateEntityField: EntityField;
   updateEntityPermission: EntityPermission;
   updateEntityPermissionFieldRoles: EntityPermissionField;
   updateEntityPermissionRoles: EntityPermission;
+  updateGitRepository: GitRepository;
   updatePluginInstallation: PluginInstallation;
   updateProject: Project;
   updateProjectConfigurationSettings?: Maybe<ProjectConfigurationSettings>;
@@ -1028,7 +1067,7 @@ export type MutationCreateDefaultRelatedFieldArgs = {
 
 
 export type MutationCreateEntitiesFromPrismaSchemaArgs = {
-  data: CreateEntitiesFromPrismaSchemaInput;
+  data: DbSchemaImportCreateInput;
   file: Scalars['Upload']['input'];
 };
 
@@ -1212,6 +1251,11 @@ export type MutationProvisionSubscriptionArgs = {
 };
 
 
+export type MutationRedeemCouponArgs = {
+  data: RedeemCouponInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1243,6 +1287,12 @@ export type MutationUpdateAccountArgs = {
 };
 
 
+export type MutationUpdateCodeGeneratorVersionArgs = {
+  data: CodeGeneratorVersionUpdateInput;
+  where: WhereUniqueInput;
+};
+
+
 export type MutationUpdateEntityArgs = {
   data: EntityUpdateInput;
   where: WhereUniqueInput;
@@ -1271,6 +1321,12 @@ export type MutationUpdateEntityPermissionFieldRolesArgs = {
 
 export type MutationUpdateEntityPermissionRolesArgs = {
   data: EntityUpdatePermissionRolesInput;
+};
+
+
+export type MutationUpdateGitRepositoryArgs = {
+  data: GitRepositoryUpdateInput;
+  where: WhereUniqueInput;
 };
 
 
@@ -1569,6 +1625,7 @@ export type Query = {
   resourceRoles: Array<ResourceRole>;
   resources: Array<Resource>;
   serviceSettings: ServiceSettings;
+  userAction: UserAction;
   userApiTokens: Array<ApiToken>;
   workspace?: Maybe<Workspace>;
   workspaceMembers?: Maybe<Array<WorkspaceMember>>;
@@ -1760,6 +1817,11 @@ export type QueryServiceSettingsArgs = {
 };
 
 
+export type QueryUserActionArgs = {
+  where: WhereUniqueInput;
+};
+
+
 export type QueryWorkspaceArgs = {
   where: WhereUniqueInput;
 };
@@ -1768,6 +1830,10 @@ export enum QueryMode {
   Default = 'Default',
   Insensitive = 'Insensitive'
 }
+
+export type RedeemCouponInput = {
+  code: Scalars['String']['input'];
+};
 
 export type RemoteGitRepos = {
   pagination: Pagination;
@@ -1797,6 +1863,8 @@ export type RemoteGitRepository = {
 
 export type Resource = {
   builds: Array<Build>;
+  codeGeneratorStrategy?: Maybe<CodeGeneratorVersionStrategy>;
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   createdAt: Scalars['DateTime']['output'];
   description: Scalars['String']['output'];
   entities: Array<Entity>;
@@ -1961,6 +2029,7 @@ export type ServerSettingsUpdateInput = {
 
 export type ServiceSettings = IBlock & {
   adminUISettings: AdminUiSettings;
+  authEntityName?: Maybe<Scalars['String']['output']>;
   authProvider: EnumAuthProviderType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
@@ -1980,6 +2049,7 @@ export type ServiceSettings = IBlock & {
 
 export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
+  authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
@@ -2155,6 +2225,21 @@ export type User = {
   workspace?: Maybe<Workspace>;
 };
 
+export type UserAction = {
+  action?: Maybe<Action>;
+  actionId: Scalars['String']['output'];
+  createdAt: Scalars['DateTime']['output'];
+  id: Scalars['String']['output'];
+  metadata?: Maybe<Scalars['JSONObject']['output']>;
+  resource?: Maybe<Resource>;
+  resourceId: Scalars['String']['output'];
+  status?: Maybe<EnumUserActionStatus>;
+  updatedAt: Scalars['DateTime']['output'];
+  user: User;
+  userActionType: EnumUserActionType;
+  userId: Scalars['String']['output'];
+};
+
 export type UserRole = {
   createdAt: Scalars['DateTime']['output'];
   id: Scalars['String']['output'];
@@ -2172,6 +2257,7 @@ export type WhereUniqueInput = {
 
 export type Workspace = {
   createdAt: Scalars['DateTime']['output'];
+  externalId?: Maybe<Scalars['String']['output']>;
   gitOrganizations?: Maybe<Array<GitOrganization>>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];

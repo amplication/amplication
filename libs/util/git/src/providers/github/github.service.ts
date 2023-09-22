@@ -441,17 +441,26 @@ export class GithubService implements GitProvider {
     branchName,
     pullRequestTitle,
     pullRequestBody,
-    defaultBranchName,
-  }: GitProviderCreatePullRequestArgs): Promise<PullRequest> {
-    const { data: pullRequest } = await this.octokit.rest.pulls.create({
-      owner,
-      repo: repositoryName,
-      title: pullRequestTitle,
-      body: pullRequestBody,
-      head: branchName,
-      base: defaultBranchName,
-    });
-    return { url: pullRequest.html_url, number: pullRequest.number };
+    baseBranchName,
+  }: GitProviderCreatePullRequestArgs): Promise<PullRequest | null> {
+    try {
+      const { data: pullRequest } = await this.octokit.rest.pulls.create({
+        owner,
+        repo: repositoryName,
+        title: pullRequestTitle,
+        body: pullRequestBody,
+        head: branchName,
+        base: baseBranchName,
+      });
+      return { url: pullRequest.html_url, number: pullRequest.number };
+    } catch (error) {
+      if (error.status === 422) {
+        throw new Error(
+          `Hey there! Looks like your code hasn't changed since the last build. We skipped creating a new pull request to keep things tidy.`
+        );
+      }
+    }
+    return null;
   }
 
   async getBranch({
@@ -480,19 +489,14 @@ export class GithubService implements GitProvider {
     repositoryName,
     branchName,
     pointingSha,
+    baseBranchName,
   }: CreateBranchArgs): Promise<Branch> {
     let baseSha = pointingSha;
     if (!baseSha) {
-      const repository = await this.getRepository({
-        owner,
-        repositoryName,
-      });
-      const { defaultBranch } = repository;
-
       const refs = await this.octokit.rest.git.getRef({
         owner,
         repo: repositoryName,
-        ref: `heads/${defaultBranch}`,
+        ref: `heads/${baseBranchName}`,
       });
       baseSha = refs.data.object.sha;
     }
@@ -645,10 +649,6 @@ export class GithubService implements GitProvider {
   // methods that are exist in the GitProvider interface, but are not implemented for the GitHub provider
 
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
-    throw NotImplementedError;
-  }
-
-  async refreshAccessToken(): Promise<OAuthTokens> {
     throw NotImplementedError;
   }
 

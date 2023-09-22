@@ -8,8 +8,9 @@ import GitRepoDetails from "../Resource/git/GitRepoDetails";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { PUSH_TO_GIT_STEP_NAME } from "../VersionControl/BuildSteps";
 import "./WorkspaceFooter.scss";
-import { Commit, EnumGitProvider } from "../models";
+import { Commit } from "../models";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { gitProviderName } from "../Resource/git/gitProviderDisplayName";
 
 const CLASS_NAME = "workspace-footer";
 
@@ -76,7 +77,7 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
   return (
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__left`}>
-        {gitRepositoryFullName?.includes("/") ? (
+        {gitRepositoryFullName && gitRepositoryOrganizationProvider ? (
           <div className={`${CLASS_NAME}__git-connection`}>
             <Icon
               icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
@@ -88,21 +89,17 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
               className={`${CLASS_NAME}__git-link`}
               href={gitUrl}
               target={
-                gitRepositoryOrganizationProvider === EnumGitProvider.Github
-                  ? "github"
-                  : gitRepositoryOrganizationProvider ===
-                    EnumGitProvider.Bitbucket
-                  ? "bitbucket"
-                  : "_blank"
+                gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
+                "_blank"
               }
             >
-              {`Open With ${gitRepositoryOrganizationProvider}`}
+              {`Open With ${gitProviderName[gitRepositoryOrganizationProvider]}`}
             </a>
           </div>
         ) : (
           <div className={`${CLASS_NAME}__git-disconnected`}>
             <Icon
-              icon="git-sync"
+              icon="pending_changes"
               size="small"
               className={`${CLASS_NAME}__git-icon`}
             />
