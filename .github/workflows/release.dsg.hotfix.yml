@@ -1,0 +1,20 @@
+name: Release DSG Hotfix
+run-name: Release DSG hotfix (sha:${{ github.sha }})
+on:
+  workflow_dispatch:
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  release-dsg-hotfix:
+    name: Create an hotfix release for data-service-generator
+    uses: ./.github/workflows/release.dsg.template.yml
+    with:
+      branch: ${{ github.ref_name }}
+      package-container: true # Packaging will happen on published Release during the deployment.production.yml workflow
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+      RELEASE_PRODUCTION_PAT: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+      ECR_AWS_ACCESS_KEY_ID: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+      ECR_AWS_SECRET_ACCESS_KEY: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
