@@ -2735,7 +2735,7 @@ describe("prismaSchemaParser", () => {
           model Event {
             id          String   @id @default(uuid())
             event2Id    String?  @unique
-            test789     Test[]    @relation("event3")
+            test789     Test[]    @relation(name: "event3")
             tests       Test[]    @relation("event1")
             test456     Test?   @relation(references: [id], fields: [event2Id], map: "FK_event4_event_id")
             test123     Test?    @relation("event2", fields: [event2Id], references: [id])
@@ -2744,10 +2744,10 @@ describe("prismaSchemaParser", () => {
           
           model Test {
             id          String  @id @default(uuid())
-            event2      Event[]  @relation("event2")
+            event2      Event[]  @relation(name: "event2")
             event4      Event[]
             event1      Event?  @relation("event1", fields: [event1Id], references: [id])
-            event3      Event?  @relation("event3", fields: [event1Id], references: [id], map: "FK_event3_event_id")
+            event3      Event?  @relation(name: "event3", fields: [event1Id], references: [id], map: "FK_event3_event_id")
             event1Id    String? @unique
           }`;
 
