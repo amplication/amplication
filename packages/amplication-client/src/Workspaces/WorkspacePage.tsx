@@ -1,13 +1,11 @@
 import React, { useContext } from "react";
-import { AppRouteProps } from "../routes/routesUtil";
 import { match } from "react-router-dom";
+import PageLayout from "../Layout/PageLayout";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import PageContent from "../Layout/PageContent";
-import ProjectList from "../Project/ProjectList";
-import { AppContext } from "../context/appContext";
-import ProjectEmptyState from "../Project/ProjectEmptyState";
-import AddNewProject from "../Project/AddNewProject";
 import useTabRoutes from "../Layout/useTabRoutes";
+import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
+import WorkspaceOverview from "./WorkspaceOverview";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -15,7 +13,6 @@ type Props = AppRouteProps & {
     project: string;
   }>;
 };
-const pageTitle = "Workspace";
 
 const WorkspacePage: React.FC<Props> = ({
   innerRoutes,
@@ -24,7 +21,7 @@ const WorkspacePage: React.FC<Props> = ({
   tabRoutes,
   tabRoutesDef,
 }) => {
-  const { currentWorkspace, projectsList } = useContext(AppContext);
+  const { currentWorkspace } = useContext(AppContext);
   useBreadcrumbs(currentWorkspace?.name, match.url);
 
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
@@ -35,32 +32,13 @@ const WorkspacePage: React.FC<Props> = ({
     <>
       {match.isExact || currentRouteIsTab ? (
         <>
-          <PageContent
-            pageTitle={pageTitle}
-            className={moduleClass}
-            tabs={tabItems}
-          >
-            {match.isExact ? (
-              <>
-                <AddNewProject />
-                {projectsList.length ? (
-                  <ProjectList
-                    projects={projectsList}
-                    workspaceId={currentWorkspace?.id}
-                  />
-                ) : (
-                  <ProjectEmptyState />
-                )}
-              </>
-            ) : (
-              tabRoutes
-            )}
-          </PageContent>
+          <PageLayout className={moduleClass} tabs={tabItems}>
+            {match.isExact ? <WorkspaceOverview /> : tabRoutes}
+          </PageLayout>
         </>
       ) : (
         innerRoutes
       )}
-      ;
     </>
   );
 };

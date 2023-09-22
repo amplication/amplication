@@ -31,10 +31,10 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
     });
   }, [tabRoutes, currentPath]);
 
-  const currentRouteIsTab = tabRoutes.some(
-    (def) =>
-      def.path.replace(currentPath, "") ===
-      location.pathname.replace(currentUrl, "")
+  const currentRouteIsTab = tabRoutes.some((def) =>
+    location.pathname
+      .replace(currentUrl, "")
+      .startsWith(def.path.replace(currentPath, ""))
   );
 
   return {

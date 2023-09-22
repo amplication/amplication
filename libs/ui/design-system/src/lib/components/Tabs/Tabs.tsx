@@ -1,12 +1,11 @@
-import React from "react";
 import {
-  Tabs as MuiTabs,
-  TabsProps as MuiTabsProps,
   Tab as MuiTab,
   TabProps as MuiTabProps,
+  Tabs as MuiTabs,
+  TabsProps as MuiTabsProps,
 } from "@mui/material";
+import { NavLink, useRouteMatch } from "react-router-dom";
 import "./Tabs.scss";
-import { NavLink } from "react-router-dom";
 
 export type Props = MuiTabsProps;
 
@@ -21,7 +20,21 @@ export type TabProps = MuiTabProps & {
 };
 
 function Tab(props: TabProps) {
-  return <MuiTab component={NavLink} {...props} />;
+  const { to, ...rest } = props;
+  const routeMatch = useRouteMatch(to);
+
+  return (
+    <MuiTab
+      className="amp-tab"
+      component={NavLink}
+      to={to}
+      disableRipple
+      {...rest}
+      isActive={() => {
+        return routeMatch?.isExact;
+      }}
+    />
+  );
 }
 
 Tabs.Tab = Tab;

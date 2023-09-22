@@ -58,27 +58,42 @@ export const Routes: RouteDef[] = [
             moduleName: "ProjectPage",
             moduleClass: "project-page",
             exactPath: false,
-            routes: [
+            tabRoutes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
+                Component: lazy(() => import("../VersionControl/CommitsPage")),
+                moduleName: "CommitsPage",
+                moduleClass: "commits-page",
+                displayName: "Commits",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../VersionControl/CommitPage")
+                    ),
+                    moduleName: "CommitPage",
+                    moduleClass: "commit-page",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                ],
+              },
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
                 Component: lazy(
                   () => import("../Resource/code-view/CodeViewPage")
                 ),
                 moduleName: "CodeViewPage",
+                displayName: "Code View",
                 moduleClass: "code-view-page",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
               },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
-                Component: lazy(() => import("../VersionControl/CommitsPage")),
-                moduleName: "CommitsPage",
-                moduleClass: "commits-page",
-                routeTrackType: "",
-                exactPath: false,
-                isAnalytics: true,
-              },
+
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
                 Component: lazy(
@@ -86,10 +101,13 @@ export const Routes: RouteDef[] = [
                 ),
                 moduleName: "PendingChangesPage",
                 moduleClass: "pending-changes-page",
+                displayName: "Pending Changes",
                 routeTrackType: "",
                 exactPath: true,
                 isAnalytics: true,
               },
+            ],
+            routes: [
               {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
                 Component: lazy(
@@ -135,7 +153,7 @@ export const Routes: RouteDef[] = [
                 moduleName: "",
                 routeTrackType: "",
                 exactPath: false,
-                routes: resourceRoutes,
+                tabRoutes: resourceRoutes,
               },
             ],
           },

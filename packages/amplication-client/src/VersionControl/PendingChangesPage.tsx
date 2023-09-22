@@ -8,6 +8,7 @@ import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { formatError } from "../util/error";
+import PendingChanges from "./PendingChanges";
 
 const CLASS_NAME = "pending-changes-page";
 const SPLIT = "Split";
@@ -50,6 +51,7 @@ const PendingChangesPage = () => {
             selectedValue={splitView ? SPLIT : UNIFIED}
           />
         </div>
+        <PendingChanges projectId={currentProject.id} />
         <div className={`${CLASS_NAME}__changes`}>
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>

@@ -8,12 +8,14 @@ import InviteMember from "./InviteMember";
 import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
 import { pluralize } from "../util/pluralize";
+import PageContent from "../Layout/PageContent";
 
 type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
 };
 
 const CLASS_NAME = "member-list";
+const PAGE_TITLE = "Members";
 
 function MemberList() {
   const [error, setError] = useState<Error>();
@@ -31,7 +33,7 @@ function MemberList() {
   }, [refetch]);
 
   return (
-    <div className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <div className={`${CLASS_NAME}__header`}>
         <h2>Workspace Members</h2>
 
@@ -62,7 +64,7 @@ function MemberList() {
       )}
 
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
-    </div>
+    </PageContent>
   );
 }
 

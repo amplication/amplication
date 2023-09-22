@@ -1,14 +1,10 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
+import React, { useCallback, useContext, useEffect } from "react";
 import { match, useHistory } from "react-router-dom";
-import { EnumImages } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
-import CommitResourceList from "./CommitResourceList";
 import "./CommitsPage.scss";
-import { EmptyState } from "../Components/EmptyState";
-import { CircularProgress } from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -19,7 +15,9 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
+const PAGE_TITLE = "Commits";
+
+const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
   const commitId = match.params.commit;
   const history = useHistory();
 
@@ -29,10 +27,6 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const handleOnLoadMoreClick = useCallback(() => {
     commitUtils.refetchCommitsData(false);
   }, [commitUtils.refetchCommitsData]);
-
-  const currentCommit = useMemo(() => {
-    return commitUtils.commits?.find((commit) => commit.id === commitId);
-  }, [commitId, commitUtils.commits]);
 
   useEffect(() => {
     if (commitId) return;
@@ -51,7 +45,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   return (
     <PageContent
       className={moduleClass}
-      pageTitle={`Commit Page ${commitId ? commitId : ""}`}
+      pageTitle={PAGE_TITLE}
       sideContent={
         commitUtils.commits?.length ? (
           <CommitList
@@ -64,19 +58,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         ) : null
       }
     >
-      {commitUtils.commits.length && currentCommit ? (
-        <CommitResourceList
-          commit={currentCommit}
-          commitChangesByResource={commitUtils.commitChangesByResource}
-        />
-      ) : commitUtils.commitsLoading ? (
-        <CircularProgress centerToParent />
-      ) : (
-        <EmptyState
-          message="There are no commits to show"
-          image={EnumImages.CommitEmptyState}
-        />
-      )}
+      {innerRoutes}
     </PageContent>
   );
 };

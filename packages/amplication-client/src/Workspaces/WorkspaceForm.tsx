@@ -13,6 +13,7 @@ import { useTracking } from "../util/analytics";
 import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import PageContent from "../Layout/PageContent";
 
 type TData = {
   updateWorkspace: models.Workspace;
@@ -36,6 +37,8 @@ const FORM_SCHEMA = {
 };
 
 const CLASS_NAME = "workspace-form";
+
+const PAGE_TITLE = "Workspace Settings";
 
 function WorkspaceForm() {
   const { currentWorkspace } = useContext(AppContext);
@@ -67,7 +70,7 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <div className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <h2>Workspace Settings</h2>
       <div className={`${CLASS_NAME}__separator`} />
       {currentWorkspace && (
@@ -91,7 +94,7 @@ function WorkspaceForm() {
       {currentWorkspace && <div>{currentWorkspace.id}</div>}
 
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-    </div>
+    </PageContent>
   );
 }
 
