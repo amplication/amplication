@@ -1,0 +1,123 @@
+name: _Reusable DSG Release template
+
+on:
+  workflow_call:
+    inputs:
+      branch: 
+        description: Name of the git branch
+        required: true
+        type: string
+    secrets:
+      NX_CLOUD_ACCESS_TOKEN:
+        required: true
+      RELEASE_PRODUCTION_PAT:
+        required: true
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  generate-dsg-release:
+    name: Create a release for data-service-generator
+    runs-on: ubuntu-20.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          ref: ${{ inputs.branch }}
+          token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+
+      - name: Determine if it's a new data-service-generator version, and its previous tag
+        id: check-tag
+        run: |
+          DSG_VERSION=v$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
+          NEW_TAG=dsg/$DSG_VERSION
+          echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+
+          IS_NEW_VERSION="false"
+    
+          # If the tag already exists, it means that was already released. So we skip it. 
+          if git tag --list | grep -q "^$NEW_TAG"; then
+            IS_NEW_VERSION="false"
+            echo -e "✅ $ECHO_GREEN data-service-generator version '$NEW_TAG' already exists (so it was already released)."
+            echo -e "  $ECHO_GREEN Skipping..."
+            echo "🏷️ CURRENT VERSION=$NEW_TAG "
+          else
+            IS_NEW_VERSION="true"
+            # create temporary tag to get the previous tag
+            git tag $NEW_TAG
+
+            PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A 1 ^$NEW_TAG | tail -n 1)
+
+            echo "previous-tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+            echo "new-tag=$NEW_TAG" >> $GITHUB_OUTPUT
+            echo "new-dsg-version=$DSG_VERSION" >> $GITHUB_OUTPUT
+
+            echo "🚀 New version detected"
+            echo " 🏷️ data-service-generator version: $DSG_VERSION"
+            echo " 🏷️ NEW_TAG: $NEW_TAG"
+            echo " 🏷️ PREVIOUS_TAG: $PREVIOUS_TAG "
+          fi
+          echo "is-new-version=$IS_NEW_VERSION" >> $GITHUB_OUTPUT
+        env:
+          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+      - name: Build data-service-generator Changelog
+        id: changelog
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
+          toTag: HEAD # from actions/checkout@v3
+          configurationJson: |
+            {
+              "ignore_labels": [
+                "ignore-from-release-notes"
+              ],
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }})",
+              "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})",
+              "categories": [
+                {
+                  "title": "## [`data-service-generator`] Changes 🛠",
+                  "exhaustive_rules": "true",
+                  "rules": [
+                    {
+                      "pattern": "app:data-service-generator",
+                      "on_property": "labels",
+                      "flags": "gu"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Create data-service-generator git tag
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
+        run: |
+          NEW_TAG="${{ steps.check-tag.outputs.new-tag }}"
+          git push origin $NEW_TAG
+
+      - name: Generate release notes artifact
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
+        run: |
+          echo "${{ steps.changelog.outputs.changelog }}" >> release-notes.md
+
+      - name: Upload release notes artifact
+        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: release-notes
+          path: release-notes.md
+
+      # - name: Release data-service-generator
+      #   id: release
+      #   if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     name: "[data-service-generator] ${{ steps.check-tag.outputs.new-dsg-version }}"
+      #     tag_name: "${{ steps.check-tag.outputs.new-tag }}"
+      #     draft: true
+      #     body: ${{ steps.changelog.outputs.changelog }}
