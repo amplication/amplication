@@ -1,4 +1,4 @@
-name: Reusable Vulnerability Scanning template
+name: _Reusable Vulnerability Scanning template
 
 on:
   workflow_call:
