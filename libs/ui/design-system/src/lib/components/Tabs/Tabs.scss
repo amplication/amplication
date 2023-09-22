@@ -1,7 +1,32 @@
 @import "../../style/index.scss";
 
 .amp-tabs {
-  .MuiTab-textColorPrimary {
-    color: var(--black100);
+  padding: 0 var(--large-spacing);
+
+  .MuiTabs-flexContainer {
+    align-items: baseline;
+  }
+
+  .amp-tab {
+    text-transform: none;
+    color: var(--black80);
+    padding: var(--default-spacing-small) var(--large-spacing);
+
+    &.active {
+      color: var(--black100);
+      position: relative;
+      overflow: visible;
+
+      &:before {
+        content: "";
+        z-index: 10;
+        position: absolute;
+        display: block;
+        width: 100%;
+        bottom: 0px;
+        height: 3px;
+        background-color: var(--primary);
+      }
+    }
   }
 }

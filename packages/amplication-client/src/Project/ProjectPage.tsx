@@ -4,8 +4,9 @@ import { AppRouteProps } from "../routes/routesUtil";
 import { match } from "react-router-dom";
 import "./ProjectPage.scss";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import PageContent from "../Layout/PageContent";
+import PageLayout from "../Layout/PageLayout";
 import { AppContext } from "../context/appContext";
+import useTabRoutes from "../Layout/useTabRoutes";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -13,18 +14,26 @@ type Props = AppRouteProps & {
     project: string;
   }>;
 };
-const pageTitle = "Project";
 
-const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
+const ProjectPage: React.FC<Props> = ({
+  innerRoutes,
+  match,
+  moduleClass,
+  tabRoutes,
+  tabRoutesDef,
+}) => {
   const { currentProject } = useContext(AppContext);
 
   useBreadcrumbs(currentProject?.name, match.url);
+  const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
-  return match.isExact ? (
+  const tabItems = [{ name: "Overview", url: match.url }, ...tabs];
+
+  return match.isExact || currentRouteIsTab ? (
     <>
-      <PageContent pageTitle={pageTitle} className={moduleClass}>
-        <ResourceList />
-      </PageContent>
+      <PageLayout className={moduleClass} tabs={tabItems}>
+        {match.isExact ? <ResourceList /> : tabRoutes}
+      </PageLayout>
     </>
   ) : (
     innerRoutes

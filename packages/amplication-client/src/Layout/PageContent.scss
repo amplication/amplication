@@ -5,27 +5,32 @@ $tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex: 1;
-  gap: var(--large-spacing);
-  padding: var(--large-spacing);
-  padding-right: 0;
   background: var(--page-content-background);
   box-sizing: border-box;
-  overflow: hidden;
   flex-direction: column;
+  overflow: hidden;
+  overflow-y: auto;
+
+  &__header {
+    border-bottom: $border-black20;
+  }
 
   &__body {
     display: flex;
     flex: 1;
+    max-width: var(--page-content-width);
+    padding: var(--large-spacing);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
   }
 
-  &__tabs {
+  &__side {
     display: flex;
     flex-direction: column;
     width: $tabs-width;
-    background: var(--page-content-tab-background);
-    border-radius: var(--default-border-radius);
-    border: $border-black10;
-    padding: var(--large-spacing);
+
+    padding: var(--default-spacing);
     box-sizing: border-box;
     overflow-y: auto;
     @include scrollbars(16px, var(--black60), transparent);
@@ -37,14 +42,11 @@ $tabs-width: 300px;
 
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
-    padding-right: var(--large-spacing);
+    padding: var(--default-spacing);
     flex: 1;
     overflow: auto;
     position: relative;
     box-sizing: border-box;
-    max-width: var(--page-content-width);
-    margin-left: auto;
-    margin-right: auto;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));

@@ -38,9 +38,9 @@ const LazyRouteWrapper: React.FC<{
 
           route.isAnalytics &&
             pageTracking(match.path, match.url, match.params);
+
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
-
           const tabRoutes =
             route.tabRoutes && routesGenerator(route.tabRoutes, route.path);
 

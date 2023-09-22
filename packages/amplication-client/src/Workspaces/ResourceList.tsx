@@ -21,6 +21,7 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
+import PageContent from "../Layout/PageContent";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -35,6 +36,7 @@ type GetWorkspaceResponse = {
 };
 
 const CLASS_NAME = "resource-list";
+const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
@@ -139,7 +141,7 @@ function ResourceList() {
     formatError(errorResources) || (error && formatError(error));
 
   return (
-    <div className={CLASS_NAME}>
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <div className={`${CLASS_NAME}__header`}>
         <SearchField
           label="search"
@@ -198,7 +200,7 @@ function ResourceList() {
         message={errorMessage}
         onClose={clearError}
       />
-    </div>
+    </PageContent>
   );
 }
 
