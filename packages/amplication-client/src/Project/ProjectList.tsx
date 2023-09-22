@@ -23,7 +23,6 @@ export const ProjectList = ({ projects, workspaceId }: Props) => {
           />
         ))}
       </div>
-      <AddNewProject />
     </div>
   );
 };

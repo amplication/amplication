@@ -114,12 +114,12 @@ const useProjectSelector = (
       });
     }
 
-    !!(!workspaceUtil && currentWorkspace?.id) &&
-      history.push(
-        `/${currentWorkspace?.id}/${projectsList[0].id}${
-          isFromSignup || isSignupCookieExist ? "/welcome" : ""
-        }`
-      );
+    // !!(!workspaceUtil && currentWorkspace?.id) &&
+    //   history.push(
+    //     `/${currentWorkspace?.id}/${projectsList[0].id}${
+    //       isFromSignup || isSignupCookieExist ? "/welcome" : ""
+    //     }`
+    //   );
   }, [
     currentWorkspace?.id,
     history,

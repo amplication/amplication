@@ -16,4 +16,6 @@
   --negative-light-transparent: rgba(248, 91, 110, 0.1);
 
   --negative-bg: #f8eaec;
+
+  --page-content-width: 930px;
 }
