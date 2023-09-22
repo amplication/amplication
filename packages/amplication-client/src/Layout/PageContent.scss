@@ -11,6 +11,12 @@ $tabs-width: 300px;
   background: var(--page-content-background);
   box-sizing: border-box;
   overflow: hidden;
+  flex-direction: column;
+
+  &__body {
+    display: flex;
+    flex: 1;
+  }
 
   &__tabs {
     display: flex;

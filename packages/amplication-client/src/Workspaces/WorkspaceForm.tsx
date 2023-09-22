@@ -12,8 +12,6 @@ import { TextField, Snackbar } from "@amplication/ui/design-system";
 import { useTracking } from "../util/analytics";
 import "./WorkspaceForm.scss";
 import { AppContext } from "../context/appContext";
-import PageContent from "../Layout/PageContent";
-import ProjectSideBar from "../Project/ProjectSideBar";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
@@ -69,38 +67,31 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent
-      pageTitle="Workspace settings"
-      sideContent={<ProjectSideBar />}
-    >
-      <div className={CLASS_NAME}>
-        <h2>Workspace Settings</h2>
-        <div className={`${CLASS_NAME}__separator`} />
-        {currentWorkspace && (
-          <Formik
-            initialValues={currentWorkspace}
-            validate={(values: models.Workspace) =>
-              validate(values, FORM_SCHEMA)
-            }
-            enableReinitialize
-            onSubmit={handleSubmit}
-          >
-            {(formik) => {
-              return (
-                <Form>
-                  <FormikAutoSave debounceMS={1000} />
-                  <TextField name="name" label="Workspace Name" />
-                </Form>
-              );
-            }}
-          </Formik>
-        )}
-        <label className={`${CLASS_NAME}__label`}>Workspace ID </label>
-        {currentWorkspace && <div>{currentWorkspace.id}</div>}
+    <div className={CLASS_NAME}>
+      <h2>Workspace Settings</h2>
+      <div className={`${CLASS_NAME}__separator`} />
+      {currentWorkspace && (
+        <Formik
+          initialValues={currentWorkspace}
+          validate={(values: models.Workspace) => validate(values, FORM_SCHEMA)}
+          enableReinitialize
+          onSubmit={handleSubmit}
+        >
+          {(formik) => {
+            return (
+              <Form>
+                <FormikAutoSave debounceMS={1000} />
+                <TextField name="name" label="Workspace Name" />
+              </Form>
+            );
+          }}
+        </Formik>
+      )}
+      <label className={`${CLASS_NAME}__label`}>Workspace ID </label>
+      {currentWorkspace && <div>{currentWorkspace.id}</div>}
 
-        <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-      </div>
-    </PageContent>
+      <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
+    </div>
   );
 }
 
