@@ -1065,97 +1065,102 @@ export class PrismaSchemaParserService {
     model: Model,
     field: Field
   ): boolean {
+    let isManyToMany = false;
     // check if the current field is a relation field that is not annotated and it is an array
-    const isRelationArrayField =
+    const isCurrentFieldIsRelationArray =
       this.isLookupField(schema, field) &&
       this.isNotAnnotatedRelationField(schema, field) &&
       field.array;
 
-    if (isRelationArrayField) {
-      const modelList = schema.list.filter(
-        (item) => item.type === MODEL_TYPE_NAME
-      ) as Model[];
+    // if the current field is not an array, it can't be a many to many relation, exit the function and return false
+    if (!isCurrentFieldIsRelationArray) return isManyToMany;
 
-      const remoteModel = modelList.find(
-        (modelItem: Model) =>
-          formatModelName(modelItem.name) ===
-          formatModelName(field.fieldType as string)
+    const modelList = schema.list.filter(
+      (item) => item.type === MODEL_TYPE_NAME
+    ) as Model[];
+
+    const remoteModel = modelList.find(
+      (modelItem: Model) =>
+        formatModelName(modelItem.name) ===
+        formatModelName(field.fieldType as string)
+    );
+
+    if (!remoteModel) {
+      throw new Error(
+        `Remote model ${field.fieldType} not found for field ${field.name} on model ${model.name}`
+      );
+    }
+
+    const remoteModelFields = remoteModel.properties.filter(
+      (property) => property.type === FIELD_TYPE_NAME
+    ) as Field[];
+
+    // from the remote model fields, find the fields that are relations to the current model (it can be more than one field)
+    const remoteRelatedFields = remoteModelFields.filter(
+      (fieldItem: Field) =>
+        formatModelName(model.name) ===
+        formatModelName(fieldItem.fieldType as string)
+    );
+
+    if (!remoteRelatedFields.length) {
+      throw new Error(
+        `The other side of the relation not found for field ${field.name} on model ${model.name}`
+      );
+    }
+
+    if (remoteRelatedFields.length === 1) {
+      const isRemoteFieldIsRelationArray =
+        this.isLookupField(schema, remoteRelatedFields[0]) &&
+        this.isNotAnnotatedRelationField(schema, remoteRelatedFields[0]) &&
+        remoteRelatedFields[0].array;
+
+      isManyToMany = !!isRemoteFieldIsRelationArray;
+    }
+
+    if (remoteRelatedFields.length > 1) {
+      // compare between the relation name of the two sides
+      let currentFieldRelationAttributeName = null;
+      let remoteFieldRelationAttributeName = null;
+      const relationAttribute = field.attributes?.find(
+        (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
 
-      if (!remoteModel) {
-        throw new Error(
-          `Remote model ${field.fieldType} not found for field ${field.name} on model ${model.name}`
-        );
+      if (relationAttribute) {
+        currentFieldRelationAttributeName =
+          findRelationAttributeName(relationAttribute);
       }
 
-      const remoteModelFields = remoteModel.properties.filter(
-        (property) => property.type === FIELD_TYPE_NAME
-      ) as Field[];
-
-      // from the remote model fields, find the fields that are relations to the current model (it can be more than one field)
-      const remoteRelatedFields = remoteModelFields.filter(
-        (fieldItem: Field) =>
-          formatModelName(model.name) ===
-          formatModelName(fieldItem.fieldType as string)
-      );
-
-      if (!remoteRelatedFields.length) {
-        throw new Error(
-          `The other side of the relation not found for field ${field.name} on model ${model.name}`
-        );
-      }
-
-      if (remoteRelatedFields.length === 1) {
-        if (
-          this.isLookupField(schema, remoteRelatedFields[0]) &&
-          this.isNotAnnotatedRelationField(schema, remoteRelatedFields[0]) &&
-          remoteRelatedFields[0].array
-        ) {
-          return true;
-        }
-      } else {
-        // remoteRelatedFields.length > 1
-        // compare between the relation name of the two sides
-        let currentFieldRelationAttributeName = null;
-        let remoteFieldRelationAttributeName = null;
-        const relationAttribute = field.attributes?.find(
+      // loop over the otherSide array, for each field find the relation name and compare it to the relation name of the field
+      // if they are equal, it means that we found the other side of the relation
+      for (const [index, fieldItem] of remoteRelatedFields.entries()) {
+        const relationAttributeOnRemoteField = fieldItem.attributes?.find(
           (attr) => attr.name === RELATION_ATTRIBUTE_NAME
         );
 
-        if (relationAttribute) {
-          currentFieldRelationAttributeName =
-            findRelationAttributeName(relationAttribute);
-        }
-
-        // loop over the otherSide array, for each field find the relation name and compare it to the relation name of the field
-        // if they are equal, it means that we found the other side of the relation
-        for (const [index, fieldItem] of remoteRelatedFields.entries()) {
-          const relationAttributeOnRemoteField = fieldItem.attributes?.find(
-            (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+        if (relationAttributeOnRemoteField) {
+          remoteFieldRelationAttributeName = findRelationAttributeName(
+            relationAttributeOnRemoteField
           );
-
-          if (relationAttributeOnRemoteField) {
-            remoteFieldRelationAttributeName = findRelationAttributeName(
-              relationAttributeOnRemoteField
-            );
-          }
-
-          if (
-            currentFieldRelationAttributeName ===
-              remoteFieldRelationAttributeName &&
-            this.isLookupField(schema, remoteRelatedFields[index]) &&
-            this.isNotAnnotatedRelationField(
-              schema,
-              remoteRelatedFields[index]
-            ) &&
-            remoteRelatedFields[index].array
-          ) {
-            return true;
-          }
         }
+
+        const isCurrentFieldRelationAttrNameEqualRemoteFieldRelationAttrName =
+          currentFieldRelationAttributeName ===
+          remoteFieldRelationAttributeName;
+
+        const isRemoteFieldItemIsRelationArray =
+          this.isLookupField(schema, remoteRelatedFields[index]) &&
+          this.isNotAnnotatedRelationField(
+            schema,
+            remoteRelatedFields[index]
+          ) &&
+          remoteRelatedFields[index].array;
+
+        isManyToMany =
+          isCurrentFieldRelationAttrNameEqualRemoteFieldRelationAttrName &&
+          isRemoteFieldItemIsRelationArray;
       }
     }
-    return false;
+    return isManyToMany;
   }
 
   private isFkFieldOfARelation(
