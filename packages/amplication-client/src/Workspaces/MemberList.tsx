@@ -7,8 +7,6 @@ import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
 import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
-import PageContent from "../Layout/PageContent";
-import ProjectSideBar from "../Project/ProjectSideBar";
 import { pluralize } from "../util/pluralize";
 
 type TData = {
@@ -33,43 +31,38 @@ function MemberList() {
   }, [refetch]);
 
   return (
-    <PageContent pageTitle="workspace members" sideContent={<ProjectSideBar />}>
-      <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__header`}>
-          <h2>Workspace Members</h2>
+    <div className={CLASS_NAME}>
+      <div className={`${CLASS_NAME}__header`}>
+        <h2>Workspace Members</h2>
 
-          <InviteMember />
-        </div>
-        <div className={`${CLASS_NAME}__separator`} />
-        <div className={`${CLASS_NAME}__title`}>
-          {data?.workspaceMembers.length}{" "}
-          {pluralize(data?.workspaceMembers.length, "Member", "Members")}
-        </div>
-        {loading && <CircularProgress centerToParent />}
-
-        {isEmpty(data?.workspaceMembers) && !loading ? (
-          <div className={`${CLASS_NAME}__empty-state`}>
-            <div className={`${CLASS_NAME}__empty-state__title`}>
-              There are no members to show
-            </div>
-          </div>
-        ) : (
-          data?.workspaceMembers.map((member, index) => (
-            <MemberListItem
-              member={member}
-              key={index}
-              onDelete={handleDelete}
-              onError={setError}
-            />
-          ))
-        )}
-
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
-        />
+        <InviteMember />
       </div>
-    </PageContent>
+      <div className={`${CLASS_NAME}__separator`} />
+      <div className={`${CLASS_NAME}__title`}>
+        {data?.workspaceMembers.length}{" "}
+        {pluralize(data?.workspaceMembers.length, "Member", "Members")}
+      </div>
+      {loading && <CircularProgress centerToParent />}
+
+      {isEmpty(data?.workspaceMembers) && !loading ? (
+        <div className={`${CLASS_NAME}__empty-state`}>
+          <div className={`${CLASS_NAME}__empty-state__title`}>
+            There are no members to show
+          </div>
+        </div>
+      ) : (
+        data?.workspaceMembers.map((member, index) => (
+          <MemberListItem
+            member={member}
+            key={index}
+            onDelete={handleDelete}
+            onError={setError}
+          />
+        ))
+      )}
+
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+    </div>
   );
 }
 

@@ -177,3 +177,7 @@ export type { LinkProps as ContactUsLinkForEnterpriseProps } from "./components/
 
 export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+
+export { default as Tabs } from "./components/Tabs/Tabs";
+export type { Props as TabsProps } from "./components/Tabs/Tabs";
+export type { TabProps } from "./components/Tabs/Tabs";

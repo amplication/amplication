@@ -7,6 +7,7 @@ import ProjectList from "../Project/ProjectList";
 import { AppContext } from "../context/appContext";
 import ProjectEmptyState from "../Project/ProjectEmptyState";
 import AddNewProject from "../Project/AddNewProject";
+import useTabRoutes from "../Layout/useTabRoutes";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -20,27 +21,47 @@ const WorkspacePage: React.FC<Props> = ({
   innerRoutes,
   match,
   moduleClass,
+  tabRoutes,
+  tabRoutesDef,
 }) => {
   const { currentWorkspace, projectsList } = useContext(AppContext);
-
   useBreadcrumbs(currentWorkspace?.name, match.url);
 
-  return match.isExact ? (
+  const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
+
+  const tabItems = [{ name: "Overview", url: match.url }, ...tabs];
+
+  return (
     <>
-      <PageContent pageTitle={pageTitle} className={moduleClass}>
-        <AddNewProject />
-        {projectsList.length ? (
-          <ProjectList
-            projects={projectsList}
-            workspaceId={currentWorkspace?.id}
-          />
-        ) : (
-          <ProjectEmptyState />
-        )}
-      </PageContent>
+      {match.isExact || currentRouteIsTab ? (
+        <>
+          <PageContent
+            pageTitle={pageTitle}
+            className={moduleClass}
+            tabs={tabItems}
+          >
+            {match.isExact ? (
+              <>
+                <AddNewProject />
+                {projectsList.length ? (
+                  <ProjectList
+                    projects={projectsList}
+                    workspaceId={currentWorkspace?.id}
+                  />
+                ) : (
+                  <ProjectEmptyState />
+                )}
+              </>
+            ) : (
+              tabRoutes
+            )}
+          </PageContent>
+        </>
+      ) : (
+        innerRoutes
+      )}
+      ;
     </>
-  ) : (
-    innerRoutes
   );
 };
 

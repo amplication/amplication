@@ -6,9 +6,11 @@ export interface RouteDef {
   redirect?: string;
   Component?: LazyExoticComponent<ComponentType<any>>;
   routes?: RouteDef[];
+  tabRoutes?: RouteDef[];
   exactPath: boolean;
   moduleName?: string;
   moduleClass?: string;
+  displayName?: string; //used for the tab name
   routeTrackType?: string;
   permission?: boolean;
   isAnalytics?: boolean;
@@ -29,6 +31,26 @@ export const Routes: RouteDef[] = [
         moduleName: "WorkspacePage",
         moduleClass: "workspace-page",
         exactPath: false,
+        tabRoutes: [
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/members",
+            Component: lazy(() => import("../Workspaces/MemberList")),
+            moduleName: "",
+            displayName: "Members",
+            exactPath: true,
+            routes: [],
+            isAnalytics: true,
+          },
+          {
+            path: "/:workspace([A-Za-z0-9-]{20,})/settings",
+            Component: lazy(() => import("../Workspaces/WorkspaceForm")),
+            moduleName: "",
+            displayName: "Settings",
+            exactPath: true,
+            routes: [],
+            isAnalytics: true,
+          },
+        ],
         routes: [
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
@@ -120,22 +142,6 @@ export const Routes: RouteDef[] = [
         ],
       },
 
-      {
-        path: "/:workspace([A-Za-z0-9-]{20,})/members",
-        Component: lazy(() => import("../Workspaces/MemberList")),
-        moduleName: "",
-        exactPath: true,
-        routes: [],
-        isAnalytics: true,
-      },
-      {
-        path: "/:workspace([A-Za-z0-9-]{20,})/settings",
-        Component: lazy(() => import("../Workspaces/WorkspaceForm")),
-        moduleName: "",
-        exactPath: true,
-        routes: [],
-        isAnalytics: true,
-      },
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/purchase",
         Component: lazy(() => import("../Purchase/PurchasePage")),
