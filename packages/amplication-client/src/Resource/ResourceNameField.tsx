@@ -57,7 +57,6 @@ const ResourceNameField = ({
     if (isValid) {
       setIsEditing(false);
       setShowTick(false);
-      hoverHandler(false);
     }
   };
 
@@ -75,10 +74,11 @@ const ResourceNameField = ({
           resourceId: resourceId,
         },
       }).catch(console.error);
+
       setShowTick(true);
       setTimeout(() => {
         setShowTick(false);
-      }, 3000);
+      }, 1500);
     },
     [updateResource, resourceId, trackEvent]
   );

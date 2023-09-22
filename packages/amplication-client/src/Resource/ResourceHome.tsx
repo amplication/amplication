@@ -68,10 +68,7 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
               currentResource={currentResource}
               resourceId={resourceId}
             />
-            <div
-              className="circle-badge-container"
-              style={{ border: "1px solid red" }}
-            >
+            <div className="circle-badge-container">
               <CircleBadge
                 name={currentResource?.name || ""}
                 color={
