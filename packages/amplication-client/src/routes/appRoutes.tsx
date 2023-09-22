@@ -24,86 +24,102 @@ export const Routes: RouteDef[] = [
     permission: true,
     routes: [
       {
-        path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
-        Component: lazy(() => import("../Project/ProjectPage")),
-        moduleName: "ProjectPage",
-        moduleClass: "project-page",
+        path: "/:workspace([A-Za-z0-9-]{20,})",
+        Component: lazy(() => import("../Workspaces/WorkspacePage")),
+        moduleName: "WorkspacePage",
+        moduleClass: "workspace-page",
         exactPath: false,
         routes: [
           {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
-            Component: lazy(() => import("../Resource/code-view/CodeViewPage")),
-            moduleName: "CodeViewPage",
-            moduleClass: "code-view-page",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
-            Component: lazy(() => import("../VersionControl/CommitsPage")),
-            moduleName: "CommitsPage",
-            moduleClass: "commits-page",
-            routeTrackType: "",
+            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})",
+            Component: lazy(() => import("../Project/ProjectPage")),
+            moduleName: "ProjectPage",
+            moduleClass: "project-page",
             exactPath: false,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
-            Component: lazy(
-              () => import("../VersionControl/PendingChangesPage")
-            ),
-            moduleName: "PendingChangesPage",
-            moduleClass: "pending-changes-page",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
-            Component: lazy(
-              () => import("../Resource/create-resource/CreateServiceWizard")
-            ),
-            moduleName: "CreateServiceWizard",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
-            Component: lazy(
-              () => import("../Resource/create-resource/CreateServiceWizard")
-            ),
-            moduleName: "CreateServiceWizard",
-            moduleClass: "create-service-wizard",
-            routeTrackType: "",
-            exactPath: false,
-            isAnalytics: true,
-            routes: [],
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
-            Component: lazy(
-              () =>
-                import("../Resource/create-message-broker/CreateMessageBroker")
-            ),
-            moduleName: "CreateMessageBroker",
-            moduleClass: "create-message-broker",
-            routeTrackType: "",
-            exactPath: true,
-            isAnalytics: true,
-          },
-          {
-            path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
-            Component: lazy(() => import("../Resource/ResourceHome")),
-            moduleName: "",
-            routeTrackType: "",
-            exactPath: false,
-            routes: resourceRoutes,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
+                Component: lazy(
+                  () => import("../Resource/code-view/CodeViewPage")
+                ),
+                moduleName: "CodeViewPage",
+                moduleClass: "code-view-page",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?",
+                Component: lazy(() => import("../VersionControl/CommitsPage")),
+                moduleName: "CommitsPage",
+                moduleClass: "commits-page",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
+                Component: lazy(
+                  () => import("../VersionControl/PendingChangesPage")
+                ),
+                moduleName: "PendingChangesPage",
+                moduleClass: "pending-changes-page",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/welcome",
+                Component: lazy(
+                  () =>
+                    import("../Resource/create-resource/CreateServiceWizard")
+                ),
+                moduleName: "CreateServiceWizard",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-resource",
+                Component: lazy(
+                  () =>
+                    import("../Resource/create-resource/CreateServiceWizard")
+                ),
+                moduleName: "CreateServiceWizard",
+                moduleClass: "create-service-wizard",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/create-broker",
+                Component: lazy(
+                  () =>
+                    import(
+                      "../Resource/create-message-broker/CreateMessageBroker"
+                    )
+                ),
+                moduleName: "CreateMessageBroker",
+                moduleClass: "create-message-broker",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})",
+                Component: lazy(() => import("../Resource/ResourceHome")),
+                moduleName: "",
+                routeTrackType: "",
+                exactPath: false,
+                routes: resourceRoutes,
+              },
+            ],
           },
         ],
       },
+
       {
         path: "/:workspace([A-Za-z0-9-]{20,})/members",
         Component: lazy(() => import("../Workspaces/MemberList")),

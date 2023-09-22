@@ -19,6 +19,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -34,9 +35,10 @@ const ResourceHome = ({ match, innerRoutes }: Props) => {
   const resourceId = match.params.resource;
   const { currentResource } = useContext(AppContext);
 
+  useBreadcrumbs(currentResource.name, match.url);
+
   return (
     <>
-      <ResourceMenu />
       {match.isExact && currentResource ? (
         <PageContent
           className={CLASS_NAME}
