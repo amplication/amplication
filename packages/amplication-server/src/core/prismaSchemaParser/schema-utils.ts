@@ -229,8 +229,10 @@ export function findRelationAttributeName(
     );
   }
 
-  const keyRelationAttributeName = relationAttribute.args.find(
-    (arg) => (arg.value as KeyValue)?.key === "name"
+  const keyRelationAttributeName = (
+    relationAttribute.args.find(
+      (arg) => (arg.value as KeyValue)?.key === "name"
+    )?.value as KeyValue
   )?.value as string;
 
   const valueRelationAttributeName = relationAttribute.args.find(
