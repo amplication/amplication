@@ -1,0 +1,82 @@
+name: Pull Request Labeler
+# This workflows works in conjunction with the release.production.yml workflow to automate release notes based on labels.
+
+on:
+  pull_request:
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  nx:
+    name: Nx
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: ${{ github.head_ref || github.ref_name }}
+      nx-base: ${{ github.base_ref || github.event.repository.default_branch }}
+
+  triage-apps:
+    name: Triage app changes
+    needs: nx
+    if: ${{ needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.nx.outputs.affected-apps) }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate label configuration
+        id: labeler-config
+        run: |
+          APP_NAME=$(echo ${{ matrix.project }} | sed -e "s/^amplication-//")
+          FILENAME=$APP_NAME-labeler.yml
+          echo "app:$APP_NAME: '**'" >> $FILENAME
+          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
+      - uses: actions/labeler@v4
+        with:
+          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
+          dot: true
+
+  triage-libs:
+    name: Triage libs changes
+    needs: nx
+    if: ${{ needs.nx.outputs.affected-lib != '[]' && needs.nx.outputs.affected-lib != ''}}
+    strategy:
+      matrix:
+        project: ${{ fromJson(needs.nx.outputs.affected-lib) }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate label configuration
+        id: labeler-config
+        run: |
+          FILENAME=${{ matrix.project }}-labeler.yml
+          echo "lib:${{ matrix.project }}: '**'" > $FILENAME
+          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
+      - uses: actions/labeler@v4
+        with:
+          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
+          dot: true
+
+  triage-branch-sync-prs:
+    name: Triage PR for branches sync
+    if: ( github.head_ref == 'master' && github.base_ref == 'next' ) || ( github.head_ref == 'next' && github.base_ref == 'master' )
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate label configuration
+        id: labeler-config
+        run: |
+          FILENAME=branch-sync-labeler.yml
+          echo "ignore-for-release: '**'" >> $FILENAME
+          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
+      - uses: actions/labeler@v4
+        with:
+          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
+          dot: true
