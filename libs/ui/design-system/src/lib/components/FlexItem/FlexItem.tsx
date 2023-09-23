@@ -14,6 +14,12 @@ export enum EnumFlexItemContentDirection {
   Column = "column",
 }
 
+export enum EnumFlexItemContentAlign {
+  Center = "center",
+  Start = "flex-start",
+  End = "flex-end",
+}
+
 export type Props = {
   className?: string;
   margin?: EnumFlexItemMargin;
@@ -21,6 +27,7 @@ export type Props = {
   near?: ReactNode;
   far?: ReactNode;
   contentDirection?: EnumFlexItemContentDirection;
+  contentAlign?: EnumFlexItemContentAlign;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -32,6 +39,7 @@ export const FlexItem = ({
   far,
   margin = EnumFlexItemMargin.None,
   contentDirection = EnumFlexItemContentDirection.Column,
+  contentAlign = EnumFlexItemContentAlign.Start,
 }: Props) => {
   const marginClass = margin ? `${CLASS_NAME}--margin-${margin}` : undefined;
 
@@ -44,6 +52,7 @@ export const FlexItem = ({
             `${CLASS_NAME}__content`,
             `${CLASS_NAME}__content--${contentDirection}`
           )}
+          style={{ justifyContent: contentAlign }}
         >
           {children}
         </div>

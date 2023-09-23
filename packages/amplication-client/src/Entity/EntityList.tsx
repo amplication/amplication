@@ -12,6 +12,12 @@ import {
   CircularProgress,
   LimitationNotification,
   Toggle,
+  FlexItem,
+  HorizontalRule,
+  EnumTextStyle,
+  List,
+  Text,
+  EnumFlexItemContentDirection,
 } from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -27,6 +33,8 @@ import { BillingFeature } from "../util/BillingFeature";
 import usePlugins from "../Plugins/hooks/usePlugins";
 import { AppContext } from "../context/appContext";
 import EntitiesERD from "./EntityERD/EntitiesERD";
+import { Flex } from "@primer/react/lib/deprecated";
+import { EnumFlexItemContentAlign } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 type TData = {
   entities: models.Entity[];
@@ -130,20 +138,53 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
       <>
         <Dialog
-          className="new-entity-dialog"
           isOpen={newEntity}
           onDismiss={handleNewEntityClick}
           title="New Entity"
         >
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
-        <div className={`${CLASS_NAME}__header`}>
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchChange}
-          />
-          <div className={`${CLASS_NAME}__action-buttons`}>
+
+        <FlexItem
+          contentAlign={EnumFlexItemContentAlign.Center}
+          near={
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          }
+          far={
+            <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
+              >
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="upload1"
+                  eventData={{
+                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  }}
+                >
+                  Upload Prisma Schema
+                </Button>
+              </Link>
+              <Button
+                className={`${CLASS_NAME}__add-button`}
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleNewEntityClick}
+                icon="plus"
+              >
+                Add entity
+              </Button>
+            </FlexItem>
+          }
+        >
+          <FlexItem
+            contentDirection={EnumFlexItemContentDirection.Row}
+            contentAlign={EnumFlexItemContentAlign.Center}
+          >
             <svg
               width="16"
               height="16"
@@ -179,42 +220,19 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 fill={displayMode === "graph" ? "white" : "#686F8C"}
               />
             </svg>
-          </div>
-          <div className={`${CLASS_NAME}__action-buttons`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-            >
-              <Button
-                className={`${CLASS_NAME}__install`}
-                buttonStyle={EnumButtonStyle.Secondary}
-                icon="upload1"
-                eventData={{
-                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                }}
-              >
-                Upload Prisma Schema
-              </Button>
-            </Link>
-            <Button
-              className={`${CLASS_NAME}__add-button`}
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewEntityClick}
-              icon="plus"
-            >
-              Add entity
-            </Button>
-          </div>
-        </div>
+          </FlexItem>
+        </FlexItem>
 
-        <div className={`${CLASS_NAME}__separator`} />
+        <HorizontalRule doubleSpacing />
+
         {loading && <CircularProgress centerToParent />}
         <>
           {displayMode === "table" ? (
             <>
-              <div className={`${CLASS_NAME}__title`}>
+              <Text textStyle={EnumTextStyle.Tag}>
                 {data?.entities.length}{" "}
                 {pluralize(data?.entities.length, "Entity", "Entities")}
-              </div>
+              </Text>
 
               {!hideNotifications.hasAccess && (
                 <LimitationNotification
@@ -224,7 +242,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 />
               )}
 
-              <div className={`${CLASS_NAME}__content`}>
+              <List>
                 {data?.entities.map((entity) => (
                   <EntityListItem
                     key={entity.id}
@@ -241,7 +259,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                     )}
                   />
                 ))}
-              </div>
+              </List>
             </>
           ) : (
             <EntitiesERD resourceId={resource} />
