@@ -27,15 +27,23 @@ export type GitOrganizationFromGitRepository = {
 };
 
 const SyncWithGithubPage: React.FC = () => {
-  const { currentResource, refreshCurrentWorkspace } = useContext(AppContext);
+  const {
+    currentProjectConfiguration,
+    currentResource,
+    refreshCurrentWorkspace,
+  } = useContext(AppContext);
+
+  const resourceId = currentResource
+    ? currentResource.id
+    : currentProjectConfiguration?.id;
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: currentResource?.id,
+      resourceId: resourceId,
     },
-    skip: !currentResource?.id,
+    skip: !resourceId,
   });
 
   const [connectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);

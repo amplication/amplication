@@ -18,22 +18,24 @@ const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
       className={CLASS_NAME}
       sideContent={
         <>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/general`}
-              icon="settings"
-            >
-              General
-            </InnerTabLink>
-          </div>
-          <div>
-            <InnerTabLink
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/directories`}
-              icon="settings"
-            >
-              Base Directory
-            </InnerTabLink>
-          </div>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/general`}
+            icon="settings"
+          >
+            General
+          </InnerTabLink>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/git`}
+            icon="pending_changes"
+          >
+            Git Provider
+          </InnerTabLink>
+          <InnerTabLink
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/directories`}
+            icon="folder"
+          >
+            Base Directory
+          </InnerTabLink>
         </>
       }
     >
