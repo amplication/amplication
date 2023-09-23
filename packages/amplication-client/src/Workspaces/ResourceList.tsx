@@ -15,6 +15,7 @@ import {
   Text,
   EnumTextStyle,
   EnumPanelStyle,
+  HorizontalRule,
 } from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
@@ -29,6 +30,7 @@ import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
 import PageContent from "../Layout/PageContent";
+import { Flex } from "@primer/react/lib/deprecated";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -148,16 +150,18 @@ function ResourceList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
+      <FlexItem
+        near={
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        }
+        far={<CreateResourceButton />}
+      />
+      <HorizontalRule doubleSpacing />
 
-        <CreateResourceButton />
-      </div>
-      <hr className={`${CLASS_NAME}__separator`} />
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
           near={<CircleBadge size="xlarge" name={currentProject?.name || ""} />}
@@ -169,10 +173,11 @@ function ResourceList() {
         </FlexItem>
       </Panel>
 
-      <div className={`${CLASS_NAME}__title`}>
+      <Text textStyle={EnumTextStyle.Subtle}>
         {resources.length}{" "}
         {pluralize(resources.length, "Resource", "Resources")}
-      </div>
+      </Text>
+
       {loadingResources && <CircularProgress centerToParent />}
 
       {!hideNotifications.hasAccess && (
@@ -183,25 +188,23 @@ function ResourceList() {
         />
       )}
 
-      <div className={`${CLASS_NAME}__content`}>
-        {isEmpty(resources) && !loadingResources ? (
-          <EmptyState
-            message="There are no resources to show"
-            image={EnumImages.AddResource}
-          />
-        ) : (
-          <List>
-            {!loadingResources &&
-              resources.map((resource) => (
-                <ResourceListItem
-                  key={resource.id}
-                  resource={resource}
-                  onDelete={handleResourceDelete}
-                />
-              ))}
-          </List>
-        )}
-      </div>
+      {isEmpty(resources) && !loadingResources ? (
+        <EmptyState
+          message="There are no resources to show"
+          image={EnumImages.AddResource}
+        />
+      ) : (
+        <List>
+          {!loadingResources &&
+            resources.map((resource) => (
+              <ResourceListItem
+                key={resource.id}
+                resource={resource}
+                onDelete={handleResourceDelete}
+              />
+            ))}
+        </List>
+      )}
 
       <Snackbar
         open={Boolean(error || errorResources)}
