@@ -8,6 +8,7 @@ import {
   Snackbar,
   CircularProgress,
   LimitationNotification,
+  List,
 } from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
@@ -184,14 +185,16 @@ function ResourceList() {
             image={EnumImages.AddResource}
           />
         ) : (
-          !loadingResources &&
-          resources.map((resource) => (
-            <ResourceListItem
-              key={resource.id}
-              resource={resource}
-              onDelete={handleResourceDelete}
-            />
-          ))
+          <List>
+            {!loadingResources &&
+              resources.map((resource) => (
+                <ResourceListItem
+                  key={resource.id}
+                  resource={resource}
+                  onDelete={handleResourceDelete}
+                />
+              ))}
+          </List>
         )}
       </div>
 

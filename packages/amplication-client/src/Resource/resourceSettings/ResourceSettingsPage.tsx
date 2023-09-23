@@ -3,7 +3,6 @@ import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
 import { EnumResourceType } from "../../models";
 import { AppRouteProps } from "../../routes/routesUtil";
-import ProjectConfigurationSettingsPage from "./ProjectConfigurationSettingsPage";
 import ServiceSettingsPage from "./ServiceSettingsPage";
 
 // eslint-disable-next-line @typescript-eslint/ban-types
@@ -17,16 +16,7 @@ const ResourceSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
       : "Resource settings";
 
   return (
-    <PageContent
-      pageTitle={pageTitle}
-      sideContent={
-        currentResource?.resourceType === EnumResourceType.Service ? (
-          <ServiceSettingsPage />
-        ) : (
-          <ProjectConfigurationSettingsPage />
-        )
-      }
-    >
+    <PageContent pageTitle={pageTitle} sideContent={<ServiceSettingsPage />}>
       {innerRoutes}
       {/* <Snackbar open={Boolean(error)} message={errorMessage} /> */}
     </PageContent>

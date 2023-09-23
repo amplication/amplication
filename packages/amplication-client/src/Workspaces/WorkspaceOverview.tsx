@@ -6,17 +6,17 @@ import {
   Chip,
   CircleBadge,
   EnumChipStyle,
+  EnumFlexItemMargin,
   EnumPanelStyle,
-  EnumTextColor,
   EnumTextStyle,
-  EnumTextWeight,
   FlexItem,
+  HorizontalRule,
   Panel,
   Text,
 } from "@amplication/ui/design-system";
 import { getWorkspaceColor } from "./WorkspaceSelector";
-import classNames from "classnames";
 import { EnumSubscriptionPlan } from "../models";
+import AddNewProject from "../Project/AddNewProject";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -34,6 +34,9 @@ export const WorkspaceOverview = () => {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <FlexItem far={<AddNewProject />} margin={EnumFlexItemMargin.None} />
+      <HorizontalRule doubleSpacing />
+
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
           near={

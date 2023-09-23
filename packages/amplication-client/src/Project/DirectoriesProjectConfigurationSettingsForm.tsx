@@ -1,22 +1,20 @@
 import {
-  Snackbar,
-  Panel,
   EnumPanelStyle,
+  Panel,
+  Snackbar,
   TextField,
 } from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
 import React from "react";
-import * as models from "../../models";
-import { formatError } from "../../util/error";
-import FormikAutoSave from "../../util/formikAutoSave";
-import { validate } from "../../util/formikValidateJsonSchema";
-import "./GenerationSettingsForm.scss";
-import useProjectConfigSettingsHook from "../useProjectConfigSettingsHook";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import FormikAutoSave from "../util/formikAutoSave";
+import { validate } from "../util/formikValidateJsonSchema";
+import useProjectConfigSettingsHook from "./useProjectConfigSettingsHook";
 
 const CLASS_NAME = "generation-settings-form";
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const DirectoriesProjectConfigurationSettingsForm: React.FC<{}> = () => {
+const DirectoriesProjectConfigurationSettingsForm: React.FC = () => {
   const {
     handleSubmit,
     PROJECT_CONFIG_FORM_SCHEMA,

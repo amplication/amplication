@@ -1,6 +1,11 @@
 import React from "react";
-import InnerTabLink from "../Layout/InnerTabLink";
 import { Project } from "../models";
+import {
+  EnumTextStyle,
+  EnumTextWeight,
+  ListItem,
+  Text,
+} from "@amplication/ui/design-system";
 
 type Props = {
   project: Project;
@@ -9,8 +14,14 @@ type Props = {
 
 export const ProjectListItem = ({ project, workspaceId }: Props) => {
   return (
-    <InnerTabLink icon="file" to={`/${workspaceId}/${project.id}`}>
-      {project.name}
-    </InnerTabLink>
+    <ListItem to={`/${workspaceId}/${project.id}`} showDefaultActionIcon={true}>
+      <Text
+        textStyle={EnumTextStyle.Normal}
+        textWeight={EnumTextWeight.SemiBold}
+      >
+        {project.name}
+      </Text>
+      <Text textStyle={EnumTextStyle.Subtle}>{project.description}</Text>
+    </ListItem>
   );
 };

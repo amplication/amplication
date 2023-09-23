@@ -1,9 +1,9 @@
 import React from "react";
 import { Project } from "../models";
-import AddNewProject from "./AddNewProject";
 import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 import ProjectEmptyState from "./ProjectEmptyState";
+import { List } from "@amplication/ui/design-system";
 
 const CLASS_NAME = "project-list";
 
@@ -15,9 +15,7 @@ type Props = {
 export const ProjectList = ({ projects, workspaceId }: Props) => {
   return (
     <div className={CLASS_NAME}>
-      <AddNewProject />
-
-      <div className={`${CLASS_NAME}__items`}>
+      <List>
         {projects.length ? (
           projects?.map((project) => (
             <ProjectListItem
@@ -29,7 +27,7 @@ export const ProjectList = ({ projects, workspaceId }: Props) => {
         ) : (
           <ProjectEmptyState />
         )}
-      </div>
+      </List>
     </div>
   );
 };
