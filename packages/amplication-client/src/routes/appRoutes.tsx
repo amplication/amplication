@@ -60,6 +60,41 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             tabRoutes: [
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
+                Component: lazy(() => import("../Project/ProjectSettingsPage")),
+                moduleName: "ProjectSettings",
+                displayName: "Settings",
+                moduleClass: "project-settings",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/general",
+                    Component: lazy(() => import("../Project/ProjectFormPage")),
+                    moduleName: "ProjectSettingsGeneral",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/directories",
+                    Component: lazy(
+                      () =>
+                        import(
+                          "../Project/DirectoriesProjectConfigurationSettingsForm"
+                        )
+                    ),
+                    moduleName: "ProjectSettingsDirectories",
+                    moduleClass: "",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                ],
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
                 Component: lazy(() => import("../VersionControl/CommitsPage")),
                 moduleName: "CommitsPage",
