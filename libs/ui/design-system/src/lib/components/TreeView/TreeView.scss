@@ -21,7 +21,7 @@
 
   .MuiTreeItem-content {
     padding: var(--icon-spacing);
-    border-radius: var(--small-border-radius);
+    border-radius: var(--default-border-radius);
 
     &.Mui-selected {
       background: var(--black10);

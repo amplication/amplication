@@ -2,7 +2,6 @@ import { Snackbar, TextField } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
-import { match } from "react-router-dom";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -18,7 +17,7 @@ import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
 
 type Props = {
-  match: match<{ resource: string }>;
+  resourceId: string;
 };
 
 type TData = {
@@ -47,9 +46,7 @@ const FORM_SCHEMA = {
 
 const CLASS_NAME = "resource-form";
 
-function ResourceForm({ match }: Props) {
-  const resourceId = match.params.resource;
-
+function ResourceForm({ resourceId }: Props) {
   const { data, error } = useQuery<{
     resource: models.Resource;
   }>(GET_RESOURCE, {

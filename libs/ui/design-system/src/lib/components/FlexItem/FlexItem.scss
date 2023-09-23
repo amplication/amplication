@@ -10,6 +10,8 @@ $expandable-transition-duration: 0.1s;
   flex: 1;
   box-sizing: border-box;
   gap: var(--default-spacing);
+  margin-top: 0;
+  margin-bottom: 0;
 
   > div {
     display: flex;
@@ -26,5 +28,16 @@ $expandable-transition-duration: 0.1s;
   }
   &__far {
     margin-left: auto;
+  }
+
+  &--margin-bottom {
+    margin-bottom: var(--default-spacing);
+  }
+  &--margin-top {
+    margin-top: var(--default-spacing);
+  }
+  &--margin-both {
+    margin-bottom: var(--default-spacing);
+    margin-top: var(--default-spacing);
   }
 }
