@@ -1,0 +1,55 @@
+@import "../../style/index.scss";
+
+.amp-text {
+  line-height: 1.2;
+  color: var(--black100);
+  margin: 0;
+
+  &--h1 {
+    font-size: var(--h1-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--h2 {
+    font-size: var(--h2-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--h3 {
+    font-size: var(--h3-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--normal {
+    font-size: var(--normal-font-size);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  &--tag {
+    font-size: var(--tag-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--black80);
+  }
+
+  &--subtle {
+    font-size: var(--subtle-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--black80);
+  }
+
+  &--weight-regular {
+    font-weight: 400;
+  }
+  &--weight-semi-bold {
+    font-weight: 500;
+  }
+  &--weight-bold {
+    font-weight: 600;
+  }
+}

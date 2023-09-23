@@ -181,3 +181,22 @@ export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpg
 export { default as Tabs } from "./components/Tabs/Tabs";
 export type { Props as TabsProps } from "./components/Tabs/Tabs";
 export type { TabProps } from "./components/Tabs/Tabs";
+
+export {
+  FlexItem,
+  Props as FlexItemProps,
+} from "./components/FlexItem/FlexItem";
+
+export {
+  Text,
+  Props as TextProps,
+  EnumTextColor,
+  EnumTextStyle,
+  EnumTextWeight,
+} from "./components/Text/Text";
+
+export {
+  Chip,
+  Props as ChipProps,
+  EnumChipStyle,
+} from "./components/Chip/Chip";
