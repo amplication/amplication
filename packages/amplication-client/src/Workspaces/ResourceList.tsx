@@ -9,6 +9,12 @@ import {
   CircularProgress,
   LimitationNotification,
   List,
+  Panel,
+  FlexItem,
+  CircleBadge,
+  Text,
+  EnumTextStyle,
+  EnumPanelStyle,
 } from "@amplication/ui/design-system";
 import { EnumImages } from "../Components/SvgThemeImage";
 import * as models from "../models";
@@ -44,7 +50,6 @@ function ResourceList() {
   const [error, setError] = useState<Error | null>(null);
   const {
     resources,
-    projectConfigurationResource,
     addEntity,
     handleSearchChange,
     loadingResources,
@@ -153,17 +158,17 @@ function ResourceList() {
         <CreateResourceButton />
       </div>
       <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>Project Settings</div>
+      <Panel panelStyle={EnumPanelStyle.Bold}>
+        <FlexItem
+          near={<CircleBadge size="xlarge" name={currentProject?.name || ""} />}
+        >
+          <Text textStyle={EnumTextStyle.H3}>{currentProject?.name}</Text>
+          <Text textStyle={EnumTextStyle.Subtle}>
+            {currentProject?.description}
+          </Text>
+        </FlexItem>
+      </Panel>
 
-      <div className={`${CLASS_NAME}__settings`}>
-        {!loadingResources && projectConfigurationResource && (
-          <ResourceListItem
-            resource={projectConfigurationResource}
-            onDelete={handleProjectDelete}
-          />
-        )}
-      </div>
-      <hr className={`${CLASS_NAME}__separator`} />
       <div className={`${CLASS_NAME}__title`}>
         {resources.length}{" "}
         {pluralize(resources.length, "Resource", "Resources")}
