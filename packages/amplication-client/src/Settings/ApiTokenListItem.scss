@@ -13,13 +13,13 @@ $panel-tag-width: 64px;
   &--expired {
     .api-token-list-item {
       &__panel-tag {
-        background-color: var(--negative-light-transparent);
-        border: 1px solid var(--negative-light);
-        color: var(--negative-light);
+        background-color: var(--theme-light-red-transparent);
+        border: 1px solid var(--theme-light-red);
+        color: var(--theme-light-red);
       }
       &__expiration {
         .time-since__icon {
-          background-color: var(--negative-light);
+          background-color: var(--theme-light-red);
         }
       }
     }

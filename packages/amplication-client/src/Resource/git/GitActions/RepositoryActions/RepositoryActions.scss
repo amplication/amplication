@@ -35,9 +35,9 @@
       @include flexFullRowWithSpacing;
       .amp-icon {
         margin-right: var(--default-spacing-small);
-        color: var(--negative);
+        color: var(--theme-red);
       }
-      color: var(--negative);
+      color: var(--theme-red);
     }
 
     &__name {

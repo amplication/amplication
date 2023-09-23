@@ -50,7 +50,7 @@ $modal-top-position: 20vh;
   }
 
   &--warning {
-    border-top: 3px solid var(--warning-default);
+    border-top: 3px solid var(--theme-orange);
   }
 
   &--success {
@@ -58,6 +58,6 @@ $modal-top-position: 20vh;
   }
 
   &--error {
-    border-top: 3px solid var(--negative);
+    border-top: 3px solid var(--theme-red);
   }
 }

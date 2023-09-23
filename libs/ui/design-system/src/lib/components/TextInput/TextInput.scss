@@ -28,7 +28,7 @@
   }
 
   &__invalid {
-    color: var(--negative);
+    color: var(--theme-red);
     position: absolute;
     right: 8px;
     bottom: 10px;
@@ -67,12 +67,12 @@
   &--has-error {
     input,
     textarea {
-      border-color: var(--negative);
+      border-color: var(--theme-red);
 
       &:active:not(:disabled),
       &:hover:not(:disabled),
       &:focus:not(:disabled) {
-        border-color: var(--negative);
+        border-color: var(--theme-red);
       }
     }
   }

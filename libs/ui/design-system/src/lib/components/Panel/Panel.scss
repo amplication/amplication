@@ -31,6 +31,12 @@ $expandable-transition-duration: 0.1s;
     margin-bottom: var(--double-spacing);
   }
 
+  &--bold {
+    background-color: var(--white);
+    border: $border-black5;
+    padding: var(--large-spacing);
+  }
+
   &--clickable {
     cursor: pointer;
     &:hover {

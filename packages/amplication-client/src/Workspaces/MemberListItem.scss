@@ -19,7 +19,7 @@
   }
   &__description {
     @include body2;
-    color: var(--dark-secondary-turquoise);
+    color: var(--theme-turquoise);
   }
 
   &__property {

@@ -10,11 +10,11 @@ $many-element-size: 16px;
   margin-bottom: var(--default-spacing);
 
   &--missing &__status {
-    color: var(--negative);
+    color: var(--theme-red);
   }
 
   &--missing &__field--target {
-    border-color: var(--negative);
+    border-color: var(--theme-red);
 
     &:hover {
       border-color: var(--black100);
@@ -89,7 +89,7 @@ $many-element-size: 16px;
     align-items: center;
     justify-content: center;
     position: relative;
-    color: var(--positive-default);
+    color: var(--theme-green);
 
     &:before,
     &:after {

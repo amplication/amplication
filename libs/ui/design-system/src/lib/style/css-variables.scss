@@ -30,21 +30,15 @@
   --black5: #f4f4f7;
   --black2: #f9f9fa;
 
-  /* Secondary green */
-  --secondary1: #f5a2f9;
-  /* Secondary green */
-  --secondary2: #59c4a9;
+  --theme-yellow: #f5b82e;
+  --theme-red: #d41a30;
+  --theme-light-red: #ff6e6e;
+  --theme-pink: #f685a1;
+  --theme-turquoise: #53dbee;
+  --theme-green: #8dd9b9;
+  --theme-blue: #20a4f3;
+  --theme-orange: #f6aa50;
 
-  --secondary-turquoise: #32c9e5;
-  --dark-secondary-turquoise: #53dbee;
-  --secondary-light-blue: #20a4f3;
-  --secondary-blue: #144bc1;
-
-  --positive-default: #31c587;
-  --warning-default: #f6aa50;
-  --negative: #e93c51;
-
-  --negative-dark: #d41a30;
   --tooltip-background: #1b1f23;
 
   --panel-background: var(--white);
@@ -54,14 +48,21 @@
 
   --form-horizontal-width: 700px;
   --form-horizontal-label-width: 300px;
+
+  //font sized
+  --normal-font-size: 14px;
+  --tag-font-size: 12px;
+  --subtle-font-size: 10px;
+  --h1-font-size: 32px;
+  --h2-font-size: 24px;
+  --h3-font-size: 18px;
+
+  //todo: check if the below is used and remove or consolidate
   --large-icon-font-size: 18px;
-  --title1-font-size: 16px;
-  --title2-font-size: 12px;
   --title3-font-size: 18px;
   --title4-font-size: 24px;
   --icon-font-size: 16px;
   --title5-font-size: 14px;
-  --normal-font-size: 12px;
   --text-field-label-font-size: 10px;
   --text-field-label-horizontal-font-size: var(--normal-font-size);
 

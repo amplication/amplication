@@ -25,11 +25,11 @@
     }
 
     &.pro {
-      color: var(--secondary-light-blue);
+      color: var(--theme-blue);
     }
 
     &.enterprise {
-      color: var(--positive-default);
+      color: var(--theme-green);
     }
   }
 
@@ -81,7 +81,7 @@
       width: calc(100% - var(--double-spacing));
       margin-bottom: var(--icon-spacing);
       &__icon {
-        color: var(--positive-default);
+        color: var(--theme-green);
       }
 
       align-items: center;

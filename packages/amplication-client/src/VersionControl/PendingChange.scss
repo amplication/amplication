@@ -43,20 +43,20 @@ $before-spacing: -6px;
     }
 
     &.update {
-      background-color: var(--secondary-light-blue);
+      background-color: var(--theme-blue);
     }
     &.delete {
-      background-color: var(--negative);
+      background-color: var(--theme-red);
     }
     &.create {
-      background-color: var(--positive-default);
+      background-color: var(--theme-green);
     }
   }
   &__version {
     font-weight: 500;
   }
   &__tooltip_deleted:after {
-    border: 1px solid var(--negative);
+    border: 1px solid var(--theme-red);
     background-color: var(--black10);
     color: var(--black100);
   }
@@ -65,6 +65,6 @@ $before-spacing: -6px;
     cursor: pointer;
   }
   .tooltipped-ne:before {
-    border-top-color: var(--negative) !important;
+    border-top-color: var(--theme-red) !important;
   }
 }
