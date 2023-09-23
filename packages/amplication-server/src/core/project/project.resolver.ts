@@ -28,6 +28,8 @@ import {
   FindPendingChangesArgs,
   PendingChange,
 } from "../resource/dto";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 @Resolver(() => Project)
@@ -81,6 +83,17 @@ export class ProjectResolver {
   @Roles("ORGANIZATION_ADMIN")
   async updateProject(@Args() args: UpdateProjectArgs): Promise<Project> {
     return this.projectService.updateProject(args);
+  }
+
+  @ResolveField(() => String)
+  async description(@Parent() project: Project): Promise<string> {
+    const [configuration] = await this.resourceService.resources({
+      where: {
+        project: { id: project.id },
+        resourceType: { equals: EnumResourceType.ProjectConfiguration },
+      },
+    });
+    return configuration?.description;
   }
 
   @ResolveField(() => [Resource])
