@@ -173,7 +173,7 @@ function ResourceList() {
         </FlexItem>
       </Panel>
 
-      <Text textStyle={EnumTextStyle.Subtle}>
+      <Text textStyle={EnumTextStyle.Tag}>
         {resources.length}{" "}
         {pluralize(resources.length, "Resource", "Resources")}
       </Text>

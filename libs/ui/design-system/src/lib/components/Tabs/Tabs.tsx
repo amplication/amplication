@@ -4,7 +4,7 @@ import {
   Tabs as MuiTabs,
   TabsProps as MuiTabsProps,
 } from "@mui/material";
-import { NavLink, useRouteMatch } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import "./Tabs.scss";
 
 export type Props = MuiTabsProps;
@@ -25,7 +25,6 @@ export type TabProps = MuiTabProps & {
 
 function Tab(props: TabProps) {
   const { to, ...rest } = props;
-  const routeMatch = useRouteMatch(to);
 
   return (
     <MuiTab
@@ -34,9 +33,6 @@ function Tab(props: TabProps) {
       to={to}
       disableRipple
       {...rest}
-      isActive={() => {
-        return routeMatch?.isExact;
-      }}
     />
   );
 }
