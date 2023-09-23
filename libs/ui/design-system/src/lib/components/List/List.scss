@@ -1,0 +1,27 @@
+@import "../../style/index.scss";
+
+$expandable-bottom-max-height: 200px;
+$expandable-transition-duration: 0.1s;
+
+.amp-list {
+  border: $border-black10;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--default-border-radius);
+}
+
+.amp-list-item {
+  padding: var(--default-spacing);
+  display: inline-block;
+  border-bottom: $border-black10;
+
+  flex: 1;
+}
+
+.amp-list-item--clickable:hover {
+  background-color: var(--black5);
+}
+
+.amp-list-item:last-child {
+  border-bottom: none;
+}

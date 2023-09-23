@@ -185,6 +185,7 @@ export type { TabProps } from "./components/Tabs/Tabs";
 export {
   FlexItem,
   Props as FlexItemProps,
+  EnumFlexItemMargin,
 } from "./components/FlexItem/FlexItem";
 
 export {
@@ -200,3 +201,6 @@ export {
   Props as ChipProps,
   EnumChipStyle,
 } from "./components/Chip/Chip";
+
+export { List, Props as ListProps } from "./components/List/List";
+export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
