@@ -19,55 +19,43 @@ const ServiceSettingsPage: React.FC<{}> = () => {
 
   return (
     <div className={CLASS_NAME}>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/update`}
-          icon="settings"
-        >
-          General
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings/update`}
-          icon="settings"
-        >
-          APIs & Admin UI
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories/update`}
-          icon="settings"
-        >
-          Base Directories
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication/update`}
-          icon="settings"
-        >
-          Authentication Entity
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/api-tokens`}
-          icon="id"
-        >
-          API Tokens
-        </InnerTabLink>
-      </div>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/general`}
+        icon="settings"
+      >
+        General
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}
+        icon="settings"
+      >
+        APIs & Admin UI
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories`}
+        icon="settings"
+      >
+        Base Directories
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication`}
+        icon="settings"
+      >
+        Authentication Entity
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/api-tokens`}
+        icon="id"
+      >
+        API Tokens
+      </InnerTabLink>
       {showCodeGeneratorVersion && (
-        <div>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version/update`}
-            icon="code"
-          >
-            Code Generator Version
-          </InnerTabLink>
-        </div>
+        <InnerTabLink
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version`}
+          icon="code"
+        >
+          Code Generator Version
+        </InnerTabLink>
       )}
     </div>
   );

@@ -2,7 +2,7 @@ import { lazy } from "react";
 
 const resourceSettingsRoutes = [
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/update",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/general",
     Component: lazy(() => import("../Resource/ResourceForm")),
     moduleName: "",
     routeTrackType: "",
@@ -11,7 +11,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/generationSettings/update",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/generationSettings",
     Component: lazy(
       () => import("../Resource/resourceSettings/GenerationSettingsForm")
     ),
@@ -22,7 +22,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/directories/update",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/directories",
     Component: lazy(
       () => import("../Resource/resourceSettings/DirectoriesSettingsForm")
     ),
@@ -33,7 +33,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/authentication/update",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/authentication",
     Component: lazy(
       () => import("../Resource/resourceSettings/AuthenticationSettingsForm")
     ),
@@ -44,7 +44,7 @@ const resourceSettingsRoutes = [
     isAnalytics: true,
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/code-generator-version/update",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/code-generator-version",
     Component: lazy(
       () =>
         import("../Resource/codeGeneratorVersionSettings/CodeGeneratorVersion")

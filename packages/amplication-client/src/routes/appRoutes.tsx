@@ -1,5 +1,6 @@
 import { ComponentType, lazy, LazyExoticComponent } from "react";
 import resourceRoutes from "./resourceRoutes";
+import resourceTabRoutes from "./resourceTabRoutes";
 
 export interface RouteDef {
   path: string;
@@ -200,7 +201,7 @@ export const Routes: RouteDef[] = [
                 routeTrackType: "",
                 exactPath: false,
                 routes: resourceRoutes,
-                tabRoutes: [],
+                tabRoutes: resourceTabRoutes,
               },
             ],
           },

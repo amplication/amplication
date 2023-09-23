@@ -1,8 +1,18 @@
 import { EnumResourceType } from "../models";
 
-export type MenuItemLinks = "entities" | "roles" | "git" | "settings";
+export type MenuItemLinks =
+  | "entities"
+  | "roles"
+  | "git"
+  | "settings"
+  | "plugins"
+  | "topics"
+  | "services"
+  | "connections";
 
-export const resourceMenuLayout: { [key: string]: string[] } = {
+export const resourceMenuLayout: {
+  [key in EnumResourceType]: MenuItemLinks[];
+} = {
   [EnumResourceType.Service]: [
     "entities",
     "roles",
@@ -15,7 +25,9 @@ export const resourceMenuLayout: { [key: string]: string[] } = {
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
 };
 
-export const linksMap = {
+export const linksMap: {
+  [key in MenuItemLinks]: { title: string; icon: string; to: string };
+} = {
   entities: {
     title: "Entities",
     icon: "entity_outline",
@@ -34,7 +46,7 @@ export const linksMap = {
   settings: {
     title: "Settings",
     icon: "settings",
-    to: "/settings/update",
+    to: "/settings/general",
   },
   plugins: {
     title: "Plugins",
@@ -62,5 +74,5 @@ export const setResourceUrlLink = (
   workspace: string,
   project: string,
   resource: string,
-  iconUrl: string
-): string => `/${workspace}/${project}/${resource}${iconUrl}`;
+  itemUrl: string
+): string => `/${workspace}/${project}/${resource}${itemUrl}`;
