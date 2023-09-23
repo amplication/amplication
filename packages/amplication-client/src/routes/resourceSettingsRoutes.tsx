@@ -3,7 +3,7 @@ import { lazy } from "react";
 const resourceSettingsRoutes = [
   {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/general",
-    Component: lazy(() => import("../Resource/ResourceForm")),
+    Component: lazy(() => import("../Resource/ResourceFormPage")),
     moduleName: "",
     routeTrackType: "",
     exactPath: true,
