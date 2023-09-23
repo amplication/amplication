@@ -87,10 +87,13 @@ const LazyRouteWrapper: React.FC<{
                 }}
               />
             ) : (
-              React.createElement(route.Component, {
-                ...props,
-                ...appRouteProps,
-              })
+              <>
+                {/* <div>{route.path}</div> */}
+                {React.createElement(route.Component, {
+                  ...props,
+                  ...appRouteProps,
+                })}
+              </>
             ))
           );
         }}
