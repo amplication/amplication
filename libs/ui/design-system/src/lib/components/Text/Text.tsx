@@ -21,6 +21,12 @@ export enum EnumTextColor {
   ThemeRed = "theme-red",
 }
 
+export enum EnumTextAlign {
+  Left = "left",
+  Center = "center",
+  Right = "right",
+}
+
 export enum EnumTextWeight {
   Regular = "regular",
   Bold = "bold",
@@ -28,11 +34,12 @@ export enum EnumTextWeight {
 }
 
 export type Props = {
-  textStyle: EnumTextStyle;
+  textStyle?: EnumTextStyle;
   textWeight?: EnumTextWeight;
   textColor?: EnumTextColor;
   className?: string;
   children: ReactNode;
+  textAlign?: EnumTextAlign;
 };
 
 const STYLE_TO_TAG: { [key: string]: string } = {
@@ -49,10 +56,11 @@ const CLASS_NAME = "amp-text";
 
 export function Text({
   className,
-  textStyle,
+  textStyle = EnumTextStyle.Normal,
   textWeight,
   textColor,
   children,
+  textAlign = EnumTextAlign.Left,
 }: Props) {
   const styleClassName = `${CLASS_NAME}--${textStyle}`;
   const weightClassName = textWeight && `${CLASS_NAME}--weight-${textWeight}`;
@@ -68,7 +76,7 @@ export function Text({
         weightClassName,
         className
       )}
-      style={colorStyle}
+      style={{ ...colorStyle, textAlign }}
     >
       {children}
     </TagName>

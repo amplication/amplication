@@ -1,6 +1,14 @@
-import { Dialog, Snackbar, TextField } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumFlexItemMargin,
+  FlexItem,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
+import { EnumTextAlign } from "libs/ui/design-system/src/lib/components/Text/Text";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
@@ -11,19 +19,18 @@ import {
   generateSingularDisplayName,
 } from "../Components/PluralDisplayNameField";
 import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
-import * as models from "../models";
-import { DIALOG_CLASS_NAME } from "../Plugins/PluginsCatalog";
-import { formatError } from "../util/error";
-import { validate } from "../util/formikValidateJsonSchema";
-import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import {
   CREATE_DEFAULT_ENTITIES,
   CREATE_ENTITY,
   NEW_ENTITY_FRAGMENT,
 } from "../Workspaces/queries/entitiesQueries";
-import { USER_ENTITY } from "./constants";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import { validate } from "../util/formikValidateJsonSchema";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
+import { USER_ENTITY } from "./constants";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -248,34 +255,36 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   return (
     <div className={CLASS_NAME}>
       <SvgThemeImage image={EnumImages.Entities} />
-      <div className={`${CLASS_NAME}__instructions`}>
+      <Text textAlign={EnumTextAlign.Center}>
         Give your new entity a descriptive name. <br />
         For example: Customer, Support Ticket, Purchase Order...
-      </div>
+      </Text>
+
       <Dialog
         title="Restore 'User' Entity?"
-        className={DIALOG_CLASS_NAME}
         isOpen={confirmInstall}
         onDismiss={handleDismissConfirmationInstall}
       >
-        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          We've noticed you're creating a new 'User' entity. This entity is used
-          by the Authentication plugin.
-        </div>
-        <div className={`${DIALOG_CLASS_NAME}__message__keep_building`}>
-          Restore the Default 'User' Entity - This will re-establish the
-          original 'User' entity provided by Amplication, including all
-          associated settings and functionalities.
-        </div>
-        <div className={`${CLASS_NAME}__dialog_btn`}>
-          <Button
-            className={`${DIALOG_CLASS_NAME}__upgrade_button`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleConfirmationInstall}
-          >
-            Restore Default
-          </Button>
-        </div>
+        <FlexItem margin={EnumFlexItemMargin.Both}>
+          <Text>
+            We've noticed you're creating a new 'User' entity. This entity is
+            used by the Authentication plugin.
+          </Text>
+        </FlexItem>
+        <FlexItem margin={EnumFlexItemMargin.Both}>
+          <Text>
+            Restore the Default 'User' Entity - This will re-establish the
+            original 'User' entity provided by Amplication, including all
+            associated settings and functionalities.
+          </Text>
+        </FlexItem>
+
+        <Button
+          buttonStyle={EnumButtonStyle.Primary}
+          onClick={handleConfirmationInstall}
+        >
+          Restore Default
+        </Button>
       </Dialog>
       <Formik
         initialValues={INITIAL_VALUES}
