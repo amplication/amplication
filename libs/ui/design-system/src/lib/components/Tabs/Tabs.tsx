@@ -10,7 +10,11 @@ import "./Tabs.scss";
 export type Props = MuiTabsProps;
 
 export const Tabs = ({ children }: Props) => {
-  return <MuiTabs className="amp-tabs">{children}</MuiTabs>;
+  return (
+    <MuiTabs value={false} className="amp-tabs">
+      {children}
+    </MuiTabs>
+  );
 };
 
 export default Tabs;
