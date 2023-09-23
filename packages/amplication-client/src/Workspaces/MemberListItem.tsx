@@ -1,16 +1,20 @@
 import { useCallback, useState } from "react";
 import { useTracking } from "../util/analytics";
 
-import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import * as models from "../models";
 
-import "./MemberListItem.scss";
 import {
+  Chip,
   ConfirmationDialog,
-  EnumPanelStyle,
-  Panel,
-  UserAvatar,
+  EnumChipStyle,
+  EnumFlexItemContentDirection,
+  EnumTextStyle,
+  FlexItem,
+  ListItem,
+  Text,
   Tooltip,
+  UserAvatar,
 } from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -26,7 +30,6 @@ type Props = {
 };
 
 const DIRECTION = "n";
-const CLASS_NAME = "member-list-item";
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
@@ -130,48 +133,53 @@ function MemberListItem({ member, onDelete, onError }: Props) {
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
-        <div className={`${CLASS_NAME}__row`}>
+      <ListItem
+        near={
           <UserAvatar firstName={data.firstName} lastName={data.lastName} />
-
-          <span className={`${CLASS_NAME}__title`}>{data.email}</span>
+        }
+        far={
+          <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+            {data.isInvitation && (
+              <Tooltip
+                aria-label="Resend invitation"
+                direction={DIRECTION}
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="mail"
+                  onClick={handleResendInvitation}
+                />
+              </Tooltip>
+            )}
+            {!data.isOwner && !deleteLoading && !revokeLoading && (
+              <Tooltip
+                aria-label={
+                  data.isInvitation ? "Revoke invitation" : "Delete user"
+                }
+                direction={DIRECTION}
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="trash_2"
+                  onClick={handleDelete}
+                />
+              </Tooltip>
+            )}
+          </FlexItem>
+        }
+      >
+        <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+          <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
           {data.isOwner && (
-            <span className={`${CLASS_NAME}__description`}>(Owner)</span>
+            <Chip chipStyle={EnumChipStyle.ThemeBlue}>Owner</Chip>
           )}
           {data.isInvitation && (
-            <span className={`${CLASS_NAME}__property`}>Pending</span>
+            <Chip chipStyle={EnumChipStyle.ThemePurple}>Pending</Chip>
           )}
-          <span className="spacer" />
-          {data.isInvitation && (
-            <Tooltip
-              aria-label="Resend invitation"
-              direction={DIRECTION}
-              noDelay
-            >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="mail"
-                onClick={handleResendInvitation}
-              />
-            </Tooltip>
-          )}
-          {!data.isOwner && !deleteLoading && !revokeLoading && (
-            <Tooltip
-              aria-label={
-                data.isInvitation ? "Revoke invitation" : "Delete user"
-              }
-              direction={DIRECTION}
-              noDelay
-            >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="trash_2"
-                onClick={handleDelete}
-              />
-            </Tooltip>
-          )}
-        </div>
-      </Panel>
+        </FlexItem>
+      </ListItem>
     </>
   );
 }

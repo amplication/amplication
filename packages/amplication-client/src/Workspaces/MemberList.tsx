@@ -1,5 +1,13 @@
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  List,
+  Snackbar,
+  Text,
+} from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback, useState } from "react";
 import * as models from "../models";
@@ -9,6 +17,8 @@ import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
 import { pluralize } from "../util/pluralize";
 import PageContent from "../Layout/PageContent";
+import { EmptyState } from "../Components/EmptyState";
+import { EnumImages } from "../Components/SvgThemeImage";
 
 type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
@@ -34,33 +44,35 @@ function MemberList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <div className={`${CLASS_NAME}__header`}>
-        <h2>Workspace Members</h2>
+      <FlexItem far={<InviteMember />}>
+        <Text textStyle={EnumTextStyle.H3}>Workspace Members</Text>
+      </FlexItem>
 
-        <InviteMember />
-      </div>
-      <div className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>
+      <HorizontalRule />
+
+      <Text textStyle={EnumTextStyle.Tag}>
         {data?.workspaceMembers.length}{" "}
         {pluralize(data?.workspaceMembers.length, "Member", "Members")}
-      </div>
+      </Text>
+
       {loading && <CircularProgress centerToParent />}
 
       {isEmpty(data?.workspaceMembers) && !loading ? (
-        <div className={`${CLASS_NAME}__empty-state`}>
-          <div className={`${CLASS_NAME}__empty-state__title`}>
-            There are no members to show
-          </div>
-        </div>
+        <EmptyState
+          image={EnumImages.CommitEmptyState}
+          message="There are no members to show"
+        />
       ) : (
-        data?.workspaceMembers.map((member, index) => (
-          <MemberListItem
-            member={member}
-            key={index}
-            onDelete={handleDelete}
-            onError={setError}
-          />
-        ))
+        <List>
+          {data?.workspaceMembers.map((member, index) => (
+            <MemberListItem
+              member={member}
+              key={index}
+              onDelete={handleDelete}
+              onError={setError}
+            />
+          ))}
+        </List>
       )}
 
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />

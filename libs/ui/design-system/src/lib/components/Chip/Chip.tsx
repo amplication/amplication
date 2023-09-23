@@ -8,6 +8,7 @@ export enum EnumChipStyle {
   ThemeGreen = "theme-green",
   ThemeTurquoise = "theme-turquoise",
   ThemeRed = "theme-red",
+  ThemeOrange = "theme-orange",
 }
 
 export type Props = {

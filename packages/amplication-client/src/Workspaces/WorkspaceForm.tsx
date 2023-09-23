@@ -1,19 +1,26 @@
-import { useCallback, useContext } from "react";
+import {
+  EnumFlexItemContentDirection,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Formik, Form } from "formik";
+import { Form, Formik } from "formik";
+import { useCallback, useContext } from "react";
+import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import FormikAutoSave from "../util/formikAutoSave";
 import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import * as models from "../models";
-import { formatError } from "../util/error";
-import FormikAutoSave from "../util/formikAutoSave";
-import { TextField, Snackbar } from "@amplication/ui/design-system";
-import { useTracking } from "../util/analytics";
-import "./WorkspaceForm.scss";
-import { AppContext } from "../context/appContext";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import PageContent from "../Layout/PageContent";
 
 type TData = {
   updateWorkspace: models.Workspace;
@@ -71,8 +78,10 @@ function WorkspaceForm() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <h2>Workspace Settings</h2>
-      <div className={`${CLASS_NAME}__separator`} />
+      <Text textStyle={EnumTextStyle.H3}>Workspace Settings</Text>
+
+      <HorizontalRule doubleSpacing />
+
       {currentWorkspace && (
         <Formik
           initialValues={currentWorkspace}
@@ -90,8 +99,11 @@ function WorkspaceForm() {
           }}
         </Formik>
       )}
-      <label className={`${CLASS_NAME}__label`}>Workspace ID </label>
-      {currentWorkspace && <div>{currentWorkspace.id}</div>}
+
+      <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+        <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
+        <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
+      </FlexItem>
 
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
     </PageContent>

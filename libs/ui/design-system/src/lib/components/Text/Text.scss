@@ -43,6 +43,12 @@
     color: var(--black80);
   }
 
+  &--label {
+    @include label;
+    margin: 0;
+    display: inline;
+  }
+
   &--weight-regular {
     font-weight: 400;
   }

@@ -9,6 +9,7 @@ export enum EnumTextStyle {
   Normal = "normal",
   Tag = "tag",
   Subtle = "subtle",
+  Label = "label",
 }
 
 export enum EnumTextColor {
@@ -41,6 +42,7 @@ const STYLE_TO_TAG: { [key: string]: string } = {
   [EnumTextStyle.Normal]: "span",
   [EnumTextStyle.Tag]: "span",
   [EnumTextStyle.Subtle]: "span",
+  [EnumTextStyle.Label]: "span",
 };
 
 const CLASS_NAME = "amp-text";
