@@ -294,7 +294,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           code. For a full personalized experience, please&nbsp;
           <Link
             title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentProjectConfiguration?.id}/git-sync`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/git`}
           >
             connect to your own repository
           </Link>

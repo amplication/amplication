@@ -34,7 +34,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
     return (
       <Link
         title={"Go to project settings"}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/git`}
         className={classNames(
           `${CLASS_NAME}__link`,
           `${CLASS_NAME}__${linkFontClass}`

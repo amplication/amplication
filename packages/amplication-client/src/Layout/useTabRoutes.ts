@@ -21,7 +21,7 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
   const currentUrl = match.url;
 
   const tabs = useMemo(() => {
-    return tabRoutes.map((route) => {
+    return tabRoutes?.map((route) => {
       return {
         name: !isEmpty(route.displayName)
           ? route.displayName
@@ -31,7 +31,7 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
     });
   }, [tabRoutes, currentPath]);
 
-  const currentRouteIsTab = tabRoutes.some((def) =>
+  const currentRouteIsTab = tabRoutes?.some((def) =>
     location.pathname
       .replace(currentUrl, "")
       .startsWith(def.path.replace(currentPath, ""))
