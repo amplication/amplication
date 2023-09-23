@@ -1,25 +1,20 @@
-import React, { useCallback, useContext, useRef, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { useCallback, useContext, useState } from "react";
 
-import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import * as models from "../models";
 
-import "./ResourceListItem.scss";
 import {
   ConfirmationDialog,
-  EnumHorizontalRuleStyle,
-  EnumPanelStyle,
-  HorizontalRule,
   Icon,
-  Panel,
+  ListItem,
   UserAndTime,
 } from "@amplication/ui/design-system";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
-import { AppContext } from "../context/appContext";
 import classNames from "classnames";
-import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
-import useTextOffsetHeight from "../util/useTextOffsetHeight";
 import EllipsisText from "../Components/EllipsisText";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
+import { AppContext } from "../context/appContext";
+import "./ResourceListItem.scss";
 
 type Props = {
   resource: models.Resource;
@@ -29,15 +24,12 @@ type Props = {
 const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
-const LINE_HEIGHT = 35;
 
 function ResourceListItem({ resource, onDelete }: Props) {
   const { currentWorkspace, currentProject, setResource } =
     useContext(AppContext);
   const { id, name, description, gitRepository, resourceType } = resource;
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
-  const headerRowRef = useRef(null);
-  const isTitleOverflow = useTextOffsetHeight(headerRowRef, LINE_HEIGHT);
 
   const handleDelete = useCallback(
     (event) => {
@@ -90,77 +82,62 @@ function ResourceListItem({ resource, onDelete }: Props) {
         onConfirm={handleConfirmDelete}
         onDismiss={handleDismissDelete}
       />
-      <NavLink to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}>
-        <Panel
-          className={CLASS_NAME}
-          clickable
-          onClick={handleClick}
-          panelStyle={EnumPanelStyle.Bordered}
-        >
-          <div
-            ref={headerRowRef}
-            className={`${CLASS_NAME}__row`}
-            style={{ alignItems: isTitleOverflow ? "flex-start" : "center" }}
-          >
-            <ResourceCircleBadge type={resource.resourceType} />
-
-            <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
-
-            <span className="spacer" />
-            {onDelete && (
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="trash_2"
-                onClick={handleDelete}
-              />
-            )}
-          </div>
-          <div className={`${CLASS_NAME}__row`}>
-            <EllipsisText
-              className={`${CLASS_NAME}__description`}
-              text={description}
-              maxLength={350}
+      <ListItem
+        onClick={handleClick}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}
+        near={<ResourceCircleBadge type={resource.resourceType} />}
+        far={
+          onDelete && (
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="trash_2"
+              onClick={handleDelete}
             />
-          </div>
-          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-          <div className={`${CLASS_NAME}__row`}>
-            <div className={`${CLASS_NAME}__git-sync`}>
-              <span
-                className={classNames(`${CLASS_NAME}__git-sync-repo`, {
-                  [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
-                })}
-              >
-                <Icon
-                  icon={gitProviderIconMap[provider]}
-                  size="small"
-                  className={`${CLASS_NAME}__git-sync-repo__icon${
-                    !gitRepo ? "-not-connected" : ""
-                  }`}
-                />
-                <span>{gitRepo ? gitRepo : "Not connected"}</span>
+          )
+        }
+      >
+        <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
+
+        <EllipsisText
+          className={`${CLASS_NAME}__description`}
+          text={description}
+          maxLength={350}
+        />
+        <div className={`${CLASS_NAME}__git-sync`}>
+          <span
+            className={classNames(`${CLASS_NAME}__git-sync-repo`, {
+              [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
+            })}
+          >
+            <Icon
+              icon={gitProviderIconMap[provider]}
+              size="small"
+              className={`${CLASS_NAME}__git-sync-repo__icon${
+                !gitRepo ? "-not-connected" : ""
+              }`}
+            />
+            <span>{gitRepo ? gitRepo : "Not connected"}</span>
+          </span>
+        </div>
+
+        <div className={`${CLASS_NAME}__recently-used`}>
+          <span className={`${CLASS_NAME}__last-build`}>
+            <span className={`${CLASS_NAME}__last-build__title`}>
+              Last commit:{" "}
+            </span>
+            {lastBuild ? (
+              <UserAndTime
+                account={lastBuild.commit.user?.account || {}}
+                time={lastBuild.createdAt}
+              />
+            ) : (
+              <span className={`${CLASS_NAME}__last-build__not-yet`}>
+                No commit yet
               </span>
-            </div>
-            <span className="spacer" />
-            <div className={`${CLASS_NAME}__recently-used`}>
-              <span className={`${CLASS_NAME}__last-build`}>
-                <span className={`${CLASS_NAME}__last-build__title`}>
-                  Last commit:{" "}
-                </span>
-                {lastBuild ? (
-                  <UserAndTime
-                    account={lastBuild.commit.user?.account || {}}
-                    time={lastBuild.createdAt}
-                  />
-                ) : (
-                  <span className={`${CLASS_NAME}__last-build__not-yet`}>
-                    No commit yet
-                  </span>
-                )}
-              </span>
-            </div>
-          </div>
-        </Panel>
-      </NavLink>
+            )}
+          </span>
+        </div>
+      </ListItem>
     </>
   );
 }
