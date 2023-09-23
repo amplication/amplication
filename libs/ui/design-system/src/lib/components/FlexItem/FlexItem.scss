@@ -24,6 +24,7 @@ $expandable-transition-duration: 0.1s;
 
   &__content {
     display: flex;
+    flex: 1;
 
     &--row {
       flex-direction: row;
