@@ -11,7 +11,7 @@
 
   &__badge {
     @include counterBadge;
-    background-color: var(--warning-default);
+    background-color: var(--theme-orange);
     color: var(--static-bl);
     top: auto;
     bottom: -12px;

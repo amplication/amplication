@@ -48,15 +48,15 @@ $split-icon-font-size: 20px;
   }
 
   &.amp-button--danger {
-    background-color: var(--negative);
+    background-color: var(--theme-red);
     color: var(--static-white);
-    border: 1px solid var(--negative);
+    border: 1px solid var(--theme-red);
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--negative-dark);
-      border-color: var(--negative-dark);
+      background-color: var(--theme-red);
+      border-color: var(--theme-red);
     }
 
     &[disabled] {

@@ -30,7 +30,7 @@ export default function ServiceConnectionsListItem({
             cx="4"
             cy="4"
             r="3"
-            fill={enabled ? "var(--positive-default)" : "var(--negative-light)"}
+            fill={enabled ? "var(--theme-green)" : "var( --theme-light-red)"}
           />
         </svg>
       </InnerTabLink>

@@ -77,11 +77,11 @@ $step-status-width: 20px;
       width: $step-status-width;
 
       &--success {
-        color: var(--positive-default);
+        color: var(--theme-green);
       }
 
       &--failed {
-        color: var(--negative);
+        color: var(--theme-red);
       }
 
       &--running {

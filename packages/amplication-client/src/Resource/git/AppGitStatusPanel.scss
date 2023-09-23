@@ -1,7 +1,7 @@
 @import "../../style/index.scss";
 .app-git-status-panel {
   &__message {
-    color: var(--warning-default);
+    color: var(--theme-orange);
     padding: var(--default-spacing) 0;
   }
 

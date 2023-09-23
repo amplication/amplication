@@ -16,7 +16,7 @@ $select-menu-max-width: 300px;
   background-color: var(--white);
 
   &__highlight {
-    background-color: var(--warning-default);
+    background-color: var(--theme-orange);
     text-align: center;
     color: var(--white);
     padding: var(--default-spacing-small);
@@ -28,7 +28,7 @@ $select-menu-max-width: 300px;
     }
   }
   &__version {
-    color: var(--dark-secondary-turquoise) !important;
+    color: var(--theme-turquoise) !important;
     margin-left: var(--user-badge-spacing);
     padding: var(--default-spacing-small);
     min-width: auto;

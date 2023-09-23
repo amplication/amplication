@@ -1,0 +1,30 @@
+@import "../../style/index.scss";
+
+$expandable-bottom-max-height: 200px;
+$expandable-transition-duration: 0.1s;
+
+.amp-flex-item {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  gap: var(--default-spacing);
+
+  > div {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 2px;
+  }
+
+  &__near {
+  }
+
+  &__content {
+  }
+  &__far {
+    margin-left: auto;
+  }
+}

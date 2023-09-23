@@ -11,11 +11,11 @@
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  border: 1px solid var(--negative-light);
+  border: 1px solid var(--theme-light-red);
 
   .amp-icon {
     margin-right: var(--default-spacing);
-    color: var(--negative-light);
+    color: var(--theme-light-red);
     font-weight: bold;
   }
 }

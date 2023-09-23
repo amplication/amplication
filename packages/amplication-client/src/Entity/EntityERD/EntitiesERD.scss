@@ -35,12 +35,12 @@
     font-size: var(--normal-font-size);
     gap: var(--default-spacing-small);
     &_datatype {
-      color: var(--secondary-light-blue);
+      color: var(--theme-blue);
       font-weight: 200;
       font-size: calc(var(--normal-font-size) - 2px);
     }
     &_custom_attributes {
-      color: var(--secondary-turquoise);
+      color: var(--theme-turquoise);
       font-weight: 200;
       font-size: calc(var(--normal-font-size) - 2px);
     }

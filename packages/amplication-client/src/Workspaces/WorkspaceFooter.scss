@@ -53,11 +53,11 @@
   &__git-disconnected {
     display: flex;
     align-items: center;
-    color: var(--negative-light);
+    color: var(--theme-light-red);
   }
 
   &__connect-to-git {
-    color: var(--negative-light);
+    color: var(--theme-light-red);
     &:hover {
       text-decoration: underline;
     }

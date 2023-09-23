@@ -32,7 +32,7 @@ $inverted-border-radius: 6px;
 
   &__badge {
     @include counterBadge;
-    background-color: var(--negative-light);
+    background-color: var(--theme-light-red);
     color: var(--static-white);
   }
 

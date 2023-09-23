@@ -14,13 +14,13 @@
 
   &--completed {
     i {
-      color: var(--positive-default) !important;
+      color: var(--theme-green) !important;
     }
   }
 
   &--failed {
     i {
-      color: var(--negative) !important;
+      color: var(--theme-red) !important;
     }
   }
 

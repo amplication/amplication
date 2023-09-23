@@ -73,7 +73,7 @@
 }
 
 @mixin errorMessage {
-  color: var(--negative);
+  color: var(--theme-red);
   font-size: 10px;
 }
 

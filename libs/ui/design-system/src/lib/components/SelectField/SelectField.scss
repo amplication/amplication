@@ -55,12 +55,12 @@
 
   &--has-error {
     .select-field__control {
-      border-color: var(--negative);
+      border-color: var(--theme-red);
 
       &:active,
       &:hover,
       &:focus {
-        border-color: var(--negative);
+        border-color: var(--theme-red);
       }
     }
   }

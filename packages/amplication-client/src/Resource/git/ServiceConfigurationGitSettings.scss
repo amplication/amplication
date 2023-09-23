@@ -65,7 +65,7 @@
   .toggle-field {
     .MuiSwitch-root {
       .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
-        background-color: var(--positive-default);
+        background-color: var(--theme-green);
       }
     }
   }
