@@ -96,7 +96,7 @@ $resource-name-max-width: 180px;
     gap: var(--default-spacing);
     border: $border-black10;
     padding: var(--default-spacing);
-    border-radius: var(--small-border-radius);
+    border-radius: var(--default-border-radius);
   }
 
   &__changes {

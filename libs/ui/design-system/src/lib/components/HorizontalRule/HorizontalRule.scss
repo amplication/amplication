@@ -6,6 +6,11 @@
   margin-bottom: var(--default-spacing);
   width: 100%;
 
+  &--double-spacing {
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+  }
+
   &--black5 {
     border-top: $border-black5;
   }

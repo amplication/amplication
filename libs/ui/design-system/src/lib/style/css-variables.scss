@@ -118,12 +118,11 @@
   --application-card-width: 390px;
   --application-card-height: 210px;
 
-  --default-border-radius: 8px;
-  --small-border-radius: 4px;
+  --default-border-radius: 4px;
   --xxlarge-border-radius: 35px;
   --scrollbar-radius: 20px;
   --form-elements-border-radius: var(--default-border-radius);
-  --form-permission-type-radius: var(--small-border-radius);
+  --form-permission-type-radius: var(--default-border-radius);
 
   --default-page-padding: calc(var(--default-spacing-small) * 3);
   --side-bar-width: 440px;
