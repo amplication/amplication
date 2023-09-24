@@ -172,7 +172,7 @@ export const EntityListItem = ({
       />
       <ListItem onClick={handleRowClick}>
         <FlexItem
-          near={
+          start={
             <Link
               title={entity.displayName}
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
@@ -180,7 +180,7 @@ export const EntityListItem = ({
               <Text>{entity.displayName}</Text>
             </Link>
           }
-          far={
+          end={
             !deleteLoading && (
               <Button
                 buttonStyle={EnumButtonStyle.Text}
@@ -193,10 +193,10 @@ export const EntityListItem = ({
         ></FlexItem>
 
         <FlexItem
-          near={
+          start={
             <Text textStyle={EnumTextStyle.Subtle}>{entity.description}</Text>
           }
-          far={
+          end={
             <>
               <div>
                 <Text textStyle={EnumTextStyle.Subtle}>Last commit:</Text>

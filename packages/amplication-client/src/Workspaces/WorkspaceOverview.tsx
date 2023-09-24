@@ -6,6 +6,7 @@ import {
   Chip,
   CircleBadge,
   EnumChipStyle,
+  EnumFlexItemContentDirection,
   EnumFlexItemMargin,
   EnumPanelStyle,
   EnumTextStyle,
@@ -34,12 +35,12 @@ export const WorkspaceOverview = () => {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <FlexItem far={<AddNewProject />} margin={EnumFlexItemMargin.None} />
+      <FlexItem end={<AddNewProject />} margin={EnumFlexItemMargin.None} />
       <HorizontalRule doubleSpacing />
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
-          near={
+          start={
             <CircleBadge
               size="xlarge"
               name={currentWorkspace.name || ""}
@@ -49,19 +50,21 @@ export const WorkspaceOverview = () => {
             />
           }
         >
-          <Chip
-            chipStyle={
-              SUBSCRIPTION_TO_CHIP_STYLE[
-                currentWorkspace.subscription?.subscriptionPlan
-              ]
-            }
-          >
-            {currentWorkspace.subscription?.subscriptionPlan ||
-              EnumSubscriptionPlan.Free}{" "}
-            Plan
-          </Chip>
+          <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+            <Chip
+              chipStyle={
+                SUBSCRIPTION_TO_CHIP_STYLE[
+                  currentWorkspace.subscription?.subscriptionPlan
+                ]
+              }
+            >
+              {currentWorkspace.subscription?.subscriptionPlan ||
+                EnumSubscriptionPlan.Free}{" "}
+              Plan
+            </Chip>
 
-          <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
+            <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
+          </FlexItem>
         </FlexItem>
       </Panel>
       <ProjectList projects={projectsList} workspaceId={currentWorkspace.id} />
