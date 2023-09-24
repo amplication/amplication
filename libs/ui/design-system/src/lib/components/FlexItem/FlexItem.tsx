@@ -50,21 +50,7 @@ export const FlexItem = ({
       style={{ justifyContent: contentAlign }}
     >
       {start && <FlexStart>{start}</FlexStart>}
-      {React.Children.toArray(children).map((child, index) => {
-        if (
-          React.isValidElement(child) &&
-          (child as React.ReactElement<any>).type === FlexStart
-        ) {
-          return child;
-        } else if (
-          React.isValidElement(child) &&
-          (child as React.ReactElement<any>).type === FlexEnd
-        ) {
-          return <FlexStart>{child}</FlexStart>;
-        } else {
-          return child;
-        }
-      })}
+      {children}
       {end && <FlexEnd>{end}</FlexEnd>}
     </div>
   );
