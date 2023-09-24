@@ -21,7 +21,12 @@ function PageLayout({ children, className, tabs }: Props) {
           <div className={`${CLASS_NAME}__header`}>
             <Tabs>
               {tabs.map((tab, index) => (
-                <Tabs.Tab key={index} label={tab.name} to={tab.url} />
+                <Tabs.Tab
+                  key={index}
+                  label={tab.name}
+                  to={tab.url}
+                  exact={tab.exact}
+                />
               ))}
             </Tabs>
           </div>

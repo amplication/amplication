@@ -43,13 +43,17 @@ const ResourceHome = ({
         currentResource.id,
         linksMap[menuItem].to
       ),
+      exact: false,
     };
   });
 
   useBreadcrumbs(currentResource?.name, match.url);
 
   const { currentRouteIsTab } = useTabRoutes(tabRoutesDef);
-  const tabItems = [{ name: "Overview", url: match.url }, ...(fixedTabs || [])];
+  const tabItems: TabItem[] = [
+    { name: "Overview", url: match.url, exact: true },
+    ...(fixedTabs || []),
+  ];
 
   return (
     <>
