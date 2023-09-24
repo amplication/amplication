@@ -1,6 +1,5 @@
 import { useContext } from "react";
 import * as models from "../../models";
-import "./GenerationSettingsForm.scss";
 import { AppContext } from "../../context/appContext";
 import { Form, Formik } from "formik";
 import { validate } from "../../util/formikValidateJsonSchema";
@@ -9,6 +8,13 @@ import useSettingsHook from "../useSettingsHook";
 import EntitySelectField from "../../Components/EntitySelectField";
 import FormikAutoSave from "../../util/formikAutoSave";
 import useResource from "../hooks/useResource";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Text,
+} from "@amplication/ui/design-system";
 
 const CLASS_NAME = "generation-settings-form";
 
@@ -41,9 +47,17 @@ function AuthenticationSettingsForm() {
           {(formik) => {
             return (
               <Form>
-                <div className={`${CLASS_NAME}__header`}>
-                  <h3>Choose authentication entity</h3>
-                </div>
+                <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                  <Text textStyle={EnumTextStyle.H4}>
+                    Choose authentication entity
+                  </Text>
+                </FlexItem>
+                <Text textStyle={EnumTextStyle.Tag}>
+                  Select the entity to be used for authentication. The chosen
+                  entity must include 'username' and 'password' fields.
+                </Text>
+                <HorizontalRule />
+
                 <FormikAutoSave debounceMS={200} />
                 <EntitySelectField
                   label={"Entity List"}

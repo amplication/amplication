@@ -1,6 +1,8 @@
 import {
   CircularProgress,
+  EnumFlexItemMargin,
   EnumTextStyle,
+  FlexItem,
   List,
   SearchField,
   Snackbar,
@@ -81,10 +83,12 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
         placeholder="Search"
         onChange={handleSearchChange}
       />
-      <Text textStyle={EnumTextStyle.Tag}>
-        {data?.entity.fields?.length}{" "}
-        {pluralize(data?.entity.fields?.length, "Field", "Fields")}
-      </Text>
+      <FlexItem margin={EnumFlexItemMargin.Both}>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.entity.fields?.length}{" "}
+          {pluralize(data?.entity.fields?.length, "Field", "Fields")}
+        </Text>
+      </FlexItem>
       {loading && <CircularProgress centerToParent />}
       <List>
         {data?.entity.fields?.map((field) => (

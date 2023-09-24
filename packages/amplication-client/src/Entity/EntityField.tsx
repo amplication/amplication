@@ -1,5 +1,6 @@
 import { types } from "@amplication/code-gen-types";
 import {
+  EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
   Snackbar,
@@ -172,7 +173,8 @@ const EntityField = () => {
       {!loading && (
         <>
           <FlexItem
-            near={<Text textStyle={EnumTextStyle.H3}>Field Settings</Text>}
+            margin={EnumFlexItemMargin.Bottom}
+            near={<Text textStyle={EnumTextStyle.H4}>Field Settings</Text>}
             far={
               entity &&
               entityField && (

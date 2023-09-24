@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
-import "./ServiceSettingsPage.scss";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
 

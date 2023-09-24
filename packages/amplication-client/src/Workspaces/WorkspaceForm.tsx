@@ -78,7 +78,7 @@ function WorkspaceForm() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <Text textStyle={EnumTextStyle.H3}>Workspace Settings</Text>
+      <Text textStyle={EnumTextStyle.H4}>Workspace Settings</Text>
 
       <HorizontalRule doubleSpacing />
 
