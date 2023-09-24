@@ -46,7 +46,7 @@ export const linksMap: {
   settings: {
     title: "Settings",
     icon: "settings",
-    to: "/settings/general",
+    to: "/settings",
   },
   plugins: {
     title: "Plugins",

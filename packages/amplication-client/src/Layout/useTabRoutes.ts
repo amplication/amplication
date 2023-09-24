@@ -6,6 +6,7 @@ import { isEmpty } from "lodash";
 export type TabItem = {
   name: string;
   url: string;
+  exact: boolean;
 };
 
 const TAB_NAME_MISSING = "TAB_NAME_MISSING";
@@ -27,6 +28,7 @@ export default function useTabRoutes(tabRoutes: RouteDef[]): {
           ? route.displayName
           : TAB_NAME_MISSING,
         url: `${currentUrl}${route.path.replace(currentPath, "")}`,
+        exact: route.exactPath,
       };
     });
   }, [tabRoutes, currentPath]);
