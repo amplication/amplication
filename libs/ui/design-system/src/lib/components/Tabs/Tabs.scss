@@ -6,27 +6,17 @@
   .MuiTabs-flexContainer {
     align-items: baseline;
   }
+  .MuiTabs-indicator {
+    background-color: var(--primary);
+  }
 
   .amp-tab {
     text-transform: none;
     color: var(--black80);
     padding: var(--default-spacing-small) var(--large-spacing);
 
-    &.active {
-      color: var(--black100);
-      position: relative;
-      overflow: visible;
-
-      &:before {
-        content: "";
-        z-index: 10;
-        position: absolute;
-        display: block;
-        width: 100%;
-        bottom: 0px;
-        height: 3px;
-        background-color: var(--primary);
-      }
+    &--selected {
+      color: var(--black100) !important;
     }
   }
 }
