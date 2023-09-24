@@ -45,7 +45,7 @@ function MemberList() {
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <FlexItem far={<InviteMember />}>
-        <Text textStyle={EnumTextStyle.H3}>Workspace Members</Text>
+        <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
       </FlexItem>
 
       <HorizontalRule />

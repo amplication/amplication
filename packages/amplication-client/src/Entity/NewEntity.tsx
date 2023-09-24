@@ -5,10 +5,10 @@ import {
   Snackbar,
   Text,
   TextField,
+  EnumTextAlign,
 } from "@amplication/ui/design-system";
 import { Reference, useMutation } from "@apollo/client";
 import { Form, Formik } from "formik";
-import { EnumTextAlign } from "libs/ui/design-system/src/lib/components/Text/Text";
 import { pascalCase } from "pascal-case";
 import { useCallback, useContext, useEffect, useState } from "react";
 import { GlobalHotKeys } from "react-hotkeys";

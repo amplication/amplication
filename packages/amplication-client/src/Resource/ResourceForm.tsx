@@ -1,4 +1,11 @@
-import { Snackbar, TextField } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
@@ -13,7 +20,6 @@ import {
 } from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
-import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
 
 type Props = {
@@ -100,10 +106,9 @@ function ResourceForm({ resourceId }: Props) {
           {() => {
             return (
               <Form>
-                <div className={`${CLASS_NAME}__header`}>
-                  <h3>General Settings</h3>
-                  <h5>Enter a name and description for your app.</h5>
-                </div>
+                <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                  <Text textStyle={EnumTextStyle.H4}>Resource Settings</Text>
+                </FlexItem>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Name" />
                 <TextField

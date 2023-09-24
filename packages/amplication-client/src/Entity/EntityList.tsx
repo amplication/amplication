@@ -18,6 +18,7 @@ import {
   List,
   Text,
   EnumFlexItemContentDirection,
+  EnumFlexItemContentAlign,
 } from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -33,8 +34,6 @@ import { BillingFeature } from "../util/BillingFeature";
 import usePlugins from "../Plugins/hooks/usePlugins";
 import { AppContext } from "../context/appContext";
 import EntitiesERD from "./EntityERD/EntitiesERD";
-import { Flex } from "@primer/react/lib/deprecated";
-import { EnumFlexItemContentAlign } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 type TData = {
   entities: models.Entity[];

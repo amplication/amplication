@@ -187,6 +187,7 @@ export {
   Props as FlexItemProps,
   EnumFlexItemMargin,
   EnumFlexItemContentDirection,
+  EnumFlexItemContentAlign,
 } from "./components/FlexItem/FlexItem";
 
 export {
@@ -195,6 +196,7 @@ export {
   EnumTextColor,
   EnumTextStyle,
   EnumTextWeight,
+  EnumTextAlign,
 } from "./components/Text/Text";
 
 export {
