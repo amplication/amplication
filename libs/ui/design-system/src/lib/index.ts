@@ -179,8 +179,7 @@ export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/Pl
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 
 export { default as Tabs } from "./components/Tabs/Tabs";
-export type { Props as TabsProps } from "./components/Tabs/Tabs";
-export type { TabProps } from "./components/Tabs/Tabs";
+export { Props as TabsProps, TabProps, TabItem } from "./components/Tabs/Tabs";
 
 export {
   FlexItem,

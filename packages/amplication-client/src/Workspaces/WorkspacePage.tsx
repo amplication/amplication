@@ -2,10 +2,11 @@ import React, { useContext } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import useTabRoutes, { TabItem } from "../Layout/useTabRoutes";
+import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import WorkspaceOverview from "./WorkspaceOverview";
+import { TabItem } from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -27,7 +28,7 @@ const WorkspacePage: React.FC<Props> = ({
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = [
-    { name: "Overview", url: match.url, exact: true },
+    { name: "Overview", to: match.url, exact: true },
     ...tabs,
   ];
 
