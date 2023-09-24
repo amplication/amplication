@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo, useState } from "react";
@@ -236,15 +236,17 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           handleCreateDefaultEntitiesConfirmation
         }
       ></PluginInstallConfirmationDialog>
-      {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
-        <PluginsCatalogItem
-          key={pluginId}
-          plugin={plugin}
-          pluginInstallation={installedPlugins[plugin.pluginId]}
-          onInstall={handleInstall}
-          onEnableStateChange={onEnableStateChange}
-        />
-      ))}
+      <List>
+        {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+          <PluginsCatalogItem
+            key={pluginId}
+            plugin={plugin}
+            pluginInstallation={installedPlugins[plugin.pluginId]}
+            onInstall={handleInstall}
+            onEnableStateChange={onEnableStateChange}
+          />
+        ))}
+      </List>
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}

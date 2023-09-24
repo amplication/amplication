@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { DndProvider } from "react-dnd";
@@ -226,19 +226,21 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
         }
       ></PluginInstallConfirmationDialog>
       <DndProvider backend={HTML5Backend}>
-        {pluginInstallations.length &&
-          pluginInstallations.map((installation) => (
-            <PluginsCatalogItem
-              key={installation.id}
-              plugin={pluginCatalog[installation.pluginId]}
-              pluginInstallation={installation as models.PluginInstallation}
-              onOrderChange={onOrderChange}
-              onInstall={handleInstall}
-              onEnableStateChange={onEnableStateChange}
-              order={pluginOrderObj[installation.pluginId]}
-              isDraggable
-            />
-          ))}
+        <List>
+          {pluginInstallations.length &&
+            pluginInstallations.map((installation) => (
+              <PluginsCatalogItem
+                key={installation.id}
+                plugin={pluginCatalog[installation.pluginId]}
+                pluginInstallation={installation as models.PluginInstallation}
+                onOrderChange={onOrderChange}
+                onInstall={handleInstall}
+                onEnableStateChange={onEnableStateChange}
+                order={pluginOrderObj[installation.pluginId]}
+                isDraggable
+              />
+            ))}
+        </List>
         <Snackbar
           open={Boolean(updateError || createError)}
           message={errorMessage}
