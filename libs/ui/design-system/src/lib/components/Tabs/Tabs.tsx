@@ -6,6 +6,7 @@ import {
 } from "@mui/material";
 import { NavLink } from "react-router-dom";
 import "./Tabs.scss";
+import { EnumTextColor } from "../Text/Text";
 
 export type Props = MuiTabsProps;
 
@@ -19,14 +20,22 @@ export const Tabs = ({ children }: Props) => {
 
 export default Tabs;
 
-export type TabProps = MuiTabProps & {
+export type TabItem = {
+  name: string;
   to: string;
   exact: boolean;
   iconName?: string;
+  indicatorValue?: string;
+  indicatorColor?: EnumTextColor;
 };
 
+export type TabProps = Omit<MuiTabProps, "label"> & TabItem;
+
 function Tab(props: TabProps) {
-  const { to, exact, iconName, ...rest } = props;
+  const { to, exact, iconName, name, indicatorColor, indicatorValue, ...rest } =
+    props;
+
+  const label = indicatorValue ? `${name} (${indicatorValue})` : name;
 
   return (
     <MuiTab
@@ -35,6 +44,7 @@ function Tab(props: TabProps) {
       classes={{ selected: "amp-tab--selected" }}
       // icon={iconName && <Icon size={"small"} icon={iconName} />}
       to={to}
+      label={label}
       disableRipple
       {...rest}
       exact={exact}

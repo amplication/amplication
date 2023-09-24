@@ -6,7 +6,8 @@ import "./ProjectPage.scss";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
 import PageLayout from "../Layout/PageLayout";
 import { AppContext } from "../context/appContext";
-import useTabRoutes, { TabItem } from "../Layout/useTabRoutes";
+import useTabRoutes from "../Layout/useTabRoutes";
+import { TabItem } from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -28,7 +29,7 @@ const ProjectPage: React.FC<Props> = ({
   const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
 
   const tabItems: TabItem[] = [
-    { name: "Overview", url: match.url, exact: true },
+    { name: "Overview", to: match.url, exact: true },
     ...tabs,
   ];
 

@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
 import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import useTabRoutes, { TabItem } from "../Layout/useTabRoutes";
+import useTabRoutes from "../Layout/useTabRoutes";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import ResourceOverview from "./ResourceOverview";
@@ -12,6 +12,7 @@ import {
   linksMap,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import { TabItem } from "@amplication/ui/design-system";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -37,7 +38,7 @@ const ResourceHome = ({
   ]?.map((menuItem: string) => {
     return {
       name: linksMap[menuItem].title,
-      url: setResourceUrlLink(
+      to: setResourceUrlLink(
         currentWorkspace.id,
         currentProject.id,
         currentResource.id,
@@ -52,7 +53,7 @@ const ResourceHome = ({
 
   const { currentRouteIsTab } = useTabRoutes(tabRoutesDef);
   const tabItems: TabItem[] = [
-    { name: "Overview", url: match.url, exact: true },
+    { name: "Overview", to: match.url, exact: true },
     ...(fixedTabs || []),
   ];
 

@@ -1,8 +1,7 @@
 import React from "react";
 import "./PageLayout.scss";
 import classNames from "classnames";
-import { TabItem } from "./useTabRoutes";
-import { Tabs } from "@amplication/ui/design-system";
+import { Tabs, TabItem } from "@amplication/ui/design-system";
 
 type Props = {
   children: React.ReactNode;
@@ -23,8 +22,8 @@ function PageLayout({ children, className, tabs }: Props) {
               {tabs.map((tab, index) => (
                 <Tabs.Tab
                   key={index}
-                  label={tab.name}
-                  to={tab.url}
+                  name={tab.name}
+                  to={tab.to}
                   iconName={tab.iconName}
                   exact={tab.exact}
                 />
