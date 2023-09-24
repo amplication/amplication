@@ -1,4 +1,11 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  Text,
+} from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
 import { AppContext } from "../../context/appContext";
@@ -11,7 +18,6 @@ import {
 } from "../../models";
 import { formatError } from "../../util/error";
 import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
-import "./SyncWithGithubPage.scss";
 import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
 import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import AuthWithGitProvider from "./AuthWithGitProvider";
@@ -74,16 +80,15 @@ const SyncWithGithubPage: React.FC = () => {
   return (
     <PageContent pageTitle={pageTitle}>
       <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__header`}>
-          <p className={`${CLASS_NAME}__header__title`}>
-            Sync with Git Provider
-          </p>
-        </div>
-        <div className={`${CLASS_NAME}__message`}>
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <Text textStyle={EnumTextStyle.H4}>Sync with Git Provider</Text>
+        </FlexItem>
+        <Text textStyle={EnumTextStyle.Tag}>
           Enable sync with Git provider to automatically push the generated code
           of your application and create a Pull Request in your Git provider
           repository every time you commit your changes.
-        </div>
+        </Text>
+        <HorizontalRule />
         {data?.resource && isProjectConfiguration && (
           <AuthWithGitProvider
             type="resource"

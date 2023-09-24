@@ -25,12 +25,6 @@ const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
             General
           </InnerTabLink>
           <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/git`}
-            icon="pending_changes"
-          >
-            Git Provider
-          </InnerTabLink>
-          <InnerTabLink
             to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/directories`}
             icon="folder"
           >
