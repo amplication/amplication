@@ -85,8 +85,8 @@ function ResourceListItem({ resource, onDelete }: Props) {
       <ListItem
         onClick={handleClick}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}
-        near={<ResourceCircleBadge type={resource.resourceType} />}
-        far={
+        start={<ResourceCircleBadge type={resource.resourceType} />}
+        end={
           onDelete && (
             <Button
               buttonStyle={EnumButtonStyle.Text}

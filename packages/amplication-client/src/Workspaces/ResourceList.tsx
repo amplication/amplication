@@ -151,20 +151,22 @@ function ResourceList() {
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <FlexItem
-        near={
+        start={
           <SearchField
             label="search"
             placeholder="search"
             onChange={handleSearchChange}
           />
         }
-        far={<CreateResourceButton />}
+        end={<CreateResourceButton />}
       />
       <HorizontalRule doubleSpacing />
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
-          near={<CircleBadge size="xlarge" name={currentProject?.name || ""} />}
+          start={
+            <CircleBadge size="xlarge" name={currentProject?.name || ""} />
+          }
         >
           <Text textStyle={EnumTextStyle.H3}>{currentProject?.name}</Text>
           <Text textStyle={EnumTextStyle.Subtle}>

@@ -144,42 +144,15 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
 
-        <FlexItem
-          contentAlign={EnumFlexItemContentAlign.Center}
-          near={
+        <FlexItem contentAlign={EnumFlexItemContentAlign.Center}>
+          <FlexItem.FlexStart>
             <SearchField
               label="search"
               placeholder="search"
               onChange={handleSearchChange}
             />
-          }
-          far={
-            <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
-              <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-              >
-                <Button
-                  className={`${CLASS_NAME}__install`}
-                  buttonStyle={EnumButtonStyle.Secondary}
-                  icon="upload1"
-                  eventData={{
-                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  }}
-                >
-                  Upload Prisma Schema
-                </Button>
-              </Link>
-              <Button
-                className={`${CLASS_NAME}__add-button`}
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleNewEntityClick}
-                icon="plus"
-              >
-                Add entity
-              </Button>
-            </FlexItem>
-          }
-        >
+          </FlexItem.FlexStart>
+
           <FlexItem
             contentDirection={EnumFlexItemContentDirection.Row}
             contentAlign={EnumFlexItemContentAlign.Center}
@@ -220,6 +193,32 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               />
             </svg>
           </FlexItem>
+          <FlexItem.FlexEnd>
+            <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
+              >
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Secondary}
+                  icon="upload1"
+                  eventData={{
+                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  }}
+                >
+                  Upload Prisma Schema
+                </Button>
+              </Link>
+              <Button
+                className={`${CLASS_NAME}__add-button`}
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleNewEntityClick}
+                icon="plus"
+              >
+                Add entity
+              </Button>
+            </FlexItem>
+          </FlexItem.FlexEnd>
         </FlexItem>
 
         <HorizontalRule doubleSpacing />

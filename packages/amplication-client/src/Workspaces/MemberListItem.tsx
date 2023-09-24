@@ -134,10 +134,10 @@ function MemberListItem({ member, onDelete, onError }: Props) {
         onDismiss={handleDismissDelete}
       />
       <ListItem
-        near={
+        start={
           <UserAvatar firstName={data.firstName} lastName={data.lastName} />
         }
-        far={
+        end={
           <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
             {data.isInvitation && (
               <Tooltip

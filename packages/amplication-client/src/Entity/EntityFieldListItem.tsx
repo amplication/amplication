@@ -70,7 +70,7 @@ export const EntityFieldListItem = ({
   return (
     <ListItem onClick={handleRowClick}>
       <FlexItem
-        near={
+        start={
           <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
             <Icon
               className="amp-data-grid-item__icon"
@@ -85,7 +85,7 @@ export const EntityFieldListItem = ({
             </Text>
           </FlexItem>
         }
-        far={
+        end={
           <DeleteEntityField
             entityId={entity.id}
             entityField={entityField}

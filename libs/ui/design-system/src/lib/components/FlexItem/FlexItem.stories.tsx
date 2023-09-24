@@ -10,7 +10,7 @@ export default {
 export const Default = (props: any) => {
   return (
     <>
-      <FlexItem near={<Icon icon="plus" />} far={<Icon icon="chevron_down" />}>
+      <FlexItem start={<Icon icon="plus" />} end={<Icon icon="chevron_down" />}>
         Content of the item
       </FlexItem>
     </>

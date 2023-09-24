@@ -174,8 +174,8 @@ const EntityField = () => {
         <>
           <FlexItem
             margin={EnumFlexItemMargin.Bottom}
-            near={<Text textStyle={EnumTextStyle.H4}>Field Settings</Text>}
-            far={
+            start={<Text textStyle={EnumTextStyle.H4}>Field Settings</Text>}
+            end={
               entity &&
               entityField && (
                 <DeleteEntityField

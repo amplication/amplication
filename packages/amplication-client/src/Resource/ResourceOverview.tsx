@@ -33,7 +33,7 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
-          near={
+          start={
             <CircleBadge
               name={currentResource?.name || ""}
               color={
