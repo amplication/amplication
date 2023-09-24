@@ -25,6 +25,7 @@ function PageLayout({ children, className, tabs }: Props) {
                   key={index}
                   label={tab.name}
                   to={tab.url}
+                  iconName={tab.iconName}
                   exact={tab.exact}
                 />
               ))}

@@ -19,6 +19,12 @@ $tab-height: 26px;
     min-height: $tab-height;
     padding: 0;
     overflow: visible; //allow for the separator to overflow
+    display: flex;
+    flex-direction: row;
+
+    .amp-icon {
+      margin-right: var(--icon-spacing);
+    }
 
     &:not(:last-child):before {
       content: "";

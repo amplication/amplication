@@ -43,6 +43,7 @@ const ResourceHome = ({
         currentResource.id,
         linksMap[menuItem].to
       ),
+      iconName: linksMap[menuItem].icon,
       exact: false,
     };
   });
