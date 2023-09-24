@@ -2,13 +2,23 @@ import React, { useState, useCallback, useContext } from "react";
 import PageContent from "../Layout/PageContent";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
-import { MultiStateToggle, Snackbar } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemContentDirection,
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  MultiStateToggle,
+  Snackbar,
+  Text,
+} from "@amplication/ui/design-system";
 import "./PendingChangesPage.scss";
 import { AppContext } from "../context/appContext";
 import { gql } from "@apollo/client";
 import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 import { formatError } from "../util/error";
 import PendingChanges from "./PendingChanges";
+import PendingChangesList from "./PendingChangesList";
 
 const CLASS_NAME = "pending-changes-page";
 const SPLIT = "Split";
@@ -40,18 +50,39 @@ const PendingChangesPage = () => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
-        <div className={`${CLASS_NAME}__header`}>
-          <h1>Pending Changes</h1>
-          <MultiStateToggle
-            label=""
-            name="compareMode"
-            options={OPTIONS}
-            onChange={handleChangeType}
-            selectedValue={splitView ? SPLIT : UNIFIED}
-          />
-        </div>
-        <PendingChanges projectId={currentProject.id} />
+      <PageContent
+        className={CLASS_NAME}
+        pageTitle={pageTitle}
+        sideContent={
+          <>
+            <FlexItem margin={EnumFlexItemMargin.Bottom}>
+              <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+            </FlexItem>
+            <PendingChangesList />
+          </>
+        }
+      >
+        <Text textStyle={EnumTextStyle.H4}>Commit Changes</Text>
+        <PendingChanges projectId={currentProject?.id} />
+
+        <HorizontalRule />
+
+        <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+          <FlexItem.FlexStart>
+            <Text textStyle={EnumTextStyle.H4}>Compare Changes</Text>
+          </FlexItem.FlexStart>
+          <FlexItem.FlexEnd>
+            <MultiStateToggle
+              className={`${CLASS_NAME}__toggle`}
+              label=""
+              name="compareMode"
+              options={OPTIONS}
+              onChange={handleChangeType}
+              selectedValue={splitView ? SPLIT : UNIFIED}
+            />
+          </FlexItem.FlexEnd>
+        </FlexItem>
+
         <div className={`${CLASS_NAME}__changes`}>
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>

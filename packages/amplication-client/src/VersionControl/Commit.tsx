@@ -1,4 +1,5 @@
 import {
+  FlexItem,
   LimitationDialog,
   Snackbar,
   TextField,
@@ -141,16 +142,20 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 placeholder={noChanges ? "Build message" : "Commit message..."}
                 autoComplete="off"
               />
-              <Button
-                type="submit"
-                buttonStyle={EnumButtonStyle.Primary}
-                eventData={{
-                  eventName: AnalyticsEventNames.CommitClicked,
-                }}
-                disabled={loading}
-              >
-                {noChanges ? "Rebuild" : "Commit changes & build "}
-              </Button>
+              <FlexItem>
+                <FlexItem.FlexEnd>
+                  <Button
+                    type="submit"
+                    buttonStyle={EnumButtonStyle.Primary}
+                    eventData={{
+                      eventName: AnalyticsEventNames.CommitClicked,
+                    }}
+                    disabled={loading}
+                  >
+                    {noChanges ? "Rebuild" : "Commit changes & build "}
+                  </Button>
+                </FlexItem.FlexEnd>
+              </FlexItem>
             </Form>
           );
         }}

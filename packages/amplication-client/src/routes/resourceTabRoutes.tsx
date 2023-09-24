@@ -96,6 +96,14 @@ const resourceTabRoutes = [
     routes: resourceSettingsRoutes,
   },
   {
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/pending-changes",
+    Component: lazy(() => import("../VersionControl/PendingChangesPage")),
+    moduleName: "",
+    routeTrackType: "",
+    exactPath: false,
+    routes: resourceSettingsRoutes,
+  },
+  {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/plugins",
     Component: lazy(() => import("../Plugins/PluginsPage")),
     moduleName: "",

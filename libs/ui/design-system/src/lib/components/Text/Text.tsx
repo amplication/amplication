@@ -20,6 +20,7 @@ export enum EnumTextColor {
   ThemeBlue = "theme-blue",
   ThemeGreen = "theme-green",
   ThemeRed = "theme-red",
+  ThemeOrange = "theme-orange",
 }
 
 export enum EnumTextAlign {

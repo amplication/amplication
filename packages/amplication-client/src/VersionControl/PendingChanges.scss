@@ -5,7 +5,6 @@ $counter-height: 18px;
 $resource-name-max-width: 180px;
 
 .pending-changes {
-  padding: var(--large-spacing);
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -97,26 +96,6 @@ $resource-name-max-width: 180px;
     border: $border-black10;
     padding: var(--default-spacing);
     border-radius: var(--default-border-radius);
-  }
-
-  &__changes {
-    flex-grow: 1;
-    flex-basis: 0px;
-    overflow-y: auto;
-    @include scrollbars(16px, var(--black60), transparent);
-
-    &__resource {
-      @include bold-12;
-      margin-bottom: var(--medium-spacing);
-      max-width: $resource-name-max-width;
-      white-space: nowrap;
-      text-align: left;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      .circle-badge {
-        margin-right: var(--user-badge-spacing);
-      }
-    }
   }
 
   .amp-button__icon {
