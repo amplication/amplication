@@ -180,7 +180,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           </Tooltip>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
-              <Breadcrumbs.Item key={item.url} href={item.url}>
+              <Breadcrumbs.Item key={item.url} to={item.url}>
                 {item.name}
               </Breadcrumbs.Item>
             ))}
