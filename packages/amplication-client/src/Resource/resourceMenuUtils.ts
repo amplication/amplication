@@ -15,11 +15,11 @@ export const resourceMenuLayout: {
 } = {
   [EnumResourceType.Service]: [
     "entities",
+    "plugins",
+    "git",
     "roles",
     "connections",
-    "git",
     "settings",
-    "plugins",
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
