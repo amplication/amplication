@@ -1,3 +1,4 @@
+import PendingChange from "../VersionControl/PendingChange";
 import { EnumResourceType } from "../models";
 
 export type MenuItemLinks =
@@ -8,7 +9,8 @@ export type MenuItemLinks =
   | "plugins"
   | "topics"
   | "services"
-  | "connections";
+  | "connections"
+  | "pendingChanges";
 
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
@@ -20,9 +22,20 @@ export const resourceMenuLayout: {
     "roles",
     "connections",
     "settings",
+    "pendingChanges",
   ],
-  [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
-  [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
+  [EnumResourceType.ProjectConfiguration]: [
+    "git",
+    "settings",
+    "pendingChanges",
+  ],
+  [EnumResourceType.MessageBroker]: [
+    "topics",
+    "services",
+    "git",
+    "settings",
+    "pendingChanges",
+  ],
 };
 
 export const linksMap: {
@@ -67,6 +80,11 @@ export const linksMap: {
     title: "Connections",
     icon: "connection",
     to: "/service-connections",
+  },
+  pendingChanges: {
+    title: "Pending Changes",
+    icon: "pending_changes",
+    to: "/pending-changes",
   },
 };
 

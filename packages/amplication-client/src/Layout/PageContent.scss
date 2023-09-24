@@ -26,8 +26,6 @@ $tabs-width: 300px;
   }
 
   &__side {
-    display: flex;
-    flex-direction: column;
     width: $tabs-width;
 
     padding: var(--default-spacing);
