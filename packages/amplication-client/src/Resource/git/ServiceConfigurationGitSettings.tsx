@@ -1,6 +1,5 @@
 import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
 import React, { useCallback, useState } from "react";
-import "./SyncWithGithubPage.scss";
 import "./ServiceConfigurationGitSettings.scss";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { useMutation } from "@apollo/client";

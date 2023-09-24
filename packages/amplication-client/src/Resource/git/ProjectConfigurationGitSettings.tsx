@@ -1,6 +1,5 @@
 import { EnumPanelStyle, Icon, Panel } from "@amplication/ui/design-system";
 import React, { useContext } from "react";
-import "./SyncWithGithubPage.scss";
 import "./ProjectConfigurationGitSettings.scss";
 import { Link } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
@@ -34,7 +33,7 @@ const ProjectConfigurationGitSettings: React.FC<Props> = ({
     return (
       <Link
         title={"Go to project settings"}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/git`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
         className={classNames(
           `${CLASS_NAME}__link`,
           `${CLASS_NAME}__${linkFontClass}`

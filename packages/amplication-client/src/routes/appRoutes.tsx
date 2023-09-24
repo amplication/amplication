@@ -61,6 +61,18 @@ export const Routes: RouteDef[] = [
             exactPath: false,
             tabRoutes: [
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/git-sync",
+                Component: lazy(
+                  () => import("../Resource/git/SyncWithGithubPage")
+                ),
+                moduleName: "ProjectSettingsGit",
+                displayName: "Sync with Git Provider",
+                moduleClass: "",
+                routeTrackType: "",
+                exactPath: false,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(() => import("../Project/ProjectSettingsPage")),
                 moduleName: "ProjectSettings",
@@ -79,17 +91,7 @@ export const Routes: RouteDef[] = [
                     exactPath: false,
                     isAnalytics: true,
                   },
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/git",
-                    Component: lazy(
-                      () => import("../Resource/git/SyncWithGithubPage")
-                    ),
-                    moduleName: "ProjectSettingsGit",
-                    moduleClass: "",
-                    routeTrackType: "",
-                    exactPath: false,
-                    isAnalytics: true,
-                  },
+
                   {
                     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings/directories",
                     Component: lazy(
