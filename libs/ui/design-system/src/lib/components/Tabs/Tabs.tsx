@@ -25,7 +25,7 @@ export type TabItem = {
   to: string;
   exact: boolean;
   iconName?: string;
-  indicatorValue?: string;
+  indicatorValue?: string | number;
   indicatorColor?: EnumTextColor;
 };
 
@@ -35,7 +35,20 @@ function Tab(props: TabProps) {
   const { to, exact, iconName, name, indicatorColor, indicatorValue, ...rest } =
     props;
 
-  const label = indicatorValue ? `${name} (${indicatorValue})` : name;
+  const colorStyle = indicatorColor && {
+    backgroundColor: `var(--${indicatorColor})`,
+  };
+
+  const label = (
+    <>
+      {name}{" "}
+      {indicatorValue && (
+        <span style={colorStyle} className="amp-tab__indicator">
+          {indicatorValue}
+        </span>
+      )}
+    </>
+  );
 
   return (
     <MuiTab

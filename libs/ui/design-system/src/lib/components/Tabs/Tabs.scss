@@ -26,6 +26,20 @@ $tab-height: 26px;
       margin-right: var(--icon-spacing);
     }
 
+    &__indicator {
+      font-size: var(--tag-font-size);
+      background-color: var(--theme-orange);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: var(--icon-spacing);
+      font-weight: 500;
+      color: var(--white);
+    }
+
     &:not(:last-child):before {
       content: "";
       position: absolute;
