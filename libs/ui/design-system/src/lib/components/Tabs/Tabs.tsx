@@ -22,16 +22,18 @@ export default Tabs;
 export type TabProps = MuiTabProps & {
   to: string;
   exact: boolean;
+  iconName?: string;
 };
 
 function Tab(props: TabProps) {
-  const { to, exact, ...rest } = props;
+  const { to, exact, iconName, ...rest } = props;
 
   return (
     <MuiTab
       className="amp-tab"
       component={NavLink}
       classes={{ selected: "amp-tab--selected" }}
+      // icon={iconName && <Icon size={"small"} icon={iconName} />}
       to={to}
       disableRipple
       {...rest}

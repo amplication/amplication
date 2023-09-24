@@ -7,6 +7,7 @@ export type TabItem = {
   name: string;
   url: string;
   exact: boolean;
+  iconName?: string;
 };
 
 const TAB_NAME_MISSING = "TAB_NAME_MISSING";
