@@ -6,7 +6,7 @@ import {
   Chip,
   CircleBadge,
   EnumChipStyle,
-  EnumItemsAlign,
+  EnumContentAlign,
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumPanelStyle,
@@ -81,7 +81,7 @@ export const WorkspaceOverview = () => {
 
             <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
           </FlexItem>
-          <FlexItem.FlexEnd alignSelf={EnumItemsAlign.Start}>
+          <FlexItem.FlexEnd alignSelf={EnumContentAlign.Start}>
             {membersData && membersData.workspaceMembers && (
               <Link to={`/${currentWorkspace.id}/members`}>
                 <Text textStyle={EnumTextStyle.Tag}>

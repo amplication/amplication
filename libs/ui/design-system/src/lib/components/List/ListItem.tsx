@@ -29,7 +29,7 @@ export function ListItem(props: Props) {
     onClick,
     showDefaultActionIcon,
     direction = EnumFlexDirection.Column,
-    itemsAlign,
+    contentAlign: itemsAlign,
     margin,
     ...rest
   } = props;
@@ -53,7 +53,7 @@ export function ListItem(props: Props) {
         start={start}
         end={showDefaultActionIcon ? defaultActionIcon : end}
       >
-        <FlexItem direction={direction} itemsAlign={itemsAlign}>
+        <FlexItem direction={direction} contentAlign={itemsAlign}>
           {children}
         </FlexItem>
       </FlexItem>

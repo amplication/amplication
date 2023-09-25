@@ -18,7 +18,7 @@ import {
   List,
   Text,
   EnumFlexDirection,
-  EnumItemsAlign,
+  EnumContentAlign,
 } from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -144,7 +144,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
 
-        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+        <FlexItem contentAlign={EnumContentAlign.Center}>
           <FlexItem.FlexStart>
             <SearchField
               label="search"
@@ -155,7 +155,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
           <FlexItem
             direction={EnumFlexDirection.Row}
-            itemsAlign={EnumItemsAlign.Center}
+            contentAlign={EnumContentAlign.Center}
           >
             <svg
               width="16"
