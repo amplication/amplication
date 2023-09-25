@@ -20,7 +20,7 @@ import PageContent from "../Layout/PageContent";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 
-type TData = {
+export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
 };
 
