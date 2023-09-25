@@ -120,6 +120,7 @@ const CodeGeneratorVersion = () => {
           },
           take: 1,
         },
+        skip: !currentResource,
       }
     );
 
@@ -159,6 +160,7 @@ const CodeGeneratorVersion = () => {
         codeGeneratorStrategy,
         codeGeneratorVersion,
       },
+      resourceId: currentResource?.id,
     });
   }, []);
 
@@ -224,7 +226,11 @@ const CodeGeneratorVersion = () => {
         <h3>Versions History</h3>
         {codeGeneratorVersionList?.versions.length &&
           codeGeneratorVersionList.versions.map((version) => (
-            <DSGCatalog name={version.name} changelog={version.changelog} />
+            <DSGCatalog
+              name={version.name}
+              changelog={version.changelog}
+              key={version.name}
+            />
           ))}
       </div>
     </div>

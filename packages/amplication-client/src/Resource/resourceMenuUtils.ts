@@ -28,7 +28,7 @@ export const linksMap = {
   },
   git: {
     title: "Sync with Git provider",
-    icon: "git-sync",
+    icon: "pending_changes",
     to: "/git-sync",
   },
   settings: {

@@ -20,9 +20,7 @@ import {
 } from "./auth.controller";
 import { JwtStrategy } from "./jwt.strategy";
 import { GitHubStrategy } from "./github.strategy";
-import { GoogleSecretsManagerModule } from "../../services/googleSecretsManager.module";
 import { GitHubStrategyConfigService } from "./githubStrategyConfig.service";
-import { GoogleSecretsManagerService } from "../../services/googleSecretsManager.service";
 import { ProjectModule } from "../project/project.module";
 import { GitHubAuthGuard } from "./github.guard";
 import { Auth0Middleware } from "./auth0.middleware";
@@ -43,7 +41,6 @@ import { Auth0Middleware } from "./auth0.middleware";
     ExceptionFiltersModule,
     WorkspaceModule,
     UserModule,
-    GoogleSecretsManagerModule,
     ProjectModule,
   ],
   providers: [
@@ -54,12 +51,10 @@ import { Auth0Middleware } from "./auth0.middleware";
       provide: "GitHubStrategy",
       useFactory: async (
         authService: AuthService,
-        configService: ConfigService,
-        googleSecretsManagerService: GoogleSecretsManagerService
+        configService: ConfigService
       ) => {
         const githubConfigService = new GitHubStrategyConfigService(
-          configService,
-          googleSecretsManagerService
+          configService
         );
         const options = await githubConfigService.getOptions();
 
@@ -69,7 +64,7 @@ import { Auth0Middleware } from "./auth0.middleware";
 
         return new GitHubStrategy(authService, options);
       },
-      inject: [AuthService, ConfigService, GoogleSecretsManagerService],
+      inject: [AuthService, ConfigService],
     },
     GqlAuthGuard,
     AuthResolver,

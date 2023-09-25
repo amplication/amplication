@@ -54,7 +54,7 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
           >
             <Button
               buttonStyle={EnumButtonStyle.Secondary}
-              icon="git-sync"
+              icon="pending_changes"
               iconPosition={EnumIconPosition.Left}
               className={`${CLASS_NAME}__connect__button`}
             >
