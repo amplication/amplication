@@ -9,6 +9,13 @@ export enum EnumFlexItemMargin {
   Both = "both",
 }
 
+export enum EnumGapSize {
+  None = "none",
+  Small = "small",
+  Default = "default",
+  Large = "large",
+}
+
 export enum EnumFlexDirection {
   Row = "row",
   Column = "column",
@@ -37,6 +44,7 @@ export type Props = {
   direction?: EnumFlexDirection;
   contentAlign?: EnumContentAlign;
   itemsAlign?: EnumItemsAlign;
+  gap?: EnumGapSize;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -50,13 +58,21 @@ export const FlexItem = ({
   direction = EnumFlexDirection.Row,
   contentAlign = EnumContentAlign.Start,
   itemsAlign = EnumItemsAlign.Start,
+  gap = EnumGapSize.Default,
 }: Props) => {
   const marginClass = getMarginStyle(margin);
   const directionClass = `${CLASS_NAME}--${direction}`;
+  const gapClass = gap ? `${CLASS_NAME}--gap-${gap}` : undefined;
 
   return (
     <div
-      className={classNames(CLASS_NAME, directionClass, marginClass, className)}
+      className={classNames(
+        CLASS_NAME,
+        directionClass,
+        marginClass,
+        gapClass,
+        className
+      )}
       style={{ justifyContent: contentAlign, alignItems: itemsAlign }}
     >
       {start && <FlexStart>{start}</FlexStart>}

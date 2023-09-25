@@ -5,23 +5,25 @@ import * as models from "../models";
 
 import {
   ConfirmationDialog,
+  EnumTextColor,
+  EnumTextStyle,
+  EnumTextWeight,
+  FlexItem,
   Icon,
   ListItem,
+  Text,
   UserAndTime,
 } from "@amplication/ui/design-system";
-import classNames from "classnames";
-import EllipsisText from "../Components/EllipsisText";
+import { EnumItemsAlign } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import { AppContext } from "../context/appContext";
-import "./ResourceListItem.scss";
 
 type Props = {
   resource: models.Resource;
   onDelete?: (resource: models.Resource) => void;
 };
 
-const CLASS_NAME = "resource-list-item";
 const CONFIRM_BUTTON = { label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
@@ -96,47 +98,36 @@ function ResourceListItem({ resource, onDelete }: Props) {
           )
         }
       >
-        <EllipsisText className={`${CLASS_NAME}__title`} text={name} />
+        <Text
+          textStyle={EnumTextStyle.Normal}
+          textWeight={EnumTextWeight.SemiBold}
+        >
+          {name}
+        </Text>
+        <Text textStyle={EnumTextStyle.Tag}>{name}</Text>
+        <Text textStyle={EnumTextStyle.Subtle}>{description}</Text>
 
-        <EllipsisText
+        {/* @todo: check whether we still need to use EllipsisText*/}
+        {/* <EllipsisText
           className={`${CLASS_NAME}__description`}
           text={description}
           maxLength={350}
-        />
-        <div className={`${CLASS_NAME}__git-sync`}>
-          <span
-            className={classNames(`${CLASS_NAME}__git-sync-repo`, {
-              [`${CLASS_NAME}__git-sync-repo--not-connected`]: !gitRepo,
-            })}
-          >
-            <Icon
-              icon={gitProviderIconMap[provider]}
-              size="small"
-              className={`${CLASS_NAME}__git-sync-repo__icon${
-                !gitRepo ? "-not-connected" : ""
-              }`}
-            />
-            <span>{gitRepo ? gitRepo : "Not connected"}</span>
-          </span>
-        </div>
+        /> */}
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <Icon
+            icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
+            size="small"
+          />
+          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+            {gitRepo ? gitRepo : "Not connected"}
+          </Text>
 
-        <div className={`${CLASS_NAME}__recently-used`}>
-          <span className={`${CLASS_NAME}__last-build`}>
-            <span className={`${CLASS_NAME}__last-build__title`}>
-              Last commit:{" "}
-            </span>
-            {lastBuild ? (
-              <UserAndTime
-                account={lastBuild.commit.user?.account || {}}
-                time={lastBuild.createdAt}
-              />
-            ) : (
-              <span className={`${CLASS_NAME}__last-build__not-yet`}>
-                No commit yet
-              </span>
-            )}
-          </span>
-        </div>
+          <UserAndTime
+            account={lastBuild?.commit?.user?.account || {}}
+            time={lastBuild?.createdAt}
+            label="Last commit:"
+          />
+        </FlexItem>
       </ListItem>
     </>
   );
