@@ -97,9 +97,7 @@ export const EntityListItem = ({
 
   const { trackEvent } = useTracking();
 
-  const [updateResourceSettings, { error: updateError }] = useMutation<TData>(
-    UPDATE_SERVICE_SETTINGS
-  );
+  const [updateResourceSettings] = useMutation<TData>(UPDATE_SERVICE_SETTINGS);
   const { handleSubmit } = useSettingsHook({
     trackEvent,
     resourceId,

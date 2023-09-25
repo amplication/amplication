@@ -82,9 +82,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
 
-  const [currentNewEntity, setCurrentNewEntity] =
-    useState<CreateEntityType>(null);
-
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
@@ -166,7 +163,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
   const handleSubmit = useCallback(
     (data: CreateEntityType) => {
       if (data.displayName.toLowerCase() === USER_ENTITY.toLowerCase()) {
-        setCurrentNewEntity(data);
         setConfirmInstall(true);
         return;
       }
@@ -188,7 +184,7 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
         },
       }).catch(console.error);
     },
-    [createEntity, setCurrentNewEntity, setConfirmInstall, resourceId]
+    [createEntity, setConfirmInstall, resourceId]
   );
 
   const handleDismissConfirmationInstall = useCallback(() => {
@@ -204,26 +200,6 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
       },
     }).catch(console.error);
   }, [setConfirmInstall, createDefaultEntities, resourceId]);
-
-  const handleDismissInstall = useCallback(() => {
-    setConfirmInstall(false);
-    const displayName = currentNewEntity.displayName.trim();
-    const pluralDisplayName = generatePluralDisplayName(displayName);
-    const singularDisplayName = generateSingularDisplayName(displayName);
-    const name = pascalCase(singularDisplayName);
-
-    createEntity({
-      variables: {
-        data: {
-          displayName,
-          pluralDisplayName,
-          name,
-
-          resource: { connect: { id: resourceId } },
-        },
-      },
-    }).catch(console.error);
-  }, [setConfirmInstall, createEntity, resourceId, currentNewEntity]);
 
   useEffect(() => {
     if (data) {

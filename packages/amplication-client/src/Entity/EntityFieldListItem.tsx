@@ -27,8 +27,6 @@ type Props = {
   onError: (error: Error) => void;
 };
 
-const CLASS_NAME = "entity-field-list-item";
-
 export const EntityFieldListItem = ({
   entityField,
   entity,

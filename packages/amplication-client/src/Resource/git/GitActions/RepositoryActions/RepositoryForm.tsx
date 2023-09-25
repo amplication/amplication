@@ -24,15 +24,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "name",
 ];
 
-const TOOLTIP_DIRECTION = "n";
-const DEMO_REPO_TOOLTIP =
-  "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to your own repository.";
-
 export const INITIAL_VALUES: Partial<models.GitRepository> = {
   baseBranchName: "",
 };
-
-const CLASS_NAME = "auth-with-git";
 
 const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
