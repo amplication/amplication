@@ -13,7 +13,7 @@ import {
   FlexItem,
   EnumFlexItemMargin,
   EnumFlexDirection,
-  EnumContentAlign,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
@@ -105,6 +105,7 @@ export const RoleList = React.memo(
         <FlexItem
           margin={EnumFlexItemMargin.Top}
           direction={EnumFlexDirection.Column}
+          itemsAlign={EnumItemsAlign.Stretch}
         >
           {data?.resourceRoles?.map((role) => (
             <InnerTabLink
