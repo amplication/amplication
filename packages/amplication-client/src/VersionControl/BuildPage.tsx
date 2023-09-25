@@ -2,7 +2,7 @@ import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import {
   CircularProgress,
   EnumFlexItemMargin,
@@ -77,7 +77,11 @@ const BuildPage = ({ match }: Props) => {
 
   return (
     <>
-      <PageContent className={CLASS_NAME} pageTitle={`Build ${truncatedId}`}>
+      <PageContent
+        pageWidth={EnumPageWidth.Wide}
+        className={CLASS_NAME}
+        pageTitle={`Build ${truncatedId}`}
+      >
         {!data ? (
           <CircularProgress centerToParent />
         ) : (
