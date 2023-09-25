@@ -56,7 +56,7 @@
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.2.1",
     "@novu/node": "^0.18.0",
-    "@novu/notification-center": "^0.18.0",
+    "@novu/notification-center": "^0.19.0",
     "@ntegral/nestjs-sendgrid": "^1.0.0",
     "@octokit/app": "^13.1.1",
     "@octokit/auth-app": "^4.0.8",
