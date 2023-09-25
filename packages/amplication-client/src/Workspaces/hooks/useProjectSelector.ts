@@ -27,7 +27,10 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string; project: string }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
+
   const project = projectMatch?.params?.project;
+  console.log({ project });
+
   const workspace =
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
   const [currentProject, setCurrentProject] = useState<models.Project>();
@@ -99,6 +102,8 @@ const useProjectSelector = (
   }, [projectListData, loadingList]);
 
   useEffect(() => {
+    console.log("effect", { project });
+
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
@@ -114,12 +119,13 @@ const useProjectSelector = (
       });
     }
 
-    // !!(!workspaceUtil && currentWorkspace?.id) &&
-    //   history.push(
-    //     `/${currentWorkspace?.id}/${projectsList[0].id}${
-    //       isFromSignup || isSignupCookieExist ? "/welcome" : ""
-    //     }`
-    //   );
+    console.log("before push");
+    !!(!workspaceUtil && currentWorkspace?.id) &&
+      history.push(
+        `/${currentWorkspace?.id}/${projectsList[0].id}${
+          isFromSignup || isSignupCookieExist ? "/welcome" : ""
+        }`
+      );
   }, [
     currentWorkspace?.id,
     history,

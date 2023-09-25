@@ -45,6 +45,7 @@ export type Props = {
   contentAlign?: EnumContentAlign;
   itemsAlign?: EnumItemsAlign;
   gap?: EnumGapSize;
+  wrap?: boolean;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -59,6 +60,7 @@ export const FlexItem = ({
   contentAlign = EnumContentAlign.Start,
   itemsAlign = EnumItemsAlign.Start,
   gap = EnumGapSize.Default,
+  wrap = false,
 }: Props) => {
   const marginClass = getMarginStyle(margin);
   const directionClass = `${CLASS_NAME}--${direction}`;
@@ -73,7 +75,11 @@ export const FlexItem = ({
         gapClass,
         className
       )}
-      style={{ justifyContent: contentAlign, alignItems: itemsAlign }}
+      style={{
+        justifyContent: contentAlign,
+        alignItems: itemsAlign,
+        flexWrap: wrap ? "wrap" : undefined,
+      }}
     >
       {start && <FlexStart>{start}</FlexStart>}
       {children}
