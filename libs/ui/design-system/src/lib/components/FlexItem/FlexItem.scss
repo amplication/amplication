@@ -12,6 +12,7 @@ $expandable-transition-duration: 0.1s;
   gap: var(--default-spacing);
   margin-top: 0;
   margin-bottom: 0;
+  min-width: 0;
 
   &__start,
   &__end {
@@ -20,6 +21,7 @@ $expandable-transition-duration: 0.1s;
     align-items: flex-start;
     justify-content: center;
     gap: 2px;
+    min-width: 0;
   }
 
   &--row {

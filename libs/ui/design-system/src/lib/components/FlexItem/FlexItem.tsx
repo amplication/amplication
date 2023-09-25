@@ -70,16 +70,21 @@ export type FlexStartProps = {
   className?: string;
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
+  minWidthAuto?: boolean;
 };
 
 export const FlexStart = ({
   children,
   className,
   alignSelf,
+  minWidthAuto = false,
 }: FlexStartProps) => {
   return (
     <div
-      style={{ alignSelf: alignSelf }}
+      style={{
+        alignSelf: alignSelf,
+        minWidth: minWidthAuto ? "auto" : undefined,
+      }}
       className={classNames(`${CLASS_NAME}__start`, className)}
     >
       {children}
@@ -91,12 +96,21 @@ export type FlexEndProps = {
   className?: string;
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
+  minWidthAuto?: boolean;
 };
 
-export const FlexEnd = ({ children, className, alignSelf }: FlexEndProps) => {
+export const FlexEnd = ({
+  children,
+  className,
+  alignSelf,
+  minWidthAuto = false,
+}: FlexEndProps) => {
   return (
     <div
-      style={{ alignSelf: alignSelf }}
+      style={{
+        alignSelf: alignSelf,
+        minWidth: minWidthAuto ? "auto" : undefined,
+      }}
       className={classNames(`${CLASS_NAME}__end`, className)}
     >
       {children}

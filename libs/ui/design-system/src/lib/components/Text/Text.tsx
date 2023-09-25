@@ -43,6 +43,7 @@ export type Props = {
   className?: string;
   children: ReactNode;
   textAlign?: EnumTextAlign;
+  singleLineEllipsis?: boolean;
 };
 
 const STYLE_TO_TAG: { [key: string]: string } = {
@@ -66,6 +67,7 @@ export function Text({
   children,
   textAlign = EnumTextAlign.Left,
   underline = false,
+  singleLineEllipsis = false,
 }: Props) {
   const styleClassName = `${CLASS_NAME}--${textStyle}`;
   const weightClassName = textWeight && `${CLASS_NAME}--weight-${textWeight}`;
@@ -85,6 +87,10 @@ export function Text({
         ...colorStyle,
         textAlign,
         textDecoration: underline ? "underline" : undefined,
+        whiteSpace: singleLineEllipsis ? "nowrap" : undefined,
+        overflow: singleLineEllipsis ? "hidden" : undefined,
+        textOverflow: singleLineEllipsis ? "ellipsis" : undefined,
+        width: singleLineEllipsis ? "100%" : undefined,
       }}
     >
       {children}
