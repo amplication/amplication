@@ -1,9 +1,10 @@
-import React, { useCallback } from "react";
-import { Link, LinkProps } from "react-router-dom";
-import { TruncatedId } from "./TruncatedId";
+import { EnumTextStyle, Text } from "@amplication/ui/design-system";
 import classNames from "classnames";
-import { useTracking, Event as TrackEvent } from "../util/analytics";
+import { useCallback } from "react";
+import { Link, LinkProps } from "react-router-dom";
+import { Event as TrackEvent, useTracking } from "../util/analytics";
 import "./ClickableId.scss";
+import { TruncatedId } from "./TruncatedId";
 
 type Props = LinkProps & {
   label?: string;
@@ -36,9 +37,12 @@ export const ClickableId = ({
 
   return (
     <span className={classNames("clickable-id", className)}>
-      {label}{" "}
+      {label && <Text textStyle={EnumTextStyle.Tag}>{label} </Text>}
+
       <Link {...rest} to={to} onClick={handleClick}>
-        <TruncatedId id={id} />
+        <Text textStyle={EnumTextStyle.Tag}>
+          <TruncatedId id={id} />
+        </Text>
       </Link>
     </span>
   );

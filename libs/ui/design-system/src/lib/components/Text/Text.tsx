@@ -38,6 +38,7 @@ export enum EnumTextWeight {
 export type Props = {
   textStyle?: EnumTextStyle;
   textWeight?: EnumTextWeight;
+  underline?: boolean;
   textColor?: EnumTextColor;
   className?: string;
   children: ReactNode;
@@ -64,6 +65,7 @@ export function Text({
   textColor,
   children,
   textAlign = EnumTextAlign.Left,
+  underline = false,
 }: Props) {
   const styleClassName = `${CLASS_NAME}--${textStyle}`;
   const weightClassName = textWeight && `${CLASS_NAME}--weight-${textWeight}`;
@@ -79,7 +81,11 @@ export function Text({
         weightClassName,
         className
       )}
-      style={{ ...colorStyle, textAlign }}
+      style={{
+        ...colorStyle,
+        textAlign,
+        textDecoration: underline ? "underline" : undefined,
+      }}
     >
       {children}
     </TagName>
