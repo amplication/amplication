@@ -201,6 +201,18 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
             </div>
           </>
         )}
+        <div className={`${CLASS_NAME}__header`}>
+          <p className={`${CLASS_NAME}__link-button`}>
+            Need more guidance? Explore our
+            <a
+              href="https://docs.amplication.com/how-to/import-prisma-schema/"
+              target="_blank"
+            >
+              &nbsp;documentation
+            </a>
+            &nbsp;on importing Prisma schema files
+          </p>
+        </div>
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </>
     </PageContent>
