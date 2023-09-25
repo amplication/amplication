@@ -17,13 +17,14 @@ import {
   Panel,
   Text,
 } from "@amplication/ui/design-system";
-import { getWorkspaceColor } from "./WorkspaceSelector";
+import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { EnumSubscriptionPlan } from "../models";
 import AddNewProject from "../Project/AddNewProject";
 import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import { useQuery } from "@apollo/client";
 import * as models from "../models";
 import { Link } from "react-router-dom";
+import { EnumGapSize } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";
@@ -66,7 +67,10 @@ export const WorkspaceOverview = () => {
             />
           }
         >
-          <FlexItem direction={EnumFlexDirection.Column}>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
             <Chip
               chipStyle={
                 SUBSCRIPTION_TO_CHIP_STYLE[
@@ -78,8 +82,8 @@ export const WorkspaceOverview = () => {
                 EnumSubscriptionPlan.Free}{" "}
               Plan
             </Chip>
-
-            <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
+            <WorkspaceSelector />
+            {/* <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text> */}
           </FlexItem>
           <FlexItem.FlexEnd alignSelf={EnumContentAlign.Start}>
             {membersData && membersData.workspaceMembers && (

@@ -5,6 +5,10 @@ import {
   CircleBadge,
   Dialog,
   CircularProgress,
+  Text,
+  EnumTextStyle,
+  FlexItem,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import WorkspaceSelectorList from "./WorkspaceSelectorList";
 import NewWorkspace from "./NewWorkspace";
@@ -48,11 +52,7 @@ function WorkspaceSelector() {
   }, [setIsOpen]);
 
   return (
-    <div
-      className={`${CLASS_NAME}${
-        isOpen ? ` ${CLASS_NAME}__open` : ` ${CLASS_NAME}__close`
-      }`}
-    >
+    <div className={`${CLASS_NAME}`}>
       <Dialog
         className="new-entity-dialog"
         isOpen={newWorkspace}
@@ -69,33 +69,15 @@ function WorkspaceSelector() {
       >
         {currentWorkspace ? (
           <>
-            <CircleBadge
-              name={currentWorkspace.name || ""}
-              color={getWorkspaceColor(
-                currentWorkspace.subscription?.subscriptionPlan
-              )}
-            />
-            <div className={`${CLASS_NAME}__current__details`}>
-              <span className={`${CLASS_NAME}__current__name`}>
-                {currentWorkspace.name}
-              </span>
-              <span
-                className={classNames(
-                  `${CLASS_NAME}__current__plan`,
-                  currentWorkspace.subscription?.subscriptionPlan?.toLocaleLowerCase()
-                )}
-              >
-                {currentWorkspace.subscription?.subscriptionPlan ||
-                  EnumSubscriptionPlan.Free}{" "}
-                Plan
-              </span>
-            </div>
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              type="button"
-              icon={isOpen ? "chevron_up" : "chevron_down"}
-              iconSize="xsmall"
-            />
+            <FlexItem itemsAlign={EnumItemsAlign.Center}>
+              <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                type="button"
+                icon={isOpen ? "chevron_up" : "chevron_down"}
+                iconSize="xsmall"
+              />
+            </FlexItem>
           </>
         ) : (
           <CircularProgress centerToParent />
