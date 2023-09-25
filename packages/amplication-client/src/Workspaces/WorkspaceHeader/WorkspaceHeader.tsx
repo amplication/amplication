@@ -150,7 +150,7 @@ const WorkspaceHeader: React.FC = () => {
             <MenuItem
               title="Home"
               icon="logo"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
+              to={`/${currentWorkspace?.id}`}
               disableHover
             />
           </div>

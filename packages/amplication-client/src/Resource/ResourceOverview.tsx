@@ -5,6 +5,7 @@ import {
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
+  List,
   Panel,
   Text,
 } from "@amplication/ui/design-system";
@@ -14,7 +15,6 @@ import { AppContext } from "../context/appContext";
 import DocsTile from "./DocsTile";
 import EntitiesTile from "./EntitiesTile";
 import FeatureRequestTile from "./FeatureRequestTile";
-import OverviewTile from "./OverviewTile";
 import RolesTile from "./RolesTile";
 import { ServicesTile } from "./ServicesTile";
 import SyncWithGithubTile from "./SyncWithGithubTile";
@@ -23,7 +23,6 @@ import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
 import PendingChangesNotification from "../VersionControl/PendingChangesNotification";
 
-const CLASS_NAME = "resource-home";
 const PAGE_TITLE = "Resource Overview";
 
 const ResourceOverview = () => {
@@ -57,27 +56,27 @@ const ResourceOverview = () => {
         </FlexItem>
       </Panel>
 
-      <div className={`${CLASS_NAME}__tiles`}>
-        {currentResource?.resourceType === EnumResourceType.Service && (
-          <OverviewTile resourceId={resourceId} />
-        )}
+      <List>
         <SyncWithGithubTile resourceId={resourceId} />
+        {currentResource?.resourceType === EnumResourceType.Service && (
+          <>
+            <EntitiesTile resourceId={resourceId} />
+
+            <RolesTile resourceId={resourceId} />
+          </>
+        )}
+        {currentResource?.resourceType === EnumResourceType.MessageBroker && (
+          <>
+            <TopicsTile resourceId={resourceId} />
+
+            <ServicesTile resourceId={resourceId} />
+          </>
+        )}
         <ViewCodeViewTile resourceId={resourceId} />
-        {currentResource?.resourceType === EnumResourceType.Service && (
-          <EntitiesTile resourceId={resourceId} />
-        )}
-        {currentResource?.resourceType === EnumResourceType.Service && (
-          <RolesTile resourceId={resourceId} />
-        )}
-        {currentResource?.resourceType === EnumResourceType.MessageBroker && (
-          <TopicsTile resourceId={resourceId} />
-        )}
-        {currentResource?.resourceType === EnumResourceType.MessageBroker && (
-          <ServicesTile resourceId={resourceId} />
-        )}
+
         <DocsTile />
         <FeatureRequestTile />
-      </div>
+      </List>
     </PageContent>
   );
 };

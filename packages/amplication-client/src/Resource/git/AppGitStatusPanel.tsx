@@ -2,14 +2,19 @@ import React, { useContext } from "react";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import {
   EnumIconPosition,
+  FlexItem,
   Icon,
   Label,
   Tooltip,
+  Text,
+  EnumTextStyle,
+  EnumTextColor,
+  EnumFlexItemMargin,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import * as models from "../../models";
 import { isEmpty } from "lodash";
-import "./AppGitStatusPanel.scss";
 import { format } from "date-fns";
 import { AppContext } from "../../context/appContext";
 import GitRepoDetails from "./GitRepoDetails";
@@ -43,10 +48,15 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
       {isEmpty(resource?.gitRepository) ? (
         <>
           {showDisconnectedMessage && (
-            <div className={`${CLASS_NAME}__message`}>
-              Connect to a git provider to create a Pull Request with the
-              generated code
-            </div>
+            <FlexItem margin={EnumFlexItemMargin.Both}>
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.ThemeOrange}
+              >
+                Connect to a git provider to create a Pull Request with the
+                generated code
+              </Text>
+            </FlexItem>
           )}
           <Link
             title={"Connect to a git provider"}
@@ -63,10 +73,13 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
           </Link>
         </>
       ) : (
-        <div className={`${CLASS_NAME}__connected`}>
-          <Label text="connected to:" />
-          <div className={`${CLASS_NAME}__connected__details`}>
-            <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
+        <div>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <Text textStyle={EnumTextStyle.Tag}>Connected to:</Text>
+
+            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+              <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
+            </Text>
             <a
               className={`${CLASS_NAME}__git-link`}
               href={gitRepositoryUrl}
@@ -84,14 +97,18 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
                 }}
               />
             </a>
-          </div>
-          <div className={`${CLASS_NAME}__last-sync`}>
-            <Icon icon="clock" />
+          </FlexItem>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <Text textStyle={EnumTextStyle.Tag}>Last sync:</Text>
             <Tooltip aria-label={`Last sync: ${lastSyncDate}`}>
-              <span>Last sync </span>
-              {lastSyncDate}
+              <Text
+                textStyle={EnumTextStyle.Tag}
+                textColor={EnumTextColor.White}
+              >
+                {lastSyncDate}
+              </Text>
             </Tooltip>
-          </div>
+          </FlexItem>
         </div>
       )}
     </div>
