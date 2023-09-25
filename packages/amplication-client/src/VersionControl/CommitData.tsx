@@ -1,16 +1,15 @@
-import React from "react";
-import { CommitMessage } from "../Components/CommitMessage";
-import UserBadge from "../Components/UserBadge";
-import { Commit } from "../models";
-import "./CommitData.scss";
 import {
-  EnumContentAlign,
   EnumFlexDirection,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
+import React from "react";
+import { CommitMessage } from "../Components/CommitMessage";
+import UserBadge from "../Components/UserBadge";
+import { Commit } from "../models";
+import "./CommitData.scss";
 
 type Props = {
   commit: Commit;

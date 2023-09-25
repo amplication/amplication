@@ -1,4 +1,3 @@
-import PendingChange from "../VersionControl/PendingChange";
 import { EnumResourceType } from "../models";
 
 export type MenuItemLinks =

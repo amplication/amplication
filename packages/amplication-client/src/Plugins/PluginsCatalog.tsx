@@ -165,8 +165,9 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const errorMessage = formatError(createError) || formatError(updateError);
 
-  const [createDefaultEntities, { data: defaultEntityData }] =
-    useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
+  const [createDefaultEntities] = useMutation<TEntities>(
+    CREATE_DEFAULT_ENTITIES,
+    {
       onCompleted: (data) => {
         if (!data) return;
         const userEntity = data.createDefaultEntities.find(
@@ -210,7 +211,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           }).catch(console.error);
         }
       },
-    });
+    }
+  );
 
   const handleCreateDefaultEntitiesConfirmation = useCallback(() => {
     createDefaultEntities({

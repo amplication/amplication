@@ -66,13 +66,9 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
   },
 ];
 
-const WorkspaceHeader: React.FC<{}> = () => {
-  const {
-    currentWorkspace,
-    currentProject,
-    currentProjectConfiguration,
-    openHubSpotChat,
-  } = useContext(AppContext);
+const WorkspaceHeader: React.FC = () => {
+  const { currentWorkspace, currentProject, openHubSpotChat } =
+    useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
   const { stigg } = useStiggContext();

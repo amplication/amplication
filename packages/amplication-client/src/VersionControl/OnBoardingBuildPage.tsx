@@ -1,20 +1,19 @@
-import React, { useCallback, useContext, useMemo, useState } from "react";
-import { match } from "react-router-dom";
-import { useQuery, useLazyQuery } from "@apollo/client";
-import * as models from "../models";
-import PageContent from "../Layout/PageContent";
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
-import { formatError } from "../util/error";
-import BuildSteps from "./BuildSteps";
-import ActionLog from "./ActionLog";
-import { GET_BUILD } from "./useBuildWatchStatus";
-import { GET_COMMIT } from "./PendingChangesPage";
-import { truncateId } from "../util/truncatedId";
-import "./BuildPage.scss";
-import DataPanel, { TitleDataType } from "./DataPanel";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
+import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
-import { boolean } from "yup/lib/locale";
+import * as models from "../models";
+import { formatError } from "../util/error";
+import { truncateId } from "../util/truncatedId";
+import ActionLog from "./ActionLog";
+import "./BuildPage.scss";
+import BuildSteps from "./BuildSteps";
+import DataPanel, { TitleDataType } from "./DataPanel";
+import { GET_COMMIT } from "./PendingChangesPage";
+import { GET_BUILD } from "./useBuildWatchStatus";
 
 type LogData = {
   action: models.Action;
