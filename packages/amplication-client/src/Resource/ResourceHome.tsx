@@ -24,6 +24,7 @@ type Props = AppRouteProps & {
 };
 
 const CLASS_NAME = "resource-home";
+const OVERVIEW = "Overview";
 
 const ResourceHome = ({
   match,
@@ -34,48 +35,46 @@ const ResourceHome = ({
   const { currentResource, currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
 
-  const fixedTabs: TabItem[] = useMemo(
-    () =>
-      resourceMenuLayout[currentResource?.resourceType]?.map(
-        (menuItem: MenuItemLinks) => {
-          const indicatorValue =
-            menuItem === "pendingChanges" && pendingChanges?.length
-              ? pendingChanges.length
-              : undefined;
+  const tabs: TabItem[] = useMemo(() => {
+    const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
+      (menuItem: MenuItemLinks) => {
+        const indicatorValue =
+          menuItem === "pendingChanges" && pendingChanges?.length
+            ? pendingChanges.length
+            : undefined;
 
-          return {
-            name: linksMap[menuItem].title,
-            to: setResourceUrlLink(
-              currentWorkspace.id,
-              currentProject.id,
-              currentResource.id,
-              linksMap[menuItem].to
-            ),
-            iconName: linksMap[menuItem].icon,
-            exact: false,
-            indicatorValue,
-          };
-        }
-      ),
-    [currentResource, currentWorkspace, currentProject, pendingChanges]
-  );
+        return {
+          name: linksMap[menuItem].title,
+          to: setResourceUrlLink(
+            currentWorkspace.id,
+            currentProject.id,
+            currentResource.id,
+            linksMap[menuItem].to
+          ),
+          iconName: linksMap[menuItem].icon,
+          exact: false,
+          indicatorValue,
+        };
+      }
+    );
+    return [
+      {
+        name: OVERVIEW,
+        to: match.url,
+        exact: true,
+      },
+      ...(fixedRoutes || []),
+    ];
+  }, [currentResource, currentWorkspace, currentProject, pendingChanges]);
 
   useBreadcrumbs(currentResource?.name, match.url);
 
   const { currentRouteIsTab } = useTabRoutes(tabRoutesDef);
-  const tabItems: TabItem[] = [
-    {
-      name: "Overview",
-      to: match.url,
-      exact: true,
-    },
-    ...(fixedTabs || []),
-  ];
 
   return (
     <>
       {(match.isExact || currentRouteIsTab) && currentResource ? (
-        <PageLayout className={CLASS_NAME} tabs={tabItems}>
+        <PageLayout className={CLASS_NAME} tabs={tabs}>
           {match.isExact ? <ResourceOverview /> : tabRoutes}
         </PageLayout>
       ) : (
