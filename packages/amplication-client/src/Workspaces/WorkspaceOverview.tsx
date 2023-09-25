@@ -6,8 +6,8 @@ import {
   Chip,
   CircleBadge,
   EnumChipStyle,
-  EnumFlexItemContentAlign,
-  EnumFlexItemContentDirection,
+  EnumItemsAlign,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumPanelStyle,
   EnumTextStyle,
@@ -66,7 +66,7 @@ export const WorkspaceOverview = () => {
             />
           }
         >
-          <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+          <FlexItem direction={EnumFlexDirection.Column}>
             <Chip
               chipStyle={
                 SUBSCRIPTION_TO_CHIP_STYLE[
@@ -81,7 +81,7 @@ export const WorkspaceOverview = () => {
 
             <Text textStyle={EnumTextStyle.H3}>{currentWorkspace.name}</Text>
           </FlexItem>
-          <FlexItem.FlexEnd alignSelf={EnumFlexItemContentAlign.Start}>
+          <FlexItem.FlexEnd alignSelf={EnumItemsAlign.Start}>
             {membersData && membersData.workspaceMembers && (
               <Link to={`/${currentWorkspace.id}/members`}>
                 <Text textStyle={EnumTextStyle.Tag}>

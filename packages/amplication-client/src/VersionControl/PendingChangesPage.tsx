@@ -3,7 +3,7 @@ import PageContent from "../Layout/PageContent";
 import PendingChangeWithCompare from "./PendingChangeWithCompare";
 import { EnumCompareType } from "./PendingChangeDiffEntity";
 import {
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
@@ -67,7 +67,7 @@ const PendingChangesPage = () => {
 
         <HorizontalRule />
 
-        <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+        <FlexItem direction={EnumFlexDirection.Row}>
           <FlexItem.FlexStart>
             <Text textStyle={EnumTextStyle.H4}>Compare Changes</Text>
           </FlexItem.FlexStart>

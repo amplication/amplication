@@ -4,7 +4,7 @@ import * as models from "../models";
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import {
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumTextColor,
   EnumTextStyle,
@@ -116,7 +116,7 @@ function PluginsCatalogItem({
         <FlexItem.FlexStart>
           <PluginLogo plugin={plugin} />
         </FlexItem.FlexStart>
-        <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+        <FlexItem direction={EnumFlexDirection.Column}>
           <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
             {name}
           </Text>

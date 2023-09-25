@@ -8,7 +8,7 @@ import {
   Chip,
   ConfirmationDialog,
   EnumChipStyle,
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumTextStyle,
   FlexItem,
   ListItem,
@@ -138,7 +138,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           <UserAvatar firstName={data.firstName} lastName={data.lastName} />
         }
         end={
-          <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+          <FlexItem direction={EnumFlexDirection.Row}>
             {data.isInvitation && (
               <Tooltip
                 aria-label="Resend invitation"
@@ -170,7 +170,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           </FlexItem>
         }
       >
-        <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+        <FlexItem direction={EnumFlexDirection.Row}>
           <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
           {data.isOwner && (
             <Chip chipStyle={EnumChipStyle.ThemeBlue}>Owner</Chip>
