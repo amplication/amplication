@@ -3,7 +3,12 @@ import { match } from "react-router-dom";
 import { useQuery, useLazyQuery } from "@apollo/client";
 import * as models from "../models";
 import PageContent from "../Layout/PageContent";
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  EnumFlexItemMargin,
+  FlexItem,
+  Snackbar,
+} from "@amplication/ui/design-system";
 import { formatError } from "../util/error";
 import BuildSteps from "./BuildSteps";
 import ActionLog from "./ActionLog";
@@ -77,10 +82,12 @@ const BuildPage = ({ match }: Props) => {
           <CircularProgress centerToParent />
         ) : (
           <>
-            <BackNavigation
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
-              label="Back to Commits"
-            />
+            <FlexItem margin={EnumFlexItemMargin.Bottom}>
+              <BackNavigation
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+                label="Back to Commits"
+              />
+            </FlexItem>
             {commitData && (
               <DataPanel
                 id={data.build.id}

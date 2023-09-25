@@ -24,6 +24,7 @@ const CommitResourceList: React.FC<Props> = ({
         dataType={TitleDataType.COMMIT}
         createdAt={commit?.createdAt}
         account={commit?.user?.account}
+        description={commit?.message}
       />
       <div className={`${CLASS_NAME}__content`}>
         {commit.builds && commit.builds.length > 0 && (

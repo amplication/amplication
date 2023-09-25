@@ -37,7 +37,6 @@ const CommitList = ({
   return (
     <div className={CLASS_NAME}>
       {loading && <CircularProgress centerToParent />}
-
       {currentProject &&
         commits.map((commit) => (
           <CommitListItem
