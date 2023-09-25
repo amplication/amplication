@@ -12,7 +12,8 @@ $tabs-width: 300px;
   overflow-y: auto;
 
   &__header {
-    max-width: var(--page-content-width);
+    box-sizing: border-box;
+    max-width: var(--page-content-width-default);
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -20,12 +21,43 @@ $tabs-width: 300px;
 
   &__body {
     display: flex;
+    box-sizing: border-box;
     flex: 1;
-    max-width: var(--page-content-width);
+    max-width: var(--page-content-width-default);
     padding: var(--large-spacing);
     margin-left: auto;
     margin-right: auto;
     width: 100%;
+  }
+
+  &--width-default {
+    .amp-page-content__header {
+      max-width: var(--page-content-width-default);
+    }
+
+    .amp-page-content__body {
+      max-width: var(--page-content-width-default);
+    }
+  }
+
+  &--width-wide {
+    .amp-page-content__header {
+      max-width: var(--page-content-width-wide);
+    }
+
+    .amp-page-content__body {
+      max-width: var(--page-content-width-wide);
+    }
+  }
+
+  &--width-full {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
   }
 
   &__side {
