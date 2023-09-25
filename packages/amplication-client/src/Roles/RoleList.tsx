@@ -8,10 +8,11 @@ import {
   SearchField,
   Snackbar,
   CircularProgress,
+  Text,
+  EnumTextStyle,
 } from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
-import "./RoleList.scss";
 import { AppContext } from "../context/appContext";
 import { pluralize } from "../util/pluralize";
 
@@ -68,7 +69,6 @@ export const RoleList = React.memo(
 
     useEffect(() => {
       if (selectFirst && data && !isEmpty(data.resourceRoles)) {
-        console.log("role list effect - inside");
         const role = data.resourceRoles[0];
         const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`;
         history.push(fieldUrl);
@@ -84,28 +84,26 @@ export const RoleList = React.memo(
 
     return (
       <div className={CLASS_NAME}>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.resourceRoles.length}{" "}
+          {pluralize(data?.resourceRoles.length, "Role", "Roles")}
+        </Text>
         <SearchField
           label="search"
           placeholder="search"
           onChange={handleSearchChange}
         />
-        <div className={`${CLASS_NAME}__header`}>
-          {data?.resourceRoles.length}{" "}
-          {pluralize(data?.resourceRoles.length, "Role", "Roles")}
-        </div>
+
         {loading && <CircularProgress centerToParent />}
-        <div className={`${CLASS_NAME}__list`}>
-          {data?.resourceRoles?.map((role) => (
-            <div key={role.id} className={`${CLASS_NAME}__list__item`}>
-              <InnerTabLink
-                icon="roles"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
-              >
-                <span>{role.displayName}</span>
-              </InnerTabLink>
-            </div>
-          ))}
-        </div>
+
+        {data?.resourceRoles?.map((role) => (
+          <InnerTabLink
+            icon="roles"
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
+          >
+            <span>{role.displayName}</span>
+          </InnerTabLink>
+        ))}
         {data?.resourceRoles && (
           <NewRole onRoleAdd={handleRoleChange} resourceId={resourceId} />
         )}
