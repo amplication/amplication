@@ -1,7 +1,7 @@
+import { TabItem, Tabs } from "@amplication/ui/design-system";
+import classNames from "classnames";
 import React from "react";
 import "./PageLayout.scss";
-import classNames from "classnames";
-import { Tabs, TabItem } from "@amplication/ui/design-system";
 
 type Props = {
   children: React.ReactNode;

@@ -21,6 +21,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
+import PendingChangesNotification from "../VersionControl/PendingChangesNotification";
 
 const CLASS_NAME = "resource-home";
 const PAGE_TITLE = "Resource Overview";
@@ -31,7 +32,10 @@ const ResourceOverview = () => {
   const resourceId = currentResource?.id;
 
   return (
-    <PageContent pageTitle={PAGE_TITLE}>
+    <PageContent
+      pageTitle={PAGE_TITLE}
+      headerContent={<PendingChangesNotification />}
+    >
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
           start={
