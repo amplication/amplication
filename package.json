@@ -284,7 +284,7 @@
     "generate-package-json-webpack-plugin": "^2.6.0",
     "get-port": "^5.1.1",
     "google-libphonenumber": "^3.2.31",
-    "graphql": "^16.6.0",
+    "graphql": "^16.8.1",
     "html-webpack-plugin": "^5.5.1",
     "husky": "^8.0.2",
     "jest": "^28.1.3",
