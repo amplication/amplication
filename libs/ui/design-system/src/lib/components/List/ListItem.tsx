@@ -1,7 +1,14 @@
 import React, { ReactNode, CSSProperties } from "react";
 import classNames from "classnames";
 import "./List.scss";
-import { EnumFlexDirection, FlexItem, FlexItemProps, Icon } from "../..";
+import {
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumItemsAlign,
+  FlexItem,
+  FlexItemProps,
+  Icon,
+} from "../..";
 import { NavLink } from "react-router-dom";
 import { isEmpty } from "lodash";
 
@@ -29,8 +36,10 @@ export function ListItem(props: Props) {
     onClick,
     showDefaultActionIcon,
     direction = EnumFlexDirection.Column,
-    contentAlign: itemsAlign,
+    contentAlign = EnumContentAlign.Start,
+    itemsAlign = EnumItemsAlign.Start,
     margin,
+
     ...rest
   } = props;
 
@@ -52,8 +61,14 @@ export function ListItem(props: Props) {
         margin={margin}
         start={start}
         end={showDefaultActionIcon ? defaultActionIcon : end}
+        contentAlign={EnumContentAlign.Center}
+        itemsAlign={EnumItemsAlign.Center}
       >
-        <FlexItem direction={direction} contentAlign={itemsAlign}>
+        <FlexItem
+          direction={direction}
+          contentAlign={contentAlign}
+          itemsAlign={itemsAlign}
+        >
           {children}
         </FlexItem>
       </FlexItem>

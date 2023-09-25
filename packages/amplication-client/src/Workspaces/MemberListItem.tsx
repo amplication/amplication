@@ -134,6 +134,7 @@ function MemberListItem({ member, onDelete, onError }: Props) {
         onDismiss={handleDismissDelete}
       />
       <ListItem
+        direction={EnumFlexDirection.Row}
         start={
           <UserAvatar firstName={data.firstName} lastName={data.lastName} />
         }
@@ -170,15 +171,11 @@ function MemberListItem({ member, onDelete, onError }: Props) {
           </FlexItem>
         }
       >
-        <FlexItem direction={EnumFlexDirection.Row}>
-          <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
-          {data.isOwner && (
-            <Chip chipStyle={EnumChipStyle.ThemeBlue}>Owner</Chip>
-          )}
-          {data.isInvitation && (
-            <Chip chipStyle={EnumChipStyle.ThemePurple}>Pending</Chip>
-          )}
-        </FlexItem>
+        <Text textStyle={EnumTextStyle.Normal}>{data.email}</Text>
+        {data.isOwner && <Chip chipStyle={EnumChipStyle.ThemeBlue}>Owner</Chip>}
+        {data.isInvitation && (
+          <Chip chipStyle={EnumChipStyle.ThemePurple}>Pending</Chip>
+        )}
       </ListItem>
     </>
   );
