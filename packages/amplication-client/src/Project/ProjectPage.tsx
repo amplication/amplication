@@ -1,14 +1,13 @@
-import React, { useContext, useMemo } from "react";
-import ResourceList from "../Workspaces/ResourceList";
-import { AppRouteProps } from "../routes/routesUtil";
-import { match } from "react-router-dom";
-import "./ProjectPage.scss";
-import useBreadcrumbs from "../Layout/useBreadcrumbs";
-import PageLayout from "../Layout/PageLayout";
-import { AppContext } from "../context/appContext";
-import useTabRoutes from "../Layout/useTabRoutes";
 import { TabItem } from "@amplication/ui/design-system";
-import PendingChange from "../VersionControl/PendingChange";
+import React, { useContext, useMemo } from "react";
+import { match } from "react-router-dom";
+import PageLayout from "../Layout/PageLayout";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import useTabRoutes from "../Layout/useTabRoutes";
+import ResourceList from "../Workspaces/ResourceList";
+import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
+import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
   match: match<{
