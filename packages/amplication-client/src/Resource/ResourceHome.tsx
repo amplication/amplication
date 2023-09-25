@@ -97,6 +97,7 @@ export const GET_RESOURCE = gql`
       description
       githubLastSync
       githubLastMessage
+      resourceType
     }
   }
 `;

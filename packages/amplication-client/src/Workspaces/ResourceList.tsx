@@ -1,47 +1,38 @@
-import React, { useCallback, useContext, useState } from "react";
-import { gql, Reference, useMutation, useQuery } from "@apollo/client";
-import { isEmpty } from "lodash";
-import { formatError } from "../util/error";
-import { useTracking } from "../util/analytics";
 import {
-  SearchField,
-  Snackbar,
+  CircleBadge,
   CircularProgress,
+  EnumFlexItemMargin,
+  EnumPanelStyle,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
   LimitationNotification,
   List,
   Panel,
-  FlexItem,
-  CircleBadge,
+  SearchField,
+  Snackbar,
   Text,
-  EnumTextStyle,
-  EnumPanelStyle,
-  HorizontalRule,
 } from "@amplication/ui/design-system";
-import { EnumImages } from "../Components/SvgThemeImage";
-import * as models from "../models";
-import ResourceListItem from "./ResourceListItem";
-import "./ResourceList.scss";
-import { AppContext } from "../context/appContext";
+import { Reference, gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
+import { isEmpty } from "lodash";
+import { useCallback, useContext, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
-import { pluralize } from "../util/pluralize";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
-import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../util/BillingFeature";
+import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
-import { Flex } from "@primer/react/lib/deprecated";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { BillingFeature } from "../util/BillingFeature";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import { pluralize } from "../util/pluralize";
+import "./ResourceList.scss";
+import ResourceListItem from "./ResourceListItem";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
-};
-
-type TDeleteProjectData = {
-  deleteProject: models.Project;
-};
-
-type GetWorkspaceResponse = {
-  currentWorkspace: models.Workspace;
 };
 
 const CLASS_NAME = "resource-list";
@@ -49,7 +40,9 @@ const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
+
   const [error, setError] = useState<Error | null>(null);
+
   const {
     resources,
     addEntity,
@@ -57,6 +50,7 @@ function ResourceList() {
     loadingResources,
     errorResources,
     currentProject,
+    currentWorkspace,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
@@ -87,24 +81,6 @@ function ResourceList() {
     },
   });
 
-  const [deleteProject] = useMutation<TDeleteProjectData>(DELETE_PROJECT, {
-    update(cache, { data }) {
-      if (!data) return;
-      const deletedProjectId = data.deleteProject.id;
-
-      cache.modify({
-        fields: {
-          projects(existingProjectRefs, { readField }) {
-            return existingProjectRefs.filter(
-              (projectRef: Reference) =>
-                deletedProjectId !== readField("id", projectRef)
-            );
-          },
-        },
-      });
-    },
-  });
-
   const handleResourceDelete = useCallback(
     (resource) => {
       trackEvent({
@@ -120,24 +96,6 @@ function ResourceList() {
       }).catch(setError);
     },
     [deleteResource, setError, trackEvent]
-  );
-
-  const handleProjectDelete = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.ProjectDelete,
-    });
-    deleteProject({
-      onCompleted: () => {
-        addEntity();
-      },
-      variables: {
-        projectId: currentProject.id,
-      },
-    }).catch(setError);
-  }, [currentProject, deleteProject, setError, trackEvent]);
-
-  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
-    GET_CURRENT_WORKSPACE
   );
 
   const { stigg } = useStiggContext();
@@ -174,18 +132,18 @@ function ResourceList() {
           </Text>
         </FlexItem>
       </Panel>
-
-      <Text textStyle={EnumTextStyle.Tag}>
-        {resources.length}{" "}
-        {pluralize(resources.length, "Resource", "Resources")}
-      </Text>
-
+      <FlexItem margin={EnumFlexItemMargin.Bottom}>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {resources.length}{" "}
+          {pluralize(resources.length, "Resource", "Resources")}
+        </Text>
+      </FlexItem>
       {loadingResources && <CircularProgress centerToParent />}
 
       {!hideNotifications.hasAccess && (
         <LimitationNotification
           description="With the current plan, you can use up to 3 services."
-          link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+          link={`/${currentWorkspace?.id}/purchase`}
           handleClick={handleResourceClick}
         />
       )}
@@ -222,14 +180,6 @@ export default ResourceList;
 const DELETE_RESOURCE = gql`
   mutation deleteResource($resourceId: String!) {
     deleteResource(where: { id: $resourceId }) {
-      id
-    }
-  }
-`;
-
-const DELETE_PROJECT = gql`
-  mutation deleteProject($projectId: String!) {
-    deleteProject(where: { id: $projectId }) {
       id
     }
   }
