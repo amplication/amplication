@@ -13,7 +13,7 @@ import {
   FlexItem,
   EnumFlexItemMargin,
   EnumFlexDirection,
-  EnumItemsAlign,
+  EnumContentAlign,
 } from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";

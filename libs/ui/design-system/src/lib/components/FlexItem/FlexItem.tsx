@@ -14,7 +14,7 @@ export enum EnumFlexDirection {
   Column = "column",
 }
 
-export enum EnumItemsAlign {
+export enum EnumContentAlign {
   Center = "center",
   Start = "flex-start",
   End = "flex-end",
@@ -27,7 +27,7 @@ export type Props = {
   start?: ReactNode;
   end?: ReactNode;
   direction?: EnumFlexDirection;
-  itemsAlign?: EnumItemsAlign;
+  contentAlign?: EnumContentAlign;
 };
 
 const CLASS_NAME = "amp-flex-item";
@@ -39,7 +39,7 @@ export const FlexItem = ({
   end,
   margin = EnumFlexItemMargin.None,
   direction = EnumFlexDirection.Row,
-  itemsAlign = EnumItemsAlign.Start,
+  contentAlign: itemsAlign = EnumContentAlign.Start,
 }: Props) => {
   const marginClass = getMarginStyle(margin);
   const directionClass = `${CLASS_NAME}--${direction}`;
@@ -59,7 +59,7 @@ export const FlexItem = ({
 export type FlexStartProps = {
   className?: string;
   children?: ReactNode;
-  alignSelf?: EnumItemsAlign;
+  alignSelf?: EnumContentAlign;
 };
 
 export const FlexStart = ({
@@ -80,7 +80,7 @@ export const FlexStart = ({
 export type FlexEndProps = {
   className?: string;
   children?: ReactNode;
-  alignSelf?: EnumItemsAlign;
+  alignSelf?: EnumContentAlign;
 };
 
 export const FlexEnd = ({ children, className, alignSelf }: FlexEndProps) => {
