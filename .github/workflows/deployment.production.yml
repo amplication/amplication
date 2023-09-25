@@ -1,4 +1,4 @@
-name: Deployment production
+name: Deployment Production
 
 on:
   release:
@@ -27,9 +27,9 @@ jobs:
 
       - name: Determine base tag
         run: |
-          TAG=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
-          echo "Base tag used for calculating the affected projects: $TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG (used to detect the affected projects)"
+          echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
         id: base
         
       - uses: actions/setup-node@v3
