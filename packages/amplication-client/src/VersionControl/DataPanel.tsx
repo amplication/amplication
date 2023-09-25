@@ -1,4 +1,5 @@
 import {
+  EnumFlexItemMargin,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -54,7 +55,11 @@ const DataPanel: React.FC<Props> = ({
         </FlexItem.FlexEnd>
       </FlexItem>
 
-      {description && <Text textStyle={EnumTextStyle.Tag}>{description}</Text>}
+      {description && (
+        <FlexItem margin={EnumFlexItemMargin.Top}>
+          <Text textStyle={EnumTextStyle.Tag}>{description}</Text>
+        </FlexItem>
+      )}
       <HorizontalRule />
     </div>
   );
