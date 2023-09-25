@@ -17,9 +17,9 @@ export const resourceMenuLayout: {
 } = {
   [EnumResourceType.Service]: [
     "entities",
+    "roles",
     "plugins",
     "git",
-    "roles",
     "connections",
     "settings",
     "pendingChanges",

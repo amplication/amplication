@@ -31,6 +31,7 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import "./ResourceList.scss";
 import ResourceListItem from "./ResourceListItem";
+import PendingChangesNotification from "../VersionControl/PendingChangesNotification";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
@@ -108,7 +109,11 @@ function ResourceList() {
     formatError(errorResources) || (error && formatError(error));
 
   return (
-    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={PAGE_TITLE}
+      headerContent={<PendingChangesNotification />}
+    >
       <FlexItem
         start={
           <SearchField

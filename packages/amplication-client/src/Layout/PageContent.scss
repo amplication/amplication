@@ -12,7 +12,10 @@ $tabs-width: 300px;
   overflow-y: auto;
 
   &__header {
-    border-bottom: $border-black20;
+    max-width: var(--page-content-width);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
   }
 
   &__body {
