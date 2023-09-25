@@ -1,5 +1,9 @@
 import {
   ConfirmationDialog,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
   ListItem,
@@ -195,27 +199,25 @@ export const EntityListItem = ({
             <Text textStyle={EnumTextStyle.Subtle}>{entity.description}</Text>
           }
           end={
-            <>
-              <div>
-                <Text textStyle={EnumTextStyle.Subtle}>Last commit:</Text>
-
-                {latestVersion.commit && (
-                  <UserAndTime
-                    account={latestVersion.commit.user?.account}
-                    time={latestVersion.commit.createdAt}
-                  />
-                )}
-              </div>
+            <FlexItem
+              itemsAlign={EnumItemsAlign.Center}
+              contentAlign={EnumContentAlign.End}
+              direction={EnumFlexDirection.Row}
+            >
               {entity.lockedByUser && (
-                <div>
-                  <Text textStyle={EnumTextStyle.Subtle}>Locked by:</Text>
-                  <UserAndTime
-                    account={entity.lockedByUser.account || {}}
-                    time={entity.lockedAt}
-                  />
-                </div>
+                <UserAndTime
+                  account={entity.lockedByUser.account || {}}
+                  time={entity.lockedAt}
+                  label="Locked:"
+                  valueColor={EnumTextColor.ThemeRed}
+                />
               )}
-            </>
+              <UserAndTime
+                account={latestVersion.commit?.user?.account}
+                time={latestVersion.commit?.createdAt}
+                label="Last commit:"
+              />
+            </FlexItem>
           }
         ></FlexItem>
       </ListItem>
