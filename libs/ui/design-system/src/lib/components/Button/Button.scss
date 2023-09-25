@@ -4,12 +4,11 @@ $split-icon-font-size: 20px;
 
 .amp-button {
   height: var(--default-button-height);
-  min-width: 120px;
+  min-width: 135px;
   border-radius: var(--default-button-radius) !important;
   border: $border-primary;
   box-sizing: border-box;
-  /** @todo: create mixin for font size and weight */
-  font-size: var(--normal-font-size) !important;
+  font-size: var(--tag-font-size) !important;
   font-weight: 400 !important;
   box-shadow: none !important;
   position: relative;

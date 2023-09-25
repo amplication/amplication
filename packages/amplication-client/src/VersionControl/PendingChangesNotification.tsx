@@ -54,7 +54,9 @@ const PendingChangesNotification = () => {
           <Link
             to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
           >
-            <Button buttonStyle={EnumButtonStyle.Outline}>View changes</Button>
+            <Button buttonStyle={EnumButtonStyle.Secondary}>
+              View changes
+            </Button>
           </Link>
         </FlexItem.FlexEnd>
       </FlexItem>
