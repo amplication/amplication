@@ -107,7 +107,13 @@ function ResourceForm({ resourceId }: Props) {
             return (
               <Form>
                 <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                  <Text textStyle={EnumTextStyle.H4}>Resource Settings</Text>
+                  <Text textStyle={EnumTextStyle.H4}>
+                    {data.resource.resourceType ===
+                    models.EnumResourceType.ProjectConfiguration
+                      ? "Project"
+                      : "Resource"}{" "}
+                    Settings
+                  </Text>
                 </FlexItem>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Name" />
