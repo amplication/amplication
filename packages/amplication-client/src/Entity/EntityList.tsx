@@ -17,8 +17,8 @@ import {
   EnumTextStyle,
   List,
   Text,
-  EnumFlexItemContentDirection,
-  EnumFlexItemContentAlign,
+  EnumFlexDirection,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
@@ -144,7 +144,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
 
-        <FlexItem contentAlign={EnumFlexItemContentAlign.Center}>
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
             <SearchField
               label="search"
@@ -154,8 +154,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           </FlexItem.FlexStart>
 
           <FlexItem
-            contentDirection={EnumFlexItemContentDirection.Row}
-            contentAlign={EnumFlexItemContentAlign.Center}
+            direction={EnumFlexDirection.Row}
+            itemsAlign={EnumItemsAlign.Center}
           >
             <svg
               width="16"
@@ -194,7 +194,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
             </svg>
           </FlexItem>
           <FlexItem.FlexEnd>
-            <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+            <FlexItem direction={EnumFlexDirection.Row}>
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >

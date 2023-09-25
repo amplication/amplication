@@ -1,7 +1,7 @@
 import { EnumResourceType } from "@amplication/code-gen-types/models";
 import {
   CircleBadge,
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
@@ -44,7 +44,7 @@ const ResourceOverview = () => {
             />
           }
         >
-          <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+          <FlexItem direction={EnumFlexDirection.Column}>
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
             <Text textStyle={EnumTextStyle.Subtle}>
               {currentResource?.description}

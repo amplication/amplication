@@ -185,8 +185,8 @@ export {
   FlexItem,
   Props as FlexItemProps,
   EnumFlexItemMargin,
-  EnumFlexItemContentDirection,
-  EnumFlexItemContentAlign,
+  EnumFlexDirection,
+  EnumItemsAlign,
   FlexStartProps,
   FlexEndProps,
 } from "./components/FlexItem/FlexItem";

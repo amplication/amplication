@@ -1,5 +1,5 @@
 import {
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -100,7 +100,7 @@ function WorkspaceForm() {
         </Formik>
       )}
 
-      <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+      <FlexItem direction={EnumFlexDirection.Column}>
         <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
         <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
       </FlexItem>

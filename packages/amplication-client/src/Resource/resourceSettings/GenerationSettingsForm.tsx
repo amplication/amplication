@@ -6,7 +6,7 @@ import {
   Snackbar,
   Text,
   ToggleField,
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
@@ -85,9 +85,7 @@ function GenerationSettingsForm({ match }: Props) {
 
                 <HorizontalRule />
                 <FormikAutoSave debounceMS={200} />
-                <FlexItem
-                  contentDirection={EnumFlexItemContentDirection.Column}
-                >
+                <FlexItem direction={EnumFlexDirection.Column}>
                   <ToggleField
                     name="serverSettings[generateGraphQL]"
                     label="GraphQL API"

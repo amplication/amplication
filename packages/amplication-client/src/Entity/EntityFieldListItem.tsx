@@ -1,5 +1,5 @@
 import {
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumTextColor,
   EnumTextStyle,
@@ -71,7 +71,7 @@ export const EntityFieldListItem = ({
     <ListItem onClick={handleRowClick}>
       <FlexItem
         start={
-          <FlexItem contentDirection={EnumFlexItemContentDirection.Row}>
+          <FlexItem direction={EnumFlexDirection.Row}>
             <Icon
               className="amp-data-grid-item__icon"
               icon={DATA_TYPE_TO_LABEL_AND_ICON[entityField.dataType].icon}
@@ -99,7 +99,7 @@ export const EntityFieldListItem = ({
         <Text textStyle={EnumTextStyle.Subtle}>{entityField.description}</Text>
       )}
       <FlexItem
-        contentDirection={EnumFlexItemContentDirection.Row}
+        direction={EnumFlexDirection.Row}
         margin={EnumFlexItemMargin.Top}
       >
         {entityField.dataType === models.EnumDataType.Lookup &&

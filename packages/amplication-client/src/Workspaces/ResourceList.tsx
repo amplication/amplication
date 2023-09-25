@@ -1,7 +1,7 @@
 import {
   CircleBadge,
   CircularProgress,
-  EnumFlexItemContentDirection,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumPanelStyle,
   EnumTextStyle,
@@ -127,7 +127,7 @@ function ResourceList() {
             <CircleBadge size="xlarge" name={currentProject?.name || ""} />
           }
         >
-          <FlexItem contentDirection={EnumFlexItemContentDirection.Column}>
+          <FlexItem direction={EnumFlexDirection.Column}>
             <Text textStyle={EnumTextStyle.H3}>{currentProject?.name}</Text>
             <Text textStyle={EnumTextStyle.Subtle}>
               {currentProject?.description}

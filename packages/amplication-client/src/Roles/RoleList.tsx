@@ -10,6 +10,10 @@ import {
   CircularProgress,
   Text,
   EnumTextStyle,
+  FlexItem,
+  EnumFlexItemMargin,
+  EnumFlexDirection,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import NewRole from "./NewRole";
 import InnerTabLink from "../Layout/InnerTabLink";
@@ -84,10 +88,13 @@ export const RoleList = React.memo(
 
     return (
       <div className={CLASS_NAME}>
-        <Text textStyle={EnumTextStyle.Tag}>
-          {data?.resourceRoles.length}{" "}
-          {pluralize(data?.resourceRoles.length, "Role", "Roles")}
-        </Text>
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <Text textStyle={EnumTextStyle.Tag}>
+            {data?.resourceRoles.length}{" "}
+            {pluralize(data?.resourceRoles.length, "Role", "Roles")}
+          </Text>
+        </FlexItem>
+
         <SearchField
           label="search"
           placeholder="search"
@@ -95,18 +102,22 @@ export const RoleList = React.memo(
         />
 
         {loading && <CircularProgress centerToParent />}
-
-        {data?.resourceRoles?.map((role) => (
-          <InnerTabLink
-            icon="roles"
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
-          >
-            <span>{role.displayName}</span>
-          </InnerTabLink>
-        ))}
-        {data?.resourceRoles && (
-          <NewRole onRoleAdd={handleRoleChange} resourceId={resourceId} />
-        )}
+        <FlexItem
+          margin={EnumFlexItemMargin.Top}
+          direction={EnumFlexDirection.Column}
+        >
+          {data?.resourceRoles?.map((role) => (
+            <InnerTabLink
+              icon="roles"
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/roles/${role.id}`}
+            >
+              <span>{role.displayName}</span>
+            </InnerTabLink>
+          ))}
+          {data?.resourceRoles && (
+            <NewRole onRoleAdd={handleRoleChange} resourceId={resourceId} />
+          )}
+        </FlexItem>
         <Snackbar open={Boolean(error)} message={errorMessage} />
       </div>
     );
