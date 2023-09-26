@@ -4,6 +4,7 @@ import "./List.scss";
 import {
   EnumContentAlign,
   EnumFlexDirection,
+  EnumGapSize,
   EnumItemsAlign,
   FlexItem,
   FlexItemProps,
@@ -68,6 +69,7 @@ export function ListItem(props: Props) {
           direction={direction}
           contentAlign={contentAlign}
           itemsAlign={itemsAlign}
+          gap={EnumGapSize.Small}
         >
           {children}
         </FlexItem>

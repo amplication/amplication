@@ -5,6 +5,7 @@ import * as models from "../models";
 
 import {
   ConfirmationDialog,
+  EnumItemsAlign,
   EnumTextColor,
   EnumTextStyle,
   EnumTextWeight,
@@ -13,7 +14,6 @@ import {
   ListItem,
   Text,
   UserAndTime,
-  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
@@ -104,8 +104,9 @@ function ResourceListItem({ resource, onDelete }: Props) {
         >
           {name}
         </Text>
-        <Text textStyle={EnumTextStyle.Tag}>{name}</Text>
-        <Text textStyle={EnumTextStyle.Subtle}>{description}</Text>
+        {description && (
+          <Text textStyle={EnumTextStyle.Subtle}>{description}</Text>
+        )}
 
         {/* @todo: check whether we still need to use EllipsisText*/}
         {/* <EllipsisText
@@ -128,6 +129,11 @@ function ResourceListItem({ resource, onDelete }: Props) {
             label="Last commit:"
           />
         </FlexItem>
+        {resourceType === models.EnumResourceType.Service && (
+          <Text textStyle={EnumTextStyle.Tag}>
+            {resource.entities.length} entities
+          </Text>
+        )}
       </ListItem>
     </>
   );
