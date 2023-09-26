@@ -16,6 +16,7 @@ import {
   Icon,
   Panel,
   Text,
+  EnumGapSize,
 } from "@amplication/ui/design-system";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { EnumSubscriptionPlan } from "../models";
@@ -24,7 +25,6 @@ import { GET_WORKSPACE_MEMBERS, TData as MemberListData } from "./MemberList";
 import { useQuery } from "@apollo/client";
 import * as models from "../models";
 import { Link } from "react-router-dom";
-import { EnumGapSize } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 const CLASS_NAME = "workspace-overview";
 const PAGE_TITLE = "Workspace Overview";

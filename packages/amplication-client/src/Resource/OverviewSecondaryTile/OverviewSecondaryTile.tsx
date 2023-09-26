@@ -6,15 +6,10 @@ import {
   Icon,
   ListItem,
   Text,
-} from "@amplication/ui/design-system";
-import {
   EnumFlexItemMargin,
-  FlexEnd,
-  FlexStart,
-} from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
-import React from "react";
+} from "@amplication/ui/design-system";
 
-const CLASS_NAME = "overview-secondary-tile";
+import React from "react";
 
 interface Props {
   title: string;

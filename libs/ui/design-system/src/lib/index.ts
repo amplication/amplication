@@ -190,6 +190,7 @@ export {
   EnumItemsAlign,
   FlexStartProps,
   FlexEndProps,
+  EnumGapSize,
 } from "./components/FlexItem/FlexItem";
 
 export {
