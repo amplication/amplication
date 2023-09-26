@@ -1,40 +1,46 @@
-name: _Reusable DSG Release template
+name: Release DSG to production
+run-name: Release DSG Version ${{ github.event.inputs.version }}
 
 on:
-  workflow_call:
+  workflow_dispatch:
     inputs:
-      branch:
-        description: Name of the git branch
-        required: true
+      version: 
         type: string
-      package-container:
-        description: If data-service-generator needs to be packaged too
-        required: false
-        default: false
-        type: boolean
-    secrets:
-      NX_CLOUD_ACCESS_TOKEN:
         required: true
-      RELEASE_PRODUCTION_PAT:
-        required: true
-      ECR_AWS_ACCESS_KEY_ID:
-        required: true
-      ECR_AWS_SECRET_ACCESS_KEY:
-        required: true
+        description: Version used create a new release. i.e. v1.0.0, v1.1.2, v2.0.1
+
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  ECHO_RED: '\033[0;31m'
+  ECHO_YELLOW: '\033[0;33m'
+  ECHO_GREEN: '\033[0;32m'
+  DSG_PACKAGE_JSON: packages/data-service-generator/package.json
 
 jobs:
-  generate-dsg-release:
+  check-version:
+    name: Check version syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check version is SemVer
+        run: |
+          if ! [[ "${{ inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version '${{ inputs.version }}'."
+            echo "Version must be a valid semver version. i.e. v1.0.0, v1.1.2, v2.0.1"
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
+        shell: bash
+
+  release-dsg:
     name: Create a release for data-service-generator
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
+    needs: check-version
     permissions:
       contents: write
     steps:
       - uses: actions/checkout@v3
         with:
           fetch-depth: 0
-          ref: ${{ inputs.branch }}
           token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
 
       - name: Determine if it's a new data-service-generator version, and its previous tag
@@ -44,16 +50,12 @@ jobs:
           NEW_TAG=dsg/$DSG_VERSION
           echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
 
-          IS_NEW_VERSION="false"
-
           # If the tag already exists, it means that was already released. So we skip it. 
           if git tag --list | grep -q "^$NEW_TAG"; then
-            IS_NEW_VERSION="false"
-            echo -e "✅ $ECHO_GREEN data-service-generator version '$NEW_TAG' already exists (so it was already released)."
-            echo -e "  $ECHO_GREEN Skipping..."
-            echo "🏷️ CURRENT VERSION=$NEW_TAG "
+            echo -e  "$ECHO_RED 🚨 data-service-generator version '$NEW_TAG' already exists (so it was already released). 🚨"
+            echo -e  "$ECHO_YELLOW If there are no data-service-generator container images tagged with ${{ inputs.version }}, delete the git tag ${NEW_TAG} and retry."
+            exit 1
           else
-            IS_NEW_VERSION="true"
             # create temporary tag to get the previous tag
             git tag $NEW_TAG
 
@@ -68,17 +70,40 @@ jobs:
             echo " 🏷️ NEW_TAG: $NEW_TAG"
             echo " 🏷️ PREVIOUS_TAG: $PREVIOUS_TAG "
           fi
-          echo "is-new-version=$IS_NEW_VERSION" >> $GITHUB_OUTPUT
-        env:
-          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+      - name: Update data-service-generator package.json
+        id: update-package-json
+        run: |
+          VERSION="${{ inputs.version }}"
+          APP_VERSION=${VERSION:1}
+          
+          # Check if jq is installed
+          if ! command -v jq &> /dev/null; then
+              echo "jq is not installed. Please install jq to use this script."
+              exit 1
+          fi
+
+          # Update the version in package.json
+          jq ".version = \"$APP_VERSION\"" $DSG_PACKAGE_JSON > temp-package.json && mv temp-package.json $DSG_PACKAGE_JSON
+
+          echo "Version in package.json updated to $APP_VERSION"
+          cat $DSG_PACKAGE_JSON
+          
+      - name: Commit changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(dsg): bump version to ${{ inputs.version }}"
+          branch: ${{ github.event.repository.default_branch }}
+          commit_user_name: amplication-engineering
+          commit_user_email: engineering@amplication.com
+          commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
 
       - name: Build data-service-generator Changelog
         id: changelog
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         uses: mikepenz/release-changelog-builder-action@v4
         with:
           fromTag: '${{ steps.check-tag.outputs.previous-tag }}'
-          toTag: HEAD # from actions/checkout@v3
+          toTag: '${{ github.sha }}'
           configurationJson: |
             {
               "ignore_labels": [
@@ -104,7 +129,6 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Configure AWS Credentials (operations account)
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
@@ -112,53 +136,31 @@ jobs:
           aws-region: us-east-1
 
       - name: Login to Amazon ECR (operations account)
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
           registries: '439403303254'
 
-      - name: Get git references
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
-        id: git-details
-        run: |
-          GIT_SHA=$(git rev-parse HEAD)
-          echo "ref=${{ inputs.branch }}" >> $GITHUB_OUTPUT
-          echo "sha=$GIT_SHA" >> $GITHUB_OUTPUT
-
       - name: Dockerize
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' && inputs.package-container == 'true' }}
         run: npx nx package:container data-service-generator --prod
         env:
           INPUT_PUSH: true
           # env variables substituted in the project.json docker target build-args
-          GIT_REF_NAME: ${{ steps.git-details.outputs.ref }}
-          GIT_SHA: ${{ steps.git-details.outputs.sha }}
+          GIT_REF_NAME: ${{ inputs.version }}
+          GIT_SHA: ${{ github.sha }}
 
       - name: Create data-service-generator git tag
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         run: |
           NEW_TAG="${{ steps.check-tag.outputs.new-tag }}"
           git push origin $NEW_TAG
 
       - name: Generate release notes artifact
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         run: |
           echo "${{ steps.changelog.outputs.changelog }}" >> release-notes.md
+          cat release-notes.md
 
       - name: Upload release notes artifact
-        if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
         uses: actions/upload-artifact@v3
         with:
           name: data-service-generator release notes
           path: release-notes.md
-
-      # - name: Release data-service-generator
-      #   id: release
-      #   if: ${{ steps.check-tag.outputs.is-new-version == 'true' }}
-      #   uses: softprops/action-gh-release@v1
-      #   with:
-      #     name: "[data-service-generator] ${{ steps.check-tag.outputs.new-dsg-version }}"
-      #     tag_name: "${{ steps.check-tag.outputs.new-tag }}"
-      #     draft: true
-      #     body: ${{ steps.changelog.outputs.changelog }}
