@@ -1,0 +1,39 @@
+@import "../../style/index.scss";
+
+.code-generator-version-form {
+  .toggle-field {
+    margin-bottom: var(--default-spacing);
+    span {
+      @include regular-12();
+    }
+
+    .input-label {
+      margin-right: var(--icon-spacing);
+    }
+  }
+
+  .select-field {
+    margin: var(--double-spacing) 0;
+  }
+
+  &__latest-minor {
+    @include body2;
+  }
+
+  &__tooltip__window {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .amp-icon {
+      color: #f85b6e;
+    }
+  }
+
+  &__view_plans_link {
+    color: #53dbee;
+    text-decoration: underline;
+    font-weight: 500;
+    margin-left: 4px;
+  }
+}

@@ -14,7 +14,11 @@ import { getToken, setTokenFromCookie } from "./authentication/authentication";
 import "@amplication/ui/design-system/icons";
 import "./index.scss";
 import App from "./App";
-import { REACT_APP_DATA_SOURCE, REACT_APP_PLUGIN_API_DATA_SOURCE } from "./env";
+import {
+  REACT_APP_DATA_SOURCE,
+  REACT_APP_PLUGIN_API_DATA_SOURCE,
+  CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
+} from "./env";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { createUploadLink } from "apollo-upload-client";
 import {
@@ -38,6 +42,10 @@ const pluginApiHttpLink = createHttpLink({
   uri: REACT_APP_PLUGIN_API_DATA_SOURCE,
 });
 
+const codeGeneratorCatalogHttpLink = createHttpLink({
+  uri: CODE_GENERATOR_CATALOG_API_DATA_SOURCE,
+});
+
 const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = getToken();
@@ -59,9 +67,14 @@ const apolloClient = new ApolloClient({
     (operation) => operation.getContext().clientName === "pluginApiHttpLink",
     pluginApiHttpLink,
     ApolloLink.split(
-      (operation) => operation.getContext().hasUpload,
-      authLink.concat(uploadLink),
-      authLink.concat(httpLink)
+      (operation) =>
+        operation.getContext().clientName === "codeGeneratorCatalogHttpLink",
+      codeGeneratorCatalogHttpLink,
+      ApolloLink.split(
+        (operation) => operation.getContext().hasUpload,
+        authLink.concat(uploadLink),
+        authLink.concat(httpLink)
+      )
     )
   ),
 });

@@ -1,4 +1,4 @@
-name: Nx
+name: Reusable Nx template
 
 on:
   workflow_call:

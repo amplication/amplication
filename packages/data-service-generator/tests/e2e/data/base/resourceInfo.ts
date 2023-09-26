@@ -1,5 +1,8 @@
 import { AppInfo } from "@amplication/code-gen-types";
-import { EnumAuthProviderType } from "@amplication/code-gen-types/models";
+import {
+  CodeGeneratorVersionStrategy,
+  EnumAuthProviderType,
+} from "@amplication/code-gen-types/models";
 
 export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".ts",
@@ -30,5 +33,9 @@ export const resourceInfo: AppInfo = {
       adminUIPath: "",
     },
     authEntityName: "User",
+  },
+  codeGeneratorVersionOptions: {
+    codeGeneratorVersion: null,
+    codeGeneratorStrategy: CodeGeneratorVersionStrategy.LatestMajor,
   },
 };

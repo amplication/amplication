@@ -49,6 +49,7 @@ export default function EntitiesERD({ resourceId }: { resourceId: string }) {
       setNodes(nodes);
       setEdges(edges);
     },
+    fetchPolicy: "no-cache",
   });
 
   const errorMessage = error && formatError(error);

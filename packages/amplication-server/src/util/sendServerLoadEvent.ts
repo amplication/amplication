@@ -2,10 +2,8 @@ import os from "os";
 import fetch from "node-fetch";
 import { JsonHelper } from "./jsonHelper";
 import { v4 as uuid } from "uuid";
-import {
-  name as APP_NAME,
-  version as APP_VERSION,
-} from "../../../../package.json";
+import { name as APP_NAME } from "../../../../package.json";
+import { version as APP_VERSION } from "../util/version";
 
 const getOSVersion = () =>
   os["version"] instanceof Function ? os["version"]() : "UNKNOWN";

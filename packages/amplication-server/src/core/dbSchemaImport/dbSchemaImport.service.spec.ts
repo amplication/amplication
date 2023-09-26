@@ -12,11 +12,10 @@ import { EntityService } from "../entity/entity.service";
 import { UserService } from "../user/user.service";
 import { UserActionService } from "../userAction/userAction.service";
 import { ActionService } from "../action/action.service";
-import { Env } from "../../env";
+import { KAFKA_TOPICS } from "@amplication/schema-registry";
 
 describe("DbSchemaImportService", () => {
   let service: DBSchemaImportService;
-  let configService: ConfigService;
   let kafkaProducerService: KafkaProducerService;
 
   const mockCreateDBSchemaImportArgs: CreateDBSchemaImportArgs = {
@@ -124,7 +123,6 @@ describe("DbSchemaImportService", () => {
     }).compile();
 
     service = module.get<DBSchemaImportService>(DBSchemaImportService);
-    configService = module.get<ConfigService>(ConfigService);
     kafkaProducerService =
       module.get<KafkaProducerService>(KafkaProducerService);
   });
@@ -150,7 +148,7 @@ describe("DbSchemaImportService", () => {
 
     expect(kafkaProducerService.emitMessage).toBeCalledTimes(1);
     expect(kafkaProducerService.emitMessage).toBeCalledWith(
-      configService.get(Env.DB_SCHEMA_IMPORT_TOPIC),
+      KAFKA_TOPICS.DB_SCHEMA_IMPORT_TOPIC,
       dbSchemaImportEvent
     );
   });

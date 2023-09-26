@@ -1,8 +1,6 @@
 {
   "name": "amplication",
-  "version": "1.8.11",
   "scripts": {
-    "postinstall": "nx run-many --target=install",
     "format:check": "npx nx format:check --all",
     "format:write": "npx nx format:write --all",
     "build": "nx run-many --target=build",
@@ -21,6 +19,7 @@
     "serve:git": "nx run-many --parallel --target=serve --projects=git-sync-manager",
     "serve:storage": "npx nx serve amplication-storage-gateway",
     "serve:plugins": "npx nx serve amplication-plugin-api",
+    "serve:notification": "npx nx serve notification-service",
     "debug:dsg": "npx nx generate-local-code data-service-generator"
   },
   "lint-staged": {
@@ -34,13 +33,10 @@
     "@amplication/react-diff-viewer-continued": "^3.4.3",
     "@apollo/client": "^3.7.1",
     "@aws-sdk/client-codecommit": "^3.362.0",
+    "@aws-sdk/client-ecr": "^3.405.0",
     "@codebrew/nestjs-storage": "^0.1.7",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.11.0",
-    "@google-cloud/cloudbuild": "^3.8.0",
-    "@google-cloud/secret-manager": "^4.2.2",
-    "@google-cloud/storage": "^5.20.5",
-    "@google-cloud/trace-agent": "^5.1.6",
     "@graphql-codegen/typescript-operations": "^4.0.1",
     "@graphql-codegen/typescript-react-apollo": "^3.3.7",
     "@monaco-editor/react": "^4.5.1",
@@ -59,6 +55,8 @@
     "@nestjs/platform-express": "^9.3.9",
     "@nestjs/serve-static": "^3.0.1",
     "@nestjs/swagger": "^6.2.1",
+    "@novu/node": "^0.18.0",
+    "@novu/notification-center": "^0.18.0",
     "@ntegral/nestjs-sendgrid": "^1.0.0",
     "@octokit/app": "^13.1.1",
     "@octokit/auth-app": "^4.0.8",
@@ -77,7 +75,7 @@
     "@prisma/client": "^4.16.2",
     "@prisma/instrumentation": "^4.16.2",
     "@sendgrid/mail": "^7.7.0",
-    "@stigg/node-server-sdk": "v0.80.1",
+    "@stigg/node-server-sdk": "v2.30.0",
     "@stigg/react-sdk": "^2.0.0",
     "@swc/core": "^1.3.11",
     "adm-zip": "^0.5.9",
@@ -97,6 +95,7 @@
     "core-js": "^3.6.5",
     "cron": "^2.3.0",
     "cronstrue": "^1.125.0",
+    "crypto-js": "^4.1.1",
     "cuid": "^2.1.8",
     "date-fns": "^2.29.3",
     "deepdash": "^5.3.9",
@@ -132,6 +131,7 @@
     "normalize-path": "^3.0.0",
     "octokit": "^1.8.1",
     "octokit-plugin-create-pull-request": "^3.13.1",
+    "openai": "^3.3.0",
     "opentelemetry-instrumentation-kafkajs": "^0.35.0",
     "ora": "5.4.0",
     "pacote": "^15.0.8",
@@ -143,7 +143,7 @@
     "php-serialize": "^4.0.2",
     "pluralize": "^8.0.0",
     "prettier": "^2.7.1",
-    "prisma-schema-dsl": "^2.1.6",
+    "prisma-schema-dsl": "^2.2.0",
     "prisma-schema-dsl-types": "^1.1.2",
     "query-string": "^7.1.1",
     "rc": "^1.2.8",
@@ -197,7 +197,7 @@
     "@nestjs/schematics": "^9.1.0",
     "@nestjs/testing": "^9.4.0",
     "@nrwl/cypress": "15.4.5",
-    "@nrwl/devkit": "^15.4.5",
+    "@nrwl/devkit": "15.4.5",
     "@nrwl/eslint-plugin-nx": "15.4.5",
     "@nrwl/express": "15.4.5",
     "@nrwl/jest": "15.4.5",
@@ -213,7 +213,7 @@
     "@nrwl/workspace": "15.4.5",
     "@nx-tools/nx-container": "^5.0.2",
     "@pmmmwh/react-refresh-webpack-plugin": "^0.5.7",
-    "@storybook/addon-essentials": "^7.0.2",
+    "@storybook/addon-essentials": "^6.5.15",
     "@storybook/builder-vite": "^0.2.6",
     "@storybook/builder-webpack5": "^6.5.15",
     "@storybook/core-server": "^6.5.15",
@@ -237,7 +237,7 @@
     "@types/jsonwebtoken": "^9.0.0",
     "@types/lodash": "^4.14.192",
     "@types/minimatch": "^3.0.5",
-    "@types/node": "^18.11.9",
+    "@types/node": "^18.17.1",
     "@types/node-fetch": "^2.6.2",
     "@types/normalize-path": "^3.0.0",
     "@types/pacote": "^11.1.5",
@@ -322,8 +322,8 @@
     "yup": "^0.32.11"
   },
   "engines": {
-    "node": "^18.3.0 || ^16.3.0",
-    "npm": "^8.1.0 || ^7.3.0"
+    "node": "^18.12.1",
+    "npm": "^9.0.0"
   },
   "bugs": {
     "url": "https://github.com/amplication/amplication/issues"

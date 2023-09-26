@@ -16,7 +16,7 @@ export const mongo: PluginInstallation[] = [
     pluginId: "db-mongo",
     npm: "@amplication/plugin-db-mongo",
     enabled: true,
-    version: "1.4.6",
+    version: "1.4.8",
   },
 ];
 

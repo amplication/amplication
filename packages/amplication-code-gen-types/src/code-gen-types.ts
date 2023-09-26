@@ -23,6 +23,7 @@ export type AppInfo = {
   id: string;
   url: string;
   settings: ServiceSettings;
+  codeGeneratorVersionOptions: models.CodeGeneratorVersionOptionsInput;
 };
 
 export type Role = Omit<
