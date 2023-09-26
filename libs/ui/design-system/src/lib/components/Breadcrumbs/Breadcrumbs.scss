@@ -5,6 +5,10 @@
     color: var(--black80);
     text-decoration: none;
     font-size: var(--default-font-size);
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 
   &__item_wrapper:last-child {
