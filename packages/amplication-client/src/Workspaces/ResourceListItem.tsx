@@ -13,8 +13,8 @@ import {
   ListItem,
   Text,
   UserAndTime,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
-import { EnumItemsAlign } from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { gitProviderIconMap } from "../Resource/git/git-provider-icon-map";
 import { AppContext } from "../context/appContext";
