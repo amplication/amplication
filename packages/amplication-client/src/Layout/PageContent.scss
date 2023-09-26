@@ -10,6 +10,7 @@ $tabs-width: 300px;
   flex-direction: column;
   overflow: hidden;
   overflow-y: auto;
+  min-height: 100%;
 
   &__header {
     box-sizing: border-box;
