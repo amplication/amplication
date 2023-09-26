@@ -83,12 +83,12 @@ const PendingChangesPage = () => {
           </FlexItem.FlexEnd>
         </FlexItem>
 
-        <div className={`${CLASS_NAME}__changes`}>
+        <div>
           {pendingChangesByResource.map((resourceChanges) => (
             <div key={resourceChanges.resource.id}>
-              <div className={`${CLASS_NAME}__title`}>
+              <Text textStyle={EnumTextStyle.Normal}>
                 {resourceChanges.resource.name}
-              </div>
+              </Text>
               {resourceChanges.changes.map((change) => (
                 <PendingChangeWithCompare
                   key={change.originId}
