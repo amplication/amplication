@@ -14,6 +14,8 @@ export const GET_RESOURCES = gql`
       resourceType
       githubLastSync
       gitRepositoryOverride
+      codeGeneratorStrategy
+      codeGeneratorVersion
       gitRepository {
         id
         name

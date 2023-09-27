@@ -11,8 +11,6 @@ import { SegmentAnalyticsModule } from "./services/segmentAnalytics/segmentAnaly
 import { SegmentAnalyticsOptionsService } from "./services/segmentAnalytics/segmentAnalyticsOptionsService";
 import { SendGridModule } from "@ntegral/nestjs-sendgrid";
 import { SendgridConfigService } from "./services/sendgridConfig.service";
-import { GoogleSecretsManagerModule } from "./services/googleSecretsManager.module";
-import { GoogleSecretsManagerService } from "./services/googleSecretsManager.service";
 import { HealthModule } from "./core/health/health.module";
 import { join } from "path";
 import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
@@ -29,8 +27,8 @@ import { RequestContextModule } from "nestjs-request-context";
       envFilePath: [".env.local", ".env"],
     }),
     SendGridModule.forRootAsync({
-      imports: [ConfigModule, GoogleSecretsManagerModule],
-      inject: [ConfigService, GoogleSecretsManagerService],
+      imports: [ConfigModule],
+      inject: [ConfigService],
       useClass: SendgridConfigService,
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
@@ -43,6 +41,7 @@ import { RequestContextModule } from "nestjs-request-context";
           sortSchema: true,
           debug: configService.get("GRAPHQL_DEBUG") === "1",
           playground: configService.get("PLAYGROUND_ENABLE") === "1",
+          introspection: configService.get("PLAYGROUND_ENABLE") === "1",
           context: ({ req }: { req: Request }) => ({
             req,
           }),

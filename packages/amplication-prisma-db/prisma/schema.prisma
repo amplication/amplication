@@ -29,7 +29,6 @@ model Account {
   githubId      String?
   currentUser   User?    @relation(fields: [currentUserId], references: [id])
   users         User[]   @relation("AccountOnUser")
-  externalId    String?
 }
 
 model Workspace {
@@ -108,6 +107,7 @@ model User {
   userRoles             UserRole[]
   sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
   createdFromInvitation Invitation?
+  createdFromCoupon     Coupon?
   deletedAt             DateTime?
   userAction            UserAction[]
   lastActive            DateTime?    @default(now())
@@ -141,16 +141,16 @@ model ApiToken {
 }
 
 model Resource {
-  id                    String           @id @default(cuid())
-  createdAt             DateTime         @default(now())
-  updatedAt             DateTime         @updatedAt
+  id                    String                       @id @default(cuid())
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
   name                  String
   description           String
-  gitRepositoryOverride Boolean          @default(false)
+  gitRepositoryOverride Boolean                      @default(false)
   githubLastSync        DateTime?
   githubLastMessage     String?
   deletedAt             DateTime?
-  archived              Boolean          @default(false)
+  archived              Boolean                      @default(false)
   gitRepositoryId       String?
   roles                 ResourceRole[]
   blocks                Block[]
@@ -158,10 +158,12 @@ model Resource {
   userAction            UserAction[]
   entities              Entity[]
   environments          Environment[]
-  gitRepository         GitRepository?   @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  gitRepository         GitRepository?               @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
   projectId             String
-  project               Project          @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  project               Project                      @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
   resourceType          EnumResourceType
+  codeGeneratorVersion  String?
+  codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
 
   @@unique([projectId, name], map: "Resource.projectId_name_unique")
 }
@@ -536,6 +538,20 @@ model Invitation {
   @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
 }
 
+model Coupon {
+  id               String               @id @default(cuid())
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  newUserId        String?              @unique()
+  newUser          User?                @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  code             String               @default(cuid())
+  expiration       DateTime
+  subscriptionPlan EnumSubscriptionPlan @default(Pro)
+  durationMonths   Int                  @default(1)
+  redemptionAt     DateTime?
+  couponType       String?
+}
+
 enum EnumSubscriptionPlan {
   Free
   Pro
@@ -580,4 +596,10 @@ enum EnumGitOrganizationType {
 
 enum EnumUserActionType {
   DBSchemaImport
+}
+
+enum CodeGeneratorVersionStrategy {
+  LatestMajor
+  LatestMinor
+  Specific
 }

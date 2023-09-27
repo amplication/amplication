@@ -1,36 +1,40 @@
-import { Injectable, ConflictException } from "@nestjs/common";
-import { Workspace, User } from "../../models";
+import { ConflictException, Injectable } from "@nestjs/common";
+import { User, Workspace } from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
-import { Invitation } from "./dto/Invitation";
 import {
-  FindManyWorkspaceArgs,
-  UpdateOneWorkspaceArgs,
-  InviteUserArgs,
   CompleteInvitationArgs,
-  WorkspaceMember,
   DeleteUserArgs,
-  RevokeInvitationArgs,
+  FindManyWorkspaceArgs,
+  InviteUserArgs,
   ResendInvitationArgs,
+  RevokeInvitationArgs,
+  UpdateOneWorkspaceArgs,
+  WorkspaceMember,
 } from "./dto";
+import { Invitation } from "./dto/Invitation";
 
-import { FindOneArgs } from "../../dto";
-import { Role } from "../../enums/Role";
-import { UserService } from "../user/user.service";
-import { MailService } from "../mail/mail.service";
-import { SubscriptionService } from "../subscription/subscription.service";
 import cuid from "cuid";
 import { addDays } from "date-fns";
 import { isEmpty } from "lodash";
-import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
-import { Subscription } from "../subscription/dto/Subscription";
+import { FindOneArgs } from "../../dto";
+import { Role } from "../../enums/Role";
 import { GitOrganization } from "../../models/GitOrganization";
-import { ProjectService } from "../project/project.service";
-import { BillingService } from "../billing/billing.service";
-import { BillingPlan } from "../billing/billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
+import { BillingService } from "../billing/billing.service";
+import { BillingPlan } from "../billing/billing.types";
+import { MailService } from "../mail/mail.service";
+import { ProjectService } from "../project/project.service";
+import { EnumSubscriptionPlan } from "../subscription/dto";
+import { Subscription } from "../subscription/dto/Subscription";
+import { SubscriptionService } from "../subscription/subscription.service";
+import { UserService } from "../user/user.service";
+import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
+import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
+import { BillingPeriod } from "@stigg/node-server-sdk";
+import { Coupon } from "./dto/Coupon";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -337,6 +341,77 @@ export class WorkspaceService {
     });
 
     return updatedInvitation;
+  }
+
+  async redeemCoupon(
+    currentUser: User,
+    args: RedeemCouponArgs
+  ): Promise<Coupon> {
+    const { account } = currentUser;
+
+    const coupons = await this.prisma.coupon.findMany({
+      where: {
+        code: args.data.code,
+        newUser: null,
+        redemptionAt: null,
+      },
+    });
+
+    if (!(coupons && coupons.length === 1)) {
+      throw new ConflictException(`coupon cannot be found or it has expired`);
+    }
+
+    const [coupon] = coupons;
+
+    if (coupon.expiration < new Date()) {
+      throw new ConflictException(`coupon is expired`);
+    }
+
+    const subscription = await this.subscriptionService.resolveSubscription(
+      currentUser.workspace.id
+    );
+
+    if (subscription.subscriptionPlan !== EnumSubscriptionPlan.Free) {
+      throw new ConflictException(
+        `The coupon cannot be applied on the current subscription`
+      );
+    }
+
+    //use stigg API to provision a new trial subscription
+    await this.billingService.provisionSubscription({
+      workspaceId: currentUser.workspace.id,
+      planId: BillingPlan.ProWithTrial,
+      cancelUrl: "",
+      successUrl: "",
+      userId: account.id,
+      billingPeriod: BillingPeriod.Monthly,
+      intentionType: "UPGRADE_PLAN",
+    });
+    await this.prisma.coupon.update({
+      where: {
+        id: coupon.id,
+      },
+      data: {
+        redemptionAt: new Date(),
+        newUser: {
+          connect: {
+            id: currentUser.id,
+          },
+        },
+      },
+    });
+
+    await this.analytics.track({
+      userId: account.id,
+      event: EnumEventType.RedeemCoupon,
+      properties: {
+        workspaceId: currentUser.workspace.id,
+        subscriptionPlan: coupon.subscriptionPlan,
+        durationMonths: coupon.durationMonths,
+      },
+    });
+
+    return coupon;
   }
 
   async findMembers(args: FindOneArgs): Promise<WorkspaceMember[]> {

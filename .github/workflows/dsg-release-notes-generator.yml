@@ -1,0 +1,62 @@
+name: DSG Release Notes Generator
+run-name: Release Notes ${{ github.event.inputs.fromVersion }}...${{ github.event.inputs.toVersion }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      fromVersion: 
+        type: string
+        required: true
+        description: Version start of the versions window used to collect changed for the release notes.
+      toVersion:
+        type: string
+        required: true
+        description: Version end of the versions window used to collect changed for the release notes.   
+
+jobs:
+  release-dsg-hotfix:
+    name: Generate release notes
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Build data-service-generator Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: "${{ inputs.fromVersion }}"
+          toTag: "${{ inputs.toVersion }}"
+          configurationJson: |
+            {
+              "ignore_labels": [
+                "ignore-for-release"
+              ],
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }})",
+              "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})",
+              "categories": [
+                {
+                  "title": "## What's Changed? 🛠",
+                  "exhaustive_rules": "true",
+                  "rules": [
+                    {
+                      "pattern": "app:data-service-generator",
+                      "on_property": "labels",
+                      "flags": "gu"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Generate release notes artifact
+        run: |
+          echo "${{ steps.changelog.outputs.changelog }}" >> release-notes.md
+          cat release-notes.md
+
+      - name: Upload release notes artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: data-service-generator release notes
+          path: release-notes.md

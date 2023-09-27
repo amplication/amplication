@@ -25,6 +25,10 @@ export const ID_DEFAULT_VALUE_CUID = "cuid";
 export const ID_DEFAULT_VALUE_UUID = "uuid";
 export const ID_DEFAULT_VALUE_AUTO_INCREMENT = "autoincrement";
 
+export const ID_DEFAULT_VALUE_CUID_FUNCTION = "cuid()";
+export const ID_DEFAULT_VALUE_UUID_FUNCTION = "uuid()";
+export const ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION = "autoincrement()";
+
 export const ID_TYPE_CUID = "CUID";
 export const ID_TYPE_UUID = "UUID";
 export const ID_TYPE_AUTO_INCREMENT = "AUTO_INCREMENT";
@@ -48,4 +52,10 @@ export const idTypePropertyMapByPrismaFieldType = {
   [PRISMA_TYPE_INT]: ID_TYPE_AUTO_INCREMENT,
   [PRISMA_TYPE_STRING]: ID_TYPE_CUID,
   [PRISMA_TYPE_BIG_INT]: ID_TYPE_AUTO_INCREMENT_BIG_INT,
+};
+
+export const prismaIdTypeToDefaultIdType = {
+  [PRISMA_TYPE_INT]: ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
+  [PRISMA_TYPE_STRING]: ID_DEFAULT_VALUE_CUID_FUNCTION,
+  [PRISMA_TYPE_BIG_INT]: ID_DEFAULT_VALUE_AUTO_INCREMENT_FUNCTION,
 };

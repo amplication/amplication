@@ -1,0 +1,151 @@
+{
+  "name": "gpt-gateway",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/gpt-gateway/src",
+  "projectType": "application",
+  "targets": {
+    "build": {
+      "executor": "@nrwl/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "target": "node",
+        "compiler": "tsc",
+        "outputPath": "dist/packages/gpt-gateway",
+        "main": "packages/gpt-gateway/src/main.ts",
+        "tsConfig": "packages/gpt-gateway/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/gpt-gateway",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/gpt-gateway/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/gpt-gateway/prisma",
+            "output": "./"
+          }
+        ],
+        "generatePackageJson": true
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nrwl/js:node",
+      "options": {
+        "buildTarget": "gpt-gateway:build",
+        "inspect": true
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "gpt-gateway:build:production"
+        }
+      }
+    },
+    "lint": {
+      "executor": "@nrwl/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/gpt-gateway/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nrwl/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "packages/gpt-gateway/jest.config.ts",
+        "passWithNoTests": true
+      }
+    },
+    "db:prisma:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/prisma/schema.prisma"],
+      "outputs": ["{projectRoot}/prisma/generated-prisma-client"],
+      "options": {
+        "command": "prisma generate --schema ./prisma/schema.prisma",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:prisma:studio": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma studio",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:migrate:dev": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate dev",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:migrate:deploy": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate deploy",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:migrate:rollback": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "prisma migrate resolve --rolled-back",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:init": {
+      "executor": "nx:run-commands",
+      "options": {
+        "commands": [
+          "nx db:migrate:dev gpt-gateway",
+          "nx db:migrate:deploy gpt-gateway",
+          "nx db:seed gpt-gateway"
+        ],
+        "parallel": false,
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:seed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/seed.ts",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "db:clean": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "ts-node scripts/clean.ts",
+        "cwd": "packages/gpt-gateway"
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/gpt-gateway:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}
