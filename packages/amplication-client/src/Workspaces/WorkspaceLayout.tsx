@@ -23,6 +23,7 @@ import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
 import "./WorkspaceLayout.scss";
 import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
+import PendingChanges from "../VersionControl/PendingChanges";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -198,7 +199,19 @@ const WorkspaceLayout: React.FC<Props> = ({
               <WorkspaceHeader />
               <CompleteInvitation />
               <RedeemCoupon />
-              {innerRoutes}
+
+              <div className={`${moduleClass}__page_content`}>
+                <div className={`${moduleClass}__main_content`}>
+                  {innerRoutes}
+                </div>
+
+                {currentProject ? (
+                  <div className={`${moduleClass}__changes_menu`}>
+                    <PendingChanges projectId={currentProject.id} />
+                  </div>
+                ) : null}
+              </div>
+
               <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
               <HubSpotChatComponent
                 setChatStatus={setChatStatus}

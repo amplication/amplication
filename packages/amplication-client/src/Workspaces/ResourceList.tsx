@@ -109,11 +109,7 @@ function ResourceList() {
     formatError(errorResources) || (error && formatError(error));
 
   return (
-    <PageContent
-      className={CLASS_NAME}
-      pageTitle={PAGE_TITLE}
-      headerContent={<PendingChangesNotification />}
-    >
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
       <FlexItem
         start={
           <SearchField

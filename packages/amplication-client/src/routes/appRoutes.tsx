@@ -142,19 +142,6 @@ export const Routes: RouteDef[] = [
                 exactPath: true,
                 isAnalytics: true,
               },
-
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/pending-changes",
-                Component: lazy(
-                  () => import("../VersionControl/PendingChangesPage")
-                ),
-                moduleName: "PendingChangesPage",
-                moduleClass: "pending-changes-page",
-                displayName: "Pending Changes",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
-              },
             ],
             routes: [
               {

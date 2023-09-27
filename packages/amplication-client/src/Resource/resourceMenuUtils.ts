@@ -21,20 +21,9 @@ export const resourceMenuLayout: {
     "git",
     "connections",
     "settings",
-    "pendingChanges",
   ],
-  [EnumResourceType.ProjectConfiguration]: [
-    "git",
-    "settings",
-    "pendingChanges",
-  ],
-  [EnumResourceType.MessageBroker]: [
-    "topics",
-    "services",
-    "git",
-    "settings",
-    "pendingChanges",
-  ],
+  [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
+  [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
 };
 
 export const linksMap: {

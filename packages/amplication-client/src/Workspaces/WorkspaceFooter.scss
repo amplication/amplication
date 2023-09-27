@@ -9,6 +9,7 @@
   background: var(--white);
   height: var(--footer-height);
   min-height: var(--footer-height);
+  border-top: $border-black5;
 
   &__skeleton {
     display: flex;
