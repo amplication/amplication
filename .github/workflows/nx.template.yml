@@ -9,34 +9,34 @@ on:
         required: true
       nx-base:
         type: string
-        description: Commit SHA, branch or tag name used by Nx in the affected jobs as base. 
+        description: Commit SHA, branch or tag name used by Nx in the affected jobs as base.
         required: true
         default: next
       nx-skip-cache:
         type: boolean
-        description: Rerun the tasks even when the results are available in the cache. 
+        description: Rerun the tasks even when the results are available in the cache.
         default: false
       nx-force-all:
         type: boolean
         description: Forces Nx to consider all projects (apps and libs) as affected.
         default: false
     outputs:
-      affected-apps: 
+      affected-apps:
         description: Nx applications affected by the changes
         value: ${{ jobs.nx.outputs.affected-apps }}
-      affected-lib: 
+      affected-lib:
         description: Nx libraries affected by the changes
         value: ${{ jobs.nx.outputs.affected-lib }}
       affected-e2e:
         description: Nx e2e projects affected by the changes
         value: ${{ jobs.nx.outputs.affected-e2e }}
-      affected-package-container: 
+      affected-package-container:
         description: Nx projects configured with package:container affected by the changes
         value: ${{ jobs.nx.outputs.affected-package-container }}
-      affected-deploy-static: 
+      affected-deploy-static:
         description: Nx projects configured with deploy:static affected by the changes
         value: ${{ jobs.nx.outputs.affected-deploy-static }}
-      affected-deploy-container: 
+      affected-deploy-container:
         description: Nx projects configured with deploy:container affected by the changes
         value: ${{ jobs.nx.outputs.affected-deploy-container }}
 
@@ -44,10 +44,10 @@ env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   NX_BRANCH: ${{ github.event.workflow_run.head_branch }}
   BRANCH: ${{ github.event.workflow_run.head_branch }}
-  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }}  # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+  NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
   CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
-  
+
 jobs:
   nx:
     name: Nx Affected
@@ -71,9 +71,9 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
 
       - name: Cache global node modules
         id: cache-node-modules
@@ -98,4 +98,3 @@ jobs:
           echo affected-deploy-static=$(npx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-deploy-container=$(npx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected
-  

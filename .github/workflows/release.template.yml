@@ -87,7 +87,7 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          mask-password: 'true'
+          mask-password: "true"
           registries: "439403303254"
 
       # https://github.com/docker/metadata-action

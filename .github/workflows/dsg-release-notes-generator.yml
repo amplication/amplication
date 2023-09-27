@@ -4,14 +4,14 @@ run-name: Release Notes ${{ github.event.inputs.fromVersion }}...${{ github.even
 on:
   workflow_dispatch:
     inputs:
-      fromVersion: 
+      fromVersion:
         type: string
         required: true
         description: Version start of the versions window used to collect changed for the release notes.
       toVersion:
         type: string
         required: true
-        description: Version end of the versions window used to collect changed for the release notes.   
+        description: Version end of the versions window used to collect changed for the release notes.
 
 jobs:
   release-dsg-hotfix:
