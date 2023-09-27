@@ -119,6 +119,7 @@ jobs:
 
       # Commit all changed files back to the repository
       - name: Commit changes
+        id: commit-changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update apps version.ts"
@@ -132,7 +133,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v4
         with:
           fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
-          toTag: "${{ github.sha }}"
+          toTag: ${{ steps.commit-changes.outputs.commit_hash }}
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ github.event.inputs.version }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ github.event.inputs.version }})",

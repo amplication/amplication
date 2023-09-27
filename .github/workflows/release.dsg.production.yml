@@ -90,6 +90,7 @@ jobs:
           cat $DSG_PACKAGE_JSON
           
       - name: Commit changes
+        id: commit-changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(dsg): bump version to ${{ inputs.version }}"
@@ -103,7 +104,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v4
         with:
           fromTag: '${{ steps.check-tag.outputs.previous-tag }}'
-          toTag: '${{ github.sha }}'
+          toTag: '${{ steps.commit-changes.outputs.commit_hash }}'
           configurationJson: |
             {
               "ignore_labels": [
@@ -147,7 +148,7 @@ jobs:
           INPUT_PUSH: true
           # env variables substituted in the project.json docker target build-args
           GIT_REF_NAME: ${{ inputs.version }}
-          GIT_SHA: ${{ github.sha }}
+          GIT_SHA: ${{ steps.commit-changes.outputs.commit_hash }}
 
       - name: Create data-service-generator git tag
         run: |
