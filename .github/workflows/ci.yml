@@ -93,12 +93,12 @@ jobs:
       - name: Get number of CPU cores
         uses: SimenB/github-actions-cpu-cores@v1
         id: cpu-cores
-        
+
       - name: Test
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
         run: npx nx affected --target=test --coverage --maxWorkers=${{ steps.cpu-cores.outputs.count }} $NX_FORCE_ALL
-      
+
   nx:
     name: Nx
     needs: ci
