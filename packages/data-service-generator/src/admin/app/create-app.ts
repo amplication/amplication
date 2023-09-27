@@ -8,6 +8,7 @@ import {
 import { builders } from "ast-types";
 import {
   CreateAdminAppModuleParams,
+  EntityComponents,
   EventNames,
   Module,
   ModuleMap,
@@ -16,7 +17,6 @@ import { addImports, importNames, interpolate } from "../../utils/ast";
 import { relativeImportPath } from "../../utils/module";
 
 import { jsxElement, jsxFragment } from "../util";
-import { EntityComponents } from "../types";
 import DsgContext from "../../dsg-context";
 import pluginWrapper from "../../plugin-wrapper";
 
