@@ -44,7 +44,7 @@ jobs:
 
   triage-apps:
     name: Triage app changes
-    needs: [nx,triage-libs]
+    needs: [nx, triage-libs]
     if: ${{ always() && needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != '' }}
     strategy:
       max-parallel: 1
