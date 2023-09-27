@@ -32,7 +32,7 @@ const CommitList = ({
 
   return (
     <>
-      {loading && <CircularProgress centerToParent />}
+      {loading && commits.length === 0 && <CircularProgress centerToParent />}
       {currentProject &&
         commits.map((commit) => (
           <CommitListItem

@@ -39,31 +39,6 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
       </Link>
 
       <Text textStyle={EnumTextStyle.Subtle}>{project.description}</Text>
-      <FlexItem margin={EnumFlexItemMargin.Top} wrap={true}>
-        {project.resources.map(
-          (resource) =>
-            resource.resourceType !== EnumResourceType.ProjectConfiguration && (
-              <>
-                <Link
-                  onClick={(e) => e.stopPropagation()}
-                  key={resource.id}
-                  to={`/${workspaceId}/${project.id}/${resource.id}`}
-                >
-                  <FlexItem
-                    gap={EnumGapSize.Small}
-                    itemsAlign={EnumItemsAlign.Center}
-                  >
-                    <ResourceCircleBadge
-                      type={resource.resourceType}
-                      size="xsmall"
-                    />
-                    <Text textStyle={EnumTextStyle.Tag}>{resource.name}</Text>
-                  </FlexItem>
-                </Link>
-              </>
-            )
-        )}
-      </FlexItem>
     </ListItem>
   );
 };

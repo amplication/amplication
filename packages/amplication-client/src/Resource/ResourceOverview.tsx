@@ -31,10 +31,7 @@ const ResourceOverview = () => {
   const resourceId = currentResource?.id;
 
   return (
-    <PageContent
-      pageTitle={PAGE_TITLE}
-      headerContent={<PendingChangesNotification />}
-    >
+    <PageContent pageTitle={PAGE_TITLE}>
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
           start={

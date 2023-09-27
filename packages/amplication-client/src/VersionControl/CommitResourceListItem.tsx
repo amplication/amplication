@@ -71,7 +71,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
             </Link>
           </FlexItem.FlexEnd>
         </FlexItem>
-        <FlexItem>
+        <FlexItem margin={EnumFlexItemMargin.Top}>
           <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
           <ClickableId
             label="Build ID"

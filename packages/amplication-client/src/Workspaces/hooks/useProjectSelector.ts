@@ -29,10 +29,10 @@ const useProjectSelector = (
   );
 
   const project = projectMatch?.params?.project;
-  console.log({ project });
 
   const workspace =
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
+
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
   const [currentProjectConfiguration, setCurrentProjectConfiguration] =
@@ -102,8 +102,6 @@ const useProjectSelector = (
   }, [projectListData, loadingList]);
 
   useEffect(() => {
-    console.log("effect", { project });
-
     if (currentProject || project || !projectsList.length) return;
 
     const isFromSignup = location.search.includes("complete-signup=1");
@@ -119,7 +117,6 @@ const useProjectSelector = (
       });
     }
 
-    console.log("before push");
     !!(!workspaceUtil && currentWorkspace?.id) &&
       history.push(
         `/${currentWorkspace?.id}/${projectsList[0].id}${
@@ -140,9 +137,10 @@ const useProjectSelector = (
       !project ||
       !projectsList.length ||
       projectListData.projects.length !== projectsList.length
-    )
+    ) {
+      setCurrentProject(undefined);
       return;
-
+    }
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
     );

@@ -1,22 +1,22 @@
+import React, { useState, useCallback, useContext } from "react";
+import { isEmpty } from "lodash";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
+import { formatError } from "../util/error";
+import PendingChange from "./PendingChange";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import {
-  EnumFlexItemMargin,
-  EnumTextColor,
-  EnumTextStyle,
-  FlexItem,
+  CircularProgress,
   Snackbar,
-  Text,
   Tooltip,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
-import { useCallback, useContext, useState } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { formatError } from "../util/error";
 import Commit from "./Commit";
 import DiscardChanges from "./DiscardChanges";
+import { SvgThemeImage, EnumImages } from "../Components/SvgThemeImage";
 
-import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
+import "./PendingChanges.scss";
 import { AppContext } from "../context/appContext";
+import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import usePendingChanges from "../Workspaces/hooks/usePendingChanges";
 
 const CLASS_NAME = "pending-changes";
 
@@ -37,6 +37,7 @@ const PendingChanges = ({ projectId }: Props) => {
     entity: string;
   }>("/:workspace/:project/:resource/entities/:entity");
   const {
+    pendingChangesByResource,
     pendingChangesDataError,
     pendingChangesIsError,
     pendingChangesDataLoading,
@@ -60,30 +61,72 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <FlexItem margin={EnumFlexItemMargin.Bottom}>
-        <FlexItem.FlexStart>
-          <Text textStyle={EnumTextStyle.Tag}>
-            <Text textStyle={EnumTextStyle.Tag}>Changes&nbsp;</Text>
-            <Text
-              textColor={
-                pendingChanges.length
-                  ? EnumTextColor.ThemeOrange
-                  : EnumTextColor.Black20
-              }
-              textStyle={EnumTextStyle.Tag}
-            >
-              {pendingChanges.length}
-            </Text>
-          </Text>
-        </FlexItem.FlexStart>
-        <FlexItem.FlexEnd>
-          <DiscardChanges
-            isOpen={discardDialogOpen}
-            projectId={projectId}
-            onComplete={handleDiscardDialogCompleted}
-            onDismiss={handleToggleDiscardDialog}
-          />
+      <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
+      <Commit projectId={projectId} noChanges={noChanges} />
 
+      <DiscardChanges
+        isOpen={discardDialogOpen}
+        projectId={projectId}
+        onComplete={handleDiscardDialogCompleted}
+        onDismiss={handleToggleDiscardDialog}
+      />
+
+      <div className={`${CLASS_NAME}__changes-wrapper`}>
+        {pendingChangesDataLoading ? (
+          <CircularProgress centerToParent />
+        ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
+          <div className={`${CLASS_NAME}__empty-state`}>
+            <SvgThemeImage image={EnumImages.NoChanges} />
+            <div className={`${CLASS_NAME}__empty-state__title`}>
+              No pending changes! keep working.
+            </div>
+          </div>
+        ) : (
+          <div className={`${CLASS_NAME}__changes`}>
+            {pendingChangesByResource.map((group) => (
+              <div key={group.resource.id}>
+                <div className={`${CLASS_NAME}__changes__resource`}>
+                  <ResourceCircleBadge
+                    type={group.resource.resourceType}
+                    size="xsmall"
+                  />
+                  <span>{group.resource.name}</span>
+                </div>
+                {group.changes.map((change) => (
+                  <PendingChange
+                    key={change.originId}
+                    change={change}
+                    linkToOrigin
+                  />
+                ))}
+              </div>
+            ))}
+          </div>
+        )}
+        <hr className={`${CLASS_NAME}__divider`} />
+        <div className={`${CLASS_NAME}__changes-header`}>
+          <span>Changes</span>
+          <span
+            className={
+              pendingChanges.length
+                ? `${CLASS_NAME}__changes-count-warning`
+                : `${CLASS_NAME}__changes-count`
+            }
+          >
+            {pendingChanges.length}
+          </span>
+          <div className="spacer" />
+          <Tooltip aria-label={"Compare Changes"} direction="nw">
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+            >
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                disabled={pendingChangesDataLoading || noChanges}
+                icon="compare"
+              />
+            </Link>
+          </Tooltip>
           <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
             <Button
               buttonStyle={EnumButtonStyle.Text}
@@ -92,11 +135,8 @@ const PendingChanges = ({ projectId }: Props) => {
               icon="trash_2"
             />
           </Tooltip>
-        </FlexItem.FlexEnd>
-      </FlexItem>
-
-      <Commit projectId={projectId} noChanges={noChanges} />
-
+        </div>
+      </div>
       <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </div>
   );
