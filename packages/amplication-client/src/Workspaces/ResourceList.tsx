@@ -31,7 +31,6 @@ import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
 import "./ResourceList.scss";
 import ResourceListItem from "./ResourceListItem";
-import PendingChangesNotification from "../VersionControl/PendingChangesNotification";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
