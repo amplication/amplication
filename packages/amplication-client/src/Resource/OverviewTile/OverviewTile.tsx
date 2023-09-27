@@ -12,6 +12,7 @@ type Props = {
 const AuthProviderLabels: { [k in EnumAuthProviderType]: string } = {
   [EnumAuthProviderType.Http]: "HTTP",
   [EnumAuthProviderType.Jwt]: "Passport JWT",
+  [EnumAuthProviderType.Auth0]: "Passport JWT",
 };
 
 const CLASS_NAME = "overview-tile";
