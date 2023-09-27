@@ -38,7 +38,7 @@ export async function createDotEnvModuleInternal({
   const MODULE_PATH = `${clientDirectories.baseDirectory}/.env`;
   const code = await readCode(templatePath);
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
-  const formattedAdditionalVariables = convertToKeyValueSting(
+  const formattedAdditionalVariables = convertToKeyValueString(
     envVariablesWithoutDuplicateKeys
   );
   const codeWithAdditionalVariables = appendAdditionalVariables(
@@ -61,7 +61,7 @@ export async function createDotEnvModuleInternal({
   return moduleMap;
 }
 
-function convertToKeyValueSting(arr: VariableDictionary): string {
+function convertToKeyValueString(arr: VariableDictionary): string {
   if (!arr.length) return "";
   return arr
     .map((item) =>

@@ -5,6 +5,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
+  EntityComponent,
 } from "@amplication/code-gen-types";
 import { getFieldsFromDTOWithoutToManyRelations } from "../../../utils/entity";
 import {
@@ -15,7 +16,6 @@ import {
 } from "../../../utils/ast";
 import { relativeImportPath } from "../../../utils/module";
 import { readFile } from "@amplication/code-gen-utils";
-import { EntityComponent } from "../../types";
 import { jsxElement, jsxFragment } from "../../util";
 import { createFieldValue } from "../create-field-value";
 import {
