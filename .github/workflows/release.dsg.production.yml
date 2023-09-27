@@ -1,0 +1,167 @@
+name: Release dsg to production
+run-name: Release DSG Version ${{ github.event.inputs.version }}
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        type: string
+        required: true
+        description: Version used create a new release. i.e. v1.0.0, v1.1.2, v2.0.1
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+  ECHO_RED: '\033[0;31m'
+  ECHO_YELLOW: '\033[0;33m'
+  ECHO_GREEN: '\033[0;32m'
+  DSG_PACKAGE_JSON: packages/data-service-generator/package.json
+
+jobs:
+  check-version:
+    name: Check version syntax
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check version is SemVer
+        run: |
+          if ! [[ "${{ inputs.version }}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version '${{ inputs.version }}'."
+            echo "Version must be a valid semver version. i.e. v1.0.0, v1.1.2, v2.0.1"
+            echo "See https://semver.org/ for more details."
+            exit 1
+          fi
+        shell: bash
+
+  release-dsg:
+    name: Create a release for data-service-generator
+    runs-on: ubuntu-latest
+    needs: check-version
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
+
+      - name: Determine if it's a new data-service-generator version, and its previous tag
+        id: check-tag
+        run: |
+          DSG_VERSION=v$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
+          NEW_TAG=dsg/$DSG_VERSION
+          echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+
+          # If the tag already exists, it means that was already released. So we skip it. 
+          if git tag --list | grep -q "^$NEW_TAG"; then
+            echo -e  "$ECHO_RED 🚨 data-service-generator version '$NEW_TAG' already exists (so it was already released). 🚨"
+            echo -e  "$ECHO_YELLOW If there are no data-service-generator container images tagged with ${{ inputs.version }}, delete the git tag ${NEW_TAG} and retry."
+            exit 1
+          else
+            # create temporary tag to get the previous tag
+            git tag $NEW_TAG
+
+            PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -A 1 ^$NEW_TAG | tail -n 1)
+
+            echo "previous-tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
+            echo "new-tag=$NEW_TAG" >> $GITHUB_OUTPUT
+            echo "new-dsg-version=$DSG_VERSION" >> $GITHUB_OUTPUT
+
+            echo "🚀 New version detected"
+            echo " 🏷️ data-service-generator version: $DSG_VERSION"
+            echo " 🏷️ NEW_TAG: $NEW_TAG"
+            echo " 🏷️ PREVIOUS_TAG: $PREVIOUS_TAG "
+          fi
+
+      - name: Update data-service-generator package.json
+        id: update-package-json
+        run: |
+          VERSION="${{ inputs.version }}"
+          APP_VERSION=${VERSION:1}
+
+          # Check if jq is installed
+          if ! command -v jq &> /dev/null; then
+              echo "jq is not installed. Please install jq to use this script."
+              exit 1
+          fi
+
+          # Update the version in package.json
+          jq ".version = \"$APP_VERSION\"" $DSG_PACKAGE_JSON > temp-package.json && mv temp-package.json $DSG_PACKAGE_JSON
+
+          echo "Version in package.json updated to $APP_VERSION"
+          cat $DSG_PACKAGE_JSON
+
+      - name: Commit changes
+        id: commit-changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: "chore(dsg): bump version to ${{ inputs.version }}"
+          branch: ${{ github.event.repository.default_branch }}
+          commit_user_name: amplication-engineering
+          commit_user_email: engineering@amplication.com
+          commit_author: amplication-engineering <engineering@amplication.com> # defaults to author of the commit that triggered the run
+
+      - name: Build data-service-generator Changelog
+        id: changelog
+        uses: mikepenz/release-changelog-builder-action@v4
+        with:
+          fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
+          toTag: "${{ steps.commit-changes.outputs.commit_hash }}"
+          configurationJson: |
+            {
+              "ignore_labels": [
+                "ignore-from-release-notes"
+              ],
+              "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ steps.check-tag.outputs.new-tag }})",
+              "pr_template": "- #{{TITLE}} by @#{{AUTHOR}} in [##{{NUMBER}}](#{{URL}})",
+              "categories": [
+                {
+                  "title": "## What's Changed? 🛠",
+                  "exhaustive_rules": "true",
+                  "rules": [
+                    {
+                      "pattern": "app:data-service-generator",
+                      "on_property": "labels",
+                      "flags": "gu"
+                    }
+                  ]
+                }
+              ]
+            }
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Configure AWS Credentials (operations account)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.ECR_AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.ECR_AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1
+
+      - name: Login to Amazon ECR (operations account)
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: "true"
+          registries: "439403303254"
+
+      - name: Dockerize
+        run: npx nx package:container data-service-generator --prod
+        env:
+          INPUT_PUSH: true
+          # env variables substituted in the project.json docker target build-args
+          GIT_REF_NAME: ${{ inputs.version }}
+          GIT_SHA: ${{ steps.commit-changes.outputs.commit_hash }}
+
+      - name: Create data-service-generator git tag
+        run: |
+          NEW_TAG="${{ steps.check-tag.outputs.new-tag }}"
+          git push origin $NEW_TAG
+
+      - name: Generate release notes artifact
+        run: |
+          echo "${{ steps.changelog.outputs.changelog }}" >> release-notes.md
+          cat release-notes.md
+
+      - name: Upload release notes artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: data-service-generator release notes
+          path: release-notes.md
