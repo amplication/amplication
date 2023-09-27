@@ -3,7 +3,7 @@ name: Security
 on:
   workflow_dispatch:
   push:
-    branches: 
+    branches:
       - master
       - next
     paths-ignore:
@@ -15,8 +15,8 @@ jobs:
     name: Vulnerability scanning - File system
     uses: ./.github/workflows/security.template.yml
     with:
-      scan-type: 'fs'
-      format: 'sarif'
+      scan-type: "fs"
+      format: "sarif"
       exit-code: 0
       publish: true
 
@@ -24,7 +24,7 @@ jobs:
     name: Vulnerability scanning - Config
     uses: ./.github/workflows/security.template.yml
     with:
-      scan-type: 'config'
-      format: 'sarif'
+      scan-type: "config"
+      format: "sarif"
       exit-code: 0
       publish: true
