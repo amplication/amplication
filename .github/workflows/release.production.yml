@@ -4,7 +4,7 @@ run-name: Release Version ${{ github.event.inputs.version }}
 on:
   workflow_dispatch:
     inputs:
-      version: 
+      version:
         type: string
         required: true
         description: Version used to update apps version.ts and create a new release. i.e. v1.0.0, v1.1.2, v2.0.1
@@ -46,7 +46,7 @@ jobs:
         with:
           fetch-depth: 0
           token: ${{ secrets.RELEASE_PRODUCTION_PAT }}
-      
+
       - name: Check version is unique
         id: validate-version-unique
         run: |
@@ -70,9 +70,9 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
 
       - name: Cache global node modules
         id: cache-node-modules
@@ -109,7 +109,7 @@ jobs:
             echo -e "$ECHO_RED  Are you sure you want to release?"
             exit 1
           fi
-        
+
       - name: Update apps version.ts
         id: update-version-ts
         run: |
@@ -119,6 +119,7 @@ jobs:
 
       # Commit all changed files back to the repository
       - name: Commit changes
+        id: commit-changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore: update apps version.ts"
@@ -132,7 +133,7 @@ jobs:
         uses: mikepenz/release-changelog-builder-action@v4
         with:
           fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
-          toTag: "${{ github.sha }}"
+          toTag: ${{ steps.commit-changes.outputs.commit_hash }}
           configurationJson: |
             {
               "template": "#{{CHANGELOG}}\n\n**Full Changelog**: [#{{FROM_TAG}}...${{ github.event.inputs.version }}](https://github.com/amplication/amplication/compare/#{{FROM_TAG}}...${{ github.event.inputs.version }})",
@@ -157,7 +158,7 @@ jobs:
             }
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Release amplication
         id: release
         if: ${{ steps.changelog.outputs.changelog != '' }}
@@ -165,5 +166,5 @@ jobs:
         with:
           name: ${{ github.event.inputs.version }}
           tag_name: ${{ github.event.inputs.version }}
-          draft: ${{ github.event.inputs.draft-release }} 
+          draft: ${{ github.event.inputs.draft-release }}
           body: ${{ steps.changelog.outputs.changelog }}

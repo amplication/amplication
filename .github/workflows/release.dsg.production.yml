@@ -4,7 +4,7 @@ run-name: Release DSG Version ${{ github.event.inputs.version }}
 on:
   workflow_dispatch:
     inputs:
-      version: 
+      version:
         type: string
         required: true
         description: Version used create a new release. i.e. v1.0.0, v1.1.2, v2.0.1
@@ -76,7 +76,7 @@ jobs:
         run: |
           VERSION="${{ inputs.version }}"
           APP_VERSION=${VERSION:1}
-          
+
           # Check if jq is installed
           if ! command -v jq &> /dev/null; then
               echo "jq is not installed. Please install jq to use this script."
@@ -88,8 +88,9 @@ jobs:
 
           echo "Version in package.json updated to $APP_VERSION"
           cat $DSG_PACKAGE_JSON
-          
+
       - name: Commit changes
+        id: commit-changes
         uses: stefanzweifel/git-auto-commit-action@v4
         with:
           commit_message: "chore(dsg): bump version to ${{ inputs.version }}"
@@ -102,8 +103,8 @@ jobs:
         id: changelog
         uses: mikepenz/release-changelog-builder-action@v4
         with:
-          fromTag: '${{ steps.check-tag.outputs.previous-tag }}'
-          toTag: '${{ github.sha }}'
+          fromTag: "${{ steps.check-tag.outputs.previous-tag }}"
+          toTag: "${{ steps.commit-changes.outputs.commit_hash }}"
           configurationJson: |
             {
               "ignore_labels": [
@@ -138,8 +139,8 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          mask-password: 'true'
-          registries: '439403303254'
+          mask-password: "true"
+          registries: "439403303254"
 
       - name: Dockerize
         run: npx nx package:container data-service-generator --prod
@@ -147,7 +148,7 @@ jobs:
           INPUT_PUSH: true
           # env variables substituted in the project.json docker target build-args
           GIT_REF_NAME: ${{ inputs.version }}
-          GIT_SHA: ${{ github.sha }}
+          GIT_SHA: ${{ steps.commit-changes.outputs.commit_hash }}
 
       - name: Create data-service-generator git tag
         run: |
