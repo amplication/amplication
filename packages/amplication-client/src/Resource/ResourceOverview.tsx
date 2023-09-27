@@ -21,7 +21,6 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
-import PendingChangesNotification from "../VersionControl/PendingChangesNotification";
 
 const PAGE_TITLE = "Resource Overview";
 
