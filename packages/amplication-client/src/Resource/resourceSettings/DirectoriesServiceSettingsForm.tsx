@@ -71,9 +71,7 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
               <Form>
                 <FormikAutoSave debounceMS={1000} />
                 <>
-                  <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                    <Text textStyle={EnumTextStyle.H4}>Base Directories</Text>
-                  </FlexItem>
+                  <Text textStyle={EnumTextStyle.H4}>Base Directories</Text>
                   <Text textStyle={EnumTextStyle.Tag}>
                     Set the base path where the generated code for the server
                     and Admin UI will be located. This will be the root

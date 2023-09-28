@@ -88,7 +88,7 @@ $panel-tag-width: 64px;
   &__row:nth-child(2):not(:last-child) {
     word-break: break-all;
     overflow-wrap: break-word;
-    border: $border-black20;
+    border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--default-border-radius);
     color: var(--black80);

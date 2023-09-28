@@ -94,7 +94,9 @@ export const EntityFieldListItem = ({
       />
 
       {!isEmpty(entityField.description) && (
-        <Text textStyle={EnumTextStyle.Subtle}>{entityField.description}</Text>
+        <Text textStyle={EnumTextStyle.Description}>
+          {entityField.description}
+        </Text>
       )}
       <FlexItem
         direction={EnumFlexDirection.Row}

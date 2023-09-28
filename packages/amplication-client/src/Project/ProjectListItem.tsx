@@ -38,7 +38,7 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
         </Text>
       </Link>
 
-      <Text textStyle={EnumTextStyle.Subtle}>{project.description}</Text>
+      <Text textStyle={EnumTextStyle.Description}>{project.description}</Text>
     </ListItem>
   );
 };

@@ -29,7 +29,7 @@ function CodeViewPage() {
     <PageContent
       pageTitle={pageTitle}
       sideContent={<CodeViewBar onFileSelected={setFileDetails} />}
-      pageWidth={EnumPageWidth.Wide}
+      pageWidth={EnumPageWidth.Full}
     >
       <div className={CLASS_NAME}>
         {fileDetails?.isFile ? (

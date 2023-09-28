@@ -47,11 +47,9 @@ function AuthenticationSettingsForm() {
           {(formik) => {
             return (
               <Form>
-                <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                  <Text textStyle={EnumTextStyle.H4}>
-                    Choose authentication entity
-                  </Text>
-                </FlexItem>
+                <Text textStyle={EnumTextStyle.H4}>
+                  Choose authentication entity
+                </Text>
                 <Text textStyle={EnumTextStyle.Tag}>
                   Select the entity to be used for authentication. The chosen
                   entity must include 'username' and 'password' fields.

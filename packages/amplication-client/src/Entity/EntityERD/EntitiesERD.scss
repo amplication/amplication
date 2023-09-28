@@ -9,7 +9,7 @@
     border-radius: 8px;
     background-color: var(--white);
     box-shadow: "box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05)";
-    border: $border-black10;
+    border: $border-dark;
     min-width: 235px;
   }
   &__display_name {
@@ -18,7 +18,7 @@
     font-size: var(--normal-font-size);
     line-height: 22px;
     font-weight: 600;
-    border-bottom: $border-black10;
+    border-bottom: $border-dark;
   }
   &__column_container {
     padding: var(--default-spacing-small) 0;

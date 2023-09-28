@@ -2,6 +2,8 @@ import { EnumResourceType } from "@amplication/code-gen-types/models";
 import {
   CircleBadge,
   EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
@@ -33,6 +35,7 @@ const ResourceOverview = () => {
     <PageContent pageTitle={PAGE_TITLE}>
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
           start={
             <CircleBadge
               name={currentResource?.name || ""}
@@ -43,9 +46,12 @@ const ResourceOverview = () => {
             />
           }
         >
-          <FlexItem direction={EnumFlexDirection.Column}>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
             <Text textStyle={EnumTextStyle.H3}>{currentResource?.name}</Text>
-            <Text textStyle={EnumTextStyle.Subtle}>
+            <Text textStyle={EnumTextStyle.Description}>
               {currentResource?.description}
             </Text>
           </FlexItem>

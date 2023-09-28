@@ -21,7 +21,7 @@ $expand-button-padding: 4px;
   &__footer {
     max-height: var(--app-footer-height);
     background-color: var(--black5);
-    border-top: $border-black10;
+    border-top: $border-dark;
   }
 
   &__content {
@@ -36,7 +36,7 @@ $expand-button-padding: 4px;
     height: 100%;
     width: auto;
     background-color: var(--menu-background-color);
-    border-right: $border-black10;
+    border-right: $border-dark;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
 
@@ -171,11 +171,11 @@ $expand-button-padding: 4px;
 
   &__aside {
     &--position-right {
-      border-left: $border-black10;
+      border-left: $border-dark;
     }
 
     &--position-left {
-      border-right: $border-black10;
+      border-right: $border-dark;
     }
 
     &__expandable {

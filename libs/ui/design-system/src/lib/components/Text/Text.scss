@@ -9,6 +9,7 @@
     font-size: var(--h1-font-size);
     font-style: normal;
     font-weight: 600;
+    line-height: 1.3;
   }
 
   &--h2 {
@@ -44,6 +45,13 @@
 
   &--subtle {
     font-size: var(--subtle-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--black80);
+  }
+
+  &--description {
+    font-size: var(--tag-font-size);
     font-style: normal;
     font-weight: 400;
     color: var(--black80);

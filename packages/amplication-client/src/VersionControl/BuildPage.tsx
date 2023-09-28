@@ -78,7 +78,7 @@ const BuildPage = ({ match }: Props) => {
   return (
     <>
       <PageContent
-        pageWidth={EnumPageWidth.Wide}
+        pageWidth={EnumPageWidth.Full}
         className={CLASS_NAME}
         pageTitle={`Build ${truncatedId}`}
       >

@@ -4,7 +4,7 @@ $split-icon-font-size: 20px;
 
 .amp-button {
   height: var(--default-button-height);
-  min-width: 135px;
+  min-width: 0;
   border-radius: var(--default-button-radius) !important;
   border: $border-primary;
   box-sizing: border-box;
@@ -17,6 +17,8 @@ $split-icon-font-size: 20px;
   align-items: center;
   letter-spacing: 1px;
   font-family: var(--primary-font-family);
+  padding-left: var(--default-spacing) !important;
+  padding-right: var(--default-spacing) !important;
 
   &[disabled] {
     cursor: default;
@@ -88,7 +90,7 @@ $split-icon-font-size: 20px;
   &.amp-button--secondary {
     background-color: transparent;
     color: var(--black100);
-    border: $border-black20;
+    border: $border-dark;
 
     &:hover,
     &:active,
@@ -131,7 +133,7 @@ $split-icon-font-size: 20px;
     border: none;
     min-width: var(--default-button-height);
     height: var(--default-button-height);
-    padding: 0;
+    padding: 0 !important;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -161,7 +163,7 @@ $split-icon-font-size: 20px;
     }
 
     .amp-button__split {
-      padding-left: var(--default-spacing);
+      padding-left: var(--default-spacing) !important;
       margin-left: var(--default-spacing);
       position: relative;
 
@@ -185,7 +187,7 @@ $split-icon-font-size: 20px;
     background-color: transparent;
     color: var(--black100);
     border: 1px solid var(--black100);
-    padding: 4px 12px;
+    padding: 4px 12px !important;
     transition: all 0.5s;
 
     &:hover,

@@ -3,6 +3,8 @@ import {
   CircularProgress,
   EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
@@ -123,13 +125,17 @@ function ResourceList() {
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
           start={
             <CircleBadge size="xlarge" name={currentProject?.name || ""} />
           }
         >
-          <FlexItem direction={EnumFlexDirection.Column}>
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
             <Text textStyle={EnumTextStyle.H3}>{currentProject?.name}</Text>
-            <Text textStyle={EnumTextStyle.Subtle}>
+            <Text textStyle={EnumTextStyle.Description}>
               {currentProject?.description}
             </Text>
           </FlexItem>

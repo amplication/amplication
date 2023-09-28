@@ -5,6 +5,7 @@ $tab-height: 26px;
 .amp-tabs {
   padding: 0 var(--large-spacing);
   min-height: calc($tab-height + var(--default-spacing-small) * 2) !important;
+  background-color: var(--white);
 
   .MuiTabs-flexContainer {
     align-items: baseline;
@@ -13,7 +14,7 @@ $tab-height: 26px;
   .amp-tab {
     text-transform: none;
     color: var(--black80);
-    margin: var(--default-spacing-small) var(--large-spacing);
+    margin: var(--default-spacing-small) var(--double-spacing);
     font-size: var(--tag-font-size);
     position: relative;
     min-height: $tab-height;
@@ -21,6 +22,7 @@ $tab-height: 26px;
     overflow: visible; //allow for the separator to overflow
     display: flex;
     flex-direction: row;
+    min-width: 0;
 
     .amp-icon {
       margin-right: var(--icon-spacing);
@@ -46,7 +48,7 @@ $tab-height: 26px;
       height: 100%;
       width: 1px;
       bottom: 0;
-      right: calc(-1 * var(--large-spacing));
+      right: calc(-1 * var(--double-spacing));
       background-color: var(--black10);
     }
 

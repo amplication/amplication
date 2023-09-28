@@ -10,6 +10,7 @@ export enum EnumTextStyle {
   Normal = "normal",
   Tag = "tag",
   Subtle = "subtle",
+  Description = "description",
   Label = "label",
 }
 
@@ -54,6 +55,7 @@ const STYLE_TO_TAG: { [key: string]: string } = {
   [EnumTextStyle.Normal]: "span",
   [EnumTextStyle.Tag]: "span",
   [EnumTextStyle.Subtle]: "span",
+  [EnumTextStyle.Description]: "span",
   [EnumTextStyle.Label]: "span",
 };
 

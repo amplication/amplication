@@ -31,7 +31,7 @@ const PendingChangesList = () => {
         </div>
       ))}
       {pendingChangesByResource.length === 0 && (
-        <Text textStyle={EnumTextStyle.Subtle}>
+        <Text textStyle={EnumTextStyle.Description}>
           No pending changes! keep working.
         </Text>
       )}

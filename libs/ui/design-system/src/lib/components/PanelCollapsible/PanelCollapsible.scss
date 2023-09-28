@@ -6,7 +6,7 @@ $expandable-transition-duration: 0.1s;
 .amp-panel-collapsible {
   &.amp-panel {
     background-color: var(--white);
-    border: $border-black10;
+    border: $border-dark;
     padding: 0;
   }
 
@@ -14,7 +14,7 @@ $expandable-transition-duration: 0.1s;
     .amp-panel-collapsible__header {
       border-bottom-left-radius: 0;
       border-bottom-right-radius: 0;
-      border-bottom: $border-black10;
+      border-bottom: $border-dark;
 
       &__collapse {
         transform: rotate(180deg);
@@ -63,7 +63,7 @@ $expandable-transition-duration: 0.1s;
 
       li {
         padding: var(--large-spacing);
-        border-bottom: $border-black10;
+        border-bottom: $border-dark;
         list-style: none;
 
         &:last-child {

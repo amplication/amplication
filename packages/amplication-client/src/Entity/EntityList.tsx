@@ -19,10 +19,12 @@ import {
   Text,
   EnumFlexDirection,
   EnumContentAlign,
+  EnumItemsAlign,
+  EnumGapSize,
 } from "@amplication/ui/design-system";
 import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
-import PageContent from "../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 import "./EntityList.scss";
@@ -134,7 +136,13 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     formatError(errorLoading) || (error && formatError(error));
 
   return match.isExact ? (
-    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={pageTitle}
+      pageWidth={
+        displayMode === "table" ? EnumPageWidth.Default : EnumPageWidth.Full
+      }
+    >
       <>
         <Dialog
           isOpen={newEntity}
@@ -144,7 +152,10 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
 
-        <FlexItem contentAlign={EnumContentAlign.Center}>
+        <FlexItem
+          contentAlign={EnumContentAlign.Center}
+          itemsAlign={EnumItemsAlign.Center}
+        >
           <FlexItem.FlexStart>
             <SearchField
               label="search"
@@ -156,6 +167,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
           <FlexItem
             direction={EnumFlexDirection.Row}
             contentAlign={EnumContentAlign.Center}
+            itemsAlign={EnumItemsAlign.Center}
           >
             <svg
               width="16"
@@ -201,7 +213,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 <Button
                   className={`${CLASS_NAME}__install`}
                   buttonStyle={EnumButtonStyle.Secondary}
-                  icon="upload1"
                   eventData={{
                     eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                   }}
@@ -213,7 +224,6 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 className={`${CLASS_NAME}__add-button`}
                 buttonStyle={EnumButtonStyle.Primary}
                 onClick={handleNewEntityClick}
-                icon="plus"
               >
                 Add entity
               </Button>

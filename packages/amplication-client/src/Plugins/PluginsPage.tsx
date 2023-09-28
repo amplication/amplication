@@ -19,6 +19,7 @@ const PluginsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
       pageTitle={pageTitle}
       className="plugins"
       sideContent={<PluginTree resourceId={resource} />}
+      contentTitle="Plugins"
     >
       {innerRoutes}
     </PageContent>

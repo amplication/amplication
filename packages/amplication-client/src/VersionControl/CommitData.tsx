@@ -28,7 +28,7 @@ const CommitData: React.FC<Props> = ({ commit }) => {
         >
           <CommitMessage commit={commit} />
         </Text>
-        <Text textStyle={EnumTextStyle.Subtle}>
+        <Text textStyle={EnumTextStyle.Description}>
           {new Date(commit.createdAt).toDateString()}
         </Text>
       </FlexItem>

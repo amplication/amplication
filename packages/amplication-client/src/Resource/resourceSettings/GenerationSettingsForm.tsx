@@ -72,11 +72,9 @@ function GenerationSettingsForm({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                  <Text textStyle={EnumTextStyle.H4}>
-                    APIs & Admin UI Settings
-                  </Text>
-                </FlexItem>
+                <Text textStyle={EnumTextStyle.H4}>
+                  APIs & Admin UI Settings
+                </Text>
                 <Text textStyle={EnumTextStyle.Tag}>
                   Amplication gives you the choice of which components to
                   generate. Use the settings to include or exclude GraphQL API,

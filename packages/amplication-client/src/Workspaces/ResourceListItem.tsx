@@ -105,7 +105,7 @@ function ResourceListItem({ resource, onDelete }: Props) {
           {name}
         </Text>
         {description && (
-          <Text textStyle={EnumTextStyle.Subtle}>{description}</Text>
+          <Text textStyle={EnumTextStyle.Description}>{description}</Text>
         )}
 
         {/* @todo: check whether we still need to use EllipsisText*/}
