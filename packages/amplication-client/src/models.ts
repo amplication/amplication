@@ -647,9 +647,9 @@ export enum EnumActionStepStatus {
 }
 
 export enum EnumAuthProviderType {
-  Http = 'Http',
-  Jwt = 'Jwt',
   Auth0 = 'Auth0',
+  Http = 'Http',
+  Jwt = 'Jwt'
 }
 
 export enum EnumBlockType {
