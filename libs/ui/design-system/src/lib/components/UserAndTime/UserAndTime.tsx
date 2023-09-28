@@ -54,7 +54,7 @@ export function UserAndTime({
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
     >
-      {label && <Text textStyle={EnumTextStyle.Tag}>{label}</Text>}
+      {label && <Text textStyle={EnumTextStyle.Subtle}>{label}</Text>}
       {formattedTime ? (
         <Tooltip
           aria-label={`${firstName} ${lastName}`}
@@ -62,13 +62,13 @@ export function UserAndTime({
           noDelay
         >
           <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
-            <Text textStyle={EnumTextStyle.Tag} textColor={valueColor}>
+            <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
               {formattedTime}
             </Text>
           </span>
         </Tooltip>
       ) : (
-        <Text textStyle={EnumTextStyle.Tag} textColor={valueColor}>
+        <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
           {emptyText}
         </Text>
       )}

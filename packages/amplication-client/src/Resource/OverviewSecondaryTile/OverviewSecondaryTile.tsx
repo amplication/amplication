@@ -36,7 +36,7 @@ const OverviewSecondaryTile: React.FC<Props> = ({
         </FlexItem>
       </Text>
       <FlexItem margin={EnumFlexItemMargin.Top}>
-        <Text textStyle={EnumTextStyle.Subtle}>{message}</Text>
+        <Text textStyle={EnumTextStyle.Description}>{message}</Text>
       </FlexItem>
       {headerExtra && (
         <Text

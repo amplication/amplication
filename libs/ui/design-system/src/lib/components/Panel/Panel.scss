@@ -26,13 +26,13 @@ $expandable-transition-duration: 0.1s;
   }
 
   &--bordered {
-    border: $border-black10;
+    border: $border-dark;
     margin-bottom: var(--double-spacing);
   }
 
   &--bold {
     background-color: var(--white);
-    border: $border-black5;
+    border: $border-dark;
     padding: var(--large-spacing);
   }
 
@@ -40,10 +40,10 @@ $expandable-transition-duration: 0.1s;
     cursor: pointer;
     &:hover {
       background: var(--panel-hover-background);
-      border: $border-black20;
+      border: $border-dark;
 
       .amp-horizontal-rule {
-        border-top: $border-black20;
+        border-top: $border-dark;
       }
     }
   }
@@ -62,7 +62,7 @@ $expandable-transition-duration: 0.1s;
     max-height: 0;
     transition: all $expandable-transition-duration ease-in;
     overflow: hidden;
-    border-top: $border-black10;
+    border-top: $border-dark;
     border-top-color: transparent;
     margin-left: calc(var(--default-spacing) * -1);
     margin-right: calc(var(--default-spacing) * -1);

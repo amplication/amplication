@@ -74,7 +74,6 @@ const ApiTokenList = React.memo(() => {
           className={`${CLASS_NAME}__add-button`}
           buttonStyle={EnumButtonStyle.Primary}
           onClick={handleNewTokenClick}
-          icon="plus"
         >
           Create API Token
         </Button>

@@ -2,11 +2,16 @@ import classNames from "classnames";
 import React from "react";
 import { Helmet } from "react-helmet";
 import "./PageContent.scss";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 
 export enum EnumPageWidth {
   Default = "default",
   Full = "full",
-  Wide = "wide",
 }
 
 type Props = {
@@ -16,6 +21,7 @@ type Props = {
   className?: string;
   pageTitle?: string;
   pageWidth?: EnumPageWidth;
+  contentTitle?: string;
 };
 
 const CLASS_NAME = "amp-page-content";
@@ -27,6 +33,7 @@ function PageContent({
   pageTitle,
   headerContent,
   pageWidth = EnumPageWidth.Default,
+  contentTitle,
 }: Props) {
   return (
     <>
@@ -45,7 +52,14 @@ function PageContent({
           {sideContent && (
             <div className={`${CLASS_NAME}__side`}>{sideContent}</div>
           )}
-          <main className={`${CLASS_NAME}__main`}>{children}</main>
+          <main className={`${CLASS_NAME}__main`}>
+            {contentTitle && (
+              <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                <Text textStyle={EnumTextStyle.H4}>{contentTitle}</Text>
+              </FlexItem>
+            )}
+            {children}
+          </main>
         </div>
       </div>
     </>

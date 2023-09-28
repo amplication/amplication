@@ -17,6 +17,7 @@ import {
   Panel,
   Text,
   EnumGapSize,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { EnumSubscriptionPlan } from "../models";
@@ -57,6 +58,7 @@ export const WorkspaceOverview = () => {
 
       <Panel panelStyle={EnumPanelStyle.Bold}>
         <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
           start={
             <CircleBadge
               size="xlarge"

@@ -34,7 +34,6 @@ const AddNewProject = () => {
       <Button
         onClick={handleNewProjectClick}
         type="button"
-        icon="plus"
         iconPosition={EnumIconPosition.Left}
         iconSize="small"
         buttonStyle={EnumButtonStyle.Primary}

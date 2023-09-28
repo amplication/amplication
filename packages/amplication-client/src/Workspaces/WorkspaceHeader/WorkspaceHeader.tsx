@@ -1,6 +1,7 @@
 import {
   Breadcrumbs,
   Dialog,
+  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
@@ -147,12 +148,9 @@ const WorkspaceHeader: React.FC = () => {
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
-            <MenuItem
-              title="Home"
-              icon="logo"
-              to={`/${currentWorkspace?.id}`}
-              disableHover
-            />
+            <Link to={`/${currentWorkspace?.id}`}>
+              <Icon icon="logo" size="medium" />
+            </Link>
           </div>
           <Tooltip
             aria-label="Version number copied successfully"

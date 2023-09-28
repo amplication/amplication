@@ -44,7 +44,7 @@ const PendingChangesNotification = () => {
           >
             {message}
           </Text>
-          <Text textStyle={EnumTextStyle.Subtle}>
+          <Text textStyle={EnumTextStyle.Description}>
             You need to commit your changes to generate the code for your
             services
           </Text>

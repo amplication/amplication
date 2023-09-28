@@ -1,5 +1,5 @@
 .amp-theme-dark {
-  --surface: var(--black2);
+  --surface: var(#1f2336);
   --white: #15192c; /*dark: black100 */
 
   --black100: #ffffff; /*dark: white */

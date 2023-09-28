@@ -92,7 +92,6 @@ const TopicsPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
             }
             type="button"
             buttonStyle={EnumButtonStyle.Secondary}
-            icon="plus"
             iconPosition={EnumIconPosition.Left}
             iconSize="xsmall"
           >

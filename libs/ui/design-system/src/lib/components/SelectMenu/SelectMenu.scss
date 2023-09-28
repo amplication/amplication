@@ -23,7 +23,7 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 
   & &__modal {
     > div {
-      border: $border-black30;
+      border: $border-dark;
       box-shadow: $dropdown-box-shadow;
       border-radius: var(--default-border-radius);
       position: relative;
@@ -38,7 +38,7 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
     .select-menu__filter {
       padding: var(--default-spacing);
       padding-left: 0;
-      border-bottom: $border-black10;
+      border-bottom: $border-dark;
     }
   }
 }

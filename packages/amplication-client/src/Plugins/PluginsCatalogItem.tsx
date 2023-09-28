@@ -120,7 +120,7 @@ function PluginsCatalogItem({
           <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
             {name}
           </Text>
-          <Text textStyle={EnumTextStyle.Subtle}>{description}</Text>
+          <Text textStyle={EnumTextStyle.Description}>{description}</Text>
         </FlexItem>
         <FlexItem.FlexEnd>
           {!pluginInstallation ? (

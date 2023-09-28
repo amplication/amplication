@@ -62,7 +62,6 @@ export default function RepositoryActions({
                         type="button"
                         buttonStyle={EnumButtonStyle.Primary}
                         onClick={onCreateRepository}
-                        icon="plus"
                       >
                         Create repository
                       </Button>
@@ -81,7 +80,6 @@ export default function RepositoryActions({
                           <Button
                             type="button"
                             buttonStyle={EnumButtonStyle.Primary}
-                            icon="plus"
                           >
                             Create repository
                           </Button>

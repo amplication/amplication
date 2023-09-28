@@ -25,7 +25,7 @@ $tabs-width: 300px;
     box-sizing: border-box;
     flex: 1;
     max-width: var(--page-content-width-default);
-    padding: var(--large-spacing);
+    padding: var(--double-spacing);
     margin-left: auto;
     margin-right: auto;
     width: 100%;
@@ -33,21 +33,24 @@ $tabs-width: 300px;
 
   &--width-default {
     .amp-page-content__header {
+      max-width: 100%;
+    }
+    .amp-page-content__main {
       max-width: var(--page-content-width-default);
     }
 
     .amp-page-content__body {
-      max-width: var(--page-content-width-default);
+      max-width: 100%;
     }
   }
 
   &--width-wide {
     .amp-page-content__header {
-      max-width: var(--page-content-width-wide);
+      max-width: 100%;
     }
 
     .amp-page-content__body {
-      max-width: var(--page-content-width-wide);
+      max-width: 100%;
     }
   }
 
@@ -63,8 +66,11 @@ $tabs-width: 300px;
 
   &__side {
     width: $tabs-width;
-
+    border: $border-dark;
+    background-color: var(--white);
+    border-radius: var(--default-border-radius);
     padding: var(--default-spacing);
+    margin-right: var(--default-spacing);
     box-sizing: border-box;
     overflow-y: auto;
     @include scrollbars(16px, var(--black60), transparent);
@@ -77,10 +83,13 @@ $tabs-width: 300px;
   &__main {
     @include scrollbars(16px, var(--black60), transparent);
     padding: var(--default-spacing);
+    padding-right: 0;
     flex: 1;
     overflow: auto;
     position: relative;
     box-sizing: border-box;
+    margin-left: auto;
+    margin-right: auto;
 
     @media only screen and (max-width: $page-content-min-width) {
       min-width: calc(#{$page-content-min-width} - var(--menu-width));

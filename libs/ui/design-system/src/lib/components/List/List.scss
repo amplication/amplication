@@ -4,7 +4,7 @@ $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
 
 .amp-list {
-  border: $border-black10;
+  border: $border-dark;
   display: flex;
   flex-direction: column;
   border-radius: var(--default-border-radius);
@@ -13,7 +13,7 @@ $expandable-transition-duration: 0.1s;
 .amp-list-item {
   padding: var(--default-spacing);
   display: inline-block;
-  border-bottom: $border-black10;
+  border-bottom: $border-dark;
 
   flex: 1;
 }

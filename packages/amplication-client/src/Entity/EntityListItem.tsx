@@ -3,6 +3,7 @@ import {
   EnumContentAlign,
   EnumFlexDirection,
   EnumItemsAlign,
+  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
@@ -23,6 +24,11 @@ import { useTracking } from "../util/analytics";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
+import {
+  EnumFlexItemMargin,
+  EnumGapSize,
+  FlexStart,
+} from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
@@ -174,13 +180,20 @@ export const EntityListItem = ({
       />
       <ListItem onClick={handleRowClick}>
         <FlexItem
+          margin={EnumFlexItemMargin.Bottom}
           start={
-            <Link
-              title={entity.displayName}
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              gap={EnumGapSize.Small}
             >
-              <Text>{entity.displayName}</Text>
-            </Link>
+              <Link
+                title={entity.displayName}
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${entity.id}`}
+              >
+                <Text>{entity.displayName}</Text>
+              </Link>
+              <Text textStyle={EnumTextStyle.Subtle}>{entity.description}</Text>
+            </FlexItem>
           }
           end={
             !deleteLoading && (
@@ -195,8 +208,14 @@ export const EntityListItem = ({
         ></FlexItem>
 
         <FlexItem
+          contentAlign={EnumContentAlign.Center}
+          itemsAlign={EnumItemsAlign.Center}
           start={
-            <Text textStyle={EnumTextStyle.Subtle}>{entity.description}</Text>
+            <UserAndTime
+              account={latestVersion.commit?.user?.account}
+              time={latestVersion.commit?.createdAt}
+              label="Last commit:"
+            />
           }
           end={
             <FlexItem
@@ -212,11 +231,6 @@ export const EntityListItem = ({
                   valueColor={EnumTextColor.ThemeRed}
                 />
               )}
-              <UserAndTime
-                account={latestVersion.commit?.user?.account}
-                time={latestVersion.commit?.createdAt}
-                label="Last commit:"
-              />
             </FlexItem>
           }
         ></FlexItem>

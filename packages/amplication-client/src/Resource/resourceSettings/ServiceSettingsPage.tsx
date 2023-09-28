@@ -32,7 +32,7 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       </InnerTabLink>
       <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories`}
-        icon="settings"
+        icon="folder"
       >
         Base Directories
       </InnerTabLink>
