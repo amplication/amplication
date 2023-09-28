@@ -60,10 +60,11 @@ jobs:
       affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
       affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ inputs.nx-head }}
+          filter: blob:none
 
       - uses: nrwl/nx-set-shas@v3
         if: inputs.nx-force-all == false
@@ -76,18 +77,22 @@ jobs:
           cache: "npm"
           cache-dependency-path: "**/package-lock.json"
 
-      - name: Cache global node modules
-        id: cache-node-modules
+      - name: Setup Bun Runtime
+        if: ${{ steps.cache.outputs.cache-hit != 'true' }}
+        uses: oven-sh/setup-bun@v1
+
+      - name: Cache
+        id: cache
         uses: actions/cache@v3
         env:
-          cache-name: cache-node-modules
+          cache-name: cache
         with:
-          path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+          path: |
+            ~/.bun/install/cache
 
-      - name: Install dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
-        run: npm ci
+      - name: Install Dependencies
+        run: bun i --lockfile package-lock.json
 
       - name: Evaluate affected projects
         id: configure-nx
