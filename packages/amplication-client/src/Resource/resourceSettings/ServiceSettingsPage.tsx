@@ -1,8 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
+import { useHistory } from "react-router-dom";
 
 const CLASS_NAME = "service-settings";
 
@@ -15,6 +16,20 @@ const ServiceSettingsPage: React.FC<{}> = () => {
   const showCodeGeneratorVersion = stigg.getBooleanEntitlement({
     featureId: BillingFeature.ShowCodeGeneratorVersion,
   }).hasAccess;
+
+  const history = useHistory();
+  const location = history.location;
+
+  useEffect(() => {
+    if (
+      location.pathname ===
+      `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings`
+    ) {
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/general`
+      );
+    }
+  }, []);
 
   return (
     <div className={CLASS_NAME}>
