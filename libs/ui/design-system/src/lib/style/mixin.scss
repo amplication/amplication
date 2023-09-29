@@ -55,14 +55,6 @@
   color: var(--gray-20);
 }
 
-@mixin columnHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--gray-40);
-}
-
 @mixin bold {
   font-weight: 600;
 }
@@ -172,28 +164,6 @@
   }
 }
 
-@mixin applicationCard {
-  box-sizing: border-box;
-  background: var(--gray-full);
-  border-radius: var(--default-border-radius);
-  border: none;
-
-  padding: var(--large-spacing);
-  width: var(--application-card-width);
-  height: var(--application-card-height);
-  margin: var(--large-spacing);
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--gray-70);
-  min-width: 240px;
-  max-width: 50vw;
-
-  &:hover {
-    box-shadow: var(--hover-box-shadow);
-  }
-}
-
 @mixin scrollbars(
   $size,
   $foreground-color,
@@ -232,72 +202,4 @@
   @media only screen and (max-width: #{$page-content-max-width}) {
     right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
-}
-
-@mixin homePageTile {
-  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
-
-  & &__title {
-    margin-top: var(--default-spacing);
-    justify-content: center;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    &__details {
-      flex: 1;
-      margin-bottom: var(--double-spacing);
-    }
-    &__action {
-      flex: 1;
-      margin-top: var(--double-spacing);
-      margin-bottom: var(--default-spacing);
-    }
-  }
-}
-
-@mixin modalForm {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--default-spacing);
-
-  > * {
-    margin-bottom: var(--large-spacing);
-  }
-  &__instructions {
-    @include body2;
-    color: var(--gray-base);
-    margin-bottom: var(--double-spacing);
-    text-align: center;
-  }
-
-  form {
-    width: 100%;
-  }
-  .amp-button {
-    margin-top: var(--double-spacing);
-    margin-bottom: 0;
-    width: 100%;
-  }
-}
-
-$active-indicator-width: 4px;
-
-@mixin activeItemIndicator {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: $active-indicator-width * -0.5;
-  width: $active-indicator-width * 1.5;
-  pointer-events: none;
-  border-top-right-radius: $active-indicator-width * 2;
-  border-bottom-right-radius: $active-indicator-width * 2;
-  background-color: var(--primary) !important;
-  content: "";
 }
