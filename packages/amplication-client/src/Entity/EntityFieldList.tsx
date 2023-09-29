@@ -6,6 +6,7 @@ import {
   List,
   SearchField,
   Snackbar,
+  TabContentTitle,
   Text,
 } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
@@ -78,6 +79,7 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   return (
     <>
+      <TabContentTitle title="Entity Fields" subTitle="" />
       <SearchField
         label="search"
         placeholder="Search"

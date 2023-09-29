@@ -1,13 +1,8 @@
+import { TabContentTitle } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React from "react";
 import { Helmet } from "react-helmet";
 import "./PageContent.scss";
-import {
-  EnumFlexItemMargin,
-  EnumTextStyle,
-  FlexItem,
-  Text,
-} from "@amplication/ui/design-system";
 
 export enum EnumPageWidth {
   Default = "default",
@@ -22,6 +17,7 @@ type Props = {
   pageTitle?: string;
   pageWidth?: EnumPageWidth;
   contentTitle?: string;
+  contentSubTitle?: string;
 };
 
 const CLASS_NAME = "amp-page-content";
@@ -34,6 +30,7 @@ function PageContent({
   headerContent,
   pageWidth = EnumPageWidth.Default,
   contentTitle,
+  contentSubTitle,
 }: Props) {
   return (
     <>
@@ -54,9 +51,10 @@ function PageContent({
           )}
           <main className={`${CLASS_NAME}__main`}>
             {contentTitle && (
-              <FlexItem margin={EnumFlexItemMargin.Bottom}>
-                <Text textStyle={EnumTextStyle.H4}>{contentTitle}</Text>
-              </FlexItem>
+              <TabContentTitle
+                title={contentTitle}
+                subTitle={contentSubTitle}
+              />
             )}
             {children}
           </main>

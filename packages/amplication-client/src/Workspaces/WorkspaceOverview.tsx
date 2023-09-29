@@ -18,6 +18,7 @@ import {
   Text,
   EnumGapSize,
   EnumItemsAlign,
+  TabContentTitle,
 } from "@amplication/ui/design-system";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { EnumSubscriptionPlan } from "../models";
@@ -53,7 +54,12 @@ export const WorkspaceOverview = () => {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <FlexItem end={<AddNewProject />} margin={EnumFlexItemMargin.None} />
+      <FlexItem
+        itemsAlign={EnumItemsAlign.Center}
+        start={<TabContentTitle title="Workspace" />}
+        end={<AddNewProject />}
+        margin={EnumFlexItemMargin.None}
+      />
       <HorizontalRule doubleSpacing />
 
       <Panel panelStyle={EnumPanelStyle.Bold}>

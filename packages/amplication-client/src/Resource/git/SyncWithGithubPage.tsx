@@ -78,16 +78,14 @@ const SyncWithGithubPage: React.FC = () => {
   );
 
   return (
-    <PageContent pageTitle={pageTitle}>
+    <PageContent
+      pageTitle={pageTitle}
+      contentTitle="Sync with Git Provider"
+      contentSubTitle="Enable sync with Git provider to automatically push the generated code
+    of your application and create a Pull Request in your Git provider
+    repository every time you commit your changes."
+    >
       <div className={CLASS_NAME}>
-        <FlexItem margin={EnumFlexItemMargin.Bottom}>
-          <Text textStyle={EnumTextStyle.H4}>Sync with Git Provider</Text>
-        </FlexItem>
-        <Text textStyle={EnumTextStyle.Tag}>
-          Enable sync with Git provider to automatically push the generated code
-          of your application and create a Pull Request in your Git provider
-          repository every time you commit your changes.
-        </Text>
         <HorizontalRule />
         {data?.resource && isProjectConfiguration && (
           <AuthWithGitProvider

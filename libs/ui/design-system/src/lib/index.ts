@@ -210,3 +210,8 @@ export {
 
 export { List, Props as ListProps } from "./components/List/List";
 export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+
+export {
+  TabContentTitle,
+  Props as TabContentTitleProps,
+} from "./components/TabContentTitle/TabContentTitle";

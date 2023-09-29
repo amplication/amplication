@@ -1,10 +1,9 @@
 import { types } from "@amplication/code-gen-types";
 import {
-  EnumFlexItemMargin,
-  EnumTextStyle,
+  EnumItemsAlign,
   FlexItem,
   Snackbar,
-  Text,
+  TabContentTitle,
 } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo, useState } from "react";
@@ -173,8 +172,8 @@ const EntityField = () => {
       {!loading && (
         <>
           <FlexItem
-            margin={EnumFlexItemMargin.Bottom}
-            start={<Text textStyle={EnumTextStyle.H4}>Field Settings</Text>}
+            itemsAlign={EnumItemsAlign.Start}
+            start={<TabContentTitle title="Field Settings" />}
             end={
               entity &&
               entityField && (

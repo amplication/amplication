@@ -1,4 +1,4 @@
-import { List, Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo, useState } from "react";
@@ -32,6 +32,10 @@ export type PluginInstallationData = {
 };
 export const DIALOG_CLASS_NAME = "limitation-dialog";
 export const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
+
+const TITLE = "Plugins Catalog";
+const SUB_TITLE =
+  "Extend and customize your services by using plugins for various technologies and integrations.";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
@@ -238,6 +242,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           handleCreateDefaultEntitiesConfirmation
         }
       ></PluginInstallConfirmationDialog>
+      <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <List>
         {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
           <PluginsCatalogItem
