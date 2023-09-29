@@ -1,4 +1,4 @@
-import { List, Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { DndProvider } from "react-dnd";
@@ -30,6 +30,9 @@ type Props = AppRouteProps & {
 type TData = {
   entities: models.Entity[];
 };
+
+const TITLE = "Installed Plugins";
+const SUB_TITLE = "Manage your installed plugins";
 
 const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
@@ -227,6 +230,7 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           handleCreateDefaultEntitiesConfirmation
         }
       ></PluginInstallConfirmationDialog>
+      <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <DndProvider backend={HTML5Backend}>
         <List>
           {pluginInstallations.length &&
