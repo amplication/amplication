@@ -7,6 +7,7 @@ import {
   ListItem,
   Text,
   EnumFlexItemMargin,
+  EnumGapSize,
 } from "@amplication/ui/design-system";
 
 import React from "react";
@@ -15,7 +16,7 @@ interface Props {
   title: string;
   icon: string;
   message: string;
-  footer: React.ReactNode;
+  footer?: React.ReactNode;
   headerExtra?: React.ReactNode;
   onClick?: (e) => void;
 }
@@ -28,23 +29,18 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   onClick,
 }) => {
   return (
-    <ListItem onClick={onClick} end={footer}>
+    <ListItem onClick={onClick} end={footer} gap={EnumGapSize.Small}>
       <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <Icon icon={icon} size="small" />
           {title}
         </FlexItem>
       </Text>
-      <FlexItem margin={EnumFlexItemMargin.Top}>
+      <FlexItem>
         <Text textStyle={EnumTextStyle.Description}>{message}</Text>
       </FlexItem>
       {headerExtra && (
-        <Text
-          textStyle={EnumTextStyle.Tag}
-          textColor={EnumTextColor.ThemeTurquoise}
-        >
-          <FlexItem margin={EnumFlexItemMargin.Top}>{headerExtra}</FlexItem>
-        </Text>
+        <FlexItem margin={EnumFlexItemMargin.Top}>{headerExtra}</FlexItem>
       )}
     </ListItem>
   );

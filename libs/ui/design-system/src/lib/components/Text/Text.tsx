@@ -15,8 +15,8 @@ export enum EnumTextStyle {
 }
 
 export enum EnumTextColor {
-  Black20 = "black80",
-  White = "black100",
+  Black20 = "gray-20",
+  White = "gray-base",
   ThemeTurquoise = "theme-turquoise",
   ThemeBlue = "theme-blue",
   ThemeGreen = "theme-green",

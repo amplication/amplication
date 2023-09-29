@@ -5,6 +5,7 @@ import * as models from "../models";
 
 import {
   ConfirmationDialog,
+  EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
   EnumTextStyle,
@@ -108,18 +109,15 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <Text textStyle={EnumTextStyle.Description}>{description}</Text>
         )}
 
-        {/* @todo: check whether we still need to use EllipsisText*/}
-        {/* <EllipsisText
-          className={`${CLASS_NAME}__description`}
-          text={description}
-          maxLength={350}
-        /> */}
-        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
           <Icon
             icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
-            size="small"
+            size="xsmall"
           />
-          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          <Text
+            textStyle={EnumTextStyle.Subtle}
+            textColor={EnumTextColor.White}
+          >
             {gitRepo ? gitRepo : "Not connected"}
           </Text>
 
@@ -129,11 +127,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
             label="Last commit:"
           />
         </FlexItem>
-        {resourceType === models.EnumResourceType.Service && (
-          <Text textStyle={EnumTextStyle.Tag}>
-            {resource.entities.length} entities
-          </Text>
-        )}
       </ListItem>
     </>
   );

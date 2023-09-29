@@ -1,12 +1,12 @@
 import {
+  EnumFlexDirection,
   EnumFlexItemMargin,
-  EnumIconPosition,
+  EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
   Text,
-  Tooltip,
 } from "@amplication/ui/design-system";
 import { format } from "date-fns";
 import { isEmpty } from "lodash";
@@ -15,7 +15,6 @@ import { Link } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import GitRepoDetails from "./GitRepoDetails";
 
 type Props = {
@@ -23,7 +22,6 @@ type Props = {
   showDisconnectedMessage: boolean;
 };
 
-const CLASS_NAME = "app-git-status-panel";
 const DATE_FORMAT = "PP p";
 
 const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
@@ -41,75 +39,60 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
 
   const lastSyncDate = lastSync ? format(lastSync, DATE_FORMAT) : "Never";
 
-  return (
-    <div className={CLASS_NAME}>
-      {isEmpty(resource?.gitRepository) ? (
-        <>
-          {showDisconnectedMessage && (
-            <FlexItem margin={EnumFlexItemMargin.Both}>
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.ThemeOrange}
-              >
-                Connect to a git provider to create a Pull Request with the
-                generated code
-              </Text>
-            </FlexItem>
-          )}
-          <Link
-            title={"Connect to a git provider"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/git-sync`}
+  return isEmpty(resource?.gitRepository) ? (
+    <>
+      {showDisconnectedMessage && (
+        <FlexItem margin={EnumFlexItemMargin.Both}>
+          <Text
+            textStyle={EnumTextStyle.Tag}
+            textColor={EnumTextColor.ThemeOrange}
           >
-            <Button
-              buttonStyle={EnumButtonStyle.Secondary}
-              icon="pending_changes"
-              iconPosition={EnumIconPosition.Left}
-              className={`${CLASS_NAME}__connect__button`}
-            >
-              Connect with a git provider
-            </Button>
-          </Link>
-        </>
-      ) : (
-        <div>
-          <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <Text textStyle={EnumTextStyle.Tag}>Connected to:</Text>
-
-            <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-              <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
-            </Text>
-            <a
-              className={`${CLASS_NAME}__git-link`}
-              href={gitRepositoryUrl}
-              target={
-                gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
-                "_blank"
-              }
-              rel="noreferrer"
-            >
-              <Button
-                buttonStyle={EnumButtonStyle.Text}
-                icon="external_link"
-                eventData={{
-                  eventName: AnalyticsEventNames.GithubCodeViewClick,
-                }}
-              />
-            </a>
-          </FlexItem>
-          <FlexItem itemsAlign={EnumItemsAlign.Center}>
-            <Text textStyle={EnumTextStyle.Tag}>Last sync:</Text>
-            <Tooltip aria-label={`Last sync: ${lastSyncDate}`}>
-              <Text
-                textStyle={EnumTextStyle.Tag}
-                textColor={EnumTextColor.White}
-              >
-                {lastSyncDate}
-              </Text>
-            </Tooltip>
-          </FlexItem>
-        </div>
+            Connect to a git provider to create a Pull Request with the
+            generated code
+          </Text>
+        </FlexItem>
       )}
-    </div>
+      <Link
+        title={"Connect to a git provider"}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/git-sync`}
+      >
+        <Button buttonStyle={EnumButtonStyle.Secondary}>Connect to git</Button>
+      </Link>
+    </>
+  ) : (
+    <FlexItem
+      gap={EnumGapSize.Small}
+      direction={EnumFlexDirection.Row}
+      itemsAlign={EnumItemsAlign.Center}
+    >
+      <FlexItem
+        gap={EnumGapSize.Small}
+        direction={EnumFlexDirection.Row}
+        itemsAlign={EnumItemsAlign.Center}
+      >
+        <Text textStyle={EnumTextStyle.Subtle}>Connected to:</Text>
+        <a
+          href={gitRepositoryUrl}
+          target={
+            gitRepositoryOrganizationProvider?.toLocaleLowerCase() || "_blank"
+          }
+          rel="noreferrer"
+        >
+          <Text
+            textStyle={EnumTextStyle.Subtle}
+            textColor={EnumTextColor.White}
+          >
+            <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
+          </Text>
+        </a>
+        <span />
+        <span />
+        <Text textStyle={EnumTextStyle.Subtle}>Last sync:</Text>
+        <Text textStyle={EnumTextStyle.Subtle} textColor={EnumTextColor.White}>
+          {lastSyncDate}
+        </Text>
+      </FlexItem>
+    </FlexItem>
   );
 };
 

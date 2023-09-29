@@ -35,7 +35,7 @@ const ProjectSettingsPage: React.FC<Props> = ({ innerRoutes }) => {
         <>
           <InnerTabLink
             to={`/${currentWorkspace?.id}/${currentProject?.id}/settings/general`}
-            icon="settings"
+            icon="app-settings"
           >
             General
           </InnerTabLink>
