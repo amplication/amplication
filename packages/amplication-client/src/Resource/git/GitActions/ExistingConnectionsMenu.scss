@@ -4,7 +4,7 @@
   &__label-title {
     @include regular-10;
     padding-bottom: var(--icon-spacing);
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &__select-menu {
@@ -47,7 +47,7 @@
     top: 28px;
     & div {
       width: 265px;
-      border: 1px solid var(--black10);
+      border: 1px solid var(--gray-70);
       margin: 0;
     }
   }
@@ -73,14 +73,14 @@
   }
 
   &__item:hover {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 
   &__add-item {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
     height: 34px;
     display: flex;
-    color: var(--white);
+    color: var(--gray-20);
 
     align-items: center;
     & i {

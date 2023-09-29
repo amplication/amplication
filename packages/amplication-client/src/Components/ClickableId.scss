@@ -3,7 +3,7 @@
 .clickable-id {
   @include body2;
   @include semiBold;
-  color: var(--black100);
+  color: var(--gray-base);
 
   a {
     color: var(--primary);

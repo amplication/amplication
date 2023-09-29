@@ -3,7 +3,7 @@
 .back-navigation {
   @include body2;
   @include semiBold;
-  color: var(--black100);
+  color: var(--gray-base);
   display: inline-flex;
   flex-direction: row;
   align-items: center;

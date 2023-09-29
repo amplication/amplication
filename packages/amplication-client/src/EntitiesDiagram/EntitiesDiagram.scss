@@ -13,7 +13,7 @@ $entity-width: 200px;
   position: absolute;
   left: calc(100% + var(--default-spacing-small));
   top: 0;
-  background: var(--black5);
+  background: var(--gray-80);
   border: $border-dark;
   border-radius: var(--default-border-radius);
   padding: var(--default-spacing-small);
@@ -93,7 +93,7 @@ $entity-width: 200px;
       &__name-wrapper {
         @include flexFullRowWithSpacing;
         padding: var(--default-spacing);
-        background-color: var(--black5);
+        background-color: var(--gray-80);
 
         label {
           margin: 0;
@@ -138,11 +138,11 @@ $entity-width: 200px;
 
       &--selected,
       &--dragged {
-        background-color: var(--black5);
+        background-color: var(--gray-80);
       }
 
       &:hover {
-        background-color: var(--black5);
+        background-color: var(--gray-80);
       }
 
       &__edit {
@@ -154,7 +154,7 @@ $entity-width: 200px;
       }
 
       &--static {
-        color: var(--black60);
+        color: var(--gray-30);
         &:hover {
           background-color: transparent;
         }

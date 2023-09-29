@@ -8,7 +8,7 @@
 
   .menu-container {
     flex: 1;
-    @include scrollbars(5px, var(--black60), transparent);
+    @include scrollbars(5px, var(--gray-30), transparent);
     overflow-y: auto;
     overflow-x: hidden;
     overflow: visible;

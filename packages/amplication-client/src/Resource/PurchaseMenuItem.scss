@@ -3,7 +3,7 @@
 .purchase-menu-item {
   .amp-menu-item {
     i {
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &:before {
@@ -22,7 +22,7 @@
     }
 
     &__arrow {
-      color: var(--black100) !important;
+      color: var(--gray-base) !important;
     }
   }
 

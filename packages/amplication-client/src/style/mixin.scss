@@ -13,14 +13,14 @@
   font-weight: normal;
   font-size: 24px;
   line-height: 36px;
-  color: var(--black100);
+  color: var(--gray-base);
   margin: 0;
 }
 
 @mixin sectionTitle {
   font-weight: normal;
   font-size: 17px;
-  color: var(--black100);
+  color: var(--gray-base);
   margin-top: 0;
   margin-bottom: var(--default-spacing);
 }
@@ -30,14 +30,14 @@
   font-style: normal;
   font-weight: normal;
   line-height: 18px;
-  color: var(--black100);
+  color: var(--gray-base);
 }
 
 @mixin headline-description {
   font-weight: 500;
   font-size: 10px;
   line-height: 120%;
-  color: var(--black40);
+  color: var(--gray-40);
   margin-bottom: var(--default-spacing);
 }
 
@@ -46,7 +46,7 @@
   font-style: normal;
   font-weight: normal;
   line-height: 18px;
-  color: var(--black80);
+  color: var(--gray-20);
 }
 
 @mixin body2 {
@@ -54,7 +54,7 @@
   font-style: normal;
   font-weight: normal;
   line-height: 20px;
-  color: var(--black80);
+  color: var(--gray-20);
 }
 
 @mixin body3 {
@@ -62,7 +62,7 @@
   line-height: 18px;
   font-style: normal;
   font-weight: normal;
-  color: var(--black80);
+  color: var(--gray-20);
 }
 
 @mixin body4 {
@@ -94,7 +94,7 @@
   border-radius: var(--form-elements-border-radius);
   width: 100%;
   box-sizing: border-box;
-  color: var(--black80);
+  color: var(--gray-20);
   height: var(--field-height);
 }
 
@@ -102,7 +102,7 @@
   display: block;
   font-size: var(--text-field-label-font-size);
   margin-bottom: var(--default-spacing-small);
-  color: var(--black60);
+  color: var(--gray-30);
 }
 
 @mixin textField--active {
@@ -110,12 +110,12 @@
   box-shadow: none;
   border: $border-primary;
   transition: border 0.2s ease-in, color 0.2s ease-in;
-  color: var(--black100);
+  color: var(--gray-base);
 }
 
 @mixin textField--disabled {
-  background: var(--black5);
-  border: var(--black10);
+  background: var(--gray-80);
+  border: var(--gray-70);
 }
 
 $bullet-size: 6px;
@@ -177,7 +177,7 @@ $bullet-size: 6px;
 
 @mixin applicationCard {
   box-sizing: border-box;
-  background: var(--black2);
+  background: var(--gray-90);
   border-radius: var(--default-border-radius);
   border: none;
 
@@ -188,13 +188,13 @@ $bullet-size: 6px;
   text-decoration: none;
   display: flex;
   flex-direction: column;
-  border: 1px solid var(--black10);
+  border: 1px solid var(--gray-70);
   min-width: 240px;
   max-width: 50vw;
 
   &:hover {
     box-shadow: var(--hover-box-shadow);
-    background: var(--black5);
+    background: var(--gray-80);
   }
 }
 
@@ -202,7 +202,7 @@ $bullet-size: 6px;
   $size,
   $foreground-color,
   $background-color: mix($foreground-color, white, 50%),
-  $transparent-color: var(--black10)
+  $transparent-color: var(--gray-70)
 ) {
   // For Google Chrome
   &::-webkit-scrollbar {
@@ -270,16 +270,16 @@ $bullet-size: 6px;
       align-items: flex-start;
       justify-content: space-between;
       flex: 1;
-      color: var(--black80);
+      color: var(--gray-20);
       &__summary {
         display: flex;
         align-items: center;
         justify-content: flex-start;
         margin-top: auto;
-        color: var(--black100);
+        color: var(--gray-base);
 
         .amp-icon {
-          color: var(--black80);
+          color: var(--gray-20);
           margin-right: var(--default-spacing-small);
         }
       }
@@ -303,7 +303,7 @@ $bullet-size: 6px;
 
   &__instructions {
     @include body2;
-    color: var(--black100);
+    color: var(--gray-base);
     margin-bottom: var(--double-spacing);
     text-align: center;
     font-size: var(--title5-font-size);

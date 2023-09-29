@@ -25,9 +25,9 @@
     margin-bottom: var(--double-spacing);
 
     .amp-button--clear {
-      background-color: var(--black10);
+      background-color: var(--gray-70);
       border-color: none !important;
-      color: var(--black100);
+      color: var(--gray-base);
       min-width: 60px;
       &:hover {
         cursor: text;
@@ -37,10 +37,10 @@
 
   &__tag {
     background-color: transparent;
-    color: var(--black100);
+    color: var(--gray-base);
     padding: var(--icon-spacing) var(--default-spacing);
     border: $border-dark;
-    background-color: var(--black10);
+    background-color: var(--gray-70);
   }
 
   &__explanation {
@@ -50,7 +50,7 @@
 
   &__divider {
     height: 1px;
-    background-color: var(--black5);
+    background-color: var(--gray-80);
     margin: var(--large-spacing) 0;
     border: none;
   }

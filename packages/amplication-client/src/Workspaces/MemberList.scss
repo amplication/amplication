@@ -14,7 +14,7 @@ $empty-state-image-size: 120px;
     margin: var(--default-spacing-small) 0;
     height: 1px;
     border: none;
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
   &__title {
     @include body2;
@@ -29,7 +29,7 @@ $empty-state-image-size: 120px;
 
     &__title {
       @include pageTitle;
-      color: var(--black60);
+      color: var(--gray-30);
       text-align: center;
       margin-bottom: var(--large-spacing);
     }

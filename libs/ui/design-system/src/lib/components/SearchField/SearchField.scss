@@ -17,20 +17,20 @@
     padding-right: var(--default-spacing);
 
     &::placeholder {
-      color: var(--black40);
+      color: var(--gray-40);
     }
-    color: var(--black100);
+    color: var(--gray-base);
     &:hover,
     &:active,
     &:focus {
       @include textField--active;
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
 
   i {
     position: absolute;
-    color: var(--black40);
+    color: var(--gray-40);
     font-size: 18px;
     line-height: 32px;
     padding-left: var(--default-spacing);

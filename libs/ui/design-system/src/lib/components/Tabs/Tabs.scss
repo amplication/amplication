@@ -13,7 +13,7 @@ $tab-height: 26px;
 
   .amp-tab {
     text-transform: none;
-    color: var(--black80);
+    color: var(--gray-20);
     margin: var(--default-spacing-small) var(--double-spacing);
     font-size: var(--tag-font-size);
     position: relative;
@@ -49,11 +49,11 @@ $tab-height: 26px;
       width: 1px;
       bottom: 0;
       right: calc(-1 * var(--double-spacing));
-      background-color: var(--black10);
+      background-color: var(--gray-70);
     }
 
     &.active {
-      color: var(--black100);
+      color: var(--gray-base);
       position: relative;
       overflow: visible;
       font-weight: 500;

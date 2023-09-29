@@ -73,7 +73,7 @@ $tabs-width: 300px;
     margin-right: var(--default-spacing);
     box-sizing: border-box;
     overflow-y: auto;
-    @include scrollbars(16px, var(--black60), transparent);
+    @include scrollbars(16px, var(--gray-30), transparent);
 
     .sub-list {
       margin-left: var(--triple-spacing);
@@ -81,7 +81,7 @@ $tabs-width: 300px;
   }
 
   &__main {
-    @include scrollbars(16px, var(--black60), transparent);
+    @include scrollbars(16px, var(--gray-30), transparent);
     padding: var(--default-spacing);
     padding-right: 0;
     flex: 1;

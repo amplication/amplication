@@ -37,7 +37,7 @@ $before-spacing: -6px;
       position: absolute;
       display: block;
       left: $before-spacing-left;
-      border-right: 1px solid var(--black10);
+      border-right: 1px solid var(--gray-70);
       top: $before-spacing;
       bottom: $before-spacing;
     }
@@ -57,11 +57,11 @@ $before-spacing: -6px;
   }
   &__tooltip_deleted:after {
     border: 1px solid var(--theme-red);
-    background-color: var(--black10);
-    color: var(--black100);
+    background-color: var(--gray-70);
+    color: var(--gray-base);
   }
   &__deleted {
-    color: var(--black80);
+    color: var(--gray-20);
     cursor: pointer;
   }
   .tooltipped-ne:before {

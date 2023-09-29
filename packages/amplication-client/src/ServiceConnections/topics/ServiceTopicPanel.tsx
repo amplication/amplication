@@ -60,7 +60,7 @@ type StatusTextProps = {
 const StatusText = ({ patternType, enable }: StatusTextProps) => {
   const color = useMemo(() => {
     if (!enable) {
-      return "var(--black40)";
+      return "var(--gray-40)";
     }
     return patternType === EnumMessagePatternConnectionOptions.None
       ? "var( --theme-light-red)"

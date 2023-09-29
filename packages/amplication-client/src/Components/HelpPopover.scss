@@ -8,7 +8,7 @@
     @include body2;
     background-color: var(--white);
     padding: var(--default-spacing);
-    color: var(--black100);
+    color: var(--gray-base);
   }
   &__details {
     display: flex;
@@ -37,7 +37,7 @@
 
   .amp-popover {
     &__content {
-      color: var(--black100);
+      color: var(--gray-base);
       padding: var(--large-spacing);
 
       a {

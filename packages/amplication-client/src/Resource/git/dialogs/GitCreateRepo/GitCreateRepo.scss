@@ -5,7 +5,7 @@
   &__header {
     font-size: 14px;
     margin-bottom: var(--large-spacing);
-    color: var(--black100);
+    color: var(--gray-base);
   }
 
   &__button {
@@ -38,7 +38,7 @@
   }
 
   &__label {
-    color: var(--black80);
+    color: var(--gray-20);
     margin-bottom: var(--icon-spacing);
     font-size: 10px;
   }

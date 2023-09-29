@@ -22,16 +22,16 @@
 
   --border-color: #2c3249;
 
-  --black100: #ffffff; /*dark: white */
-  --black90: #b7bac7; /*dark: black10 */
-  --black80: #a3a8b8; /*dark: black20 */
-  --black60: #80869d; /*dark: black30 */
-  --black40: #686f8c; /*dark: black40 */
-  --black30: #515873; /*dark: black50 */
-  --black20: #444b66; /*dark: black60 */
-  --black10: #373d57; /*dark: black70 */
-  --black5: #2c3249; /*dark: black80 */
-  --black2: #22273c; /*dark: black90 */
+  --gray-base: #ffffff; /*dark: white */
+  --gray-10: #b7bac7; /*dark: black10 */
+  --gray-20: #a3a8b8; /*dark: black20 */
+  --gray-30: #80869d; /*dark: black30 */
+  --gray-40: #686f8c; /*dark: black40 */
+  --gray-50: #515873; /*dark: black50 */
+  --gray-60: #444b66; /*dark: black60 */
+  --gray-70: #373d57; /*dark: black70 */
+  --gray-80: #2c3249; /*dark: black80 */
+  --gray-90: #22273c; /*dark: black90 */
 
   --theme-yellow: #f5b82e;
   --theme-red: #f85b6e;
@@ -44,10 +44,10 @@
 
   --tooltip-background: #1b1f23;
 
-  --panel-background: var(--black5);
-  --panel-hover-background: var(--black10);
+  --panel-background: var(--gray-80);
+  --panel-hover-background: var(--gray-70);
 
-  --menu-background-color: var(--black2);
+  --menu-background-color: var(--gray-90);
 
   --toggle-track-background: #e3ddf6;
 

@@ -51,7 +51,7 @@ $menu_modal_width: 60px;
   }
 
   &__item:hover {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 
   &__header {
@@ -83,7 +83,7 @@ $menu_modal_width: 60px;
       align-items: center;
 
       h4 {
-        color: var(--black80);
+        color: var(--gray-20);
       }
 
       .select-menu {
@@ -155,6 +155,6 @@ $menu_modal_width: 60px;
   .amp-dialog__body {
     flex: 1;
     overflow: auto;
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
   }
 }

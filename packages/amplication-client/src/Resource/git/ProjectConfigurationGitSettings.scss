@@ -12,7 +12,7 @@
   }
 
   &__disabled_color {
-    color: var(--black40);
+    color: var(--gray-40);
   }
 
   &__settingsLink {
@@ -26,7 +26,7 @@
     width: 100%;
     height: 72px;
     border: $border-dark;
-    background: var(--black2);
+    background: var(--gray-90);
     margin: 0;
     min-height: var(--min-height-of-banner);
     display: flex;
@@ -42,14 +42,14 @@
   }
 
   &__githubSync {
-    color: var(--black40);
+    color: var(--gray-40);
   }
 
   &__select-repo {
     display: flex;
     flex-direction: row;
     align-items: center;
-    color: var(--black100);
+    color: var(--gray-base);
 
     .amp-icon {
       margin-right: var(--default-spacing-small);
