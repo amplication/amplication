@@ -1,15 +1,8 @@
-import {
-  EnumFlexItemMargin,
-  EnumTextStyle,
-  FlexItem,
-  HorizontalRule,
-  Snackbar,
-  Text,
-} from "@amplication/ui/design-system";
+import { HorizontalRule, Snackbar } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
-import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
+import { AppContext } from "../../context/appContext";
 import {
   EnumGitOrganizationType,
   EnumGitProvider,
@@ -17,10 +10,10 @@ import {
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
-import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
-import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
-import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import AuthWithGitProvider from "./AuthWithGitProvider";
+import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
+import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
 
 const TITLE = "Sync with Git Provider";
 const SUB_TITLE =

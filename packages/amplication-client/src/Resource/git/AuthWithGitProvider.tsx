@@ -1,4 +1,4 @@
-import { Dialog, HorizontalRule } from "@amplication/ui/design-system";
+import { Dialog } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import * as models from "../../models";
