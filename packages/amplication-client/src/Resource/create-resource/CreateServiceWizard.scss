@@ -120,7 +120,7 @@ $max-width: 700px;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--white);
+    background: var(--gray-full);
   }
 
   &__description {
@@ -162,7 +162,7 @@ $max-width: 700px;
     position: relative;
     height: 100%;
     width: 100%;
-    background: var(--white);
+    background: var(--gray-full);
 
     &__message_title_container {
       display: flex;
@@ -188,7 +188,7 @@ $max-width: 700px;
 
     &__loader {
       .amp-loader {
-        background: var(--white);
+        background: var(--gray-full);
       }
     }
 

@@ -25,7 +25,7 @@
   }
   &__tooltip_invalid::after {
     border: 1px solid var(--theme-red);
-    background-color: var(--white);
+    background-color: var(--gray-full);
     color: var(--gray-base);
   }
   &__edit {

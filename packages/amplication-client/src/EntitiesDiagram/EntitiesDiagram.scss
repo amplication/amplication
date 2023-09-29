@@ -59,7 +59,7 @@ $entity-width: 200px;
   &__entities {
     &__entity {
       margin: var(--default-spacing);
-      background-color: var(--white);
+      background-color: var(--gray-full);
       overflow: hidden;
       border: $border-dark;
       border-radius: var(--default-border-radius);

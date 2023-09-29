@@ -7,7 +7,7 @@
   }
 
   &__menu-list {
-    background-color: var(--white);
+    background-color: var(--gray-full);
     padding: 0;
   }
 
@@ -67,7 +67,7 @@
 
   .select-field__option {
     color: var(--gray-30);
-    background-color: var(--white);
+    background-color: var(--gray-full);
     @include flexFullRow;
     justify-content: flex-start;
     padding: var(--default-spacing-small);

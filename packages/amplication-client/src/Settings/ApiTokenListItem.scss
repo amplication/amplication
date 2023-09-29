@@ -28,7 +28,7 @@ $panel-tag-width: 64px;
   &__panel-tag {
     width: $panel-tag-width;
     min-width: $panel-tag-width;
-    background-color: var(--white);
+    background-color: var(--gray-full);
     border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
     display: flex;
     align-items: center;

@@ -88,7 +88,7 @@
   font: inherit;
   font-size: var(--normal-font-size);
   padding: calc(var(--default-spacing) / 2) var(--default-spacing);
-  background-color: var(--white);
+  background-color: var(--gray-full);
   border: $border-dark;
   border-radius: var(--form-elements-border-radius);
   width: 100%;
@@ -123,7 +123,7 @@
   height: 16px;
   min-width: 16px;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--gray-full);
   border-radius: 8px;
   padding-left: 4px;
   padding-right: 4px;
@@ -174,7 +174,7 @@
 
 @mixin applicationCard {
   box-sizing: border-box;
-  background: var(--white);
+  background: var(--gray-full);
   border-radius: var(--default-border-radius);
   border: none;
 

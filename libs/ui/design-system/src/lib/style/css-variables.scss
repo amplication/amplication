@@ -1,6 +1,5 @@
 :root {
   --surface: #1f2336;
-  --white: #15192c; /*dark: black100 */
 
   --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
   --static-black: #121242; //static black stays black on dark mode, to be used on button and other color elements
@@ -20,18 +19,19 @@
     --mdc-typography-body2-font-family
   );
 
-  --border-color: #2c3249;
+  --gray-base: #ffffff;
+  --gray-10: #b7bac7;
+  --gray-20: #a3a8b8;
+  --gray-30: #80869d;
+  --gray-40: #686f8c;
+  --gray-50: #515873;
+  --gray-60: #444b66;
+  --gray-70: #373d57;
+  --gray-80: #2c3249;
+  --gray-90: #22273c;
+  --gray-full: #15192c;
 
-  --gray-base: #ffffff; /*dark: white */
-  --gray-10: #b7bac7; /*dark: black10 */
-  --gray-20: #a3a8b8; /*dark: black20 */
-  --gray-30: #80869d; /*dark: black30 */
-  --gray-40: #686f8c; /*dark: black40 */
-  --gray-50: #515873; /*dark: black50 */
-  --gray-60: #444b66; /*dark: black60 */
-  --gray-70: #373d57; /*dark: black70 */
-  --gray-80: #2c3249; /*dark: black80 */
-  --gray-90: #22273c; /*dark: black90 */
+  --border-color: var(--gray-80);
 
   --theme-yellow: #f5b82e;
   --theme-red: #f85b6e;
@@ -146,10 +146,8 @@
   --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
   --menu-box-shadow: 4px 0 12px rgba(79, 65, 116, 0.08);
 
-  --dark-carrot-color: #ffbd70;
-
   --page-content-background: #1f2336;
-  --page-content-tab-background: var(--white);
+  --page-content-tab-background: var(--gray-full);
 
   --fixed-menu-panel-width: 300px;
   --fixed-menu-panel-max-width: 300px;
