@@ -66,7 +66,7 @@ export const Routes: RouteDef[] = [
                   () => import("../Resource/git/SyncWithGithubPage")
                 ),
                 moduleName: "ProjectSettingsGit",
-                displayName: "Sync with Git Provider",
+                displayName: "Sync with Git",
                 moduleClass: "",
                 routeTrackType: "",
                 exactPath: false,

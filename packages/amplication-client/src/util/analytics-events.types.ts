@@ -123,6 +123,7 @@ export enum AnalyticsEventNames {
   UpgradeFromCodeGeneratorVersionClick = "UpgradeFromCodeGeneratorVersionClick",
   ContactUsButtonClick = "ContactUsButtonClick",
   UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
+  ProFeatureLockClick = "ProFeatureLockClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",
