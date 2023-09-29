@@ -1,6 +1,5 @@
 import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import "./ServiceConfigurationGitSettings.scss";
 import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
 import { useTracking } from "../../util/analytics";
@@ -94,7 +93,7 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
       <div className={`${CLASS_NAME}__panelWarper`}>
         <ProjectConfigurationGitSettings
           isOverride={isOverride}
-          isProjectSettingsLinkShow={false}
+          showProjectSettingsLink={false}
         />
         <Panel
           className={`${CLASS_NAME}__${settingsClassName}`}

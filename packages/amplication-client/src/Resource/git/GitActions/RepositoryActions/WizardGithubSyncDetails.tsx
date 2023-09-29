@@ -2,7 +2,6 @@ import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import GitRepoDetails from "../../GitRepoDetails";
-import "./GithubSyncDetails.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
 
 const CLASS_NAME = "git-repo-details";

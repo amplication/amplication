@@ -1,6 +1,7 @@
-import { Dialog, EnumPanelStyle, Panel } from "@amplication/ui/design-system";
+import { Dialog, HorizontalRule } from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
+import * as models from "../../models";
 import { EnumGitProvider, Resource } from "../../models";
 import "./AuthWithGit.scss";
 import ExistingConnectionsMenu from "./GitActions/ExistingConnectionsMenu";
@@ -14,7 +15,6 @@ import {
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
 import useGitHook from "./useAuthWithGit";
-import * as models from "../../models";
 
 interface AuthWithGitProviderProps {
   type: "wizard" | "resource";
@@ -37,8 +37,6 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
   gitRepositorySelectedCb,
   gitRepositorySelected,
 }) => {
-  const CLASS_NAME = type === "wizard" ? "auth-with-git" : "auth-app-with-git";
-
   const {
     gitOrganizations,
     gitOrganization,
@@ -120,49 +118,49 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
           />
         </Dialog>
       )}
-      <Panel panelStyle={EnumPanelStyle.Transparent}>
-        {isEmpty(gitOrganizations) ? (
-          <GitProviderConnectionList
-            onDone={onDone}
-            setPopupFailed={setPopupFailed}
-          />
-        ) : (
-          <>
+      {isEmpty(gitOrganizations) ? (
+        <GitProviderConnectionList
+          onDone={onDone}
+          setPopupFailed={setPopupFailed}
+        />
+      ) : (
+        <>
+          {!resource?.gitRepository && (
             <ExistingConnectionsMenu
               gitOrganizations={gitOrganizations}
               onSelectGitOrganization={handleOrganizationChange}
               selectedGitOrganization={gitOrganization}
               onAddGitOrganization={openSelectOrganizationDialog}
             />
-            {type === "wizard" ? (
-              <WizardRepositoryActions
+          )}
+          {type === "wizard" ? (
+            <WizardRepositoryActions
+              onCreateRepository={openCreateNewRepo}
+              onSelectRepository={openSelectRepoDialog}
+              onDisconnectGitRepository={handleRepoDisconnected}
+              selectedGitOrganization={gitOrganization}
+              selectedGitRepository={gitRepositorySelectedData}
+            />
+          ) : (
+            <>
+              <RepositoryActions
                 onCreateRepository={openCreateNewRepo}
                 onSelectRepository={openSelectRepoDialog}
-                onDisconnectGitRepository={handleRepoDisconnected}
+                currentResourceWithGitRepository={resource}
                 selectedGitOrganization={gitOrganization}
-                selectedGitRepository={gitRepositorySelectedData}
               />
-            ) : (
-              <>
-                <RepositoryActions
-                  onCreateRepository={openCreateNewRepo}
-                  onSelectRepository={openSelectRepoDialog}
-                  currentResourceWithGitRepository={resource}
-                  selectedGitOrganization={gitOrganization}
-                />
-                {resource?.gitRepository && (
-                  <>
-                    <RepositoryForm
-                      defaultValues={resource?.gitRepository}
-                      onSubmit={handleUpdateGitRepositorySubmit}
-                    />
-                  </>
-                )}
-              </>
-            )}
-          </>
-        )}
-      </Panel>
+              {resource?.gitRepository && (
+                <>
+                  <RepositoryForm
+                    defaultValues={resource?.gitRepository}
+                    onSubmit={handleUpdateGitRepositorySubmit}
+                  />
+                </>
+              )}
+            </>
+          )}
+        </>
+      )}
     </>
   );
 };

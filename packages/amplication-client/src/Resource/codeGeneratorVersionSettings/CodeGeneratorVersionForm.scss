@@ -20,16 +20,6 @@
     @include body2;
   }
 
-  &__tooltip__window {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
-    .amp-icon {
-      color: #f85b6e;
-    }
-  }
-
   &__view_plans_link {
     color: #53dbee;
     text-decoration: underline;

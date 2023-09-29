@@ -40,7 +40,7 @@ export const linksMap: {
     to: "/roles",
   },
   git: {
-    title: "Sync with Git provider",
+    title: "Sync with Git",
     icon: "pending_changes",
     to: "/git-sync",
   },

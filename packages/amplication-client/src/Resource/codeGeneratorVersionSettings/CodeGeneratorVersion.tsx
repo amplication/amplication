@@ -90,19 +90,6 @@ const CodeGeneratorVersion = () => {
   const { currentResource, currentWorkspace, updateCodeGeneratorVersion } =
     useContext(AppContext);
 
-  const history = useHistory();
-  const { trackEvent } = useTracking();
-
-  const handleViewPlansClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeFromCodeGeneratorVersionClick,
-      workspace: currentWorkspace.id,
-    });
-  }, [currentWorkspace, window.location.pathname]);
-
   const { data: currentCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
     GET_CURRENT_CODE_GENERATOR_VERSION,
     {
@@ -244,7 +231,6 @@ const CodeGeneratorVersion = () => {
       <FlexItem margin={EnumFlexItemMargin.Top} />
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
-        onViewPlansClick={handleViewPlansClick}
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
       />
