@@ -1,24 +1,23 @@
 import {
-  EnumFlexItemMargin,
+  EnumFlexDirection,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
   Snackbar,
   Text,
   ToggleField,
-  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext } from "react";
+import { useContext } from "react";
+import { match } from "react-router-dom";
+import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { match } from "react-router-dom";
 import useSettingsHook from "../useSettingsHook";
-import { AppContext } from "../../context/appContext";
 
 type Props = {
   match: match<{ resource: string }>;

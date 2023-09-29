@@ -1,20 +1,18 @@
-import { useContext } from "react";
-import * as models from "../../models";
-import { AppContext } from "../../context/appContext";
-import { Form, Formik } from "formik";
-import { validate } from "../../util/formikValidateJsonSchema";
-import { useTracking } from "../../util/analytics";
-import useSettingsHook from "../useSettingsHook";
-import EntitySelectField from "../../Components/EntitySelectField";
-import FormikAutoSave from "../../util/formikAutoSave";
-import useResource from "../hooks/useResource";
 import {
-  EnumFlexItemMargin,
   EnumTextStyle,
-  FlexItem,
   HorizontalRule,
   Text,
 } from "@amplication/ui/design-system";
+import { Form, Formik } from "formik";
+import { useContext } from "react";
+import EntitySelectField from "../../Components/EntitySelectField";
+import { AppContext } from "../../context/appContext";
+import * as models from "../../models";
+import { useTracking } from "../../util/analytics";
+import FormikAutoSave from "../../util/formikAutoSave";
+import { validate } from "../../util/formikValidateJsonSchema";
+import useResource from "../hooks/useResource";
+import useSettingsHook from "../useSettingsHook";
 
 const CLASS_NAME = "generation-settings-form";
 

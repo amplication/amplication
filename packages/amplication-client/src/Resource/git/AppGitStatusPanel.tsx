@@ -1,24 +1,22 @@
-import React, { useContext } from "react";
-import { Button, EnumButtonStyle } from "../../Components/Button";
 import {
-  EnumIconPosition,
-  FlexItem,
-  Icon,
-  Label,
-  Tooltip,
-  Text,
-  EnumTextStyle,
-  EnumTextColor,
   EnumFlexItemMargin,
+  EnumIconPosition,
   EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+  Tooltip,
 } from "@amplication/ui/design-system";
-import { Link } from "react-router-dom";
-import * as models from "../../models";
-import { isEmpty } from "lodash";
 import { format } from "date-fns";
+import { isEmpty } from "lodash";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
+import { Button, EnumButtonStyle } from "../../Components/Button";
 import { AppContext } from "../../context/appContext";
-import GitRepoDetails from "./GitRepoDetails";
+import * as models from "../../models";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import GitRepoDetails from "./GitRepoDetails";
 
 type Props = {
   resource: models.Resource | null;

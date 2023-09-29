@@ -1,6 +1,6 @@
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
 import { useLazyQuery, useQuery } from "@apollo/client";
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import { BackNavigation } from "../Components/BackNavigation";
 import PageContent from "../Layout/PageContent";
@@ -33,11 +33,6 @@ const OnBoardingBuildPage = ({ match }: Props) => {
   }, [build]);
 
   const { currentProject, currentWorkspace } = useContext(AppContext);
-  const [isBuildCompleted, setIsBuildCompleted] = useState<boolean>(false);
-
-  const handleBuildCompleted = useCallback(() => {
-    setIsBuildCompleted(true);
-  }, [isBuildCompleted]);
 
   const [getCommit, { data: commitData }] = useLazyQuery<{
     commit: models.Commit;
@@ -73,7 +68,7 @@ const OnBoardingBuildPage = ({ match }: Props) => {
       <PageContent className={CLASS_NAME} pageTitle={`Build ${truncatedId}`}>
         {!data ? (
           <CircularProgress centerToParent />
-        ) : !isBuildCompleted ? (
+        ) : (
           <>
             <BackNavigation
               to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
@@ -101,8 +96,6 @@ const OnBoardingBuildPage = ({ match }: Props) => {
               </aside>
             </div>
           </>
-        ) : (
-          <div>building is completed</div>
         )}
       </PageContent>
       <Snackbar open={Boolean(errorLoading)} message={errorMessage} />

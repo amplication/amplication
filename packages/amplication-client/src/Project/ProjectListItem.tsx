@@ -1,18 +1,13 @@
 import {
-  EnumFlexItemMargin,
-  EnumItemsAlign,
   EnumTextStyle,
   EnumTextWeight,
-  FlexItem,
   ListItem,
   Text,
-  EnumGapSize,
 } from "@amplication/ui/design-system";
 import { useCallback, useContext } from "react";
 import { Link, useHistory } from "react-router-dom";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
-import { EnumResourceType, Project } from "../models";
+import { Project } from "../models";
 
 type Props = {
   project: Project;

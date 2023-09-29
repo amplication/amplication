@@ -2,8 +2,9 @@ import {
   ConfirmationDialog,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
   EnumItemsAlign,
-  EnumTextAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
@@ -24,11 +25,6 @@ import { useTracking } from "../util/analytics";
 import ConfirmationDialogFieldList from "./ConfirmationDialogFieldList";
 import "./EntityListItem.scss";
 import { USER_ENTITY } from "./constants";
-import {
-  EnumFlexItemMargin,
-  EnumGapSize,
-  FlexStart,
-} from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };

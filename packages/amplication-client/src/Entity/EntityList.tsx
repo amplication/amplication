@@ -1,41 +1,40 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { Link, match } from "react-router-dom";
+import {
+  CircularProgress,
+  Dialog,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  LimitationNotification,
+  List,
+  SearchField,
+  Snackbar,
+  Text,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Link, match } from "react-router-dom";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
-import * as models from "../models";
-import {
-  Dialog,
-  SearchField,
-  Snackbar,
-  CircularProgress,
-  LimitationNotification,
-  Toggle,
-  FlexItem,
-  HorizontalRule,
-  EnumTextStyle,
-  List,
-  Text,
-  EnumFlexDirection,
-  EnumContentAlign,
-  EnumItemsAlign,
-  EnumGapSize,
-} from "@amplication/ui/design-system";
-import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
-import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import NewEntity from "./NewEntity";
 
-import { Button, EnumButtonStyle } from "../Components/Button";
-import "./EntityList.scss";
-import { AppRouteProps } from "../routes/routesUtil";
-import { pluralize } from "../util/pluralize";
-import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../util/BillingFeature";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import usePlugins from "../Plugins/hooks/usePlugins";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
+import { BillingFeature } from "../util/BillingFeature";
+import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
+import "./EntityList.scss";
 
 type TData = {
   entities: models.Entity[];
