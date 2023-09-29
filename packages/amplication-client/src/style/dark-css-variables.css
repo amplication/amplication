@@ -1,29 +1,5 @@
 .amp-theme-dark {
-  --surface: var(#1f2336);
-  --white: #15192c; /*dark: black100 */
-
-  --black100: #ffffff; /*dark: white */
-  --black90: #b7bac7; /*dark: black10 */
-  --black80: #a3a8b8; /*dark: black20 */
-  --black60: #80869d; /*dark: black30 */
-  --black40: #686f8c; /*dark: black40 */
-  --black30: #515873; /*dark: black50 */
-  --black20: #444b66; /*dark: black60 */
-  --black10: #373d57; /*dark: black70 */
-  --black5: #2c3249; /*dark: black80 */
-  --black2: #22273c; /*dark: black90 */
-
   --welcome-page-stripe-background: var(--white);
-  --panel-hover-background: var(--black100);
-
-  --panel-background: var(--black5);
-  --panel-hover-background: var(--black10);
-
-  --menu-background-color: var(--black2);
-  --menu-fixed-panel-background: var(--white);
-
-  --page-content-background: #1f2336;
-  --page-content-tab-background: var(--white);
 
   --action-log-background-color: var(--white);
   --action-log-header-color: var(--black100);
@@ -73,6 +49,4 @@
   --diffViewerTitleColor: var(--black100);
   --diffViewerTitleBorderColor: var(--white);
   --screenResolutionMessageColor: var(--black100);
-
-  --floating-box-shadow: 0px 44px 40px -24px rgba(9, 11, 20, 0.3);
 }
