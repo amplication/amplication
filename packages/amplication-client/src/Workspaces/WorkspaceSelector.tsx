@@ -1,20 +1,19 @@
-import React, { useCallback, useContext, useState } from "react";
-import classNames from "classnames";
-import { Button, EnumButtonStyle } from "../Components/Button";
 import {
-  CircleBadge,
-  Dialog,
   CircularProgress,
-  Text,
+  Dialog,
+  EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
-  EnumItemsAlign,
+  Text,
 } from "@amplication/ui/design-system";
-import WorkspaceSelectorList from "./WorkspaceSelectorList";
-import NewWorkspace from "./NewWorkspace";
-import "./WorkspaceSelector.scss";
+import classNames from "classnames";
+import { useCallback, useContext, useState } from "react";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { EnumSubscriptionPlan } from "../models";
+import NewWorkspace from "./NewWorkspace";
+import "./WorkspaceSelector.scss";
+import WorkspaceSelectorList from "./WorkspaceSelectorList";
 
 export const FREE_WORKSPACE_COLOR = "#A787FF";
 export const PRO_WORKSPACE_COLOR = "#20a4f3";

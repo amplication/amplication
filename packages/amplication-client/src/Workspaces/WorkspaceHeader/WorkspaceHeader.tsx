@@ -23,7 +23,6 @@ import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
 import UserBadge from "../../Components/UserBadge";
 import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
-import MenuItem from "../../Layout/MenuItem";
 import ProfileForm from "../../Profile/ProfileForm";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";

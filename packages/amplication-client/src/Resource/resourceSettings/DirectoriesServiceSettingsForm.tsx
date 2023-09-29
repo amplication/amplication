@@ -1,7 +1,5 @@
 import {
-  EnumFlexItemMargin,
   EnumTextStyle,
-  FlexItem,
   HorizontalRule,
   Snackbar,
   Text,
