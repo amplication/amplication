@@ -1,7 +1,7 @@
 .amp-theme-dark {
-  --welcome-page-stripe-background: var(--white);
+  --welcome-page-stripe-background: var(--gray-full);
 
-  --action-log-background-color: var(--white);
+  --action-log-background-color: var(--gray-full);
   --action-log-header-color: var(--gray-base);
   --action-log-step-color: var(--gray-base);
 
@@ -24,7 +24,7 @@
   --image-import-prisma-schema: url("../assets/images/mono/import-prisma-schema-dark.svg");
   --image-import-prisma: url("../assets/images/mono/import-prisma-dark.svg");
 
-  --diffViewerBackground: var(--white);
+  --diffViewerBackground: var(--gray-full);
   --diffViewerColor: var(--gray-base);
   --addedBackground: #1b3b3e;
   --addedColor: var(--gray-base);
@@ -35,9 +35,9 @@
   --addedGutterBackground: #205e50;
   --removedGutterBackground: #6a273b;
   --gutterBackground: var(--gray-80);
-  --gutterBackgroundDark: var(--white);
-  --highlightBackground: var(--white);
-  --highlightGutterBackground: var(--white);
+  --gutterBackgroundDark: var(--gray-full);
+  --highlightBackground: var(--gray-full);
+  --highlightGutterBackground: var(--gray-full);
   --codeFoldGutterBackground: var(--gray-80);
   --codeFoldBackground: var(--gray-90);
   --emptyLineBackground: var(--gray-90);
@@ -45,8 +45,8 @@
   --addedGutterColor: var(--gray-base);
   --removedGutterColor: var(--gray-base);
   --codeFoldContentColor: var(--gray-base);
-  --diffViewerTitleBackground: var(--white);
+  --diffViewerTitleBackground: var(--gray-full);
   --diffViewerTitleColor: var(--gray-base);
-  --diffViewerTitleBorderColor: var(--white);
+  --diffViewerTitleBorderColor: var(--gray-full);
   --screenResolutionMessageColor: var(--gray-base);
 }

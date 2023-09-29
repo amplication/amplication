@@ -13,17 +13,17 @@ $select-menu-max-width: 300px;
   min-height: var(--header-height);
   background: var(--gray-90);
   border-bottom: $border-dark;
-  background-color: var(--white);
+  background-color: var(--gray-full);
 
   &__highlight {
     background-color: var(--theme-orange);
     text-align: center;
-    color: var(--white);
+    color: var(--gray-full);
     padding: var(--default-spacing-small);
 
     a {
       @include bold;
-      color: var(--white);
+      color: var(--gray-full);
       text-decoration: underline;
     }
   }

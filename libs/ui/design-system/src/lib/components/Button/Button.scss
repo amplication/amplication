@@ -43,7 +43,7 @@ $split-icon-font-size: 20px;
 
     &[disabled] {
       background-color: var(--gray-60);
-      color: var(--white);
+      color: var(--gray-full);
       border: none;
     }
   }
@@ -62,14 +62,14 @@ $split-icon-font-size: 20px;
 
     &[disabled] {
       background-color: var(--gray-60);
-      color: var(--white);
+      color: var(--gray-full);
       border: none;
     }
   }
 
   &.amp-button--call-to-action {
     background-color: var(--gray-10);
-    color: var(--white);
+    color: var(--gray-full);
     border: $border-primary;
     border-color: var(--gray-10);
 
@@ -200,7 +200,7 @@ $split-icon-font-size: 20px;
 
     &[disabled] {
       background-color: var(--gray-60);
-      color: var(--white);
+      color: var(--gray-full);
       border: none;
     }
   }

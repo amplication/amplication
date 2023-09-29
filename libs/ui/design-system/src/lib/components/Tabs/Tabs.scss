@@ -5,7 +5,7 @@ $tab-height: 26px;
 .amp-tabs {
   padding: 0 var(--large-spacing);
   min-height: calc($tab-height + var(--default-spacing-small) * 2) !important;
-  background-color: var(--white);
+  background-color: var(--gray-full);
 
   .MuiTabs-flexContainer {
     align-items: baseline;
@@ -39,7 +39,7 @@ $tab-height: 26px;
       align-items: center;
       margin-left: var(--icon-spacing);
       font-weight: 500;
-      color: var(--white);
+      color: var(--gray-full);
     }
 
     &:not(:last-child):before {

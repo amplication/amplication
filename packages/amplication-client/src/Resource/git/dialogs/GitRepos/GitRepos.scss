@@ -16,7 +16,7 @@ $menu_modal_width: 60px;
   }
 
   &__menu {
-    background: var(--white);
+    background: var(--gray-full);
     width: 50px;
     margin: 0px;
     top: 28px;
@@ -67,10 +67,10 @@ $menu_modal_width: 60px;
       .select-menu__summary {
         width: 50px;
         min-width: 50px;
-        background-color: var(--white);
+        background-color: var(--gray-full);
       }
       .select-menu__summary:focus {
-        background-color: var(--white);
+        background-color: var(--gray-full);
       }
       .amp-circular-progress {
         margin-left: var(--default-spacing);
