@@ -31,6 +31,7 @@ import {
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
 
 @Resolver(() => Project)
 @UseFilters(GqlResolverExceptionsFilter)

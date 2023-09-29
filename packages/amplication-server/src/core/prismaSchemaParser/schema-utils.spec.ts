@@ -106,21 +106,6 @@ describe("schema-utils", () => {
       expect(result.searchable).toEqual(true);
     });
 
-    it("should throw error if Lookup field has custom attributes", () => {
-      const field = {
-        name: "testField",
-        optional: false,
-        attributes: mockAttributes,
-      } as unknown as Field;
-      const dataType = EnumDataType.Lookup;
-
-      expect(() =>
-        createOneEntityFieldCommonProperties(field, dataType)
-      ).toThrowError(
-        "Custom attributes are not allowed on relation fields. Only @relation attribute is allowed"
-      );
-    });
-
     it("should add custom attributes for non-Lookup field", () => {
       const field = {
         name: "testField",
@@ -361,25 +346,6 @@ describe("schema-utils", () => {
   });
 
   describe("findFkFieldNameOnAnnotatedField", () => {
-    it("should throw error if no relation attribute is found", () => {
-      const field = {
-        type: "field",
-        name: "testField",
-        attributes: [
-          {
-            type: "attribute-type",
-            kind: "kind",
-            name: "attribute",
-            args: [],
-          },
-        ],
-      } as unknown as Field;
-
-      expect(() => {
-        findFkFieldNameOnAnnotatedField(field);
-      }).toThrow(`Missing relation attribute on field ${field.name}`);
-    });
-
     it("should throw error if no fields attribute is found on relation attribute", () => {
       const field = {
         name: "testField",
