@@ -1,6 +1,7 @@
 :root {
-  --surface: #ffffff; //solid white on the background
-  --white: #ffffff; //main white
+  --surface: #1f2336;
+  --white: #15192c; /*dark: black100 */
+
   --static-white: #ffffff; //static white stays white on dark mode, to be used on button and other color elements
   --static-black: #121242; //static black stays black on dark mode, to be used on button and other color elements
 
@@ -21,16 +22,16 @@
 
   --border-color: #2c3249;
 
-  --black100: #121242;
-  --black90: #2a2a55;
-  --black80: #414168;
-  --black60: #71718e;
-  --black40: #a0a0b3;
-  --black30: #b8b8c6;
-  --black20: #d0d0d9;
-  --black10: #e7e7ec;
-  --black5: #f4f4f7;
-  --black2: #f9f9fa;
+  --black100: #ffffff; /*dark: white */
+  --black90: #b7bac7; /*dark: black10 */
+  --black80: #a3a8b8; /*dark: black20 */
+  --black60: #80869d; /*dark: black30 */
+  --black40: #686f8c; /*dark: black40 */
+  --black30: #515873; /*dark: black50 */
+  --black20: #444b66; /*dark: black60 */
+  --black10: #373d57; /*dark: black70 */
+  --black5: #2c3249; /*dark: black80 */
+  --black2: #22273c; /*dark: black90 */
 
   --theme-yellow: #f5b82e;
   --theme-red: #f85b6e;
@@ -43,8 +44,10 @@
 
   --tooltip-background: #1b1f23;
 
-  --panel-background: var(--white);
-  --panel-hover-background: var(--black5);
+  --panel-background: var(--black5);
+  --panel-hover-background: var(--black10);
+
+  --menu-background-color: var(--black2);
 
   --toggle-track-background: #e3ddf6;
 
@@ -141,8 +144,19 @@
   --default-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --modal-box-shadow: 0px 7px 10px rgba(56, 28, 138, 0.06);
   --hover-box-shadow: 0 0 6px rgba(63, 37, 135, 0.1);
-  --floating-box-shadow: 0 4px 7px rgba(79, 65, 116, 0.03);
   --menu-box-shadow: 4px 0 12px rgba(79, 65, 116, 0.08);
 
   --dark-carrot-color: #ffbd70;
+
+  --page-content-background: #1f2336;
+  --page-content-tab-background: var(--white);
+
+  --fixed-menu-panel-width: 300px;
+  --fixed-menu-panel-max-width: 300px;
+  --app-footer-height: 50px;
+
+  --theme-turquoise-transparent: rgba(65, 202, 221, 0.1);
+  --theme-light-red-transparent: rgba(248, 91, 110, 0.1);
+
+  --page-content-width-default: 1300px;
 }
