@@ -41,10 +41,6 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 
   const { trackEvent } = useTracking();
 
-  const settingsClassName = isOverride
-    ? "gitSettingsPanel"
-    : "gitSettingsFromProject";
-
   const [connectResourceToProjectRepository] = useMutation<TData>(
     CONNECT_RESOURCE_PROJECT_REPO,
     {

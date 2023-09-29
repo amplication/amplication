@@ -16,11 +16,8 @@ import {
 } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
 import { useCallback, useContext, useMemo } from "react";
-import { useHistory } from "react-router-dom";
-import { useTracking } from "react-tracking";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import { DSGCatalog } from "./Catalog";
 import CodeGeneratorVersionForm, {
   CodeGenerationVersionSettings,
@@ -87,7 +84,7 @@ const defaultValues = (
 };
 
 const CodeGeneratorVersion = () => {
-  const { currentResource, currentWorkspace, updateCodeGeneratorVersion } =
+  const { currentResource, updateCodeGeneratorVersion } =
     useContext(AppContext);
 
   const { data: currentCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
