@@ -24,6 +24,7 @@ import "./WorkspaceLayout.scss";
 import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
 import PendingChanges from "../VersionControl/PendingChanges";
+import LastCommit from "../VersionControl/LastCommit";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -208,6 +209,9 @@ const WorkspaceLayout: React.FC<Props> = ({
                 {currentProject ? (
                   <div className={`${moduleClass}__changes_menu`}>
                     <PendingChanges projectId={currentProject.id} />
+                    {commitUtils.lastCommit && (
+                      <LastCommit lastCommit={commitUtils.lastCommit} />
+                    )}
                   </div>
                 ) : null}
               </div>

@@ -13,7 +13,6 @@ import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
-import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
 import { pluralize } from "../util/pluralize";
 import PageContent from "../Layout/PageContent";
