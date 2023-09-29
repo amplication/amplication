@@ -1,10 +1,8 @@
 import {
   EnumFlexItemMargin,
-  EnumPanelStyle,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
-  Panel,
   Snackbar,
   Text,
   TextField,
@@ -52,23 +50,21 @@ const DirectoriesProjectConfigurationSettingsForm: React.FC = () => {
                 <HorizontalRule />
 
                 <FormikAutoSave debounceMS={1000} />
-                <Panel panelStyle={EnumPanelStyle.Transparent}>
-                  <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
-                    name="baseDirectory"
-                    placeholder="./"
-                    label="Base directory"
-                    value={
-                      projectConfigurationData?.projectConfigurationSettings
-                        .baseDirectory || ""
-                    }
-                    helpText={
-                      projectConfigurationData?.projectConfigurationSettings
-                        .baseDirectory
-                    }
-                    labelType="normal"
-                  />
-                </Panel>
+                <TextField
+                  className={`${CLASS_NAME}__formWrapper_field`}
+                  name="baseDirectory"
+                  placeholder="./"
+                  label="Base directory"
+                  value={
+                    projectConfigurationData?.projectConfigurationSettings
+                      .baseDirectory || ""
+                  }
+                  helpText={
+                    projectConfigurationData?.projectConfigurationSettings
+                      .baseDirectory
+                  }
+                  labelType="normal"
+                />
               </Form>
             );
           }}
