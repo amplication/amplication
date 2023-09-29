@@ -1,5 +1,7 @@
 import React, { useCallback, useContext, useEffect } from "react";
 import { match, useHistory } from "react-router-dom";
+import { EmptyState } from "../Components/EmptyState";
+import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
@@ -58,7 +60,16 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
         ) : null
       }
     >
-      {innerRoutes}
+      {commitUtils.commits?.length ? (
+        innerRoutes
+      ) : (
+        <>
+          <EmptyState
+            message="There are no commits to show. "
+            image={EnumImages.CommitEmptyState}
+          />
+        </>
+      )}
     </PageContent>
   );
 };

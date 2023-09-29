@@ -120,7 +120,7 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
           />
         </Dialog>
       )}
-      <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Transparent}>
+      <Panel panelStyle={EnumPanelStyle.Transparent}>
         {isEmpty(gitOrganizations) ? (
           <GitProviderConnectionList
             onDone={onDone}

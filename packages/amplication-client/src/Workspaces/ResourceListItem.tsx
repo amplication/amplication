@@ -5,6 +5,7 @@ import * as models from "../models";
 
 import {
   ConfirmationDialog,
+  EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
   EnumTextColor,
@@ -109,7 +110,11 @@ function ResourceListItem({ resource, onDelete }: Props) {
           <Text textStyle={EnumTextStyle.Description}>{description}</Text>
         )}
 
-        <FlexItem itemsAlign={EnumItemsAlign.Center} gap={EnumGapSize.Small}>
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
+          gap={EnumGapSize.Small}
+          margin={EnumFlexItemMargin.Top}
+        >
           <Icon
             icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
             size="xsmall"
