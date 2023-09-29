@@ -65,7 +65,7 @@ const CreateServiceDatabase: React.FC<Props> = ({
             image={MysqlPng}
             imageSize="large"
             label="MySQL"
-            description="Use MySQL database in Amplication service.."
+            description="Use MySQL database in Amplication service."
             onClick={handleDatabaseSelect}
             currentValue={formik.values.databaseType}
           />
