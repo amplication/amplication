@@ -55,15 +55,6 @@ const resourceSettingsRoutes = [
     routes: [],
     isAnalytics: true,
   },
-  {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/settings/api-tokens",
-    Component: lazy(() => import("../Settings/ApiTokenList")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: true,
-    routes: [],
-    isAnalytics: true,
-  },
 ];
 
 export default resourceSettingsRoutes;

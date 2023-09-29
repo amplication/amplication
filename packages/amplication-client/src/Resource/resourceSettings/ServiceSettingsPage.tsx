@@ -35,13 +35,13 @@ const ServiceSettingsPage: React.FC<{}> = () => {
     <div className={CLASS_NAME}>
       <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/general`}
-        icon="settings"
+        icon="app-settings"
       >
         General
       </InnerTabLink>
       <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}
-        icon="settings"
+        icon="api"
       >
         APIs & Admin UI
       </InnerTabLink>
@@ -53,15 +53,9 @@ const ServiceSettingsPage: React.FC<{}> = () => {
       </InnerTabLink>
       <InnerTabLink
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication`}
-        icon="settings"
+        icon="unlock"
       >
         Authentication Entity
-      </InnerTabLink>
-      <InnerTabLink
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/api-tokens`}
-        icon="id"
-      >
-        API Tokens
       </InnerTabLink>
       {showCodeGeneratorVersion && (
         <InnerTabLink
