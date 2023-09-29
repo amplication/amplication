@@ -11,7 +11,7 @@ $message-margin-bottom: 40px;
 
   &__signup {
     @include body2;
-    color: var(--black80);
+    color: var(--gray-20);
 
     a {
       color: var(--theme-turquoise);
@@ -21,7 +21,7 @@ $message-margin-bottom: 40px;
   &__message {
     @include body1;
     white-space: normal;
-    color: var(--black60);
+    color: var(--gray-30);
     margin-top: var(--default-spacing);
     margin-bottom: $message-margin-bottom;
   }
@@ -35,10 +35,10 @@ $message-margin-bottom: 40px;
     margin-top: $policy-margin-top !important;
     margin-bottom: 0;
     @include body2;
-    color: var(--black80);
+    color: var(--gray-20);
 
     a {
-      color: var(--black80);
+      color: var(--gray-20);
       text-decoration: underline;
     }
   }

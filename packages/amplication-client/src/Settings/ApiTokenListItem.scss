@@ -53,11 +53,11 @@ $panel-tag-width: 64px;
   }
   &__title {
     @include body1;
-    color: var(--black100);
+    color: var(--gray-base);
   }
   &__description {
     @include body2;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &__created {
@@ -74,7 +74,7 @@ $panel-tag-width: 64px;
   }
 
   &__token-preview {
-    color: var(--black80);
+    color: var(--gray-20);
   }
   &--new {
     .api-token-list-item {
@@ -91,6 +91,6 @@ $panel-tag-width: 64px;
     border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--default-border-radius);
-    color: var(--black80);
+    color: var(--gray-20);
   }
 }

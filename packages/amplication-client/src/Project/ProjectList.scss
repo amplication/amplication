@@ -8,7 +8,7 @@
 
   &__items {
     overflow-y: auto;
-    @include scrollbars(16px, var(--black60), transparent);
+    @include scrollbars(16px, var(--gray-30), transparent);
     flex: 1;
   }
 
@@ -20,8 +20,8 @@
     gap: 8px;
 
     &:hover {
-      color: var(--black100);
-      background-color: var(--black10);
+      color: var(--gray-base);
+      background-color: var(--gray-70);
     }
 
     .amp-button__icon {

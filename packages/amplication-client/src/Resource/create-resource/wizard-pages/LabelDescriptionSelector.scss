@@ -8,7 +8,7 @@
   justify-content: center;
   gap: var(--default-spacing-small);
   cursor: pointer;
-  border: 1px solid var(--black10);
+  border: 1px solid var(--gray-70);
   border-radius: 8px;
   padding: 24px;
   height: 110px;
@@ -23,12 +23,12 @@
     text-align: center;
     font-size: 12px;
     font-weight: 400;
-    color: var(--black80);
+    color: var(--gray-20);
     width: 216px;
   }
 
   &.selected {
-    background: var(--black5);
+    background: var(--gray-80);
   }
 
   label {
@@ -41,7 +41,7 @@
     text-align: center;
     font-size: 12px;
     font-weight: 400;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &__subDescription {
@@ -53,7 +53,7 @@
   &__logo {
     box-sizing: border-box;
     gap: 10px;
-    border: 1px solid var(--black2);
+    border: 1px solid var(--gray-90);
     border-radius: 24px;
 
     &.medium {
@@ -68,6 +68,6 @@
   }
 
   .circle-badge.medium .amp-icon {
-    color: var(--black100);
+    color: var(--gray-base);
   }
 }

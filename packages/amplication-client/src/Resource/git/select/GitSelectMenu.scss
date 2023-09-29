@@ -5,7 +5,7 @@
 
   .select-menu__summary {
     padding: 5px 4px 5px 8px;
-    border: 1px solid var(--black10);
+    border: 1px solid var(--gray-70);
     background-color: var(--white);
     width: 268px;
     display: flex;
@@ -30,7 +30,7 @@
     width: 266px;
     margin: 0px;
     top: 28px;
-    border: 1px solid var(--black10);
+    border: 1px solid var(--gray-70);
     & div {
       border-radius: 0px;
       border: none;
@@ -63,6 +63,6 @@
   }
 
   &__item:hover {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 }

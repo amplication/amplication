@@ -14,7 +14,7 @@
   }
   &__description-row {
     padding-bottom: var(--default-spacing);
-    border-bottom: 1px solid var(--black10);
+    border-bottom: 1px solid var(--gray-70);
   }
   &__title {
     @include bold-14;
@@ -28,7 +28,7 @@
   }
   &__description {
     @include body2;
-    color: var(--black100);
+    color: var(--gray-base);
     line-height: 18px;
   }
   &__property {
@@ -50,7 +50,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    color: var(--black100);
+    color: var(--gray-base);
 
     .amp-icon {
       margin-right: var(--icon-spacing);

@@ -11,7 +11,7 @@ $select-menu-max-width: 300px;
   @include flexFullRowWithSpacing;
   height: var(--header-height);
   min-height: var(--header-height);
-  background: var(--black2);
+  background: var(--gray-90);
   border-bottom: $border-dark;
   background-color: var(--white);
 
@@ -59,20 +59,20 @@ $select-menu-max-width: 300px;
     align-items: center;
 
     .select-menu__summary.amp-button.amp-button--text {
-      color: var(--black80);
+      color: var(--gray-20);
 
       &.highlight,
       &:hover,
       &:focus,
       &:active {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
 
     &__name {
       @include regular-12();
       width: 100%;
-      color: var(--black80);
+      color: var(--gray-20);
       white-space: nowrap;
       padding: 2px var(--default-spacing-small);
     }
@@ -106,7 +106,7 @@ $select-menu-max-width: 300px;
   &__vertical_border {
     width: 1px;
     height: var(--large-spacing);
-    background: var(--black10);
+    background: var(--gray-70);
     border: none;
     margin: 0;
   }

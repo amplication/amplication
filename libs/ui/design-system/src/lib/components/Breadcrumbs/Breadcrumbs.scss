@@ -2,7 +2,7 @@
 
 .amp-breadcrumbs {
   &__link {
-    color: var(--black80);
+    color: var(--gray-20);
     text-decoration: none;
     font-size: var(--default-font-size);
 
@@ -13,11 +13,11 @@
 
   &__item_wrapper:last-child {
     .amp-text {
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
   &__separator {
-    color: var(--black80);
+    color: var(--gray-20);
     margin-left: var(--icon-spacing);
     margin-right: var(--icon-spacing);
   }

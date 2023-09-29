@@ -10,13 +10,13 @@ $toggle-min-width: 250px;
     @include flexFullRow;
     width: 100%;
     h3 {
-      color: var(--black60);
+      color: var(--gray-30);
       margin: 0;
     }
 
     h4 {
       @include body2;
-      color: var(--black40);
+      color: var(--gray-40);
       margin: 0;
       margin-top: var(--default-spacing-small);
       display: flex;
@@ -26,7 +26,7 @@ $toggle-min-width: 250px;
       }
 
       .entity-permissions-action__action-summary {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
 
@@ -44,7 +44,7 @@ $toggle-min-width: 250px;
     }
   }
   &__action-name {
-    color: var(--black100);
+    color: var(--gray-base);
   }
   .amp-panel-collapsible__body {
     .panel-list .toggle-button label span {

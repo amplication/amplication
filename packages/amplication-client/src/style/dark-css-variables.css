@@ -2,8 +2,8 @@
   --welcome-page-stripe-background: var(--white);
 
   --action-log-background-color: var(--white);
-  --action-log-header-color: var(--black100);
-  --action-log-step-color: var(--black100);
+  --action-log-header-color: var(--gray-base);
+  --action-log-step-color: var(--gray-base);
 
   --image-roles: url("../assets/images/mono/roles-dark.svg");
   --image-entities: url("../assets/images/mono/entities-dark.svg");
@@ -25,28 +25,28 @@
   --image-import-prisma: url("../assets/images/mono/import-prisma-dark.svg");
 
   --diffViewerBackground: var(--white);
-  --diffViewerColor: var(--black100);
+  --diffViewerColor: var(--gray-base);
   --addedBackground: #1b3b3e;
-  --addedColor: var(--black100);
+  --addedColor: var(--gray-base);
   --removedBackground: #3f2033;
-  --removedColor: var(--black100);
+  --removedColor: var(--gray-base);
   --wordAddedBackground: #288e6a;
   --wordRemovedBackground: #a53145;
   --addedGutterBackground: #205e50;
   --removedGutterBackground: #6a273b;
-  --gutterBackground: var(--black5);
+  --gutterBackground: var(--gray-80);
   --gutterBackgroundDark: var(--white);
   --highlightBackground: var(--white);
   --highlightGutterBackground: var(--white);
-  --codeFoldGutterBackground: var(--black5);
-  --codeFoldBackground: var(--black2);
-  --emptyLineBackground: var(--black2);
-  --gutterColor: var(--black100);
-  --addedGutterColor: var(--black100);
-  --removedGutterColor: var(--black100);
-  --codeFoldContentColor: var(--black100);
+  --codeFoldGutterBackground: var(--gray-80);
+  --codeFoldBackground: var(--gray-90);
+  --emptyLineBackground: var(--gray-90);
+  --gutterColor: var(--gray-base);
+  --addedGutterColor: var(--gray-base);
+  --removedGutterColor: var(--gray-base);
+  --codeFoldContentColor: var(--gray-base);
   --diffViewerTitleBackground: var(--white);
-  --diffViewerTitleColor: var(--black100);
+  --diffViewerTitleColor: var(--gray-base);
   --diffViewerTitleBorderColor: var(--white);
-  --screenResolutionMessageColor: var(--black100);
+  --screenResolutionMessageColor: var(--gray-base);
 }

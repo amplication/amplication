@@ -67,7 +67,7 @@ $expandable-transition-duration: 0.1s;
     margin-left: calc(var(--default-spacing) * -1);
     margin-right: calc(var(--default-spacing) * -1);
     margin-bottom: calc(var(--default-spacing) * -1);
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
     padding-left: var(--default-spacing);
     padding-right: var(--default-spacing);
 
@@ -76,7 +76,7 @@ $expandable-transition-duration: 0.1s;
       overflow-y: auto;
       padding: var(--default-spacing);
       padding-bottom: 0;
-      border-top-color: var(--black10);
+      border-top-color: var(--gray-70);
       margin-bottom: 0;
     }
   }

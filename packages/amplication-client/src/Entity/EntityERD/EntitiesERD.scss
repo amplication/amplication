@@ -67,12 +67,12 @@
 
   .react-flow__node.selected {
     div {
-      border-color: var(--black100) !important;
+      border-color: var(--gray-base) !important;
     }
   }
   .react-flow__attribution {
     font-size: calc(var(--normal-font-size) - 2px);
-    background: var(--black2) !important;
+    background: var(--gray-90) !important;
     padding: 0 4px !important;
   }
 }

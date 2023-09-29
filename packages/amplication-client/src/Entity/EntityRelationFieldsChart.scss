@@ -17,7 +17,7 @@ $many-element-size: 16px;
     border-color: var(--theme-red);
 
     &:hover {
-      border-color: var(--black100);
+      border-color: var(--gray-base);
     }
   }
 
@@ -44,7 +44,7 @@ $many-element-size: 16px;
       justify-content: center;
 
       &:hover {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
   }
@@ -52,7 +52,7 @@ $many-element-size: 16px;
   &__entity {
     border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
     border-right: none;
-    background: var(--black10);
+    background: var(--gray-70);
     .amp-icon {
       margin-right: var(--default-spacing);
     }
@@ -98,7 +98,7 @@ $many-element-size: 16px;
       left: 0;
       width: calc(50% - 8px);
       top: 50%;
-      border-top: 1px solid var(--black80);
+      border-top: 1px solid var(--gray-20);
     }
     &:after {
       left: auto;
@@ -109,7 +109,7 @@ $many-element-size: 16px;
       &--many {
         width: $many-element-size;
         height: $many-element-size;
-        border: 1px solid var(--black80);
+        border: 1px solid var(--gray-20);
         border-top: none;
         border-right: none;
         transform: rotate(45deg);

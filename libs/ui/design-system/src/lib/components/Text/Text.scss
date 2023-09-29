@@ -2,7 +2,7 @@
 
 .amp-text {
   line-height: 1.2;
-  color: var(--black100);
+  color: var(--gray-base);
   margin: 0;
 
   &--h1 {
@@ -40,21 +40,21 @@
     font-size: var(--tag-font-size);
     font-style: normal;
     font-weight: 400;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &--subtle {
     font-size: var(--subtle-font-size);
     font-style: normal;
     font-weight: 400;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &--description {
     font-size: var(--tag-font-size);
     font-style: normal;
     font-weight: 400;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &--label {

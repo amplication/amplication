@@ -24,7 +24,7 @@ $inverted-border-radius: 6px;
     white-space: nowrap;
     opacity: 0;
     transition: all var(--menu-expand-animation-duration) ease-in;
-    color: var(--black40);
+    color: var(--gray-40);
     padding-left: 0;
     width: 0;
     letter-spacing: normal;
@@ -97,7 +97,7 @@ $inverted-border-radius: 6px;
         width: calc(100% - (100% - #{$select-item-width}) / 2);
       }
       i {
-        color: var(--black80);
+        color: var(--gray-20);
       }
     }
   }

@@ -9,7 +9,7 @@
     &__action {
       flex: 1;
       @include body2;
-      color: var(--black100);
+      color: var(--gray-base);
       border-right: $border-dark;
       padding-right: var(--default-spacing);
       padding-left: var(--default-spacing);

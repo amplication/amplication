@@ -40,7 +40,7 @@ $thumb-position-offset: -6px;
       @include label;
       margin-left: var(--default-spacing);
       margin-bottom: 0;
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
 
@@ -58,7 +58,7 @@ $thumb-position-offset: -6px;
       }
 
       &:not(.Mui-checked) {
-        @include state(var(--static-white), var(--black20));
+        @include state(var(--static-white), var(--gray-60));
       }
 
       + .MuiSwitch-track {

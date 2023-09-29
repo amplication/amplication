@@ -9,7 +9,7 @@ $expand-button-padding: 4px;
   display: flex;
   flex-direction: column;
   background-color: var(--surface);
-  color: var(--black100);
+  color: var(--gray-base);
 
   &__wrapper {
     flex: 1;
@@ -20,7 +20,7 @@ $expand-button-padding: 4px;
 
   &__footer {
     max-height: var(--app-footer-height);
-    background-color: var(--black5);
+    background-color: var(--gray-80);
     border-top: $border-dark;
   }
 
@@ -114,7 +114,7 @@ $expand-button-padding: 4px;
         justify-content: flex-end;
         align-items: center;
         button {
-          color: var(--black30);
+          color: var(--gray-50);
           padding: 0 $expand-button-padding;
           border: none;
           background: transparent;
@@ -141,7 +141,7 @@ $expand-button-padding: 4px;
       }
       .menu-container {
         flex: 1;
-        @include scrollbars(5px, var(--black60), transparent);
+        @include scrollbars(5px, var(--gray-30), transparent);
         overflow-y: auto;
         overflow-x: hidden;
         overflow: visible;

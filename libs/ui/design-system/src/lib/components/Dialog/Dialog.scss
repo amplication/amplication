@@ -12,7 +12,7 @@ $modal-top-position: 20vh;
   min-width: var(--modal-min-width);
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
-  background-color: var(--black2) !important;
+  background-color: var(--gray-90) !important;
   padding: var(--double-spacing);
 
   //mobile
@@ -33,7 +33,7 @@ $modal-top-position: 20vh;
 
   & &__header {
     @include semiBold;
-    color: var(--black100);
+    color: var(--gray-base);
     background-color: transparent;
     box-sizing: border-box;
     display: flex;

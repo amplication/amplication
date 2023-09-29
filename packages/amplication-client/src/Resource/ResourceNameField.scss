@@ -26,7 +26,7 @@
   &__tooltip_invalid::after {
     border: 1px solid var(--theme-red);
     background-color: var(--white);
-    color: var(--black100);
+    color: var(--gray-base);
   }
   &__edit {
     display: flex;

@@ -42,7 +42,7 @@ $split-icon-font-size: 20px;
     }
 
     &[disabled] {
-      background-color: var(--black20);
+      background-color: var(--gray-60);
       color: var(--white);
       border: none;
     }
@@ -61,47 +61,47 @@ $split-icon-font-size: 20px;
     }
 
     &[disabled] {
-      background-color: var(--black20);
+      background-color: var(--gray-60);
       color: var(--white);
       border: none;
     }
   }
 
   &.amp-button--call-to-action {
-    background-color: var(--black90);
+    background-color: var(--gray-10);
     color: var(--white);
     border: $border-primary;
-    border-color: var(--black90);
+    border-color: var(--gray-10);
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--black100);
-      border-color: var(--black100);
+      background-color: var(--gray-base);
+      border-color: var(--gray-base);
     }
 
     &[disabled] {
-      background-color: var(--black40);
-      border-color: var(--black40);
-      color: var(--black20);
+      background-color: var(--gray-40);
+      border-color: var(--gray-40);
+      color: var(--gray-60);
     }
   }
 
   &.amp-button--secondary {
     background-color: transparent;
-    color: var(--black100);
+    color: var(--gray-base);
     border: $border-dark;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--black10);
+      background-color: var(--gray-70);
       border-color: none !important;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &[disabled] {
-      color: var(--black20);
+      color: var(--gray-60);
       background-color: transparent;
       border: none;
     }
@@ -109,19 +109,19 @@ $split-icon-font-size: 20px;
 
   &.amp-button--clear {
     background-color: transparent;
-    color: var(--black100);
+    color: var(--gray-base);
     border: none;
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--black10);
+      background-color: var(--gray-70);
       border-color: none !important;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &[disabled] {
-      color: var(--black20);
+      color: var(--gray-60);
       background-color: transparent;
       border: none;
     }
@@ -129,7 +129,7 @@ $split-icon-font-size: 20px;
 
   &.amp-button--text {
     background-color: transparent;
-    color: var(--black100);
+    color: var(--gray-base);
     border: none;
     min-width: var(--default-button-height);
     height: var(--default-button-height);
@@ -141,12 +141,12 @@ $split-icon-font-size: 20px;
     &:hover,
     &:active,
     &:focus {
-      color: var(--black80);
+      color: var(--gray-20);
       background-color: transparent;
     }
 
     &[disabled] {
-      color: var(--black40);
+      color: var(--gray-40);
       background-color: transparent;
       border: none;
     }
@@ -159,7 +159,7 @@ $split-icon-font-size: 20px;
     align-items: center;
 
     &[disabled] .amp-button__split:after {
-      border-left-color: var(--black10);
+      border-left-color: var(--gray-70);
     }
 
     .amp-button__split {
@@ -185,8 +185,8 @@ $split-icon-font-size: 20px;
 
   &.amp-button--outline {
     background-color: transparent;
-    color: var(--black100);
-    border: 1px solid var(--black100);
+    color: var(--gray-base);
+    border: 1px solid var(--gray-base);
     padding: 4px 12px !important;
     transition: all 0.5s;
 
@@ -199,7 +199,7 @@ $split-icon-font-size: 20px;
     }
 
     &[disabled] {
-      background-color: var(--black20);
+      background-color: var(--gray-60);
       color: var(--white);
       border: none;
     }

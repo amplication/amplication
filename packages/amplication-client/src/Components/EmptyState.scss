@@ -12,7 +12,7 @@ $svg-img-height: 200px;
 
   p {
     @include regular-12;
-    color: var(--black20);
+    color: var(--gray-60);
   }
   .svg-theme-image {
     width: $svg-img-width;

@@ -24,11 +24,11 @@
     border-radius: var(--default-border-radius);
 
     &.Mui-selected {
-      background: var(--black10);
+      background: var(--gray-70);
     }
 
     &:hover {
-      background: var(--black5);
+      background: var(--gray-80);
     }
   }
 }
