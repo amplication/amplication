@@ -31,7 +31,7 @@ export default function RepositoryActions({
   const { gitRepository } = currentResourceWithGitRepository;
 
   return (
-    <Panel panelStyle={EnumPanelStyle.Default}>
+    <Panel panelStyle={EnumPanelStyle.Bold}>
       {gitRepository ? (
         <GithubSyncDetails
           resourceWithRepository={currentResourceWithGitRepository}

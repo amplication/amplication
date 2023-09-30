@@ -27,7 +27,6 @@ type Props = {
   selectedGitRepository: GitRepositorySelected;
 };
 
-const CLASS_NAME = "repository-actions";
 export default function WizardRepositoryActions({
   onCreateRepository,
   onSelectRepository,
@@ -36,7 +35,7 @@ export default function WizardRepositoryActions({
   onDisconnectGitRepository,
 }: Props) {
   return (
-    <Panel panelStyle={EnumPanelStyle.Bordered}>
+    <Panel panelStyle={EnumPanelStyle.Bold}>
       {selectedGitRepository?.gitOrganizationId ? (
         <WizardGithubSyncDetails
           repositorySelected={selectedGitRepository}
