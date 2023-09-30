@@ -11,6 +11,11 @@
     margin-bottom: var(--double-spacing);
   }
 
+  &--small-spacing {
+    margin-top: var(--icon-spacing);
+    margin-bottom: var(--icon-spacing);
+  }
+
   &--gray-80 {
     border-top: $border-dark;
   }

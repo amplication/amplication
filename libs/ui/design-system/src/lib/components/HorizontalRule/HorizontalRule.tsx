@@ -12,17 +12,26 @@ export enum EnumHorizontalRuleStyle {
 export type Props = {
   style?: EnumHorizontalRuleStyle;
   doubleSpacing?: boolean;
+  smallSpacing?: boolean;
 };
 
 export function HorizontalRule({
   style = EnumHorizontalRuleStyle.Black5,
   doubleSpacing = false,
+  smallSpacing = false,
 }: Props) {
   return (
     <hr
-      className={classNames(CLASS_NAME, `${CLASS_NAME}--${style}`, {
-        [`${CLASS_NAME}--double-spacing`]: doubleSpacing,
-      })}
+      className={classNames(
+        CLASS_NAME,
+        `${CLASS_NAME}--${style}`,
+        {
+          [`${CLASS_NAME}--double-spacing`]: doubleSpacing,
+        },
+        {
+          [`${CLASS_NAME}--small-spacing`]: smallSpacing,
+        }
+      )}
     />
   );
 }

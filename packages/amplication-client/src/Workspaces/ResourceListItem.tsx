@@ -5,6 +5,7 @@ import * as models from "../models";
 
 import {
   ConfirmationDialog,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
   EnumItemsAlign,
@@ -12,6 +13,7 @@ import {
   EnumTextStyle,
   EnumTextWeight,
   FlexItem,
+  HorizontalRule,
   Icon,
   ListItem,
   Text,
@@ -89,31 +91,40 @@ function ResourceListItem({ resource, onDelete }: Props) {
       <ListItem
         onClick={handleClick}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${id}`}
-        start={<ResourceCircleBadge type={resource.resourceType} />}
-        end={
-          onDelete && (
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="trash_2"
-              onClick={handleDelete}
-            />
-          )
-        }
       >
-        <Text
-          textStyle={EnumTextStyle.Normal}
-          textWeight={EnumTextWeight.SemiBold}
+        <FlexItem
+          margin={EnumFlexItemMargin.Bottom}
+          start={<ResourceCircleBadge type={resource.resourceType} />}
+          end={
+            onDelete && (
+              <Button
+                buttonStyle={EnumButtonStyle.Text}
+                icon="trash_2"
+                onClick={handleDelete}
+              />
+            )
+          }
         >
-          {name}
-        </Text>
-        {description && (
-          <Text textStyle={EnumTextStyle.Description}>{description}</Text>
-        )}
-
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
+            <Text
+              textStyle={EnumTextStyle.Normal}
+              textWeight={EnumTextWeight.SemiBold}
+            >
+              {name}
+            </Text>
+            {description && (
+              <Text textStyle={EnumTextStyle.Description}>{description}</Text>
+            )}
+          </FlexItem>
+        </FlexItem>
+        <HorizontalRule smallSpacing={true} />
         <FlexItem
           itemsAlign={EnumItemsAlign.Center}
           gap={EnumGapSize.Small}
-          margin={EnumFlexItemMargin.Top}
+          margin={EnumFlexItemMargin.None}
         >
           <Icon
             icon={gitProviderIconMap[provider || models.EnumGitProvider.Github]}
