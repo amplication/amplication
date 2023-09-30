@@ -3,6 +3,7 @@ import {
   Dialog,
   EnumContentAlign,
   EnumFlexDirection,
+  EnumFlexItemMargin,
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
@@ -236,10 +237,12 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
         <>
           {displayMode === "table" ? (
             <>
-              <Text textStyle={EnumTextStyle.Tag}>
-                {data?.entities.length}{" "}
-                {pluralize(data?.entities.length, "Entity", "Entities")}
-              </Text>
+              <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                <Text textStyle={EnumTextStyle.Tag}>
+                  {data?.entities.length}{" "}
+                  {pluralize(data?.entities.length, "Entity", "Entities")}
+                </Text>
+              </FlexItem>
 
               {!hideNotifications.hasAccess && (
                 <LimitationNotification

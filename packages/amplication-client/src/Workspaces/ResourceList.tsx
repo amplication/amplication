@@ -31,7 +31,6 @@ import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { pluralize } from "../util/pluralize";
-import "./ResourceList.scss";
 import ResourceListItem from "./ResourceListItem";
 
 type TDeleteResourceData = {
