@@ -194,24 +194,25 @@ const WorkspaceHeader: React.FC<{}> = () => {
             />
           </div>
           <Tooltip
-            aria-label="Version number copied successfully"
-            direction="e"
-            noDelay
-            show={versionAlert}
+              aria-label="Click to view releases on GitHub"
+              direction="e"
+              noDelay
+              show={versionAlert}
           >
-            <Button
-              className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={async () => {
-                setVersionAlert(true);
-                await navigator.clipboard.writeText(version);
-              }}
-              onMouseLeave={() => {
-                setVersionAlert(false);
-              }}
-            >
-              <span>v{version}</span>
-            </Button>
+              <a
+                href="https://github.com/amplication/amplication/releases"
+                target="_blank"
+                rel="noopener noreferrer"
+                className={`${CLASS_NAME}__version`}
+                onMouseEnter={() => {
+                  setVersionAlert(true);
+                }}
+                onMouseLeave={() => {
+                  setVersionAlert(false);
+                }}
+              >
+                <span>v{version}</span>
+              </a>
           </Tooltip>
         </div>
         <div className={`${CLASS_NAME}__center`}>
