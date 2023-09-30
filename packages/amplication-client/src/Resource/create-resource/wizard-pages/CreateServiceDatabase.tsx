@@ -9,6 +9,7 @@ interface Props extends WizardStepProps {
   PostgresPng: React.ReactElement<any, any>;
   MongoPng: React.ReactElement<any, any>;
   MysqlPng: React.ReactElement<any, any>;
+  MsSqlPng: React.ReactElement<any, any>;
 }
 
 const CreateServiceDatabase: React.FC<Props> = ({
@@ -16,6 +17,7 @@ const CreateServiceDatabase: React.FC<Props> = ({
   PostgresPng,
   MongoPng,
   MysqlPng,
+  MsSqlPng,
 }) => {
   const handleDatabaseSelect = useCallback(
     (database: string) => {
@@ -65,7 +67,16 @@ const CreateServiceDatabase: React.FC<Props> = ({
             image={MysqlPng}
             imageSize="large"
             label="MySQL"
-            description="Use MySQL database in Amplication service.."
+            description="Use MySQL database in Amplication service."
+            onClick={handleDatabaseSelect}
+            currentValue={formik.values.databaseType}
+          />
+          <LabelDescriptionSelector
+            name="mssql"
+            imageSize="large"
+            image={MsSqlPng}
+            label="MS SQL Server"
+            description="Use MS SQL Server database in Amplication service."
             onClick={handleDatabaseSelect}
             currentValue={formik.values.databaseType}
           />
