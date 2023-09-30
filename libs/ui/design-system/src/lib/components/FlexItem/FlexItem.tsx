@@ -1,4 +1,4 @@
-import React, { CSSProperties, ReactNode } from "react";
+import React, { ReactNode } from "react";
 import classNames from "classnames";
 import "./FlexItem.scss";
 
@@ -119,7 +119,6 @@ export type FlexEndProps = {
   children?: ReactNode;
   alignSelf?: EnumContentAlign;
   minWidthAuto?: boolean;
-  style?: CSSProperties | undefined;
 };
 
 export const FlexEnd = ({
