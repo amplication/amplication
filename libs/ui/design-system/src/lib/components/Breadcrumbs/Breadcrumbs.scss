@@ -3,7 +3,7 @@
 .amp-breadcrumbs {
   &__link {
     color: var(--gray-20);
-    text-decoration: none;
+    text-decoration: none !important;
     font-size: var(--default-font-size);
 
     &:hover {
