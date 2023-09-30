@@ -61,9 +61,10 @@ $content-max-width: 700px;
   &__selector_wrapper {
     display: flex;
     gap: var(--large-spacing);
-    justify-content: space-between;
+    justify-content: center;
     margin-top: var(--double-spacing);
     margin-bottom: var(--double-spacing);
+    flex-wrap: wrap;
   }
 
   &__content_wrapper {

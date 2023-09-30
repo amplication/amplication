@@ -28,7 +28,8 @@
   }
 
   &.selected {
-    background: var(--gray-80);
+    background-color: var(--gray-full);
+    box-shadow: 0px 28px 30px -19px rgba(9, 11, 20, 0.5);
   }
 
   label {
