@@ -75,59 +75,65 @@ const WorkspaceFooter: React.FC<{ lastCommit: Commit }> = ({ lastCommit }) => {
     }, [gitRepositoryUrl, lastResourceBuild]) || gitRepositoryUrl;
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__left`}>
-        {gitRepositoryFullName && gitRepositoryOrganizationProvider ? (
-          <div className={`${CLASS_NAME}__git-connection`}>
-            <Icon
-              icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
-              size="small"
-              className={`${CLASS_NAME}__git-icon`}
-            />
-            <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
-            <a
-              className={`${CLASS_NAME}__git-link`}
-              href={gitUrl}
-              target={
-                gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
-                "_blank"
-              }
-            >
-              {`Open With ${gitProviderName[gitRepositoryOrganizationProvider]}`}
-            </a>
+    currentProject && (
+      <div className={CLASS_NAME}>
+        <>
+          <div className={`${CLASS_NAME}__left`}>
+            {gitRepositoryFullName && gitRepositoryOrganizationProvider ? (
+              <div className={`${CLASS_NAME}__git-connection`}>
+                <Icon
+                  icon={gitProviderIconMap[gitRepositoryOrganizationProvider]}
+                  size="small"
+                  className={`${CLASS_NAME}__git-icon`}
+                />
+                <GitRepoDetails gitRepositoryFullName={gitRepositoryFullName} />
+                <a
+                  className={`${CLASS_NAME}__git-link`}
+                  href={gitUrl}
+                  target={
+                    gitRepositoryOrganizationProvider?.toLocaleLowerCase() ||
+                    "_blank"
+                  }
+                >
+                  {`Open With ${gitProviderName[gitRepositoryOrganizationProvider]}`}
+                </a>
+              </div>
+            ) : (
+              <div className={`${CLASS_NAME}__git-disconnected`}>
+                <Icon
+                  icon="pending_changes"
+                  size="small"
+                  className={`${CLASS_NAME}__git-icon`}
+                />
+                <Link
+                  className={`${CLASS_NAME}__connect-to-git`}
+                  title={`Connect to git`}
+                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
+                >
+                  Connect to git
+                </Link>
+              </div>
+            )}
           </div>
-        ) : (
-          <div className={`${CLASS_NAME}__git-disconnected`}>
-            <Icon
-              icon="pending_changes"
-              size="small"
-              className={`${CLASS_NAME}__git-icon`}
-            />
-            <Link
-              className={`${CLASS_NAME}__connect-to-git`}
-              title={`Connect to git`}
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${projectConfigurationResource?.id}/git-sync`}
+          <div className={`${CLASS_NAME}__right`}>
+            <SkeletonWrapper
+              showSkeleton={commitRunning}
+              className={`${CLASS_NAME}__skeleton`}
             >
-              Connect to git
-            </Link>
+              <span className={`${CLASS_NAME}__commit-id`}>
+                {ClickableCommitId}
+              </span>
+              {lastResourceBuild && (
+                <hr className={`${CLASS_NAME}__vertical_border`} />
+              )}
+              <span className={`${CLASS_NAME}__build-id`}>
+                {ClickableBuildId}
+              </span>
+            </SkeletonWrapper>
           </div>
-        )}
+        </>
       </div>
-      <div className={`${CLASS_NAME}__right`}>
-        <SkeletonWrapper
-          showSkeleton={commitRunning}
-          className={`${CLASS_NAME}__skeleton`}
-        >
-          <span className={`${CLASS_NAME}__commit-id`}>
-            {ClickableCommitId}
-          </span>
-          {lastResourceBuild && (
-            <hr className={`${CLASS_NAME}__vertical_border`} />
-          )}
-          <span className={`${CLASS_NAME}__build-id`}>{ClickableBuildId}</span>
-        </SkeletonWrapper>
-      </div>
-    </div>
+    )
   );
 };
 
