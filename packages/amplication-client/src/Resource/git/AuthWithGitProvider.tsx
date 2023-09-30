@@ -1,4 +1,10 @@
-import { Dialog } from "@amplication/ui/design-system";
+import {
+  Dialog,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  FlexItem,
+} from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback } from "react";
 import * as models from "../../models";
@@ -126,12 +132,20 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
       ) : (
         <>
           {!resource?.gitRepository && (
-            <ExistingConnectionsMenu
-              gitOrganizations={gitOrganizations}
-              onSelectGitOrganization={handleOrganizationChange}
-              selectedGitOrganization={gitOrganization}
-              onAddGitOrganization={openSelectOrganizationDialog}
-            />
+            <FlexItem
+              direction={EnumFlexDirection.Column}
+              margin={EnumFlexItemMargin.Bottom}
+              gap={EnumGapSize.Small}
+            >
+              <div>
+                <ExistingConnectionsMenu
+                  gitOrganizations={gitOrganizations}
+                  onSelectGitOrganization={handleOrganizationChange}
+                  selectedGitOrganization={gitOrganization}
+                  onAddGitOrganization={openSelectOrganizationDialog}
+                />
+              </div>
+            </FlexItem>
           )}
           {type === "wizard" ? (
             <WizardRepositoryActions
