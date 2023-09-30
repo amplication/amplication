@@ -24,13 +24,13 @@ const CreateServiceName: React.FC<WizardStepProps> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <Layout.SelectorWrapper>
+        <Layout.ContentWrapper>
           <TextField
             name="serviceName"
             label="Service name"
             placeholder="Order Service"
           />
-        </Layout.SelectorWrapper>
+        </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );

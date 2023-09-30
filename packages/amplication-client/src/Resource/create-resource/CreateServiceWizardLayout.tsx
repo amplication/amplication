@@ -62,3 +62,7 @@ CreateServiceWizardLayout.RightSide = ({ children }) => {
 CreateServiceWizardLayout.SelectorWrapper = ({ children }) => {
   return <div className={`${className}__selector_wrapper`}>{children}</div>;
 };
+
+CreateServiceWizardLayout.ContentWrapper = ({ children }) => {
+  return <div className={`${className}__content_wrapper`}>{children}</div>;
+};
