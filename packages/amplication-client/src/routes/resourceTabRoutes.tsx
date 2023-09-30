@@ -49,7 +49,7 @@ const resourceTabRoutes = [
     ],
   },
   {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/Services",
+    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/services",
     Component: lazy(() => import("../MessageBrokerServices/ServicesPage")),
     moduleName: "",
     routeTrackType: "",
