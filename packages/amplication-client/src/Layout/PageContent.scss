@@ -8,9 +8,8 @@ $tabs-width: 300px;
   background: var(--page-content-background);
   box-sizing: border-box;
   flex-direction: column;
-  overflow: hidden;
-  overflow-y: auto;
   min-height: 100%;
+  overflow: hidden;
 
   &__header {
     box-sizing: border-box;
@@ -25,10 +24,10 @@ $tabs-width: 300px;
     box-sizing: border-box;
     flex: 1;
     max-width: var(--page-content-width-default);
-    padding: var(--double-spacing);
     margin-left: auto;
     margin-right: auto;
     width: 100%;
+    overflow: hidden;
   }
 
   &--width-default {
@@ -73,6 +72,8 @@ $tabs-width: 300px;
     margin-right: var(--default-spacing);
     box-sizing: border-box;
     overflow-y: auto;
+    margin: var(--double-spacing);
+    margin-right: 0;
     @include scrollbars(16px, var(--gray-30), transparent);
 
     .sub-list {
@@ -80,19 +81,24 @@ $tabs-width: 300px;
     }
   }
 
-  &__main {
-    @include scrollbars(16px, var(--gray-30), transparent);
-    padding: var(--default-spacing);
-    padding-right: 0;
+  //This element provides scroll experience without margin on the top of bottom,
+  //and also the bar is location on the right side on extremely large screens
+  &__main-scroll {
+    padding-right: var(--double-spacing);
+    padding-left: var(--double-spacing);
     flex: 1;
-    overflow: auto;
     position: relative;
     box-sizing: border-box;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--gray-30), transparent);
+  }
+
+  &__main {
     margin-left: auto;
     margin-right: auto;
-
-    @media only screen and (max-width: $page-content-min-width) {
-      min-width: calc(#{$page-content-min-width} - var(--menu-width));
-    }
+    box-sizing: border-box;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    padding-top: var(--default-spacing);
   }
 }

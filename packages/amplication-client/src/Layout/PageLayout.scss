@@ -8,13 +8,14 @@ $tabs-width: 300px;
   background: var(--page-content-background);
   box-sizing: border-box;
   flex-direction: column;
-  overflow: auto;
 
   &__header {
     border-bottom: $border-dark;
   }
 
   &__body {
+    display: flex;
     flex: 1;
+    overflow: hidden; //the scroll is handled on PageContent
   }
 }
