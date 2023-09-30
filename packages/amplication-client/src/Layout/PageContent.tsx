@@ -49,14 +49,17 @@ function PageContent({
           {sideContent && (
             <div className={`${CLASS_NAME}__side`}>{sideContent}</div>
           )}
-          <main className={`${CLASS_NAME}__main`}>
-            {contentTitle && (
-              <TabContentTitle
-                title={contentTitle}
-                subTitle={contentSubTitle}
-              />
-            )}
-            {children}
+
+          <main className={`${CLASS_NAME}__main-scroll`}>
+            <div className={`${CLASS_NAME}__main`}>
+              {contentTitle && (
+                <TabContentTitle
+                  title={contentTitle}
+                  subTitle={contentSubTitle}
+                />
+              )}
+              {children}
+            </div>
           </main>
         </div>
       </div>
