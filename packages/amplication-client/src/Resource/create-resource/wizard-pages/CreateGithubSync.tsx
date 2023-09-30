@@ -135,7 +135,7 @@ const CreateGithubSync: React.FC<props> = ({
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <Layout.SelectorWrapper>
+        <Layout.ContentWrapper>
           {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
             <AuthWithGitProvider
               type="wizard"
@@ -180,7 +180,7 @@ const CreateGithubSync: React.FC<props> = ({
               />
             </div>
           )}
-        </Layout.SelectorWrapper>
+        </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );
