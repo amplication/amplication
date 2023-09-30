@@ -23,6 +23,7 @@ import SyncWithGithubTile from "./SyncWithGithubTile";
 import { TopicsTile } from "./TopicsTile";
 import ViewCodeViewTile from "./ViewCodeViewTile";
 import { resourceThemeMap } from "./constants";
+import PluginsTile from "./PluginsTile";
 
 const PAGE_TITLE = "Resource Overview";
 
@@ -63,6 +64,7 @@ const ResourceOverview = () => {
         {currentResource?.resourceType === EnumResourceType.Service && (
           <>
             <EntitiesTile resourceId={resourceId} />
+            <PluginsTile resourceId={resourceId} />
 
             <RolesTile resourceId={resourceId} />
           </>

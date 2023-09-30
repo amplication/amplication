@@ -63,6 +63,7 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  PluginsTileClick = "pluginsTileClick",
   ImportPrismaSchemaClick = "importPrismaSchemaClick",
   ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",

@@ -34,7 +34,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
           onClick={handleClick}
           style={{ minWidth: "140px" }}
         >
-          View code
+          View Code
         </Button>
       }
     />

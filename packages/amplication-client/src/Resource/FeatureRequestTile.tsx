@@ -27,7 +27,7 @@ function FeatureRequestTile() {
           style={{ minWidth: "140px" }}
         >
           <Button buttonStyle={EnumButtonStyle.Secondary} type="button">
-            Share your idea
+            Share Your Idea
           </Button>
         </a>
       }
