@@ -56,17 +56,17 @@ export function UserAndTime({
     >
       {label && <Text textStyle={EnumTextStyle.Subtle}>{label}</Text>}
       {formattedTime ? (
-        <Tooltip
-          aria-label={`${firstName} ${lastName}`}
-          direction={tooltipDirection}
-          noDelay
-        >
-          <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
-            <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
+        <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
+          <Tooltip
+            aria-label={`${firstName} ${lastName}`}
+            direction={tooltipDirection}
+            noDelay
+          >
+            <span onMouseOver={(e) => changeTooltipDirection(e.pageY)}>
               {formattedTime}
-            </Text>
-          </span>
-        </Tooltip>
+            </span>
+          </Tooltip>
+        </Text>
       ) : (
         <Text textStyle={EnumTextStyle.Subtle} textColor={valueColor}>
           {emptyText}

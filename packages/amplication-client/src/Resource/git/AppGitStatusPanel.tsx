@@ -60,7 +60,7 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
           buttonStyle={EnumButtonStyle.Secondary}
           style={{ minWidth: "140px" }}
         >
-          Connect to git
+          Connect to Git
         </Button>
       </Link>
     </>

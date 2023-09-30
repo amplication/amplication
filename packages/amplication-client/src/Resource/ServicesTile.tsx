@@ -39,7 +39,7 @@ function ServicesTile({ resourceId }: Props) {
           onClick={handleClick}
           style={{ minWidth: "140px" }}
         >
-          Go to services
+          Connect Services
         </Button>
       }
     />

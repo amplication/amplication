@@ -29,7 +29,7 @@ function DocsTile() {
             type="button"
             style={{ minWidth: "140px" }}
           >
-            Go to docs
+            Go to Docs
           </Button>
         </a>
       }

@@ -120,7 +120,6 @@ function ResourceListItem({ resource, onDelete }: Props) {
             )}
           </FlexItem>
         </FlexItem>
-        <HorizontalRule smallSpacing={true} />
         <FlexItem
           itemsAlign={EnumItemsAlign.Center}
           gap={EnumGapSize.Small}

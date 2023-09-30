@@ -12,24 +12,24 @@ type Props = {
   resourceId: string;
 };
 
-function EntitiesTile({ resourceId }: Props) {
+function PluginsTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
   const { trackEvent } = useTracking();
 
   const handleClick = useCallback(() => {
-    trackEvent({ eventName: AnalyticsEventNames.EntitiesTileClick });
+    trackEvent({ eventName: AnalyticsEventNames.PluginsTileClick });
     history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities`
+      `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/plugins`
     );
   }, [history, trackEvent, resourceId, currentWorkspace, currentProject]);
 
   return (
     <OverviewSecondaryTile
-      icon="database"
-      title="Entities"
-      message="Declare the data models for your application, including fields, relationships, and permissions "
+      icon="plugins"
+      title="Plugins"
+      message="Extend and customize your services by using plugins for various technologies and integrations"
       footer={
         <Button
           buttonStyle={EnumButtonStyle.Secondary}
@@ -37,11 +37,11 @@ function EntitiesTile({ resourceId }: Props) {
           onClick={handleClick}
           style={{ minWidth: "140px" }}
         >
-          Go to Entities
+          Go to Plugins
         </Button>
       }
     />
   );
 }
 
-export default EntitiesTile;
+export default PluginsTile;

@@ -37,7 +37,7 @@ function RolesTile({ resourceId }: Props) {
           onClick={handleClick}
           style={{ minWidth: "140px" }}
         >
-          Go to roles
+          Go to Roles
         </Button>
       }
     />

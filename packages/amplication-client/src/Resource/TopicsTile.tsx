@@ -37,7 +37,7 @@ function TopicsTile({ resourceId }: Props) {
           onClick={handleClick}
           style={{ minWidth: "140px" }}
         >
-          Go to topics
+          Go to Topics
         </Button>
       }
     />
