@@ -60,7 +60,7 @@ export const linksMap: {
     to: "/topics",
   },
   services: {
-    title: "Services",
+    title: "Connected Services",
     icon: "services",
     to: "/services",
   },
