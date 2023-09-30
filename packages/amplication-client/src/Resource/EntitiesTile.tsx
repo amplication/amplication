@@ -29,12 +29,13 @@ function EntitiesTile({ resourceId }: Props) {
     <OverviewSecondaryTile
       icon="database"
       title="Entities"
-      message="Use Amplication's simple and intuitive user interface to define your data model."
+      message="Declare the data models for your application, including fields, relationships, and permissions "
       footer={
         <Button
           buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
+          style={{ minWidth: "140px" }}
         >
           Go to entities
         </Button>

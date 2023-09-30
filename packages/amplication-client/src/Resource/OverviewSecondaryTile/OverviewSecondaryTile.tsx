@@ -8,6 +8,7 @@ import {
   Text,
   EnumFlexItemMargin,
   EnumGapSize,
+  EnumFlexDirection,
 } from "@amplication/ui/design-system";
 
 import React from "react";
@@ -29,14 +30,15 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   onClick,
 }) => {
   return (
-    <ListItem onClick={onClick} end={footer} gap={EnumGapSize.Small}>
-      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
-        <FlexItem itemsAlign={EnumItemsAlign.Center}>
-          <Icon icon={icon} size="small" />
-          {title}
-        </FlexItem>
-      </Text>
-      <FlexItem>
+    <ListItem onClick={onClick} end={footer}>
+      <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Default}>
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <Icon icon={icon} size="small" />
+            {title}
+          </FlexItem>
+        </Text>
+
         <Text textStyle={EnumTextStyle.Description}>{message}</Text>
       </FlexItem>
       {headerExtra && (

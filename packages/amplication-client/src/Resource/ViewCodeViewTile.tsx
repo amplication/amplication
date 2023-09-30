@@ -32,6 +32,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
           buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
+          style={{ minWidth: "140px" }}
         >
           View code
         </Button>
