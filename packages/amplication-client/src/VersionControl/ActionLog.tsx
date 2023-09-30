@@ -15,7 +15,7 @@ import {
 } from "@amplication/ui/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
-const MIN_HEIGHT = 55;
+const MIN_HEIGHT = 60;
 
 type Props = {
   action?: models.Action;

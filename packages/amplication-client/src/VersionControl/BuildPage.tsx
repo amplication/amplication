@@ -1,22 +1,29 @@
-import React, { useContext, useMemo } from "react";
-import { match } from "react-router-dom";
-import { useQuery, useLazyQuery } from "@apollo/client";
-import * as models from "../models";
-import PageContent, { EnumPageWidth } from "../Layout/PageContent";
 import {
   CircularProgress,
+  EnumFlexDirection,
   EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextStyle,
   FlexItem,
+  HorizontalRule,
   Snackbar,
+  Text,
+  UserAndTime,
 } from "@amplication/ui/design-system";
+import { useLazyQuery, useQuery } from "@apollo/client";
+import { useContext, useMemo } from "react";
+import { match } from "react-router-dom";
+import { TruncatedId } from "../Components/TruncatedId";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import * as models from "../models";
 import { formatError } from "../util/error";
-import BuildSteps from "./BuildSteps";
-import ActionLog from "./ActionLog";
-import { GET_BUILD } from "./useBuildWatchStatus";
-import { GET_COMMIT } from "./PendingChangesPage";
 import { truncateId } from "../util/truncatedId";
+import ActionLog from "./ActionLog";
+import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
-import DataPanel, { TitleDataType } from "./DataPanel";
+import { GET_COMMIT } from "./PendingChangesPage";
+import { GET_BUILD } from "./useBuildWatchStatus";
 import { BackNavigation } from "../Components/BackNavigation";
 import { AppContext } from "../context/appContext";
 
@@ -28,11 +35,12 @@ export type LogData = {
 
 type Props = {
   match: match<{ resource: string; build: string }>;
+  buildId?: string;
 };
 const CLASS_NAME = "build-page";
 
-const BuildPage = ({ match }: Props) => {
-  const { build } = match.params;
+const BuildPage = ({ match, buildId }: Props) => {
+  const { build } = match?.params || { build: buildId };
   const truncatedId = useMemo(() => {
     return truncateId(build);
   }, [build]);
@@ -71,7 +79,7 @@ const BuildPage = ({ match }: Props) => {
   const screenHeight =
     actionLog?.action.steps.length < 3
       ? screenBuildHeight - 150
-      : screenBuildHeight - 300;
+      : screenBuildHeight - 305;
 
   const errorMessage = formatError(errorLoading);
 
@@ -86,24 +94,51 @@ const BuildPage = ({ match }: Props) => {
           <CircularProgress centerToParent />
         ) : (
           <>
-            <FlexItem margin={EnumFlexItemMargin.Bottom}>
-              <BackNavigation
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
-                label="Back to Commits"
-              />
-            </FlexItem>
             {commitData && (
-              <DataPanel
-                id={data.build.id}
-                dataType={TitleDataType.BUILD}
-                createdAt={data.build.createdAt}
-                account={data.build.createdBy.account}
-                relatedDataName="Commit"
-                relatedDataId={commitData.commit.id}
-              />
+              <>
+                <FlexItem>
+                  <FlexItem
+                    gap={EnumGapSize.Small}
+                    direction={EnumFlexDirection.Column}
+                  >
+                    <Text textStyle={EnumTextStyle.H4}>
+                      Build <TruncatedId id={data.build.id} />
+                    </Text>
+
+                    <Text textStyle={EnumTextStyle.Tag}>
+                      <BackNavigation
+                        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+                        label={
+                          <>
+                            Commit&nbsp;
+                            <TruncatedId id={commitData.commit.id} />
+                          </>
+                        }
+                      />
+                    </Text>
+                  </FlexItem>
+                  <FlexItem.FlexEnd>
+                    <UserAndTime
+                      account={commitData.commit.user.account}
+                      time={data.build.createdAt}
+                    />
+                  </FlexItem.FlexEnd>
+                </FlexItem>
+
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  margin={EnumFlexItemMargin.Top}
+                  end={<BuildGitLink build={data.build} />}
+                >
+                  <Text textStyle={EnumTextStyle.Tag}>
+                    {data.build.message}
+                  </Text>
+                </FlexItem>
+
+                <HorizontalRule />
+              </>
             )}
             <div className={`${CLASS_NAME}__build-details`}>
-              <BuildSteps build={data.build} />
               <aside className="log-container">
                 <ActionLog
                   height={screenHeight}

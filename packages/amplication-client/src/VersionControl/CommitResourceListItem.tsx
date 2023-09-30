@@ -18,6 +18,7 @@ import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
 import { CommitChangesByResource } from "./hooks/useCommits";
 import useBuildWatchStatus from "./useBuildWatchStatus";
+import BuildGitLink from "./BuildGitLink";
 
 type Props = {
   build: Build;
@@ -42,7 +43,7 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
     build &&
     build.resource && (
       <ListItem
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
@@ -71,11 +72,15 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
             </Link>
           </FlexItem.FlexEnd>
         </FlexItem>
-        <FlexItem margin={EnumFlexItemMargin.Top}>
+        <FlexItem
+          margin={EnumFlexItemMargin.Top}
+          itemsAlign={EnumItemsAlign.Center}
+          end={<BuildGitLink build={build} textColor={EnumTextColor.Black20} />}
+        >
           <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
           <ClickableId
             label="Build ID"
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
             id={build.id}
             onClick={handleBuildLinkClick}
             eventData={{

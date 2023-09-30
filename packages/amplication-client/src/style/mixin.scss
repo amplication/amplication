@@ -167,8 +167,7 @@ $bullet-size: 6px;
 @mixin scrollbars(
   $size,
   $foreground-color,
-  $background-color: mix($foreground-color, white, 50%),
-  $transparent-color: var(--gray-70)
+  $background-color: mix($foreground-color, white, 50%)
 ) {
   // For Google Chrome
   &::-webkit-scrollbar {
@@ -176,31 +175,15 @@ $bullet-size: 6px;
     height: $size;
   }
 
-  &::-webkit-scrollbar-button {
-    background-color: transparent;
-    height: 0;
-  }
-
   &::-webkit-scrollbar-thumb {
-    background-color: $transparent-color;
+    background: $foreground-color;
     border-radius: $size * 0.5;
-    background-clip: padding-box;
-    border: math.div($size, 3) solid transparent;
   }
 
   &::-webkit-scrollbar-track {
-    background-color: $background-color;
-    margin: math.div(-$size, 3);
-  }
-
-  &:hover {
-    &::-webkit-scrollbar-thumb {
-      background-color: $foreground-color;
-    }
-  }
-
-  &::-webkit-scrollbar-corner {
-    background-color: transparent;
+    background: $background-color;
+    border-radius: $size * 0.5;
+    margin: 10px;
   }
 
   // For Internet Explorer
