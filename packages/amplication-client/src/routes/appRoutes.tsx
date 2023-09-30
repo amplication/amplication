@@ -73,6 +73,50 @@ export const Routes: RouteDef[] = [
                 isAnalytics: true,
               },
               {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
+                Component: lazy(() => import("../VersionControl/CommitsPage")),
+                moduleName: "CommitsPage",
+                moduleClass: "commits-page",
+                displayName: "Commits",
+                routeTrackType: "",
+                exactPath: false,
+                routes: [
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../VersionControl/CommitPage")
+                    ),
+                    moduleName: "CommitPage",
+                    moduleClass: "commit-page",
+                    routeTrackType: "",
+                    exactPath: false,
+                    isAnalytics: true,
+                  },
+                  {
+                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})/builds/:build([A-Za-z0-9-]{20,})",
+                    Component: lazy(
+                      () => import("../VersionControl/BuildPage")
+                    ),
+                    moduleName: "",
+                    routeTrackType: "",
+                    exactPath: true,
+                    isAnalytics: true,
+                  },
+                ],
+              },
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
+                Component: lazy(
+                  () => import("../Resource/code-view/CodeViewPage")
+                ),
+                moduleName: "CodeViewPage",
+                displayName: "Code View",
+                moduleClass: "code-view-page",
+                routeTrackType: "",
+                exactPath: true,
+                isAnalytics: true,
+              },
+              {
                 path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/settings",
                 Component: lazy(() => import("../Project/ProjectSettingsPage")),
                 moduleName: "ProjectSettings",
@@ -107,40 +151,6 @@ export const Routes: RouteDef[] = [
                     isAnalytics: true,
                   },
                 ],
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits",
-                Component: lazy(() => import("../VersionControl/CommitsPage")),
-                moduleName: "CommitsPage",
-                moduleClass: "commits-page",
-                displayName: "Commits",
-                routeTrackType: "",
-                exactPath: false,
-                routes: [
-                  {
-                    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})",
-                    Component: lazy(
-                      () => import("../VersionControl/CommitPage")
-                    ),
-                    moduleName: "CommitPage",
-                    moduleClass: "commit-page",
-                    routeTrackType: "",
-                    exactPath: false,
-                    isAnalytics: true,
-                  },
-                ],
-              },
-              {
-                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view",
-                Component: lazy(
-                  () => import("../Resource/code-view/CodeViewPage")
-                ),
-                moduleName: "CodeViewPage",
-                displayName: "Code View",
-                moduleClass: "code-view-page",
-                routeTrackType: "",
-                exactPath: true,
-                isAnalytics: true,
               },
             ],
             routes: [

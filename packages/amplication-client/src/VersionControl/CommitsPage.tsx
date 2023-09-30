@@ -1,5 +1,5 @@
 import React, { useCallback, useContext, useEffect } from "react";
-import { match, useHistory } from "react-router-dom";
+import { match, useHistory, useRouteMatch } from "react-router-dom";
 import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
@@ -7,6 +7,7 @@ import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
 import "./CommitsPage.scss";
+import BuildPage from "./BuildPage";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -20,8 +21,17 @@ type Props = AppRouteProps & {
 const PAGE_TITLE = "Commits";
 
 const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
-  const commitId = match.params.commit;
+  const { commit: commitId } = match.params;
   const history = useHistory();
+
+  const buildMatch = useRouteMatch<{
+    workspace: string;
+    project: string;
+    commit: string;
+    build?: string;
+  }>("/:workspace/:project/commits/:commit/builds/:build");
+
+  const { build: buildId } = buildMatch?.params ?? {};
 
   const { currentProject, currentWorkspace, commitUtils } =
     useContext(AppContext);
@@ -44,7 +54,9 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
     history,
   ]);
 
-  return (
+  return buildId ? (
+    <BuildPage match={undefined} buildId={buildId} />
+  ) : (
     <PageContent
       className={moduleClass}
       pageTitle={PAGE_TITLE}
@@ -60,6 +72,7 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
         ) : null
       }
     >
+      {buildId}
       {commitUtils.commits?.length ? (
         innerRoutes
       ) : (
