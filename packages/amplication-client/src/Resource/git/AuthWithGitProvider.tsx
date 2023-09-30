@@ -131,22 +131,23 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
         />
       ) : (
         <>
-          {!resource?.gitRepository && (
-            <FlexItem
-              direction={EnumFlexDirection.Column}
-              margin={EnumFlexItemMargin.Bottom}
-              gap={EnumGapSize.Small}
-            >
-              <div>
-                <ExistingConnectionsMenu
-                  gitOrganizations={gitOrganizations}
-                  onSelectGitOrganization={handleOrganizationChange}
-                  selectedGitOrganization={gitOrganization}
-                  onAddGitOrganization={openSelectOrganizationDialog}
-                />
-              </div>
-            </FlexItem>
-          )}
+          {!resource?.gitRepository &&
+            !gitRepositorySelectedData?.repositoryName && (
+              <FlexItem
+                direction={EnumFlexDirection.Column}
+                margin={EnumFlexItemMargin.Bottom}
+                gap={EnumGapSize.Small}
+              >
+                <div>
+                  <ExistingConnectionsMenu
+                    gitOrganizations={gitOrganizations}
+                    onSelectGitOrganization={handleOrganizationChange}
+                    selectedGitOrganization={gitOrganization}
+                    onAddGitOrganization={openSelectOrganizationDialog}
+                  />
+                </div>
+              </FlexItem>
+            )}
           {type === "wizard" ? (
             <WizardRepositoryActions
               onCreateRepository={openCreateNewRepo}
