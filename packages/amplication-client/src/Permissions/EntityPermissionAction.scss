@@ -6,43 +6,15 @@ $toggle-min-width: 250px;
   margin-left: 0;
   margin-right: 0;
 
-  &__header {
-    @include flexFullRow;
-    width: 100%;
-    h3 {
-      color: var(--gray-30);
-      margin: 0;
-    }
+  .multi-state-toggle {
+    margin-bottom: 0;
+    min-width: $toggle-min-width;
 
-    h4 {
-      @include body2;
-      color: var(--gray-40);
-      margin: 0;
-      margin-top: var(--default-spacing-small);
-      display: flex;
-      align-items: center;
-      .amp-icon {
-        margin-right: var(--default-spacing);
-      }
-
-      .entity-permissions-action__action-summary {
-        color: var(--gray-base);
-      }
-    }
-
-    &__title {
-      flex: 1;
-      padding: 0 var(--default-spacing);
-    }
-    .multi-state-toggle {
-      margin-bottom: 0;
-      min-width: $toggle-min-width;
-
-      label {
-        display: none;
-      }
+    label {
+      display: none;
     }
   }
+
   &__action-name {
     color: var(--gray-base);
   }
