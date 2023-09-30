@@ -56,7 +56,12 @@ const AppGitStatusPanel = ({ resource, showDisconnectedMessage }: Props) => {
         title={"Connect to a git provider"}
         to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource?.id}/git-sync`}
       >
-        <Button buttonStyle={EnumButtonStyle.Secondary}>Connect to git</Button>
+        <Button
+          buttonStyle={EnumButtonStyle.Secondary}
+          style={{ minWidth: "140px" }}
+        >
+          Connect to git
+        </Button>
       </Link>
     </>
   ) : (

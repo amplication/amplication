@@ -24,7 +24,11 @@ function DocsTile() {
           rel="noopener"
           onClick={handleClick}
         >
-          <Button buttonStyle={EnumButtonStyle.Secondary} type="button">
+          <Button
+            buttonStyle={EnumButtonStyle.Secondary}
+            type="button"
+            style={{ minWidth: "140px" }}
+          >
             Go to docs
           </Button>
         </a>

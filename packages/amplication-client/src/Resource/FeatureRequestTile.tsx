@@ -24,6 +24,7 @@ function FeatureRequestTile() {
           target="githubfeature"
           rel="noopener"
           onClick={handleClick}
+          style={{ minWidth: "140px" }}
         >
           <Button buttonStyle={EnumButtonStyle.Secondary} type="button">
             Share your idea

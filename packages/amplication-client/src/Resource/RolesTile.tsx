@@ -35,6 +35,7 @@ function RolesTile({ resourceId }: Props) {
           buttonStyle={EnumButtonStyle.Secondary}
           type="button"
           onClick={handleClick}
+          style={{ minWidth: "140px" }}
         >
           Go to roles
         </Button>
