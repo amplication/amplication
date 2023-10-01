@@ -160,7 +160,7 @@ npm run serve:plugins
 ```
 
 > **Note**
-> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, aswell as additional component for development on a specific component.
+> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as additional component for development on a specific component.
 
 The development environment should now be set up. Additional information on the different application component can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
@@ -169,7 +169,7 @@ The development environment should now be set up. Additional information on the 
 
 - **[Website](https://amplication.com)** overview of the product.
 - **[Docs](https://docs.amplication.com)** for comprehensive documentation.
-- **[Blog](https://amplication.com/blog)** for guides and techinical comparisons.
+- **[Blog](https://amplication.com/blog)** for guides and technical comparisons.
 - **[Roadmap](https://amplication.com/#roadmap)** to see what features will be added in the future.
 - **[Discord](https://amplication.com/discord)** for support and discussions with the community and the team.
 - **[GitHub](https://github.com/amplication/amplication)** for source code, project board, issues, and pull requests.
@@ -261,4 +261,4 @@ change the height and width for each of the contributors from 80 to 50.
 
 ## License
 
-A large part of this project is licensed under the [Apache 2.0](./LICENSE) license. The only expection are the components under the `ee` (enterprise edition) directory, these are licensed under the [Amplication Enterprise Edition](./ee/LICENSE) license.
+A large part of this project is licensed under the [Apache 2.0](./LICENSE) license. The only exception are the components under the `ee` (enterprise edition) directory, these are licensed under the [Amplication Enterprise Edition](./ee/LICENSE) license.

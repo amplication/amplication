@@ -50,7 +50,7 @@ const Column = memo(({ column }: ColumnProps) => {
         <span title={column.description}>{column.displayName}</span>
         <span
           className={`${CLASS_NAME}__column_display_name_datatype`}
-          title={`${column.required ? "Reqired" : "Not reqired"} ${
+          title={`${column.required ? "Required" : "Not required"} ${
             column.unique ? " and unique" : ""
           }`}
         >
