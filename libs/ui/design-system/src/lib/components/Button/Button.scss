@@ -67,26 +67,6 @@ $split-icon-font-size: 20px;
     }
   }
 
-  &.amp-button--call-to-action {
-    background-color: var(--gray-10);
-    color: var(--gray-full);
-    border: $border-primary;
-    border-color: var(--gray-10);
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: var(--gray-base);
-      border-color: var(--gray-base);
-    }
-
-    &[disabled] {
-      background-color: var(--gray-40);
-      border-color: var(--gray-40);
-      color: var(--gray-60);
-    }
-  }
-
   &.amp-button--secondary {
     background-color: transparent;
     color: var(--gray-base);
