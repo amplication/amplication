@@ -45,7 +45,6 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
         <>
           <HorizontalRule />
           <EntityRelationFieldsChart
-            fixInPlace={false}
             resourceId={data.entity.resourceId}
             entityId={data.entity.id}
             field={formik.values}
