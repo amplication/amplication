@@ -5,7 +5,6 @@ import PageContent from "../Layout/PageContent";
 import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
 import { Resource } from "../models";
 import { Item } from "./Item";
-import "./ServicesPage.scss";
 
 type Response = {
   messageBrokerConnectedServices: Resource[];
