@@ -7,14 +7,16 @@
   align-items: center;
   justify-content: center;
   gap: var(--default-spacing);
-  border: $border-dark;
+  border: 1px solid var(--gray-70);
   border-radius: var(--default-border-radius);
   height: 160px;
   min-width: 220px;
   max-width: 220px;
+  box-shadow: 0px 0px 0px 0px rgba(9, 11, 20, 0);
+  transition: box-shadow 0.3s ease-in-out;
 
   &--selected {
-    background-color: var(--gray-full);
+    background-color: var(--gray-80);
     box-shadow: 0px 28px 30px -19px rgba(9, 11, 20, 0.5);
   }
 

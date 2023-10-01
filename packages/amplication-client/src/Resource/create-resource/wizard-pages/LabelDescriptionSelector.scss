@@ -14,6 +14,8 @@
   height: 110px;
   min-width: 200px;
   max-width: 200px;
+  box-shadow: 0px 0px 0px 0px rgba(9, 11, 20, 0);
+  transition: box-shadow 0.3s ease-in-out;
 
   &__template {
     justify-content: flex-start;
@@ -28,7 +30,7 @@
   }
 
   &.selected {
-    background-color: var(--gray-full);
+    background-color: var(--gray-80);
     box-shadow: 0px 28px 30px -19px rgba(9, 11, 20, 0.5);
   }
 
