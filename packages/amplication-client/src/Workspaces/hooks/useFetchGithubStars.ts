@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 const AMP_GITHUB_API_URL =
   "https://api.github.com/repos/amplication/amplication";

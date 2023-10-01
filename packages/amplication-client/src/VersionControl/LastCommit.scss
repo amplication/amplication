@@ -25,7 +25,7 @@
 
   &__divider {
     border: none;
-    background-color: var(--black10);
+    background-color: var(--gray-70);
     height: 1px;
     margin: 0;
   }
@@ -42,10 +42,10 @@
 
   .clickable-id {
     @include regular-12;
-    color: var(--black80);
+    color: var(--gray-20);
     margin-right: var(--icon-spacing);
     a {
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
   .user-and-time {
@@ -61,11 +61,10 @@
   }
 
   &__message {
-    color: var(--black60);
+    color: var(--gray-30);
   }
 
-  .amp-button.amp-button--secondary {
-    @include regular-14;
+  .amp-button.amp-button--outline {
     width: 100%;
   }
 }

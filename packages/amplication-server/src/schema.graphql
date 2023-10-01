@@ -1105,7 +1105,7 @@ input PluginSetOrderInput {
 type Project {
   createdAt: DateTime!
   demoRepoName: String
-  description: String!
+  description: String
   id: String!
   name: String!
   resources: [Resource!]

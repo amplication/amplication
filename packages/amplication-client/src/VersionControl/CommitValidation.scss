@@ -8,14 +8,14 @@
     justify-content: flex-start;
 
     .amp-icon {
-      color: var(--negative-light);
+      color: var(--theme-light-red);
       margin-right: var(--default-spacing);
     }
 
     a {
       display: block;
-      color: var(--black100);
+      color: var(--gray-base);
     }
-    color: var(--black90);
+    color: var(--gray-10);
   }
 }

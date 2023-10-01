@@ -32,6 +32,8 @@ const RolesPage: React.FC<Props> = ({ match, innerRoutes }: Props) => {
       sideContent={
         <RoleList resourceId={resource} selectFirst={null === roleId} />
       }
+      contentTitle="Roles"
+      contentSubTitle="Use roles to define permissions for users. Go to Entities to set permissions for specific entities."
     >
       {match.isExact ? !isEmpty(roleId) && <Role /> : innerRoutes}
     </PageContent>

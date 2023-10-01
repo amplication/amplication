@@ -27,9 +27,12 @@ const useProjectSelector = (
   } | null = useRouteMatch<{ workspace: string; project: string }>(
     "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
   );
+
   const project = projectMatch?.params?.project;
+
   const workspace =
     projectMatch?.params?.workspace || workspaceMatch?.params.workspace;
+
   const [currentProject, setCurrentProject] = useState<models.Project>();
   const [projectsList, setProjectList] = useState<models.Project[]>([]);
   const [currentProjectConfiguration, setCurrentProjectConfiguration] =
@@ -134,9 +137,10 @@ const useProjectSelector = (
       !project ||
       !projectsList.length ||
       projectListData.projects.length !== projectsList.length
-    )
+    ) {
+      setCurrentProject(undefined);
       return;
-
+    }
     const selectedProject = projectsList.find(
       (projectDB: models.Project) => projectDB.id === project
     );
