@@ -19,6 +19,9 @@ import {
   EnumGapSize,
   EnumItemsAlign,
   TabContentTitle,
+  Button,
+  EnumButtonStyle,
+  EnumIconPosition,
 } from "@amplication/ui/design-system";
 import WorkspaceSelector, { getWorkspaceColor } from "./WorkspaceSelector";
 import { EnumSubscriptionPlan } from "../models";
@@ -95,12 +98,15 @@ export const WorkspaceOverview = () => {
           </FlexItem>
           <FlexItem.FlexEnd alignSelf={EnumContentAlign.Start}>
             {membersData && membersData.workspaceMembers && (
-              <Link to={`/${currentWorkspace.id}/members`}>
-                <Text textStyle={EnumTextStyle.Tag}>
-                  <Icon icon="users" />
-                  {membersCount} members
-                </Text>
-              </Link>
+              <Button
+                iconPosition={EnumIconPosition.Left}
+                icon="users"
+                buttonStyle={EnumButtonStyle.Text}
+                as={Link}
+                to={`/${currentWorkspace.id}/members`}
+              >
+                {membersCount} members
+              </Button>
             )}
           </FlexItem.FlexEnd>
         </FlexItem>

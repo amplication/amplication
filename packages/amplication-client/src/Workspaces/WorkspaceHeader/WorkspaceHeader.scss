@@ -30,6 +30,7 @@ $select-menu-max-width: 300px;
   &__version {
     color: var(--theme-turquoise) !important;
     margin-left: var(--user-badge-spacing);
+    margin-right: var(--default-spacing);
     padding: var(--default-spacing-small);
     min-width: auto;
   }
