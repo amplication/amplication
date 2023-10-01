@@ -66,8 +66,8 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
         </Layout.SelectorWrapper>
         <FlexItem margin={EnumFlexItemMargin.Top}>
           <Text textStyle={EnumTextStyle.Tag}>
-            Note: The Admin UI is using the GraphQL API so you can’t generate
-            the one without the other.
+            Note: The Admin UI uses the GraphQL API, so you can't select the
+            former without the latter
           </Text>
         </FlexItem>
       </Layout.RightSide>
