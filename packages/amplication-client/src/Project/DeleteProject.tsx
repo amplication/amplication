@@ -1,6 +1,10 @@
 import React, { useCallback, useContext, useState } from "react";
 import * as models from "../models";
-import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
+import {
+  ConfirmationDialog,
+  Snackbar,
+  EnumButtonState,
+} from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { formatError } from "../util/error";
 import { useTracking } from "../util/analytics";
@@ -96,7 +100,8 @@ export const DeleteProject = ({ project, onDelete }: Props) => {
 
       <div>
         <Button
-          buttonStyle={EnumButtonStyle.Danger}
+          buttonStyle={EnumButtonStyle.Primary}
+          buttonState={EnumButtonState.Danger}
           icon="trash_2"
           onClick={handleDelete}
         >

@@ -14,6 +14,10 @@ export enum EnumButtonStyle {
   Clear = "clear",
   Outline = "outline",
   Text = "text",
+}
+
+export enum EnumButtonState {
+  Default = "default",
   Danger = "danger",
 }
 
@@ -34,6 +38,7 @@ export interface Props extends PrimerButtonProps {
   /** Icon can have left or right position. Default position is right */
   iconPosition?: EnumIconPosition;
   to?: string;
+  buttonState?: EnumButtonState;
 }
 
 export const Button = ({
@@ -46,6 +51,7 @@ export const Button = ({
   iconSize,
   iconStyle,
   iconPosition = EnumIconPosition.Right,
+  buttonState = EnumButtonState.Default,
   ...rest
 }: Props) => {
   if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
@@ -60,7 +66,8 @@ export const Button = ({
         {
           "amp-button--split": isSplit,
         },
-        `amp-button--${buttonStyle}`
+        `amp-button--${buttonStyle}`,
+        `amp-button--${buttonStyle}--${buttonState}`
       )}
       {...rest}
     >

@@ -46,24 +46,17 @@ $split-icon-font-size: 20px;
       color: var(--gray-full);
       border: none;
     }
-  }
 
-  &.amp-button--danger {
-    background-color: var(--theme-red);
-    color: var(--static-white);
-    border: 1px solid var(--theme-red);
-
-    &:hover,
-    &:active,
-    &:focus {
+    &--danger {
       background-color: var(--theme-red);
-      border-color: var(--theme-red);
-    }
+      border: 1px solid var(--theme-red);
 
-    &[disabled] {
-      background-color: var(--gray-60);
-      color: var(--gray-full);
-      border: none;
+      &:hover,
+      &:active,
+      &:focus {
+        background-color: var(--theme-red);
+        border-color: var(--theme-red);
+      }
     }
   }
 
