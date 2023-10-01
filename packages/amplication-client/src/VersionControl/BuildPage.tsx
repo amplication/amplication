@@ -23,7 +23,7 @@ import ActionLog from "./ActionLog";
 import BuildGitLink from "./BuildGitLink";
 import "./BuildPage.scss";
 import { GET_COMMIT } from "./PendingChangesPage";
-import { GET_BUILD } from "./useBuildWatchStatus";
+import useBuildWatchStatus, { GET_BUILD } from "./useBuildWatchStatus";
 import { BackNavigation } from "../Components/BackNavigation";
 import { AppContext } from "../context/appContext";
 
@@ -51,7 +51,7 @@ const BuildPage = ({ match, buildId }: Props) => {
     commit: models.Commit;
   }>(GET_COMMIT);
 
-  const { data, error: errorLoading } = useQuery<{
+  const { data: buildData, error: errorLoading } = useQuery<{
     build: models.Build;
   }>(GET_BUILD, {
     variables: {
@@ -62,17 +62,19 @@ const BuildPage = ({ match, buildId }: Props) => {
     },
   });
 
-  const actionLog = useMemo<LogData | null>(() => {
-    if (!data?.build) return null;
+  const { data: updatedBuild } = useBuildWatchStatus(buildData.build);
 
-    if (!data.build.action) return null;
+  const actionLog = useMemo<LogData | null>(() => {
+    if (!updatedBuild?.build) return null;
+
+    if (!updatedBuild.build.action) return null;
 
     return {
-      action: data.build.action,
+      action: updatedBuild.build.action,
       title: "Build log",
-      versionNumber: data.build.version,
+      versionNumber: updatedBuild.build.version,
     };
-  }, [data]);
+  }, [updatedBuild]);
 
   const screenBuildHeight = window.innerHeight - 360;
 
@@ -90,7 +92,7 @@ const BuildPage = ({ match, buildId }: Props) => {
         className={CLASS_NAME}
         pageTitle={`Build ${truncatedId}`}
       >
-        {!data ? (
+        {!updatedBuild ? (
           <CircularProgress centerToParent />
         ) : (
           <>
@@ -102,12 +104,12 @@ const BuildPage = ({ match, buildId }: Props) => {
                     direction={EnumFlexDirection.Column}
                   >
                     <Text textStyle={EnumTextStyle.H4}>
-                      Build <TruncatedId id={data.build.id} />
+                      Build <TruncatedId id={updatedBuild.build.id} />
                     </Text>
 
                     <Text textStyle={EnumTextStyle.Tag}>
                       <BackNavigation
-                        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${data.build.commitId}`}
+                        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${updatedBuild.build.commitId}`}
                         label={
                           <>
                             Commit&nbsp;
@@ -120,7 +122,7 @@ const BuildPage = ({ match, buildId }: Props) => {
                   <FlexItem.FlexEnd>
                     <UserAndTime
                       account={commitData.commit.user.account}
-                      time={data.build.createdAt}
+                      time={updatedBuild.build.createdAt}
                     />
                   </FlexItem.FlexEnd>
                 </FlexItem>
@@ -128,10 +130,10 @@ const BuildPage = ({ match, buildId }: Props) => {
                 <FlexItem
                   itemsAlign={EnumItemsAlign.Center}
                   margin={EnumFlexItemMargin.Top}
-                  end={<BuildGitLink build={data.build} />}
+                  end={<BuildGitLink build={updatedBuild.build} />}
                 >
                   <Text textStyle={EnumTextStyle.Tag}>
-                    {data.build.message}
+                    {updatedBuild.build.message}
                   </Text>
                 </FlexItem>
 
