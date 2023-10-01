@@ -32,7 +32,7 @@ function TopicsTile({ resourceId }: Props) {
       message="Create topics to send and receive messages between services."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}

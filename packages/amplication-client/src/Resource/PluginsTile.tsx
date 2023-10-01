@@ -32,7 +32,7 @@ function PluginsTile({ resourceId }: Props) {
       message="Extend and customize your services by using plugins for various technologies and integrations"
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}

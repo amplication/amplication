@@ -32,7 +32,7 @@ function EntitiesTile({ resourceId }: Props) {
       message="Declare the data models for your application, including fields, relationships, and permissions "
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}

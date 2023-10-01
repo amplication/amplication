@@ -19,6 +19,19 @@ $split-icon-font-size: 20px;
   font-family: var(--primary-font-family);
   padding-left: var(--default-spacing) !important;
   padding-right: var(--default-spacing) !important;
+  padding-top: 0;
+  padding-bottom: 0;
+  transition-property: border-color, background-color, color;
+  transition-duration: 0.2s;
+  transition-timing-function: ease-in-out;
+
+  &--icon-left {
+    padding-left: var(--default-spacing-small) !important;
+  }
+
+  &--icon-right {
+    padding-right: var(--default-spacing-small) !important;
+  }
 
   &[disabled] {
     cursor: default;
@@ -37,14 +50,15 @@ $split-icon-font-size: 20px;
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--dark-purple);
-      border-color: var(--dark-purple);
+      background-color: var(--secondary);
+      border-color: var(--secondary);
+      outline: none;
     }
 
     &[disabled] {
-      background-color: var(--gray-60);
-      color: var(--gray-full);
-      border: none;
+      background-color: var(--gray-80);
+      color: var(--gray-40);
+      border-color: var(--gray-80);
     }
 
     &--danger {
@@ -56,47 +70,8 @@ $split-icon-font-size: 20px;
       &:focus {
         background-color: var(--theme-red);
         border-color: var(--theme-red);
+        outline: none;
       }
-    }
-  }
-
-  &.amp-button--secondary {
-    background-color: transparent;
-    color: var(--gray-base);
-    border: $border-dark;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: var(--gray-70);
-      border-color: none !important;
-      color: var(--gray-base);
-    }
-
-    &[disabled] {
-      color: var(--gray-60);
-      background-color: transparent;
-      border: none;
-    }
-  }
-
-  &.amp-button--clear {
-    background-color: transparent;
-    color: var(--gray-base);
-    border: none;
-
-    &:hover,
-    &:active,
-    &:focus {
-      background-color: var(--gray-70);
-      border-color: none !important;
-      color: var(--gray-base);
-    }
-
-    &[disabled] {
-      color: var(--gray-60);
-      background-color: transparent;
-      border: none;
     }
   }
 
@@ -104,8 +79,7 @@ $split-icon-font-size: 20px;
     background-color: transparent;
     color: var(--gray-base);
     border: none;
-    min-width: var(--default-button-height);
-    height: var(--default-button-height);
+    height: auto;
     padding: 0 !important;
     display: inline-flex;
     align-items: center;
@@ -116,12 +90,25 @@ $split-icon-font-size: 20px;
     &:focus {
       color: var(--gray-20);
       background-color: transparent;
+      border: none;
+      outline: none;
     }
 
     &[disabled] {
       color: var(--gray-40);
       background-color: transparent;
       border: none;
+    }
+
+    &--danger {
+      color: var(--theme-red);
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: var(--theme-red);
+        outline: none;
+      }
     }
   }
 
@@ -159,22 +146,32 @@ $split-icon-font-size: 20px;
   &.amp-button--outline {
     background-color: transparent;
     color: var(--gray-base);
-    border: 1px solid var(--gray-base);
-    padding: 4px 12px !important;
-    transition: all 0.5s;
+    border-color: var(--gray-base);
 
     &:hover,
     &:active,
     &:focus {
-      background-color: var(--dark-purple);
-      border-color: var(--dark-purple);
-      color: var(--static-white);
+      color: var(--gray-10);
+      border-color: var(--gray-10);
+      outline: none;
     }
 
     &[disabled] {
-      background-color: var(--gray-60);
-      color: var(--gray-full);
-      border: none;
+      color: var(--gray-40);
+      border-color: var(--gray-40);
+    }
+
+    &--danger {
+      color: var(--theme-red);
+      border-color: var(--theme-red);
+
+      &:hover,
+      &:active,
+      &:focus {
+        color: var(--theme-red);
+        border-color: var(--theme-red);
+        outline: none;
+      }
     }
   }
 }

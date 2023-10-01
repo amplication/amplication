@@ -58,17 +58,6 @@ $select-menu-max-width: 300px;
     justify-content: center;
     align-items: center;
 
-    .select-menu__summary.amp-button.amp-button--text {
-      color: var(--gray-20);
-
-      &.highlight,
-      &:hover,
-      &:focus,
-      &:active {
-        color: var(--gray-base);
-      }
-    }
-
     &__name {
       @include regular-12();
       width: 100%;
@@ -95,12 +84,6 @@ $select-menu-max-width: 300px;
 
   &__links {
     @include flexFullRowWithSpacingBothSides;
-  }
-
-  &__upgrade__btn {
-    &.amp-button--outline {
-      border-radius: 5px !important;
-    }
   }
 
   &__vertical_border {

@@ -32,7 +32,7 @@ function RolesTile({ resourceId }: Props) {
       message="Create roles and define permissions. Whether at the Entity level or the Field level, granularity is key."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}

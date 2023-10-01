@@ -1,13 +1,8 @@
 @import "../style/index.scss";
-$button-width: 180px;
 $caret-width: 7px;
 
 .create-resource-button {
   position: relative;
-
-  .amp-button {
-    width: $button-width;
-  }
 
   .select-menu__modal {
     top: calc(100% + ($caret-width / 2));
