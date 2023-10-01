@@ -78,7 +78,7 @@ const CreateServiceDatabase: React.FC<Props> = ({
             currentValue={formik.values.databaseType}
           />
           <LabelDescriptionSelector
-            name="mssql"
+            name="sqlserver"
             imageSize="large"
             image={MsSqlPng}
             label="MS SQL Server"
