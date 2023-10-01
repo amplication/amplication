@@ -114,6 +114,32 @@ export const FAQ = () => {
           }
         />
         <Question
+          question="Can I pay for my subscription through AWS Marketplace?"
+          answer={
+            <div>
+              Yes, absolutely! We understand that many businesses prefer the
+              convenience and security of managing their software subscriptions
+              through AWS Marketplace. That's why we've made it possible for you
+              to subscribe to our services directly from there.
+              <br />
+              <br />
+              To view our plans and make a purchase via AWS Marketplace, simply{" "}
+              <a
+                className="mail-link"
+                href="https://aws.amazon.com/marketplace/"
+              >
+                click here
+              </a>
+              .
+              <br />
+              <br />
+              By subscribing through AWS Marketplace, you can consolidate your
+              billing and enjoy a streamlined procurement process, all while
+              taking advantage of AWS's secure payment infrastructure.
+            </div>
+          }
+        />
+        <Question
           question="We're an open-source project, is there special pricing available?"
           answer={
             <div>
