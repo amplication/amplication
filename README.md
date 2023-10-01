@@ -87,13 +87,13 @@ To get started with Amplication, the hosted version of the product can be used. 
 
 ## Development
 
-Alternatively to using the hosted version of the product, Amplication can be ran local for code generation purposes or contributions - if so please refer to our [contributing](#contributing_anchor) section.
+Alternatively to using the hosted version of the product, Amplication can be run locally for code generation purposes or contributions - if so please refer to our [contributing](#contributing_anchor) section.
 
 <details open>
 <summary>
 Pre-requisites
 </summary> <br />
-To be able to start development on amplication make sure that you have the following pre-requisites installed:
+To be able to start development on Amplication, make sure that you have the following pre-requisites installed:
 
 ###
 
@@ -160,9 +160,9 @@ npm run serve:plugins
 ```
 
 > **Note**
-> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, aswell as additional component for development on a specific component.
+> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as additional components for development on a specific component.
 
-The development environment should now be set up. Additional information on the different application component can be found under packages/`[application]`/README.md file. Happy hacking! 👾
+The development environment should now be set up. Additional information on the different application components can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
 
 ## Resources
@@ -185,7 +185,7 @@ Amplication is an open-source project. We are committed to a fully transparent d
 
 - Feature Request: If you have an idea or you're missing a capability that would make development easier and more robust, please submit a [feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
-- Documentation Request: If you're reading the Amplication docs and feel like the you're missing something, please submit a [documentation request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+docs&template=documentation-request.yaml&title=%F0%9F%93%96+Documentation%3A+).
+- Documentation Request: If you're reading the Amplication docs and feel like you're missing something, please submit a [documentation request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+docs&template=documentation-request.yaml&title=%F0%9F%93%96+Documentation%3A+).
 
 Not sure where to start? Join our discord and we will help you get started!
 
