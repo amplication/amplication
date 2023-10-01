@@ -236,7 +236,6 @@ $bullet-size: 6px;
   }
 
   .amp-button {
-    font-weight: 600;
     margin-top: var(--large-spacing);
     margin-bottom: 0;
     width: 100%;
@@ -265,7 +264,6 @@ $bullet-size: 6px;
 @mixin font-base {
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto",
     "Helvetica Neue", sans-serif;
-  -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 

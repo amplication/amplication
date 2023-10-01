@@ -159,7 +159,7 @@ const WorkspaceHeader: React.FC = () => {
           >
             <Button
               className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Clear}
+              buttonStyle={EnumButtonStyle.Text}
               onClick={async () => {
                 setVersionAlert(true);
                 await navigator.clipboard.writeText(version);

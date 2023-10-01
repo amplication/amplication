@@ -212,7 +212,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               >
                 <Button
                   className={`${CLASS_NAME}__install`}
-                  buttonStyle={EnumButtonStyle.Secondary}
+                  buttonStyle={EnumButtonStyle.Outline}
                   eventData={{
                     eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
                   }}

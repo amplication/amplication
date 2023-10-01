@@ -25,7 +25,7 @@ function DocsTile() {
           onClick={handleClick}
         >
           <Button
-            buttonStyle={EnumButtonStyle.Secondary}
+            buttonStyle={EnumButtonStyle.Outline}
             type="button"
             style={{ minWidth: "140px" }}
           >

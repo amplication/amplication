@@ -60,7 +60,7 @@ const LastCommit = ({ lastCommit }: Props) => {
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Outline}
               disabled={commitRunning}
             >
               Go to view code

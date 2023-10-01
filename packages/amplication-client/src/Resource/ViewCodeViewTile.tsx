@@ -29,7 +29,7 @@ function ViewCodeViewTile({ resourceId }: Props) {
       message="Amplication generates the code automatically. You can use the 'Code View' page to view and explore the generated code."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}

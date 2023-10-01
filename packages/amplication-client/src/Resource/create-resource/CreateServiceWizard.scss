@@ -43,12 +43,6 @@ $max-width: 700px;
     gap: 8px;
     margin-left: 16px;
     flex-grow: 1;
-
-    & .amp-button.amp-button--outline {
-      border-radius: 5px !important;
-      padding: 0px;
-      min-width: 60px;
-    }
   }
 
   &__continueBtn {

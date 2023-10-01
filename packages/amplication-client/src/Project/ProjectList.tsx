@@ -1,6 +1,5 @@
 import React from "react";
 import { Project } from "../models";
-import "./ProjectList.scss";
 import { ProjectListItem } from "./ProjectListItem";
 import ProjectEmptyState from "./ProjectEmptyState";
 import {

@@ -34,7 +34,7 @@ function ServicesTile({ resourceId }: Props) {
       message="Connect services to the message broker for event-driven architecture."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
           style={{ minWidth: "140px" }}
