@@ -9,7 +9,6 @@ import {
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
   ListItem,
   Text,
   Toggle,
@@ -83,33 +82,34 @@ function PluginsCatalogItem({
     <ListItem>
       {pluginInstallation && (
         <>
-          <FlexItem>
-            <FlexItem.FlexStart>
-              <Toggle
-                title="enabled"
-                onValueChange={handleEnableStateChange}
-                checked={pluginInstallation.enabled}
-              />
-            </FlexItem.FlexStart>
-            <FlexItem.FlexEnd>
-              {isDraggable && (
-                <div className={`${CLASS_NAME}__order`}>
-                  <Button
-                    buttonStyle={EnumButtonStyle.Text}
-                    onClick={handleDemote}
-                    icon="arrow_up"
-                  />
-                  <span>{order}</span>
-                  <Button
-                    buttonStyle={EnumButtonStyle.Text}
-                    onClick={handlePromote}
-                    icon="arrow_down"
-                  />
-                </div>
-              )}
-            </FlexItem.FlexEnd>
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <FlexItem>
+              <FlexItem.FlexStart>
+                <Toggle
+                  title="enabled"
+                  onValueChange={handleEnableStateChange}
+                  checked={pluginInstallation.enabled}
+                />
+              </FlexItem.FlexStart>
+              <FlexItem.FlexEnd>
+                {isDraggable && (
+                  <div className={`${CLASS_NAME}__order`}>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Text}
+                      onClick={handleDemote}
+                      icon="arrow_up"
+                    />
+                    <span>{order}</span>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Text}
+                      onClick={handlePromote}
+                      icon="arrow_down"
+                    />
+                  </div>
+                )}
+              </FlexItem.FlexEnd>
+            </FlexItem>
           </FlexItem>
-          <HorizontalRule />
         </>
       )}
       <FlexItem>

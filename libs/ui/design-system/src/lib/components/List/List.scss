@@ -3,8 +3,12 @@
 $expandable-bottom-max-height: 200px;
 $expandable-transition-duration: 0.1s;
 
+$border-color: var(--gray-80);
+$background-color: var(--gray-90);
+$hover-background-color: var(--gray-80);
+
 .amp-list {
-  border: $border-dark;
+  border: 1px solid $border-color;
   display: flex;
   flex-direction: column;
   border-radius: var(--default-border-radius);
@@ -13,13 +17,14 @@ $expandable-transition-duration: 0.1s;
 .amp-list-item {
   padding: var(--default-spacing);
   display: inline-block;
-  border-bottom: $border-dark;
+  border-bottom: 1px solid $border-color;
+  background-color: $background-color;
 
   flex: 1;
 }
 
 .amp-list-item--clickable:hover {
-  background-color: var(--gray-90);
+  background-color: $hover-background-color;
 }
 
 .amp-list-item:last-child {
