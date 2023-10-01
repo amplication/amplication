@@ -101,7 +101,7 @@ const StructureType = {
 const DatabaseType = {
   properties: {
     databaseType: {
-      enum: ["postgres", "mongo", "mysql", "mssql"],
+      enum: ["postgres", "mongo", "mysql", "sqlserver"],
     },
   },
   required: ["databaseType"],
