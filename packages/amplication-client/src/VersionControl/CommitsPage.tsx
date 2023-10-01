@@ -13,16 +13,21 @@ type Props = AppRouteProps & {
   match: match<{
     workspace: string;
     project: string;
-    resource: string;
-    commit: string;
   }>;
 };
 
 const PAGE_TITLE = "Commits";
 
-const CommitsPage: React.FC<Props> = ({ match, moduleClass, innerRoutes }) => {
-  const { commit: commitId } = match.params;
+const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
   const history = useHistory();
+
+  const commitMatch = useRouteMatch<{
+    workspace: string;
+    project: string;
+    commit: string;
+    build?: string;
+  }>("/:workspace/:project/commits/:commit");
+  const { commit: commitId } = commitMatch?.params ?? {};
 
   const buildMatch = useRouteMatch<{
     workspace: string;
