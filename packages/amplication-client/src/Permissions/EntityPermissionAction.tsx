@@ -15,16 +15,13 @@ import {
   EnumGapSize,
   Text,
   EnumTextStyle,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
 import { GET_ENTITY_PERMISSIONS } from "./PermissionsForm";
 import { GET_ROLES } from "../Roles/RoleList";
 import { AppContext } from "../context/appContext";
-import {
-  EnumItemsAlign,
-  FlexEnd,
-} from "libs/ui/design-system/src/lib/components/FlexItem/FlexItem";
 
 const CLASS_NAME = "entity-permissions-action";
 type TData = {
@@ -264,7 +261,7 @@ export const EntityPermissionAction = ({
               </FlexItem>
             </Text>
           </FlexItem>
-          <FlexEnd minWidthAuto={true}>
+          <FlexItem.FlexEnd minWidthAuto={true}>
             {permission.type !== models.EnumEntityPermissionType.Disabled && (
               <MultiStateToggle
                 label=""
@@ -274,7 +271,7 @@ export const EntityPermissionAction = ({
                 selectedValue={permission.type}
               />
             )}
-          </FlexEnd>
+          </FlexItem.FlexEnd>
         </FlexItem>
       }
     >

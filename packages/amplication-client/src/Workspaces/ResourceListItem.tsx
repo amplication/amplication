@@ -13,7 +13,6 @@ import {
   EnumTextStyle,
   EnumTextWeight,
   FlexItem,
-  HorizontalRule,
   Icon,
   ListItem,
   Text,

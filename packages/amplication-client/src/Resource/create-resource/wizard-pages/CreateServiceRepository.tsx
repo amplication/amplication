@@ -1,12 +1,12 @@
-import { HorizontalRule, Icon, TextField } from "@amplication/ui/design-system";
+import { Icon, TextField } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo } from "react";
 
 import "./CreateServiceRepository.scss";
 
+import { kebabCase } from "lodash";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
-import { kebabCase } from "lodash";
 
 const className = "create-service-repository";
 
