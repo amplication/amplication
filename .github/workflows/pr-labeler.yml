@@ -2,7 +2,7 @@ name: Pull Request Labeler
 # This workflows works in conjunction with the release.production.yml workflow to automate release notes based on labels.
 
 on:
-  pull_request:
+  pull_request_target:
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
@@ -12,8 +12,8 @@ jobs:
     name: Nx
     uses: ./.github/workflows/nx.template.yml
     with:
-      nx-head: ${{ github.head_ref || github.ref_name }}
-      nx-base: ${{ github.base_ref || github.event.repository.default_branch }}
+      nx-head: ${{ github.event.pull_request.merge_commit_sha || "refs/pull/${{ github.event.number }}/merge" }}
+      nx-base: ${{ github.sha }}
 
   triage-libs:
     name: Triage libs changes
