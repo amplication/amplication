@@ -6,6 +6,7 @@ export enum EnumPanelStyle {
   Default = "default",
   Transparent = "transparent",
   Bordered = "bordered",
+  Bold = "bold",
 }
 
 export type Props = {

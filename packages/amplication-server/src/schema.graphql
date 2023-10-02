@@ -274,6 +274,14 @@ input ConnectGitRepositoryInput {
   resourceId: String!
 }
 
+type Coupon {
+  code: String!
+  couponType: String
+  durationMonths: Int!
+  id: String!
+  subscriptionPlan: EnumSubscriptionPlan!
+}
+
 input CreateGitRepositoryBaseInput {
   gitOrganizationId: String!
   gitOrganizationType: EnumGitOrganizationType!
@@ -936,6 +944,7 @@ type Mutation {
   lockEntity(where: WhereUniqueInput!): Entity
   login(data: LoginInput!): Auth!
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
+  redeemCoupon(data: RedeemCouponInput!): Coupon!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
@@ -1096,6 +1105,7 @@ input PluginSetOrderInput {
 type Project {
   createdAt: DateTime!
   demoRepoName: String
+  description: String
   id: String!
   name: String!
   resources: [Resource!]
@@ -1215,6 +1225,10 @@ type Query {
 enum QueryMode {
   Default
   Insensitive
+}
+
+input RedeemCouponInput {
+  code: String!
 }
 
 type RemoteGitRepos {

@@ -304,6 +304,14 @@ export type ConnectGitRepositoryInput = {
   resourceId: Scalars['String']['input'];
 };
 
+export type Coupon = {
+  code: Scalars['String']['output'];
+  couponType?: Maybe<Scalars['String']['output']>;
+  durationMonths: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  subscriptionPlan: EnumSubscriptionPlan;
+};
+
 export type CreateGitRepositoryBaseInput = {
   gitOrganizationId: Scalars['String']['input'];
   gitOrganizationType: EnumGitOrganizationType;
@@ -966,6 +974,7 @@ export type Mutation = {
   lockEntity?: Maybe<Entity>;
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
+  redeemCoupon: Coupon;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
@@ -1239,6 +1248,11 @@ export type MutationProvisionSubscriptionArgs = {
 };
 
 
+export type MutationRedeemCouponArgs = {
+  data: RedeemCouponInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1499,6 +1513,7 @@ export type PluginSetOrderInput = {
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
   demoRepoName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;
@@ -1813,6 +1828,10 @@ export enum QueryMode {
   Default = 'Default',
   Insensitive = 'Insensitive'
 }
+
+export type RedeemCouponInput = {
+  code: Scalars['String']['input'];
+};
 
 export type RemoteGitRepos = {
   pagination: Pagination;

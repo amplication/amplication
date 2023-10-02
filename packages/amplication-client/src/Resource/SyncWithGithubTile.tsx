@@ -30,14 +30,14 @@ function SyncWithGithubTile({ resourceId }: Props) {
 
   return (
     <OverviewSecondaryTile
-      icon="git-sync"
+      icon="pending_changes"
       title="Sync with Git provider"
       message="Push the Amplication-generated resource to your favorite Git provider. Track changes, track our code. You are in full control of your resource."
-      footer={
+      headerExtra={
         data?.resource && (
           <AppGitStatusPanel
             resource={data?.resource}
-            showDisconnectedMessage={false}
+            showDisconnectedMessage={true}
           />
         )
       }

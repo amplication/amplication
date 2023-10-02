@@ -1,19 +1,17 @@
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
+import { Toggle } from "@amplication/ui/design-system";
+import { FormikProps } from "formik";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import "./SyncWithGithubPage.scss";
-import "./ServiceConfigurationGitSettings.scss";
-import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import { AppContext } from "../../context/appContext";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { FormikProps } from "formik";
+import { getGitRepositoryDetails } from "../../util/git-repository-details";
+import AuthWithGitProvider from "./AuthWithGitProvider";
+import GitSyncNotes from "./GitSyncNotes";
+import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
 } from "./dialogs/GitRepos/GithubRepos";
-import { getGitRepositoryDetails } from "../../util/git-repository-details";
-import GitSyncNotes from "./GitSyncNotes";
-import AuthWithGitProvider from "./AuthWithGitProvider";
 
 const CLASS_NAME = "service-configuration-git-settings";
 
@@ -40,10 +38,6 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
   );
   const { trackEvent } = useTracking();
   const gitProvider = gitRepository?.gitOrganization?.provider;
-
-  const settingsClassName = isOverride
-    ? "gitSettingsPanel"
-    : "gitSettingsFromProject";
 
   const gitRepositoryUrl = getGitRepositoryDetails({
     organization: gitRepository?.gitOrganization,
@@ -92,44 +86,34 @@ const ServiceWizardConfigurationGitSettings: React.FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__panelWarper`}>
-        <ProjectConfigurationGitSettings
-          isOverride={isOverride}
-          isProjectSettingsLinkShow={false}
-        />
-        <Panel
-          className={`${CLASS_NAME}__${settingsClassName}`}
-          panelStyle={EnumPanelStyle.Transparent}
-        >
-          <div className={`${CLASS_NAME}__defaultSettings`}>
-            <div>Override default settings</div>
+      <ProjectConfigurationGitSettings
+        isOverride={isOverride}
+        showProjectSettingsLink={false}
+      />
 
-            <div>
-              <Toggle onValueChange={handleToggleChange} checked={isOverride} />
-            </div>
-          </div>
-          {isOverride && (
-            <div className={`${CLASS_NAME}__AuthWithGit`}>
-              <hr />
-              <AuthWithGitProvider
-                type="wizard"
-                gitProvider={gitProvider}
-                onDone={onDone}
-                gitRepositoryDisconnectedCb={gitRepositoryDisconnectedCb}
-                gitRepositoryCreatedCb={gitRepositoryCreatedCb}
-                gitRepositorySelectedCb={gitRepositorySelectedCb}
-                gitRepositorySelected={{
-                  gitOrganizationId: formik.values.gitOrganizationId,
-                  repositoryName: formik.values.gitRepositoryName,
-                  gitRepositoryUrl: formik.values.gitRepositoryUrl,
-                  gitProvider: formik.values.gitProvider,
-                }}
-              />
-            </div>
-          )}
-        </Panel>
-        <GitSyncNotes />
-      </div>
+      <Toggle
+        label="Override default settings"
+        onValueChange={handleToggleChange}
+        checked={isOverride}
+      />
+
+      {isOverride && (
+        <AuthWithGitProvider
+          type="wizard"
+          gitProvider={gitProvider}
+          onDone={onDone}
+          gitRepositoryDisconnectedCb={gitRepositoryDisconnectedCb}
+          gitRepositoryCreatedCb={gitRepositoryCreatedCb}
+          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositorySelected={{
+            gitOrganizationId: formik.values.gitOrganizationId,
+            repositoryName: formik.values.gitRepositoryName,
+            gitRepositoryUrl: formik.values.gitRepositoryUrl,
+            gitProvider: formik.values.gitProvider,
+          }}
+        />
+      )}
+      <GitSyncNotes />
     </div>
   );
 };

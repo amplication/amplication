@@ -164,7 +164,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
                   selectedVersion ||
                   pluginInstallation.PluginInstallation.version
                 }
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Outline}
                 className={`${moduleClass}__menu`}
                 icon="chevron_down"
               >
@@ -192,9 +192,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           </div>
           <HorizontalRule />
           <CodeEditor
-            defaultValue={JsonFormatting(
-              pluginInstallation?.PluginInstallation.settings
-            )}
+            defaultValue={pluginInstallation?.PluginInstallation.settings}
             value={value}
             resetKey={resetKey}
             onChange={onEditorChange}
@@ -203,7 +201,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           <div className={`${moduleClass}__row`}>
             <Button
               className={`${moduleClass}__reset`}
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Outline}
               onClick={handleResetClick}
             >
               Reset to default

@@ -1,21 +1,20 @@
-import React, { useCallback, useContext } from "react";
-import { Switch, match } from "react-router-dom";
-import { gql, useQuery, useMutation } from "@apollo/client";
 import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
-import * as models from "../models";
-import { formatError } from "../util/error";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useContext } from "react";
+import { Switch, match } from "react-router-dom";
+import EntityField from "../Entity/EntityField";
+import InnerTabLink from "../Layout/InnerTabLink";
 import PageContent from "../Layout/PageContent";
-import EntityForm from "./EntityForm";
+import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
+import PermissionsForm from "../Permissions/PermissionsForm";
+import * as models from "../models";
+import { track } from "../util/analytics";
+import { formatError } from "../util/error";
 import { EntityFieldLinkList } from "./EntityFieldLinkList";
 import EntityFieldList from "./EntityFieldList";
-import EntityField from "../Entity/EntityField";
-import PermissionsForm from "../Permissions/PermissionsForm";
+import EntityForm from "./EntityForm";
 import { ENTITY_ACTIONS } from "./constants";
-import { track } from "../util/analytics";
-import InnerTabLink from "../Layout/InnerTabLink";
-import RouteWithAnalytics from "../Layout/RouteWithAnalytics";
 
-import "./Entity.scss";
 import { AppContext } from "../context/appContext";
 
 type Props = {
@@ -85,7 +84,6 @@ const Entity = ({ match }: Props) => {
       sideContent={
         data && (
           <>
-            <h2>{data?.entity.displayName}</h2>
             <InnerTabLink
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${resource}/entities/${data.entity.id}`}
               icon="settings"

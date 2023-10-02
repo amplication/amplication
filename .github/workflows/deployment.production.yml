@@ -1,4 +1,4 @@
-name: Deployment production
+name: Deployment Production
 
 on:
   release:
@@ -12,7 +12,12 @@ jobs:
     name: Preparation
     runs-on: ubuntu-20.04
     outputs:
-      base_tag: "${{ steps.base.outputs.tag }}"
+      affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
+      affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
+      affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
+      affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
+      affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
+      affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
     steps:
       - name: Checkout source code repository
         uses: actions/checkout@v3
@@ -21,16 +26,51 @@ jobs:
           fetch-depth: 0
 
       - name: Determine base tag
-        run: echo "tag=$(git tag --sort=-creatordate | grep -A 1 ${{ github.ref_name }} | tail -n 1)" >> $GITHUB_OUTPUT
+        run: |
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG (used to detect the affected projects)"
+          echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
         id: base
+
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
+      - name: Cache global node modules
+        id: cache-node-modules
+        uses: actions/cache@v3
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
+
+      - name: Install dependencies
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
+        run: npm ci
+
+      - name: Evaluate affected projects
+        id: configure-nx
+        env:
+          NX_EXCLUDE: "--exclude=data-service-generator"
+        run: |
+          echo affected-apps=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=app $NX_FORCE_ALL ${NX_EXCLUDE} | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-lib=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=lib $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=e2e $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=package:container --type=app $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:static --type=app $NX_FORCE_ALL $NX_EXCLUDE  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:container --type=app $NX_FORCE_ALL $NX_EXCLUDE  | jq -c .projects) >> $GITHUB_OUTPUT
+          cat $GITHUB_OUTPUT | grep affected
 
   package:
     name: Package
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-package-container) }}
-    needs: nx
+        project: ${{ fromJson(needs.preparation.outputs.affected-package-container) }}
+    needs: preparation
     steps:
       - name: Checkout source code repository
         uses: actions/checkout@v3
@@ -39,10 +79,10 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -66,7 +106,7 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          mask-password: 'true'
+          mask-password: "true"
           registries: "439403303254"
 
       # https://github.com/docker/metadata-action
@@ -81,61 +121,54 @@ jobs:
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       # GIT_REF_NAME and GIT_SHA variables are substituted in the project.json docker target build-args
       - name: Package
-        run: npx nx package:container ${{ matrix.project }} --prod 
+        run: npx nx package:container ${{ matrix.project }} --prod
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
           GIT_REF_NAME: ${{ github.ref_name }}
           GIT_SHA: ${{ github.sha }}
+          PRODUCTION_TAGS: true
 
   deployment-container:
     name: Deployment container
     runs-on: ubuntu-20.04
     environment: "production"
-    needs: [preparation, nx, package]
+    needs: [preparation, package]
     steps:
       - name: Checkout manifest repository
         uses: actions/checkout@v3
         with:
-          repository: "amplication/amplication-manifests"
+          repository: "amplication/amplication-cluster-configuration"
           token: "${{ secrets.PAT }}"
-          fetch-depth: '0'
+          fetch-depth: "0"
 
       - name: Setup yq
         uses: mikefarah/yq@v4.30.8
 
       - name: Replace image tag
-        env:
-          DSG_PACKAGE_JSON: packages/data-service-generator/package.json
         run: |
-          nx=${{ needs.nx.outputs.affected-package-container }}
+          nx=${{ needs.preparation.outputs.affected-deploy-container }}
           array=$(echo $nx | sed -e 's/\[//g' -e 's/\]//g' -e 's/\,/ /g')
-          DSG_LATEST_VERSION=$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            if [[ "$project" != "data-service-generator" ]]; then
-              yq -i '.image.tag = "${{ github.ref_name }}"' charts/applications/$project/values/production.yaml
-              git add charts/applications/$project/values/production.yaml
-            elif [[ "$project" == "data-service-generator" ]]; then
-              yq -i '.job.image.tag = "$DSG_LATEST_VERSION"' charts/applications/$project/values/production.yaml
-              git add charts/applications/$project/values/production.yaml
-            fi;
+            yq -i ".$project.image.tag = \"${{ github.ref_name }}\"" production/applications/$project/values.yaml
+            git add production/applications/$project/values.yaml
           done
 
-      - name: Create pull request on manifest repository
+      - name: Create pull request on cluster-configuration repository
         uses: peter-evans/create-pull-request@v4.2.3
         with:
           token: "${{ secrets.PAT }}"
-          commit-message: "feat: image.tag bump to ${{ github.ref_name }}"
+          commit-message: "feat: image tag bump to ${{ github.ref_name }}"
           branch: "release/${{ github.ref_name }}"
           title: "Release: bump version of production environment to `${{ github.ref_name }}`"
           body: |
-            This pull request was generated as a result of the `tag.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
+            This pull request was generated as a result of the `deployment.production.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
 
             Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
 
-            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `production-applications`. 
+            Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `applications`. 
 
             Releases: https://github.com/amplication/amplication/releases
           labels: "release"
@@ -143,11 +176,11 @@ jobs:
 
   deployment-static:
     name: Deployment static
-    needs: nx
-    if: ${{ needs.nx.outputs.affected-deploy-static != '[]' && needs.nx.outputs.affected-deploy-static != ''}}
+    needs: preparation
+    if: ${{ needs.preparation.outputs.affected-deploy-static != '[]' && needs.preparation.outputs.affected-deploy-static != ''}}
     strategy:
       matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-deploy-static) }}
+        project: ${{ fromJson(needs.preparation.outputs.affected-deploy-static) }}
     uses: ./.github/workflows/deployment.static.template.yml
     with:
       environment-name: "production"
@@ -157,11 +190,3 @@ jobs:
       NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
       AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
       AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-
-  nx:
-    name: Nx
-    needs: preparation
-    uses: ./.github/workflows/nx.template.yml
-    with:
-      nx-head: "${{ github.ref }}"
-      nx-base: "${{ needs.preparation.outputs.base_tag }}"

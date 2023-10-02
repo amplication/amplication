@@ -10,11 +10,12 @@ import "./Button.scss";
 
 export enum EnumButtonStyle {
   Primary = "primary",
-  Secondary = "secondary",
-  CallToAction = "call-to-action",
-  Clear = "clear",
   Outline = "outline",
   Text = "text",
+}
+
+export enum EnumButtonState {
+  Default = "default",
   Danger = "danger",
 }
 
@@ -35,6 +36,7 @@ export interface Props extends PrimerButtonProps {
   /** Icon can have left or right position. Default position is right */
   iconPosition?: EnumIconPosition;
   to?: string;
+  buttonState?: EnumButtonState;
 }
 
 export const Button = ({
@@ -47,11 +49,10 @@ export const Button = ({
   iconSize,
   iconStyle,
   iconPosition = EnumIconPosition.Right,
+  buttonState = EnumButtonState.Default,
   ...rest
 }: Props) => {
-  if (buttonStyle === EnumButtonStyle.Clear && isSplit) {
-    throw new Error("isSplit must not be true if buttonStyle is Clear");
-  }
+  const hasIcon = !isEmpty(icon);
 
   return (
     <PrimerButton
@@ -61,15 +62,24 @@ export const Button = ({
         {
           "amp-button--split": isSplit,
         },
-        `amp-button--${buttonStyle}`
+        `amp-button--${buttonStyle}`,
+        `amp-button--${buttonStyle}--${buttonState}`,
+        {
+          "amp-button--icon-left":
+            iconPosition === EnumIconPosition.Left && hasIcon,
+        },
+        {
+          "amp-button--icon-right":
+            iconPosition === EnumIconPosition.Right && hasIcon,
+        }
       )}
       {...rest}
     >
       {iconPosition === EnumIconPosition.Right && children}
-      {!isEmpty(icon) && (
+      {hasIcon && (
         <Icon
           icon={icon as string}
-          size={iconSize || "small"}
+          size={iconSize || "xsmall"}
           className={`amp-button__icon ${iconStyle ? ` ${iconStyle}` : ""}`}
         />
       )}

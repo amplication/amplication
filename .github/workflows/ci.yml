@@ -34,6 +34,7 @@ env:
 jobs:
   ci:
     name: Continuous Integration
+    if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
     runs-on: ubuntu-20.04
     steps:
       - uses: actions/checkout@v3
@@ -89,11 +90,15 @@ jobs:
           npx nx affected --target=build --parallel=3 $NX_FORCE_ALL
           npx nx affected --target=postbuild --parallel=3 $NX_FORCE_ALL
 
+      - name: Get number of CPU cores
+        uses: SimenB/github-actions-cpu-cores@v1
+        id: cpu-cores
+
       - name: Test
         env:
           NODE_OPTIONS: "--max_old_space_size=4096"
-        run: npx nx affected --target=test --parallel=3 --coverage --coverageReporters=text-summary $NX_FORCE_ALL
-      
+        run: npx nx affected --target=test --coverage --maxWorkers=${{ steps.cpu-cores.outputs.count }} $NX_FORCE_ALL
+
   nx:
     name: Nx
     needs: ci
@@ -102,8 +107,8 @@ jobs:
     with:
       nx-head: ${{ github.head_ref || github.ref_name }}
       nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
-      nx-skip-cache: ${{ inputs.nx-force-all || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
-      nx-force-all: ${{ inputs.nx-skip-cache || false }}
+      nx-skip-cache: ${{ inputs.nx-skip-cache || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
+      nx-force-all: ${{ inputs.nx-force-all || false }}
 
   release:
     name: Release

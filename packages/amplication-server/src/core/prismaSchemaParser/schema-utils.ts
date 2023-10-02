@@ -27,6 +27,9 @@ import {
   FUNCTION_ARG_TYPE_NAME,
   ID_FIELD_NAME,
   ID_ATTRIBUTE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
+  prismaIdTypeToDefaultIdType,
+  ID_DEFAULT_VALUE_CUID_FUNCTION,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -61,15 +64,9 @@ export function createOneEntityFieldCommonProperties(
   const fieldAttributes = filterOutAmplicationAttributes(
     prepareFieldAttributes(field.attributes)
   )
-    // in some case we get "@default()" as an attribute, we want to filter it out
+    // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
     .join(" ");
-
-  if (fieldDataType === EnumDataType.Lookup && fieldAttributes !== "") {
-    throw new Error(
-      `Custom attributes are not allowed on relation fields. Only @relation attribute is allowed`
-    );
-  }
 
   return {
     permanentId: cuid(),
@@ -179,11 +176,21 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
         if (isKeyValue(arg.value)) {
           if (isRelationArray(arg.value.value)) {
             return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else if (isFunction(arg.value.value)) {
+            const functionArgs =
+              arg.value.value.params && arg.value.value.params.length
+                ? arg.value.value.params.join(", ")
+                : "";
+            return `${arg.value.key}: ${arg.value.value.name}(${functionArgs})`;
           } else {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isFunction(arg.value)) {
-          return `${arg.value.name}()`;
+          const functionArgs =
+            arg.value.params && arg.value.params.length
+              ? arg.value.params.join(", ")
+              : "";
+          return `${arg.value.name}(${functionArgs})`;
         } else if (typeof arg.value === "string") {
           return arg.value;
         } else {
@@ -192,14 +199,47 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
       });
     }
 
-    if (attributeGroup) {
+    // if there's an attribute group and args are present
+    if (attributeGroup && args.length > 0) {
       return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
         ", "
       )})`;
-    } else {
+    }
+    // if there's an attribute group but no args are present
+    else if (attributeGroup) {
+      return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}`;
+    }
+    // if there's no attribute group but args are present
+    else if (args.length > 0) {
       return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
     }
+    // if no args are present (@id, @unique)
+    else {
+      return `${fieldAttrPrefix}${attribute.name}`;
+    }
   });
+}
+
+export function findRelationAttributeName(
+  relationAttribute: Attribute
+): string | undefined {
+  if (!relationAttribute.args) {
+    throw new Error(
+      `Missing args attribute on relation attribute on field ${relationAttribute.name}`
+    );
+  }
+
+  const keyRelationAttributeName = (
+    relationAttribute.args.find(
+      (arg) => (arg.value as KeyValue)?.key === "name"
+    )?.value as KeyValue
+  )?.value as string;
+
+  const valueRelationAttributeName = relationAttribute.args.find(
+    (arg) => typeof arg.value === "string"
+  )?.value as string;
+
+  return valueRelationAttributeName || keyRelationAttributeName;
 }
 
 /**
@@ -215,22 +255,15 @@ export function findRemoteRelatedModelAndField(
 ): { remoteModel: Model; remoteField: Field } | undefined {
   let relationAttributeName: string | undefined;
   let remoteField: Field | undefined;
-  let relationAttributeStringArgument: AttributeArgument | undefined;
 
-  // in the main relation, check if the relation annotation has a name
-  field.attributes?.find((attr) => {
-    const relationAttribute = attr.name === RELATION_ATTRIBUTE_NAME;
+  const relationAttribute = field.attributes?.find(
+    (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+  );
 
-    if (relationAttribute) {
-      relationAttributeStringArgument = attr.args?.find(
-        (arg) => typeof arg.value === "string"
-      );
-    }
-
-    relationAttributeName =
-      relationAttributeStringArgument &&
-      (relationAttributeStringArgument.value as string);
-  });
+  if (relationAttribute) {
+    // in the main relation, check if the relation annotation has a name
+    relationAttributeName = findRelationAttributeName(relationAttribute);
+  }
 
   const remoteModel = schema.list.find(
     (item) =>
@@ -250,34 +283,41 @@ export function findRemoteRelatedModelAndField(
 
   if (relationAttributeName) {
     // find the remote field in the remote model that has the relation attribute with the name we found
-    remoteField = remoteModelFields.find((field: Field) => {
-      return field.attributes?.some(
-        (attr) =>
-          attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.find((arg) => arg.value === relationAttributeName)
+    // and make sure that the field is not the current field because we don't want to return the current field
+    // in cases where the relation is self relation
+    remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
+      return (
+        field.name !== fieldOnRelatedModel.name &&
+        fieldOnRelatedModel.attributes?.find(
+          (attr) =>
+            attr.name === RELATION_ATTRIBUTE_NAME &&
+            findRelationAttributeName(attr) === relationAttributeName
+        )
       );
     });
   } else {
-    const remoteFields = remoteModelFields.filter((remoteField: Field) => {
-      const hasRelationAttribute = remoteField.attributes?.some(
+    // in this block the current field is a relation field that doesn't have a relation attribute with name
+    // but, because there could be more than one field in the remote model that reference the current model
+    // we still need to find the field that reference the current model and *doesn't* have a relation attribute with name
+    // it can still have a relation attribute *without* a name (for one to one relation for example) and this case is still valid,
+    // meaning it can be the remote field we are looking for
+    const remoteRelatedFields = remoteModelFields.filter(
+      (fieldOnRelatedModel: Field) =>
+        formatModelName(fieldOnRelatedModel.fieldType as string) ===
+        formatModelName(model.name)
+    );
+
+    remoteField = remoteRelatedFields.find((fieldOnRelatedModel: Field) => {
+      const relationAttribute = fieldOnRelatedModel.attributes?.find(
         (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
-
-      return (
-        formatModelName(remoteField.fieldType as string) ===
-          formatModelName(model.name) && !hasRelationAttribute
-      );
+      if (
+        !relationAttribute ||
+        (relationAttribute && !findRelationAttributeName(relationAttribute))
+      ) {
+        return fieldOnRelatedModel;
+      }
     });
-
-    if (remoteFields.length > 1) {
-      throw new Error(
-        `Multiple fields found in model ${remoteModel.name} that reference ${model.name}`
-      );
-    }
-
-    if (remoteFields.length === 1) {
-      remoteField = remoteFields[0];
-    }
   }
 
   if (!remoteField) {
@@ -294,12 +334,10 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
     (attr) => attr.name === RELATION_ATTRIBUTE_NAME
   );
 
-  if (!relationAttribute) {
-    throw new Error(`Missing relation attribute on field ${field.name}`);
-  }
-
-  const fieldsArgs = relationAttribute.args?.find(
-    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+  const fieldsArgs = relationAttribute?.args?.find(
+    (arg) =>
+      (arg.value as KeyValue).key &&
+      (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
   if (!fieldsArgs) {
@@ -432,7 +470,8 @@ export function addIdFieldIfNotExists(
   builder
     .model(model.name)
     .field(ID_FIELD_NAME, "String")
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
@@ -446,10 +485,14 @@ export function convertUniqueFieldNamedIdToIdField(
   uniqueFieldNamedId: Field,
   actionContext: ActionContext
 ) {
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[uniqueFieldNamedId.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldNamedId.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
@@ -475,10 +518,14 @@ export function convertUniqueFieldNotNamedIdToIdField(
     actionContext
   );
 
+  const idDefaultType =
+    prismaIdTypeToDefaultIdType[uniqueFieldAsIdField.fieldType as string];
+
   builder
     .model(model.name)
     .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME);
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
