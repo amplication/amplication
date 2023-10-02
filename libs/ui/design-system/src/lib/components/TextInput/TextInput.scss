@@ -30,6 +30,10 @@
     &:disabled {
       @include textField--disabled;
     }
+
+    &::placeholder {
+      color: var(--gray-40);
+    }
   }
 
   textarea {

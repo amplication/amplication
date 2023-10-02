@@ -1,4 +1,8 @@
-import { EnumTextStyle, Text } from "@amplication/ui/design-system";
+import {
+  EnumTextColor,
+  EnumTextStyle,
+  Text,
+} from "@amplication/ui/design-system";
 import classNames from "classnames";
 import { useCallback } from "react";
 import { Link, LinkProps } from "react-router-dom";
@@ -40,7 +44,7 @@ export const ClickableId = ({
       {label && <Text textStyle={EnumTextStyle.Tag}>{label} </Text>}
 
       <Link {...rest} to={to} onClick={handleClick}>
-        <Text textStyle={EnumTextStyle.Tag}>
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
           <TruncatedId id={id} />
         </Text>
       </Link>
