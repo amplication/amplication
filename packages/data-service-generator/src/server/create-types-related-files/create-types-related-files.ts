@@ -16,7 +16,7 @@ export async function createTypesRelatedFiles(): Promise<ModuleMap> {
 
   const moduleMap = new ModuleMap(logger);
 
-  await logger.info("Creating GraphqlBitIntFile...");
+  await logger.info("Creating GraphqlBitInt file...");
   await createGraphQLBigInt(moduleMap);
 
   await logger.info("Creating BigIntFilters files...");
