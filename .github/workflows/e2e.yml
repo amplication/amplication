@@ -52,9 +52,9 @@ jobs:
     needs: nx
     if: ${{ needs.nx.outputs.affected-e2e != '[]' && needs.nx.outputs.affected-e2e != ''}}
     strategy:
-        fail-fast: false
-        matrix:
-          project: ${{ fromJson(needs.nx.outputs.affected-e2e) }}
+      fail-fast: false
+      matrix:
+        project: ${{ fromJson(needs.nx.outputs.affected-e2e) }}
     steps:
       - uses: actions/checkout@v3
         with:
@@ -90,5 +90,5 @@ jobs:
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
-      - name: e2e 
+      - name: e2e
         run: npx nx e2e ${{ matrix.project }} --prod
