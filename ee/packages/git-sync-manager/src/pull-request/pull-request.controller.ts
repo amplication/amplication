@@ -32,6 +32,28 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
+  private async logStartProcessing(buildId: string): Promise<void> {
+    const key = {
+      buildId: buildId,
+    };
+    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
+      key,
+      value: {
+        buildId: buildId,
+        level: "info",
+        message: "Worker assigned!",
+      },
+    });
+    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
+      key,
+      value: {
+        buildId: buildId,
+        level: "info",
+        message: "Starting pull request creation...",
+      },
+    });
+  }
+
   @EventPattern(KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC)
   async generatePullRequest(
     @Payload() message: CreatePrRequest.Value,
@@ -53,17 +75,7 @@ export class PullRequestController {
       buildId: validArgs.newBuildId,
     });
 
-    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
-      key: {
-        buildId: validArgs.newBuildId,
-      },
-      value: {
-        buildId: validArgs.newBuildId,
-        level: "info",
-        message: "Start processing pull request...",
-      },
-    });
-
+    await this.logStartProcessing(validArgs.newBuildId);
     logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
