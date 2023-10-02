@@ -21,21 +21,5 @@ div.mdc-top-app-bar--fixed-adjust {
 
 a {
   text-decoration: none;
-  color: var(--black80);
-}
-
-h1 {
-  @include pageTitle;
-}
-
-h2 {
-  @include sectionTitle;
-}
-
-h3 {
-  @include title1;
-}
-
-h4 {
-  @include headline-description;
+  color: var(--gray-20);
 }

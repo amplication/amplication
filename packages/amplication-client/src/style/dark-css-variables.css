@@ -1,33 +1,9 @@
 .amp-theme-dark {
-  --surface: var(--black2);
-  --white: #15192c; /*dark: black100 */
+  --welcome-page-stripe-background: var(--gray-full);
 
-  --black100: #ffffff; /*dark: white */
-  --black90: #b7bac7; /*dark: black10 */
-  --black80: #a3a8b8; /*dark: black20 */
-  --black60: #80869d; /*dark: black30 */
-  --black40: #686f8c; /*dark: black40 */
-  --black30: #515873; /*dark: black50 */
-  --black20: #444b66; /*dark: black60 */
-  --black10: #373d57; /*dark: black70 */
-  --black5: #2c3249; /*dark: black80 */
-  --black2: #22273c; /*dark: black90 */
-
-  --welcome-page-stripe-background: var(--white);
-  --panel-hover-background: var(--black100);
-
-  --panel-background: var(--black5);
-  --panel-hover-background: var(--black10);
-
-  --menu-background-color: var(--black2);
-  --menu-fixed-panel-background: var(--white);
-
-  --page-content-background: var(--black2);
-  --page-content-tab-background: var(--white);
-
-  --action-log-background-color: var(--white);
-  --action-log-header-color: var(--black100);
-  --action-log-step-color: var(--black100);
+  --action-log-background-color: var(--gray-full);
+  --action-log-header-color: var(--gray-base);
+  --action-log-step-color: var(--gray-base);
 
   --image-roles: url("../assets/images/mono/roles-dark.svg");
   --image-entities: url("../assets/images/mono/entities-dark.svg");
@@ -48,31 +24,29 @@
   --image-import-prisma-schema: url("../assets/images/mono/import-prisma-schema-dark.svg");
   --image-import-prisma: url("../assets/images/mono/import-prisma-dark.svg");
 
-  --diffViewerBackground: var(--white);
-  --diffViewerColor: var(--black100);
+  --diffViewerBackground: var(--gray-full);
+  --diffViewerColor: var(--gray-base);
   --addedBackground: #1b3b3e;
-  --addedColor: var(--black100);
+  --addedColor: var(--gray-base);
   --removedBackground: #3f2033;
-  --removedColor: var(--black100);
+  --removedColor: var(--gray-base);
   --wordAddedBackground: #288e6a;
   --wordRemovedBackground: #a53145;
   --addedGutterBackground: #205e50;
   --removedGutterBackground: #6a273b;
-  --gutterBackground: var(--black5);
-  --gutterBackgroundDark: var(--white);
-  --highlightBackground: var(--white);
-  --highlightGutterBackground: var(--white);
-  --codeFoldGutterBackground: var(--black5);
-  --codeFoldBackground: var(--black2);
-  --emptyLineBackground: var(--black2);
-  --gutterColor: var(--black100);
-  --addedGutterColor: var(--black100);
-  --removedGutterColor: var(--black100);
-  --codeFoldContentColor: var(--black100);
-  --diffViewerTitleBackground: var(--white);
-  --diffViewerTitleColor: var(--black100);
-  --diffViewerTitleBorderColor: var(--white);
-  --screenResolutionMessageColor: var(--black100);
-
-  --floating-box-shadow: 0px 44px 40px -24px rgba(9, 11, 20, 0.3);
+  --gutterBackground: var(--gray-80);
+  --gutterBackgroundDark: var(--gray-full);
+  --highlightBackground: var(--gray-full);
+  --highlightGutterBackground: var(--gray-full);
+  --codeFoldGutterBackground: var(--gray-80);
+  --codeFoldBackground: var(--gray-90);
+  --emptyLineBackground: var(--gray-90);
+  --gutterColor: var(--gray-base);
+  --addedGutterColor: var(--gray-base);
+  --removedGutterColor: var(--gray-base);
+  --codeFoldContentColor: var(--gray-base);
+  --diffViewerTitleBackground: var(--gray-full);
+  --diffViewerTitleColor: var(--gray-base);
+  --diffViewerTitleBorderColor: var(--gray-full);
+  --screenResolutionMessageColor: var(--gray-base);
 }

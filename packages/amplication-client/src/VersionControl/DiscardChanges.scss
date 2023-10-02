@@ -6,11 +6,11 @@
     &__title {
       @include body1;
       padding-bottom: var(--default-spacing);
-      color: var(--black100);
+      color: var(--gray-base);
     }
     &__instructions {
       @include body2;
-      color: var(--black60);
+      color: var(--gray-30);
     }
   }
   &__buttons {

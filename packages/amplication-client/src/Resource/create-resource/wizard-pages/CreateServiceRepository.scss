@@ -1,16 +1,11 @@
+@import "../../../style/index.scss";
+
 .create-service-repository {
   &__repo_wrapper {
     flex: 1;
     display: flex;
     flex-direction: column;
-    height: 500px;
-  }
-
-  &__repo_hr {
-    height: 1px;
-    border: none;
-    background: #22273c;
-    margin: 32px 0px;
+    height: 240px;
   }
 
   &__monorepo {
@@ -31,8 +26,8 @@
     flex-direction: column;
     padding: 24px;
     gap: 4px;
-    border: 1px solid #22273c;
-    border-radius: 8px;
+    border: $border-dark;
+    border-radius: var(--default-border-radius);
   }
 
   &__monorepo_example_app {
@@ -96,16 +91,5 @@
   &__repository_options {
     display: flex;
     gap: 24px;
-  }
-
-  &__repository_base_dir {
-    input {
-      max-width: none;
-      height: auto;
-      padding: var(--default-spacing);
-      margin-top: 4px;
-      font-size: 14px;
-      border-radius: 4px;
-    }
   }
 }

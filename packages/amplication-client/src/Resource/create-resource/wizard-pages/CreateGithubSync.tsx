@@ -127,20 +127,15 @@ const CreateGithubSync: React.FC<props> = ({
   return (
     <Layout.Split>
       <Layout.LeftSide>
-        <Layout.DescriptionCustom
+        <Layout.Description
           header="Now, let's connect to a Git repository"
           text={
-            <div className={`create-service-wizard-layout__description__text`}>
-              Amplication automatically pushes the generated code of your
-              services to a Git repository.
-              <br />
-              You are the owner of the code and can freely customize it.
-            </div>
+            "Amplication automatically pushes the generated code of your services to a Git repository. You are the owner of the code and can freely customize it."
           }
         />
       </Layout.LeftSide>
       <Layout.RightSide>
-        <div className={`${CLASS_NAME}__github_box`}>
+        <Layout.ContentWrapper>
           {defineUser === "Onboarding" || isNeedToConnectGitProvider ? (
             <AuthWithGitProvider
               type="wizard"
@@ -185,7 +180,7 @@ const CreateGithubSync: React.FC<props> = ({
               />
             </div>
           )}
-        </div>
+        </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );

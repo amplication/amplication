@@ -42,4 +42,9 @@ export class Project {
     nullable: true,
   })
   demoRepoName?: string;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  description?: string;
 }

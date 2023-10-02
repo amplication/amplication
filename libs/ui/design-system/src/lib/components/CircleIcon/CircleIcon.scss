@@ -13,7 +13,7 @@ $small-font-size: 12px;
   height: $default-size;
   border-radius: 50%;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--gray-full);
   padding: $padding;
   box-sizing: border-box;
   display: inline-flex;
@@ -24,13 +24,13 @@ $small-font-size: 12px;
   }
 
   &--positive {
-    background-color: var(--positive-default);
+    background-color: var(--theme-green);
   }
   &--warning {
-    background-color: var(--warning-default);
+    background-color: var(--theme-orange);
   }
-  &--negative {
-    background-color: var(--negative);
+  & --theme-red {
+    background-color: var(--theme-red);
   }
 
   &--large {

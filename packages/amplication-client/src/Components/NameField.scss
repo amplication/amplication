@@ -16,12 +16,12 @@ $tooltip-animation-duration: 0.2s;
 
   &__tooltip {
     position: absolute;
-    background: var(--black80);
-    color: var(--white);
+    background: var(--gray-20);
+    color: var(--gray-full);
     width: calc(100% - 40px);
     left: $tooltip-size-gap;
     top: $tooltip-top;
-    border: $border-black10;
+    border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--default-border-radius);
     z-index: 99;

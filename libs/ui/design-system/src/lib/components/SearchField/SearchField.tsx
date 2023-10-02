@@ -25,7 +25,7 @@ const SearchField = ({ label, placeholder, onChange }: Props) => {
         placeholder={placeholder}
         title={label}
       />
-      <Icon icon="search" />
+      <Icon icon="search" size="xsmall" />
     </div>
   );
 };

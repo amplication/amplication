@@ -67,7 +67,7 @@ const EntitiesImport: React.FC<Props> = ({ match, innerRoutes }) => {
   const [userAction, setUserAction] = React.useState<models.UserAction>(null);
   const { data: userActionData } = useUserActionWatchStatus(userAction);
 
-  const { resource: resourceId, project: projectId } = match.params;
+  const { resource: resourceId } = match.params;
   const { trackEvent } = useTracking();
 
   const { stigg } = useStiggContext();

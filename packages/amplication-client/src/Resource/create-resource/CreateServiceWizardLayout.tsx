@@ -1,13 +1,31 @@
+import {
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import "./CreateServiceWizardLayout.scss";
 
 const className = "create-service-wizard-layout";
 
 export const CreateServiceWizardLayout = ({ children }) => {
-  return <div className={className}>{children}</div>;
+  return (
+    <div className={className}>
+      <div className={`${className}__wrapper`}>{children}</div>
+    </div>
+  );
 };
 
 CreateServiceWizardLayout.Split = ({ children }) => {
-  return <div className={`${className}__split`}>{children}</div>;
+  return (
+    <div className={`${className}__split`}>
+      <div className={`${className}__wrapper`}>{children}</div>
+    </div>
+  );
 };
 
 CreateServiceWizardLayout.LeftSide = ({ children }) => {
@@ -16,10 +34,16 @@ CreateServiceWizardLayout.LeftSide = ({ children }) => {
 
 CreateServiceWizardLayout.Description = ({ header, text }) => {
   return (
-    <div className={`${className}__description`}>
-      <div className={`${className}__description__header`}>{header}</div>
-      <div className={`${className}__description__text`}>{text}</div>
-    </div>
+    <FlexItem
+      className={`${className}__description`}
+      direction={EnumFlexDirection.Column}
+      itemsAlign={EnumItemsAlign.Center}
+      gap={EnumGapSize.Large}
+      margin={EnumFlexItemMargin.Bottom}
+    >
+      <Text textStyle={EnumTextStyle.H2}>{header}</Text>
+      <Text textAlign={EnumTextAlign.Center}>{text}</Text>
+    </FlexItem>
   );
 };
 CreateServiceWizardLayout.DescriptionCustom = ({ header, text }) => {
@@ -37,4 +61,8 @@ CreateServiceWizardLayout.RightSide = ({ children }) => {
 
 CreateServiceWizardLayout.SelectorWrapper = ({ children }) => {
   return <div className={`${className}__selector_wrapper`}>{children}</div>;
+};
+
+CreateServiceWizardLayout.ContentWrapper = ({ children }) => {
+  return <div className={`${className}__content_wrapper`}>{children}</div>;
 };

@@ -5,16 +5,16 @@
   flex-direction: column;
   gap: var(--default-spacing-small);
   padding: var(--large-spacing);
-  background-color: var(--black5);
+  background-color: var(--gray-80);
   border-radius: var(--default-border-radius);
-  border-color: var(--black10);
+  border-color: var(--gray-70);
   border-width: 1px;
 
   &__header {
     display: flex;
 
     &__title {
-      color: var(--black100);
+      color: var(--gray-base);
       font-weight: 600;
       font-size: 14px;
     }
@@ -22,6 +22,6 @@
 
   &__description {
     @include body2;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 }

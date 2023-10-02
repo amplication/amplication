@@ -25,7 +25,7 @@ export default function ServiceTopicPatternMenu({
       <div className={`${CLASS_NAME}__label`}>Message pattern</div>
       <SelectMenu
         title={selectedPatternType}
-        buttonStyle={EnumButtonStyle.Secondary}
+        buttonStyle={EnumButtonStyle.Outline}
         icon="chevron_down"
       >
         <SelectMenuModal>

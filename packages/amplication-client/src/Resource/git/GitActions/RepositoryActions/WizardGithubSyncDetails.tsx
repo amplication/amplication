@@ -2,8 +2,14 @@ import classNames from "classnames";
 import { AnalyticsEventNames } from "../../../../util/analytics-events.types";
 import { Button, EnumButtonStyle } from "../../../../Components/Button";
 import GitRepoDetails from "../../GitRepoDetails";
-import "./GithubSyncDetails.scss";
 import { GitRepositorySelected } from "../../dialogs/GitRepos/GithubRepos";
+import {
+  EnumFlexDirection,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 
 const CLASS_NAME = "git-repo-details";
 
@@ -23,39 +29,36 @@ function WizardGithubSyncDetails({
   const { repositoryName, gitRepositoryUrl } = repositorySelected;
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__body`}>
-        <div className={`${CLASS_NAME}__details`}>
+    <FlexItem
+      itemsAlign={EnumItemsAlign.Center}
+      end={
+        showGitRepositoryBtn && (
+          <Button
+            buttonStyle={EnumButtonStyle.Primary}
+            eventData={{
+              eventName: AnalyticsEventNames.GithubRepositoryChange,
+            }}
+            onClick={onDisconnectGitRepository}
+          >
+            Change Repository
+          </Button>
+        )
+      }
+    >
+      <FlexItem direction={EnumFlexDirection.Column}>
+        <Text>
           <GitRepoDetails
             gitRepositoryFullName={repositoryName}
             className={classNames(className, `${CLASS_NAME}__name`)}
           />
-          <div>
-            <a
-              href={gitRepositoryUrl}
-              target="github_repo"
-              className={className}
-            >
-              {gitRepositoryUrl}
-            </a>
-          </div>
-        </div>
-
-        {showGitRepositoryBtn && (
-          <div className={`${CLASS_NAME}__action`}>
-            <Button
-              buttonStyle={EnumButtonStyle.Primary}
-              eventData={{
-                eventName: AnalyticsEventNames.GithubRepositoryChange,
-              }}
-              onClick={onDisconnectGitRepository}
-            >
-              Change Repository
-            </Button>
-          </div>
-        )}
-      </div>
-    </div>
+        </Text>
+        <Text textStyle={EnumTextStyle.Tag} underline={true}>
+          <a href={gitRepositoryUrl} target="github_repo" className={className}>
+            {gitRepositoryUrl}
+          </a>
+        </Text>
+      </FlexItem>
+    </FlexItem>
   );
 }
 
