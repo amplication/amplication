@@ -31,20 +31,6 @@
     align-items: center;
   }
 
-  &__right {
-    .truncated-id {
-      @include regular-12;
-      color: var(--gray-base);
-    }
-
-    .clickable-id {
-      color: var(--gray-20);
-      a {
-        color: var(--gray-base);
-      }
-    }
-  }
-
   &__git-connection {
     color: var(--gray-20);
     display: flex;
