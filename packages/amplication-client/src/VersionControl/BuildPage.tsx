@@ -62,7 +62,7 @@ const BuildPage = ({ match, buildId }: Props) => {
     },
   });
 
-  const { data: updatedBuild } = useBuildWatchStatus(buildData.build);
+  const { data: updatedBuild } = useBuildWatchStatus(buildData?.build);
 
   const actionLog = useMemo<LogData | null>(() => {
     if (!updatedBuild?.build) return null;
