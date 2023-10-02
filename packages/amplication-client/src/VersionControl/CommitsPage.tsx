@@ -1,27 +1,42 @@
-import React, { useCallback, useContext, useEffect, useMemo } from "react";
-import { match, useHistory } from "react-router-dom";
+import React, { useCallback, useContext, useEffect } from "react";
+import { match, useHistory, useRouteMatch } from "react-router-dom";
+import { EmptyState } from "../Components/EmptyState";
 import { EnumImages } from "../Components/SvgThemeImage";
-import { AppContext } from "../context/appContext";
 import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
 import CommitList from "./CommitList";
-import CommitResourceList from "./CommitResourceList";
 import "./CommitsPage.scss";
-import { EmptyState } from "../Components/EmptyState";
-import { CircularProgress } from "@amplication/ui/design-system";
+import BuildPage from "./BuildPage";
 
 type Props = AppRouteProps & {
   match: match<{
     workspace: string;
     project: string;
-    resource: string;
-    commit: string;
   }>;
 };
 
-const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
-  const commitId = match.params.commit;
+const PAGE_TITLE = "Commits";
+
+const CommitsPage: React.FC<Props> = ({ moduleClass, innerRoutes }) => {
   const history = useHistory();
+
+  const commitMatch = useRouteMatch<{
+    workspace: string;
+    project: string;
+    commit: string;
+    build?: string;
+  }>("/:workspace/:project/commits/:commit");
+  const { commit: commitId } = commitMatch?.params ?? {};
+
+  const buildMatch = useRouteMatch<{
+    workspace: string;
+    project: string;
+    commit: string;
+    build?: string;
+  }>("/:workspace/:project/commits/:commit/builds/:build");
+
+  const { build: buildId } = buildMatch?.params ?? {};
 
   const { currentProject, currentWorkspace, commitUtils } =
     useContext(AppContext);
@@ -29,10 +44,6 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
   const handleOnLoadMoreClick = useCallback(() => {
     commitUtils.refetchCommitsData(false);
   }, [commitUtils.refetchCommitsData]);
-
-  const currentCommit = useMemo(() => {
-    return commitUtils.commits?.find((commit) => commit.id === commitId);
-  }, [commitId, commitUtils.commits]);
 
   useEffect(() => {
     if (commitId) return;
@@ -48,10 +59,12 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
     history,
   ]);
 
-  return (
+  return buildId ? (
+    <BuildPage match={undefined} buildId={buildId} />
+  ) : (
     <PageContent
       className={moduleClass}
-      pageTitle={`Commit Page ${commitId ? commitId : ""}`}
+      pageTitle={PAGE_TITLE}
       sideContent={
         commitUtils.commits?.length ? (
           <CommitList
@@ -64,18 +77,16 @@ const CommitsPage: React.FC<Props> = ({ match, moduleClass }) => {
         ) : null
       }
     >
-      {commitUtils.commits.length && currentCommit ? (
-        <CommitResourceList
-          commit={currentCommit}
-          commitChangesByResource={commitUtils.commitChangesByResource}
-        />
-      ) : commitUtils.commitsLoading ? (
-        <CircularProgress centerToParent />
+      {buildId}
+      {commitUtils.commits?.length ? (
+        innerRoutes
       ) : (
-        <EmptyState
-          message="There are no commits to show"
-          image={EnumImages.CommitEmptyState}
-        />
+        <>
+          <EmptyState
+            message="There are no commits to show. "
+            image={EnumImages.CommitEmptyState}
+          />
+        </>
       )}
     </PageContent>
   );

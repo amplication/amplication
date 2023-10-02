@@ -1,7 +1,7 @@
 import React, { useMemo } from "react";
 import { Formik } from "formik";
 import * as models from "../models";
-import { TextField } from "@amplication/ui/design-system";
+import { TabContentTitle, TextField } from "@amplication/ui/design-system";
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import { Form } from "../Components/Form";
@@ -83,6 +83,7 @@ const EntityForm = React.memo(({ entity, resourceId, onSubmit }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
+      <TabContentTitle title="Entity Settings" subTitle="" />
       <Formik
         initialValues={initialValues}
         validate={(values) => {

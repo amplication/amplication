@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { useCallback, useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
@@ -14,7 +14,10 @@ import {
 } from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
-
+import BreadcrumbsContext, {
+  BreadcrumbItem,
+} from "./Layout/BreadcrumbsContext";
+import { sortBy } from "lodash";
 declare global {
   interface Window {
     HubSpotConversations: any;
@@ -67,6 +70,43 @@ function App() {
     undefined
   );
 
+  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
+    []
+  );
+
+  const registerBreadcrumbItem = useCallback(
+    (addItem: BreadcrumbItem) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          [...items.filter((item) => item.url !== addItem.url), addItem],
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const unregisterBreadcrumbItem = useCallback(
+    (url: string) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          items.filter((item) => item.url !== url),
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const breadcrumbsContextValue = useMemo(
+    () => ({
+      breadcrumbsItems,
+      registerItem: registerBreadcrumbItem,
+      unregisterItem: unregisterBreadcrumbItem,
+    }),
+    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
+  );
+
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {
@@ -109,21 +149,23 @@ function App() {
 
   return (
     <ThemeProvider>
-      {showLoadingAnimation && (
-        <FullScreenLoader
-          animationType={AnimationType.Full}
-          minimumLoadTimeMS={MIN_ANIMATION_TIME}
-          onTimeout={handleTimeout}
-        />
-      )}
-      {!currentWorkspaceLoading && GeneratedRoutes}
-      {workspaceUpgradeConfirmation && (
-        <PlanUpgradeConfirmation
-          isOpen={workspaceUpgradeConfirmation}
-          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
-          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
-        />
-      )}
+      <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
+        {showLoadingAnimation && (
+          <FullScreenLoader
+            animationType={AnimationType.Full}
+            minimumLoadTimeMS={MIN_ANIMATION_TIME}
+            onTimeout={handleTimeout}
+          />
+        )}
+        {!currentWorkspaceLoading && GeneratedRoutes}
+        {workspaceUpgradeConfirmation && (
+          <PlanUpgradeConfirmation
+            isOpen={workspaceUpgradeConfirmation}
+            onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
+            onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+          />
+        )}
+      </BreadcrumbsContext.Provider>
     </ThemeProvider>
   );
 }

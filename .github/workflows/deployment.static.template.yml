@@ -1,9 +1,9 @@
-name: Reusable Deployment Static template
+name: _Reusable Deployment Static template
 
 on:
   workflow_call:
     inputs:
-      environment-name: 
+      environment-name:
         type: string
         description: Environment to deploy to.
         required: true
@@ -39,10 +39,10 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3

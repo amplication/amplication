@@ -15,7 +15,7 @@ const CreateServiceWizardFooter: React.FC<{}> = () => {
   return (
     <div className={`create-service-wizard__footer`}>
       <Button
-        buttonStyle={EnumButtonStyle.Secondary}
+        buttonStyle={EnumButtonStyle.Outline}
         icon="arrow_left"
         iconPosition={EnumIconPosition.Left}
         // onClick={}
