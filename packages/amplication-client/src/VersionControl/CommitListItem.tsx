@@ -1,33 +1,33 @@
 import React, { useContext } from "react";
 import * as models from "../models";
-import "./CommitListItem.scss";
 import { AppContext } from "../context/appContext";
 import InnerTabLink from "../Layout/InnerTabLink";
 import CommitData from "./CommitData";
 import { useCommitStatus } from "./hooks/useCommitStatus";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
+import { FlexItem } from "@amplication/ui/design-system";
 
 type Props = {
   projectId: string;
   commit: models.Commit;
 };
 
-export const CLASS_NAME = "commit-list-item";
-
 export const CommitListItem = ({ commit, projectId }: Props) => {
   const { currentWorkspace } = useContext(AppContext);
   const { commitStatus } = useCommitStatus(commit);
   return (
-    <div className={`${CLASS_NAME}__row`}>
-      <InnerTabLink
-        icon=""
-        to={`/${currentWorkspace?.id}/${projectId}/commits/${commit.id}`}
-      >
-        <div className={CLASS_NAME}>
+    <InnerTabLink
+      icon=""
+      to={`/${currentWorkspace?.id}/${projectId}/commits/${commit.id}`}
+    >
+      <FlexItem>
+        <FlexItem.FlexStart>
           <CommitData commit={commit} />
+        </FlexItem.FlexStart>
+        <FlexItem.FlexEnd minWidthAuto={true}>
           <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
-        </div>
-      </InnerTabLink>
-    </div>
+        </FlexItem.FlexEnd>
+      </FlexItem>
+    </InnerTabLink>
   );
 };

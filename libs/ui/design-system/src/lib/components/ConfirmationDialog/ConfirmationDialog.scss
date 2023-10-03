@@ -2,7 +2,7 @@
 
 .confirmation-dialog {
   padding-bottom: var(--large-spacing);
-  border-color: var(--warning-default);
+  border-color: var(--theme-orange);
 
   &__message {
     font-size: 14px;
@@ -18,6 +18,6 @@
     margin: var(--large-spacing) 0;
     height: 1px;
     border: none;
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 }

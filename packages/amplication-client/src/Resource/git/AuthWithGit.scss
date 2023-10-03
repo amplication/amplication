@@ -44,18 +44,18 @@
   &__notice {
     &__title {
       @include body2;
-      color: var(--black100);
+      color: var(--gray-base);
     }
     text-align: left;
     margin-top: var(--double-spacing);
-    color: var(--black100);
+    color: var(--gray-base);
     margin-bottom: var(--double-spacing);
 
     ul {
       margin: 0;
       padding: 0;
       padding-top: var(--default-spacing-small);
-      color: var(--black60);
+      color: var(--gray-30);
       li {
         line-height: var(--double-spacing);
         list-style: none;
@@ -65,7 +65,7 @@
         align-items: center;
         .amp-icon {
           margin-right: var(--default-spacing-small);
-          color: var(--positive-default);
+          color: var(--theme-green);
         }
       }
     }

@@ -4,25 +4,6 @@ $log-min-width: 360px;
 $icon-size: 20px;
 
 .build-page {
-  &__header {
-    margin-bottom: var(--double-spacing);
-    color: var(--black80);
-
-    @include flexFullRowWithSpacing;
-    align-items: center;
-
-    .truncated-id {
-      @include semiBold;
-      color: var(--black100);
-    }
-
-    .clickable-id {
-      color: var(--black80);
-      a {
-        color: var(--black100);
-      }
-    }
-  }
   &__build-details {
     display: flex;
     direction: row;
@@ -30,7 +11,6 @@ $icon-size: 20px;
     .log-container {
       flex: 1;
       min-width: $log-min-width;
-      margin-left: var(--double-spacing);
     }
   }
 
@@ -40,9 +20,5 @@ $icon-size: 20px;
     i {
       font-size: $icon-size;
     }
-  }
-
-  .amp-page-content__main {
-    overflow-x: hidden;
   }
 }

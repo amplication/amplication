@@ -1,21 +1,25 @@
-import { useCallback, useMemo, useContext, useState } from "react";
-import { useRouteMatch, useHistory } from "react-router-dom";
-import { gql, useMutation, useQuery } from "@apollo/client";
 import { types } from "@amplication/code-gen-types";
-import { Snackbar } from "@amplication/ui/design-system";
+import {
+  EnumItemsAlign,
+  FlexItem,
+  Snackbar,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
+import { gql, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useContext, useMemo, useState } from "react";
+import { useHistory, useRouteMatch } from "react-router-dom";
 
-import { formatError } from "../util/error";
 import * as models from "../models";
+import { formatError } from "../util/error";
 
-import { SYSTEM_DATA_TYPES } from "./constants";
+import { AppContext } from "../context/appContext";
+import { DeleteEntityField } from "./DeleteEntityField";
 import EntityFieldForm, { Values } from "./EntityFieldForm";
 import {
   RelatedFieldDialog,
   Values as RelatedFieldValues,
 } from "./RelatedFieldDialog";
-import { DeleteEntityField } from "./DeleteEntityField";
-import "./EntityField.scss";
-import { AppContext } from "../context/appContext";
+import { SYSTEM_DATA_TYPES } from "./constants";
 
 type TData = {
   entity: models.Entity;
@@ -167,18 +171,23 @@ const EntityField = () => {
     <div className={CLASS_NAME}>
       {!loading && (
         <>
-          <div className={`${CLASS_NAME}__header`}>
-            <h3>Field Settings</h3>
-            {entity && entityField && (
-              <DeleteEntityField
-                entityId={entity}
-                entityField={entityField}
-                showLabel
-                onDelete={handleDeleteField}
-                onError={setError}
-              />
-            )}
-          </div>
+          <FlexItem
+            itemsAlign={EnumItemsAlign.Start}
+            start={<TabContentTitle title="Field Settings" />}
+            end={
+              entity &&
+              entityField && (
+                <DeleteEntityField
+                  entityId={entity}
+                  entityField={entityField}
+                  showLabel
+                  onDelete={handleDeleteField}
+                  onError={setError}
+                />
+              )
+            }
+          ></FlexItem>
+
           <EntityFieldForm
             isSystemDataType={
               defaultValues && SYSTEM_DATA_TYPES.has(defaultValues.dataType)
