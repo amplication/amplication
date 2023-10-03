@@ -1,6 +1,13 @@
-import { CircleBadge, ToggleField } from "@amplication/ui/design-system";
+import {
+  CircleBadge,
+  EnumTextStyle,
+  EnumTextWeight,
+  Text,
+  ToggleField,
+} from "@amplication/ui/design-system";
 import { useCallback } from "react";
 import "./ImageLabelToggle.scss";
+import classNames from "classnames";
 
 const className = "image-label-toggle";
 
@@ -26,11 +33,22 @@ export const ImageLabelToggle: React.FC<Props> = ({
   }, [value, onChange]);
 
   return (
-    <div tabIndex={0} className={className} onClick={handleClick}>
-      <CircleBadge color="#22273C" border="1px solid #373D57" size="medium">
+    <div
+      tabIndex={0}
+      className={classNames(className, { [`${className}--selected`]: value })}
+      onClick={handleClick}
+    >
+      <CircleBadge
+        color="#22273C"
+        border="1px solid var(--border-color)"
+        size="medium"
+      >
         <img src={image} alt="" />
       </CircleBadge>
-      <label>{label}</label>
+      <Text textStyle={EnumTextStyle.Normal} textWeight={EnumTextWeight.Bold}>
+        {label}
+      </Text>
+
       <ToggleField name={name} label="" disabled={disabled} />
     </div>
   );

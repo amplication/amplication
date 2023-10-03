@@ -15,7 +15,7 @@
   }
 
   &__notice {
-    color: var(--black100);
+    color: var(--gray-base);
     &__title {
       @include body2;
     }
@@ -28,7 +28,7 @@
       padding-top: var(--default-spacing-small);
       li {
         @include regular-10;
-        color: var(--black80);
+        color: var(--gray-20);
         line-height: var(--double-spacing);
         list-style: none;
         margin: 0;
@@ -37,7 +37,7 @@
         align-items: center;
         .amp-icon {
           margin-right: var(--default-spacing-small);
-          color: var(--positive-default);
+          color: var(--theme-green);
         }
       }
     }

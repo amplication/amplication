@@ -5,7 +5,7 @@
   display: flex;
   flex-direction: column;
   background-color: var(--surface);
-  color: var(--black100);
+  color: var(--gray-base);
 
   &__page_content {
     display: flex;
@@ -22,9 +22,9 @@
     width: var(--changes-menu-width);
     min-width: var(--changes-menu-width);
     background: var(--menu-background-color);
-    border-left: $border-black10;
+    border-left: $border-dark;
     display: flex;
     flex-direction: column;
-    background-color: var(--white);
+    background-color: var(--gray-full);
   }
 }

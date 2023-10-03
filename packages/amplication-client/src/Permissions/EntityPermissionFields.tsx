@@ -173,11 +173,7 @@ export const EntityPermissionFields = ({
     <div className={CLASS_NAME}>
       <div className={`${CLASS_NAME}__add-field`}>
         Set specific permissions to special fields
-        <SelectMenu
-          title="Add Field"
-          icon="plus"
-          buttonStyle={EnumButtonStyle.Clear}
-        >
+        <SelectMenu title="Add Field" buttonStyle={EnumButtonStyle.Text}>
           <SelectMenuModal>
             <SelectMenuList>
               {data?.entity?.fields?.map((field) => (

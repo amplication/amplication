@@ -17,6 +17,7 @@ if [[ $PRODUCTION_TAGS = "true" ]]; then
     # prefix with `v` to match other container image tags
     IMAGE_TAG="v$PACKAGE_VERSION"
     export INPUT_TAGS="$IMAGE_REPO:$IMAGE_TAG,$IMAGE_REPO:sha-${GIT_SHA:0:7}"
+    export GIT_REF_NAME=${IMAGE_TAG}
 
     npx nx internal:package:container data-service-generator --prod
 else

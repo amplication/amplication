@@ -18,12 +18,12 @@
       visibility: hidden;
 
       &:hover + span {
-        background-color: var(--black20);
+        background-color: var(--gray-60);
         color: var(--static-white);
       }
 
       &:focus + span {
-        background-color: var(--black20);
+        background-color: var(--gray-60);
         color: var(--static-white);
       }
 

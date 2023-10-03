@@ -6,16 +6,16 @@ import {
   TextField,
   Toggle,
 } from "@amplication/ui/design-system";
-import { ApolloError, gql, useQuery } from "@apollo/client";
+import { ApolloError, useQuery } from "@apollo/client";
 import { useCallback, useEffect, useState } from "react";
 import { EnumGitOrganizationType, GitGroup } from "../../../../models";
 import { formatError } from "../../../../util/error";
+import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
+import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
+import { GET_GROUPS } from "../../queries/gitProvider";
+import { GitSelectMenu } from "../../select/GitSelectMenu";
 import { GitRepositoryCreatedData } from "../GitRepos/GithubRepos";
 import "./GitCreateRepo.scss";
-import { GitOrganizationFromGitRepository } from "../../SyncWithGithubPage";
-import { getGitRepositoryDetails } from "../../../../util/git-repository-details";
-import { GitSelectMenu } from "../../select/GitSelectMenu";
-import { GET_GROUPS } from "../../queries/gitProvider";
 
 type createRepositoryInput = {
   name: string;

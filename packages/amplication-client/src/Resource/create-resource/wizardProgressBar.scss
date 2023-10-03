@@ -10,7 +10,7 @@ $small-size: 15px;
     flex-grow: 1;
   }
   &__disabled {
-    color: var(--black40) !important;
+    color: var(--gray-40) !important;
   }
 
   &__item {
@@ -20,7 +20,7 @@ $small-size: 15px;
       content: "";
       width: 8px;
       height: 0px;
-      border: 1px solid var(--black30);
+      border: 1px solid var(--gray-50);
       right: -8px;
       position: absolute;
       top: 50%;
@@ -46,7 +46,7 @@ $small-size: 15px;
       font-size: $small-size;
     }
     .wizard_check {
-      color: var(--positive-default);
+      color: var(--theme-green);
     }
     .wizard_loading {
       color: var(--secondary);
