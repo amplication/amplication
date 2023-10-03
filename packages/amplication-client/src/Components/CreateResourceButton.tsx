@@ -36,11 +36,7 @@ const ITEMS: CreateResourceButtonItemType[] = [
 const CreateResourceButton = () => {
   return (
     <div className={CLASS_NAME}>
-      <SelectMenu
-        title="Add Resource"
-        buttonStyle={EnumButtonStyle.Primary}
-        icon="plus"
-      >
+      <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
         <SelectMenuModal align="right">
           <SelectMenuList>
             {ITEMS.map((item, index) => (

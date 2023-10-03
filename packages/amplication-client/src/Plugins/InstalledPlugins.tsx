@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import React, { useCallback, useContext, useMemo, useState } from "react";
 import { match } from "react-router-dom";
 import { DndProvider } from "react-dnd";
@@ -30,6 +30,9 @@ type Props = AppRouteProps & {
 type TData = {
   entities: models.Entity[];
 };
+
+const TITLE = "Installed Plugins";
+const SUB_TITLE = "Manage your installed plugins";
 
 const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
@@ -100,8 +103,9 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
     [createPluginInstallation, resource]
   );
 
-  const [createDefaultEntities, { data: defaultEntityData }] =
-    useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
+  const [createDefaultEntities] = useMutation<TEntities>(
+    CREATE_DEFAULT_ENTITIES,
+    {
       onCompleted: (data) => {
         if (!data) return;
         const userEntity = data.createDefaultEntities.find(
@@ -143,7 +147,8 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           }).catch(console.error);
         }
       },
-    });
+    }
+  );
 
   const handleCreateDefaultEntitiesConfirmation = useCallback(() => {
     createDefaultEntities({
@@ -225,20 +230,23 @@ const InstalledPlugins: React.FC<Props> = ({ match }: Props) => {
           handleCreateDefaultEntitiesConfirmation
         }
       ></PluginInstallConfirmationDialog>
+      <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <DndProvider backend={HTML5Backend}>
-        {pluginInstallations.length &&
-          pluginInstallations.map((installation) => (
-            <PluginsCatalogItem
-              key={installation.id}
-              plugin={pluginCatalog[installation.pluginId]}
-              pluginInstallation={installation as models.PluginInstallation}
-              onOrderChange={onOrderChange}
-              onInstall={handleInstall}
-              onEnableStateChange={onEnableStateChange}
-              order={pluginOrderObj[installation.pluginId]}
-              isDraggable
-            />
-          ))}
+        <List>
+          {pluginInstallations.length &&
+            pluginInstallations.map((installation) => (
+              <PluginsCatalogItem
+                key={installation.id}
+                plugin={pluginCatalog[installation.pluginId]}
+                pluginInstallation={installation as models.PluginInstallation}
+                onOrderChange={onOrderChange}
+                onInstall={handleInstall}
+                onEnableStateChange={onEnableStateChange}
+                order={pluginOrderObj[installation.pluginId]}
+                isDraggable
+              />
+            ))}
+        </List>
         <Snackbar
           open={Boolean(updateError || createError)}
           message={errorMessage}

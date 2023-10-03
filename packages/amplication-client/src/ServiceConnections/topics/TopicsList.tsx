@@ -23,6 +23,9 @@ type Props = {
 type TData = {
   Topics: Topic[];
 };
+type messagePatternDictionary = {
+  [topicId: string]: EnumMessagePatternConnectionOptions;
+};
 export default function TopicsList({
   messageBrokerId,
   enabled,
@@ -41,6 +44,21 @@ export default function TopicsList({
     return keyBy(messagePatterns, (pattern) => pattern.topicId);
   }, [messagePatterns]);
 
+  const messagePatternsByTopicIdDictionary: messagePatternDictionary = {};
+  if (messagePatterns) {
+    messagePatterns.forEach(
+      (x) => (messagePatternsByTopicIdDictionary[x.topicId] = x.type)
+    );
+  }
+  function handleSelectedPatternType(currentTopicId): MessagePattern {
+    return {
+      type:
+        messagePatternsByTopicIdDictionary[currentTopicId] ||
+        EnumMessagePatternConnectionOptions.None,
+      topicId: currentTopicId,
+    } as MessagePattern;
+  }
+
   return data ? (
     data.Topics.length ? (
       <FieldArray
@@ -53,18 +71,14 @@ export default function TopicsList({
                 enabled={enabled}
                 key={i}
                 topic={topic}
-                selectedPatternType={
-                  messagePatternsByTopicId[topic.id] || {
-                    type: EnumMessagePatternConnectionOptions.None,
-                    topicId: topic.id,
-                  }
-                }
+                selectedPatternType={handleSelectedPatternType(topic.id)}
                 onMessagePatternTypeChange={(pattern) => {
                   trackEvent({
                     eventName: AnalyticsEventNames.MessagePatternTypeClick,
                     pattern,
                   });
-                  replace(i, { type: pattern, topicId: topic.id });
+                  replace(i, { topicId: topic.id, type: pattern });
+                  messagePatternsByTopicIdDictionary[topic.id] = pattern;
                 }}
               />
             ))}

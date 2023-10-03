@@ -1,6 +1,16 @@
 import { useContext } from "react";
 import classNames from "classnames";
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import { ClickableId } from "../Components/ClickableId";
 import "./LastCommit.scss";
 import { AppContext } from "../context/appContext";
@@ -43,24 +53,31 @@ const LastCommit = ({ lastCommit }: Props) => {
     >
       <hr className={`${CLASS_NAME}__divider`} />
       <div className={`${CLASS_NAME}__content`}>
-        <p className={`${CLASS_NAME}__title`}>
-          Last Commit
-          <CommitBuildsStatusIcon commitBuildStatus={commitStatus} />
-        </p>
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
+          end={<CommitBuildsStatusIcon commitBuildStatus={commitStatus} />}
+        >
+          <Text textStyle={EnumTextStyle.H4}>Last Commit</Text>
+        </FlexItem>
 
-        <div className={`${CLASS_NAME}__status`}>
-          <div>{ClickableCommitId}</div>
-          <span className={classNames("clickable-id")}>
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          margin={EnumFlexItemMargin.Both}
+          gap={EnumGapSize.Small}
+        >
+          {ClickableCommitId}
+          <Text textStyle={EnumTextStyle.Tag}>
             {formatTimeToNow(lastCommit?.createdAt)}
-          </span>
-        </div>
+          </Text>
+        </FlexItem>
+
         {lastCommit && (
           <Link
             to={`/${currentWorkspace?.id}/${currentProject?.id}/code-view`}
             className={`${CLASS_NAME}__view-code`}
           >
             <Button
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Outline}
               disabled={commitRunning}
             >
               Go to view code

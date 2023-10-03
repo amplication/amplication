@@ -1,16 +1,23 @@
-import { Snackbar, ToggleField } from "@amplication/ui/design-system";
+import {
+  EnumFlexDirection,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  Text,
+  ToggleField,
+} from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
-import React, { useContext } from "react";
+import { useContext } from "react";
+import { match } from "react-router-dom";
+import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
-import { match } from "react-router-dom";
-import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
-import { AppContext } from "../../context/appContext";
 
 type Props = {
   match: match<{ resource: string }>;
@@ -64,17 +71,18 @@ function GenerationSettingsForm({ match }: Props) {
           {(formik) => {
             return (
               <Form>
-                <div className={`${CLASS_NAME}__header`}>
-                  <h3>APIs Admin UI Settings</h3>
-                </div>
-                <p className={`${CLASS_NAME}__description`}>
+                <Text textStyle={EnumTextStyle.H4}>
+                  APIs & Admin UI Settings
+                </Text>
+                <Text textStyle={EnumTextStyle.Tag}>
                   Amplication gives you the choice of which components to
                   generate. Use the settings to include or exclude GraphQL API,
                   REST API, and Admin UI.
-                </p>
-                <hr />
+                </Text>
+
+                <HorizontalRule />
                 <FormikAutoSave debounceMS={200} />
-                <div className={`${CLASS_NAME}__toggle_wrapper`}>
+                <FlexItem direction={EnumFlexDirection.Column}>
                   <ToggleField
                     name="serverSettings[generateGraphQL]"
                     label="GraphQL API"
@@ -90,7 +98,7 @@ function GenerationSettingsForm({ match }: Props) {
                     name="adminUISettings[generateAdminUI]"
                     label="Admin UI"
                   />
-                </div>
+                </FlexItem>
               </Form>
             );
           }}

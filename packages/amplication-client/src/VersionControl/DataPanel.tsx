@@ -1,8 +1,14 @@
-import { UserAndTime } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Text,
+  UserAndTime,
+} from "@amplication/ui/design-system";
 import React from "react";
 import { TruncatedId } from "../Components/TruncatedId";
 import { Account, Maybe } from "../models";
-import "./DataPanel.scss";
 
 export enum TitleDataType {
   COMMIT = "Commit",
@@ -32,22 +38,29 @@ const DataPanel: React.FC<Props> = ({
 }) => {
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__main`}>
-        <p className={`${CLASS_NAME}__title`}>
-          {dataType} <TruncatedId id={id} />
-          {relatedDataId && relatedDataName && (
-            <span className={`${CLASS_NAME}__related-data-id`}>
-              {relatedDataName} <TruncatedId id={relatedDataId} />
-            </span>
-          )}
-        </p>
+      <FlexItem>
+        <FlexItem.FlexStart>
+          <Text textStyle={EnumTextStyle.H4}>
+            {dataType} <TruncatedId id={id} />
+          </Text>
 
-        <UserAndTime account={account} time={createdAt} />
-      </div>
+          {relatedDataId && relatedDataName && (
+            <Text textStyle={EnumTextStyle.Tag}>
+              {relatedDataName} <TruncatedId id={relatedDataId} />
+            </Text>
+          )}
+        </FlexItem.FlexStart>
+        <FlexItem.FlexEnd>
+          <UserAndTime account={account} time={createdAt} />
+        </FlexItem.FlexEnd>
+      </FlexItem>
+
       {description && (
-        <span className={`${CLASS_NAME}__description`}>{description}</span>
+        <FlexItem margin={EnumFlexItemMargin.Top}>
+          <Text textStyle={EnumTextStyle.Tag}>{description}</Text>
+        </FlexItem>
       )}
-      <hr className={`${CLASS_NAME}__divider`} />
+      <HorizontalRule />
     </div>
   );
 };

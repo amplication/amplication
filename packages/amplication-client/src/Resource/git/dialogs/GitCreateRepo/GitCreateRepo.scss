@@ -5,7 +5,7 @@
   &__header {
     font-size: 14px;
     margin-bottom: var(--large-spacing);
-    color: var(--black100);
+    color: var(--gray-base);
   }
 
   &__button {
@@ -34,11 +34,11 @@
   }
 
   &__progress {
-    color: var(--white) !important;
+    color: var(--gray-full) !important;
   }
 
   &__label {
-    color: var(--black80);
+    color: var(--gray-20);
     margin-bottom: var(--icon-spacing);
     font-size: 10px;
   }
