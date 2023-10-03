@@ -80,8 +80,8 @@ export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
 export const PUSH_TO_GIT_STEP_NAME = "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
   `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
-export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Waiting for a worker...`;
+export const PUSH_TO_GIT_STEP_START_LOG =
+  "Pull request creation job added to queue. Waiting for available worker...";
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
   `Successfully pushed changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
@@ -718,10 +718,7 @@ export class BuildService {
       PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitSettings.gitProvider]),
       async (step) => {
         try {
-          await this.actionService.logInfo(
-            step,
-            PUSH_TO_GIT_STEP_START_LOG(EnumGitProvider[gitSettings.gitProvider])
-          );
+          await this.actionService.logInfo(step, PUSH_TO_GIT_STEP_START_LOG);
 
           const smartGitSyncEntitlement = this.billingService.isBillingEnabled
             ? await this.billingService.getBooleanEntitlement(
