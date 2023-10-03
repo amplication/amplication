@@ -9,7 +9,6 @@ $expandable-transition-duration: 0.1s;
   border: none;
   box-sizing: border-box;
   padding: var(--default-spacing) var(--large-spacing);
-  margin: var(--default-spacing);
   margin-top: 0;
   margin-bottom: var(--double-spacing);
 
@@ -19,7 +18,9 @@ $expandable-transition-duration: 0.1s;
 
   &--transparent {
     background: transparent;
-    margin: 0 calc(var(--default-spacing) * -1);
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
     margin-top: 0;
   }
   &--shadow {
@@ -27,18 +28,24 @@ $expandable-transition-duration: 0.1s;
   }
 
   &--bordered {
-    border: $border-black10;
+    border: $border-dark;
     margin-bottom: var(--double-spacing);
+  }
+
+  &--bold {
+    background-color: var(--gray-full);
+    border: $border-dark;
+    padding: var(--large-spacing);
   }
 
   &--clickable {
     cursor: pointer;
     &:hover {
       background: var(--panel-hover-background);
-      border: $border-black20;
+      border: $border-dark;
 
       .amp-horizontal-rule {
-        border-top: $border-black20;
+        border-top: $border-dark;
       }
     }
   }
@@ -57,12 +64,12 @@ $expandable-transition-duration: 0.1s;
     max-height: 0;
     transition: all $expandable-transition-duration ease-in;
     overflow: hidden;
-    border-top: $border-black10;
+    border-top: $border-dark;
     border-top-color: transparent;
     margin-left: calc(var(--default-spacing) * -1);
     margin-right: calc(var(--default-spacing) * -1);
     margin-bottom: calc(var(--default-spacing) * -1);
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
     padding-left: var(--default-spacing);
     padding-right: var(--default-spacing);
 
@@ -71,7 +78,7 @@ $expandable-transition-duration: 0.1s;
       overflow-y: auto;
       padding: var(--default-spacing);
       padding-bottom: 0;
-      border-top-color: var(--black10);
+      border-top-color: var(--gray-70);
       margin-bottom: 0;
     }
   }

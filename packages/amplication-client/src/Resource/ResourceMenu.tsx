@@ -1,19 +1,19 @@
-import { CircleBadge, Popover } from "@amplication/ui/design-system";
+import { CircleBadge } from "@amplication/ui/design-system";
 import React, { useContext } from "react";
-import { AppContext } from "../context/appContext";
 import MenuItem from "../Layout/MenuItem";
+import { AppContext } from "../context/appContext";
 import { EnumResourceType } from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { resourceThemeMap } from "./constants";
+import PurchaseMenuItem from "./PurchaseMenuItem";
 import "./ResourceMenu.scss";
+import { resourceThemeMap } from "./constants";
 import {
-  linksMap,
   MenuItemLinks,
+  linksMap,
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
-import PurchaseMenuItem from "./PurchaseMenuItem";
 
 const CLASS_NAME = "resource-menu";
 

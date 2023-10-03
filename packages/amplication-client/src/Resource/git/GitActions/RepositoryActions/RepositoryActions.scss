@@ -5,20 +5,18 @@
 }
 
 .repository-actions {
-  max-width: 800px;
-
   &__auth {
     margin: var(--medium-spacing) 0;
     min-height: var(--min-height-of-banner);
     display: flex;
-    background: var(--white);
+    background: var(--gray-full);
   }
 
   &__wizard_auth {
     margin: var(--default-spacing-small) 0 var(--double-spacing) 0;
     min-height: var(--min-height-of-banner);
     display: flex;
-    background: var(--white);
+    background: var(--gray-full);
   }
   &__action {
     margin-left: var(--default-spacing-small);
@@ -35,17 +33,14 @@
       @include flexFullRowWithSpacing;
       .amp-icon {
         margin-right: var(--default-spacing-small);
-        color: var(--negative);
+        color: var(--theme-red);
       }
-      color: var(--negative);
+      color: var(--theme-red);
     }
 
     &__name {
       @include title1;
       padding-bottom: var(--default-spacing-small);
     }
-  }
-  .amp-button--outline {
-    border-radius: 4px !important;
   }
 }

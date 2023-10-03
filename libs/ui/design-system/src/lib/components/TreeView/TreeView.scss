@@ -15,20 +15,20 @@
   }
 
   .MuiCollapse-wrapperInner {
-    border-left: $border-black30;
+    border-left: $border-dark;
     padding-left: var(--default-spacing);
   }
 
   .MuiTreeItem-content {
     padding: var(--icon-spacing);
-    border-radius: var(--small-border-radius);
+    border-radius: var(--default-border-radius);
 
     &.Mui-selected {
-      background: var(--black10);
+      background: var(--gray-70);
     }
 
     &:hover {
-      background: var(--black5);
+      background: var(--gray-80);
     }
   }
 }

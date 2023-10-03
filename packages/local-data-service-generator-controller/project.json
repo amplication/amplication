@@ -3,7 +3,6 @@
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/local-data-service-generator-controller/src",
   "projectType": "application",
-  "implicitDependencies": ["data-service-generator"],
   "targets": {
     "build": {
       "executor": "@nrwl/js:tsc",

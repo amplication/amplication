@@ -3,19 +3,19 @@
 .amp-error-message {
   @include body2;
   box-sizing: border-box;
-  background-color: var(--black5);
+  background-color: var(--gray-80);
   padding: var(--default-spacing-small);
-  border-radius: var(--small-border-radius);
-  color: var(--black80);
+  border-radius: var(--default-border-radius);
+  color: var(--gray-20);
   text-align: left;
   display: flex;
   justify-content: flex-start;
   align-items: flex-start;
-  border: 1px solid var(--negative-light);
+  border: 1px solid var(--theme-light-red);
 
   .amp-icon {
     margin-right: var(--default-spacing);
-    color: var(--negative-light);
+    color: var(--theme-light-red);
     font-weight: bold;
   }
 }

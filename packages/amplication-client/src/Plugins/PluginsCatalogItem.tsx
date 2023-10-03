@@ -1,22 +1,25 @@
-import React, { useCallback, useContext } from "react";
+import { useCallback, useContext } from "react";
 import * as models from "../models";
 
 import { Button, EnumButtonStyle } from "../Components/Button";
 
 import {
-  EnumHorizontalRuleStyle,
-  EnumPanelStyle,
-  HorizontalRule,
-  Panel,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  ListItem,
+  Text,
   Toggle,
 } from "@amplication/ui/design-system";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
-import { Plugin, PluginVersion } from "./hooks/usePlugins";
+import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
 import { PluginLogo } from "./PluginLogo";
 import "./PluginsCatalogItem.scss";
 import { LATEST_VERSION_TAG } from "./constant";
-import { REACT_APP_PLUGIN_VERSION_USE_LATEST } from "../env";
+import { Plugin, PluginVersion } from "./hooks/usePlugins";
 
 type Props = {
   plugin: Plugin;
@@ -76,73 +79,80 @@ function PluginsCatalogItem({
   }, [onEnableStateChange, pluginInstallation]);
 
   return (
-    <Panel className={CLASS_NAME} panelStyle={EnumPanelStyle.Bordered}>
+    <ListItem>
       {pluginInstallation && (
         <>
-          <div className={`${CLASS_NAME}__row`}>
-            {/* <Icon icon="drag" className={`${CLASS_NAME}__drag`} /> */}
-            <Toggle
-              title="enabled"
-              onValueChange={handleEnableStateChange}
-              checked={pluginInstallation.enabled}
-              className={`${CLASS_NAME}__enabled`}
-            />
-            {isDraggable && (
-              <div className={`${CLASS_NAME}__order`}>
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={handleDemote}
-                  icon="arrow_up"
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <FlexItem>
+              <FlexItem.FlexStart>
+                <Toggle
+                  title="enabled"
+                  onValueChange={handleEnableStateChange}
+                  checked={pluginInstallation.enabled}
                 />
-                <span>{order}</span>
-                <Button
-                  buttonStyle={EnumButtonStyle.Text}
-                  onClick={handlePromote}
-                  icon="arrow_down"
-                />
-              </div>
-            )}
+              </FlexItem.FlexStart>
+              <FlexItem.FlexEnd>
+                {isDraggable && (
+                  <div className={`${CLASS_NAME}__order`}>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Text}
+                      onClick={handleDemote}
+                      icon="arrow_up"
+                    />
+                    <span>{order}</span>
+                    <Button
+                      buttonStyle={EnumButtonStyle.Text}
+                      onClick={handlePromote}
+                      icon="arrow_down"
+                    />
+                  </div>
+                )}
+              </FlexItem.FlexEnd>
+            </FlexItem>
+          </FlexItem>
+        </>
+      )}
+      <FlexItem>
+        <FlexItem.FlexStart>
+          <PluginLogo plugin={plugin} />
+        </FlexItem.FlexStart>
+        <FlexItem direction={EnumFlexDirection.Column}>
+          <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+            {name}
+          </Text>
+          <Text textStyle={EnumTextStyle.Description}>{description}</Text>
+        </FlexItem>
+        <FlexItem.FlexEnd>
+          {!pluginInstallation ? (
+            <Button
+              className={`${CLASS_NAME}__install`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleInstall}
+            >
+              Install
+            </Button>
+          ) : (
             <Link
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/plugins/installed/${pluginInstallation.id}`}
             >
               <Button
                 className={`${CLASS_NAME}__install`}
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Outline}
               >
                 Settings
               </Button>
             </Link>
-          </div>
-          <HorizontalRule style={EnumHorizontalRuleStyle.Black10} />
-        </>
-      )}
-      <div className={`${CLASS_NAME}__row `}>
-        <PluginLogo plugin={plugin} />
-        <div className={`${CLASS_NAME}__details`}>
-          <div className={`${CLASS_NAME}__details__title`}>{name}</div>
-          <span className={`${CLASS_NAME}__details__description`}>
-            {description}
-          </span>
-        </div>
-        {!pluginInstallation && (
-          <Button
-            className={`${CLASS_NAME}__install`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleInstall}
-          >
-            Install
-          </Button>
-        )}
-      </div>
-      <div className={`${CLASS_NAME}__row `}>
-        <span className="spacer" />
-        <span className={`${CLASS_NAME}__repo`}>
+          )}
+        </FlexItem.FlexEnd>
+      </FlexItem>
+      <FlexItem margin={EnumFlexItemMargin.Top}>
+        <FlexItem.FlexStart>
           <a href={plugin?.github} target="github_plugin">
-            View on GitHub
+            <Text textStyle={EnumTextStyle.Subtle}>View on GitHub</Text>
           </a>
-        </span>
-      </div>
-    </Panel>
+        </FlexItem.FlexStart>
+      </FlexItem>
+    </ListItem>
   );
 }
 

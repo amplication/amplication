@@ -1,4 +1,4 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo, useState } from "react";
@@ -32,6 +32,10 @@ export type PluginInstallationData = {
 };
 export const DIALOG_CLASS_NAME = "limitation-dialog";
 export const REQUIRE_AUTH_ENTITY = "requireAuthenticationEntity";
+
+const TITLE = "Plugins Catalog";
+const SUB_TITLE =
+  "Extend and customize your services by using plugins for various technologies and integrations.";
 
 const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
   const { resource } = match.params;
@@ -165,8 +169,9 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
 
   const errorMessage = formatError(createError) || formatError(updateError);
 
-  const [createDefaultEntities, { data: defaultEntityData }] =
-    useMutation<TEntities>(CREATE_DEFAULT_ENTITIES, {
+  const [createDefaultEntities] = useMutation<TEntities>(
+    CREATE_DEFAULT_ENTITIES,
+    {
       onCompleted: (data) => {
         if (!data) return;
         const userEntity = data.createDefaultEntities.find(
@@ -210,7 +215,8 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           }).catch(console.error);
         }
       },
-    });
+    }
+  );
 
   const handleCreateDefaultEntitiesConfirmation = useCallback(() => {
     createDefaultEntities({
@@ -236,15 +242,18 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
           handleCreateDefaultEntitiesConfirmation
         }
       ></PluginInstallConfirmationDialog>
-      {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
-        <PluginsCatalogItem
-          key={pluginId}
-          plugin={plugin}
-          pluginInstallation={installedPlugins[plugin.pluginId]}
-          onInstall={handleInstall}
-          onEnableStateChange={onEnableStateChange}
-        />
-      ))}
+      <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
+      <List>
+        {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+          <PluginsCatalogItem
+            key={pluginId}
+            plugin={plugin}
+            pluginInstallation={installedPlugins[plugin.pluginId]}
+            onInstall={handleInstall}
+            onEnableStateChange={onEnableStateChange}
+          />
+        ))}
+      </List>
       <Snackbar
         open={Boolean(updateError || createError)}
         message={errorMessage}
