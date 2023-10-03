@@ -11,14 +11,14 @@
   font-weight: normal;
   font-size: 24px;
   line-height: 36px;
-  color: var(--black100);
+  color: var(--gray-base);
   margin: 0;
 }
 
 @mixin sectionTitle {
   font-weight: normal;
   font-size: 17px;
-  color: var(--black100);
+  color: var(--gray-base);
   margin-top: 0;
   margin-bottom: var(--default-spacing);
 }
@@ -28,14 +28,14 @@
   font-style: normal;
   font-weight: normal;
   line-height: 18px;
-  color: var(--black100);
+  color: var(--gray-base);
 }
 
 @mixin headline-description {
   font-weight: 500;
   font-size: 10px;
   line-height: 120%;
-  color: var(--black40);
+  color: var(--gray-40);
   margin-bottom: var(--default-spacing);
 }
 
@@ -44,7 +44,7 @@
   font-style: normal;
   font-weight: normal;
   line-height: 18px;
-  color: var(--black80);
+  color: var(--gray-20);
 }
 
 @mixin body2 {
@@ -52,15 +52,7 @@
   font-style: normal;
   font-weight: normal;
   line-height: 18px;
-  color: var(--black80);
-}
-
-@mixin columnHeader {
-  font-style: normal;
-  font-weight: 500;
-  font-size: 12px;
-  line-height: 18px;
-  color: var(--black40);
+  color: var(--gray-20);
 }
 
 @mixin bold {
@@ -75,25 +67,25 @@
   display: block;
   font-size: var(--text-field-label-font-size);
   margin-bottom: var(--default-spacing-small);
-  color: var(--black60);
+  color: var(--gray-30);
 }
 
 @mixin labelHorizontal {
   display: block;
   font-size: var(--text-field-label-horizontal-font-size);
-  color: var(--black80);
+  color: var(--gray-20);
 }
 
 @mixin textField {
   font: inherit;
-  font-size: var(--normal-font-size);
+  font-size: var(--tag-font-size);
   padding: calc(var(--default-spacing) / 2) var(--default-spacing);
-  background-color: var(--white);
-  border: $border-black20;
+  background-color: var(--gray-full);
+  border: $border-dark;
   border-radius: var(--form-elements-border-radius);
   width: 100%;
   box-sizing: border-box;
-  color: var(--black80);
+  color: var(--gray-20);
   height: var(--field-height);
 }
 
@@ -102,12 +94,12 @@
   box-shadow: none;
   border: $border-primary;
   transition: border 0.2s ease-in, color 0.2s ease-in;
-  color: var(--black100);
+  color: var(--gray-base);
 }
 
 @mixin textField--disabled {
-  background: var(--black5);
-  border: 1px solid var(--black10);
+  background: var(--gray-80);
+  border: 1px solid var(--gray-70);
 }
 
 @mixin counterBadge {
@@ -123,7 +115,7 @@
   height: 16px;
   min-width: 16px;
   background-color: var(--primary);
-  color: var(--white);
+  color: var(--gray-full);
   border-radius: 8px;
   padding-left: 4px;
   padding-right: 4px;
@@ -150,16 +142,16 @@
 }
 
 @mixin tag {
-  background-color: var(--black10);
+  background-color: var(--gray-70);
   height: var(--medium-button-height);
   border-radius: var(--medium-button-radius);
-  border: 1px solid var(--black10);
+  border: 1px solid var(--gray-70);
   display: inline-flex;
   flex-direction: row;
   align-items: center;
   justify-content: center;
   padding: calc(var(--default-spacing-small) / 2) var(--default-spacing);
-  color: var(--black80);
+  color: var(--gray-20);
   box-sizing: border-box;
   white-space: nowrap;
   width: auto;
@@ -169,28 +161,6 @@
 
   i {
     font-size: 20px;
-  }
-}
-
-@mixin applicationCard {
-  box-sizing: border-box;
-  background: var(--white);
-  border-radius: var(--default-border-radius);
-  border: none;
-
-  padding: var(--large-spacing);
-  width: var(--application-card-width);
-  height: var(--application-card-height);
-  margin: var(--large-spacing);
-  text-decoration: none;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid var(--black10);
-  min-width: 240px;
-  max-width: 50vw;
-
-  &:hover {
-    box-shadow: var(--hover-box-shadow);
   }
 }
 
@@ -232,72 +202,4 @@
   @media only screen and (max-width: #{$page-content-max-width}) {
     right: calc(var(--default-page-padding) + var(--default-spacing-small));
   }
-}
-
-@mixin homePageTile {
-  padding: calc(var(--default-spacing) * 3) calc(var(--default-spacing) * 2);
-
-  & &__title {
-    margin-top: var(--default-spacing);
-    justify-content: center;
-  }
-
-  &__content {
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    align-items: center;
-
-    &__details {
-      flex: 1;
-      margin-bottom: var(--double-spacing);
-    }
-    &__action {
-      flex: 1;
-      margin-top: var(--double-spacing);
-      margin-bottom: var(--default-spacing);
-    }
-  }
-}
-
-@mixin modalForm {
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: var(--default-spacing);
-
-  > * {
-    margin-bottom: var(--large-spacing);
-  }
-  &__instructions {
-    @include body2;
-    color: var(--black100);
-    margin-bottom: var(--double-spacing);
-    text-align: center;
-  }
-
-  form {
-    width: 100%;
-  }
-  .amp-button {
-    margin-top: var(--double-spacing);
-    margin-bottom: 0;
-    width: 100%;
-  }
-}
-
-$active-indicator-width: 4px;
-
-@mixin activeItemIndicator {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: $active-indicator-width * -0.5;
-  width: $active-indicator-width * 1.5;
-  pointer-events: none;
-  border-top-right-radius: $active-indicator-width * 2;
-  border-bottom-right-radius: $active-indicator-width * 2;
-  background-color: var(--primary) !important;
-  content: "";
 }

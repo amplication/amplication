@@ -11,8 +11,6 @@ import {
 import { AppContext } from "../context/appContext";
 import { CommitListItem } from "./CommitListItem";
 
-import "./CommitList.scss";
-
 type Props = {
   commits: models.Commit[];
   error: ApolloError | undefined;
@@ -20,8 +18,6 @@ type Props = {
   onLoadMoreClick: () => void;
   disableLoadMore: boolean;
 };
-
-const CLASS_NAME = "commit-list";
 
 const CommitList = ({
   commits,
@@ -35,9 +31,8 @@ const CommitList = ({
   const errorMessage = formatError(error);
 
   return (
-    <div className={CLASS_NAME}>
-      {loading && <CircularProgress centerToParent />}
-
+    <>
+      {loading && commits.length === 0 && <CircularProgress centerToParent />}
       {currentProject &&
         commits.map((commit) => (
           <CommitListItem
@@ -46,15 +41,14 @@ const CommitList = ({
             projectId={currentProject.id}
           />
         ))}
-      <Button
-        disabled={disableLoadMore}
-        buttonStyle={EnumButtonStyle.Outline}
-        onClick={onLoadMoreClick}
-      >
-        Load more...
-      </Button>
+
+      {!disableLoadMore && (
+        <Button buttonStyle={EnumButtonStyle.Text} onClick={onLoadMoreClick}>
+          Load more...
+        </Button>
+      )}
       <Snackbar open={Boolean(error)} message={errorMessage} />
-    </div>
+    </>
   );
 };
 

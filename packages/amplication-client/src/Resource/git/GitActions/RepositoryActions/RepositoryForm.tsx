@@ -5,7 +5,16 @@ import { DisplayNameField } from "../../../../Components/DisplayNameField";
 import { Form } from "../../../../Components/Form";
 import * as models from "../../../../models";
 
+import {
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
+import { LockedFeatureIndicator } from "../../../../Components/LockedFeatureIndicator";
 import { BillingFeature } from "../../../../util/BillingFeature";
 import FormikAutoSave from "../../../../util/formikAutoSave";
 
@@ -24,15 +33,9 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "name",
 ];
 
-const TOOLTIP_DIRECTION = "n";
-const DEMO_REPO_TOOLTIP =
-  "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to your own repository.";
-
 export const INITIAL_VALUES: Partial<models.GitRepository> = {
   baseBranchName: "",
 };
-
-const CLASS_NAME = "auth-with-git";
 
 const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
   const initialValues = useMemo(() => {
@@ -52,24 +55,55 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
   });
 
   return (
-    <Formik
-      initialValues={initialValues}
-      enableReinitialize
-      onSubmit={onSubmit}
-    >
-      <Form childrenAsBlocks>
-        <FormikAutoSave debounceMS={1000} />
+    <>
+      <FlexItem
+        margin={EnumFlexItemMargin.Both}
+        gap={EnumGapSize.Small}
+        direction={EnumFlexDirection.Column}
+      >
+        <FlexItem>
+          <Text textStyle={EnumTextStyle.H4}>Git Base Branch</Text>
 
-        <DisplayNameField
-          helpText="Leave this field empty to use the default branch of the repository"
-          labelType="normal"
-          disabled={!canChangeGitBaseBranch.hasAccess}
-          name="baseBranchName"
-          label="Base Branch"
-          minLength={1}
-        />
-      </Form>
-    </Formik>
+          {!canChangeGitBaseBranch.hasAccess && (
+            <LockedFeatureIndicator
+              featureName={BillingFeature.ChangeGitBaseBranch}
+            />
+          )}
+        </FlexItem>
+        <Text textStyle={EnumTextStyle.Description}>
+          Override the default base branch used for the Pull Request with the
+          generated code
+        </Text>
+      </FlexItem>
+
+      <Formik
+        initialValues={initialValues}
+        enableReinitialize
+        onSubmit={onSubmit}
+      >
+        <Form childrenAsBlocks>
+          <FormikAutoSave debounceMS={1000} />
+
+          <FlexItem>
+            <DisplayNameField
+              labelType="normal"
+              disabled={!canChangeGitBaseBranch.hasAccess}
+              name="baseBranchName"
+              label="Base Branch"
+              inputToolTip={{
+                content: (
+                  <span>
+                    Leave this field empty to use the default branch of the
+                    repository
+                  </span>
+                ),
+              }}
+              minLength={1}
+            />
+          </FlexItem>
+        </Form>
+      </Formik>
+    </>
   );
 };
 

@@ -5,14 +5,14 @@
 
   .select-menu__summary {
     padding: 5px 4px 5px 8px;
-    border: 1px solid var(--black10);
-    background-color: var(--white);
+    border: 1px solid var(--gray-70);
+    background-color: var(--gray-full);
     width: 268px;
     display: flex;
     justify-content: space-between;
   }
   .select-menu__summary:focus {
-    background-color: var(--white);
+    background-color: var(--gray-full);
   }
 
   .item-content {
@@ -26,11 +26,11 @@
   }
 
   &__menu {
-    background: var(--white);
+    background: var(--gray-full);
     width: 266px;
     margin: 0px;
     top: 28px;
-    border: 1px solid var(--black10);
+    border: 1px solid var(--gray-70);
     & div {
       border-radius: 0px;
       border: none;
@@ -63,6 +63,6 @@
   }
 
   &__item:hover {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 }

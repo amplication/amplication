@@ -142,6 +142,7 @@ export const GET_MESSAGE_BROKER_CONNECTED_SERVICES = gql`
       id
       name
       description
+      resourceType
     }
   }
 `;
