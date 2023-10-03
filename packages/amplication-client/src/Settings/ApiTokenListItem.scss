@@ -13,13 +13,13 @@ $panel-tag-width: 64px;
   &--expired {
     .api-token-list-item {
       &__panel-tag {
-        background-color: var(--negative-light-transparent);
-        border: 1px solid var(--negative-light);
-        color: var(--negative-light);
+        background-color: var(--theme-light-red-transparent);
+        border: 1px solid var(--theme-light-red);
+        color: var(--theme-light-red);
       }
       &__expiration {
         .time-since__icon {
-          background-color: var(--negative-light);
+          background-color: var(--theme-light-red);
         }
       }
     }
@@ -28,7 +28,7 @@ $panel-tag-width: 64px;
   &__panel-tag {
     width: $panel-tag-width;
     min-width: $panel-tag-width;
-    background-color: var(--white);
+    background-color: var(--gray-full);
     border-radius: var(--default-border-radius) 0 0 var(--default-border-radius);
     display: flex;
     align-items: center;
@@ -53,11 +53,11 @@ $panel-tag-width: 64px;
   }
   &__title {
     @include body1;
-    color: var(--black100);
+    color: var(--gray-base);
   }
   &__description {
     @include body2;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &__created {
@@ -74,7 +74,7 @@ $panel-tag-width: 64px;
   }
 
   &__token-preview {
-    color: var(--black80);
+    color: var(--gray-20);
   }
   &--new {
     .api-token-list-item {
@@ -88,9 +88,9 @@ $panel-tag-width: 64px;
   &__row:nth-child(2):not(:last-child) {
     word-break: break-all;
     overflow-wrap: break-word;
-    border: $border-black20;
+    border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--default-border-radius);
-    color: var(--black80);
+    color: var(--gray-20);
   }
 }

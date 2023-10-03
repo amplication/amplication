@@ -9,18 +9,18 @@ $step-status-width: 25px;
 
   &--success {
     i {
-      color: var(--positive-default) !important;
+      color: var(--theme-green) !important;
     }
   }
 
   &--failed {
     i {
-      color: var(--negative) !important;
+      color: var(--theme-red) !important;
     }
   }
   &--waiting {
     i {
-      color: var(--black20) !important;
+      color: var(--gray-60) !important;
     }
   }
 }

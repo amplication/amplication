@@ -13,7 +13,7 @@
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    background: var(--black2);
+    background: var(--gray-90);
   }
 
   &__description {
@@ -24,7 +24,7 @@
     width: 450px;
 
     .circle-badge i {
-      color: var(--black5);
+      color: var(--gray-80);
       font-size: 20px;
     }
   }
@@ -53,7 +53,7 @@
     display: flex;
     justify-content: space-between;
     padding: 16px;
-    background: var(--black10);
+    background: var(--gray-70);
   }
 
   .amp-icon--size-small {
@@ -67,7 +67,7 @@
     justify-content: center;
     gap: 24px;
     height: 100%;
-    background: var(--white);
+    background: var(--gray-full);
 
     &__message_title_container {
       display: flex;
@@ -80,15 +80,15 @@
       font-weight: 600;
       font-size: 24px;
       text-align: center;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &__message {
       font-size: 18px;
       line-height: 28px;
-      color: var(--black80);
+      color: var(--gray-20);
       margin-top: 4px;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &__tagline {
@@ -98,7 +98,7 @@
       text-align: center;
       font-size: 10px;
       line-height: 15px;
-      color: var(--black80);
+      color: var(--gray-20);
     }
 
     .svg-theme-image {

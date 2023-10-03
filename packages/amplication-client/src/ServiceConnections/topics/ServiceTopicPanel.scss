@@ -19,11 +19,11 @@
   }
 
   &-disable {
-    color: var(--black40);
+    color: var(--gray-40);
   }
 
   > .amp-horizontal-rule {
-    border-color: var(--black20);
+    border-color: var(--gray-60);
     margin: var(--large-spacing) 0;
   }
 }

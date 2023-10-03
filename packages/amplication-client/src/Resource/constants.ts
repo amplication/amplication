@@ -1,9 +1,7 @@
-import { gql } from "@apollo/client";
 import * as models from "../models";
-import { EnumAuthProviderType } from "../models";
+import { EnumAuthProviderType, EnumGitProvider } from "../models";
 import { DefineUser } from "./create-resource/CreateServiceWizard";
 import { TemplateSettings } from "./create-resource/wizardResourceSchema";
-import { EnumGitProvider } from "../models";
 
 export const serviceSettingsFieldsInitValues = {
   generateAdminUI: true,

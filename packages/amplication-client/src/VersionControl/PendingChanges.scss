@@ -19,7 +19,7 @@ $resource-name-max-width: 180px;
   &__divider {
     border: none;
     margin: auto 0 0 0;
-    background-color: var(--black10);
+    background-color: var(--gray-70);
     height: 1px;
   }
 
@@ -35,7 +35,7 @@ $resource-name-max-width: 180px;
     @include regular-12;
 
     :first-child {
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     :last-child {
@@ -67,8 +67,8 @@ $resource-name-max-width: 180px;
 
   &__changes-count {
     @extend %__changes-count;
-    background-color: var(--black5);
-    color: var(--black100);
+    background-color: var(--gray-80);
+    color: var(--gray-base);
   }
 
   &__empty-state {
@@ -94,7 +94,7 @@ $resource-name-max-width: 180px;
     flex-direction: column;
     flex: 1;
     gap: var(--default-spacing);
-    border: $border-black10;
+    border: $border-dark;
     padding: var(--default-spacing);
     border-radius: var(--small-border-radius);
   }
@@ -103,7 +103,7 @@ $resource-name-max-width: 180px;
     flex-grow: 1;
     flex-basis: 0px;
     overflow-y: auto;
-    @include scrollbars(16px, var(--black60), transparent);
+    @include scrollbars(16px, var(--gray-30), transparent);
 
     &__resource {
       @include bold-12;
@@ -117,13 +117,6 @@ $resource-name-max-width: 180px;
         margin-right: var(--user-badge-spacing);
       }
     }
-  }
-
-  .amp-button__icon {
-    color: var(--black100);
-    font-size: var(--icon-font-size);
-    cursor: pointer;
-    margin-right: 0;
   }
 }
 
