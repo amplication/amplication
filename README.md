@@ -16,7 +16,7 @@
     <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration">
   </a>
   <a href="https://github.com/amplication/amplication/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributers">
+    <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributors">
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
     <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license">
@@ -191,10 +191,10 @@ Not sure where to start? Join our discord and we will help you get started!
 
 <a href="https://amplication.com/discord"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
-## Contributers
+## contributors
 
 <!---
-npx contributer-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
+npx contributor-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
 
 change the height and width for each of the contributors from 80 to 50.
 --->
