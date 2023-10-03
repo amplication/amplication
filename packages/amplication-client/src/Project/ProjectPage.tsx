@@ -1,10 +1,12 @@
-import React from "react";
-import ResourceList from "../Workspaces/ResourceList";
-import ProjectSideBar from "./ProjectSideBar";
-import { AppRouteProps } from "../routes/routesUtil";
+import { TabItem } from "@amplication/ui/design-system";
+import React, { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
-import classNames from "classnames";
-import { Helmet } from "react-helmet";
+import PageLayout from "../Layout/PageLayout";
+import useBreadcrumbs from "../Layout/useBreadcrumbs";
+import useTabRoutes from "../Layout/useTabRoutes";
+import ResourceList from "../Workspaces/ResourceList";
+import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
 import "./ProjectPage.scss";
 
 type Props = AppRouteProps & {
@@ -13,29 +15,50 @@ type Props = AppRouteProps & {
     project: string;
   }>;
 };
-const pageTitle = "Project";
+const OVERVIEW = "Overview";
 
-const ProjectPage: React.FC<Props> = ({ innerRoutes, match, moduleClass }) => {
-  return (
-    <div className={moduleClass}>
-      {match.isExact ? (
-        <>
-          <Helmet>
-            <title>{`Amplication${pageTitle ? ` | ${pageTitle}` : ""}`}</title>
-          </Helmet>
-          <div className={classNames("amp-page-content", moduleClass)}>
-            <div className={`amp-page-content__tabs`}>
-              <ProjectSideBar />
-            </div>
-            <main className={`amp-page-content__main`}>
-              <ResourceList />
-            </main>
-          </div>
-        </>
-      ) : (
-        innerRoutes
-      )}
-    </div>
+const ProjectPage: React.FC<Props> = ({
+  innerRoutes,
+  match,
+  moduleClass,
+  tabRoutes,
+  tabRoutesDef,
+}) => {
+  const { currentProject, pendingChanges } = useContext(AppContext);
+
+  useBreadcrumbs(currentProject?.name, match.url);
+  const { tabs, currentRouteIsTab } = useTabRoutes(tabRoutesDef);
+
+  const tabItems: TabItem[] = useMemo(() => {
+    const tabsWithPendingChanges = tabs.map((tab) => {
+      if (tab.name === "Pending Changes") {
+        return {
+          ...tab,
+          indicatorValue: pendingChanges?.length
+            ? pendingChanges.length
+            : undefined,
+        };
+      } else return tab;
+    });
+
+    return [
+      {
+        name: OVERVIEW,
+        to: match.url,
+        exact: true,
+      },
+      ...(tabsWithPendingChanges || []),
+    ];
+  }, [tabs, pendingChanges]);
+
+  return match.isExact || currentRouteIsTab ? (
+    <>
+      <PageLayout className={moduleClass} tabs={tabItems}>
+        {match.isExact ? <ResourceList /> : tabRoutes}
+      </PageLayout>
+    </>
+  ) : (
+    innerRoutes
   );
 };
 

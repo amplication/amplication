@@ -3,7 +3,7 @@
 .signup-page {
   &__login {
     @include body2;
-    color: var(--black60);
+    color: var(--gray-30);
 
     a {
       color: var(--primary);

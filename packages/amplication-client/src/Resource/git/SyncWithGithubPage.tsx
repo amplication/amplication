@@ -1,8 +1,8 @@
-import { Snackbar } from "@amplication/ui/design-system";
+import { HorizontalRule, Snackbar } from "@amplication/ui/design-system";
 import { gql, useMutation, useQuery } from "@apollo/client";
 import React, { useCallback, useContext } from "react";
-import { AppContext } from "../../context/appContext";
 import PageContent from "../../Layout/PageContent";
+import { AppContext } from "../../context/appContext";
 import {
   EnumGitOrganizationType,
   EnumGitProvider,
@@ -10,13 +10,14 @@ import {
   Resource,
 } from "../../models";
 import { formatError } from "../../util/error";
-import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
-import "./SyncWithGithubPage.scss";
-import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
-import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
 import AuthWithGitProvider from "./AuthWithGitProvider";
+import ServiceConfigurationGitSettings from "./ServiceConfigurationGitSettings";
+import { GitRepositorySelected } from "./dialogs/GitRepos/GithubRepos";
+import { CONNECT_GIT_REPOSITORY } from "./queries/gitProvider";
 
-const CLASS_NAME = "sync-with-git-page";
+const TITLE = "Sync with Git Provider";
+const SUB_TITLE =
+  "Enable sync with Git provider to automatically push the generated code of your application and create a Pull Request in your Git provider repository every time you commit your changes.";
 
 export type GitOrganizationFromGitRepository = {
   id: string;
@@ -27,15 +28,23 @@ export type GitOrganizationFromGitRepository = {
 };
 
 const SyncWithGithubPage: React.FC = () => {
-  const { currentResource, refreshCurrentWorkspace } = useContext(AppContext);
+  const {
+    currentProjectConfiguration,
+    currentResource,
+    refreshCurrentWorkspace,
+  } = useContext(AppContext);
+
+  const resourceId = currentResource
+    ? currentResource.id
+    : currentProjectConfiguration?.id;
 
   const { data, error, refetch } = useQuery<{
     resource: Resource;
   }>(GET_RESOURCE_GIT_REPOSITORY, {
     variables: {
-      resourceId: currentResource?.id,
+      resourceId: resourceId,
     },
-    skip: !currentResource?.id,
+    skip: !resourceId,
   });
 
   const [connectGitRepository] = useMutation(CONNECT_GIT_REPOSITORY);
@@ -64,37 +73,30 @@ const SyncWithGithubPage: React.FC = () => {
   );
 
   return (
-    <PageContent pageTitle={pageTitle}>
-      <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__header`}>
-          <p className={`${CLASS_NAME}__header__title`}>
-            Sync with Git Provider
-          </p>
-        </div>
-        <div className={`${CLASS_NAME}__message`}>
-          Enable sync with Git provider to automatically push the generated code
-          of your application and create a Pull Request in your Git provider
-          repository every time you commit your changes.
-        </div>
-        {data?.resource && isProjectConfiguration && (
-          <AuthWithGitProvider
-            type="resource"
-            resource={data.resource}
-            onDone={handleOnDone}
-            gitRepositorySelectedCb={gitRepositorySelectedCb}
-            gitRepositoryCreatedCb={handleOnDone}
-          />
-        )}
-        {!isProjectConfiguration && data?.resource && (
-          <ServiceConfigurationGitSettings
-            resource={data.resource}
-            onDone={handleOnDone}
-            gitRepositorySelectedCb={gitRepositorySelectedCb}
-            gitRepositoryCreatedCb={handleOnDone}
-          />
-        )}
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </div>
+    <PageContent
+      pageTitle={pageTitle}
+      contentTitle={TITLE}
+      contentSubTitle={SUB_TITLE}
+    >
+      <HorizontalRule />
+      {data?.resource && isProjectConfiguration && (
+        <AuthWithGitProvider
+          type="resource"
+          resource={data.resource}
+          onDone={handleOnDone}
+          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositoryCreatedCb={handleOnDone}
+        />
+      )}
+      {!isProjectConfiguration && data?.resource && (
+        <ServiceConfigurationGitSettings
+          resource={data.resource}
+          onDone={handleOnDone}
+          gitRepositorySelectedCb={gitRepositorySelectedCb}
+          gitRepositoryCreatedCb={handleOnDone}
+        />
+      )}
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </PageContent>
   );
 };

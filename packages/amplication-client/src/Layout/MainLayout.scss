@@ -9,7 +9,7 @@ $expand-button-padding: 4px;
   display: flex;
   flex-direction: column;
   background-color: var(--surface);
-  color: var(--black100);
+  color: var(--gray-base);
 
   &__wrapper {
     flex: 1;
@@ -20,8 +20,8 @@ $expand-button-padding: 4px;
 
   &__footer {
     max-height: var(--app-footer-height);
-    background-color: var(--black5);
-    border-top: $border-black10;
+    background-color: var(--gray-80);
+    border-top: $border-dark;
   }
 
   &__content {
@@ -36,7 +36,7 @@ $expand-button-padding: 4px;
     height: 100%;
     width: auto;
     background-color: var(--menu-background-color);
-    border-right: $border-black10;
+    border-right: $border-dark;
     transition: width var(--menu-expand-animation-duration) ease-in;
     overflow: visible;
 
@@ -53,20 +53,6 @@ $expand-button-padding: 4px;
       display: flex;
       flex-direction: row;
 
-      &__menu-fixed-panel {
-        @include scrollbars($default-scroll-width, var(--black60), transparent);
-        background-color: var(--menu-fixed-panel-background);
-        height: 100%;
-        width: var(--fixed-menu-panel-width);
-        max-width: var(--fixed-menu-panel-max-width);
-        overflow: auto;
-        transition: width var(--menu-expand-animation-duration) ease-in;
-
-        &:empty {
-          width: 0;
-        }
-      }
-
       &__main-menu {
         height: 100%;
         display: flex;
@@ -81,7 +67,7 @@ $expand-button-padding: 4px;
         overflow: hidden;
         transition: all var(--menu-expand-animation-duration) ease-in;
 
-        // background-color: var(--white);
+        // background-color: var(--gray-full);
         position: relative;
         padding: var(--default-spacing);
         box-sizing: border-box;
@@ -128,7 +114,7 @@ $expand-button-padding: 4px;
         justify-content: flex-end;
         align-items: center;
         button {
-          color: var(--black30);
+          color: var(--gray-50);
           padding: 0 $expand-button-padding;
           border: none;
           background: transparent;
@@ -155,7 +141,7 @@ $expand-button-padding: 4px;
       }
       .menu-container {
         flex: 1;
-        @include scrollbars(5px, var(--black60), transparent);
+        @include scrollbars(5px, var(--gray-30), transparent);
         overflow-y: auto;
         overflow-x: hidden;
         overflow: visible;
@@ -171,25 +157,11 @@ $expand-button-padding: 4px;
 
   &__aside {
     &--position-right {
-      border-left: $border-black10;
+      border-left: $border-dark;
     }
 
     &--position-left {
-      border-right: $border-black10;
-    }
-
-    &__expandable {
-      @include scrollbars($default-scroll-width, var(--black60), transparent);
-      background-color: var(--menu-fixed-panel-background);
-      height: 100%;
-      width: var(--fixed-menu-panel-width);
-      max-width: var(--fixed-menu-panel-max-width);
-      overflow: auto;
-      transition: width var(--menu-expand-animation-duration) ease-in;
-
-      &:empty {
-        width: 0;
-      }
+      border-right: $border-dark;
     }
   }
 

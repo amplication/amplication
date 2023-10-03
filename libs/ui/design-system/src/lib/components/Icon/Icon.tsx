@@ -3,6 +3,7 @@ import React from "react";
 import classNames from "classnames";
 
 import "./Icon.scss";
+import { EnumTextColor } from "../Text/Text";
 
 export type IconSize = "xsmall" | "small" | "medium" | "large" | "xlarge";
 
@@ -10,18 +11,24 @@ export type Props = {
   icon: string;
   size?: IconSize;
   className?: string;
+  color?: EnumTextColor;
 };
 
 const CLASS_NAME = "amp-icon";
 
-export function Icon(props: Props) {
+export function Icon({ icon, size, className, color }: Props) {
+  const colorStyle = color && { color: `var(--${color})` };
+
   return (
     <i
-      className={classNames(CLASS_NAME, props.className, {
-        [`${CLASS_NAME}--size-${props.size}`]: props.size,
+      style={{
+        ...colorStyle,
+      }}
+      className={classNames(CLASS_NAME, className, {
+        [`${CLASS_NAME}--size-${size}`]: size,
       })}
     >
-      {props.icon}
+      {icon}
     </i>
   );
 }
