@@ -33,6 +33,7 @@
         overflow: hidden;
         white-space: nowrap;
         text-overflow: ellipsis;
+        color: var(--white);
       }
     }
 
@@ -79,7 +80,7 @@
     background-color: var(--black5);
     height: 34px;
     display: flex;
-    color: var(--black80);
+    color: var(--white);
 
     align-items: center;
     & i {
