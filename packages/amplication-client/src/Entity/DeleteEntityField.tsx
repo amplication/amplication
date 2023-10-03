@@ -117,9 +117,7 @@ export const DeleteEntityField = ({
       <div className={CLASS_NAME}>
         {!deleteLoading && !SYSTEM_DATA_TYPES.has(entityField.dataType) && (
           <Button
-            buttonStyle={
-              showLabel ? EnumButtonStyle.Clear : EnumButtonStyle.Text
-            }
+            buttonStyle={EnumButtonStyle.Text}
             icon="trash_2"
             onClick={handleDelete}
           >

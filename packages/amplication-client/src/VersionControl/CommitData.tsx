@@ -1,3 +1,10 @@
+import {
+  EnumFlexDirection,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
 import React from "react";
 import { CommitMessage } from "../Components/CommitMessage";
 import UserBadge from "../Components/UserBadge";
@@ -7,20 +14,25 @@ import "./CommitData.scss";
 type Props = {
   commit: Commit;
 };
-const CLASS_NAME = "commit-data";
 const CommitData: React.FC<Props> = ({ commit }) => {
   return (
-    <div className={CLASS_NAME}>
-      <UserBadge />
-      <div className={`${CLASS_NAME}__metadata`}>
-        <span className={`${CLASS_NAME}__metadata__message`}>
+    <FlexItem>
+      <FlexItem.FlexStart>
+        <UserBadge />
+      </FlexItem.FlexStart>
+      <FlexItem direction={EnumFlexDirection.Column}>
+        <Text
+          singleLineEllipsis={true}
+          textStyle={EnumTextStyle.Tag}
+          textColor={EnumTextColor.White}
+        >
           <CommitMessage commit={commit} />
-        </span>
-        <span className={`${CLASS_NAME}__metadata__created`}>
+        </Text>
+        <Text textStyle={EnumTextStyle.Description}>
           {new Date(commit.createdAt).toDateString()}
-        </span>
-      </div>
-    </div>
+        </Text>
+      </FlexItem>
+    </FlexItem>
   );
 };
 

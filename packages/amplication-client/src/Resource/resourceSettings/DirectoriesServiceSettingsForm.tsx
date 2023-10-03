@@ -1,24 +1,24 @@
 import {
+  EnumTextStyle,
+  HorizontalRule,
   Snackbar,
-  Panel,
-  EnumPanelStyle,
+  Text,
   TextField,
 } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useContext } from "react";
+import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import { useTracking } from "../../util/analytics";
 import { formatError } from "../../util/error";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
-import "./GenerationSettingsForm.scss";
 import useSettingsHook from "../useSettingsHook";
 import {
   GET_RESOURCE_SETTINGS,
   UPDATE_SERVICE_SETTINGS,
 } from "./GenerationSettingsForm";
-import { AppContext } from "../../context/appContext";
 
 type TData = {
   updateServiceSettings: models.ServiceSettings;
@@ -67,14 +67,16 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
           {(formik) => {
             return (
               <Form>
-                <div className={`${CLASS_NAME}__header`}>
-                  <h3>Base directories</h3>
-                </div>
                 <FormikAutoSave debounceMS={1000} />
-                <Panel panelStyle={EnumPanelStyle.Transparent}>
-                  <h2>Server</h2>
+                <>
+                  <Text textStyle={EnumTextStyle.H4}>Base Directories</Text>
+                  <Text textStyle={EnumTextStyle.Tag}>
+                    Set the base path where the generated code for the server
+                    and Admin UI will be located. This will be the root
+                    directory for your generated files.
+                  </Text>
+                  <HorizontalRule />
                   <TextField
-                    className={`${CLASS_NAME}__formWrapper_field`}
                     name="serverSettings[serverPath]"
                     placeholder="packages/[SERVICE-NAME]"
                     label="Server base directory"
@@ -84,12 +86,10 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                     helpText={data?.serviceSettings.serverSettings.serverPath}
                     labelType="normal"
                   />
-                </Panel>
+                </>
                 {data.serviceSettings.adminUISettings.generateAdminUI && (
-                  <Panel panelStyle={EnumPanelStyle.Transparent}>
-                    <h2>Admin UI</h2>
+                  <>
                     <TextField
-                      className={`${CLASS_NAME}__formWrapper_field`}
                       name="adminUISettings[adminUIPath]"
                       placeholder="packages/[SERVICE-NAME]"
                       label="Admin UI base directory"
@@ -104,7 +104,7 @@ const DirectoriesServiceSettingsForm: React.FC<{}> = () => {
                       }
                       labelType="normal"
                     />
-                  </Panel>
+                  </>
                 )}
               </Form>
             );

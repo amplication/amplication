@@ -1,35 +1,43 @@
 @import "../../style/index.scss";
 
+$content-max-width: 700px;
+
 .create-service-wizard-layout {
   display: flex;
   flex: 1;
+  background: var(--surface);
+  justify-content: center;
+  align-items: center;
+
+  &__wrapper {
+    max-width: $content-max-width;
+    margin: auto;
+  }
 
   &__split {
     display: flex;
+    flex-direction: column;
     flex: 1;
+    justify-content: center;
+
+    background: var(--surface);
   }
 
   &__right,
   &__left {
     display: flex;
-    flex: 1;
     flex-direction: column;
     justify-content: center;
-    align-items: center;
-  }
-
-  &__right {
-    background: var(--white);
-    width: 80%;
-    padding-top: 100px;
+    align-items: stretch;
+    text-align: center;
   }
 
   &__description {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     flex-direction: column;
+    text-align: center;
     font-size: 14px;
-    width: 73%;
 
     &__header {
       @include title-24;
@@ -51,12 +59,19 @@
   }
 
   &__selector_wrapper {
-    flex: 1;
     display: flex;
-    flex-wrap: wrap;
-    align-content: center;
-    align-self: center;
     gap: var(--large-spacing);
-    width: 520px;
+    justify-content: center;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    flex-wrap: wrap;
+  }
+
+  &__content_wrapper {
+    text-align: left;
+    .text-input input,
+    .text-input textarea {
+      max-width: none;
+    }
   }
 }

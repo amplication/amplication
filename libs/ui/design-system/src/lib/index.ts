@@ -4,6 +4,7 @@ import "./style/icon.scss";
 export {
   Button,
   EnumButtonStyle,
+  EnumButtonState,
   EnumIconPosition,
 } from "./components/Button/Button";
 
@@ -177,3 +178,41 @@ export type { LinkProps as ContactUsLinkForEnterpriseProps } from "./components/
 
 export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+
+export { default as Tabs } from "./components/Tabs/Tabs";
+export { Props as TabsProps, TabProps, TabItem } from "./components/Tabs/Tabs";
+
+export {
+  FlexItem,
+  Props as FlexItemProps,
+  EnumFlexItemMargin,
+  EnumFlexDirection,
+  EnumContentAlign,
+  EnumItemsAlign,
+  FlexStartProps,
+  FlexEndProps,
+  EnumGapSize,
+} from "./components/FlexItem/FlexItem";
+
+export {
+  Text,
+  Props as TextProps,
+  EnumTextColor,
+  EnumTextStyle,
+  EnumTextWeight,
+  EnumTextAlign,
+} from "./components/Text/Text";
+
+export {
+  Chip,
+  Props as ChipProps,
+  EnumChipStyle,
+} from "./components/Chip/Chip";
+
+export { List, Props as ListProps } from "./components/List/List";
+export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+
+export {
+  TabContentTitle,
+  Props as TabContentTitleProps,
+} from "./components/TabContentTitle/TabContentTitle";

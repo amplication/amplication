@@ -70,7 +70,7 @@ $sub-title-font-size: 28px;
   }
 
   .open-source-message {
-    color: var(--black80);
+    color: var(--gray-20);
     line-height: 1.6;
 
     a {
@@ -97,7 +97,7 @@ $sub-title-font-size: 28px;
       display: block;
 
       .open-source-message {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
     .discord-button {
@@ -111,7 +111,7 @@ $sub-title-font-size: 28px;
     box-sizing: border-box;
     text-align: center;
     padding: $panel-padding !important;
-    border: $border-black10;
+    border: $border-dark;
     margin-left: var(--double-spacing);
     margin-right: var(--double-spacing);
 

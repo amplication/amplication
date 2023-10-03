@@ -15,6 +15,8 @@ import {
 } from "@amplication/ui/design-system";
 import { STEP_STATUS_TO_STYLE, STEP_STATUS_TO_ICON } from "./constants";
 
+const MIN_HEIGHT = 60;
+
 type Props = {
   action?: models.Action;
   title: string;
@@ -139,6 +141,8 @@ const ActionLog = ({
             isNumber(height) && dynamicHeight
               ? (height as number) > logsHeight
                 ? logsHeight
+                : (height as number) < MIN_HEIGHT
+                ? MIN_HEIGHT
                 : height
               : height;
 
