@@ -110,7 +110,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
       )}
       <div className={`${moduleClass}__footer`}>
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           icon="arrow_left"
           iconPosition={EnumIconPosition.Left}
           onClick={handleBackToProjectClick}

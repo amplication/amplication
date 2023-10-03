@@ -1,21 +1,30 @@
 import { gql, useQuery } from "@apollo/client";
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  List,
+  Snackbar,
+  Text,
+} from "@amplication/ui/design-system";
 import { isEmpty } from "lodash";
 import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import InviteMember from "./InviteMember";
-import "./MemberList.scss";
 import MemberListItem from "./MemberListItem";
-import PageContent from "../Layout/PageContent";
-import ProjectSideBar from "../Project/ProjectSideBar";
 import { pluralize } from "../util/pluralize";
+import PageContent from "../Layout/PageContent";
+import { EmptyState } from "../Components/EmptyState";
+import { EnumImages } from "../Components/SvgThemeImage";
 
-type TData = {
+export type TData = {
   workspaceMembers: Array<models.WorkspaceMember>;
 };
 
 const CLASS_NAME = "member-list";
+const PAGE_TITLE = "Members";
 
 function MemberList() {
   const [error, setError] = useState<Error>();
@@ -33,42 +42,39 @@ function MemberList() {
   }, [refetch]);
 
   return (
-    <PageContent pageTitle="workspace members" sideContent={<ProjectSideBar />}>
-      <div className={CLASS_NAME}>
-        <div className={`${CLASS_NAME}__header`}>
-          <h2>Workspace Members</h2>
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <FlexItem end={<InviteMember />}>
+        <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
+      </FlexItem>
 
-          <InviteMember />
-        </div>
-        <div className={`${CLASS_NAME}__separator`} />
-        <div className={`${CLASS_NAME}__title`}>
-          {data?.workspaceMembers.length}{" "}
-          {pluralize(data?.workspaceMembers.length, "Member", "Members")}
-        </div>
-        {loading && <CircularProgress centerToParent />}
+      <HorizontalRule />
 
-        {isEmpty(data?.workspaceMembers) && !loading ? (
-          <div className={`${CLASS_NAME}__empty-state`}>
-            <div className={`${CLASS_NAME}__empty-state__title`}>
-              There are no members to show
-            </div>
-          </div>
-        ) : (
-          data?.workspaceMembers.map((member, index) => (
+      <Text textStyle={EnumTextStyle.Tag}>
+        {data?.workspaceMembers.length}{" "}
+        {pluralize(data?.workspaceMembers.length, "Member", "Members")}
+      </Text>
+
+      {loading && <CircularProgress centerToParent />}
+
+      {isEmpty(data?.workspaceMembers) && !loading ? (
+        <EmptyState
+          image={EnumImages.CommitEmptyState}
+          message="There are no members to show"
+        />
+      ) : (
+        <List>
+          {data?.workspaceMembers.map((member, index) => (
             <MemberListItem
               member={member}
               key={index}
               onDelete={handleDelete}
               onError={setError}
             />
-          ))
-        )}
+          ))}
+        </List>
+      )}
 
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
-        />
-      </div>
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </PageContent>
   );
 }

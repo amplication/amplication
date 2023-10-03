@@ -164,7 +164,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
                   selectedVersion ||
                   pluginInstallation.PluginInstallation.version
                 }
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Outline}
                 className={`${moduleClass}__menu`}
                 icon="chevron_down"
               >
@@ -201,7 +201,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           <div className={`${moduleClass}__row`}>
             <Button
               className={`${moduleClass}__reset`}
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Outline}
               onClick={handleResetClick}
             >
               Reset to default

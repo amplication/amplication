@@ -178,7 +178,7 @@ function GitRepos({
               {numberOfPages && (
                 <SelectMenu
                   title={page.toString()}
-                  buttonStyle={EnumButtonStyle.Secondary}
+                  buttonStyle={EnumButtonStyle.Outline}
                   icon="chevron_down"
                 >
                   <SelectMenuModal className={`${CLASS_NAME}__menu`}>

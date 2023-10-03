@@ -24,10 +24,10 @@ $options-max-width: 1000px;
     justify-content: center;
 
     border-radius: var(--default-border-radius);
-    border: $border-black10;
+    border: $border-dark;
     border-style: dashed;
-    background-color: var(--white);
-    color: var(--black80);
+    background-color: var(--gray-full);
+    color: var(--gray-20);
     outline: none;
     transition: border 0.1s ease-in-out;
     cursor: pointer;
@@ -35,7 +35,7 @@ $options-max-width: 1000px;
     &:hover,
     &--active {
       border-color: var(--primary);
-      background-color: var(--black5);
+      background-color: var(--gray-80);
     }
   }
 }

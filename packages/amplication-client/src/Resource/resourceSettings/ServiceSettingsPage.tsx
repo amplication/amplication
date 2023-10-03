@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
-import "./ServiceSettingsPage.scss";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useStiggContext } from "@stigg/react-sdk";
+import { useHistory } from "react-router-dom";
 
 const CLASS_NAME = "service-settings";
 
@@ -17,57 +17,53 @@ const ServiceSettingsPage: React.FC<{}> = () => {
     featureId: BillingFeature.ShowCodeGeneratorVersion,
   }).hasAccess;
 
+  const history = useHistory();
+  const location = history.location;
+
+  useEffect(() => {
+    if (
+      location.pathname ===
+      `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings`
+    ) {
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/general`
+      );
+    }
+  }, []);
+
   return (
     <div className={CLASS_NAME}>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/update`}
-          icon="settings"
-        >
-          General
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings/update`}
-          icon="settings"
-        >
-          APIs & Admin UI
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories/update`}
-          icon="settings"
-        >
-          Base Directories
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication/update`}
-          icon="settings"
-        >
-          Authentication Entity
-        </InnerTabLink>
-      </div>
-      <div>
-        <InnerTabLink
-          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/api-tokens`}
-          icon="id"
-        >
-          API Tokens
-        </InnerTabLink>
-      </div>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/general`}
+        icon="app-settings"
+      >
+        General
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/generationSettings`}
+        icon="api"
+      >
+        APIs & Admin UI
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/directories`}
+        icon="folder"
+      >
+        Base Directories
+      </InnerTabLink>
+      <InnerTabLink
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/authentication`}
+        icon="unlock"
+      >
+        Authentication Entity
+      </InnerTabLink>
       {showCodeGeneratorVersion && (
-        <div>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version/update`}
-            icon="code"
-          >
-            Code Generator Version
-          </InnerTabLink>
-        </div>
+        <InnerTabLink
+          to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/settings/code-generator-version`}
+          icon="code"
+        >
+          Code Generator Version
+        </InnerTabLink>
       )}
     </div>
   );

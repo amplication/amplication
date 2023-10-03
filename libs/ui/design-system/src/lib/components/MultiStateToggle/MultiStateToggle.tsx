@@ -8,6 +8,7 @@ export type Props = {
   options: OptionItem[];
   label: string;
   selectedValue: string;
+  className?: string;
   onChange: (selectedValue: string) => void;
 };
 
@@ -16,6 +17,7 @@ export const MultiStateToggle = ({
   options,
   label,
   selectedValue,
+  className,
   onChange,
 }: Props) => {
   const handleClick = useCallback(
@@ -26,7 +28,7 @@ export const MultiStateToggle = ({
   );
 
   return (
-    <div className="multi-state-toggle">
+    <div className={classNames("multi-state-toggle", className)}>
       <label>{label}</label>
       <div className="multi-state-toggle__states">
         {options.map((option) => (

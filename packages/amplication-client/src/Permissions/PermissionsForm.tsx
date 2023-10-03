@@ -1,7 +1,11 @@
 import React, { useMemo } from "react";
 import { gql, useQuery } from "@apollo/client";
 
-import { CircularProgress, Snackbar } from "@amplication/ui/design-system";
+import {
+  CircularProgress,
+  Snackbar,
+  TabContentTitle,
+} from "@amplication/ui/design-system";
 
 import "./PermissionsForm.scss";
 
@@ -45,6 +49,11 @@ const PermissionsForm = ({
 
   return (
     <div className="permissions-form">
+      <TabContentTitle
+        title="Entity Permissions"
+        subTitle="Set the access permissions for the various actions and fields of the entity"
+      />
+
       {loading ? (
         <CircularProgress centerToParent />
       ) : (

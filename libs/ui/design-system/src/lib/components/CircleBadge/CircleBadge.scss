@@ -19,12 +19,12 @@
   align-items: center;
   justify-content: center;
   font-family: var(--primary-font-family);
-  background-color: var(--secondary-turquoise);
+  background-color: var(--theme-turquoise);
 
   &.xxsmall {
     @include circleSize(--icon-size-xxsmall);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--text-field-label-font-size);
     }
   }
@@ -32,7 +32,7 @@
   &.xsmall {
     @include circleSize(--icon-size-xsmall);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--text-field-label-font-size);
     }
   }
@@ -40,7 +40,7 @@
   &.small {
     @include circleSize(--icon-size-small);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--title3-font-size);
     }
   }
@@ -48,7 +48,7 @@
   &.medium {
     @include circleSize(--icon-size-medium);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--title3-font-size);
     }
   }
@@ -56,7 +56,7 @@
   &.large {
     @include circleSize(--icon-size-large);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--large-icon-font-size);
     }
   }
@@ -64,7 +64,7 @@
   &.xlarge {
     @include circleSize(--icon-size-xlarge);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--title4-font-size);
     }
   }
@@ -72,7 +72,7 @@
   &.xxlarge {
     @include circleSize(--icon-size-xxlarge);
     .amp-icon {
-      color: var(--black2);
+      color: var(--gray-90);
       font-size: var(--title4-font-size);
     }
   }

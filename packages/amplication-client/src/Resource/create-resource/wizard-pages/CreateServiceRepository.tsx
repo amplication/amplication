@@ -3,10 +3,10 @@ import React, { useCallback, useMemo } from "react";
 
 import "./CreateServiceRepository.scss";
 
+import { kebabCase } from "lodash";
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
 import { WizardStepProps } from "./interfaces";
 import { LabelDescriptionSelector } from "./LabelDescriptionSelector";
-import { kebabCase } from "lodash";
 
 const className = "create-service-repository";
 
@@ -50,43 +50,38 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
         <Layout.Description
           header="Are you using a monorepo or polyrepo?"
           text={`If you are using a monorepo, you can select the folder where you want to save the code of the service. “apps”, “packages”, “ee/packages” all are valid. 
-          
           Otherwise, Amplication will push the code to the root of the repo in separate folders for the server and the admin-ui.
           `}
         />
       </Layout.LeftSide>
       <Layout.RightSide>
         <Layout.SelectorWrapper>
+          <LabelDescriptionSelector
+            name="Mono"
+            image=""
+            label="Monorepo"
+            description="Generate the service into a folder next to other services in the repository"
+            onClick={handleDatabaseSelect}
+            currentValue={formik.values.structureType}
+          />
+          <LabelDescriptionSelector
+            name="Poly"
+            image=""
+            label="Polyrepo"
+            description="Generate the services into the root of the repository"
+            onClick={handleDatabaseSelect}
+            currentValue={formik.values.structureType}
+          />
+        </Layout.SelectorWrapper>
+        <Layout.ContentWrapper>
           <div className={`${className}__repo_wrapper`}>
-            <div className={`${className}__repository_box`}>
-              <div className={`${className}__repository_options`}>
-                <LabelDescriptionSelector
-                  name="Mono"
-                  image=""
-                  label="Monorepo"
-                  description="Generate the service into a folder next to other services in the repository"
-                  onClick={handleDatabaseSelect}
-                  currentValue={formik.values.structureType}
-                />
-                <LabelDescriptionSelector
-                  name="Poly"
-                  image=""
-                  label="Polyrepo"
-                  description="Generate the services into the root of the repository"
-                  onClick={handleDatabaseSelect}
-                  currentValue={formik.values.structureType}
-                />
-              </div>
-              {formik.values.structureType === "Mono" && (
-                <TextField
-                  className={`${className}__repository_base_dir`}
-                  name="baseDir"
-                  label="Base directory"
-                  onChange={handleChange}
-                />
-              )}
-            </div>
-            <hr className={`${className}__repo_hr`} />
+            {formik.values.structureType === "Mono" && (
+              <TextField
+                name="baseDir"
+                label="Base directory"
+                onChange={handleChange}
+              />
+            )}
             <div className={`${className}__monorepo`}>
               <div className={`${className}__monorepo_title`}>
                 Your project will look like this:
@@ -129,7 +124,7 @@ const CreateServiceRepository: React.FC<WizardStepProps> = ({ formik }) => {
               )}
             </div>
           </div>
-        </Layout.SelectorWrapper>
+        </Layout.ContentWrapper>
       </Layout.RightSide>
     </Layout.Split>
   );
