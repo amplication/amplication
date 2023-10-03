@@ -35,7 +35,7 @@ jobs:
           echo "lib:${{ matrix.project }}:
                   pattern:
                     - '**'
-                  color: '#E99695'" > $FILENAME
+                  color: '#CDD3DE'" > $FILENAME
           echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
       - uses: overbit/labeler@main
         with:
@@ -58,12 +58,17 @@ jobs:
       - name: Generate label configuration
         id: labeler-config
         run: |
+          LABEL_COLOR='#5319E7'
           APP_NAME=$(echo ${{ matrix.project }} | sed -e "s/^amplication-//")
+          if [[ $APP_NAME == 'data-service-generator' ]]; then
+            LABEL_COLOR='#B60205'
+          fi
+
           FILENAME=${APP_NAME}-labeler.yml
           echo "app:${APP_NAME}:
                   pattern:
                     - '**'
-                  color: '#5319E7'" > $FILENAME
+                  color: ${LABEL_COLOR}" > $FILENAME
           echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
       - uses: overbit/labeler@main
         with:
