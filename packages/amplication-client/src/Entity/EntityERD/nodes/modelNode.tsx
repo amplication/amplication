@@ -5,7 +5,7 @@ import * as models from "../../../models";
 import { CLASS_NAME } from "../EntitiesERD";
 import { AppContext } from "../../../context/appContext";
 import { Link } from "react-router-dom";
-import { Icon } from "libs/ui/design-system/src/lib/components/Icon/Icon";
+import { Icon } from "@amplication/ui/design-system";
 interface ModelProps {
   data: models.Entity;
 }
