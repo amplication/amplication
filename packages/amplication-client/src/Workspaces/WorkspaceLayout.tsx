@@ -9,12 +9,9 @@ import { AppContextProvider } from "../context/appContext";
 import { REACT_APP_BILLING_API_KEY } from "../env";
 import { HubSpotChatComponent } from "../hubSpotChat";
 import ScreenResolutionMessage from "../Layout/ScreenResolutionMessage";
-import ProjectEmptyState from "../Project/ProjectEmptyState";
 import { AppRouteProps } from "../routes/routesUtil";
 import CompleteInvitation from "../User/CompleteInvitation";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import LastCommit from "../VersionControl/LastCommit";
-import PendingChanges from "../VersionControl/PendingChanges";
 import usePendingChanges, {
   PendingChangeItem,
 } from "./hooks/usePendingChanges";
@@ -26,6 +23,8 @@ import WorkspaceHeader from "./WorkspaceHeader/WorkspaceHeader";
 import "./WorkspaceLayout.scss";
 import useCommits from "../VersionControl/hooks/useCommits";
 import RedeemCoupon from "../User/RedeemCoupon";
+import PendingChanges from "../VersionControl/PendingChanges";
+import LastCommit from "../VersionControl/LastCommit";
 
 const MobileMessage = lazy(() => import("../Layout/MobileMessage"));
 
@@ -39,7 +38,11 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
+const WorkspaceLayout: React.FC<Props> = ({
+  match,
+  innerRoutes,
+  moduleClass,
+}) => {
   const [chatStatus, setChatStatus] = useState<boolean>(false);
   const authenticated = useAuthenticated();
   const {
@@ -197,19 +200,22 @@ const WorkspaceLayout: React.FC<Props> = ({ innerRoutes, moduleClass }) => {
               <WorkspaceHeader />
               <CompleteInvitation />
               <RedeemCoupon />
+
               <div className={`${moduleClass}__page_content`}>
                 <div className={`${moduleClass}__main_content`}>
-                  {projectsList.length ? innerRoutes : <ProjectEmptyState />}
+                  {innerRoutes}
                 </div>
-                <div className={`${moduleClass}__changes_menu`}>
-                  {currentProject ? (
+
+                {currentProject ? (
+                  <div className={`${moduleClass}__changes_menu`}>
                     <PendingChanges projectId={currentProject.id} />
-                  ) : null}
-                  {currentProject && commitUtils.lastCommit && (
-                    <LastCommit lastCommit={commitUtils.lastCommit} />
-                  )}
-                </div>
+                    {commitUtils.lastCommit && (
+                      <LastCommit lastCommit={commitUtils.lastCommit} />
+                    )}
+                  </div>
+                ) : null}
               </div>
+
               <WorkspaceFooter lastCommit={commitUtils.lastCommit} />
               <HubSpotChatComponent
                 setChatStatus={setChatStatus}

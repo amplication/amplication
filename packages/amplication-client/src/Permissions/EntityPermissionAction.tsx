@@ -10,6 +10,12 @@ import {
   PanelCollapsible,
   Toggle,
   Icon,
+  FlexItem,
+  EnumFlexDirection,
+  EnumGapSize,
+  Text,
+  EnumTextStyle,
+  EnumItemsAlign,
 } from "@amplication/ui/design-system";
 import { ActionRoleList } from "./ActionRoleList";
 import { EntityPermissionFields } from "./EntityPermissionFields";
@@ -207,8 +213,9 @@ export const EntityPermissionAction = ({
       manualCollapseDisabled
       className={CLASS_NAME}
       headerContent={
-        <div className={`${CLASS_NAME}__header`}>
-          <div>
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
+          start={
             <Toggle
               title="enable action"
               onValueChange={handleDisableChange}
@@ -216,37 +223,45 @@ export const EntityPermissionAction = ({
                 permission.type !== models.EnumEntityPermissionType.Disabled
               }
             />
-          </div>
-          <div className={`${CLASS_NAME}__header__title`}>
-            <h3>
-              <span className={`${CLASS_NAME}__action-name`}>
-                {actionDisplayName}
-              </span>{" "}
-              {entityDisplayName}
-            </h3>
-            <h4>
-              <Icon icon="lock" />
-              {permission.type === models.EnumEntityPermissionType.AllRoles ? (
-                <span className={`${CLASS_NAME}__action-summary`}>
-                  All roles selected
-                </span>
-              ) : permission.type ===
-                models.EnumEntityPermissionType.Granular ? (
-                <span className={`${CLASS_NAME}__action-summary`}>
-                  {selectedRoleIds.size} roles selected
-                </span>
-              ) : permission.type === models.EnumEntityPermissionType.Public ? (
-                <span className={`${CLASS_NAME}__action-summary`}>
-                  This action is public
-                </span>
-              ) : (
-                <span className={`${CLASS_NAME}__action-summary--muted`}>
-                  This action is disabled
-                </span>
-              )}
-            </h4>
-          </div>
-          <div>
+          }
+        >
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
+            <Text textStyle={EnumTextStyle.H4}>
+              {`${actionDisplayName} ${entityDisplayName}`}
+            </Text>
+            <Text textStyle={EnumTextStyle.Subtle}>
+              <FlexItem
+                itemsAlign={EnumItemsAlign.Center}
+                gap={EnumGapSize.Small}
+              >
+                <Icon icon="lock" />
+                {permission.type ===
+                models.EnumEntityPermissionType.AllRoles ? (
+                  <span className={`${CLASS_NAME}__action-summary`}>
+                    All roles selected
+                  </span>
+                ) : permission.type ===
+                  models.EnumEntityPermissionType.Granular ? (
+                  <span className={`${CLASS_NAME}__action-summary`}>
+                    {selectedRoleIds.size} roles selected
+                  </span>
+                ) : permission.type ===
+                  models.EnumEntityPermissionType.Public ? (
+                  <span className={`${CLASS_NAME}__action-summary`}>
+                    This action is public
+                  </span>
+                ) : (
+                  <span className={`${CLASS_NAME}__action-summary--muted`}>
+                    This action is disabled
+                  </span>
+                )}
+              </FlexItem>
+            </Text>
+          </FlexItem>
+          <FlexItem.FlexEnd minWidthAuto={true}>
             {permission.type !== models.EnumEntityPermissionType.Disabled && (
               <MultiStateToggle
                 label=""
@@ -256,8 +271,8 @@ export const EntityPermissionAction = ({
                 selectedValue={permission.type}
               />
             )}
-          </div>
-        </div>
+          </FlexItem.FlexEnd>
+        </FlexItem>
       }
     >
       <ul className="panel-list">

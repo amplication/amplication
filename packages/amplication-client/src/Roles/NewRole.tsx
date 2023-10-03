@@ -132,7 +132,6 @@ const NewRole = ({ onRoleAdd, resourceId }: Props) => {
             />
             <Button
               buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
               className={classNames(`${CLASS_NAME}__add-field__button`, {
                 [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
                   formik.values.displayName

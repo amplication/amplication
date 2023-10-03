@@ -7,26 +7,26 @@
     align-items: center;
 
     .amp-icon {
-      color: var(--black80);
+      color: var(--gray-20);
       font-size: var(--icon-font-size);
     }
   }
 
   &--completed {
     i {
-      color: var(--positive-default) !important;
+      color: var(--theme-green) !important;
     }
   }
 
   &--failed {
     i {
-      color: var(--negative) !important;
+      color: var(--theme-red) !important;
     }
   }
 
   &--running {
     i {
-      color: var(--black20) !important;
+      color: var(--gray-60) !important;
     }
   }
 }

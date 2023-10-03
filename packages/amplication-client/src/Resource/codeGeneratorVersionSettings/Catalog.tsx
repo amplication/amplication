@@ -1,6 +1,4 @@
-import { PanelCollapsible } from "@amplication/ui/design-system";
-
-const CLASS_NAME = "catalog";
+import { EnumTextStyle, ListItem, Text } from "@amplication/ui/design-system";
 
 type CatalogProps = {
   name: string;
@@ -9,11 +7,9 @@ type CatalogProps = {
 
 export const DSGCatalog: React.FC<CatalogProps> = ({ name, changelog }) => {
   return (
-    <div className={CLASS_NAME}>
-      <PanelCollapsible headerContent={name}>
-        <div className={`${CLASS_NAME}__separator`}></div>
-        <div className={`${CLASS_NAME}__changelog`}>{changelog}</div>
-      </PanelCollapsible>
-    </div>
+    <ListItem>
+      <Text textStyle={EnumTextStyle.Normal}>{name}</Text>
+      <Text textStyle={EnumTextStyle.Tag}>{changelog}</Text>
+    </ListItem>
   );
 };

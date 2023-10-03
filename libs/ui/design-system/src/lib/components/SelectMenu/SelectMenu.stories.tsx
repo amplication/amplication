@@ -43,7 +43,7 @@ export const Secondary = (props: any) => {
   return (
     <SelectMenu
       title="Create New"
-      buttonStyle={EnumButtonStyle.Clear}
+      buttonStyle={EnumButtonStyle.Text}
       icon="plus"
     >
       <SelectMenuModal>
@@ -93,7 +93,7 @@ export const Clear = (props: any) => {
 
 export const WithoutIcon = (props: any) => {
   return (
-    <SelectMenu title="Create New" buttonStyle={EnumButtonStyle.Secondary}>
+    <SelectMenu title="Create New" buttonStyle={EnumButtonStyle.Outline}>
       <SelectMenuModal>
         <SelectMenuList>
           {ITEMS.map((item) => (

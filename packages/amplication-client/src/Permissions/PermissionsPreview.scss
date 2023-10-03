@@ -9,8 +9,8 @@
     &__action {
       flex: 1;
       @include body2;
-      color: var(--black100);
-      border-right: $border-black10;
+      color: var(--gray-base);
+      border-right: $border-dark;
       padding-right: var(--default-spacing);
       padding-left: var(--default-spacing);
 
@@ -23,7 +23,7 @@
       }
 
       h3 {
-        color: var(--secondary-light-blue);
+        color: var(--theme-blue);
         margin: 0;
       }
 

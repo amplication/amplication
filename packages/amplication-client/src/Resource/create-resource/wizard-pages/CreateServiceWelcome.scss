@@ -7,7 +7,7 @@ $max-width: 700px;
   justify-content: center;
   display: flex;
   flex-direction: column;
-  background-color: var(--black2);
+  background-color: var(--gray-90);
   flex: 1;
   gap: 16px;
   align-items: center;
@@ -25,6 +25,7 @@ $max-width: 700px;
   h1 {
     font-size: 32px;
     font-weight: 600;
+    color: var(--gray-base);
   }
 
   h3 {
