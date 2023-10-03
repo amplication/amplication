@@ -12,8 +12,8 @@ jobs:
     name: Nx
     uses: ./.github/workflows/nx.template.yml
     with:
-      nx-head: ${{ github.event.pull_request.merge_commit_sha || "refs/pull/${{ github.event.number }}/merge" }}
-      nx-base: ${{ github.sha }}
+      nx-head: "refs/pull/${{ github.event.number }}/merge"
+      nx-base: ${{ github.base_ref }}
 
   triage-libs:
     name: Triage libs changes
