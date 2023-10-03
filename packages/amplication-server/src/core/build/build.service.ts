@@ -41,6 +41,7 @@ import {
   CodeGenerationLog,
   CodeGenerationRequest,
   CreatePrFailure,
+  CreatePrLog,
   CreatePrRequest,
   CreatePrSuccess,
   KAFKA_TOPICS,
@@ -76,12 +77,11 @@ export const BUILD_DOCKER_IMAGE_STEP_RUNNING_LOG =
 export const BUILD_DOCKER_IMAGE_STEP_START_LOG =
   "Starting to build Docker image. It should take a few minutes.";
 
-export const PUSH_TO_GIT_STEP_NAME = (gitProvider: EnumGitProvider) =>
-  gitProvider ? `PUSH_TO_${gitProvider.toUpperCase()}` : "PUSH_TO_GIT_PROVIDER";
+export const PUSH_TO_GIT_STEP_NAME = "PUSH_TO_GIT_PROVIDER";
 export const PUSH_TO_GIT_STEP_MESSAGE = (gitProvider: EnumGitProvider) =>
   `Push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_START_LOG = (gitProvider: EnumGitProvider) =>
-  `Starting to push changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
+  `Waiting for a worker...`;
 export const PUSH_TO_GIT_STEP_FINISH_LOG = (gitProvider: EnumGitProvider) =>
   `Successfully pushed changes to ${PROVIDERS_DISPLAY_NAME[gitProvider]}`;
 export const PUSH_TO_GIT_STEP_FAILED_LOG = (gitProvider: EnumGitProvider) =>
@@ -461,9 +461,7 @@ export class BuildService {
   ): Promise<void> {
     const build = await this.findOne({ where: { id: response.buildId } });
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
-    );
+    const step = steps.find((step) => step.name === PUSH_TO_GIT_STEP_NAME);
 
     try {
       await this.resourceService.reportSyncMessage(
@@ -515,9 +513,7 @@ export class BuildService {
     });
 
     const steps = await this.actionService.getSteps(build.actionId);
-    const step = steps.find(
-      (step) => step.name === PUSH_TO_GIT_STEP_NAME(response.gitProvider)
-    );
+    const step = steps.find((step) => step.name === PUSH_TO_GIT_STEP_NAME);
 
     await this.resourceService.reportSyncMessage(
       build.resourceId,
@@ -718,7 +714,7 @@ export class BuildService {
 
     return this.actionService.run(
       build.actionId,
-      PUSH_TO_GIT_STEP_NAME(EnumGitProvider[gitSettings.gitProvider]),
+      PUSH_TO_GIT_STEP_NAME,
       PUSH_TO_GIT_STEP_MESSAGE(EnumGitProvider[gitSettings.gitProvider]),
       async (step) => {
         try {
@@ -887,5 +883,29 @@ export class BuildService {
       },
       otherResources,
     };
+  }
+
+  public async onCreatePullRequestLog(
+    logEntry: CreatePrLog.Value
+  ): Promise<void> {
+    const { buildId, level, message } = logEntry;
+    const [step] = await this.prisma.build
+      .findUnique({
+        where: {
+          id: buildId,
+        },
+      })
+      .action()
+      .steps({
+        where: {
+          name: PUSH_TO_GIT_STEP_NAME,
+        },
+      });
+
+    await this.actionService.logByStepId(
+      step.id,
+      ACTION_LOG_LEVEL[level],
+      message
+    );
   }
 }
