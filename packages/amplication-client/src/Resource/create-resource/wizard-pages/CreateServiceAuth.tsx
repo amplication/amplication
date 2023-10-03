@@ -34,7 +34,7 @@ const CreateServiceAuth: React.FC<WizardStepProps> = ({ formik }) => {
         <Layout.SelectorWrapper>
           <LabelDescriptionSelector
             name="core"
-            image={AuthCoreSvg}
+            icon="unlock"
             label="Include Auth Module"
             description="Generate the code needed for authentication and authorization"
             onClick={handleDatabaseSelect}
