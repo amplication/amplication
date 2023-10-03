@@ -25,6 +25,7 @@ export type Props = {
   onDone: () => void;
   setPopupFailed: (status: boolean) => void;
   onProviderSelect?: (data: any) => any;
+  onSelectRepository?: () => void;
 };
 
 const CLASS_NAME = "git-provider-connection-list";
@@ -33,6 +34,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
   onDone,
   setPopupFailed,
   onProviderSelect,
+  onSelectRepository,
 }) => {
   const { trackEvent } = useTracking();
   const { stigg } = useStiggContext();
@@ -73,7 +75,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         variables: {
           gitProvider: provider,
         },
-      }).catch(console.error);
+      })
+        .then(() => {
+          onSelectRepository();
+        })
+        .catch(console.error);
       onProviderSelect && onProviderSelect(provider);
     },
     [authWithGit, trackEvent, onProviderSelect]
