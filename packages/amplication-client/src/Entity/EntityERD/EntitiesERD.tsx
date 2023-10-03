@@ -68,6 +68,7 @@ export default function EntitiesERD({ resourceId }: { resourceId: string }) {
         onNodesChange={onNodesChange}
         onEdgesChange={onEdgesChange}
         connectionMode={ConnectionMode.Loose}
+        proOptions={{ hideAttribution: true }}
         minZoom={0.1}
       >
         <Background color="grey" />
