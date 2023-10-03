@@ -244,7 +244,7 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 
       {defineUser === "Create Service" && (
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           className={`${moduleCss}__close`}
           onClick={() =>
             handleCloseWizard(wizardSteps[currWizardPatternIndex]?.stepName)

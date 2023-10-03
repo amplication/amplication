@@ -1,17 +1,24 @@
-import { EnumPanelStyle, Icon, Panel } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Icon,
+  ListItem,
+  Text,
+} from "@amplication/ui/design-system";
 import { useCallback, useContext, useMemo } from "react";
-import { Link, NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ClickableId } from "../Components/ClickableId";
 import ResourceCircleBadge from "../Components/ResourceCircleBadge";
 import { AppContext } from "../context/appContext";
 import { Build } from "../models";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { CommitBuildsStatusIcon } from "./CommitBuildsStatusIcon";
-import "./CommitResourceListItem.scss";
 import { CommitChangesByResource } from "./hooks/useCommits";
 import useBuildWatchStatus from "./useBuildWatchStatus";
-
-const CLASS_NAME = "commit-resource-list-item";
+import BuildGitLink from "./BuildGitLink";
 
 type Props = {
   build: Build;
@@ -33,54 +40,56 @@ const CommitResourceListItem = ({ build, commitChangesByResource }: Props) => {
   }, [build.commitId, build.resourceId, commitChangesByResource]);
 
   return (
-    <NavLink
-      to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
-    >
-      {build && build.resource && (
-        <Panel
-          className={CLASS_NAME}
-          clickable
-          panelStyle={EnumPanelStyle.Bordered}
-        >
-          <div className={`${CLASS_NAME}__row`}>
+    build &&
+    build.resource && (
+      <ListItem
+        to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
+      >
+        <FlexItem itemsAlign={EnumItemsAlign.Center}>
+          <FlexItem.FlexStart>
             <ResourceCircleBadge type={build.resource.resourceType} />
-
-            <div className={`${CLASS_NAME}__title`}>
-              <Link
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
-              >
-                {build.resource.name}
-                <Icon icon="link" size="xsmall" />
-              </Link>
-            </div>
-
-            <span className="spacer" />
+          </FlexItem.FlexStart>
+          <Link
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}`}
+          >
+            <Text textStyle={EnumTextStyle.Normal}>{build.resource.name}</Text>
+            <Icon icon="link" size="xsmall" />
+          </Link>
+          <FlexItem.FlexEnd>
             <Link
               to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/changes/${build.commitId}`}
-              className={`${CLASS_NAME}__changes-count`}
             >
-              {resourceChangesCount && resourceChangesCount > 0
-                ? resourceChangesCount
-                : 0}{" "}
-              changes
+              <Text
+                textColor={EnumTextColor.White}
+                underline={true}
+                textStyle={EnumTextStyle.Tag}
+              >
+                {resourceChangesCount && resourceChangesCount > 0
+                  ? resourceChangesCount
+                  : 0}{" "}
+                changes
+              </Text>
             </Link>
-          </div>
-          <hr className={`${CLASS_NAME}__divider`} />
-          <div className={`${CLASS_NAME}__row`}>
-            <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
-            <ClickableId
-              label="Build ID"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${build.resourceId}/builds/${build.id}`}
-              id={build.id}
-              onClick={handleBuildLinkClick}
-              eventData={{
-                eventName: AnalyticsEventNames.CommitListBuildIdClick,
-              }}
-            />
-          </div>
-        </Panel>
-      )}
-    </NavLink>
+          </FlexItem.FlexEnd>
+        </FlexItem>
+        <FlexItem
+          margin={EnumFlexItemMargin.Top}
+          itemsAlign={EnumItemsAlign.Center}
+          end={<BuildGitLink build={build} textColor={EnumTextColor.Black20} />}
+        >
+          <CommitBuildsStatusIcon commitBuildStatus={data.build.status} />
+          <ClickableId
+            label="Build ID"
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/commits/${build.commitId}/builds/${build.id}`}
+            id={build.id}
+            onClick={handleBuildLinkClick}
+            eventData={{
+              eventName: AnalyticsEventNames.CommitListBuildIdClick,
+            }}
+          />
+        </FlexItem>
+      </ListItem>
+    )
   );
 };
 

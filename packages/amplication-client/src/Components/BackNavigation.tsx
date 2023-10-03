@@ -1,11 +1,11 @@
-import React from "react";
+import React, { ReactNode } from "react";
 import { Link, LinkProps } from "react-router-dom";
 import classNames from "classnames";
 import "./BackNavigation.scss";
 import { Icon } from "@amplication/ui/design-system";
 
 type Props = LinkProps & {
-  label?: string;
+  label?: string | ReactNode;
 };
 
 const CLASS_NAME = "back-navigation";

@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
 import {
   EnumGitProvider,
   useCreateOrganizationGitHubMutation,
 } from "../../models";
-import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
+import { useTracking } from "../../util/analytics";
 
 const AuthResourceWithGithubCallback = () => {
   const { trackEvent } = useTracking();

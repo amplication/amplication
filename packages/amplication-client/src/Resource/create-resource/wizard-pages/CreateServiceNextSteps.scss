@@ -25,13 +25,13 @@
     &__top {
       font-size: 38px;
       font-weight: 600;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &__bottom {
       font-size: 24px;
       font-weight: 600;
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
 
@@ -44,7 +44,7 @@
     cursor: pointer;
     height: 160px;
     width: 300px;
-    border: 1px solid var(--black10);
+    border: 1px solid var(--gray-70);
     border-radius: 8px;
 
     &__description {
@@ -54,7 +54,7 @@
 
       font-size: 18px;
       font-weight: 600;
-      color: var(--black100);
+      color: var(--gray-base);
     }
   }
 }
