@@ -1,24 +1,28 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { gql, useQuery } from "@apollo/client";
-import { formatError } from "../util/error";
-import * as models from "../models";
 import {
+  CircularProgress,
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  List,
   SearchField,
   Snackbar,
-  CircularProgress,
+  TabContentTitle,
+  Text,
 } from "@amplication/ui/design-system";
+import { gql, useQuery } from "@apollo/client";
+import React, { useCallback, useMemo, useState } from "react";
+import * as models from "../models";
+import { formatError } from "../util/error";
 
+import { pluralize } from "../util/pluralize";
 import { EntityFieldListItem } from "./EntityFieldListItem";
 import { GET_ENTITIES } from "./EntityList";
-import "./EntityFieldList.scss";
-import { pluralize } from "../util/pluralize";
 
 type TData = {
   entity: models.Entity;
 };
 
 const DATE_CREATED_FIELD = "createdAt";
-const CLASS_NAME = "entity-field-list";
 
 type Props = {
   entityId: string;
@@ -75,28 +79,31 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
 
   return (
     <>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="Search"
-          onChange={handleSearchChange}
-        />
-      </div>
-      <div className={`${CLASS_NAME}__title`}>
-        {data?.entity.fields?.length}{" "}
-        {pluralize(data?.entity.fields?.length, "Field", "Fields")}
-      </div>
+      <TabContentTitle title="Entity Fields" subTitle="" />
+      <SearchField
+        label="search"
+        placeholder="Search"
+        onChange={handleSearchChange}
+      />
+      <FlexItem margin={EnumFlexItemMargin.Both}>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {data?.entity.fields?.length}{" "}
+          {pluralize(data?.entity.fields?.length, "Field", "Fields")}
+        </Text>
+      </FlexItem>
       {loading && <CircularProgress centerToParent />}
-      {data?.entity.fields?.map((field) => (
-        <EntityFieldListItem
-          key={field.id}
-          resourceId={data?.entity.resourceId}
-          entity={data?.entity}
-          entityField={field}
-          entityIdToName={entityIdToName}
-          onError={setError}
-        />
-      ))}
+      <List>
+        {data?.entity.fields?.map((field) => (
+          <EntityFieldListItem
+            key={field.id}
+            resourceId={data?.entity.resourceId}
+            entity={data?.entity}
+            entityField={field}
+            entityIdToName={entityIdToName}
+            onError={setError}
+          />
+        ))}
+      </List>
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
     </>
   );
@@ -104,7 +111,6 @@ const EntityFieldList = React.memo(({ entityId }: Props) => {
 
 export default EntityFieldList;
 
-/**@todo: expand search on other field  */
 export const GET_FIELDS = gql`
   query getEntityFields(
     $id: String!

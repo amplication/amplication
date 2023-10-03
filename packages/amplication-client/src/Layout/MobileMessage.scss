@@ -23,7 +23,7 @@ $button-height: 40px;
     padding-left: $content-padding;
     text-align: center;
     margin-top: $title-margin-top;
-    color: var(--black100);
+    color: var(--gray-base);
     line-height: 1.2;
   }
 
@@ -32,13 +32,13 @@ $button-height: 40px;
     padding-right: $content-padding;
     padding-left: $content-padding;
     text-align: center;
-    color: var(--black90);
+    color: var(--gray-10);
     margin-bottom: var(--large-spacing);
     margin-top: var(--large-spacing);
   }
   &__action {
     padding-top: $content-padding;
-    color: var(--black60);
+    color: var(--gray-30);
     .amp-button {
       width: $button-width;
       height: $button-height;

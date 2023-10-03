@@ -1,12 +1,18 @@
 import React, { useEffect } from "react";
 
 import { CreateServiceWizardLayout as Layout } from "../CreateServiceWizardLayout";
-import { WizardStepProps } from "./interfaces";
 import { ImageLabelToggle } from "./ImageLabelToggle";
+import { WizardStepProps } from "./interfaces";
 
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  Text,
+} from "@amplication/ui/design-system";
+import adminUI from "../../../assets/images/admin-ui.svg";
 import graphql from "../../../assets/images/graphql.svg";
 import swagger from "../../../assets/images/swagger.svg";
-import adminUI from "../../../assets/images/admin-ui.svg";
 
 const CreateGenerationSettings: React.FC<WizardStepProps> = ({
   formik,
@@ -28,10 +34,8 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
         <Layout.Description
           header="How would you like to build your service?"
           text={`Do you want to use GraphQL API? REST API? both?
-
             Also, select whether you want to generate the Admin UI for your service with forms to create, update and delete data in your service.
             
-            Note: The Admin UI is using the GraphQL API so you can’t generate the one without the other.
           `}
         />
       </Layout.LeftSide>
@@ -60,6 +64,12 @@ const CreateGenerationSettings: React.FC<WizardStepProps> = ({
             onChange={formik.setFieldValue}
           />
         </Layout.SelectorWrapper>
+        <FlexItem margin={EnumFlexItemMargin.Top}>
+          <Text textStyle={EnumTextStyle.Tag}>
+            Note: The Admin UI uses the GraphQL API, so you can't select the
+            former without the latter
+          </Text>
+        </FlexItem>
       </Layout.RightSide>
     </Layout.Split>
   );

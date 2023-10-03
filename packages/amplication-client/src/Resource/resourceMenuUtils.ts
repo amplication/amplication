@@ -1,21 +1,34 @@
 import { EnumResourceType } from "../models";
 
-export type MenuItemLinks = "entities" | "roles" | "git" | "settings";
+export type MenuItemLinks =
+  | "entities"
+  | "roles"
+  | "git"
+  | "settings"
+  | "plugins"
+  | "topics"
+  | "services"
+  | "connections"
+  | "pendingChanges";
 
-export const resourceMenuLayout: { [key: string]: string[] } = {
+export const resourceMenuLayout: {
+  [key in EnumResourceType]: MenuItemLinks[];
+} = {
   [EnumResourceType.Service]: [
     "entities",
     "roles",
-    "connections",
-    "git",
-    "settings",
     "plugins",
+    "git",
+    "connections",
+    "settings",
   ],
   [EnumResourceType.ProjectConfiguration]: ["git", "settings"],
   [EnumResourceType.MessageBroker]: ["topics", "services", "git", "settings"],
 };
 
-export const linksMap = {
+export const linksMap: {
+  [key in MenuItemLinks]: { title: string; icon: string; to: string };
+} = {
   entities: {
     title: "Entities",
     icon: "entity_outline",
@@ -27,14 +40,14 @@ export const linksMap = {
     to: "/roles",
   },
   git: {
-    title: "Sync with Git provider",
+    title: "Sync with Git",
     icon: "pending_changes",
     to: "/git-sync",
   },
   settings: {
     title: "Settings",
     icon: "settings",
-    to: "/settings/update",
+    to: "/settings",
   },
   plugins: {
     title: "Plugins",
@@ -47,7 +60,7 @@ export const linksMap = {
     to: "/topics",
   },
   services: {
-    title: "Services",
+    title: "Connected Services",
     icon: "services",
     to: "/services",
   },
@@ -56,11 +69,16 @@ export const linksMap = {
     icon: "connection",
     to: "/service-connections",
   },
+  pendingChanges: {
+    title: "Pending Changes",
+    icon: "pending_changes",
+    to: "/pending-changes",
+  },
 };
 
 export const setResourceUrlLink = (
   workspace: string,
   project: string,
   resource: string,
-  iconUrl: string
-): string => `/${workspace}/${project}/${resource}${iconUrl}`;
+  itemUrl: string
+): string => `/${workspace}/${project}/${resource}${itemUrl}`;

@@ -117,7 +117,7 @@
     "graphql-upload": "^13.0.0",
     "json-schema": "^0.4.0",
     "jsonwebtoken": "^9.0.0",
-    "kafkajs": "^1.16.0",
+    "kafkajs": "^2.2.4",
     "lodash": "^4.17.21",
     "lottie-react": "^2.3.1",
     "minimatch": "^9.0.0",

@@ -44,17 +44,11 @@ export const GitProviderConnectionList: React.FC<Props> = ({
     featureId: BillingFeature.AwsCodeCommit,
   });
 
-  const [authWithGit, { error }] = useMutation<DType>(
-    START_AUTH_APP_WITH_GITHUB,
-    {
-      onCompleted: (data) => {
-        openSignInWindow(
-          data.getGitResourceInstallationUrl.url,
-          "auth with git"
-        );
-      },
-    }
-  );
+  const [authWithGit] = useMutation<DType>(START_AUTH_APP_WITH_GITHUB, {
+    onCompleted: (data) => {
+      openSignInWindow(data.getGitResourceInstallationUrl.url, "auth with git");
+    },
+  });
 
   triggerOnDone = () => {
     onDone();

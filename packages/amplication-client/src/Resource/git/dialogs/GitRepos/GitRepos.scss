@@ -16,7 +16,7 @@ $menu_modal_width: 60px;
   }
 
   &__menu {
-    background: var(--white);
+    background: var(--gray-full);
     width: 50px;
     margin: 0px;
     top: 28px;
@@ -51,7 +51,7 @@ $menu_modal_width: 60px;
   }
 
   &__item:hover {
-    background-color: var(--black5);
+    background-color: var(--gray-80);
   }
 
   &__header {
@@ -67,10 +67,10 @@ $menu_modal_width: 60px;
       .select-menu__summary {
         width: 50px;
         min-width: 50px;
-        background-color: var(--white);
+        background-color: var(--gray-full);
       }
       .select-menu__summary:focus {
-        background-color: var(--white);
+        background-color: var(--gray-full);
       }
       .amp-circular-progress {
         margin-left: var(--default-spacing);
@@ -83,7 +83,7 @@ $menu_modal_width: 60px;
       align-items: center;
 
       h4 {
-        color: var(--black80);
+        color: var(--gray-20);
       }
 
       .select-menu {
@@ -135,10 +135,6 @@ $menu_modal_width: 60px;
   }
 }
 
-.amp-button.amp-button--outline {
-  border-radius: 4px !important;
-}
-
 .amp-dialog.select-repo-dialog {
   margin-top: 10vh !important;
   max-height: 80vh;
@@ -155,6 +151,6 @@ $menu_modal_width: 60px;
   .amp-dialog__body {
     flex: 1;
     overflow: auto;
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
   }
 }

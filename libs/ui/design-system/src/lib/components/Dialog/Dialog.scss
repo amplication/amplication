@@ -6,13 +6,13 @@ $modal-top-position: 20vh;
 .amp-dialog {
   box-shadow: none;
   border-radius: var(--default-border-radius);
-  border: $border-black10;
+  border: $border-dark;
   width: max-content !important;
   max-width: $modal-max-width;
   min-width: var(--modal-min-width);
   margin-top: $modal-top-position !important;
   margin-bottom: 0 !important;
-  background-color: var(--black2) !important;
+  background-color: var(--gray-90) !important;
   padding: var(--double-spacing);
 
   //mobile
@@ -33,7 +33,7 @@ $modal-top-position: 20vh;
 
   & &__header {
     @include semiBold;
-    color: var(--black100);
+    color: var(--gray-base);
     background-color: transparent;
     box-sizing: border-box;
     display: flex;
@@ -50,7 +50,7 @@ $modal-top-position: 20vh;
   }
 
   &--warning {
-    border-top: 3px solid var(--warning-default);
+    border-top: 3px solid var(--theme-orange);
   }
 
   &--success {
@@ -58,6 +58,6 @@ $modal-top-position: 20vh;
   }
 
   &--error {
-    border-top: 3px solid var(--negative);
+    border-top: 3px solid var(--theme-red);
   }
 }

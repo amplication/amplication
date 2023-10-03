@@ -3,15 +3,15 @@
 .json-editor {
   margin-bottom: var(--default-spacing);
   flex: 1;
-  border: $border-black10;
+  border: $border-dark;
   border-radius: var(--default-border-radius);
   overflow: hidden;
-  background-color: var(--white);
+  background-color: var(--gray-full);
   section {
     margin-top: 20px;
   }
 }
 
 .editor--invalid {
-  border-color: var(--negative);
+  border-color: var(--theme-red);
 }
