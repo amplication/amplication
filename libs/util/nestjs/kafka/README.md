@@ -1,7 +1,7 @@
 # util-nestjs-kafka
 
 Library containing nestjs specific utils for Kafka integration.
-This library leverage util-kafka funtionality to satisfy nestjs specific use-cases.
+This library leverage util-kafka functionality to satisfy nestjs specific use-cases.
 
 ## Serialisation of Kafka Message
 

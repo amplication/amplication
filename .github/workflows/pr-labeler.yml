@@ -15,14 +15,10 @@ jobs:
       nx-head: "refs/pull/${{ github.event.number }}/merge"
       nx-base: ${{ github.base_ref }}
 
-  triage-libs:
-    name: Triage libs changes
+  triage:
+    name: Triage changes
     needs: nx
-    if: ${{ needs.nx.outputs.affected-lib != '[]' && needs.nx.outputs.affected-lib != ''}}
-    strategy:
-      max-parallel: 1
-      matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-lib) }}
+    if: ${{ (needs.nx.outputs.affected-lib != '[]' && needs.nx.outputs.affected-lib != '') || (needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != '') }}
     permissions:
       contents: read
       pull-requests: write
@@ -31,45 +27,42 @@ jobs:
       - name: Generate label configuration
         id: labeler-config
         run: |
-          FILENAME=${{ matrix.project }}-labeler.yml
-          echo "lib:${{ matrix.project }}:
-                  pattern:
-                    - '**'
-                  color: '#CDD3DE'" > $FILENAME
-          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
-      - uses: overbit/labeler@main
-        with:
-          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
-          dot: true
+          LABELER_CONFIG=labeler.yml
+          # Function to generate the YAML block for an project
+          generate_yaml_block() {
+            project="$1"
+            prefix="$2"
+            color="#CDD3DE"
 
-  triage-apps:
-    name: Triage app changes
-    needs: [nx, triage-libs]
-    if: ${{ always() && needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != '' }}
-    strategy:
-      max-parallel: 1
-      matrix:
-        project: ${{ fromJson(needs.nx.outputs.affected-apps) }}
-    permissions:
-      contents: read
-      pull-requests: write
-    runs-on: ubuntu-latest
-    steps:
-      - name: Generate label configuration
-        id: labeler-config
-        run: |
-          LABEL_COLOR='#5319E7'
-          APP_NAME=$(echo ${{ matrix.project }} | sed -e "s/^amplication-//")
-          if [[ $APP_NAME == 'data-service-generator' ]]; then
-            LABEL_COLOR='#B60205'
+            if [[ $project == 'data-service-generator' ]]; then
+              color='#B60205'
+            elif [[ $prefix == 'app' ]]; then
+              color='#5319E7'
+            fi
+
+            cat <<EOF
+          ${prefix}:${project}:
+            pattern:
+              - '**'
+            color: '${color}'
+          EOF
+          }
+
+          LIBS=($(echo '${{ needs.nx.outputs.affected-lib }}' | jq -r '.[]'))
+          # run the loop only if LIBS is not empty
+          if [ -n "$LIBS" ]; then
+            for entry in "${LIBS[@]}"; do
+              generate_yaml_block "$entry" "lib" >> ${LABELER_CONFIG}
+            done
           fi
 
-          FILENAME=${APP_NAME}-labeler.yml
-          echo "app:${APP_NAME}:
-                  pattern:
-                    - '**'
-                  color: ${LABEL_COLOR}" > $FILENAME
-          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
+          APPS=($(echo '${{ needs.nx.outputs.affected-apps }}' | jq -r '.[]'))
+          if [ -n "$APPS" ]; then
+            for entry in "${APPS[@]}"; do
+              generate_yaml_block "$entry" "app" >> ${LABELER_CONFIG}
+            done
+          fi
+          echo "config-file=${LABELER_CONFIG}" >> $GITHUB_OUTPUT
       - uses: overbit/labeler@main
         with:
           configuration-path: ${{ steps.labeler-config.outputs.config-file }}
