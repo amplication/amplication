@@ -186,6 +186,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
             <Toggle
               value={displayMode === "graph"}
+              defaultChecked={displayMode === "graph"}
               onValueChange={(isGraph) =>
                 setDisplayMode(isGraph ? "graph" : "table")
               }

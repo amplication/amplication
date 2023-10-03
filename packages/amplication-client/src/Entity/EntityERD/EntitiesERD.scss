@@ -15,12 +15,20 @@
     min-width: 235px;
   }
   &__display_name {
+    display: flex;
     padding: var(--default-spacing-small) var(--default-spacing);
-    margin: 0;
-    font-size: var(--normal-font-size);
+    margin-left: 10px;
+    margin-right: 10px;
+    font-size: var(--title5-font-size);
     line-height: 22px;
     font-weight: 600;
     border-bottom: $border-dark;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  &__display_icon {
+    margin-left: auto;
+    margin-right: 0;
   }
   &__column_container {
     padding: var(--default-spacing-small) 0;
