@@ -1,7 +1,7 @@
 {
   "name": "amplication-code-gen-types",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": ["packages/amplication-code-gen-types/src"],
+  "sourceRoot": "packages/amplication-code-gen-types/src",
   "projectType": "library",
   "targets": {
     "prebuild": {
