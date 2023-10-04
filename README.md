@@ -119,7 +119,7 @@ Amplication is using a monorepo architecture - powered by <a href="https://nx.de
 git clone https://github.com/amplication/amplication.git && cd amplication && npm install
 ```
 
-2. Run the setup script, which takes care of installing dependencies, building packages, and setting up the workspace.
+2. Run the setup script, which takes care of installing dependencies, building packages, and setting up the workspace:
 ```shell
 npm run setup:dev
 ```
