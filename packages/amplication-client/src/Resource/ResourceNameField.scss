@@ -17,16 +17,16 @@
   }
 
   &__saved {
-    color: var(--positive-default);
+    color: var(--theme-green);
   }
   &__invalid {
-    color: var(--negative-light);
+    color: var(--theme-light-red);
     cursor: pointer;
   }
   &__tooltip_invalid::after {
-    border: 1px solid var(--negative);
-    background-color: var(--white);
-    color: var(--black100);
+    border: 1px solid var(--theme-red);
+    background-color: var(--gray-full);
+    color: var(--gray-base);
   }
   &__edit {
     display: flex;

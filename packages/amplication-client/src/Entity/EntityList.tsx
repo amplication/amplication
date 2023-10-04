@@ -1,32 +1,41 @@
-import React, { useState, useCallback, useEffect, useContext } from "react";
-import { Link, match } from "react-router-dom";
+import {
+  CircularProgress,
+  Dialog,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  LimitationNotification,
+  List,
+  SearchField,
+  Snackbar,
+  Text,
+  Toggle,
+} from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
+import React, { useCallback, useContext, useEffect, useState } from "react";
+import { Link, match } from "react-router-dom";
+import PageContent, { EnumPageWidth } from "../Layout/PageContent";
+import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
-import * as models from "../models";
-import {
-  Dialog,
-  SearchField,
-  Snackbar,
-  CircularProgress,
-  LimitationNotification,
-  Toggle,
-} from "@amplication/ui/design-system";
-import NewEntity from "./NewEntity";
 import { EntityListItem } from "./EntityListItem";
-import PageContent from "../Layout/PageContent";
+import NewEntity from "./NewEntity";
 
-import { Button, EnumButtonStyle } from "../Components/Button";
-import "./EntityList.scss";
-import { AppRouteProps } from "../routes/routesUtil";
-import { pluralize } from "../util/pluralize";
-import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../util/BillingFeature";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import usePlugins from "../Plugins/hooks/usePlugins";
+import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { AppContext } from "../context/appContext";
+import { AppRouteProps } from "../routes/routesUtil";
+import { BillingFeature } from "../util/BillingFeature";
+import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
+import "./EntityList.scss";
 
 type TData = {
   entities: models.Entity[];
@@ -127,23 +136,39 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
     formatError(errorLoading) || (error && formatError(error));
 
   return match.isExact ? (
-    <PageContent className={CLASS_NAME} pageTitle={pageTitle}>
+    <PageContent
+      className={CLASS_NAME}
+      pageTitle={pageTitle}
+      pageWidth={
+        displayMode === "table" ? EnumPageWidth.Default : EnumPageWidth.Full
+      }
+    >
       <>
         <Dialog
-          className="new-entity-dialog"
           isOpen={newEntity}
           onDismiss={handleNewEntityClick}
           title="New Entity"
         >
           <NewEntity resourceId={resource} onSuccess={handleNewEntityClick} />
         </Dialog>
-        <div className={`${CLASS_NAME}__header`}>
-          <SearchField
-            label="search"
-            placeholder="search"
-            onChange={handleSearchChange}
-          />
-          <div className={`${CLASS_NAME}__action-buttons`}>
+
+        <FlexItem
+          contentAlign={EnumContentAlign.Center}
+          itemsAlign={EnumItemsAlign.Center}
+        >
+          <FlexItem.FlexStart>
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          </FlexItem.FlexStart>
+
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            contentAlign={EnumContentAlign.Center}
+            itemsAlign={EnumItemsAlign.Center}
+          >
             <svg
               width="16"
               height="16"
@@ -161,6 +186,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
 
             <Toggle
               value={displayMode === "graph"}
+              defaultChecked={displayMode === "graph"}
               onValueChange={(isGraph) =>
                 setDisplayMode(isGraph ? "graph" : "table")
               }
@@ -179,42 +205,45 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 fill={displayMode === "graph" ? "white" : "#686F8C"}
               />
             </svg>
-          </div>
-          <div className={`${CLASS_NAME}__action-buttons`}>
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
-            >
-              <Button
-                className={`${CLASS_NAME}__install`}
-                buttonStyle={EnumButtonStyle.Secondary}
-                icon="upload1"
-                eventData={{
-                  eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                }}
+          </FlexItem>
+          <FlexItem.FlexEnd>
+            <FlexItem direction={EnumFlexDirection.Row}>
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                Upload Prisma Schema
+                <Button
+                  className={`${CLASS_NAME}__install`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  eventData={{
+                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                  }}
+                >
+                  Upload Prisma Schema
+                </Button>
+              </Link>
+              <Button
+                className={`${CLASS_NAME}__add-button`}
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleNewEntityClick}
+              >
+                Add entity
               </Button>
-            </Link>
-            <Button
-              className={`${CLASS_NAME}__add-button`}
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleNewEntityClick}
-              icon="plus"
-            >
-              Add entity
-            </Button>
-          </div>
-        </div>
+            </FlexItem>
+          </FlexItem.FlexEnd>
+        </FlexItem>
 
-        <div className={`${CLASS_NAME}__separator`} />
+        <HorizontalRule doubleSpacing />
+
         {loading && <CircularProgress centerToParent />}
         <>
           {displayMode === "table" ? (
             <>
-              <div className={`${CLASS_NAME}__title`}>
-                {data?.entities.length}{" "}
-                {pluralize(data?.entities.length, "Entity", "Entities")}
-              </div>
+              <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                <Text textStyle={EnumTextStyle.Tag}>
+                  {data?.entities.length}{" "}
+                  {pluralize(data?.entities.length, "Entity", "Entities")}
+                </Text>
+              </FlexItem>
 
               {!hideNotifications.hasAccess && (
                 <LimitationNotification
@@ -224,7 +253,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                 />
               )}
 
-              <div className={`${CLASS_NAME}__content`}>
+              <List>
                 {data?.entities.map((entity) => (
                   <EntityListItem
                     key={entity.id}
@@ -241,7 +270,7 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
                     )}
                   />
                 ))}
-              </div>
+              </List>
             </>
           ) : (
             <EntitiesERD resourceId={resource} />

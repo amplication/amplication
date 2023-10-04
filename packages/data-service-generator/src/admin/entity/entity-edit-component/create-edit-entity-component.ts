@@ -6,6 +6,7 @@ import {
   EnumDataType,
   EntityField,
   LookupResolvedProperties,
+  EntityComponent,
 } from "@amplication/code-gen-types";
 import {
   addImports,
@@ -16,7 +17,6 @@ import {
 } from "../../../utils/ast";
 import { relativeImportPath } from "../../../utils/module";
 import { readFile } from "@amplication/code-gen-utils";
-import { EntityComponent } from "../../types";
 import { createFieldInput } from "../create-field-input";
 import { jsxFragment } from "../../util";
 

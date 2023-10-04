@@ -1,25 +1,24 @@
 @import "../../style/index.scss";
 
 .amp-breadcrumbs {
-  li {
-    &:after {
-      color: var(--black20);
-    }
-    a,
-    a span {
-      @include body2;
-      @include semiBold;
-      color: var(--primary);
+  &__link {
+    color: var(--gray-20);
+    text-decoration: none !important;
+    font-size: var(--default-font-size);
 
-      &:visited,
-      &:active,
-      &:hover {
-        color: var(--primary);
-      }
-
-      &.selected {
-        color: var(--black60);
-      }
+    &:hover {
+      text-decoration: none;
     }
+  }
+
+  &__item_wrapper:last-child {
+    .amp-text {
+      color: var(--gray-base);
+    }
+  }
+  &__separator {
+    color: var(--gray-20);
+    margin-left: var(--icon-spacing);
+    margin-right: var(--icon-spacing);
   }
 }

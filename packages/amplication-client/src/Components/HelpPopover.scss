@@ -6,9 +6,9 @@
 
   .amp-popover__inner-content {
     @include body2;
-    background-color: var(--white);
+    background-color: var(--gray-full);
     padding: var(--default-spacing);
-    color: var(--black100);
+    color: var(--gray-base);
   }
   &__details {
     display: flex;
@@ -29,19 +29,19 @@
 
   .rmwc-tooltip-inner {
     @include body2;
-    background-color: var(--white);
+    background-color: var(--gray-full);
     padding: 0;
   }
 
-  --mdc-theme-on-surface: var(--white);
+  --mdc-theme-on-surface: var(--gray-full);
 
   .amp-popover {
     &__content {
-      color: var(--black100);
+      color: var(--gray-base);
       padding: var(--large-spacing);
 
       a {
-        color: var(--white);
+        color: var(--gray-full);
       }
     }
   }
