@@ -52,7 +52,8 @@
         ],
         "styles": ["packages/amplication-client/src/index.scss"],
         "scripts": [],
-        "webpackConfig": "@nx/react/plugins/webpack"
+        "isolatedConfig": true,
+        "webpackConfig": "packages/amplication-client/webpack.config.js"
       },
       "configurations": {
         "development": {
