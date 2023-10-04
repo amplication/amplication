@@ -53,9 +53,9 @@ $step-status-width: 20px;
   &__body {
     flex: 1;
     overflow: auto;
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
     &::-webkit-scrollbar-thumb {
-      background-color: var(--black60);
+      background-color: var(--gray-30);
     }
 
     box-sizing: border-box;
@@ -77,11 +77,11 @@ $step-status-width: 20px;
       width: $step-status-width;
 
       &--success {
-        color: var(--positive-default);
+        color: var(--theme-green);
       }
 
       &--failed {
-        color: var(--negative);
+        color: var(--theme-red);
       }
 
       &--running {
@@ -106,9 +106,9 @@ $step-status-width: 20px;
   }
 
   .react-lazylog {
-    color: var(--black10);
+    color: var(--gray-70);
     background-color: var(--action-log-background-color);
-    @include scrollbars($default-scroll-width, var(--black60), transparent);
+    @include scrollbars($default-scroll-width, var(--gray-30), transparent);
 
     .log-line {
       //line number

@@ -3,6 +3,7 @@ import YAML from "yaml";
 import { gql, useQuery } from "@apollo/client";
 import ReactDiffViewer, {
   DiffMethod,
+  ReactDiffViewerStylesOverride,
 } from "@amplication/react-diff-viewer-continued";
 import * as models from "../models";
 import "./PendingChangeDiff.scss";
@@ -36,7 +37,7 @@ type Props = {
   splitView: boolean;
 };
 
-export const DIFF_STYLES = {
+export const DIFF_STYLES: ReactDiffViewerStylesOverride = {
   variables: {
     light: {
       diffViewerBackground: "var(--diffViewerBackground)",
@@ -64,6 +65,12 @@ export const DIFF_STYLES = {
       diffViewerTitleColor: "var(--diffViewerTitleColor)",
       diffViewerTitleBorderColor: "var(--diffViewerTitleBorderColor)",
     },
+  },
+};
+
+export const UNIFIED_VIEW_STYLE: ReactDiffViewerStylesOverride = {
+  titleBlock: {
+    padding: "0",
   },
 };
 
@@ -119,12 +126,14 @@ const PendingChangeDiffEntity = ({
         <CircularProgress centerToParent />
       ) : (
         <ReactDiffViewer
-          styles={DIFF_STYLES}
+          styles={
+            splitView ? DIFF_STYLES : { ...DIFF_STYLES, ...UNIFIED_VIEW_STYLE }
+          }
           compareMethod={DiffMethod.WORDS}
           oldValue={otherValue}
           newValue={newValue}
-          leftTitle={splitView ? "This Version" : undefined}
-          rightTitle="Previous Version"
+          leftTitle={splitView ? "Previous Version" : undefined}
+          rightTitle="This Version"
           splitView={splitView}
         />
       )}

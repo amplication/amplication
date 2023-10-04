@@ -7,7 +7,7 @@
   }
 
   &__menu-list {
-    background-color: var(--white);
+    background-color: var(--gray-full);
     padding: 0;
   }
 
@@ -30,7 +30,7 @@
       transition: border-color 0.2s ease-in, color 0.2s ease-in;
 
       .select-field__single-value {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
     .select-field__input {
@@ -50,24 +50,24 @@
   }
 
   .select-field__single-value {
-    color: var(--black60);
+    color: var(--gray-30);
   }
 
   &--has-error {
     .select-field__control {
-      border-color: var(--negative);
+      border-color: var(--theme-red);
 
       &:active,
       &:hover,
       &:focus {
-        border-color: var(--negative);
+        border-color: var(--theme-red);
       }
     }
   }
 
   .select-field__option {
-    color: var(--black60);
-    background-color: var(--white);
+    color: var(--gray-30);
+    background-color: var(--gray-full);
     @include flexFullRow;
     justify-content: flex-start;
     padding: var(--default-spacing-small);
@@ -76,10 +76,10 @@
       padding-right: var(--default-spacing);
     }
     &:hover {
-      background-color: var(--black5);
+      background-color: var(--gray-80);
     }
     &--is-focused {
-      background-color: var(--black5);
+      background-color: var(--gray-80);
     }
     &--is-selected {
       color: var(--primary);

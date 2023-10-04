@@ -25,7 +25,7 @@ const PendingChangeWithCompare = ({
 }: Props) => {
   return (
     <PanelCollapsible
-      initiallyOpen
+      initiallyOpen={false}
       className={CLASS_NAME}
       headerContent={<PendingChange change={change} />}
     >

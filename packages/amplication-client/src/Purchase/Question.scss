@@ -1,7 +1,7 @@
 @import "../style/index.scss";
 
 .question {
-  border: 1px solid var(--black10);
+  border: 1px solid var(--gray-70);
   border-radius: 8px;
 
   &__header {
@@ -21,7 +21,7 @@
     margin: 0 var(--large-spacing);
     height: 1px;
     border: none;
-    background-color: var(--black10);
+    background-color: var(--gray-70);
   }
 
   &__answer {

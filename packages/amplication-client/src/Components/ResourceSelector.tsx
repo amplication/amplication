@@ -31,7 +31,7 @@ const ResourceSelector = ({
       </div>
       <SelectMenu
         title={<ResourceSelectorItem resource={selectedResource} />}
-        buttonStyle={EnumButtonStyle.Secondary}
+        buttonStyle={EnumButtonStyle.Outline}
         className={`${CLASS_NAME}__menu`}
         icon="chevron_down"
       >

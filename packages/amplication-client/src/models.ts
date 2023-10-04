@@ -647,6 +647,7 @@ export enum EnumActionStepStatus {
 }
 
 export enum EnumAuthProviderType {
+  Auth0 = 'Auth0',
   Http = 'Http',
   Jwt = 'Jwt'
 }
@@ -1516,6 +1517,7 @@ export type PluginSetOrderInput = {
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
   demoRepoName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;

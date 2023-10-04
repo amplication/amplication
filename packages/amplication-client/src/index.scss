@@ -1,13 +1,11 @@
-@import "./style/css-variables.css";
-@import "./style/light-css-variables.css";
 @import "./style/dark-css-variables.css";
-@import "./style/css-variables.css";
 @import "./style/index.scss";
 
 body {
-  color: var(--black100);
+  color: var(--gray-base);
   -moz-osx-font-smoothing: auto;
   -webkit-font-smoothing: subpixel-antialiased;
+  background-color: var(--surface);
 }
 
 #root {
@@ -47,12 +45,12 @@ a:focus {
   width: var(--default-spacing);
 }
 ::-webkit-scrollbar-button {
-  background-color: var(--black10);
+  background-color: var(--gray-70);
 }
 ::-webkit-scrollbar-track {
-  background-color: var(--black5);
+  background-color: var(--gray-80);
 }
 
 ::-webkit-scrollbar-thumb {
-  background-color: var(--black40);
+  background-color: var(--gray-40);
 }

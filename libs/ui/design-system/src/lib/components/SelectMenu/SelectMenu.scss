@@ -6,24 +6,24 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 .select-menu {
   & &__item {
     border-bottom: none;
-    color: var(--black80);
-    background-color: var(--black2);
+    color: var(--gray-20);
+    background-color: var(--gray-90);
     flex-direction: row-reverse;
     justify-content: space-between;
 
     &--selected,
     &[aria-checked="true"] {
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &:hover {
-      background-color: var(--black5);
+      background-color: var(--gray-80);
     }
   }
 
   & &__modal {
     > div {
-      border: $border-black30;
+      border: $border-dark;
       box-shadow: $dropdown-box-shadow;
       border-radius: var(--default-border-radius);
       position: relative;
@@ -31,14 +31,14 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 
       & > div {
         border-radius: var(--default-border-radius);
-        background: var(--black2);
+        background: var(--gray-90);
       }
     }
 
     .select-menu__filter {
       padding: var(--default-spacing);
       padding-left: 0;
-      border-bottom: $border-black10;
+      border-bottom: $border-dark;
     }
   }
 }

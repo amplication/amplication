@@ -15,7 +15,7 @@
 
     &__message {
       @include regular-12;
-      color: var(--black100);
+      color: var(--gray-base);
       white-space: nowrap;
       text-overflow: ellipsis;
       overflow: hidden;
@@ -23,7 +23,7 @@
 
     &__created {
       @include regular-10;
-      color: var(--black80);
+      color: var(--gray-20);
     }
   }
 }

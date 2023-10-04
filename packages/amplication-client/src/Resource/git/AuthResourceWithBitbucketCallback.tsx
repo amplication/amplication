@@ -1,11 +1,10 @@
 import { useEffect } from "react";
-import { useTracking } from "../../util/analytics";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
+import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
 import {
   EnumGitProvider,
   useCompleteGitOAuth2FlowMutation,
 } from "../../models";
-import { GET_PROJECTS } from "../../Workspaces/queries/projectQueries";
+import { useTracking } from "../../util/analytics";
 
 const AuthResourceWithBitbucketCallback = () => {
   const { trackEvent } = useTracking();

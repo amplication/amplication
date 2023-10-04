@@ -1,4 +1,4 @@
-name: Deployment production
+name: Deployment Production
 
 on:
   release:
@@ -12,6 +12,7 @@ jobs:
     name: Preparation
     runs-on: ubuntu-20.04
     outputs:
+      previous-tag: ${{ steps.base.outputs.tag }}
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
       affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
@@ -27,16 +28,16 @@ jobs:
 
       - name: Determine base tag
         run: |
-          TAG=$(git tag --sort=-creatordate | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
-          echo "Base tag used for calculating the affected projects: $TAG"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          PREVIOUS_TAG=$(git tag --sort=-v:refname | grep -v ^dsg/ | grep -A 1 ^${{ github.ref_name }} | tail -n 1)
+          echo "🏷️ PREVIOUS_TAG=$PREVIOUS_TAG (used to detect the affected projects)"
+          echo "tag=$PREVIOUS_TAG" >> $GITHUB_OUTPUT
         id: base
-        
+
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
 
       - name: Cache global node modules
         id: cache-node-modules
@@ -50,18 +51,20 @@ jobs:
       - name: Install dependencies
         if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
-        
+
       - name: Evaluate affected projects
         id: configure-nx
+        env:
+          NX_EXCLUDE: "--exclude=data-service-generator"
         run: |
-          echo affected-apps=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-lib=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-e2e=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-package-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-static=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
-          echo affected-deploy-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-apps=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=app $NX_FORCE_ALL ${NX_EXCLUDE} | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-lib=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --type=lib $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-e2e=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=e2e $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-package-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=package:container --type=app $NX_FORCE_ALL $NX_EXCLUDE | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-static=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:static --type=app $NX_FORCE_ALL $NX_EXCLUDE  | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-deploy-container=$(npx nx print-affected --base=${{ steps.base.outputs.tag }} --target=deploy:container --type=app $NX_FORCE_ALL $NX_EXCLUDE  | jq -c .projects) >> $GITHUB_OUTPUT
           cat $GITHUB_OUTPUT | grep affected
-  
+
   package:
     name: Package
     runs-on: ubuntu-20.04
@@ -77,10 +80,10 @@ jobs:
 
       - uses: actions/setup-node@v3
         with:
-          node-version-file: 'package.json'
-          cache: 'npm'
-          cache-dependency-path: '**/package-lock.json'
-      
+          node-version-file: "package.json"
+          cache: "npm"
+          cache-dependency-path: "**/package-lock.json"
+
       - name: Cache global node modules
         id: cache-node-modules
         uses: actions/cache@v3
@@ -104,7 +107,7 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
-          mask-password: 'true'
+          mask-password: "true"
           registries: "439403303254"
 
       # https://github.com/docker/metadata-action
@@ -119,7 +122,7 @@ jobs:
       # https://www.npmjs.com/package/@nx-tools/nx-docker
       # GIT_REF_NAME and GIT_SHA variables are substituted in the project.json docker target build-args
       - name: Package
-        run: npx nx package:container ${{ matrix.project }} --prod 
+        run: npx nx package:container ${{ matrix.project }} --prod
         env:
           INPUT_TAGS: ${{ steps.meta.outputs.tags }}
           INPUT_PUSH: true
@@ -138,7 +141,7 @@ jobs:
         with:
           repository: "amplication/amplication-cluster-configuration"
           token: "${{ secrets.PAT }}"
-          fetch-depth: '0'
+          fetch-depth: "0"
 
       - name: Setup yq
         uses: mikefarah/yq@v4.30.8
@@ -150,7 +153,7 @@ jobs:
 
           for i in $array; do
             project=$(echo $i | sed -e "s/^amplication-//")
-            yq -i '.$project.image.tag = "${{ github.ref_name }}"' production/applications/$project/values.yaml
+            yq -i ".$project.image.tag = \"${{ github.ref_name }}\"" production/applications/$project/values.yaml
             git add production/applications/$project/values.yaml
           done
 
@@ -164,7 +167,7 @@ jobs:
           body: |
             This pull request was generated as a result of the `deployment.production.yml` workflow on the source code repository which is triggered when a release is created. This subsequently checksout the components that have been changed between this release and the previous one. Based on the affected projects it changes the image.tag where applicable. After merging this pull request, navigate to our argocd and synchronize the changes that are pending (make sure these are "correct/expected").
 
-            Image to bump from `${{ needs.preparation.outputs.base_tag }}` to `${{ github.ref_name }}`
+            Image to bump from `${{ needs.preparation.outputs.previous-tag }}` to `${{ github.ref_name }}`
 
             Note: after merging you will still need to do a manual sync of the applications that are in the `argocd project` called `applications`. 
 

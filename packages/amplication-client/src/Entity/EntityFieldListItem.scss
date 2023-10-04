@@ -14,7 +14,7 @@
   }
   &__description-row {
     padding-bottom: var(--default-spacing);
-    border-bottom: 1px solid var(--black10);
+    border-bottom: 1px solid var(--gray-70);
   }
   &__title {
     @include bold-14;
@@ -24,16 +24,16 @@
     font-style: italic;
     text-transform: capitalize;
     font-weight: 400;
-    color: var(--dark-secondary-turquoise);
+    color: var(--theme-turquoise);
   }
   &__description {
     @include body2;
-    color: var(--black100);
+    color: var(--gray-base);
     line-height: 18px;
   }
   &__property {
-    color: var(--positive-default);
-    border: 1px solid var(--positive-default);
+    color: var(--theme-green);
+    border: 1px solid var(--theme-green);
     height: 20px;
     border-radius: 10px;
     display: flex;
@@ -50,7 +50,7 @@
     display: flex;
     align-items: center;
     justify-content: flex-start;
-    color: var(--black100);
+    color: var(--gray-base);
 
     .amp-icon {
       margin-right: var(--icon-spacing);

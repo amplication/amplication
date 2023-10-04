@@ -54,7 +54,7 @@ Builds the app. The distributable is expored to the `dist` folder in the reposit
 npx nx build amplication-client 
 ```
 
-To build the app for production pass the optional `--production` paramater
+To build the app for production pass the optional `--production` parameter
 
 ```
 npx nx build amplication-client --production

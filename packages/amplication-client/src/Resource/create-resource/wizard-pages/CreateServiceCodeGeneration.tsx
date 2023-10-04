@@ -176,7 +176,7 @@ const CreateServiceCodeGeneration: React.FC<
                 Try again
               </Button>
               <Button
-                buttonStyle={EnumButtonStyle.Clear}
+                buttonStyle={EnumButtonStyle.Text}
                 onClick={handleContinueClick}
               >
                 Continue anyway
@@ -210,7 +210,7 @@ const CreateServiceCodeGeneration: React.FC<
               <a href={gitUrl} target="docs">
                 <Button
                   type="button"
-                  buttonStyle={EnumButtonStyle.Clear}
+                  buttonStyle={EnumButtonStyle.Outline}
                   onClick={handleViewCodeClick}
                 >
                   View my code

@@ -1,5 +1,8 @@
-import { ModuleMap } from "@amplication/code-gen-types";
-import { EntityComponent, EntityComponents } from "../types";
+import {
+  EntityComponent,
+  EntityComponents,
+  ModuleMap,
+} from "@amplication/code-gen-types";
 import { createEntityComponentModule } from "./create-entity-component-module";
 import DsgContext from "../../dsg-context";
 
