@@ -360,7 +360,7 @@ describe("schema-utils", () => {
       expect(() => {
         findFkFieldNameOnAnnotatedField(field);
       }).toThrow(
-        `Missing fields attribute on relation attribute on field ${field.name}`
+        `Missing the 'args' attribute in the relation attribute "${field.name}"`
       );
     });
 
@@ -385,7 +385,7 @@ describe("schema-utils", () => {
       expect(() => {
         findFkFieldNameOnAnnotatedField(field);
       }).toThrow(
-        `Relation attribute on field ${field.name} has more than one field, which is not supported`
+        `The relation attribute on field "${field.name}" contains multiple fields. Only one single field is supported`
       );
     });
 
