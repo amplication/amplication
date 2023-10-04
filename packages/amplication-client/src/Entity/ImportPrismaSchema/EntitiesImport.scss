@@ -67,7 +67,7 @@ $max-width: 700px;
   &__link-button {
     @include body2;
     a {
-      color: var(--dark-secondary-turquoise);
+      color: var(--theme-turquoise);
     }
   }
 }
