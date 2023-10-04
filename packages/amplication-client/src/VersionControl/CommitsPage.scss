@@ -5,7 +5,7 @@ $svg-img-height: 200px;
 .commits-page {
   &__header {
     @include flexFullRowWithSpacing;
-    color: var(--black80);
+    color: var(--gray-20);
     align-items: center;
     margin-bottom: var(--default-spacing);
 
@@ -15,13 +15,13 @@ $svg-img-height: 200px;
 
     .truncated-id {
       @include semiBold;
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     .clickable-id {
-      color: var(--black80);
+      color: var(--gray-20);
       a {
-        color: var(--black100);
+        color: var(--gray-base);
       }
     }
   }
@@ -36,7 +36,7 @@ $svg-img-height: 200px;
   }
   &__commit-message {
     margin-bottom: var(--double-spacing);
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   .pending-change-with-compare {

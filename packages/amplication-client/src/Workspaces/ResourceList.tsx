@@ -1,52 +1,58 @@
-import React, { useCallback, useContext, useState } from "react";
-import { gql, Reference, useMutation, useQuery } from "@apollo/client";
-import { isEmpty } from "lodash";
-import { formatError } from "../util/error";
-import { useTracking } from "../util/analytics";
 import {
+  CircleBadge,
+  CircularProgress,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumPanelStyle,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  LimitationNotification,
+  List,
+  Panel,
   SearchField,
   Snackbar,
-  CircularProgress,
-  LimitationNotification,
+  Text,
 } from "@amplication/ui/design-system";
-import { EnumImages } from "../Components/SvgThemeImage";
-import * as models from "../models";
-import ResourceListItem from "./ResourceListItem";
-import "./ResourceList.scss";
-import { AppContext } from "../context/appContext";
+import { Reference, gql, useMutation } from "@apollo/client";
+import { useStiggContext } from "@stigg/react-sdk";
+import { isEmpty } from "lodash";
+import { useCallback, useContext, useState } from "react";
 import CreateResourceButton from "../Components/CreateResourceButton";
 import { EmptyState } from "../Components/EmptyState";
-import { pluralize } from "../util/pluralize";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { GET_CURRENT_WORKSPACE } from "./queries/workspaceQueries";
-import { useStiggContext } from "@stigg/react-sdk";
+import { EnumImages } from "../Components/SvgThemeImage";
+import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
 import { BillingFeature } from "../util/BillingFeature";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import { pluralize } from "../util/pluralize";
+import ResourceListItem from "./ResourceListItem";
 
 type TDeleteResourceData = {
   deleteResource: models.Resource;
 };
 
-type TDeleteProjectData = {
-  deleteProject: models.Project;
-};
-
-type GetWorkspaceResponse = {
-  currentWorkspace: models.Workspace;
-};
-
 const CLASS_NAME = "resource-list";
+const PAGE_TITLE = "Project Overview";
 
 function ResourceList() {
   const { trackEvent } = useTracking();
+
   const [error, setError] = useState<Error | null>(null);
+
   const {
     resources,
-    projectConfigurationResource,
     addEntity,
     handleSearchChange,
     loadingResources,
     errorResources,
     currentProject,
+    currentWorkspace,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
@@ -77,24 +83,6 @@ function ResourceList() {
     },
   });
 
-  const [deleteProject] = useMutation<TDeleteProjectData>(DELETE_PROJECT, {
-    update(cache, { data }) {
-      if (!data) return;
-      const deletedProjectId = data.deleteProject.id;
-
-      cache.modify({
-        fields: {
-          projects(existingProjectRefs, { readField }) {
-            return existingProjectRefs.filter(
-              (projectRef: Reference) =>
-                deletedProjectId !== readField("id", projectRef)
-            );
-          },
-        },
-      });
-    },
-  });
-
   const handleResourceDelete = useCallback(
     (resource) => {
       trackEvent({
@@ -112,24 +100,6 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const handleProjectDelete = useCallback(() => {
-    trackEvent({
-      eventName: AnalyticsEventNames.ProjectDelete,
-    });
-    deleteProject({
-      onCompleted: () => {
-        addEntity();
-      },
-      variables: {
-        projectId: currentProject.id,
-      },
-    }).catch(setError);
-  }, [currentProject, deleteProject, setError, trackEvent]);
-
-  const { data: getWorkspaceData } = useQuery<GetWorkspaceResponse>(
-    GET_CURRENT_WORKSPACE
-  );
-
   const { stigg } = useStiggContext();
   const hideNotifications = stigg.getBooleanEntitlement({
     featureId: BillingFeature.HideNotifications,
@@ -139,66 +109,77 @@ function ResourceList() {
     formatError(errorResources) || (error && formatError(error));
 
   return (
-    <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__header`}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-
-        <CreateResourceButton />
-      </div>
-      <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>Project Settings</div>
-
-      <div className={`${CLASS_NAME}__settings`}>
-        {!loadingResources && projectConfigurationResource && (
-          <ResourceListItem
-            resource={projectConfigurationResource}
-            onDelete={handleProjectDelete}
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <FlexItem
+        start={
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
           />
-        )}
-      </div>
-      <hr className={`${CLASS_NAME}__separator`} />
-      <div className={`${CLASS_NAME}__title`}>
-        {resources.length}{" "}
-        {pluralize(resources.length, "Resource", "Resources")}
-      </div>
+        }
+        end={<CreateResourceButton />}
+      />
+      <HorizontalRule doubleSpacing />
+
+      <Panel panelStyle={EnumPanelStyle.Bold}>
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
+          start={
+            <CircleBadge size="xlarge" name={currentProject?.name || ""} />
+          }
+        >
+          <FlexItem
+            direction={EnumFlexDirection.Column}
+            gap={EnumGapSize.Small}
+          >
+            <Text textStyle={EnumTextStyle.H3}>{currentProject?.name}</Text>
+            <Text textStyle={EnumTextStyle.Description}>
+              {currentProject?.description}
+            </Text>
+          </FlexItem>
+        </FlexItem>
+      </Panel>
+      <FlexItem margin={EnumFlexItemMargin.Bottom}>
+        <Text textStyle={EnumTextStyle.Tag}>
+          {resources.length}{" "}
+          {pluralize(resources.length, "Resource", "Resources")}
+        </Text>
+      </FlexItem>
       {loadingResources && <CircularProgress centerToParent />}
 
       {!hideNotifications.hasAccess && (
         <LimitationNotification
           description="With the current plan, you can use up to 3 services."
-          link={`/${getWorkspaceData.currentWorkspace.id}/purchase`}
+          link={`/${currentWorkspace?.id}/purchase`}
           handleClick={handleResourceClick}
         />
       )}
 
-      <div className={`${CLASS_NAME}__content`}>
-        {isEmpty(resources) && !loadingResources ? (
-          <EmptyState
-            message="There are no resources to show"
-            image={EnumImages.AddResource}
-          />
-        ) : (
-          !loadingResources &&
-          resources.map((resource) => (
-            <ResourceListItem
-              key={resource.id}
-              resource={resource}
-              onDelete={handleResourceDelete}
-            />
-          ))
-        )}
-      </div>
+      {isEmpty(resources) && !loadingResources ? (
+        <EmptyState
+          message="There are no resources to show"
+          image={EnumImages.AddResource}
+        />
+      ) : (
+        <List>
+          {!loadingResources &&
+            resources.map((resource) => (
+              <ResourceListItem
+                key={resource.id}
+                resource={resource}
+                onDelete={handleResourceDelete}
+              />
+            ))}
+        </List>
+      )}
 
       <Snackbar
         open={Boolean(error || errorResources)}
         message={errorMessage}
         onClose={clearError}
       />
-    </div>
+    </PageContent>
   );
 }
 
@@ -207,14 +188,6 @@ export default ResourceList;
 const DELETE_RESOURCE = gql`
   mutation deleteResource($resourceId: String!) {
     deleteResource(where: { id: $resourceId }) {
-      id
-    }
-  }
-`;
-
-const DELETE_PROJECT = gql`
-  mutation deleteProject($projectId: String!) {
-    deleteProject(where: { id: $projectId }) {
       id
     }
   }

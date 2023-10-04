@@ -1,19 +1,12 @@
 import { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
-import { useQuery } from "@apollo/client";
 
-import * as models from "../models";
-import {
-  CircularProgress,
-  Button,
-  EnumButtonStyle,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 
-import { GET_TOPICS } from "../Topics/TopicList";
-import { useTracking } from "../util/analytics";
-import OverviewSecondaryTile from "./OverviewSecondaryTile";
 import { AppContext } from "../context/appContext";
+import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
+import OverviewSecondaryTile from "./OverviewSecondaryTile";
 
 type Props = {
   resourceId: string;
@@ -22,13 +15,7 @@ type Props = {
 function TopicsTile({ resourceId }: Props) {
   const history = useHistory();
   const { currentWorkspace, currentProject } = useContext(AppContext);
-  const { data, loading } = useQuery<{
-    Topics: models.Topic[];
-  }>(GET_TOPICS, {
-    variables: {
-      where: { resource: { id: resourceId } },
-    },
-  });
+
   const { trackEvent } = useTracking();
 
   const handleClick = useCallback(() => {
@@ -42,24 +29,15 @@ function TopicsTile({ resourceId }: Props) {
     <OverviewSecondaryTile
       icon="topics_outline"
       title="Topics"
-      headerExtra={
-        loading ? (
-          <CircularProgress centerToParent />
-        ) : (
-          <>
-            {data?.Topics.length}
-            {data && data?.Topics.length > 1 ? " topics" : " topic"}
-          </>
-        )
-      }
-      message="Create topics and define properties."
+      message="Create topics to send and receive messages between services."
       footer={
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           type="button"
           onClick={handleClick}
+          style={{ minWidth: "140px" }}
         >
-          Go to topics
+          Go to Topics
         </Button>
       }
     />

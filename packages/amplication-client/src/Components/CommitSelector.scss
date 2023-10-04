@@ -3,12 +3,12 @@
 .commit-selector {
   &__label-title {
     padding-bottom: var(--icon-spacing);
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   &__hour {
     @include regular-8;
-    color: var(--black80);
+    color: var(--gray-20);
   }
 
   .select-menu {

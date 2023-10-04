@@ -159,7 +159,7 @@ const CREATE_SERVICE_STEPS: WizardStep[] = [
   },
 ];
 
-const PLUGIN_LOGO_BASE_URL =
+export const PLUGIN_LOGO_BASE_URL =
   "https://raw.githubusercontent.com/amplication/plugin-catalog/master/assets/icons/";
 const CREATE_SERVICE_PATTERN = CREATE_SERVICE_STEPS.map((step) => step.index);
 
@@ -195,6 +195,10 @@ const CreateServiceWizard: React.FC<Props> = ({
   });
   const MysqlPng = ImgSvg({
     image: `${PLUGIN_LOGO_BASE_URL}db-mysql.png`,
+    imgSize: "large",
+  });
+  const MsSqlPng = ImgSvg({
+    image: `${PLUGIN_LOGO_BASE_URL}db-mssql.png`,
     imgSize: "large",
   });
 
@@ -499,6 +503,7 @@ const CreateServiceWizard: React.FC<Props> = ({
           PostgresPng={PostgresPng}
           MongoPng={MongoPng}
           MysqlPng={MysqlPng}
+          MsSqlPng={MsSqlPng}
           moduleClass={moduleClass}
           trackWizardPageEvent={trackWizardPageEvent}
         />

@@ -110,7 +110,6 @@ const NewProject = ({ onProjectCreated }: Props) => {
                 autoComplete="off"
               />
               <Button
-                className={CLASS_NAME}
                 type="submit"
                 buttonStyle={EnumButtonStyle.Primary}
                 disabled={!formik.isValid || loading}

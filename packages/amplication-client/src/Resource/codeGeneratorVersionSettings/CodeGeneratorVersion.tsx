@@ -1,23 +1,32 @@
+import {
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumPanelStyle,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  List,
+  Panel,
+  PanelCollapsible,
+  TabContentTitle,
+  Text,
+} from "@amplication/ui/design-system";
+import { useQuery } from "@apollo/client";
+import { useCallback, useContext, useMemo } from "react";
+import { AppContext } from "../../context/appContext";
+import * as models from "../../models";
+import { DSGCatalog } from "./Catalog";
 import CodeGeneratorVersionForm, {
   CodeGenerationVersionSettings,
 } from "./CodeGeneratorVersionForm";
-import * as models from "../../models";
 import {
   GET_CODE_GENERATOR_VERSIONS,
   GET_CODE_GENERATOR_VERSION_FOR_LAST_BUILD,
   GET_CURRENT_CODE_GENERATOR_VERSION,
 } from "./queries";
-import { useQuery } from "@apollo/client";
-import { useCallback, useContext, useMemo } from "react";
-import "./CodeGeneratorVersion.scss";
-import { AppContext } from "../../context/appContext";
-import { Panel } from "@amplication/ui/design-system";
-import { useHistory } from "react-router-dom";
-import { useTracking } from "react-tracking";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import { DSGCatalog } from "./Catalog";
-
-const CLASS_NAME = "code-generator-version";
 
 export type CodeGeneratorVersionData = {
   name: string;
@@ -75,21 +84,8 @@ const defaultValues = (
 };
 
 const CodeGeneratorVersion = () => {
-  const { currentResource, currentWorkspace, updateCodeGeneratorVersion } =
+  const { currentResource, updateCodeGeneratorVersion } =
     useContext(AppContext);
-
-  const history = useHistory();
-  const { trackEvent } = useTracking();
-
-  const handleViewPlansClick = useCallback(() => {
-    history.push(`/${currentWorkspace.id}/purchase`, {
-      from: { pathname: window.location.pathname },
-    });
-    trackEvent({
-      eventName: AnalyticsEventNames.UpgradeFromCodeGeneratorVersionClick,
-      workspace: currentWorkspace.id,
-    });
-  }, [currentWorkspace, window.location.pathname]);
 
   const { data: currentCodeGeneratorVersion } = useQuery<TCodeGeneratorVersion>(
     GET_CURRENT_CODE_GENERATOR_VERSION,
@@ -171,68 +167,86 @@ const CodeGeneratorVersion = () => {
 
   return (
     <div>
-      <div className={`${CLASS_NAME}__header`}>
-        <h3>Code Generator Version Settings</h3>
-        <Panel>
-          <div className={`${CLASS_NAME}__message`}>
-            <div className={`${CLASS_NAME}__title`}>
-              Code generator version used for:
-              <ul>
-                <li>
-                  your last build:&nbsp;
-                  <strong>
-                    {codeGeneratorVersionLastBuild?.resource?.builds[0]
-                      ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]}
-                  </strong>
-                </li>
-                <li>
-                  current next build:&nbsp;
-                  <strong>
-                    {currentCodeGeneratorVersion?.getCodeGeneratorVersion?.name}
-                  </strong>
-                </li>
-              </ul>
-            </div>
+      <TabContentTitle
+        title="Code Generator Version Settings"
+        subTitle="Control the version of the code generator to be used
+                when generating the code."
+      />
+      <HorizontalRule />
 
-            <div className={`${CLASS_NAME}__explanation`}>
-              <div>
-                You can control the version of the code generator to be used
-                when generating the code.
-              </div>
-              <div>
-                New major versions may include breaking changes and updates to
-                major version of core frameworks like NodeJS, NestJS, Prisma,
-                etc.
-              </div>
-            </div>
+      <Panel panelStyle={EnumPanelStyle.Default}>
+        <FlexItem
+          direction={EnumFlexDirection.Column}
+          gap={EnumGapSize.Small}
+          margin={EnumFlexItemMargin.Bottom}
+        >
+          <Text textStyle={EnumTextStyle.Normal}>
+            New major versions may include breaking changes and updates to major
+            version of core frameworks like NodeJS, NestJS, Prisma, etc.
+          </Text>
+          <Text textStyle={EnumTextStyle.Normal}>
+            In case you are not ready to upgrade to a new major version, you can
+            select a specific Code Generator version
+          </Text>
+        </FlexItem>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Row}
+          itemsAlign={EnumItemsAlign.Center}
+        >
+          <Text textStyle={EnumTextStyle.Description}>
+            Version used on your last build:
+          </Text>
 
-            <div className={`${CLASS_NAME}__instructions`}>
-              In case you are not ready to upgrade to a new major version, you
-              can select a specific Code Generator version
-            </div>
-          </div>
-        </Panel>
-      </div>
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textColor={EnumTextColor.White}
+          >
+            {codeGeneratorVersionLastBuild?.resource?.builds[0]
+              ?.codeGeneratorVersion ?? codeGeneratorVersionNameList[0]}
+          </Text>
+        </FlexItem>
+        <FlexItem
+          gap={EnumGapSize.Small}
+          direction={EnumFlexDirection.Row}
+          itemsAlign={EnumItemsAlign.Center}
+          margin={EnumFlexItemMargin.Bottom}
+        >
+          <Text textStyle={EnumTextStyle.Description}>
+            Version for your next build
+          </Text>
 
+          <Text
+            textStyle={EnumTextStyle.Description}
+            textColor={EnumTextColor.ThemeTurquoise}
+          >
+            {currentCodeGeneratorVersion?.getCodeGeneratorVersion?.name}
+          </Text>
+        </FlexItem>
+      </Panel>
+
+      <FlexItem margin={EnumFlexItemMargin.Top} />
       <CodeGeneratorVersionForm
         onSubmit={handleSubmit}
-        onViewPlansClick={handleViewPlansClick}
         defaultValues={defaultValues(currentResource)}
         codeGeneratorVersionList={codeGeneratorVersionNameList}
       />
-      <hr className={`${CLASS_NAME}__divider`} />
 
-      <div className={`${CLASS_NAME}__catalog`}>
-        <h3>Versions History</h3>
-        {codeGeneratorVersionList?.versions.length &&
-          codeGeneratorVersionList.versions.map((version) => (
-            <DSGCatalog
-              name={version.name}
-              changelog={version.changelog}
-              key={version.name}
-            />
-          ))}
-      </div>
+      <HorizontalRule />
+
+      <PanelCollapsible headerContent={"Version History"}>
+        {codeGeneratorVersionList?.versions.length && (
+          <List>
+            {codeGeneratorVersionList.versions.map((version) => (
+              <DSGCatalog
+                name={version.name}
+                changelog={version.changelog}
+                key={version.name}
+              />
+            ))}
+          </List>
+        )}
+      </PanelCollapsible>
     </div>
   );
 };

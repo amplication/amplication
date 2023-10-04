@@ -1,8 +1,8 @@
 import { CircleBadge, Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
-import React, { useCallback } from "react";
+import { useCallback } from "react";
 import * as models from "../models";
-import { FREE_WORKSPACE_COLOR, getWorkspaceColor } from "./WorkspaceSelector";
+import { getWorkspaceColor } from "./WorkspaceSelector";
 
 const CLASS_NAME = "workspaces-selector__list__item";
 
