@@ -781,6 +781,7 @@ export class PrismaSchemaParserService {
 
       const hasUniqueFields = modelFields.some((field) => isUniqueField(field));
 
+      // the model has no id field, but it has unique field/s
       if (!hasIdField && hasUniqueFields) {
         const uniqueFieldAsIdFieldNamedId = modelFields.find(
           (field) =>
@@ -788,6 +789,7 @@ export class PrismaSchemaParserService {
             isValidIdFieldType(field.fieldType as string) &&
             isUniqueField(field)
         );
+        // first, we check if there is a unique field named id that can be converted to id field. If so, we prefer to use this field as id field
         if (uniqueFieldAsIdFieldNamedId) {
           convertUniqueFieldNamedIdToIdField(
             builder,
@@ -796,6 +798,7 @@ export class PrismaSchemaParserService {
             actionContext
           );
         } else {
+          // if there is no unique field named id, we check if there is another unique field that we can convert to id field
           const uniqueFieldAsIdFieldNotNamedId = modelFields.find(
             (field) =>
               field.name !== ID_FIELD_NAME &&
@@ -813,9 +816,11 @@ export class PrismaSchemaParserService {
             );
           }
         }
+        // the model has no id field and no unique field/s
       } else if (!hasIdField && !hasUniqueFields) {
         addIdFieldIfNotExists(builder, model, actionContext);
       } else {
+        // the model has an id field. There are two cases: field named id that is not an id field, or id field that is not named id
         const notIdFieldNamedId = modelFields.find(
           (field) =>
             field.name === ID_FIELD_NAME &&
