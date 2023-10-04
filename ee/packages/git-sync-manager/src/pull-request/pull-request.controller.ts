@@ -41,15 +41,7 @@ export class PullRequestController {
       value: {
         buildId: buildId,
         level: "info",
-        message: "Worker assigned!",
-      },
-    });
-    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
-      key,
-      value: {
-        buildId: buildId,
-        level: "info",
-        message: "Starting pull request creation...",
+        message: "Worker assigned. Starting pull request creation...",
       },
     });
   }
