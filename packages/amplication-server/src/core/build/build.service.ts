@@ -748,8 +748,9 @@ export class BuildService {
                 ? EnumPullRequestMode.Accumulative
                 : EnumPullRequestMode.Basic,
             isBranchPerResource:
-              branchPerResourceEntitlement &&
-              branchPerResourceEntitlement.hasAccess,
+              (branchPerResourceEntitlement &&
+                branchPerResourceEntitlement.hasAccess) ??
+              false,
           };
 
           const createPullRequestEvent: CreatePrRequest.KafkaEvent = {
