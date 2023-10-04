@@ -616,17 +616,14 @@ export class PrismaSchemaParserService {
 
       if (!modelIdAttribute) return builder;
 
-      // rename the @@id attribute to @@unique
-      builder.model(model.name).then<Model>((model) => {
-        modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
-      });
-
       void actionContext.onEmitUserActionLog(
-        `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
-        EnumActionLogLevel.Warning
+        `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`,
+        EnumActionLogLevel.Error
       );
 
-      handleIdFieldForModelsWithIdAttribute(model, builder, actionContext);
+      throw new Error(
+        `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`
+      );
     });
 
     return {
