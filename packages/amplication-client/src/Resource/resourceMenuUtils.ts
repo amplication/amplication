@@ -16,7 +16,6 @@ export const resourceMenuLayout: {
 } = {
   [EnumResourceType.Service]: [
     "entities",
-    "modules",
     "roles",
     "plugins",
     "git",
@@ -34,11 +33,6 @@ export const linksMap: {
     title: "Entities",
     icon: "entity_outline",
     to: "/entities",
-  },
-  modules: {
-    title: "Modules",
-    icon: "box",
-    to: "/modules",
   },
   roles: {
     title: "Roles",
