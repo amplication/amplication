@@ -648,174 +648,6 @@ describe("prismaSchemaParser", () => {
           expect(result).toEqual(expectedEntitiesWithFields);
         });
 
-        it("should add the @id attribute to a field if its name is id and there is id and @@id attribute on the model", async () => {
-          // arrange
-          const prismaSchema = `datasource db {
-            provider = "postgresql"
-            url      = env("DB_URL")
-          }
-          
-          generator client {
-            provider = "prisma-client-js"
-          }
-          
-          model Doctor {
-            id         Int   @default(autoincrement())
-            firstName   String    
-            lastName     String
-          
-            @@id([firstName, lastName])
-          }`;
-
-          const existingEntities: ExistingEntitySelect[] = [];
-          // act
-          const result = await service.convertPrismaSchemaForImportObjects(
-            prismaSchema,
-            existingEntities,
-            actionContext
-          );
-          // assert
-          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-            {
-              id: expect.any(String),
-              name: "Doctor",
-              displayName: "Doctor",
-              pluralDisplayName: "Doctors",
-              description: "",
-              customAttributes: "@@unique([firstName, lastName])",
-              fields: [
-                {
-                  permanentId: expect.any(String),
-                  name: "id",
-                  displayName: "Id",
-                  dataType: EnumDataType.Id,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    idType: "AUTO_INCREMENT",
-                  },
-                  customAttributes: "@default(autoincrement()) @id",
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "firstName",
-                  displayName: "First Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
-                  },
-                  customAttributes: "",
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "lastName",
-                  displayName: "Last Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
-                  },
-                  customAttributes: "",
-                },
-              ],
-            },
-          ];
-          expect(result).toEqual(expectedEntitiesWithFields);
-        });
-
-        it("should add the @id and @default attributes to a field if its name is id and there is an @@id attribute on the model", async () => {
-          // arrange
-          const prismaSchema = `datasource db {
-            provider = "postgresql"
-            url      = env("DB_URL")
-          }
-          
-          generator client {
-            provider = "prisma-client-js"
-          }
-          
-          model Doctor {
-            id         Int   
-            firstName   String    
-            lastName     String
-          
-            @@id([firstName, lastName])
-          }`;
-
-          const existingEntities: ExistingEntitySelect[] = [];
-          // act
-          const result = await service.convertPrismaSchemaForImportObjects(
-            prismaSchema,
-            existingEntities,
-            actionContext
-          );
-          // assert
-          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-            {
-              id: expect.any(String),
-              name: "Doctor",
-              displayName: "Doctor",
-              pluralDisplayName: "Doctors",
-              description: "",
-              customAttributes: "@@unique([firstName, lastName])",
-              fields: [
-                {
-                  permanentId: expect.any(String),
-                  name: "id",
-                  displayName: "Id",
-                  dataType: EnumDataType.Id,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    idType: "AUTO_INCREMENT",
-                  },
-                  customAttributes: "@id @default(autoincrement())",
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "firstName",
-                  displayName: "First Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
-                  },
-                  customAttributes: "",
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "lastName",
-                  displayName: "Last Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
-                  },
-                  customAttributes: "",
-                },
-              ],
-            },
-          ];
-          expect(result).toEqual(expectedEntitiesWithFields);
-        });
-
         it("should rename a field to id if it is a unique field and its type is a valid id type and add the id and the a map with the original name", async () => {
           // arrange
           const prismaSchema = `datasource db {
@@ -1910,7 +1742,7 @@ describe("prismaSchemaParser", () => {
         });
       });
       describe("when model has @@index/@@id/@@unique attributes", () => {
-        it("should convert @@id attribute to @@unique attribute", async () => {
+        it("should throw an error when the model has @@id attribute (composite id)", async () => {
           // arrange
           const prismaSchema = `datasource db {
             provider = "postgresql"
@@ -1928,71 +1760,16 @@ describe("prismaSchemaParser", () => {
             @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
           }`;
           const existingEntities: ExistingEntitySelect[] = [];
-          // act
-          const result = await service.convertPrismaSchemaForImportObjects(
-            prismaSchema,
-            existingEntities,
-            actionContext
+
+          await expect(
+            service.convertPrismaSchemaForImportObjects(
+              prismaSchema,
+              existingEntities,
+              actionContext
+            )
+          ).rejects.toThrowError(
+            'The model "Doctor" has a composite id which is not supported. Please fix this issue and import the schema again.'
           );
-          // assert
-          const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
-            {
-              id: expect.any(String),
-              name: "Doctor",
-              displayName: "Doctor",
-              pluralDisplayName: "Doctors",
-              description: "",
-              customAttributes:
-                '@@unique([firstName, licenseId], map: "doctor_first_name_license_id_unique")',
-              fields: [
-                {
-                  permanentId: expect.any(String),
-                  name: "firstName",
-                  displayName: "First Name",
-                  dataType: EnumDataType.SingleLineText,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    maxLength: 256,
-                  },
-                  customAttributes: '@map("first_name")',
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "licenseId",
-                  displayName: "License Id",
-                  dataType: EnumDataType.WholeNumber,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    databaseFieldType: "INT",
-                    maximumValue: 99999999999,
-                    minimumValue: 0,
-                  },
-                  customAttributes: '@map("license_id")',
-                },
-                {
-                  permanentId: expect.any(String),
-                  name: "id",
-                  displayName: "Id",
-                  dataType: EnumDataType.Id,
-                  required: true,
-                  unique: false,
-                  searchable: true,
-                  description: "",
-                  properties: {
-                    idType: "CUID",
-                  },
-                  customAttributes: "@id @default(cuid())",
-                },
-              ],
-            },
-          ];
-          expect(result).toEqual(expectedEntitiesWithFields);
         });
 
         it("should format the args in the @@index attribute in the same way they were formatted in the model fields", async () => {
