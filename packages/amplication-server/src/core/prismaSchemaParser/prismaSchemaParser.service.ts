@@ -50,7 +50,6 @@ import {
   addMapAttributeToModel,
   findRelationAttributeName,
   handleNotIdFieldNameId,
-  handleIdFieldForModelsWithIdAttribute,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";

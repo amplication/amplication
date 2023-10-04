@@ -476,44 +476,6 @@ export function addIdFieldIfNotExists(
   );
 }
 
-export function handleIdFieldForModelsWithIdAttribute(
-  model: Model,
-  builder: ConcretePrismaSchemaBuilder,
-  actionContext: ActionContext
-) {
-  // find field named id and add the @id attribute to it
-  const modelFields = model.properties.filter(
-    (prop) => prop.type === FIELD_TYPE_NAME
-  ) as Field[];
-
-  const fieldNamedId = modelFields.find(
-    (field) => field.name === ID_FIELD_NAME
-  );
-  const isFieldNamedIdWithoutDefaultAttribute = fieldNamedId?.attributes?.some(
-    (attribute) => attribute.name === DEFAULT_ATTRIBUTE_NAME
-  );
-
-  if (fieldNamedId) {
-    builder
-      .model(model.name)
-      .field(fieldNamedId.name)
-      .attribute(ID_ATTRIBUTE_NAME);
-
-    // if there is no default attribute on the id field, add it (we need it for the id type)
-    if (!isFieldNamedIdWithoutDefaultAttribute) {
-      const idDefaultType: string =
-        prismaIdTypeToDefaultIdType[fieldNamedId.fieldType as string];
-
-      builder
-        .model(model.name)
-        .field(fieldNamedId.name)
-        .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
-    }
-  } else {
-    addIdFieldIfNotExists(builder, model, actionContext);
-  }
-}
-
 export function convertUniqueFieldNamedIdToIdField(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
