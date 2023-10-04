@@ -29,21 +29,18 @@
     }
   },
   "extends": "nx/presets/npm.json",
-  "npmScope": "amplication",
   "affected": {
     "defaultBase": "master"
-  },
-  "implicitDependencies": {
-    "package.json": {
-      "dependencies": "*",
-      "devDependencies": "*"
-    },
-    ".eslintrc.json": "*"
   },
   "targetDefaults": {
     "test": {
       "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
-      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+      "inputs": [
+        "default",
+        "^default",
+        "{workspaceRoot}/jest.preset.js",
+        "{workspaceRoot}/jest.preset.js"
+      ]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
@@ -78,6 +75,7 @@
       "application": {
         "style": "scss",
         "linter": "eslint",
+        "bundler": "webpack",
         "babel": true
       },
       "component": {
@@ -94,5 +92,6 @@
     "appsDir": "packages",
     "libsDir": "libs"
   },
-  "defaultProject": "amplication-client"
+  "defaultProject": "amplication-client",
+  "$schema": "./node_modules/nx/schemas/nx-schema.json"
 }
