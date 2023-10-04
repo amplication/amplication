@@ -13,6 +13,7 @@ if (require.main === module) {
   if (!htmlFile) {
     throw new Error("Must pass one argument: HTML_FILE");
   }
+
   injectVariables(process.env, htmlFile).catch((error) => {
     console.error(error);
     process.exit(1);

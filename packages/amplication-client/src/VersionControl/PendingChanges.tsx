@@ -6,7 +6,15 @@ import PendingChange from "./PendingChange";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import {
   CircularProgress,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
   Snackbar,
+  Text,
   Tooltip,
 } from "@amplication/ui/design-system";
 import Commit from "./Commit";
@@ -61,82 +69,90 @@ const PendingChanges = ({ projectId }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      <h5 className={`${CLASS_NAME}__title`}>Pending changes</h5>
-      <Commit projectId={projectId} noChanges={noChanges} />
+      <Text textStyle={EnumTextStyle.H4}>Pending changes</Text>
+      <FlexItem
+        itemsAlign={EnumItemsAlign.Stretch}
+        direction={EnumFlexDirection.Column}
+        margin={EnumFlexItemMargin.Top}
+        gap={EnumGapSize.Small}
+      >
+        <Commit projectId={projectId} noChanges={noChanges} />
 
-      <DiscardChanges
-        isOpen={discardDialogOpen}
-        projectId={projectId}
-        onComplete={handleDiscardDialogCompleted}
-        onDismiss={handleToggleDiscardDialog}
-      />
+        <DiscardChanges
+          isOpen={discardDialogOpen}
+          projectId={projectId}
+          onComplete={handleDiscardDialogCompleted}
+          onDismiss={handleToggleDiscardDialog}
+        />
 
-      <div className={`${CLASS_NAME}__changes-wrapper`}>
-        {pendingChangesDataLoading ? (
-          <CircularProgress centerToParent />
-        ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
-          <div className={`${CLASS_NAME}__empty-state`}>
-            <SvgThemeImage image={EnumImages.NoChanges} />
-            <div className={`${CLASS_NAME}__empty-state__title`}>
-              No pending changes! keep working.
-            </div>
-          </div>
-        ) : (
-          <div className={`${CLASS_NAME}__changes`}>
-            {pendingChangesByResource.map((group) => (
-              <div key={group.resource.id}>
-                <div className={`${CLASS_NAME}__changes__resource`}>
-                  <ResourceCircleBadge
-                    type={group.resource.resourceType}
-                    size="xsmall"
-                  />
-                  <span>{group.resource.name}</span>
-                </div>
-                {group.changes.map((change) => (
-                  <PendingChange
-                    key={change.originId}
-                    change={change}
-                    linkToOrigin
-                  />
-                ))}
+        <div className={`${CLASS_NAME}__changes-wrapper`}>
+          {pendingChangesDataLoading ? (
+            <CircularProgress centerToParent />
+          ) : isEmpty(pendingChanges) && !pendingChangesDataLoading ? (
+            <div className={`${CLASS_NAME}__empty-state`}>
+              <SvgThemeImage image={EnumImages.NoChanges} />
+              <div className={`${CLASS_NAME}__empty-state__title`}>
+                No pending changes! keep working.
               </div>
-            ))}
-          </div>
-        )}
-        <hr className={`${CLASS_NAME}__divider`} />
-        <div className={`${CLASS_NAME}__changes-header`}>
-          <span>Changes</span>
-          <span
-            className={
-              pendingChanges.length
-                ? `${CLASS_NAME}__changes-count-warning`
-                : `${CLASS_NAME}__changes-count`
-            }
-          >
-            {pendingChanges.length}
-          </span>
-          <div className="spacer" />
-          <Tooltip aria-label={"Compare Changes"} direction="nw">
-            <Link
-              to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+            </div>
+          ) : (
+            <div className={`${CLASS_NAME}__changes`}>
+              {pendingChangesByResource.map((group) => (
+                <div key={group.resource.id}>
+                  <div className={`${CLASS_NAME}__changes__resource`}>
+                    <ResourceCircleBadge
+                      type={group.resource.resourceType}
+                      size="xsmall"
+                    />
+                    <span>{group.resource.name}</span>
+                  </div>
+                  {group.changes.map((change) => (
+                    <PendingChange
+                      key={change.originId}
+                      change={change}
+                      linkToOrigin
+                    />
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+          <hr className={`${CLASS_NAME}__divider`} />
+          <div className={`${CLASS_NAME}__changes-header`}>
+            <span>Changes</span>
+            <span
+              className={
+                pendingChanges.length
+                  ? `${CLASS_NAME}__changes-count-warning`
+                  : `${CLASS_NAME}__changes-count`
+              }
             >
+              {pendingChanges.length}
+            </span>
+            <div className="spacer" />
+            <Tooltip aria-label={"Compare Changes"} direction="nw">
+              <Link
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/pending-changes`}
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  disabled={pendingChangesDataLoading || noChanges}
+                  icon="compare"
+                />
+              </Link>
+            </Tooltip>
+            <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
               <Button
                 buttonStyle={EnumButtonStyle.Text}
+                onClick={handleToggleDiscardDialog}
                 disabled={pendingChangesDataLoading || noChanges}
-                icon="compare"
+                icon="trash_2"
               />
-            </Link>
-          </Tooltip>
-          <Tooltip aria-label={"Discard Pending Changes"} direction="nw">
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              onClick={handleToggleDiscardDialog}
-              disabled={pendingChangesDataLoading || noChanges}
-              icon="trash_2"
-            />
-          </Tooltip>
+            </Tooltip>
+          </div>
         </div>
-      </div>
+      </FlexItem>
+
       <Snackbar open={Boolean(pendingChangesIsError)} message={errorMessage} />
     </div>
   );

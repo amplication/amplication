@@ -1,12 +1,9 @@
-import React from "react";
+import { HorizontalRule, List } from "@amplication/ui/design-system";
 import { useQuery } from "@apollo/client";
-import { HorizontalRule } from "@amplication/ui/design-system";
-import { EnumResourceType, Resource } from "../models";
-import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
-import PageContent from "../Layout/PageContent";
 import { useRouteMatch } from "react-router-dom";
-import "./ServicesPage.scss";
-import ResourceCircleBadge from "../Components/ResourceCircleBadge";
+import PageContent from "../Layout/PageContent";
+import { GET_MESSAGE_BROKER_CONNECTED_SERVICES } from "../Workspaces/queries/resourcesQueries";
+import { Resource } from "../models";
 import { Item } from "./Item";
 
 type Response = {
@@ -33,20 +30,14 @@ const Service = () => {
   );
 
   return (
-    <PageContent pageTitle={pageTitle} className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__header`}>
-        <div className={`${CLASS_NAME}__header__top`}>
-          <ResourceCircleBadge type={EnumResourceType.Service} />
-          <div className={`${CLASS_NAME}__header__top__title`}>
-            Service List
-          </div>
-        </div>
-        <div className={`${CLASS_NAME}__header__description`}>
-          Services associated with this message broker.
-        </div>
-      </div>
+    <PageContent
+      pageTitle={pageTitle}
+      className={CLASS_NAME}
+      contentTitle="Connected service List"
+      contentSubTitle="Services connected with this message broker."
+    >
       <HorizontalRule />
-      <div className={`${CLASS_NAME}__list`}>
+      <List>
         {data?.messageBrokerConnectedServices.map((service) => (
           <Item
             key={service.id}
@@ -54,7 +45,7 @@ const Service = () => {
             link={`/${workspaceId}/${projectId}/${service.id}`}
           />
         ))}
-      </div>
+      </List>
     </PageContent>
   );
 };

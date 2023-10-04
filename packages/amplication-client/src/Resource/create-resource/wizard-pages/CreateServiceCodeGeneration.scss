@@ -19,7 +19,7 @@
     font-size: 38px;
     line-height: 57px;
     gap: 8px;
-    color: var(--black100);
+    color: var(--gray-base);
   }
 
   &__negative_status {
@@ -81,7 +81,7 @@
       align-items: center;
       justify-content: center;
 
-      background: var(--white);
+      background: var(--gray-full);
 
       gap: 32px;
 
@@ -103,17 +103,12 @@
         &__link {
           @include title-14;
           font-weight: 400;
-          color: var(--black80);
+          color: var(--gray-20);
         }
       }
     }
   }
   a {
     color: white;
-  }
-  .amp-button.amp-button--clear {
-    border: 1px solid var(--black100);
-    border-radius: 4px;
-    color: var(--black100);
   }
 }

@@ -1,16 +1,6 @@
 import { lazy } from "react";
-import resourceEntitiesRoutes from "./resourceEntitiesRoutes";
-import resourceSettingsRoutes from "./resourceSettingsRoutes";
 
 const resourceRoutes = [
-  {
-    path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/entities",
-    Component: lazy(() => import("../Entity/EntityList")),
-    moduleName: "",
-    routeTrackType: "",
-    exactPath: false,
-    routes: resourceEntitiesRoutes,
-  },
   {
     path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/builds/:build([A-Za-z0-9-]{20,})",
     Component: lazy(() => import("../VersionControl/BuildPage")),

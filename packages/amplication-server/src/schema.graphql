@@ -604,6 +604,7 @@ enum EnumActionStepStatus {
 }
 
 enum EnumAuthProviderType {
+  Auth0
   Http
   Jwt
 }
@@ -1164,6 +1165,7 @@ input PluginSetOrderInput {
 type Project {
   createdAt: DateTime!
   demoRepoName: String
+  description: String
   id: String!
   name: String!
   resources: [Resource!]

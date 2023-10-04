@@ -15,7 +15,7 @@ $letter-spacing: 1px;
   padding-right: var(--default-spacing);
   padding-left: 0;
   position: relative;
-  background-color: var(--black10);
+  background-color: var(--gray-70);
   display: inline-flex;
   flex-direction: row;
   align-items: center;
@@ -46,7 +46,7 @@ $letter-spacing: 1px;
     text-align: center;
     color: var(--static-white);
     text-transform: capitalize;
-    border: $user-border-width solid var(--black5);
+    border: $user-border-width solid var(--gray-80);
     margin-right: var(--default-spacing-small);
     letter-spacing: $letter-spacing;
   }

@@ -2,6 +2,11 @@ import * as models from "../models";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AppContext } from "../context/appContext";
+import {
+  EnumTextColor,
+  EnumTextStyle,
+  Text,
+} from "@amplication/ui/design-system";
 
 type Props = {
   change: models.PendingChange;
@@ -20,6 +25,16 @@ const PendingChangeContent = ({
 
   const url = `/${currentWorkspace?.id}/${currentProject?.id}/${change.resource.id}/${relativeUrl}`;
 
-  return linkToOrigin ? <Link to={url}>{name}</Link> : <span>{name}</span>;
+  const nameElement = (
+    <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+      {name}
+    </Text>
+  );
+
+  return linkToOrigin ? (
+    <Link to={url}>{nameElement}</Link>
+  ) : (
+    <span>{nameElement}</span>
+  );
 };
 export default PendingChangeContent;
