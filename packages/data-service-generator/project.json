@@ -13,6 +13,8 @@
         "outputPath": "dist/packages/data-service-generator",
         "main": "packages/data-service-generator/src/main.ts",
         "tsConfig": "packages/data-service-generator/tsconfig.app.json",
+        "updateBuildableProjectDepsInPackageJson": true,
+        "buildableProjectDepsInPackageJsonType": "dependencies",
         "assets": [
           "**/*.template.env",
           "packages/data-service-generator/src/**/package.json",
