@@ -178,6 +178,113 @@ describe("prismaSchemaParser", () => {
         expect(result).toEqual(expectedEntitiesWithFields);
       });
 
+      it("should treat the @default(cuid()) attribute as a custom attribute for scalar type", async () => {
+        // arrange
+        const prismaSchema = `datasource db {
+          provider = "postgresql"
+          url      = env("DB_URL")
+        }
+        
+        generator client {
+          provider = "prisma-client-js"
+        }
+        
+        model Admin {
+          id         Int   @id @default(autoincrement())
+          createdAt  DateTime @default(now())
+          username   String   @unique @db.VarChar(256)
+          tag        String   @default(cuid())
+          roles      Json?
+        }`;
+        const existingEntities: ExistingEntitySelect[] = [];
+        // act
+        const result = await service.convertPrismaSchemaForImportObjects(
+          prismaSchema,
+          existingEntities,
+          actionContext
+        );
+        // assert
+        const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+          {
+            id: expect.any(String),
+            name: "Admin",
+            displayName: "Admin",
+            pluralDisplayName: "Admins",
+            description: "",
+            customAttributes: "",
+            fields: [
+              {
+                permanentId: expect.any(String),
+                name: "id",
+                displayName: "Id",
+                dataType: EnumDataType.Id,
+                required: true,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {
+                  idType: "AUTO_INCREMENT",
+                },
+                customAttributes: "",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "createdAt",
+                displayName: "Created At",
+                dataType: EnumDataType.CreatedAt,
+                required: true,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {},
+                customAttributes: "",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "username",
+                displayName: "Username",
+                dataType: EnumDataType.SingleLineText,
+                required: true,
+                unique: true,
+                searchable: true,
+                description: "",
+                properties: {
+                  maxLength: 256,
+                },
+                customAttributes: "@db.VarChar(256)",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "tag",
+                displayName: "Tag",
+                dataType: EnumDataType.SingleLineText,
+                required: true,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {
+                  maxLength: 256,
+                },
+                customAttributes: "@default(cuid())",
+              },
+              {
+                permanentId: expect.any(String),
+                name: "roles",
+                displayName: "Roles",
+                dataType: EnumDataType.Json,
+                required: false,
+                unique: false,
+                searchable: true,
+                description: "",
+                properties: {},
+                customAttributes: "",
+              },
+            ],
+          },
+        ];
+        expect(result).toEqual(expectedEntitiesWithFields);
+      });
+
       it("should rename models starting in lower case to upper case, add a `@@map` attribute to the model with the original model name and a log informing what happened", async () => {
         // arrange
         const prismaSchema = `datasource db {
