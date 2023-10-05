@@ -27,19 +27,50 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
     .join(" ");
 }
 
-export function filterOutAmplicationAttributes(attributes: string[]): string[] {
+function handleIdAttribute(attributes: string[]): string[] {
   return attributes.filter(
     (attribute) =>
+      attribute !== "@id" &&
+      attribute !== "@id()" &&
       attribute !== "@default(now())" &&
       attribute !== "@default(cuid())" &&
       attribute !== "@default(uuid())" &&
-      attribute !== "@default(autoincrement())" &&
-      attribute !== "@id" &&
-      attribute !== "@db.ObjectId" &&
-      !attribute.startsWith("@updatedAt") &&
-      !attribute.startsWith("@unique") &&
-      !attribute.startsWith("@relation")
+      attribute !== "@default(autoincrement())"
   );
+}
+
+function handleCreatedAtAttribute(attributes: string[]): string[] {
+  return attributes.filter((attribute) => attribute !== "@default(now())");
+}
+
+function handleUpdatedAtAttribute(attributes: string[]): string[] {
+  return attributes.filter((attribute) => !attribute.startsWith("@updatedAt"));
+}
+
+function handleRelationAttribute(attributes: string[]): string[] {
+  return attributes.filter((attribute) => !attribute.startsWith("@relation"));
+}
+
+function handleScalarFieldAttributes(attributes: string[]): string[] {
+  return attributes.filter((attribute) => !attribute.startsWith("@unique"));
+}
+
+export function filterOutAmplicationAttributesBasedOnFieldDataType(
+  fieldDataType: EnumDataType,
+  attributes: string[]
+) {
+  switch (fieldDataType) {
+    case EnumDataType.Id:
+      return handleIdAttribute(attributes);
+    case EnumDataType.CreatedAt:
+      return handleCreatedAtAttribute(attributes);
+    case EnumDataType.UpdatedAt:
+      return handleUpdatedAtAttribute(attributes);
+    case EnumDataType.Lookup:
+      return handleRelationAttribute(attributes);
+    default:
+      return handleScalarFieldAttributes(attributes);
+  }
 }
 
 /**

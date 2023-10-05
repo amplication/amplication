@@ -32,7 +32,7 @@ import {
   ID_DEFAULT_VALUE_CUID_FUNCTION,
 } from "./constants";
 import {
-  filterOutAmplicationAttributes,
+  filterOutAmplicationAttributesBasedOnFieldDataType,
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
@@ -61,7 +61,8 @@ export function createOneEntityFieldCommonProperties(
     field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
     false;
 
-  const fieldAttributes = filterOutAmplicationAttributes(
+  const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
+    fieldDataType,
     prepareFieldAttributes(field.attributes)
   )
     // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
