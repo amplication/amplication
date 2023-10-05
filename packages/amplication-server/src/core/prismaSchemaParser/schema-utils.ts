@@ -46,6 +46,20 @@ import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
 import { camelCase } from "lodash";
 
+export function getDatasourceProviderFromSchema(schema: string): string | null {
+  const schemaObject = getSchema(schema);
+  const datasourceAssignments = (
+    schemaObject.list.find((item) => item.type === "datasource") as Datasource
+  ).assignments;
+  const provider = (
+    datasourceAssignments.find(
+      (assignment: Assignment) => assignment.key === "provider"
+    ) as Assignment
+  ).value as string;
+
+  return provider ?? null;
+}
+
 /**
  * create the common properties of one entity field from model field
  * @param field the current field to prepare
