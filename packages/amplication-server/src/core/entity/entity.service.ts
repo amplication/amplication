@@ -925,14 +925,6 @@ export class EntityService {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
       }
 
-      if (entity.name === USER_ENTITY_NAME) {
-        if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
-          throw new ConflictException(
-            `The 'user' entity is a reserved entity and its name cannot be updated`
-          );
-        }
-      }
-
       const resourceWithProject = await this.prisma.resource.findUnique({
         where: {
           id: entity.resourceId,
