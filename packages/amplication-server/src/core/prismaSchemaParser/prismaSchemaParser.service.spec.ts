@@ -216,10 +216,10 @@ describe("prismaSchemaParser", () => {
               {
                 permanentId: expect.any(String),
                 name: "id",
-                displayName: "Id",
+                displayName: "ID",
                 dataType: EnumDataType.Id,
                 required: true,
-                unique: false,
+                unique: true,
                 searchable: true,
                 description: "",
                 properties: {
