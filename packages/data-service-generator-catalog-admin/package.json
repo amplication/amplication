@@ -22,14 +22,21 @@
   },
   "nx": {
     "targets": {
-      "build": {},
-      "serve": {}
+      "build": {
+        "dependsOn": [
+          "install"
+        ]
+      },
+      "serve": {
+        "dependsOn": [
+          "install"
+        ]
+      }
     }
   },
   "scripts": {
     "serve": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
