@@ -272,12 +272,13 @@ const WorkspaceHeader: React.FC = () => {
           </div>
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
-
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            icon="log_out"
-            onClick={handleSignOut}
-          />
+          <Tooltip aria-label={`Log out`} direction="sw" noDelay>
+            <Button
+              buttonStyle={EnumButtonStyle.Text}
+              icon="log_out"
+              onClick={handleSignOut}
+            />
+          </Tooltip>
         </div>
       </div>
 
