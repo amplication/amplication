@@ -693,7 +693,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: '@db.VarChar(256) @map("username")',
+                  customAttributes: '@unique @db.VarChar(256) @map("username")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -770,7 +770,8 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "CUID",
                   },
-                  customAttributes: '@db.VarChar(256) @map("username_123")',
+                  customAttributes:
+                    '@unique @db.VarChar(256) @map("username_123")',
                 },
                 {
                   permanentId: expect.any(String),
@@ -846,7 +847,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "",
+                  customAttributes: "@unique",
                 },
                 {
                   permanentId: expect.any(String),
@@ -927,7 +928,7 @@ describe("prismaSchemaParser", () => {
                   properties: {
                     idType: "AUTO_INCREMENT",
                   },
-                  customAttributes: "",
+                  customAttributes: "@unique",
                 },
                 {
                   permanentId: expect.any(String),
