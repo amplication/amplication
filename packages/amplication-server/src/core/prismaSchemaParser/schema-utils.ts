@@ -11,6 +11,9 @@ import {
   Enum,
   Enumerator,
   ConcretePrismaSchemaBuilder,
+  getSchema,
+  Datasource,
+  Assignment,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
