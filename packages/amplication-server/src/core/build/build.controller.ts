@@ -77,6 +77,7 @@ export class BuildController {
     try {
       const args = plainToInstance(CreatePrSuccess.Value, message);
       await this.buildService.onCreatePRSuccess(args);
+      this.logger.info("PR process and Successfully!");
     } catch (error) {
       this.logger.error(error.message, error);
     }
