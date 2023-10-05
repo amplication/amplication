@@ -56,9 +56,15 @@ export function createOneEntityFieldCommonProperties(
   field: Field,
   fieldDataType: EnumDataType
 ): CreateBulkFieldsInput {
-  const fieldDisplayName = formatDisplayName(field.name);
+  const fieldDisplayName =
+    field.name === ID_FIELD_NAME
+      ? field.name.toUpperCase()
+      : formatDisplayName(field.name);
+
+  // in Amplication id fields are uniques and from prisma schema perspective unique field is a field that has the @unique attribute
   const isUniqueField =
-    field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
+    (fieldDataType === EnumDataType.Id ||
+      field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)) ??
     false;
 
   const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
