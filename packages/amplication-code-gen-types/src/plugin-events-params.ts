@@ -2,6 +2,7 @@ import type { namedTypes } from "ast-types";
 import {
   DTOs,
   Entity,
+  EntityComponents,
   EntityField,
   EntityLookupField,
   EnumDataType,
@@ -98,6 +99,15 @@ export interface CreateEntityControllerSpecParams extends EventParams {
 }
 
 export interface CreateServerAuthParams extends EventParams {}
+
+export interface CreateAdminAppModuleParams extends EventParams {
+  entitiesComponents: Record<string, EntityComponents>;
+  template: namedTypes.File;
+}
+
+export interface CreateAdminDotEnvParams extends EventParams {
+  envVariables: VariableDictionary;
+}
 
 export interface CreateAdminUIParams extends EventParams {}
 export interface CreateServerParams extends EventParams {}

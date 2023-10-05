@@ -1,10 +1,13 @@
 import * as path from "path";
 import { builders } from "ast-types";
-import { Entity, EnumDataType } from "@amplication/code-gen-types";
+import {
+  Entity,
+  EntityComponent,
+  EnumDataType,
+} from "@amplication/code-gen-types";
 import { addImports, interpolate } from "../../../utils/ast";
 import { relativeImportPath } from "../../../utils/module";
 import { readFile } from "@amplication/code-gen-utils";
-import { EntityComponent } from "../../types";
 import DsgContext from "../../../dsg-context";
 
 const template = path.resolve(__dirname, "entity-title-component.template.tsx");

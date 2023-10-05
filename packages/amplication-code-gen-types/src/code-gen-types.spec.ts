@@ -117,6 +117,17 @@ describe("ModuleMap", () => {
     expect(moduleMap.get("path2").code).toBe(newCode);
   });
 
+  test("removeMany should remove modules from the map", () => {
+    const module1 = { path: "path1", code: "code1" };
+    const module2 = { path: "path2", code: "code2" };
+    moduleMap.set(module1);
+    moduleMap.set(module2);
+
+    moduleMap.removeMany(["path1"]);
+
+    expect(moduleMap.get("path1")).toBeUndefined();
+  });
+
   test("modules should return an array of modules", () => {
     const module1 = { path: "path1", code: "code1" };
     const module2 = { path: "path2", code: "code2" };
