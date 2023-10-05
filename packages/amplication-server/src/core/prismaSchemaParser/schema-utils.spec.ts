@@ -37,6 +37,12 @@ describe("schema-utils", () => {
           },
         ],
       },
+      {
+        type: "attribute",
+        name: "ObjectId",
+        kind: "field",
+        group: "db",
+      },
     ] as unknown as Attribute[];
 
     beforeEach(() => {
@@ -63,7 +69,7 @@ describe("schema-utils", () => {
         searchable: true,
         description: "",
         properties: {},
-        customAttributes: '@map("_id")',
+        customAttributes: '@map("_id") @db.ObjectId',
       });
     });
 
@@ -144,7 +150,7 @@ describe("schema-utils", () => {
 
       const result = createOneEntityFieldCommonProperties(field, dataType);
 
-      expect(result.customAttributes).toEqual('@map("_id")');
+      expect(result.customAttributes).toEqual('@map("_id") @db.ObjectId');
     });
   });
 
