@@ -111,11 +111,8 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   await context.logger.info("Creating application module...");
   const appModuleMap = await createAppModule(entitiesComponents);
 
-  await context.logger.info("Creating Dot Env...");
-  const dotEnvModule = await createDotEnvModule(
-    appInfo,
-    clientDirectories.baseDirectory
-  );
+  await context.logger.info("Creating Dotenv...");
+  const dotEnvModuleMap = await createDotEnvModule();
 
   await context.logger.info("Formatting code...");
   const tsModules = new ModuleMap(context.logger);
