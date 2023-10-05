@@ -166,7 +166,7 @@ type Build {
   action: Action
   actionId: String!
   archiveURI: String!
-  codeGeneratorVersion: String!
+  codeGeneratorVersion: String
   commit: Commit!
   commitId: String!
   createdAt: DateTime!
@@ -272,6 +272,14 @@ input ConnectGitRepositoryInput {
   isOverrideGitRepository: Boolean
   name: String!
   resourceId: String!
+}
+
+type Coupon {
+  code: String!
+  couponType: String
+  durationMonths: Int!
+  id: String!
+  subscriptionPlan: EnumSubscriptionPlan!
 }
 
 input CreateGitRepositoryBaseInput {
@@ -596,6 +604,7 @@ enum EnumActionStepStatus {
 }
 
 enum EnumAuthProviderType {
+  Auth0
   Http
   Jwt
 }
@@ -936,6 +945,7 @@ type Mutation {
   lockEntity(where: WhereUniqueInput!): Entity
   login(data: LoginInput!): Auth!
   provisionSubscription(data: ProvisionSubscriptionInput!): ProvisionSubscriptionResult
+  redeemCoupon(data: RedeemCouponInput!): Coupon!
   resendInvitation(where: WhereUniqueInput!): Invitation
   revokeInvitation(where: WhereUniqueInput!): Invitation
   setCurrentWorkspace(data: WhereUniqueInput!): Auth!
@@ -1096,6 +1106,7 @@ input PluginSetOrderInput {
 type Project {
   createdAt: DateTime!
   demoRepoName: String
+  description: String
   id: String!
   name: String!
   resources: [Resource!]
@@ -1215,6 +1226,10 @@ type Query {
 enum QueryMode {
   Default
   Insensitive
+}
+
+input RedeemCouponInput {
+  code: String!
 }
 
 type RemoteGitRepos {

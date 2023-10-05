@@ -70,8 +70,8 @@ Set up and run the development environment on your local machine:
 
 **BEFORE** you run the following steps make sure:
 1. You have typescript installed locally on you machine ```npm install -g typescript```
-2. You are using node version: ^18.3.0 || ^16.3.0
-3. You are using npm version: ^8.1.0 || ^7.3.0"
+2. You are using a supported node version (check `engines` `node` in the [package.json](./package.json))
+3. You are using a supported npm version (check `engines` `npm` in the [package.json](./package.json))
 4. You have `docker` installed and running on your machine
 
 ```shell

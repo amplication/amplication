@@ -339,7 +339,7 @@ export const createPrismaSchemaFieldsHandlers: {
         undefined,
         undefined,
         undefined,
-        undefined,
+        true,
         field.customAttributes
       ),
     ];

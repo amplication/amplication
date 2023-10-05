@@ -1,4 +1,4 @@
-import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
+import { SubscriptionStatus } from "@stigg/node-server-sdk";
 import { BillingPlan } from "../../billing/billing.types";
 
 export interface UpdateStatusDto {

@@ -22,7 +22,7 @@ mockResourceService.resource
         actualValue.where.id !== TEST_RESOURCE_ID &&
         actualValue.where.id !== MOCK_SERVICE_RESOURCE_WITHOUT_GITHUB_TOKEN.id
       );
-    }, `Make sure that the id of the resource is'nt ${TEST_RESOURCE_ID}`)
+    }, `Make sure that the id of the resource isn't ${TEST_RESOURCE_ID}`)
   )
   .mockReturnValue(Promise.resolve(null));
 mockResourceService.resource

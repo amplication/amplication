@@ -3,7 +3,7 @@
 .amp-github-banner {
   &__banner {
     text-align: center;
-    background-color: var(--white);
+    background-color: var(--gray-full);
     padding: 6px 12px;
     display: inline-flex;
     align-items: center;
@@ -22,7 +22,7 @@
       font-size: var(--normal-font-size);
       &__stars {
         color: var(--static-black);
-        background-color: var(--dark-secondary-turquoise);
+        background-color: var(--theme-turquoise);
         margin-left: var(--default-spacing-small);
         padding: 0px, 2px, 0px, 4px;
         border-radius: 2px;
@@ -43,7 +43,7 @@
           margin-left: -6px;
           border-width: 3px;
           border-style: solid;
-          border-color: transparent var(--dark-secondary-turquoise) transparent
+          border-color: transparent var(--theme-turquoise) transparent
             transparent;
         }
       }

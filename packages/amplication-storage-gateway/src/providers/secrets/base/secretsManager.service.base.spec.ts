@@ -28,7 +28,7 @@ describe("Testing the secrets manager base class", () => {
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw an exeption if getting null key", () => {
+  it("should throw an exception if getting null key", () => {
     return expect(secretsManagerServiceBase.getSecret(null)).rejects.toThrow();
   });
 });

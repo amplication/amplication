@@ -664,6 +664,10 @@ export class EntityService {
             field: field.name,
             entity: entity.name,
           });
+          void actionContext.onEmitUserActionLog(
+            `Failed to create entity field "${field.name}" on entity "${entity.name}". ${error.message}`,
+            EnumActionLogLevel.Error
+          );
         }
       }
     }
@@ -919,14 +923,6 @@ export class EntityService {
 
       if (isReservedName(args.data?.name?.toLowerCase().trim())) {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
-      }
-
-      if (entity.name === USER_ENTITY_NAME) {
-        if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
-          throw new ConflictException(
-            `The 'user' entity is a reserved entity and its name cannot be updated`
-          );
-        }
       }
 
       const resourceWithProject = await this.prisma.resource.findUnique({

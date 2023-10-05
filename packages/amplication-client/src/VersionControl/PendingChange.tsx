@@ -100,11 +100,12 @@ const changeOriginMap = {
       [key in models.EnumBlockType]?: entityLinkAndDisplayName;
     } = {
       [models.EnumBlockType.ServiceSettings]: {
-        relativeUrl: `settings/update`,
+        relativeUrl: `settings/general`,
         icon: "",
         displayName: "Service Settings",
       },
       [models.EnumBlockType.ProjectConfigurationSettings]: {
+        //Todo: link to project setting
         relativeUrl: `settings/update`,
         icon: "",
         displayName: "Project Settings",
