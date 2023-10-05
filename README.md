@@ -191,7 +191,7 @@ Not sure where to start? Join our discord and we will help you get started!
 
 <a href="https://amplication.com/discord"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
-## Contributers
+## Contributors
 
 <!---
 npx contributer-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
