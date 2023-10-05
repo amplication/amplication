@@ -67,11 +67,14 @@ export function getDatasourceProviderFromSchema(schema: string): string | null {
  * create the common properties of one entity field from model field
  * @param field the current field to prepare
  * @param fieldDataType the field data type
+ * @datasourceProvider the datasource provider from the schema. Make sure to pass it only if you want to filter out the datasource specific attributes.
+ * Currently only use it for the id data type (EnumDataType.Id) for handling the id attributes for mongodb
  * @returns the field in a structure of CreateBulkFieldsInput
  */
 export function createOneEntityFieldCommonProperties(
   field: Field,
-  fieldDataType: EnumDataType
+  fieldDataType: EnumDataType,
+  datasourceProvider = null
 ): CreateBulkFieldsInput {
   const fieldDisplayName = formatDisplayName(field.name);
   const isUniqueField =
@@ -80,7 +83,8 @@ export function createOneEntityFieldCommonProperties(
 
   const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
     fieldDataType,
-    prepareFieldAttributes(field.attributes)
+    prepareFieldAttributes(field.attributes),
+    datasourceProvider
   )
     // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")

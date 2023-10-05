@@ -1526,7 +1526,8 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.Id
+      EnumDataType.Id,
+      this.datasourceProvider
     );
 
     const defaultIdAttribute = field.attributes?.find(
