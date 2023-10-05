@@ -93,7 +93,7 @@ describe("schema-utils", () => {
         displayName: "Test Field",
         dataType: dataType,
         required: true,
-        unique: false,
+        unique: true,
         searchable: true,
         description: "",
         properties: {},
