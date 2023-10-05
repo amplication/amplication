@@ -28,12 +28,30 @@
       "executor": "@nx/storybook:build",
       "outputs": ["{options.outputDir}"],
       "options": {
-        "configDir": "libs/ui/design-system/.storybook",
-        "outputDir": "dist/storybook/ui-design-system"
+        "outputDir": "dist/storybook/ui-design-system",
+        "configDir": "libs/ui/design-system/.storybook"
       },
       "configurations": {
         "ci": {
           "quiet": true
+        }
+      }
+    },
+    "test-storybook": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "test-storybook -c libs/ui/design-system/.storybook --url=http://localhost:4400"
+      }
+    },
+    "static-storybook": {
+      "executor": "@nx/web:file-server",
+      "options": {
+        "buildTarget": "ui-design-system:build-storybook",
+        "staticFilePath": "dist/storybook/ui-design-system"
+      },
+      "configurations": {
+        "ci": {
+          "buildTarget": "ui-design-system:build-storybook:ci"
         }
       }
     }

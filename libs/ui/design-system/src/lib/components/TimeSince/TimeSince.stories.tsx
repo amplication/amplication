@@ -10,10 +10,14 @@ export default {
 const SAMPLE_DATE = new Date();
 SAMPLE_DATE.setHours(SAMPLE_DATE.getHours() - 2);
 
-export const Default = (props: any) => {
-  return <TimeSince time={SAMPLE_DATE} />;
+export const Default = {
+  render: (props: any) => {
+    return <TimeSince time={SAMPLE_DATE} />;
+  },
 };
 
-export const Short = (props: any) => {
-  return <TimeSince time={SAMPLE_DATE} size={EnumTimeSinceSize.short} />;
+export const Short = {
+  render: (props: any) => {
+    return <TimeSince time={SAMPLE_DATE} size={EnumTimeSinceSize.short} />;
+  },
 };
