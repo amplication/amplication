@@ -60,7 +60,9 @@ export function getDatasourceProviderFromSchema(schema: string): string | null {
     datasourceAssignments?.find(
       (assignment: Assignment) => assignment.key === "provider"
     ) as Assignment
-  )?.value as string;
+  )?.value
+    .toString()
+    .replace(/"/g, "");
 
   return provider ?? null;
 }
