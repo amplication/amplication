@@ -14,7 +14,7 @@ export default {
 } as Meta;
 
 export const Default = (args: any) => {
-  return <Button>Default Button</Button>;
+  return <Button {...args}>Default Button</Button>;
 };
 
 export const Primary = (args: any) => {
