@@ -27,14 +27,18 @@ export function capitalizeFirstLetterOfEachWord(str: string): string {
     .join(" ");
 }
 
-export function filterOutAmplicationAttributes(attributes): string[] {
+export function filterOutAmplicationAttributes(attributes: string[]): string[] {
   return attributes.filter(
     (attribute) =>
-      !attribute.startsWith("@default(now())") &&
+      attribute !== "@default(now())" &&
+      attribute !== "@default(cuid())" &&
+      attribute !== "@default(uuid())" &&
+      attribute !== "@default(autoincrement())" &&
+      attribute !== "@id" &&
+      attribute !== "@db.ObjectId" &&
       !attribute.startsWith("@updatedAt") &&
       !attribute.startsWith("@unique") &&
-      !attribute.startsWith("@relation") &&
-      !attribute.startsWith("@db.ObjectId")
+      !attribute.startsWith("@relation")
   );
 }
 
