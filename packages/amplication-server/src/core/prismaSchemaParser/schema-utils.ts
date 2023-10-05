@@ -11,6 +11,9 @@ import {
   Enum,
   Enumerator,
   ConcretePrismaSchemaBuilder,
+  getSchema,
+  Datasource,
+  Assignment,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
@@ -46,15 +49,34 @@ import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
 import { camelCase } from "lodash";
 
+export function getDatasourceProviderFromSchema(schema: string): string | null {
+  const schemaObject = getSchema(schema);
+
+  const datasourceAssignments = (
+    schemaObject.list.find((item) => item.type === "datasource") as Datasource
+  )?.assignments;
+
+  const provider = (
+    datasourceAssignments?.find(
+      (assignment: Assignment) => assignment.key === "provider"
+    ) as Assignment
+  )?.value as string;
+
+  return provider ?? null;
+}
+
 /**
  * create the common properties of one entity field from model field
  * @param field the current field to prepare
  * @param fieldDataType the field data type
+ * @datasourceProvider the datasource provider from the schema. Make sure to pass it only if you want to filter out the datasource specific attributes.
+ * Currently only use it for the id data type (EnumDataType.Id) for handling the id attributes for mongodb
  * @returns the field in a structure of CreateBulkFieldsInput
  */
 export function createOneEntityFieldCommonProperties(
   field: Field,
-  fieldDataType: EnumDataType
+  fieldDataType: EnumDataType,
+  datasourceProvider = null
 ): CreateBulkFieldsInput {
   const fieldDisplayName =
     field.name === ID_FIELD_NAME
@@ -69,7 +91,8 @@ export function createOneEntityFieldCommonProperties(
 
   const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
     fieldDataType,
-    prepareFieldAttributes(field.attributes)
+    prepareFieldAttributes(field.attributes),
+    datasourceProvider
   )
     // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
