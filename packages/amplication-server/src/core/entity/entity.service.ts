@@ -88,6 +88,7 @@ import { BillingFeature } from "../billing/billing.types";
 import { ActionContext } from "../userAction/types";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
+import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -776,11 +777,20 @@ export class EntityService {
         await this.deleteField({ where: { id: relatedEntityField.id } }, user);
       }
 
-      await this.moduleService.deleteDefaultModuleForEntity(
-        entity.resourceId,
-        entity.id,
-        user
-      );
+      try {
+        await this.moduleService.deleteDefaultModuleForEntity(
+          entity.resourceId,
+          entity.id,
+          user
+        );
+      } catch (error) {
+        //continue to delete the entity even if the deletion of the default module failed.
+        //This is done in order to allow the user to workaround issues in any case when a default module is missing
+        this.logger.error(
+          "Continue with EntityDelete even though the default entity could not be deleted or was not found ",
+          error
+        );
+      }
 
       return this.prisma.entity.update({
         where: args.where,
@@ -973,15 +983,43 @@ export class EntityService {
         event: EnumEventType.EntityUpdate,
       });
 
-      await this.moduleService.updateDefaultModuleForEntity(
-        {
-          name: args.data.name,
-          displayName: args.data.name,
-        },
-        entity.resourceId,
-        entity.id,
-        user
-      );
+      try {
+        await this.moduleService.updateDefaultModuleForEntity(
+          {
+            name: args.data.name,
+            displayName: args.data.name,
+          },
+          entity.resourceId,
+          entity.id,
+          user
+        );
+      } catch (error) {
+        if (error instanceof DefaultModuleForEntityNotFoundError) {
+          //create a default module if it does not exist
+          //This is done in order to allow the user to workaround issues in any case when a default module is missing
+          this.logger.error(
+            "Creating a default module and continue with UpdateEntity even though the default module could not be found ",
+            error
+          );
+          await this.moduleService.createDefaultModuleForEntity(
+            {
+              data: {
+                name: args.data.name,
+                displayName: args.data.name,
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            entity.id,
+            user
+          );
+        } else {
+          throw error;
+        }
+      }
 
       return this.prisma.entity.update({
         where: { ...args.where },

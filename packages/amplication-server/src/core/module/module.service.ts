@@ -11,6 +11,7 @@ import { Module } from "./dto/Module";
 import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { PrismaService } from "../../prisma";
+import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -107,6 +108,7 @@ export class ModuleService extends BlockTypeService<
     const [module] = await this.prisma.block.findMany({
       where: {
         resourceId: resourceId,
+        deletedAt: null,
         versions: {
           some: {
             settings: {
@@ -119,9 +121,7 @@ export class ModuleService extends BlockTypeService<
     });
 
     if (!module) {
-      throw new Error(
-        "Cannot find module for entity with entityId " + entityId
-      );
+      throw new DefaultModuleForEntityNotFoundError(entityId);
     }
 
     return module.id;
