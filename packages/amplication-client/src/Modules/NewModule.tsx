@@ -1,27 +1,27 @@
-import { Snackbar, TextField } from "@amplication/ui/design-system";
-import classNames from "classnames";
+import {
+  EnumTextAlign,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { Form, Formik } from "formik";
-import { isEmpty } from "lodash";
 import { pascalCase } from "pascal-case";
-import { useCallback, useContext, useRef, useState } from "react";
+import { useCallback, useContext, useEffect } from "react";
+import { GlobalHotKeys } from "react-hotkeys";
+import { useHistory } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
+import { EnumImages, SvgThemeImage } from "../Components/SvgThemeImage";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
+import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewModule.scss";
 import useModule from "./hooks/useModule";
 
-const INITIAL_VALUES: Partial<models.Module> = {
-  name: "",
-  displayName: "",
-  description: "",
-};
-
 type Props = {
   resourceId: string;
-  onModuleAdd?: (module: models.Module) => void;
+  onSuccess: () => void;
 };
 
 const FORM_SCHEMA = {
@@ -29,29 +29,38 @@ const FORM_SCHEMA = {
   properties: {
     displayName: {
       type: "string",
-      minLength: 1,
-      maxLength: 249,
+      minLength: 2,
     },
   },
 };
-const CLASS_NAME = "new-module";
+
+const INITIAL_VALUES: Partial<models.Module> = {
+  name: "",
+  displayName: "",
+  description: "",
+};
+
+const keyMap = {
+  SUBMIT: CROSS_OS_CTRL_ENTER,
+};
 
 const prepareName = (displayName: string) => {
   return pascalCase(displayName);
 };
 
-const NewModule = ({ onModuleAdd, resourceId }: Props) => {
-  const { trackEvent } = useTracking();
-  const { addBlock } = useContext(AppContext);
+const NewModule = ({ resourceId, onSuccess }: Props) => {
+  const history = useHistory();
+  const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const { createModule, createModuleError, createModuleLoading } = useModule();
-
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const [autoFocus, setAutoFocus] = useState<boolean>(false);
+  const {
+    createModule,
+    createModuleData: data,
+    createModuleError: error,
+    createModuleLoading: loading,
+  } = useModule();
 
   const handleSubmit = useCallback(
-    (data, actions) => {
-      setAutoFocus(true);
+    (data) => {
       const name = prepareName(data.displayName);
       createModule({
         variables: {
@@ -62,59 +71,63 @@ const NewModule = ({ onModuleAdd, resourceId }: Props) => {
             resource: { connect: { id: resourceId } },
           },
         },
-      })
-        .then((result) => {
-          if (onModuleAdd) {
-            onModuleAdd(result.data.createModule);
-          }
-          addBlock(result.data.createModule.id);
-          actions.resetForm();
-          inputRef.current?.focus();
-        })
-        .catch(console.error);
+      });
     },
-    [createModule, resourceId, onModuleAdd, addBlock, trackEvent]
+    [createModule, resourceId]
   );
 
-  const errorMessage = formatError(createModuleError);
+  useEffect(() => {
+    if (data) {
+      history.push(
+        `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${data.createModule.id}`
+      );
+    }
+  }, [history, data, resourceId, currentWorkspace, currentProject]);
+
+  const errorMessage = formatError(error);
 
   return (
-    <div className={CLASS_NAME}>
+    <div>
+      <SvgThemeImage image={EnumImages.Entities} />
+      <Text textAlign={EnumTextAlign.Center}>
+        Give your new entity a descriptive name. <br />
+        For example: Customer, Support Ticket, Purchase Order...
+      </Text>
+
       <Formik
         initialValues={INITIAL_VALUES}
-        validate={(values: Partial<models.Module>) =>
-          validate(values, FORM_SCHEMA)
-        }
-        validateOnBlur={false}
+        validate={(values) => validate(values, FORM_SCHEMA)}
         onSubmit={handleSubmit}
+        validateOnMount
       >
-        {(formik) => (
-          <Form className={`${CLASS_NAME}__add-field`}>
-            <TextField
-              required
-              name="displayName"
-              label="New Module Name"
-              disabled={createModuleLoading}
-              inputRef={inputRef}
-              placeholder="Add module"
-              autoComplete="off"
-              autoFocus={autoFocus}
-              hideLabel
-              className={`${CLASS_NAME}__add-field__text`}
-            />
-            <Button
-              buttonStyle={EnumButtonStyle.Text}
-              icon="plus"
-              className={classNames(`${CLASS_NAME}__add-field__button`, {
-                [`${CLASS_NAME}__add-field__button--show`]: !isEmpty(
-                  formik.values.displayName
-                ),
-              })}
-            />
-          </Form>
-        )}
+        {(formik) => {
+          const handlers = {
+            SUBMIT: formik.submitForm,
+          };
+          return (
+            <Form>
+              <GlobalHotKeys keyMap={keyMap} handlers={handlers} />
+              <TextField
+                name="displayName"
+                label="New Module Name"
+                disabled={loading}
+                autoFocus
+                hideLabel
+                placeholder="Type New Module Name"
+                autoComplete="off"
+              />
+              <Button
+                type="submit"
+                buttonStyle={EnumButtonStyle.Primary}
+                disabled={!formik.isValid || loading}
+              >
+                Create Module
+              </Button>
+            </Form>
+          );
+        }}
       </Formik>
-      <Snackbar open={Boolean(createModuleError)} message={errorMessage} />
+      <Snackbar open={Boolean(error)} message={errorMessage} />
     </div>
   );
 };

@@ -7,8 +7,32 @@ export const MODULE_FIELDS_FRAGMENT = gql`
     displayName
     description
     entityId
+    lockedByUserId
+    lockedAt
+    lockedByUser {
+      account {
+        firstName
+        lastName
+      }
+    }
   }
 `;
+
+// versions(take: 1, orderBy: { versionNumber: Desc }) {
+//   versionNumber
+//   commit {
+//     userId
+//     message
+//     createdAt
+//     user {
+//       id
+//       account {
+//         firstName
+//         lastName
+//       }
+//     }
+//   }
+// }
 
 export const DELETE_MODULE = gql`
   mutation deleteModule($where: WhereUniqueInput!) {

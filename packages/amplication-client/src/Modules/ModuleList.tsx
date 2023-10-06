@@ -1,122 +1,153 @@
 import {
   CircularProgress,
+  Dialog,
+  EnumContentAlign,
+  EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumItemsAlign,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  List,
   SearchField,
   Snackbar,
+  Text,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
-import InnerTabLink from "../Layout/InnerTabLink";
-import { AppContext } from "../context/appContext";
+import React, { useCallback, useEffect, useState } from "react";
+import PageContent from "../Layout/PageContent";
 import * as models from "../models";
 import { formatError } from "../util/error";
-import { pluralize } from "../util/pluralize";
-import "./ModuleList.scss";
+import { ModuleListItem } from "./ModuleListItem";
 import NewModule from "./NewModule";
+
+import { Button, EnumButtonStyle } from "../Components/Button";
+import { pluralize } from "../util/pluralize";
 import useModule from "./hooks/useModule";
-
-const DATE_CREATED_FIELD = "createdAt";
-const CLASS_NAME = "module-list";
-
+const TITLE = "Modules";
+const SUB_TITLE =
+  "Modules are used to group services, actions, DTOs and other code components.";
 type Props = {
   resourceId: string;
-  selectFirst?: boolean;
 };
 
-export const ModuleList = React.memo(
-  ({ resourceId, selectFirst = false }: Props) => {
-    const [searchPhrase, setSearchPhrase] = useState<string>("");
-    const { currentWorkspace, currentProject } = useContext(AppContext);
+export const DATE_CREATED_FIELD = "createdAt";
 
-    const handleSearchChange = useCallback(
-      (value) => {
-        setSearchPhrase(value);
-      },
-      [setSearchPhrase]
-    );
-    const history = useHistory();
+const ModuleList: React.FC<Props> = ({ resourceId }) => {
+  const pageTitle = "Modules";
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
+  const [newModule, setNewModule] = useState<boolean>(false);
+  const [error, setError] = useState<Error>();
 
-    const {
-      findModules,
-      findModulesData: data,
-      findModulesError: error,
-      findModulesLoading: loading,
-    } = useModule();
+  const {
+    findModules,
+    findModulesData: data,
+    findModulesError: errorLoading,
+    findModulesLoading: loading,
+  } = useModule();
 
-    useEffect(() => {
-      findModules({
-        variables: {
-          where: {
-            resource: { id: resourceId },
-            displayName:
-              searchPhrase !== ""
-                ? {
-                    contains: searchPhrase,
-                    mode: models.QueryMode.Insensitive,
-                  }
-                : undefined,
-          },
-          orderBy: {
-            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-          },
+  useEffect(() => {
+    findModules({
+      variables: {
+        where: {
+          resource: { id: resourceId },
+          displayName:
+            searchPhrase !== ""
+              ? {
+                  contains: searchPhrase,
+                  mode: models.QueryMode.Insensitive,
+                }
+              : undefined,
         },
-      });
-    }, [resourceId, searchPhrase, findModules]);
-
-    const errorMessage = formatError(error);
-
-    const handleModuleChange = useCallback(
-      (module: models.Module) => {
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${module.id}`;
-        history.push(fieldUrl);
+        orderBy: {
+          [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+        },
       },
-      [history, resourceId, currentWorkspace, currentProject]
-    );
+    });
+  }, [resourceId, searchPhrase, findModules]);
 
-    useEffect(() => {
-      if (selectFirst && data && !isEmpty(data.Modules)) {
-        const module = data.Modules[0];
-        const fieldUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${module.id}`;
-        history.push(fieldUrl);
-      }
-    }, [
-      data,
-      selectFirst,
-      resourceId,
-      history,
-      currentWorkspace,
-      currentProject,
-    ]);
+  const handleNewModuleClick = useCallback(() => {
+    setNewModule(!newModule);
+  }, [newModule, setNewModule]);
 
-    return (
-      <div className={CLASS_NAME}>
-        <SearchField
-          label="search"
-          placeholder="search"
-          onChange={handleSearchChange}
-        />
-        <div className={`${CLASS_NAME}__header`}>
-          {data?.Modules.length}{" "}
-          {pluralize(data?.Modules.length, "Module", "Modules")}
-        </div>
-        {loading && <CircularProgress />}
-        <div className={`${CLASS_NAME}__list`}>
-          {data?.Modules?.map((module) => (
-            <div key={module.id} className={`${CLASS_NAME}__list__item`}>
-              <InnerTabLink
-                icon="modules"
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${module.id}`}
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
+    },
+    [setSearchPhrase]
+  );
+
+  const errorMessage =
+    (errorLoading && formatError(errorLoading)) ||
+    (error && formatError(error));
+
+  return (
+    <PageContent
+      pageTitle={pageTitle}
+      contentTitle={TITLE}
+      contentSubTitle={SUB_TITLE}
+    >
+      <>
+        <Dialog
+          isOpen={newModule}
+          onDismiss={handleNewModuleClick}
+          title="New Module"
+        >
+          <NewModule resourceId={resourceId} onSuccess={handleNewModuleClick} />
+        </Dialog>
+
+        <FlexItem
+          contentAlign={EnumContentAlign.Center}
+          itemsAlign={EnumItemsAlign.Center}
+        >
+          <FlexItem.FlexStart>
+            <SearchField
+              label="search"
+              placeholder="search"
+              onChange={handleSearchChange}
+            />
+          </FlexItem.FlexStart>
+
+          <FlexItem.FlexEnd>
+            <FlexItem direction={EnumFlexDirection.Row}>
+              <Button
+                buttonStyle={EnumButtonStyle.Primary}
+                onClick={handleNewModuleClick}
               >
-                <span>{module.displayName}</span>
-              </InnerTabLink>
-            </div>
-          ))}
-        </div>
-        {data?.Modules && (
-          <NewModule onModuleAdd={handleModuleChange} resourceId={resourceId} />
-        )}
-        <Snackbar open={Boolean(error)} message={errorMessage} />
-      </div>
-    );
-  }
-);
+                Add Module
+              </Button>
+            </FlexItem>
+          </FlexItem.FlexEnd>
+        </FlexItem>
+
+        <HorizontalRule doubleSpacing />
+
+        {loading && <CircularProgress centerToParent />}
+        <>
+          <FlexItem margin={EnumFlexItemMargin.Bottom}>
+            <Text textStyle={EnumTextStyle.Tag}>
+              {data?.Modules.length}{" "}
+              {pluralize(data?.Modules.length, "Module", "Modules")}
+            </Text>
+          </FlexItem>
+
+          <List>
+            {data?.Modules.map((module) => (
+              <ModuleListItem
+                key={module.id}
+                module={module}
+                onError={setError}
+              />
+            ))}
+          </List>
+        </>
+
+        <Snackbar
+          open={Boolean(error || errorLoading)}
+          message={errorMessage}
+        />
+      </>
+    </PageContent>
+  );
+};
+
+export default ModuleList;

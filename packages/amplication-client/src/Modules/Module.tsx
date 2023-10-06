@@ -1,23 +1,33 @@
-import { HorizontalRule, Snackbar } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Snackbar,
+  TabContentTitle,
+  Text,
+} from "@amplication/ui/design-system";
+import { isEmpty } from "lodash";
 import { useCallback, useContext, useEffect } from "react";
-import { useHistory, useRouteMatch } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { formatError } from "../util/error";
 import { DeleteModule } from "./DeleteModule";
 import "./Module.scss";
 import ModuleForm from "./ModuleForm";
 import useModule from "./hooks/useModule";
-import { isEmpty } from "lodash";
 
-const CLASS_NAME = "module";
+const TITLE = "Modules";
+const SUB_TITLE =
+  "Modules are used to group services, actions, DTOs and other code components.";
 
 const Module = () => {
   const match = useRouteMatch<{
     resource: string;
-    moduleId: string;
-  }>("/:workspace/:project/:resource/modules/:moduleId");
+    module: string;
+  }>("/:workspace/:project/:resource/modules/:module");
 
-  const { moduleId } = match?.params ?? {};
+  const { module: moduleId } = match?.params ?? {};
   const {
     currentWorkspace,
     currentProject,
@@ -89,13 +99,31 @@ const Module = () => {
 
   return (
     <>
-      <div className={`${CLASS_NAME}__header`}>
-        <h3>Module Settings</h3>
-        {data?.Module && !isEntityModule && (
-          <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
-        )}
-      </div>
-      <HorizontalRule />
+      <FlexItem>
+        <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
+        <FlexItem.FlexEnd>
+          {data?.Module && !isEntityModule && (
+            <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />
+          )}
+        </FlexItem.FlexEnd>
+      </FlexItem>
+      {data?.Module && isEntityModule && (
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <Text textStyle={EnumTextStyle.Description}>
+            This modules was created automatically with the{" "}
+            <Link
+              to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/${data?.Module.entityId}`}
+            >
+              <Text
+                textStyle={EnumTextStyle.Description}
+                textColor={EnumTextColor.White}
+              >
+                {data.Module.name} entity
+              </Text>
+            </Link>
+          </Text>
+        </FlexItem>
+      )}
 
       {!loading && (
         <ModuleForm

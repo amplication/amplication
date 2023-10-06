@@ -9,12 +9,14 @@ export type MenuItemLinks =
   | "topics"
   | "services"
   | "connections"
+  | "modules"
   | "pendingChanges";
 
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
 } = {
   [EnumResourceType.Service]: [
+    "modules",
     "entities",
     "roles",
     "plugins",
@@ -73,6 +75,11 @@ export const linksMap: {
     title: "Pending Changes",
     icon: "pending_changes",
     to: "/pending-changes",
+  },
+  modules: {
+    title: "Modules",
+    icon: "box",
+    to: "/modules",
   },
 };
 

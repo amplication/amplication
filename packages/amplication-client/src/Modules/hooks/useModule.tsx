@@ -33,33 +33,37 @@ type TUpdateData = {
 const useModule = () => {
   const { addBlock } = useContext(AppContext);
 
-  const [deleteModule, { error: deleteModuleError }] = useMutation<TDeleteData>(
-    DELETE_MODULE,
-    {
-      update(cache, { data }) {
-        if (!data || data === undefined) return;
-        const deletedModuleId = data.deleteModule.id;
-        cache.modify({
-          fields: {
-            Modules(existingModuleRefs, { readField }) {
-              return existingModuleRefs.filter(
-                (moduleRef: Reference) =>
-                  deletedModuleId !== readField("id", moduleRef)
-              );
-            },
+  const [
+    deleteModule,
+    { error: deleteModuleError, loading: deleteModuleLoading },
+  ] = useMutation<TDeleteData>(DELETE_MODULE, {
+    update(cache, { data }) {
+      if (!data || data === undefined) return;
+      const deletedModuleId = data.deleteModule.id;
+      cache.modify({
+        fields: {
+          Modules(existingModuleRefs, { readField }) {
+            return existingModuleRefs.filter(
+              (moduleRef: Reference) =>
+                deletedModuleId !== readField("id", moduleRef)
+            );
           },
-        });
-      },
+        },
+      });
+    },
 
-      onCompleted: (data) => {
-        addBlock(data.deleteModule.id);
-      },
-    }
-  );
+    onCompleted: (data) => {
+      addBlock(data.deleteModule.id);
+    },
+  });
 
   const [
     createModule,
-    { error: createModuleError, loading: createModuleLoading },
+    {
+      data: createModuleData,
+      error: createModuleError,
+      loading: createModuleLoading,
+    },
   ] = useMutation<TCreateData>(CREATE_MODULE, {
     update(cache, { data }) {
       if (!data) return;
@@ -96,6 +100,7 @@ const useModule = () => {
       data: findModulesData,
       loading: findModulesLoading,
       error: findModulesError,
+      refetch: findModuleRefetch,
     },
   ] = useLazyQuery<TFindData>(FIND_MODULES, {});
 
@@ -117,13 +122,16 @@ const useModule = () => {
   return {
     deleteModule,
     deleteModuleError,
+    deleteModuleLoading,
     createModule,
+    createModuleData,
     createModuleError,
     createModuleLoading,
     findModules,
     findModulesData,
     findModulesLoading,
     findModulesError,
+    findModuleRefetch,
     getModule,
     getModuleData,
     getModuleError,
