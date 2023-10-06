@@ -50,6 +50,7 @@ import {
   addMapAttributeToModel,
   findRelationAttributeName,
   handleNotIdFieldNameId,
+  handleIdFieldForModelsWithIdAttribute,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -616,14 +617,49 @@ export class PrismaSchemaParserService {
 
       if (!modelIdAttribute) return builder;
 
-      void actionContext.onEmitUserActionLog(
-        `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`,
-        EnumActionLogLevel.Error
-      );
+      const modelIdAttributeValueArgs = (
+        modelIdAttribute.args.find((arg) => arg.type === "attributeArgument")
+          .value as RelationArray
+      ).args;
 
-      throw new Error(
-        `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`
-      );
+      if (modelIdAttributeValueArgs.length > 1) {
+        void actionContext.onEmitUserActionLog(
+          `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`,
+          EnumActionLogLevel.Error
+        );
+
+        throw new Error(
+          `The model "${model.name}" has a composite id which is not supported. Please fix this issue and import the schema again.`
+        );
+      }
+
+      if (modelIdAttributeValueArgs.length === 1) {
+        // rename the @@id attribute to @@unique
+        builder.model(model.name).then<Model>((model) => {
+          modelIdAttribute.name = UNIQUE_ATTRIBUTE_NAME;
+        });
+
+        void actionContext.onEmitUserActionLog(
+          `Attribute "${ID_ATTRIBUTE_NAME}" was changed to "${UNIQUE_ATTRIBUTE_NAME}" on model "${model.name}"`,
+          EnumActionLogLevel.Warning
+        );
+
+        const modelFields = model.properties.filter(
+          (property) => property.type === FIELD_TYPE_NAME
+        ) as Field[];
+
+        const pkField = modelFields.find(
+          (field) => field.name === modelIdAttributeValueArgs[0]
+        );
+
+        handleIdFieldForModelsWithIdAttribute(
+          model,
+          pkField.name,
+          pkField.fieldType as string,
+          builder,
+          actionContext
+        );
+      }
     });
 
     return {

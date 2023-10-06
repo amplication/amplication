@@ -28,7 +28,6 @@ import {
   ID_ATTRIBUTE_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   prismaIdTypeToDefaultIdType,
-  ID_DEFAULT_VALUE_CUID_FUNCTION,
 } from "./constants";
 import {
   filterOutAmplicationAttributes,
@@ -459,16 +458,88 @@ export function handleEnumMapAttribute(
   return enumOptions;
 }
 
+export function handleIdFieldForModelsWithIdAttribute(
+  model: Model,
+  originalPKFieldName: string,
+  originalPKFieldType: string,
+  builder: ConcretePrismaSchemaBuilder,
+  actionContext: ActionContext
+) {
+  // find field named id and add the @id attribute to it
+  const modelFields = model.properties.filter(
+    (prop) => prop.type === FIELD_TYPE_NAME
+  ) as Field[];
+
+  const fieldNamedId = modelFields.find(
+    (field) => field.name === ID_FIELD_NAME
+  );
+  const isFieldNamedIdWithoutDefaultAttribute = fieldNamedId?.attributes?.some(
+    (attribute) => attribute.name === DEFAULT_ATTRIBUTE_NAME
+  );
+
+  if (fieldNamedId) {
+    builder
+      .model(model.name)
+      .field(fieldNamedId.name)
+      .attribute(ID_ATTRIBUTE_NAME);
+
+    const hasMapAttribute = fieldNamedId.attributes?.some(
+      (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
+    );
+
+    // if there is already a map attribute on the id field, throw an error because we can't add another map attribute
+    if (hasMapAttribute) {
+      void actionContext.onEmitUserActionLog(
+        `The field "${fieldNamedId.name}" on model "${model.name}" already has a map attribute and cannot be converted to an id field and mapped to the field "${originalPKFieldName}`,
+        EnumActionLogLevel.Error
+      );
+
+      throw new Error(
+        `The field "${fieldNamedId.name}" on model "${model.name}" already has a map attribute and cannot be converted to an id field and mapped to the field "${originalPKFieldName}`
+      );
+    }
+
+    // add map attribute to the id field and map it to the original fk field
+    builder
+      .model(model.name)
+      .field(fieldNamedId.name)
+      .attribute(MAP_ATTRIBUTE_NAME, [`"${originalPKFieldName}"`]);
+
+    // if there is no default attribute on the id field, add it (we need it for the id type)
+    if (!isFieldNamedIdWithoutDefaultAttribute) {
+      const idDefaultType: string =
+        prismaIdTypeToDefaultIdType[fieldNamedId.fieldType as string];
+
+      builder
+        .model(model.name)
+        .field(fieldNamedId.name)
+        .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+    }
+  } else {
+    // add id field to the model based on the original fk field type
+    addIdFieldIfNotExists(builder, model, actionContext, originalPKFieldType);
+
+    // after adding the id field, add map attribute to it and map it to the original fk field
+    builder
+      .model(model.name)
+      .field(ID_FIELD_NAME)
+      .attribute(MAP_ATTRIBUTE_NAME, [`"${originalPKFieldName}"`]);
+  }
+}
+
 export function addIdFieldIfNotExists(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
-  actionContext: ActionContext
+  actionContext: ActionContext,
+  idType = "String"
 ) {
+  const idDefaultType: string = prismaIdTypeToDefaultIdType[idType];
+
   builder
     .model(model.name)
-    .field(ID_FIELD_NAME, "String")
+    .field(ID_FIELD_NAME, idType)
     .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION]);
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
