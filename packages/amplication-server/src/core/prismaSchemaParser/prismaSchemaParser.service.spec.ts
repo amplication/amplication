@@ -1892,34 +1892,242 @@ describe("prismaSchemaParser", () => {
         });
       });
       describe("when model has @@index/@@id/@@unique attributes", () => {
-        it("should throw an error when the model has @@id attribute (composite id)", async () => {
-          // arrange
-          const prismaSchema = `datasource db {
-            provider = "postgresql"
-            url      = env("DB_URL")
-          }
-          
-          generator client {
-            provider = "prisma-client-js"
-          }
-          
-          model Doctor {
-            first_name   String    
-            license_id     Int
-          
-            @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
-          }`;
-          const existingEntities: ExistingEntitySelect[] = [];
+        describe("when the @@id attribute has more than one arg (composite id)", () => {
+          it("should throw an error", async () => {
+            // arrange
+            const prismaSchema = `datasource db {
+              provider = "postgresql"
+              url      = env("DB_URL")
+            }
+            
+            generator client {
+              provider = "prisma-client-js"
+            }
+            
+            model Doctor {
+              first_name   String    
+              license_id     Int
+            
+              @@id([first_name, license_id], map: "doctor_first_name_license_id_unique")
+            }`;
+            const existingEntities: ExistingEntitySelect[] = [];
 
-          await expect(
-            service.convertPrismaSchemaForImportObjects(
+            await expect(
+              service.convertPrismaSchemaForImportObjects(
+                prismaSchema,
+                existingEntities,
+                actionContext
+              )
+            ).rejects.toThrowError(
+              'The model "Doctor" has a composite id which is not supported. Please fix this issue and import the schema again.'
+            );
+          });
+        });
+
+        describe("when the @@id attribute has one arg", () => {
+          it("should throw an error when the model has a field named id with @map attribute", async () => {
+            // arrange
+            const prismaSchema = `
+            generator client {
+              provider = "prisma-client-js"
+            }
+
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+
+            model Doctor {
+              id          String     @default(cuid()) @map("doctor_id")
+              fullName    String    	
+              tagId       Int
+
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+
+            await expect(
+              service.convertPrismaSchemaForImportObjects(
+                prismaSchema,
+                existingEntities,
+                actionContext
+              )
+            ).rejects.toThrowError(
+              'The model "Doctor" has a field named "id" that already has a map attribute. Therefore it cannot be converted to an id field and mapped to the field "tagId"'
+            );
+          });
+
+          it("should change the @@id attribute to @@unique attribute and add if the model has a field named id, add @id attribute and @map attribute with the original PK field name", async () => {
+            // arrange
+            const prismaSchema = `generator client {
+              provider = "prisma-client-js"
+            }
+            
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+            
+             model Doctor {
+              id          String     @default(cuid())
+              fullName    String    	
+              tagId       Int
+            
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+            // act
+            const result = await service.convertPrismaSchemaForImportObjects(
               prismaSchema,
               existingEntities,
               actionContext
-            )
-          ).rejects.toThrowError(
-            'The model "Doctor" has a composite id which is not supported. Please fix this issue and import the schema again.'
-          );
+            );
+            // assert
+            const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+              {
+                id: expect.any(String),
+                name: "Doctor",
+                displayName: "Doctor",
+                pluralDisplayName: "Doctors",
+                description: "",
+                customAttributes: "@@unique([tagId])",
+                fields: [
+                  {
+                    permanentId: expect.any(String),
+                    name: "id",
+                    displayName: "ID",
+                    dataType: EnumDataType.Id,
+                    required: true,
+                    unique: true,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      idType: "CUID",
+                    },
+                    customAttributes: '@map("tagId")',
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "fullName",
+                    displayName: "Full Name",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "tagId",
+                    displayName: "Tag Id",
+                    dataType: EnumDataType.WholeNumber,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      databaseFieldType: "INT",
+                      maximumValue: 99999999999,
+                      minimumValue: 0,
+                    },
+                    customAttributes: "",
+                  },
+                ],
+              },
+            ];
+            expect(result).toEqual(expectedEntitiesWithFields);
+          });
+
+          it("should change the @@id attribute to @@unique attribute and add an id field with @id, @default and @map attributes to the model with the type and name of the original PK field", async () => {
+            // arrange
+            const prismaSchema = `generator client {
+              provider = "prisma-client-js"
+            }
+            
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+            
+             model Doctor {
+              fullName    String    	
+              tagId       Int
+            
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+            // act
+            const result = await service.convertPrismaSchemaForImportObjects(
+              prismaSchema,
+              existingEntities,
+              actionContext
+            );
+            // assert
+            const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+              {
+                id: expect.any(String),
+                name: "Doctor",
+                displayName: "Doctor",
+                pluralDisplayName: "Doctors",
+                description: "",
+                customAttributes: "@@unique([tagId])",
+                fields: [
+                  {
+                    permanentId: expect.any(String),
+                    name: "fullName",
+                    displayName: "Full Name",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "tagId",
+                    displayName: "Tag Id",
+                    dataType: EnumDataType.WholeNumber,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      databaseFieldType: "INT",
+                      maximumValue: 99999999999,
+                      minimumValue: 0,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "id",
+                    displayName: "ID",
+                    dataType: EnumDataType.Id,
+                    required: true,
+                    unique: true,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      idType: "AUTO_INCREMENT",
+                    },
+                    customAttributes: '@map("tagId")',
+                  },
+                ],
+              },
+            ];
+            expect(result).toEqual(expectedEntitiesWithFields);
+          });
         });
 
         it("should format the args in the @@index attribute in the same way they were formatted in the model fields", async () => {
