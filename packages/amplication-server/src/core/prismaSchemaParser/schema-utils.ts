@@ -38,7 +38,6 @@ import {
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
-  isUniqueField,
   lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
