@@ -1938,7 +1938,7 @@ describe("prismaSchemaParser", () => {
             }
 
             model Doctor {
-              id          String     @default(cuid()) @map("doctor_id")
+              id          Int     @default(autoincrement()) @map("doctor_id")
               fullName    String    	
               tagId       Int
 
@@ -1958,7 +1958,7 @@ describe("prismaSchemaParser", () => {
             );
           });
 
-          it("should change the @@id attribute to @@unique attribute and add if the model has a field named id, add @id attribute and @map attribute with the original PK field name", async () => {
+          it("should change the @@id attribute to @@unique attribute and add if the model has a field named id with a different type from the original PK - rename the field to and add id field with the right type", async () => {
             // arrange
             const prismaSchema = `generator client {
               provider = "prisma-client-js"
@@ -1996,6 +1996,50 @@ describe("prismaSchemaParser", () => {
                 fields: [
                   {
                     permanentId: expect.any(String),
+                    name: "doctorId",
+                    displayName: "Doctor Id",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: '@default(cuid()) @map("id")',
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "fullName",
+                    displayName: "Full Name",
+                    dataType: EnumDataType.SingleLineText,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      maxLength: 256,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
+                    name: "tagId",
+                    displayName: "Tag Id",
+                    dataType: EnumDataType.WholeNumber,
+                    required: true,
+                    unique: false,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      databaseFieldType: "INT",
+                      maximumValue: 99999999999,
+                      minimumValue: 0,
+                    },
+                    customAttributes: "",
+                  },
+                  {
+                    permanentId: expect.any(String),
                     name: "id",
                     displayName: "ID",
                     dataType: EnumDataType.Id,
@@ -2004,7 +2048,63 @@ describe("prismaSchemaParser", () => {
                     searchable: true,
                     description: "",
                     properties: {
-                      idType: "CUID",
+                      idType: "AUTO_INCREMENT",
+                    },
+                    customAttributes: '@map("tagId")',
+                  },
+                ],
+              },
+            ];
+            expect(result).toEqual(expectedEntitiesWithFields);
+          });
+
+          it("should change the @@id attribute to @@unique attribute and add if the model has a field named id, add @id attribute and @map attribute with the original PK field name", async () => {
+            // arrange
+            const prismaSchema = `generator client {
+              provider = "prisma-client-js"
+            }
+            
+            datasource db {
+              provider = "postgresql"
+              url      = env("DATABASE_URL")
+            }
+            
+             model Doctor {
+              id          Int     @default(autoincrement())
+              fullName    String    	
+              tagId       Int
+            
+              @@id([tagId])
+            }`;
+
+            const existingEntities: ExistingEntitySelect[] = [];
+            // act
+            const result = await service.convertPrismaSchemaForImportObjects(
+              prismaSchema,
+              existingEntities,
+              actionContext
+            );
+            // assert
+            const expectedEntitiesWithFields: CreateBulkEntitiesInput[] = [
+              {
+                id: expect.any(String),
+                name: "Doctor",
+                displayName: "Doctor",
+                pluralDisplayName: "Doctors",
+                description: "",
+                customAttributes: "@@unique([tagId])",
+                fields: [
+                  {
+                    permanentId: expect.any(String),
+                    name: "id",
+                    displayName: "ID",
+                    dataType: EnumDataType.Id,
+                    required: true,
+                    unique: true,
+                    searchable: true,
+                    description: "",
+                    properties: {
+                      idType: "AUTO_INCREMENT",
                     },
                     customAttributes: '@map("tagId")',
                   },
