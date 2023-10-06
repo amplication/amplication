@@ -108,6 +108,8 @@ export function getSwaggerAuthDecorationIdForClass(
       return builders.identifier("ApiBasicAuth");
     case EnumAuthProviderType.Jwt:
       return builders.identifier("ApiBearerAuth");
+    case EnumAuthProviderType.Auth0:
+      return builders.identifier("ApiBearerAuth");
     default:
       throw new Error(
         "Not got valid auth provider to the getSwaggerAuthFunction"

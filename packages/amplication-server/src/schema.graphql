@@ -604,6 +604,7 @@ enum EnumActionStepStatus {
 }
 
 enum EnumAuthProviderType {
+  Auth0
   Http
   Jwt
 }

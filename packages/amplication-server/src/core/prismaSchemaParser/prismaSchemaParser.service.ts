@@ -49,6 +49,7 @@ import {
   addMapAttributeToField,
   addMapAttributeToModel,
   findRelationAttributeName,
+  getDatasourceProviderFromSchema,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import pluralize from "pluralize";
@@ -101,6 +102,7 @@ import { ActionContext } from "../userAction/types";
 
 @Injectable()
 export class PrismaSchemaParserService {
+  private datasourceProvider: string;
   private prepareOperations: PrepareOperation[] = [
     this.prepareModelNames,
     this.prepareFieldNames,
@@ -146,6 +148,9 @@ export class PrismaSchemaParserService {
         "Prisma Schema Validation completed successfully",
         EnumActionLogLevel.Info
       );
+
+      this.datasourceProvider = getDatasourceProviderFromSchema(schema);
+      this.logger.debug(`Datasource provider: ${this.datasourceProvider}`);
 
       void onEmitUserActionLog(
         "Prepare Prisma Schema for import",
@@ -1521,7 +1526,8 @@ export class PrismaSchemaParserService {
 
     const entityField = createOneEntityFieldCommonProperties(
       field,
-      EnumDataType.Id
+      EnumDataType.Id,
+      this.datasourceProvider
     );
 
     const defaultIdAttribute = field.attributes?.find(
