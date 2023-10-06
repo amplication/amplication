@@ -510,11 +510,10 @@ export function handleIdFieldForModelsWithIdAttribute(
     (field) => field.name === ID_FIELD_NAME
   );
 
-  if (fieldNamedId) {
-    const isValidIdField = isValidIdFieldType(fieldNamedId.fieldType as string);
-
+  const isValidIdField = isValidIdFieldType(fieldNamedId?.fieldType as string);
+  if (fieldNamedId && isValidIdField) {
     // if it's a valid id field and the field type is the same as the original pk field type, we can use it as the id field
-    if (isValidIdField && fieldNamedId.fieldType === originalPKFieldType) {
+    if (fieldNamedId.fieldType === originalPKFieldType) {
       builder
         .model(model.name)
         .field(fieldNamedId.name)
@@ -557,10 +556,7 @@ export function handleIdFieldForModelsWithIdAttribute(
           .field(fieldNamedId.name)
           .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
       }
-    } else if (
-      isValidIdField &&
-      fieldNamedId.fieldType !== originalPKFieldType
-    ) {
+    } else {
       // rename the id field to model name + "Id" and add if field
       builder
         .model(model.name)
