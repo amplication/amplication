@@ -7,15 +7,15 @@ export default {
   component: Text,
 } as Meta;
 
-export const Default = () => {
+export const Default = (props: any) => {
   return (
     <>
-      <Text textStyle={EnumTextStyle.Normal}>Normal text</Text>
+      <Text {...props}>Normal text</Text>
     </>
   );
 };
 
-export const WithColorAndWeight = () => {
+export const WithColorAndWeight = (props: any) => {
   return (
     <>
       <Text
@@ -29,31 +29,39 @@ export const WithColorAndWeight = () => {
   );
 };
 
-export const H1 = () => {
+export const H1 = (props: any) => {
   return (
     <>
-      <Text textStyle={EnumTextStyle.Normal}>Header 1</Text>
+      <Text textStyle={EnumTextStyle.H1}>Header 1</Text>
     </>
   );
 };
 
-export const H2 = () => {
+export const H2 = (props: any) => {
   return (
     <>
-      <Text textStyle={EnumTextStyle.Normal}>Header 2</Text>
+      <Text textStyle={EnumTextStyle.H2}>Header 2</Text>
     </>
   );
 };
 
-export const H3 = () => {
+export const H3 = (props: any) => {
   return (
     <>
-      <Text textStyle={EnumTextStyle.Normal}>Header 3</Text>
+      <Text textStyle={EnumTextStyle.H3}>Header 3</Text>
     </>
   );
 };
 
-export const Subtle = () => {
+export const H4 = (props: any) => {
+  return (
+    <>
+      <Text textStyle={EnumTextStyle.H4}>Header 4</Text>
+    </>
+  );
+};
+
+export const Subtle = (props: any) => {
   return (
     <>
       <Text textStyle={EnumTextStyle.Subtle}>Subtle text</Text>
@@ -61,10 +69,18 @@ export const Subtle = () => {
   );
 };
 
-export const Tag = () => {
+export const Tag = (props: any) => {
   return (
     <>
       <Text textStyle={EnumTextStyle.Tag}>Tag text</Text>
+    </>
+  );
+};
+
+export const Description = (props: any) => {
+  return (
+    <>
+      <Text textStyle={EnumTextStyle.Description}>Description text</Text>
     </>
   );
 };

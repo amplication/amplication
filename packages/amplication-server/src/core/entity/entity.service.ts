@@ -152,10 +152,9 @@ const RELATED_FIELD_ID_UNDEFINED_AND_NAMES_UNDEFINED_ERROR_MESSAGE =
 const RELATED_FIELD_NAMES_SHOULD_BE_UNDEFINED_ERROR_MESSAGE =
   "When data.dataType is not Lookup, relatedFieldName and relatedFieldDisplayName must be null";
 
-const UPDATED_AT = "updatedAt";
-const CREATED_AT = "createdAt";
-const PROPERTIES = "properties";
-const CUSTOM_ATTRIBUTES = "customAttributes";
+const NAME = "name";
+const DATA_TYPE = "dataType";
+const SEARCHABLE = "searchable";
 
 const BASE_FIELD: Pick<
   EntityField,
@@ -923,14 +922,6 @@ export class EntityService {
 
       if (isReservedName(args.data?.name?.toLowerCase().trim())) {
         throw new ReservedNameError(args.data?.name?.toLowerCase().trim());
-      }
-
-      if (entity.name === USER_ENTITY_NAME) {
-        if (args.data.name && args.data.name !== USER_ENTITY_NAME) {
-          throw new ConflictException(
-            `The 'user' entity is a reserved entity and its name cannot be updated`
-          );
-        }
       }
 
       const resourceWithProject = await this.prisma.resource.findUnique({
@@ -2779,25 +2770,21 @@ function isUserEntity(entity: Entity): boolean {
 function isBasePropertyIdFieldPayloadChanged(
   data: EntityFieldUpdateInput
 ): boolean {
+  const PROPERTIES_TO_VALIDATE = [NAME, DATA_TYPE, SEARCHABLE];
+
   const idTypeData = {
     ...INITIAL_ID_TYPE_FIELDS,
     createdAt: undefined,
     updatedAt: undefined,
   };
-  const idTypeDataWithoutProperties = omit(idTypeData, [
-    PROPERTIES,
-    CREATED_AT,
-    UPDATED_AT,
-    CUSTOM_ATTRIBUTES,
-  ]);
-  const dataWithoutProperties = omit(data, [
-    PROPERTIES,
-    CREATED_AT,
-    UPDATED_AT,
-    CUSTOM_ATTRIBUTES,
-  ]);
 
-  return !isEqual(dataWithoutProperties, idTypeDataWithoutProperties);
+  const idTypeDataWithSelectedProperties = pick(
+    idTypeData,
+    PROPERTIES_TO_VALIDATE
+  );
+  const dataWithSelectedProperties = pick(data, PROPERTIES_TO_VALIDATE);
+
+  return !isEqual(dataWithSelectedProperties, idTypeDataWithSelectedProperties);
 }
 
 export function createEntityNamesWhereInput(
