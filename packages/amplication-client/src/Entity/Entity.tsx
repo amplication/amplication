@@ -16,6 +16,8 @@ import EntityForm from "./EntityForm";
 import { ENTITY_ACTIONS } from "./constants";
 
 import { AppContext } from "../context/appContext";
+import useModule from "../Modules/hooks/useModule";
+import { DATE_CREATED_FIELD } from "../Modules/ModuleList";
 
 type Props = {
   match: match<{ resource: string; entityId: string; fieldId: string }>;
@@ -34,6 +36,8 @@ const Entity = ({ match }: Props) => {
   const { addEntity, currentWorkspace, currentProject } =
     useContext(AppContext);
 
+  const { findModuleRefetch } = useModule();
+
   const { data, loading, error } = useQuery<TData>(GET_ENTITY, {
     variables: {
       id: entityId,
@@ -44,6 +48,16 @@ const Entity = ({ match }: Props) => {
     UPDATE_ENTITY,
     {
       onCompleted: (data) => {
+        //refresh the modules list
+        findModuleRefetch({
+          where: {
+            resource: { id: resource },
+          },
+          orderBy: {
+            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+          },
+        });
+
         addEntity(data.updateEntity.id);
       },
     }

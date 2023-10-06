@@ -56,7 +56,7 @@ type Props = AppRouteProps & {
 const NAME_FIELD = "displayName";
 const CLASS_NAME = "entity-list";
 
-const POLL_INTERVAL = 2000;
+const POLL_INTERVAL = 30000;
 
 const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
   const { resource } = match.params;
