@@ -525,12 +525,12 @@ export function handleIdFieldForModelsWithIdAttribute(
     // if there is already a map attribute on the id field, throw an error because we can't add another map attribute
     if (hasMapAttribute) {
       void actionContext.onEmitUserActionLog(
-        `The field "${fieldNamedId.name}" on model "${model.name}" already has a map attribute and cannot be converted to an id field and mapped to the field "${originalPKFieldName}`,
+        `The model "${model.name}" has a field named "id" that already has a map attribute. Therefore it cannot be converted to an id field and mapped to the field "${originalPKFieldName}"`,
         EnumActionLogLevel.Error
       );
 
       throw new Error(
-        `The field "${fieldNamedId.name}" on model "${model.name}" already has a map attribute and cannot be converted to an id field and mapped to the field "${originalPKFieldName}`
+        `The model "${model.name}" has a field named "id" that already has a map attribute. Therefore it cannot be converted to an id field and mapped to the field "${originalPKFieldName}"`
       );
     }
 
