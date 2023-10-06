@@ -11,6 +11,9 @@ import {
   Enum,
   Enumerator,
   ConcretePrismaSchemaBuilder,
+  getSchema,
+  Datasource,
+  Assignment,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
@@ -28,9 +31,10 @@ import {
   ID_ATTRIBUTE_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   prismaIdTypeToDefaultIdType,
+  UNIQUE_ATTRIBUTE_NAME,
 } from "./constants";
 import {
-  filterOutAmplicationAttributes,
+  filterOutAmplicationAttributesBasedOnFieldDataType,
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
@@ -45,20 +49,52 @@ import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
 import { camelCase } from "lodash";
 
+export function getDatasourceProviderFromSchema(schema: string): string | null {
+  const schemaObject = getSchema(schema);
+
+  const datasourceAssignments = (
+    schemaObject.list.find((item) => item.type === "datasource") as Datasource
+  )?.assignments;
+
+  const provider = (
+    datasourceAssignments?.find(
+      (assignment: Assignment) => assignment.key === "provider"
+    ) as Assignment
+  )?.value
+    .toString()
+    .replace(/"/g, "");
+
+  return provider ?? null;
+}
+
 /**
  * create the common properties of one entity field from model field
  * @param field the current field to prepare
  * @param fieldDataType the field data type
+ * @datasourceProvider the datasource provider from the schema. Make sure to pass it only if you want to filter out the datasource specific attributes.
+ * Currently only use it for the id data type (EnumDataType.Id) for handling the id attributes for mongodb
  * @returns the field in a structure of CreateBulkFieldsInput
  */
 export function createOneEntityFieldCommonProperties(
   field: Field,
-  fieldDataType: EnumDataType
+  fieldDataType: EnumDataType,
+  datasourceProvider = null
 ): CreateBulkFieldsInput {
-  const fieldDisplayName = formatDisplayName(field.name);
+  const fieldDisplayName =
+    field.name === ID_FIELD_NAME
+      ? field.name.toUpperCase()
+      : formatDisplayName(field.name);
 
-  const fieldAttributes = filterOutAmplicationAttributes(
-    prepareFieldAttributes(field.attributes)
+  // in Amplication id fields are uniques and from prisma schema perspective unique field is a field that has the @unique attribute
+  const isUniqueField =
+    (fieldDataType === EnumDataType.Id ||
+      field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)) ??
+    false;
+
+  const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
+    fieldDataType,
+    prepareFieldAttributes(field.attributes),
+    datasourceProvider
   )
     // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
@@ -70,7 +106,7 @@ export function createOneEntityFieldCommonProperties(
     displayName: fieldDisplayName,
     dataType: fieldDataType,
     required: !field.optional || false,
-    unique: isUniqueField(field),
+    unique: isUniqueField,
     searchable: true,
     description: "",
     properties: {},
