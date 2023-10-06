@@ -112,7 +112,12 @@ Running Amplication
 
 Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple application and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
 
-###
+**BEFORE** you run the following steps make sure:
+1. You have typescript installed locally on you machine ```npm install -g typescript```
+2. You are using a supported node version (check `engines` `node` in the [package.json](./package.json))
+3. You are using a supported npm version (check `engines` `npm` in the [package.json](./package.json))
+4. You have `docker` installed and running on your machine
+
 
 1. Clone the repository and install dependencies:
 ```shell
