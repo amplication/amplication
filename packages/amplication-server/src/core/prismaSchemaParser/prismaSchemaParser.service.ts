@@ -616,7 +616,7 @@ export class PrismaSchemaParserService {
           prop.type === ATTRIBUTE_TYPE_NAME && prop.kind === OBJECT_KIND_NAME
       ) as BlockAttribute[];
 
-      const modelIdAttribute = modelAttributes.find(
+      const modelIdAttribute = modelAttributes?.find(
         (attribute) => attribute.name === ID_ATTRIBUTE_NAME
       );
 
