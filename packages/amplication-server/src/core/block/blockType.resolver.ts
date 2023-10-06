@@ -110,7 +110,7 @@ export function BlockTypeResolver<
       return this.service.update(args, user);
     }
 
-    @ResolveField(() => User)
+    @ResolveField(() => User, { nullable: true })
     async lockedByUser(@Parent() block: T): Promise<User> {
       if (block.lockedByUserId) {
         return this.userService.findUser({
