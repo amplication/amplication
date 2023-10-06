@@ -384,6 +384,7 @@ export class BuildService {
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
             externalId: encryptString(commitWithAccount.commit.user.id),
+            envBaseUrl: process.env.CLIENT_HOST,
           },
         })
         .catch((error) =>

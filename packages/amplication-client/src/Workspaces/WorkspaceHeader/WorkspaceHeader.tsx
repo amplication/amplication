@@ -10,6 +10,7 @@ import {
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import {
+  ButtonTypeEnum,
   IMessage,
   NotificationBell,
   NovuProvider,
@@ -99,6 +100,13 @@ const WorkspaceHeader: React.FC = () => {
     }
   }, []);
 
+  const onBuildNotificationClick = useCallback(
+    (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
+      console.log(templateIdentifier, type, message);
+    },
+    []
+  );
+
   const handleUpgradeClick = useCallback(() => {
     history.push(`/${currentWorkspace.id}/purchase`, {
       from: { pathname: window.location.pathname },
@@ -132,6 +140,8 @@ const WorkspaceHeader: React.FC = () => {
   const handleShowProfileForm = useCallback(() => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
+
+  const Footer = () => <div></div>;
 
   return (
     <>
@@ -254,6 +264,8 @@ const WorkspaceHeader: React.FC = () => {
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
                     onNotificationClick={onNotificationClick}
+                    onActionClick={onBuildNotificationClick}
+                    footer={() => <Footer />}
                   >
                     {({ unseenCount }) => (
                       <NotificationBell unseenCount={unseenCount} />
