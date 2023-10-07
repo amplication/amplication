@@ -292,6 +292,7 @@ type BlockOmittedFields<T> = Omit<
   | "outputParameters"
   | "lockedByUserId"
   | "lockedAt"
+  | "lockedByUser"
 >;
 
 export type clientDirectories = {

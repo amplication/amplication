@@ -845,7 +845,7 @@ interface IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
@@ -907,7 +907,7 @@ type Module implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!
@@ -1077,7 +1077,7 @@ type PluginInstallation implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   npm: String!
   outputParameters: [BlockInputOutput!]!
@@ -1145,7 +1145,7 @@ type PluginOrder implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   order: [PluginOrderItem!]!
   outputParameters: [BlockInputOutput!]!
@@ -1184,7 +1184,7 @@ type ProjectConfigurationSettings implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
@@ -1485,7 +1485,7 @@ type ServiceSettings implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
@@ -1513,7 +1513,7 @@ type ServiceTopics implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   messageBrokerId: String!
   outputParameters: [BlockInputOutput!]!
@@ -1614,7 +1614,7 @@ type Topic implements IBlock {
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
-  lockedByUser: User!
+  lockedByUser: User
   lockedByUserId: String
   name: String!
   outputParameters: [BlockInputOutput!]!

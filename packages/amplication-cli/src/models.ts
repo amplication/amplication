@@ -880,7 +880,7 @@ export type IBlock = {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
@@ -937,7 +937,7 @@ export type Module = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
@@ -1501,7 +1501,7 @@ export type PluginInstallation = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   npm: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
@@ -1569,7 +1569,7 @@ export type PluginOrder = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   order: Array<PluginOrderItem>;
   outputParameters: Array<BlockInputOutput>;
@@ -1608,7 +1608,7 @@ export type ProjectConfigurationSettings = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
@@ -2130,7 +2130,7 @@ export type ServiceSettings = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
@@ -2158,7 +2158,7 @@ export type ServiceTopics = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   messageBrokerId: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
@@ -2259,7 +2259,7 @@ export type Topic = IBlock & {
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: User;
+  lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
