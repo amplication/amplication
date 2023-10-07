@@ -14,7 +14,7 @@ import { Icon, ToggleField, Tooltip } from "@amplication/ui/design-system";
 import AuthWithGitProvider from "../../git/AuthWithGitProvider";
 
 const TOOLTIP_DIRECTION = "n";
-const CLASS_NAME = "create-git-sync";
+const CLASS_NAME = "create-git-sync1";
 const DEMO_REPO_TOOLTIP =
   "Take Amplication for a test drive with a preview repository on our GitHub account. You can later connect to your own repository.";
 
