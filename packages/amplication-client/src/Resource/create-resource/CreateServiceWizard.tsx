@@ -378,11 +378,9 @@ const CreateServiceWizard: React.FC<Props> = ({
       pageEventName: AnalyticsEventNames
     ) => {
       if (!continueButtonClicked) {
-        // If the button hasn't been clicked yet, proceed with tracking and any other actions
         trackWizardPageEvent(eventName, { step: page });
         trackWizardPageEvent(pageEventName);
 
-        // Set the state to indicate that the button has been clicked
         setContinueButtonClicked(true);
       }
     },
