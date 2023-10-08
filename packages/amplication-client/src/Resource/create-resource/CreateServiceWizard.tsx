@@ -367,6 +367,8 @@ const CreateServiceWizard: React.FC<Props> = ({
     [currentWorkspace, currentProject]
   );
 
+  const [continueButtonClicked, setContinueButtonClicked] = useState(false);
+
   const handleWizardProgress = useCallback(
     (
       eventName:
@@ -375,11 +377,18 @@ const CreateServiceWizard: React.FC<Props> = ({
       page: string,
       pageEventName: AnalyticsEventNames
     ) => {
-      trackWizardPageEvent(eventName, { step: page });
-      trackWizardPageEvent(pageEventName);
+      if (!continueButtonClicked) {
+        // If the button hasn't been clicked yet, proceed with tracking and any other actions
+        trackWizardPageEvent(eventName, { step: page });
+        trackWizardPageEvent(pageEventName);
+
+        // Set the state to indicate that the button has been clicked
+        setContinueButtonClicked(true);
+      }
     },
-    []
+    [continueButtonClicked]
   );
+
 
   const trackWizardPageEvent = useCallback(
     (
@@ -528,6 +537,12 @@ const CreateServiceWizard: React.FC<Props> = ({
           trackWizardPageEvent={trackWizardPageEvent}
           {...serviceNextStepStatus}
         />
+        <button
+          type="submit"
+          disabled={continueButtonClicked || loadingCreateService}
+        >
+          Continue
+        </button>
       </ServiceWizard>
       <Snackbar open={Boolean(errorCreateService)} message={errorMessage} />
     </Modal>
