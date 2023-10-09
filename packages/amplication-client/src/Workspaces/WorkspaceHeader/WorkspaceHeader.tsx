@@ -102,7 +102,9 @@ const WorkspaceHeader: React.FC = () => {
 
   const onBuildNotificationClick = useCallback(
     (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
-      console.log(templateIdentifier, type, message);
+      if (templateIdentifier === "build-completed") {
+        window.location.href = message.cta.data.url;
+      }
     },
     []
   );
