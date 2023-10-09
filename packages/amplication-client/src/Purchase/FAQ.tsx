@@ -116,7 +116,7 @@ export const FAQ = () => {
         <Question
           question="Can I pay for my subscription through AWS Marketplace?"
           answer={
-            <div>
+            <>
               <p>
                 Yes, absolutely! We understand that many businesses prefer the
                 convenience and security of managing their software
@@ -140,7 +140,7 @@ export const FAQ = () => {
                 billing and enjoy a streamlined procurement process, all while
                 taking advantage of AWS's secure payment infrastructure.
               </p>
-            </div>
+            </>
           }
         />
         <Question

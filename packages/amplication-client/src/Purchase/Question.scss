@@ -27,5 +27,12 @@
   &__answer {
     white-space: pre-line;
     padding: var(--default-spacing) var(--large-spacing);
+
+    :first-child {
+      margin: 0;
+    }
+    :last-child {
+      margin: 0;
+    }
   }
 }
