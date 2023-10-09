@@ -152,10 +152,10 @@ const WorkspaceHeader: React.FC = () => {
             </Link>
           </div>
           <Tooltip
-              aria-label="Click to view releases on GitHub"
-              direction="e"
-              noDelay
-              show={versionAlert}
+            aria-label="Version number copied successfully"
+            direction="e"
+            noDelay
+            show={versionAlert}
           >
               <a
                 href="https://github.com/amplication/amplication/releases"
