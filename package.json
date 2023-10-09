@@ -129,7 +129,6 @@
     "node-fetch": "^2.6.7",
     "node-jose": "^2.2.0",
     "normalize-path": "^3.0.0",
-    "npm": "^9.0.0",
     "octokit": "^1.8.1",
     "octokit-plugin-create-pull-request": "^3.13.1",
     "openai": "^3.3.0",
