@@ -2,6 +2,7 @@
   "name": "local-data-service-generator-controller",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/local-data-service-generator-controller/src",
+  "implicitDependencies": ["data-service-generator"],
   "projectType": "application",
   "targets": {
     "build": {
