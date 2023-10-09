@@ -69,7 +69,6 @@ jobs:
           path: |
             libs/util/code-gen-utils/node_modules
             packages/amplication-cli/node_modules
-             /home/runner/.cache/Cypress
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
 
       - name: Install Dependencies

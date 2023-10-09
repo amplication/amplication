@@ -10,14 +10,14 @@
   },
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["packages/amplication-server/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "dependsOn": ["graphql:schema:check"],
       "options": {
@@ -27,7 +27,7 @@
       }
     },
     "e2e": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
       "options": {
         "jestConfig": "packages/amplication-server/jest.e2e.config.ts",
@@ -45,7 +45,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "outputs": ["{options.outputPath}"],
       "dependsOn": [
         "^build",
@@ -74,7 +74,9 @@
             "output": "./"
           }
         ],
-        "generatePackageJson": true
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -85,7 +87,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "port": 7000,
         "buildTarget": "amplication-server:build"
@@ -144,7 +146,9 @@
         }
       }
     },
-    "deploy:container": { "executor": "nx:run-commands" }
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
   },
   "tags": []
 }
