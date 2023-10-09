@@ -157,20 +157,20 @@ const WorkspaceHeader: React.FC = () => {
             noDelay
             show={versionAlert}
           >
-              <a
-                href="https://github.com/amplication/amplication/releases"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={`${CLASS_NAME}__version`}
-                onMouseEnter={() => {
-                  setVersionAlert(true);
-                }}
-                onMouseLeave={() => {
-                  setVersionAlert(false);
-                }}
-              >
-                <span>v{version}</span>
-              </a>
+            <a
+              href="https://github.com/amplication/amplication/releases"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={`${CLASS_NAME}__version`}
+              onMouseEnter={() => {
+                setVersionAlert(true);
+              }}
+              onMouseLeave={() => {
+                setVersionAlert(false);
+              }}
+            >
+              <span>v{version}</span>
+            </a>
           </Tooltip>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
