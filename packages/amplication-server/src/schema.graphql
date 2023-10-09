@@ -611,6 +611,7 @@ enum EnumAuthProviderType {
 
 enum EnumBlockType {
   Module
+  ModuleAction
   PluginInstallation
   PluginOrder
   ProjectConfigurationSettings
@@ -917,6 +918,62 @@ type Module implements IBlock {
   versionNumber: Float!
 }
 
+type ModuleAction implements IBlock {
+  blockType: EnumBlockType!
+  createdAt: DateTime!
+  description: String
+  displayName: String!
+  enabled: Boolean!
+  id: String!
+  inputParameters: [BlockInputOutput!]!
+  isDefault: Boolean!
+  lockedAt: DateTime
+  lockedByUser: User
+  lockedByUserId: String
+  name: String!
+  outputParameters: [BlockInputOutput!]!
+  parentBlock: Block
+  resourceId: String
+  updatedAt: DateTime!
+  versionNumber: Float!
+}
+
+input ModuleActionCreateInput {
+  description: String
+  displayName: String!
+  inputParameters: [BlockInputOutputInput!]
+  name: String
+  outputParameters: [BlockInputOutputInput!]
+  parentBlock: WhereParentIdInput
+  resource: WhereParentIdInput!
+}
+
+input ModuleActionOrderByInput {
+  blockType: SortOrder
+  createdAt: SortOrder
+  description: SortOrder
+  displayName: SortOrder
+  id: SortOrder
+  updatedAt: SortOrder
+}
+
+input ModuleActionUpdateInput {
+  description: String
+  displayName: String
+  enabled: Boolean!
+  name: String
+}
+
+input ModuleActionWhereInput {
+  createdAt: DateTimeFilter
+  description: StringFilter
+  displayName: StringFilter
+  id: StringFilter
+  parentBlock: WhereUniqueInput
+  resource: ResourceWhereInput
+  updatedAt: DateTimeFilter
+}
+
 input ModuleCreateInput {
   description: String
   displayName: String!
@@ -970,6 +1027,7 @@ type Mutation {
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
   createMessageBroker(data: ResourceCreateInput!): Resource!
   createModule(data: ModuleCreateInput!): Module!
+  createModuleAction(data: ModuleActionCreateInput!): ModuleAction!
   createOneEntity(data: EntityCreateInput!): Entity!
   createOrganization(data: GitOrganizationCreateInput!): GitOrganization!
   createPluginInstallation(data: PluginInstallationCreateInput!): PluginInstallation!
@@ -988,6 +1046,7 @@ type Mutation {
   deleteGitOrganization(gitOrganizationId: String!, gitProvider: EnumGitProvider!): Boolean!
   deleteGitRepository(gitRepositoryId: String!): Resource!
   deleteModule(where: WhereUniqueInput!): Module!
+  deleteModuleAction(where: WhereUniqueInput!): ModuleAction!
   deletePluginInstallation(where: WhereUniqueInput!): PluginInstallation!
   deleteProject(where: WhereUniqueInput!): Project
   deleteResource(where: WhereUniqueInput!): Resource
@@ -1018,6 +1077,7 @@ type Mutation {
   updateEntityPermissionRoles(data: EntityUpdatePermissionRolesInput!): EntityPermission!
   updateGitRepository(data: GitRepositoryUpdateInput!, where: WhereUniqueInput!): GitRepository!
   updateModule(data: ModuleUpdateInput!, where: WhereUniqueInput!): Module!
+  updateModuleAction(data: ModuleActionUpdateInput!, where: WhereUniqueInput!): ModuleAction!
   updatePluginInstallation(data: PluginInstallationUpdateInput!, where: WhereUniqueInput!): PluginInstallation!
   updateProject(data: ProjectUpdateInput!, where: WhereUniqueInput!): Project!
   updateProjectConfigurationSettings(data: ProjectConfigurationSettingsUpdateInput!, where: WhereUniqueInput!): ProjectConfigurationSettings
@@ -1246,6 +1306,8 @@ type ProvisionSubscriptionResult {
 
 type Query {
   Module(where: WhereUniqueInput!): Module
+  ModuleAction(where: WhereUniqueInput!): ModuleAction
+  ModuleActions(orderBy: ModuleActionOrderByInput, skip: Int, take: Int, where: ModuleActionWhereInput): [ModuleAction!]!
   Modules(orderBy: ModuleOrderByInput, skip: Int, take: Int, where: ModuleWhereInput): [Module!]!
   PluginInstallation(where: WhereUniqueInput!): PluginInstallation
   PluginInstallations(orderBy: PluginInstallationOrderByInput, skip: Int, take: Int, where: PluginInstallationWhereInput): [PluginInstallation!]!

@@ -499,6 +499,7 @@ enum EnumBlockType {
   PluginInstallation
   PluginOrder
   Module
+  ModuleAction
 }
 
 enum ActionStepStatus {
