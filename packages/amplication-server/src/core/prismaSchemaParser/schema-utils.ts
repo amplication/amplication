@@ -494,97 +494,36 @@ export function handleEnumMapAttribute(
   return enumOptions;
 }
 
-export function handleIdFieldForModelsWithIdAttribute(
+export function convertModelIdToFieldId(
   model: Model,
-  originalPKFieldName: string,
-  originalPKFieldType: string,
+  originalPKField: Field,
   builder: ConcretePrismaSchemaBuilder,
   actionContext: ActionContext
 ) {
-  // find field named id and add the @id attribute to it
-  const modelFields = model.properties.filter(
-    (prop) => prop.type === FIELD_TYPE_NAME
-  ) as Field[];
-
-  const fieldNamedId = modelFields.find(
-    (field) => field.name === ID_FIELD_NAME
+  // check if the original pk field can be converted to Amplication id field
+  const isValidIdField = isValidIdFieldType(
+    originalPKField?.fieldType as string
   );
 
-  const isValidIdField = isValidIdFieldType(fieldNamedId?.fieldType as string);
-  if (fieldNamedId && isValidIdField) {
-    // if it's a valid id field and the field type is the same as the original pk field type, we can use it as the id field
-    if (fieldNamedId.fieldType === originalPKFieldType) {
-      builder
-        .model(model.name)
-        .field(fieldNamedId.name)
-        .attribute(ID_ATTRIBUTE_NAME);
+  if (!isValidIdField) {
+    void actionContext.onEmitUserActionLog(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`,
+      EnumActionLogLevel.Error
+    );
 
-      const hasMapAttribute = fieldNamedId.attributes?.some(
-        (attribute) => attribute.name === MAP_ATTRIBUTE_NAME
-      );
-
-      // if there is already a map attribute on the id field, throw an error because we can't add another map attribute
-      if (hasMapAttribute) {
-        void actionContext.onEmitUserActionLog(
-          `The model "${model.name}" has a field named "id" that already has a map attribute. Therefore it cannot be converted to an id field and mapped to the field "${originalPKFieldName}"`,
-          EnumActionLogLevel.Error
-        );
-
-        throw new Error(
-          `The model "${model.name}" has a field named "id" that already has a map attribute. Therefore it cannot be converted to an id field and mapped to the field "${originalPKFieldName}"`
-        );
-      }
-
-      // add map attribute to the id field and map it to the original fk field
-      builder
-        .model(model.name)
-        .field(fieldNamedId.name)
-        .attribute(MAP_ATTRIBUTE_NAME, [`"${originalPKFieldName}"`]);
-
-      const isFieldNamedIdWithoutDefaultAttribute =
-        fieldNamedId.attributes?.some(
-          (attribute) => attribute.name === DEFAULT_ATTRIBUTE_NAME
-        );
-
-      // if there is no default attribute on the id field, add it (we need it for the id type)
-      if (!isFieldNamedIdWithoutDefaultAttribute) {
-        const idDefaultType: string =
-          prismaIdTypeToDefaultIdType[fieldNamedId.fieldType as string];
-
-        builder
-          .model(model.name)
-          .field(fieldNamedId.name)
-          .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
-      }
-    } else {
-      // rename the id field to model name + "Id" and add if field
-      builder
-        .model(model.name)
-        .field(fieldNamedId.name)
-        .attribute(MAP_ATTRIBUTE_NAME, [`"${fieldNamedId.name}"`])
-        .then<Field>((field) => {
-          field.name = `${camelCase(model.name)}Id`;
-        });
-
-      // add id field to the model based on the original fk field type
-      addIdFieldIfNotExists(builder, model, actionContext, originalPKFieldType);
-
-      // after adding the id field, add map attribute to it and map it to the original fk field
-      builder
-        .model(model.name)
-        .field(ID_FIELD_NAME)
-        .attribute(MAP_ATTRIBUTE_NAME, [`"${originalPKFieldName}"`]);
-    }
-  } else {
-    // add id field to the model based on the original fk field type
-    addIdFieldIfNotExists(builder, model, actionContext, originalPKFieldType);
-
-    // after adding the id field, add map attribute to it and map it to the original fk field
-    builder
-      .model(model.name)
-      .field(ID_FIELD_NAME)
-      .attribute(MAP_ATTRIBUTE_NAME, [`"${originalPKFieldName}"`]);
+    throw new Error(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`
+    );
   }
+
+  // if the original PK field is can be converted to id field: add @id and @default attributes to the field
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[originalPKField.fieldType as string];
+  builder
+    .model(model.name)
+    .field(originalPKField.name)
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 }
 
 export function addIdFieldIfNotExists(

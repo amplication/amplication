@@ -50,7 +50,7 @@ import {
   addMapAttributeToModel,
   findRelationAttributeName,
   handleNotIdFieldNameId,
-  handleIdFieldForModelsWithIdAttribute,
+  convertModelIdToFieldId,
   getDatasourceProviderFromSchema,
 } from "./schema-utils";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -624,8 +624,8 @@ export class PrismaSchemaParserService {
 
       const modelIdAttributeValueArgs = (
         modelIdAttribute.args.find((arg) => arg.type === "attributeArgument")
-          .value as RelationArray
-      ).args;
+          ?.value as RelationArray
+      )?.args;
 
       if (modelIdAttributeValueArgs.length > 1) {
         void actionContext.onEmitUserActionLog(
@@ -657,13 +657,14 @@ export class PrismaSchemaParserService {
           (field) => field.name === modelIdAttributeValueArgs[0]
         );
 
-        handleIdFieldForModelsWithIdAttribute(
-          model,
-          pkField.name,
-          pkField.fieldType as string,
-          builder,
-          actionContext
-        );
+        convertModelIdToFieldId(model, pkField, builder, actionContext);
+
+        // change the name of the unique attribute arg to id
+        builder.model(model.name).then<Model>((model) => {
+          modelIdAttributeValueArgs[0] = ID_FIELD_NAME;
+        });
+
+        // then, on prepareIdField, we will handle the id field (for example id field that is not named id and the other way around)
       }
     });
 
