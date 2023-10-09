@@ -17,8 +17,7 @@
   gap: var(--user-badge-spacing);
 
   .amp-icon {
-    font-size: var(--title3-font-size);
-    width: 22px;
+    width: var(--title3-font-size);
   }
 
   &:last-child {
