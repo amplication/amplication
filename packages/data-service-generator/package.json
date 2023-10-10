@@ -5,8 +5,8 @@
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "*",
-    "@amplication/code-gen-utils": "*",
+    "@amplication/code-gen-types": "2.0.12",
+    "@amplication/code-gen-utils": "0.0.6",
     "@apollo/client": "^3.7.1",
     "@nestjs/common": "^9.4.0",
     "@nestjs/config": "^2.3.1",
