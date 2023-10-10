@@ -131,7 +131,8 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["@amplication/util/logging", "winston"]
+            "ignoredDependencies": ["@amplication/util/logging"],
+            "includeTransitiveDependencies": true
           }
         ]
       }
