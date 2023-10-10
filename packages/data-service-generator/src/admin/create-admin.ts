@@ -40,7 +40,6 @@ export function createAdminModules(): Promise<ModuleMap> {
 async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const {
-    appInfo,
     entities,
     roles,
     // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -110,20 +109,17 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   );
 
   await context.logger.info("Creating application module...");
-  const appModule = await createAppModule(entitiesComponents);
+  const appModuleMap = await createAppModule(entitiesComponents);
 
-  await context.logger.info("Creating Dot Env...");
-  const dotEnvModule = await createDotEnvModule(
-    appInfo,
-    clientDirectories.baseDirectory
-  );
+  await context.logger.info("Creating Dotenv...");
+  const dotEnvModuleMap = await createDotEnvModule();
 
   await context.logger.info("Formatting code...");
   const tsModules = new ModuleMap(context.logger);
-  await tsModules.set(appModule);
   await tsModules.set(enumRolesModule);
   await tsModules.set(rolesModule);
   await tsModules.mergeMany([
+    appModuleMap,
     dtoModuleMap,
     entityTitleComponentsModules,
     entityComponentsModules,
@@ -138,10 +134,10 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     typesRelatedFiles,
     gitIgnore,
     packageJson,
+    dotEnvModuleMap,
     publicFilesModules,
     tsModules,
   ]);
-  await allModules.set(dotEnvModule);
 
   return allModules;
 }

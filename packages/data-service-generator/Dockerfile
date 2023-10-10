@@ -1,7 +1,7 @@
 ARG GIT_REF_NAME
 ARG GIT_SHA
 
-FROM node:19.1-alpine AS base
+FROM node:18-alpine AS base
 ARG GIT_REF_NAME
 ARG GIT_SHA
 

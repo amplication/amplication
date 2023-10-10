@@ -9,16 +9,18 @@ export default {
   component: Dialog,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Formik initialValues={{ checkboxListName: [] }} onSubmit={() => {}}>
-      {(formik) => {
-        return (
-          <Dialog isOpen onDismiss={props.onDismiss} title="Dialog Title">
-            Dialog Content
-          </Dialog>
-        );
-      }}
-    </Formik>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Formik initialValues={{ checkboxListName: [] }} onSubmit={() => {}}>
+        {(formik) => {
+          return (
+            <Dialog isOpen onDismiss={props.onDismiss} title="Dialog Title">
+              Dialog Content
+            </Dialog>
+          );
+        }}
+      </Formik>
+    );
+  },
 };

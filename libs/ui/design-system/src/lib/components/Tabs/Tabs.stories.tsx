@@ -7,12 +7,14 @@ export default {
   component: Tabs,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Tabs>
-      <Tabs.Tab label="Page 1" to="#" />
-      <Tabs.Tab label="Page 2" to="#" />
-      <Tabs.Tab label="Page 3" to="3" />
-    </Tabs>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Tabs>
+        <Tabs.Tab label="Page 1" to="#" />
+        <Tabs.Tab label="Page 2" to="#" />
+        <Tabs.Tab label="Page 3" to="3" />
+      </Tabs>
+    );
+  },
 };

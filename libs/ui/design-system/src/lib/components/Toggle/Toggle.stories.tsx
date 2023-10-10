@@ -8,23 +8,27 @@ export default {
   component: Toggle,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Toggle
-      label="Toggle Label"
-      title="Toggle Title"
-      onValueChange={props.onValueChange}
-      checked={false}
-    />
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Toggle
+        label="Toggle Label"
+        title="Toggle Title"
+        onValueChange={props.onValueChange}
+        checked={false}
+      />
+    );
+  },
 };
-export const Checked = (props: any) => {
-  return (
-    <Toggle
-      label="Toggle Label"
-      title="Toggle Title"
-      onValueChange={props.onValueChange}
-      checked
-    />
-  );
+export const Checked = {
+  render: (props: any) => {
+    return (
+      <Toggle
+        label="Toggle Label"
+        title="Toggle Title"
+        onValueChange={props.onValueChange}
+        checked
+      />
+    );
+  },
 };

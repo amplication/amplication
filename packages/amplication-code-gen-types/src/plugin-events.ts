@@ -35,6 +35,8 @@ import {
   LoadStaticFilesParams,
   CreateServerDockerComposeDevParams,
   CreateConnectMicroservicesParams,
+  CreateAdminAppModuleParams,
+  CreateAdminDotEnvParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -43,6 +45,7 @@ export type Events = {
   [EventNames.CreateAdminUI]?: PluginEventType<CreateAdminUIParams>;
   [EventNames.CreateServer]?: PluginEventType<CreateServerParams>;
   [EventNames.CreateServerDotEnv]?: PluginEventType<CreateServerDotEnvParams>;
+  [EventNames.CreateAdminDotEnv]?: PluginEventType<CreateAdminDotEnvParams>;
   [EventNames.CreateServerGitIgnore]?: PluginEventType<CreateServerGitIgnoreParams>;
   [EventNames.CreateAdminGitIgnore]?: PluginEventType<CreateAdminGitIgnoreParams>;
   [EventNames.CreateEntityService]?: PluginEventType<CreateEntityServiceParams>;
@@ -62,6 +65,7 @@ export type Events = {
   [EventNames.CreateServerPackageJson]?: PluginEventType<CreateServerPackageJsonParams>;
   [EventNames.CreateAdminUIPackageJson]?: PluginEventType<CreateAdminUIPackageJsonParams>;
   [EventNames.CreateServerAppModule]?: PluginEventType<CreateServerAppModuleParams>;
+  [EventNames.CreateAdminAppModule]?: PluginEventType<CreateAdminAppModuleParams>;
   [EventNames.CreateConnectMicroservices]?: PluginEventType<CreateConnectMicroservicesParams>;
   [EventNames.CreateEntityModule]?: PluginEventType<CreateEntityModuleParams>;
   [EventNames.CreateEntityResolver]?: PluginEventType<CreateEntityResolverParams>;

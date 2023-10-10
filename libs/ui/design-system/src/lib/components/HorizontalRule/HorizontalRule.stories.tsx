@@ -7,6 +7,8 @@ export default {
   component: HorizontalRule,
 } as Meta;
 
-export const Default = (props: any) => {
-  return <HorizontalRule style={props.style} />;
+export const Default = {
+  render: (props: any) => {
+    return <HorizontalRule {...props} style={props.style} />;
+  },
 };
