@@ -516,6 +516,11 @@ export function convertModelIdToFieldId(
     );
   }
 
+  const hasDefaultAttribute =
+    originalPKField.attributes?.some(
+      (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+    ) ?? false;
+
   // if the original PK field is can be converted to id field: add @id and @default attributes to the field
   const idDefaultType: string =
     prismaIdTypeToDefaultIdType[originalPKField.fieldType as string];
@@ -524,6 +529,24 @@ export function convertModelIdToFieldId(
     .field(originalPKField.name)
     .attribute(ID_ATTRIBUTE_NAME)
     .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+  void actionContext.onEmitUserActionLog(
+    `The field "${originalPKField.name}" on model "${model.name}" was converted to id field`,
+    EnumActionLogLevel.Info
+  );
+
+  // add the @default attribute to the field if it doesn't have it
+  if (!hasDefaultAttribute) {
+    builder
+      .model(model.name)
+      .field(originalPKField.name)
+      .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+    void actionContext.onEmitUserActionLog(
+      `The attribute "@default(${idDefaultType})" was added to the field "${originalPKField.name}" on model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
 }
 
 export function addIdFieldIfNotExists(
