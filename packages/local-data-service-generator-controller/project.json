@@ -2,10 +2,11 @@
   "name": "local-data-service-generator-controller",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
   "sourceRoot": "packages/local-data-service-generator-controller/src",
+  "implicitDependencies": ["data-service-generator"],
   "projectType": "application",
   "targets": {
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "options": {
         "target": "node",
@@ -23,7 +24,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "local-data-service-generator-controller:build"
       },
@@ -35,7 +36,7 @@
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": [
@@ -44,7 +45,7 @@
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
       "options": {
         "jestConfig": "packages/local-data-service-generator-controller/jest.config.ts",

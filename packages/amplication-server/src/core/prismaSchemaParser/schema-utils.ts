@@ -20,7 +20,6 @@ import {
   RELATION_ATTRIBUTE_NAME,
   ARRAY_ARG_TYPE_NAME,
   KEY_VALUE_ARG_TYPE_NAME,
-  UNIQUE_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   FIELD_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
@@ -32,13 +31,14 @@ import {
   ID_ATTRIBUTE_NAME,
   DEFAULT_ATTRIBUTE_NAME,
   prismaIdTypeToDefaultIdType,
-  ID_DEFAULT_VALUE_CUID_FUNCTION,
+  UNIQUE_ATTRIBUTE_NAME,
 } from "./constants";
 import {
   filterOutAmplicationAttributesBasedOnFieldDataType,
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
+  isValidIdFieldType,
   lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
@@ -494,16 +494,73 @@ export function handleEnumMapAttribute(
   return enumOptions;
 }
 
+export function convertModelIdToFieldId(
+  model: Model,
+  originalPKField: Field,
+  builder: ConcretePrismaSchemaBuilder,
+  actionContext: ActionContext
+) {
+  // check if the original pk field can be converted to Amplication id field
+  const isValidIdField = isValidIdFieldType(
+    originalPKField?.fieldType as string
+  );
+
+  if (!isValidIdField) {
+    void actionContext.onEmitUserActionLog(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`,
+      EnumActionLogLevel.Error
+    );
+
+    throw new Error(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`
+    );
+  }
+
+  const hasDefaultAttribute =
+    originalPKField.attributes?.some(
+      (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+    ) ?? false;
+
+  // if the original PK field is can be converted to id field: add @id and @default attributes to the field
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[originalPKField.fieldType as string];
+  builder
+    .model(model.name)
+    .field(originalPKField.name)
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `The field "${originalPKField.name}" on model "${model.name}" was converted to id field`,
+    EnumActionLogLevel.Info
+  );
+
+  // add the @default attribute to the field if it doesn't have it
+  if (!hasDefaultAttribute) {
+    builder
+      .model(model.name)
+      .field(originalPKField.name)
+      .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+    void actionContext.onEmitUserActionLog(
+      `The attribute "@default(${idDefaultType})" was added to the field "${originalPKField.name}" on model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
+}
+
 export function addIdFieldIfNotExists(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
-  actionContext: ActionContext
+  actionContext: ActionContext,
+  idType = "String"
 ) {
+  const idDefaultType: string = prismaIdTypeToDefaultIdType[idType];
+
   builder
     .model(model.name)
-    .field(ID_FIELD_NAME, "String")
+    .field(ID_FIELD_NAME, idType)
     .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [ID_DEFAULT_VALUE_CUID_FUNCTION]);
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
@@ -517,18 +574,11 @@ export function convertUniqueFieldNamedIdToIdField(
   uniqueFieldNamedId: Field,
   actionContext: ActionContext
 ) {
-  const idDefaultType: string =
-    prismaIdTypeToDefaultIdType[uniqueFieldNamedId.fieldType as string];
-
-  builder
-    .model(model.name)
-    .field(uniqueFieldNamedId.name)
-    .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
-
-  void actionContext.onEmitUserActionLog(
-    `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
-    EnumActionLogLevel.Info
+  addIdAndDefaultAttributesToIdField(
+    builder,
+    model,
+    uniqueFieldNamedId,
+    actionContext
   );
 }
 
@@ -542,26 +592,11 @@ export function convertUniqueFieldNotNamedIdToIdField(
 ) {
   const originalModelName = findOriginalModelName(mapper, model.name);
 
-  addMapAttributeToField(
+  addIdAndDefaultAttributesToIdField(
     builder,
-    schema,
     model,
     uniqueFieldAsIdField,
     actionContext
-  );
-
-  const idDefaultType =
-    prismaIdTypeToDefaultIdType[uniqueFieldAsIdField.fieldType as string];
-
-  builder
-    .model(model.name)
-    .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
-
-  void actionContext.onEmitUserActionLog(
-    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
-    EnumActionLogLevel.Info
   );
 
   mapper.idFields = {
@@ -575,20 +610,24 @@ export function convertUniqueFieldNotNamedIdToIdField(
     },
   };
 
-  void actionContext.onEmitUserActionLog(
-    `field ${uniqueFieldAsIdField.name} was renamed to ${ID_FIELD_NAME}`,
-    EnumActionLogLevel.Info
+  addMapAttributeToField(
+    builder,
+    schema,
+    model,
+    uniqueFieldAsIdField,
+    actionContext
   );
 
-  builder
-    .model(model.name)
-    .field(uniqueFieldAsIdField.name)
-    .then<Field>((field) => {
-      field.name = ID_FIELD_NAME;
-    });
+  renameField(
+    builder,
+    model,
+    uniqueFieldAsIdField,
+    ID_FIELD_NAME,
+    actionContext
+  );
 }
 
-export function handleIdFieldNotNamedId(
+export function handleNotIdFieldNameId(
   builder: ConcretePrismaSchemaBuilder,
   schema: Schema,
   model: Model,
@@ -597,47 +636,6 @@ export function handleIdFieldNotNamedId(
   actionContext: ActionContext
 ) {
   const originalModelName = findOriginalModelName(mapper, model.name);
-
-  void actionContext.onEmitUserActionLog(
-    `field name "${field.name}" on model name ${model.name} was changed to "id"`,
-    EnumActionLogLevel.Info
-  );
-
-  mapper.idFields = {
-    ...mapper.idFields,
-    [originalModelName]: {
-      ...mapper.idFields[originalModelName],
-      [field.name]: {
-        originalName: field.name,
-        newName: ID_FIELD_NAME,
-      },
-    },
-  };
-
-  addMapAttributeToField(builder, schema, model, field, actionContext);
-
-  builder
-    .model(model.name)
-    .field(field.name)
-    .then<Field>((field) => {
-      field.name = ID_FIELD_NAME;
-    });
-}
-
-export function handleNotIdFieldNotUniqueNamedId(
-  builder: ConcretePrismaSchemaBuilder,
-  schema: Schema,
-  model: Model,
-  field: Field,
-  mapper: Mapper,
-  actionContext: ActionContext
-) {
-  const originalModelName = findOriginalModelName(mapper, model.name);
-
-  void actionContext.onEmitUserActionLog(
-    `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
-    EnumActionLogLevel.Info
-  );
 
   mapper.idFields = {
     ...mapper.idFields,
@@ -652,11 +650,84 @@ export function handleNotIdFieldNotUniqueNamedId(
 
   addMapAttributeToField(builder, schema, model, field, actionContext);
 
+  renameField(
+    builder,
+    model,
+    field,
+    `${camelCase(model.name)}Id`,
+    actionContext
+  );
+}
+
+export function handleIdFieldNotNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
+
+  addMapAttributeToField(builder, schema, model, field, actionContext);
+
+  renameField(builder, model, field, ID_FIELD_NAME, actionContext);
+}
+
+function addIdAndDefaultAttributesToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  actionContext: ActionContext
+) {
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[field.fieldType as string];
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${field.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@default" was added to the field "${field.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+}
+
+function renameField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  newFieldName: string,
+  actionContext: ActionContext
+) {
+  void actionContext.onEmitUserActionLog(
+    `field ${field.name} was renamed to ${newFieldName}`,
+    EnumActionLogLevel.Info
+  );
+
   builder
     .model(model.name)
     .field(field.name)
     .then<Field>((field) => {
-      field.name = `${camelCase(model.name)}Id`;
+      field.name = newFieldName;
     });
 }
 

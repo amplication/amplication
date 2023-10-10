@@ -8,6 +8,7 @@ import {
   ID_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   NOW_FUNCTION_NAME,
+  UNIQUE_ATTRIBUTE_NAME,
   UPDATED_AT_ATTRIBUTE_NAME,
   idTypePropertyMapByPrismaFieldType,
 } from "./constants";
@@ -175,6 +176,14 @@ export function lookupField(schema: Schema, field: Field) {
   if (isFieldTypeIsModel) {
     return EnumDataType.Lookup;
   }
+}
+
+export function isUniqueField(field: Field) {
+  return (
+    field.attributes?.some(
+      (attribute) => attribute.name === UNIQUE_ATTRIBUTE_NAME
+    ) ?? false
+  );
 }
 
 export function createAtField(field: Field) {

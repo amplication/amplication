@@ -121,6 +121,7 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
             onDone={onDone}
             setPopupFailed={setPopupFailed}
             onProviderSelect={closeSelectOrganizationDialog}
+            onSelectRepository={openSelectRepoDialog}
           />
         </Dialog>
       )}
@@ -128,6 +129,7 @@ const AuthWithGitProvider: React.FC<AuthWithGitProviderProps> = ({
         <GitProviderConnectionList
           onDone={onDone}
           setPopupFailed={setPopupFailed}
+          onSelectRepository={openSelectRepoDialog}
         />
       ) : (
         <>
