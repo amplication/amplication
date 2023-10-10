@@ -169,19 +169,20 @@ const WorkspaceHeader: React.FC = () => {
             noDelay
             show={versionAlert}
           >
-            <Button
+            <a
+              href="https://github.com/amplication/amplication/releases"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Text}
-              onClick={async () => {
+              onMouseEnter={() => {
                 setVersionAlert(true);
-                await navigator.clipboard.writeText(version);
               }}
               onMouseLeave={() => {
                 setVersionAlert(false);
               }}
             >
               <span>v{version}</span>
-            </Button>
+            </a>
           </Tooltip>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
