@@ -4,19 +4,6 @@
   "sourceRoot": "libs/util/code-gen-utils/src",
   "projectType": "library",
   "targets": {
-    "install": {
-      "executor": "nx:run-commands",
-      "inputs": [
-        "{projectRoot}/package.json",
-        "{projectRoot}/package-lock.json"
-      ],
-      "outputs": ["{projectRoot}/node_modules"],
-      "options": {
-        "commands": ["npm ci"],
-        "parallel": false,
-        "cwd": "libs/util/code-gen-utils"
-      }
-    },
     "build": {
       "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
@@ -34,7 +21,8 @@
       },
       "dependsOn": [
         {
-          "target": "build"
+          "target": "build",
+          "projects": "self"
         }
       ]
     },
