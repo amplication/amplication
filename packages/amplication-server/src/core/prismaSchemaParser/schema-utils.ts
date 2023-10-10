@@ -527,8 +527,7 @@ export function convertModelIdToFieldId(
   builder
     .model(model.name)
     .field(originalPKField.name)
-    .attribute(ID_ATTRIBUTE_NAME)
-    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+    .attribute(ID_ATTRIBUTE_NAME);
 
   void actionContext.onEmitUserActionLog(
     `The field "${originalPKField.name}" on model "${model.name}" was converted to id field`,
