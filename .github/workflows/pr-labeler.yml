@@ -3,6 +3,7 @@ name: Pull Request Labeler
 
 on:
   pull_request_target:
+    types: [opened, edited, synchronize, reopened]
 
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
