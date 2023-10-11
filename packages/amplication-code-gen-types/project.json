@@ -1,7 +1,7 @@
 {
   "name": "amplication-code-gen-types",
   "$schema": "../../node_modules/nx/schemas/project-schema.json",
-  "sourceRoot": ["packages/amplication-code-gen-types/src"],
+  "sourceRoot": "packages/amplication-code-gen-types/src",
   "projectType": "library",
   "targets": {
     "prebuild": {
@@ -13,27 +13,29 @@
       }
     },
     "build": {
-      "executor": "@nrwl/js:tsc",
+      "executor": "@nx/js:tsc",
       "outputs": ["{options.outputPath}"],
       "dependsOn": ["prebuild"],
       "options": {
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
         "packageJson": "packages/amplication-code-gen-types/package.json",
-        "updateBuildableProjectDepsInPackageJson": true,
         "main": "packages/amplication-code-gen-types/src/index.ts",
         "assets": ["packages/amplication-code-gen-types/*.md"]
       }
     },
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/amplication-code-gen-types/**/*.ts"]
+        "lintFilePatterns": [
+          "packages/amplication-code-gen-types/**/*.{ts,tsx,js,jsx}",
+          "packages/amplication-code-gen-types/package.json"
+        ]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/packages/amplication-code-gen-types"
       ],
