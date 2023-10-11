@@ -173,6 +173,7 @@ jobs:
           # env variables substituted in the project.json docker target build-args
           GIT_REF_NAME: ${{ inputs.version }}
           GIT_SHA: ${{ steps.commit-changes.outputs.commit_hash }}
+          PRODUCTION_TAGS: true
 
       - name: Create data-service-generator git tag
         run: |
