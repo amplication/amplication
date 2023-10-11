@@ -46,7 +46,6 @@ env:
   BRANCH: ${{ github.event.workflow_run.head_branch }}
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   nx:

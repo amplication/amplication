@@ -10,8 +10,6 @@ import { MockedLogger } from "@amplication/util/logging/test-utils";
 
 jest.setTimeout(100000);
 
-jest.mock("./build-logger");
-
 beforeAll(() => {
   const userEntity = entities.find((e) => e.name === USER_ENTITY_NAME);
   if (!userEntity) {

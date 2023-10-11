@@ -10,6 +10,7 @@ import {
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
 import {
+  ButtonTypeEnum,
   IMessage,
   NotificationBell,
   NovuProvider,
@@ -99,6 +100,15 @@ const WorkspaceHeader: React.FC = () => {
     }
   }, []);
 
+  const onBuildNotificationClick = useCallback(
+    (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
+      if (templateIdentifier === "build-completed") {
+        window.location.href = message.cta.data.url;
+      }
+    },
+    []
+  );
+
   const handleUpgradeClick = useCallback(() => {
     history.push(`/${currentWorkspace.id}/purchase`, {
       from: { pathname: window.location.pathname },
@@ -133,6 +143,8 @@ const WorkspaceHeader: React.FC = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
+  const Footer = () => <div></div>;
+
   return (
     <>
       <Dialog
@@ -157,19 +169,20 @@ const WorkspaceHeader: React.FC = () => {
             noDelay
             show={versionAlert}
           >
-            <Button
+            <a
+              href="https://github.com/amplication/amplication/releases"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Text}
-              onClick={async () => {
+              onMouseEnter={() => {
                 setVersionAlert(true);
-                await navigator.clipboard.writeText(version);
               }}
               onMouseLeave={() => {
                 setVersionAlert(false);
               }}
             >
               <span>v{version}</span>
-            </Button>
+            </a>
           </Tooltip>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
@@ -254,6 +267,8 @@ const WorkspaceHeader: React.FC = () => {
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
                     onNotificationClick={onNotificationClick}
+                    onActionClick={onBuildNotificationClick}
+                    footer={() => <Footer />}
                   >
                     {({ unseenCount }) => (
                       <NotificationBell unseenCount={unseenCount} />
