@@ -20,7 +20,6 @@
         "outputPath": "dist/packages/amplication-code-gen-types",
         "tsConfig": "packages/amplication-code-gen-types/tsconfig.lib.json",
         "packageJson": "packages/amplication-code-gen-types/package.json",
-        "updateBuildableProjectDepsInPackageJson": true,
         "main": "packages/amplication-code-gen-types/src/index.ts",
         "assets": ["packages/amplication-code-gen-types/*.md"]
       }
@@ -29,7 +28,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/amplication-code-gen-types/**/*.ts"]
+        "lintFilePatterns": [
+          "packages/amplication-code-gen-types/**/*.{ts,tsx,js,jsx}",
+          "packages/amplication-code-gen-types/package.json"
+        ]
       }
     },
     "test": {

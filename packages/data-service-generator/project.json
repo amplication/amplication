@@ -13,8 +13,6 @@
         "outputPath": "dist/packages/data-service-generator",
         "main": "packages/data-service-generator/src/main.ts",
         "tsConfig": "packages/data-service-generator/tsconfig.app.json",
-        "updateBuildableProjectDepsInPackageJson": true,
-        "buildableProjectDepsInPackageJsonType": "dependencies",
         "assets": [
           "**/*.template.env",
           "packages/data-service-generator/src/**/package.json",
@@ -57,7 +55,10 @@
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
-        "lintFilePatterns": ["packages/data-service-generator/src/**/*"]
+        "lintFilePatterns": [
+          "packages/data-service-generator/src/**/*",
+          "packages/data-service-generator/package.json"
+        ]
       }
     },
     "test": {
