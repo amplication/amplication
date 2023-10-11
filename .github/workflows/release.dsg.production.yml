@@ -47,8 +47,13 @@ jobs:
         id: check-tag
         run: |
           DSG_VERSION=v$(cat $DSG_PACKAGE_JSON  | jq -r '.version')
-          NEW_TAG=dsg/$DSG_VERSION
+          NEW_TAG=dsg/${{ inputs.version }}
           echo "🏷️ NEW_TAG=$NEW_TAG (based on $DSG_PACKAGE_JSON DSG_VERSION=$DSG_VERSION)"
+
+          if [[${{ inputs.version }} == $DSG_VERSION]]; then
+            echo -e  "$ECHO_RED 🚨 The chosen version '${{ inputs.version }}' already defined in data-service-generator package.json. 🚨"
+            exit 1
+          fi
 
           # If the tag already exists, it means that was already released. So we skip it. 
           if git tag --list | grep -q "^$NEW_TAG"; then
