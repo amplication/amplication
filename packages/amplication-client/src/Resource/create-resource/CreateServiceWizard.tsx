@@ -175,7 +175,6 @@ const CreateServiceWizard: React.FC<Props> = ({
     currentProject,
     currentWorkspace,
     loadingCreateService,
-    continueButtonClicked,
     setNewService,
     createServiceWithEntitiesResult: createResult,
   } = useContext(AppContext);
