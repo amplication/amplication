@@ -30,7 +30,7 @@ const resourceTabRoutes = [
         routes: [
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module/actions",
-            Component: lazy(() => import("../Modules/ActionList")),
+            Component: lazy(() => import("../Modules/ModuleActionList")),
             moduleName: "",
             routeTrackType: "",
             exactPath: true,
