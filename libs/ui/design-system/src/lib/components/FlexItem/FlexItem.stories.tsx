@@ -29,12 +29,14 @@ const contentItems = (
 
 const endItem = <div>end</div>;
 
-export const Default = (props: any) => {
-  return (
-    <div className="flex-default-story">
-      <FlexItem {...props} start={startItem} end={endItem}>
-        {contentItems}
-      </FlexItem>
-    </div>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <div className="flex-default-story">
+        <FlexItem {...props} start={startItem} end={endItem}>
+          {contentItems}
+        </FlexItem>
+      </div>
+    );
+  },
 };
