@@ -360,7 +360,7 @@ describe("schema-utils", () => {
       expect(() => {
         findFkFieldNameOnAnnotatedField(field);
       }).toThrow(
-        `Missing the 'args' attribute in the relation attribute "${field.name}"`
+        `The field "${field.name}" is missing the 'fields' attribute in the relation attribute`
       );
     });
 
