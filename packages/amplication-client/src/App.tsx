@@ -7,6 +7,12 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
+import useLocalStorage from "react-use-localstorage";
+import queryString from "query-string";
+import BreadcrumbsContext, {
+  BreadcrumbItem,
+} from "./Layout/BreadcrumbsContext";
+import { sortBy } from "lodash";
 
 //use specific import path to prevent inclusion of all the design-system CSS in the main bundle
 import { AnimationType } from "@amplication/ui/design-system/components/Loader/Loader";
@@ -22,12 +28,6 @@ const PlanUpgradeConfirmation = lazy(
     )
 );
 
-import useLocalStorage from "react-use-localstorage";
-import queryString from "query-string";
-import BreadcrumbsContext, {
-  BreadcrumbItem,
-} from "./Layout/BreadcrumbsContext";
-import { sortBy } from "lodash";
 declare global {
   interface Window {
     HubSpotConversations: any;
