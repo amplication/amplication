@@ -33,6 +33,9 @@
       "@amplication/ui/design-system": [
         "libs/ui/design-system/src/lib/index.ts"
       ],
+      "@amplication/ui/design-system/components/*": [
+        "libs/ui/design-system/src/lib/components/*"
+      ],
       "@amplication/ui/design-system/icons": [
         "libs/ui/design-system/src/lib/icons"
       ],
