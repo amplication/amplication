@@ -163,16 +163,27 @@ const WorkspaceHeader: React.FC = () => {
               <Icon icon="logo" size="medium" />
             </Link>
           </div>
-          <span>
+          <Tooltip
+            aria-label="Version number copied successfully"
+            direction="e"
+            noDelay
+            show={versionAlert}
+          >
             <a
               href="https://github.com/amplication/amplication/releases"
               target="_blank"
               rel="noopener noreferrer"
               className={`${CLASS_NAME}__version`}
+              onMouseEnter={() => {
+                setVersionAlert(true);
+              }}
+              onMouseLeave={() => {
+                setVersionAlert(false);
+              }}
             >
-              v{version}
+              <span>v{version}</span>
             </a>
-          </span>
+          </Tooltip>
           <Breadcrumbs>
             {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
               <Breadcrumbs.Item key={item.url} to={item.url}>
