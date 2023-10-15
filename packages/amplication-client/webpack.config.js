@@ -5,5 +5,12 @@ const { withReact } = require("@nx/react");
 module.exports = composePlugins(withNx(), withReact(), (config) => {
   // Update the webpack config as needed here.
   // e.g. `config.plugins.push(new MyPlugin())`
+  const miniCssExtractPlugin = config.plugins.find(
+    (plugin) => plugin.constructor.name === "MiniCssExtractPlugin"
+  );
+  if (miniCssExtractPlugin) {
+    miniCssExtractPlugin.options.ignoreOrder = true;
+  }
+
   return config;
 });
