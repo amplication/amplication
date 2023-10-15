@@ -1,6 +1,7 @@
 import {
   CircularProgress,
   EnumFlexItemMargin,
+  EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
   List,
@@ -15,9 +16,11 @@ import { formatError } from "../util/error";
 
 import { pluralize } from "../util/pluralize";
 import { ModuleActionListItem } from "./ModuleActionListItem";
-import useModuleAction from "./hooks/useModuleAction";
+import useModuleAction from "../Modules/hooks/useModuleAction";
 import { AppRouteProps } from "../routes/routesUtil";
 import { match } from "react-router-dom";
+import NewModuleAction from "./NewModuleAction";
+import ModuleActionForm from "./ModuleActionForm";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -27,7 +30,7 @@ type Props = AppRouteProps & {
     module: string;
   }>;
 };
-const ModuleActionList = React.memo(({ match }: Props) => {
+const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
@@ -72,33 +75,51 @@ const ModuleActionList = React.memo(({ match }: Props) => {
 
   return (
     <>
-      <TabContentTitle
-        title="Module Actions"
-        subTitle="Actions are used to perform operations on resources, with or without API endpoints."
-      />
-      <SearchField
-        label="search"
-        placeholder="Search"
-        onChange={handleSearchChange}
-      />
-      <FlexItem margin={EnumFlexItemMargin.Both}>
-        <Text textStyle={EnumTextStyle.Tag}>
-          {data?.ModuleActions?.length}{" "}
-          {pluralize(data?.ModuleActions?.length, "Action", "Actions")}
-        </Text>
-      </FlexItem>
-      {loading && <CircularProgress centerToParent />}
-      <List>
-        {data?.ModuleActions?.map((action) => (
-          <ModuleActionListItem
-            key={action.id}
-            moduleId={moduleId}
-            moduleAction={action}
-            onError={setError}
+      {match.isExact ? (
+        <>
+          <FlexItem
+            itemsAlign={EnumItemsAlign.Center}
+            start={
+              <TabContentTitle
+                title="Module Actions"
+                subTitle="Actions are used to perform operations on resources, with or without API endpoints."
+              />
+            }
+            end={
+              <NewModuleAction resourceId={resourceId} moduleId={moduleId} />
+            }
+          ></FlexItem>
+
+          <SearchField
+            label="search"
+            placeholder="Search"
+            onChange={handleSearchChange}
           />
-        ))}
-      </List>
-      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+          <FlexItem margin={EnumFlexItemMargin.Both}>
+            <Text textStyle={EnumTextStyle.Tag}>
+              {data?.ModuleActions?.length}{" "}
+              {pluralize(data?.ModuleActions?.length, "Action", "Actions")}
+            </Text>
+          </FlexItem>
+          {loading && <CircularProgress centerToParent />}
+          <List>
+            {data?.ModuleActions?.map((action) => (
+              <ModuleActionListItem
+                key={action.id}
+                moduleId={moduleId}
+                moduleAction={action}
+                onError={setError}
+              />
+            ))}
+          </List>
+          <Snackbar
+            open={Boolean(error || errorLoading)}
+            message={errorMessage}
+          />
+        </>
+      ) : (
+        innerRoutes
+      )}
     </>
   );
 });

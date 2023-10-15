@@ -1,5 +1,9 @@
 import {
+  Chip,
+  EnumChipStyle,
   EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumTextColor,
   EnumTextStyle,
   FlexItem,
@@ -13,6 +17,7 @@ import { Link, useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { DeleteModuleAction } from "./DeleteModuleAction";
+import { EntityFieldProperty } from "../Entity/EntityFieldProperty";
 
 type Props = {
   moduleId: string;
@@ -45,10 +50,14 @@ export const ModuleActionListItem = ({
   ]);
 
   return (
-    <ListItem onClick={handleRowClick}>
+    <ListItem onClick={handleRowClick} showDefaultActionIcon={true}>
       <FlexItem
         start={
-          <FlexItem direction={EnumFlexDirection.Row}>
+          <FlexItem
+            gap={EnumGapSize.Small}
+            direction={EnumFlexDirection.Row}
+            itemsAlign={EnumItemsAlign.Center}
+          >
             <Icon
               className="amp-data-grid-item__icon"
               icon={"box"}
@@ -62,15 +71,20 @@ export const ModuleActionListItem = ({
             </Text>
           </FlexItem>
         }
-        end={
-          <DeleteModuleAction moduleAction={moduleAction} onDelete={onDelete} />
-        }
       />
 
       {!isEmpty(moduleAction.description) && (
         <Text textStyle={EnumTextStyle.Description}>
           {moduleAction.description}
         </Text>
+      )}
+      {moduleAction.isDefault && (
+        <Chip chipStyle={EnumChipStyle.ThemePurple}>Default Action</Chip>
+      )}
+      {!moduleAction.enabled ? (
+        <Chip chipStyle={EnumChipStyle.ThemeRed}>Disabled</Chip>
+      ) : (
+        <Chip chipStyle={EnumChipStyle.ThemeGreen}>Enabled</Chip>
       )}
     </ListItem>
   );

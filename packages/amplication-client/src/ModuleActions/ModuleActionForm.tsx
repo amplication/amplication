@@ -1,13 +1,15 @@
-import React, { useMemo } from "react";
+import { ToggleField } from "@amplication/ui/design-system";
 import { Formik } from "formik";
-import { Form } from "../Components/Form";
 import { omit } from "lodash";
+import { useMemo } from "react";
+import { Form } from "../Components/Form";
 import * as models from "../models";
-import { TextField } from "@amplication/ui/design-system";
 import { validate } from "../util/formikValidateJsonSchema";
 
-import FormikAutoSave from "../util/formikAutoSave";
+import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
+import OptionalDescriptionField from "../Components/OptionalDescriptionField";
+import FormikAutoSave from "../util/formikAutoSave";
 
 type Props = {
   onSubmit: (values: models.Module) => void;
@@ -20,6 +22,10 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "createdAt",
   "updatedAt",
   "__typename",
+  "isDefault",
+  "lockedByUserId",
+  "lockedAt",
+  "lockedByUser",
 ];
 
 export const INITIAL_VALUES: Partial<models.Module> = {
@@ -29,9 +35,14 @@ export const INITIAL_VALUES: Partial<models.Module> = {
 };
 
 const FORM_SCHEMA = {
-  required: ["name"],
+  required: ["name", "displayName"],
   properties: {
     name: {
+      type: "string",
+      minLength: 1,
+      maxLength: 249,
+    },
+    displayName: {
       type: "string",
       minLength: 1,
       maxLength: 249,
@@ -39,7 +50,7 @@ const FORM_SCHEMA = {
   },
 };
 
-const ModuleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
+const ModuleActionForm = ({ onSubmit, defaultValues, disabled }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -60,17 +71,19 @@ const ModuleForm = ({ onSubmit, defaultValues, disabled }: Props) => {
     >
       <Form childrenAsBlocks>
         {!disabled && <FormikAutoSave debounceMS={1000} />}
+        <DisplayNameField name="displayName" label="Display Name" />
         <NameField label="Name" name="name" disabled={disabled} />
-        <TextField
+        <OptionalDescriptionField
           name="description"
           label="Description"
-          textarea
-          rows={3}
           disabled={disabled}
         />
+        <div>
+          <ToggleField name="enabled" label="Enabled" disabled={disabled} />
+        </div>
       </Form>
     </Formik>
   );
 };
 
-export default ModuleForm;
+export default ModuleActionForm;
