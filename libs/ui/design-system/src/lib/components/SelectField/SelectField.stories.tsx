@@ -1,14 +1,14 @@
 import React from "react";
-import type { ComponentStory, ComponentMeta } from "@storybook/react";
 
 import { SelectField } from "./SelectField";
 import { Form, Formik } from "formik";
 import { OptionItem } from "../types";
+import { Meta } from "@storybook/react";
 
-const Story: ComponentMeta<typeof SelectField> = {
-  component: SelectField,
+export default {
   title: "SelectField",
-};
+  component: SelectField,
+} as Meta;
 
 const OPTIONS: OptionItem[] = [
   {
@@ -25,15 +25,14 @@ const OPTIONS: OptionItem[] = [
   },
 ];
 
-const Template: ComponentStory<typeof SelectField> = (args: any) => {
-  return (
-    <Formik initialValues={[]} onSubmit={() => {}}>
-      <Form>
-        <SelectField label="Label" name="name" options={OPTIONS} {...args} />
-      </Form>
-    </Formik>
-  );
+export const Default = {
+  render: (args: any) => {
+    return (
+      <Formik initialValues={[]} onSubmit={() => {}}>
+        <Form>
+          <SelectField label="Label" name="name" options={OPTIONS} {...args} />
+        </Form>
+      </Formik>
+    );
+  },
 };
-
-export const Primary = Template.bind({});
-Primary.args = {};

@@ -44,7 +44,7 @@ const CreateServiceDatabase: React.FC<Props> = ({
           header="Which database do you want to use?"
           text={`Amplication generates the service with all the required configuration and code to start working with a DB. 
           
-          You can easily change the type of the DB later in the plugins page
+          You can easily change the type of the DB later in the plugins page.
           `}
         />
       </Layout.LeftSide>

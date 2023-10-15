@@ -15,22 +15,24 @@ export default {
 const CONFIRM_BUTTON = { icon: "trash_2", label: "Delete" };
 const DISMISS_BUTTON = { label: "Dismiss" };
 
-export const Default = (props: any) => {
-  return (
-    <Formik initialValues={{ checkboxListName: [] }} onSubmit={() => {}}>
-      {(formik) => {
-        return (
-          <ConfirmationDialog
-            isOpen
-            title="Delete record"
-            confirmButton={CONFIRM_BUTTON}
-            dismissButton={DISMISS_BUTTON}
-            message="Are you sure you want to delete?"
-            onConfirm={props.onConfirm}
-            onDismiss={props.onDismiss}
-          />
-        );
-      }}
-    </Formik>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Formik initialValues={{ checkboxListName: [] }} onSubmit={() => {}}>
+        {(formik) => {
+          return (
+            <ConfirmationDialog
+              isOpen
+              title="Delete record"
+              confirmButton={CONFIRM_BUTTON}
+              dismissButton={DISMISS_BUTTON}
+              message="Are you sure you want to delete?"
+              onConfirm={props.onConfirm}
+              onDismiss={props.onDismiss}
+            />
+          );
+        }}
+      </Formik>
+    );
+  },
 };

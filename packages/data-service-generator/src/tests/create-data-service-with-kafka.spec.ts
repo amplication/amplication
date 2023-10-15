@@ -12,8 +12,6 @@ import roles from "./roles";
 
 jest.setTimeout(100000);
 
-jest.mock("./build-logger");
-
 describe("createDataService", () => {
   afterEach(() => {
     jest.clearAllMocks();

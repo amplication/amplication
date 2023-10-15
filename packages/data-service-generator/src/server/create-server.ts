@@ -82,7 +82,7 @@ async function createServerInternal(
 
   await context.logger.info("Formatting resources code...");
   await resourcesModules.replaceModulesCode((code) => formatCode(code));
-  await context.logger.info("Formatting dtos code...");
+  await context.logger.info("Formatting DTOs code...");
   await dtoModules.replaceModulesCode((code) => formatCode(code));
   await context.logger.info("Formatting swagger code...");
   await swagger.replaceModulesCode((code) => formatCode(code));
@@ -102,7 +102,7 @@ async function createServerInternal(
   await context.logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
-  await context.logger.info("Creating Dot Env...");
+  await context.logger.info("Creating Dotenv...");
   const dotEnvModule = await createDotEnvModule({
     envVariables: ENV_VARIABLES,
   });
@@ -110,7 +110,7 @@ async function createServerInternal(
   await context.logger.info("Creating connectMicroservices function...");
   const connectMicroservicesModule = await connectMicroservices();
 
-  await context.logger.info("Creating Docker compose configurations...");
+  await context.logger.info("Creating Docker Compose configurations...");
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDevFile = await createDockerComposeDevFile();
 

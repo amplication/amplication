@@ -25,8 +25,6 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
-jest.mock("./build-logger");
-
 describe("createDataService", () => {
   afterEach(() => {
     jest.clearAllMocks();

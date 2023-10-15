@@ -39,7 +39,7 @@
 
 ## Introduction
 
-`Amplication` is a robust, open-source development platform crafted to revolutionize the creation of scalable and secure Node.js applications. We eliminate repetitive coding tasks and deliver production-ready infrastructure code, meticulously tailored to your specifications and adhering to industry best practices.
+`Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure Node.js applications. We eliminate repetitive coding tasks and deliver production-ready infrastructure code, meticulously tailored to your specifications and adhering to industry best practices.
 
 Our user-friendly interface fosters seamless integration of APIs, data models, databases, authentication, and authorization. Built on a flexible, plugin-based architecture, Amplication allows effortless customization of the code and offers a diverse range of integrations.
 
@@ -87,13 +87,13 @@ To get started with Amplication, the hosted version of the product can be used. 
 
 ## Development
 
-Alternatively to using the hosted version of the product, Amplication can be ran local for code generation purposes or contributions - if so please refer to our [contributing](#contributing_anchor) section.
+Alternatively, instead of using the hosted version of the product, Amplication can be run locally for code generation purposes or contributions - if so, please refer to our [contributing](#contributing_anchor) section.
 
 <details open>
 <summary>
 Pre-requisites
 </summary> <br />
-To be able to start development on amplication make sure that you have the following pre-requisites installed:
+To be able to start development on Amplication, make sure that you have the following prerequisites installed:
 
 ###
 
@@ -110,16 +110,21 @@ Running Amplication
 > **Note**
 > It is also possible to start development with GitHub Codespaces, when navigating to `< > Code`, select `Codespaces` instead of `Local`. Click on either the `+`-sign or the `Create codespace on master`-button.
 
-Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple application and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
+Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple applications and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
 
-###
+**BEFORE** you run the following steps make sure:
+1. You have typescript installed locally on you machine ```npm install -g typescript```
+2. You are using a supported node version (check `engines` `node` in the [package.json](./package.json))
+3. You are using a supported npm version (check `engines` `npm` in the [package.json](./package.json))
+4. You have `docker` installed and running on your machine
+
 
 1. Clone the repository and install dependencies:
 ```shell
 git clone https://github.com/amplication/amplication.git && cd amplication && npm install
 ```
 
-2. Run the setup script, which takes care of installing dependencies, building packages and setting up the workspace:
+2. Run the setup script, which takes care of installing dependencies, building packages, and setting up the workspace:
 ```shell
 npm run setup:dev
 ```
@@ -160,9 +165,9 @@ npm run serve:plugins
 ```
 
 > **Note**
-> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as additional component for development on a specific component.
+> In order to run the Amplication client properly, both the client and server need to be started by the `npm run serve:[application]` command, as well as an additional component for development on a specific component.
 
-The development environment should now be set up. Additional information on the different application component can be found under packages/`[application]`/README.md file. Happy hacking! 👾
+The development environment should now be set up. Additional information on the different application components can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
 
 ## Resources
@@ -181,11 +186,11 @@ The development environment should now be set up. Additional information on the 
 
 Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community. Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
-- Bug Report: If you see an error message or run into an issue while using Amplication, please create a [bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+).
+- Bug Report: If you see an error message or encounter an issue while using Amplication, please create a[bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+).
 
-- Feature Request: If you have an idea or you're missing a capability that would make development easier and more robust, please submit a [feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
+- Feature Request: If you have an idea or if there is a capability that is missing and would make development easier and more robust, please submit a[feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
-- Documentation Request: If you're reading the Amplication docs and feel like the you're missing something, please submit a [documentation request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+docs&template=documentation-request.yaml&title=%F0%9F%93%96+Documentation%3A+).
+- Documentation Request: If you're reading the Amplication docs and feel like you're missing something, please submit a [documentation request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+docs&template=documentation-request.yaml&title=%F0%9F%93%96+Documentation%3A+).
 
 Not sure where to start? Join our discord and we will help you get started!
 
