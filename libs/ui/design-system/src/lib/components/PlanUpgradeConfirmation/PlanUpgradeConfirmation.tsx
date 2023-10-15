@@ -20,7 +20,7 @@ export type Props = DialogProps & {
   graphics?: ReactNode;
 };
 
-export const PlanUpgradeConfirmation = ({
+const PlanUpgradeConfirmation = ({
   isOpen,
   onConfirm,
   onDismiss,
@@ -70,3 +70,5 @@ export const PlanUpgradeConfirmation = ({
     </Dialog>
   );
 };
+
+export default PlanUpgradeConfirmation;
