@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { User } from "../../models";
+import { Entity, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
 import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
@@ -11,9 +11,15 @@ import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { ModuleActionUpdateInput } from "./dto/ModuleActionUpdateInput";
 import { PrismaService } from "../../prisma";
+import { pascalCase } from "pascal-case";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
+
+type ModuleActionData = Pick<
+  ModuleAction,
+  "description" | "displayName" | "enabled" | "isDefault" | "name"
+>;
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -50,7 +56,8 @@ export class ModuleActionService extends BlockTypeService<
         ...args,
         data: {
           ...args.data,
-          displayName: args.data.name,
+          enabled: true,
+          isDefault: false,
         },
       },
       user
@@ -62,16 +69,7 @@ export class ModuleActionService extends BlockTypeService<
     user: User
   ): Promise<ModuleAction> {
     this.validateModuleActionName(args.data.name);
-    return super.update(
-      {
-        ...args,
-        data: {
-          ...args.data,
-          displayName: args.data.name,
-        },
-      },
-      user
-    );
+    return super.update(args, user);
   }
 
   async delete(
@@ -82,27 +80,39 @@ export class ModuleActionService extends BlockTypeService<
 
     if (moduleAction?.isDefault) {
       throw new Error(
-        "Cannot delete the default moduleAction for entity. To delete it, you must delete the entity"
+        "Cannot delete a default Action for entity. To delete it, you must delete the entity"
       );
     }
     return super.delete(args, user);
   }
 
-  async createDefaultModuleActionForEntity(
-    args: CreateModuleActionArgs,
-    entityId: string,
+  async createDefaultModuleActionsForEntity(
+    entity: Entity,
+    moduleId: string,
     user: User
-  ): Promise<ModuleAction> {
-    return this.create(
-      {
-        ...args,
-        data: {
-          ...args.data,
-          description: DEFAULT_MODULE_DESCRIPTION,
-          entityId: entityId,
-        },
-      },
-      user
+  ): Promise<ModuleAction[]> {
+    const defaultActions = await this.getDefaultActionsForEntity(entity);
+    return await Promise.all(
+      defaultActions.map((action) =>
+        super.create(
+          {
+            data: {
+              ...action,
+              parentBlock: {
+                connect: {
+                  id: moduleId,
+                },
+              },
+              resource: {
+                connect: {
+                  id: entity.id,
+                },
+              },
+            },
+          },
+          user
+        )
+      )
     );
   }
 
@@ -165,5 +175,35 @@ export class ModuleActionService extends BlockTypeService<
     );
 
     return super.delete({ where: { id: moduleActionId } }, user);
+  }
+
+  async getDefaultActionsForEntity(
+    entity: Entity
+  ): Promise<ModuleActionData[]> {
+    const pascalCaseName = pascalCase(entity.name);
+
+    return [
+      {
+        name: `count${pascalCaseName}`,
+        displayName: `Count ${entity.displayName}`,
+        description: `Count ${entity.displayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        name: `findMany${pascalCaseName}`,
+        displayName: `Find Many ${entity.displayName}`,
+        description: `Find many ${entity.displayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        name: `findOne${pascalCaseName}`,
+        displayName: `Find One ${entity.displayName}`,
+        description: `Find one ${entity.displayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+    ];
   }
 }

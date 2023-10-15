@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
-import { User } from "../../models";
+import { Entity, User } from "../../models";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
 import { CreateModuleArgs } from "./dto/CreateModuleArgs";
@@ -12,7 +12,7 @@ import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { PrismaService } from "../../prisma";
 import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
-
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -28,7 +28,8 @@ export class ModuleService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService
+    private readonly prisma: PrismaService,
+    private readonly moduleActionService: ModuleActionService
   ) {
     super(blockService);
   }
@@ -85,20 +86,28 @@ export class ModuleService extends BlockTypeService<
 
   async createDefaultModuleForEntity(
     args: CreateModuleArgs,
-    entityId: string,
+    entity: Entity,
     user: User
   ): Promise<Module> {
-    return this.create(
+    const module = await this.create(
       {
         ...args,
         data: {
           ...args.data,
           description: DEFAULT_MODULE_DESCRIPTION,
-          entityId: entityId,
+          entityId: entity.id,
         },
       },
       user
     );
+
+    await this.moduleActionService.createDefaultModuleActionsForEntity(
+      entity,
+      module.id,
+      user
+    );
+
+    return module;
   }
 
   async getDefaultModuleIdForEntity(

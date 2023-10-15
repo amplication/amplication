@@ -363,7 +363,7 @@ export class EntityService {
           },
         },
       },
-      newEntity.id,
+      newEntity,
       user
     );
 
@@ -1011,7 +1011,7 @@ export class EntityService {
                 },
               },
             },
-            entity.id,
+            entity,
             user
           );
         } else {
