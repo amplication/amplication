@@ -1,5 +1,5 @@
 import "./index.scss";
-import "./style/css-variables.scss";
+//import "./style/css-variables.scss"; // Do not load the css-variables here, instead load them in the client(s)
 import "./style/icon.scss";
 export {
   Button,
