@@ -12,6 +12,7 @@ export enum BillingFeature {
   HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   Services = "feature-services",
+  Projects = "feature-projects",
   ServicesAboveEntitiesPerServiceLimit = "feature-services-above-entities-per-service-limit",
   ServicesWithManyEntities = "feature-services-wth-many-entities",
   SmartGitSync = "feature-smart-git-sync",

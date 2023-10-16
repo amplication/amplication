@@ -74,10 +74,16 @@ export class ProjectService {
         },
       },
     });
+
     await this.resourceService.createProjectConfiguration(
       project.id,
       project?.name,
       userId
+    );
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects
     );
 
     return project;
@@ -103,6 +109,12 @@ export class ProjectService {
       project.workspace.id,
       BillingFeature.Services,
       -archivedServiceCount
+    );
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects,
+      -1
     );
 
     return this.prisma.project.update({
@@ -252,9 +264,21 @@ export class ProjectService {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
+      const projects = await this.prisma.project.findMany({
+        where: {
+          workspaceId: project.workspaceId,
+          deletedAt: null,
+        },
+        orderBy: {
+          createdAt: "asc",
+        },
+      });
+
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
         project.workspaceId,
-        currentUser
+        currentUser,
+        project.id,
+        projects
       );
     }
 
