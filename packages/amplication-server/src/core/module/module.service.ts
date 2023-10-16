@@ -13,6 +13,7 @@ import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
 import { PrismaService } from "../../prisma";
 import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { AmplicationError } from "../../errors/AmplicationError";
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
@@ -37,7 +38,7 @@ export class ModuleService extends BlockTypeService<
   validateModuleName(moduleName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleName)) {
-      throw new Error("Invalid module name");
+      throw new AmplicationError("Invalid module name");
     }
   }
 
@@ -77,7 +78,7 @@ export class ModuleService extends BlockTypeService<
     const module = await super.findOne(args);
 
     if (module?.entityId) {
-      throw new Error(
+      throw new AmplicationError(
         "Cannot delete the default module for entity. To delete it, you must delete the entity"
       );
     }
@@ -116,10 +117,12 @@ export class ModuleService extends BlockTypeService<
   ): Promise<string> {
     const [module] = await this.prisma.block.findMany({
       where: {
+        blockType: EnumBlockType.Module,
         resourceId: resourceId,
         deletedAt: null,
         versions: {
           some: {
+            versionNumber: 0,
             settings: {
               path: ["entityId"],
               equals: entityId,
