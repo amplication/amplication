@@ -10,7 +10,7 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
 } from "@stigg/node-server-sdk";
-import { User } from "../../models";
+import { Project, User } from "../../models";
 import { ValidationError } from "apollo-server-express";
 
 jest.mock("@stigg/node-server-sdk");
@@ -77,6 +77,7 @@ describe("BillingService", () => {
 
   it("should throw exceptions on number of services if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
+    const projectId = "project-id-1";
     const servicesPerWorkspaceLimit = 3;
 
     const spyOnServiceGetBooleanEntitlement = jest
@@ -108,8 +109,24 @@ describe("BillingService", () => {
       isOwner: true,
     };
 
+    const projects: Project[] = [
+      {
+        id: projectId,
+        name: "project-1",
+        workspaceId: "workspace-id",
+        useDemoRepo: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+      service.validateSubscriptionPlanLimitationsForWorkspace(
+        workspaceId,
+        user,
+        projectId,
+        projects
+      )
     ).rejects.toThrow(
       new ValidationError("LimitationError: Allowed services per workspace: 3")
     );
@@ -130,9 +147,14 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
+      workspaceId,
+      BillingFeature.Projects
+    );
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
+      2,
       workspaceId,
       BillingFeature.Services
     );
@@ -147,6 +169,8 @@ describe("BillingService", () => {
 
   it("should throw exceptions on number of entities per service if the workspace has no entitlement to bypass code generation limitation", async () => {
     const workspaceId = "id";
+    const projectId = "project-id-1";
+    const projectsPerWorkspaceLimit = 1;
     const entitiesPerServiceLimit = 5;
     const servicesPerWorkspaceLimit = 3;
 
@@ -161,6 +185,10 @@ describe("BillingService", () => {
       .mockResolvedValueOnce({
         hasAccess: true,
         usageLimit: servicesPerWorkspaceLimit,
+      } as MeteredEntitlement)
+      .mockResolvedValueOnce({
+        hasAccess: true,
+        usageLimit: projectsPerWorkspaceLimit,
       } as MeteredEntitlement)
       .mockResolvedValueOnce({
         hasAccess: false,
@@ -189,8 +217,24 @@ describe("BillingService", () => {
       isOwner: true,
     };
 
+    const projects: Project[] = [
+      {
+        id: projectId,
+        name: "project-1",
+        workspaceId: "workspace-id",
+        useDemoRepo: false,
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      },
+    ];
+
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(workspaceId, user)
+      service.validateSubscriptionPlanLimitationsForWorkspace(
+        workspaceId,
+        user,
+        projectId,
+        projects
+      )
     ).rejects.toThrow(
       new ValidationError("LimitationError: Allowed entities per service: 5")
     );
@@ -211,14 +255,19 @@ describe("BillingService", () => {
       })
     );
 
-    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(2);
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(3);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
+      workspaceId,
+      BillingFeature.Projects
+    );
+    expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
+      2,
       workspaceId,
       BillingFeature.Services
     );
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
-      2,
+      3,
       workspaceId,
       BillingFeature.ServicesAboveEntitiesPerServiceLimit
     );
