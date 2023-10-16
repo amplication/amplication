@@ -15,13 +15,19 @@ import { pascalCase } from "pascal-case";
 import { Module } from "../module/dto/Module";
 import { prepareEntityPluralName } from "libs/util/dsg-utils/src";
 import { AmplicationError } from "../../errors/AmplicationError";
+import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
 
 type ModuleActionData = Pick<
   ModuleAction,
-  "description" | "displayName" | "enabled" | "isDefault" | "name"
+  | "description"
+  | "displayName"
+  | "enabled"
+  | "isDefault"
+  | "name"
+  | "actionType"
 >;
 
 @Injectable()
@@ -61,6 +67,7 @@ export class ModuleActionService extends BlockTypeService<
           ...args.data,
           enabled: true,
           isDefault: false,
+          type: EnumModuleActionType.Custom,
         },
       },
       user
@@ -176,44 +183,50 @@ export class ModuleActionService extends BlockTypeService<
 
     return [
       {
-        name: `count${entityPluralName}`,
-        displayName: `Count ${entityPluralDisplayName}`,
-        description: `Count ${entityPluralDisplayName}`,
+        actionType: EnumModuleActionType.Meta,
+        name: `_${entityPluralName}Meta`,
+        displayName: `${entityPluralDisplayName} Meta`,
+        description: `Meta data about ${entityDisplayName} records`,
         enabled: true,
         isDefault: true,
       },
       {
-        name: `findMany${entityPluralName}`,
-        displayName: `Find Many ${entityPluralDisplayName}`,
-        description: `Find many ${entityPluralDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        name: `findOne${entityName}`,
-        displayName: `Find One ${entityDisplayName}`,
-        description: `Find one ${entityDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
+        actionType: EnumModuleActionType.Create,
         name: `create${entityName}`,
         displayName: `Create ${entityDisplayName}`,
-        description: `Create ${entityDisplayName}`,
+        description: `Create one ${entityDisplayName}`,
         enabled: true,
         isDefault: true,
       },
       {
+        actionType: EnumModuleActionType.Read,
+        name: `${entityName}`,
+        displayName: `Get ${entityDisplayName}`,
+        description: `Get one ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        actionType: EnumModuleActionType.Update,
         name: `update${entityName}`,
         displayName: `Update ${entityDisplayName}`,
-        description: `Update ${entityDisplayName}`,
+        description: `Update one ${entityDisplayName}`,
         enabled: true,
         isDefault: true,
       },
       {
+        actionType: EnumModuleActionType.Delete,
         name: `delete${entityName}`,
         displayName: `Delete ${entityDisplayName}`,
-        description: `Delete ${entityDisplayName}`,
+        description: `Delete one ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        actionType: EnumModuleActionType.Find,
+        name: `${entityPluralName}`,
+        displayName: `Find ${entityPluralDisplayName}`,
+        description: `Find many ${entityPluralDisplayName}`,
         enabled: true,
         isDefault: true,
       },

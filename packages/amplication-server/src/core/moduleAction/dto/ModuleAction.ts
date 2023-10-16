@@ -1,5 +1,6 @@
 import { Field, ObjectType } from "@nestjs/graphql";
 import { IBlock } from "../../../models";
+import { EnumModuleActionType } from "./EnumModuleActionType";
 
 @ObjectType({
   isAbstract: true,
@@ -20,4 +21,9 @@ export class ModuleAction extends IBlock {
     nullable: false,
   })
   isDefault!: boolean;
+
+  @Field(() => EnumModuleActionType, {
+    nullable: false,
+  })
+  actionType!: keyof typeof EnumModuleActionType;
 }

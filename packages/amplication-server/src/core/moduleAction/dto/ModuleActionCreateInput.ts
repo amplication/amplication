@@ -9,7 +9,4 @@ export class ModuleActionCreateInput extends BlockCreateInput {
     nullable: true,
   })
   name!: string | null;
-
-  enabled?: boolean;
-  isDefault?: boolean;
 }
