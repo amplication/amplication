@@ -14,6 +14,7 @@ import { PrismaService } from "../../prisma";
 import { pascalCase } from "pascal-case";
 import { Module } from "../module/dto/Module";
 import { prepareEntityPluralName } from "libs/util/dsg-utils/src";
+import { AmplicationError } from "../../errors/AmplicationError";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -43,7 +44,7 @@ export class ModuleActionService extends BlockTypeService<
   validateModuleActionName(moduleActionName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleActionName)) {
-      throw new Error("Invalid moduleAction name");
+      throw new AmplicationError("Invalid moduleAction name");
     }
   }
 
@@ -72,6 +73,25 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleActionName(args.data.name);
+
+    const existingAction = await super.findOne({
+      where: { id: args.where.id },
+    });
+
+    if (!existingAction) {
+      throw new AmplicationError(
+        `Module Action not found, ID: ${args.where.id}`
+      );
+    }
+
+    if (existingAction.isDefault) {
+      if (existingAction.name !== args.data.name) {
+        throw new AmplicationError(
+          "Cannot update the name of a default Action for entity."
+        );
+      }
+    }
+
     return super.update(args, user);
   }
 
@@ -82,7 +102,7 @@ export class ModuleActionService extends BlockTypeService<
     const moduleAction = await super.findOne(args);
 
     if (moduleAction?.isDefault) {
-      throw new Error(
+      throw new AmplicationError(
         "Cannot delete a default Action for entity. To delete it, you must delete the entity"
       );
     }
@@ -117,67 +137,6 @@ export class ModuleActionService extends BlockTypeService<
         )
       )
     );
-  }
-
-  async getDefaultModuleActionIdForEntity(
-    resourceId: string,
-    entityId: string
-  ): Promise<string> {
-    const [moduleAction] = await this.prisma.block.findMany({
-      where: {
-        resourceId: resourceId,
-        deletedAt: null,
-        versions: {
-          some: {
-            settings: {
-              path: ["entityId"],
-              equals: entityId,
-            },
-          },
-        },
-      },
-    });
-
-    // if (!moduleAction) {
-    //   throw new DefaultModuleActionForEntityNotFoundError(entityId);
-    // }
-
-    return moduleAction.id;
-  }
-
-  async updateDefaultModuleActionForEntity(
-    args: ModuleActionUpdateInput,
-    resourceId: string,
-    entityId: string,
-    user: User
-  ): Promise<ModuleAction> {
-    const moduleActionId = await this.getDefaultModuleActionIdForEntity(
-      resourceId,
-      entityId
-    );
-
-    return this.update(
-      {
-        where: {
-          id: moduleActionId,
-        },
-        data: args,
-      },
-      user
-    );
-  }
-
-  async deleteDefaultModuleActionForEntity(
-    resourceId: string,
-    entityId: string,
-    user: User
-  ): Promise<ModuleAction> {
-    const moduleActionId = await this.getDefaultModuleActionIdForEntity(
-      resourceId,
-      entityId
-    );
-
-    return super.delete({ where: { id: moduleActionId } }, user);
   }
 
   async getDefaultActionsForEntity(

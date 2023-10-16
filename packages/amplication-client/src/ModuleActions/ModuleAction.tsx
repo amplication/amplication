@@ -116,7 +116,8 @@ const ModuleAction = ({ match }: Props) => {
       {data?.ModuleAction && isDefaultAction && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
-            This modules was created automatically
+            This is a default action that was created automatically with the
+            entity. It cannot be deleted, and its name cannot be changed.
           </Text>
         </FlexItem>
       )}

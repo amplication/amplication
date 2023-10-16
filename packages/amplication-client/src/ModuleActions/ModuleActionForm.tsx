@@ -80,9 +80,13 @@ const ModuleActionForm = ({
         <DisplayNameField
           name="displayName"
           label="Display Name"
+          disabled={disabled}
+        />
+        <NameField
+          label="Name"
+          name="name"
           disabled={disabled || isDefaultAction}
         />
-        <NameField label="Name" name="name" disabled={disabled} />
         <div>
           <ToggleField name="enabled" label="Enabled" disabled={disabled} />
         </div>
