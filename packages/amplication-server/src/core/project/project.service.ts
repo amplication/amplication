@@ -228,6 +228,7 @@ export class ProjectService {
     }
 
     return {
+      projects: workspace.projects.length,
       services: workspaceServices.length,
       servicesAboveEntityPerServiceLimit:
         servicesAboveEntityPerServiceLimitCount,

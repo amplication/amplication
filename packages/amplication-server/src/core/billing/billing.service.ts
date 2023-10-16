@@ -374,6 +374,12 @@ export class BillingService {
     if (this.isBillingEnabled) {
       await this.setUsage(
         workspaceId,
+        BillingFeature.Projects,
+        currentUsage.projects
+      );
+
+      await this.setUsage(
+        workspaceId,
         BillingFeature.Services,
         currentUsage.services
       );
