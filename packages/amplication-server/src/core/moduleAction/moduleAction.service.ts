@@ -12,6 +12,7 @@ import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
 import { ModuleActionUpdateInput } from "./dto/ModuleActionUpdateInput";
 import { PrismaService } from "../../prisma";
 import { pascalCase } from "pascal-case";
+import { Module } from "../module/dto/Module";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -68,6 +69,7 @@ export class ModuleActionService extends BlockTypeService<
     args: UpdateModuleActionArgs,
     user: User
   ): Promise<ModuleAction> {
+    //todo: validate that only the enabled field can be updated for default actions
     this.validateModuleActionName(args.data.name);
     return super.update(args, user);
   }
@@ -86,9 +88,9 @@ export class ModuleActionService extends BlockTypeService<
     return super.delete(args, user);
   }
 
-  async createDefaultModuleActionsForEntity(
+  async createDefaultActionsForEntityModule(
     entity: Entity,
-    moduleId: string,
+    module: Module,
     user: User
   ): Promise<ModuleAction[]> {
     const defaultActions = await this.getDefaultActionsForEntity(entity);
@@ -100,12 +102,12 @@ export class ModuleActionService extends BlockTypeService<
               ...action,
               parentBlock: {
                 connect: {
-                  id: moduleId,
+                  id: module.id,
                 },
               },
               resource: {
                 connect: {
-                  id: entity.id,
+                  id: entity.resourceId,
                 },
               },
             },

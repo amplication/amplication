@@ -101,9 +101,9 @@ export class ModuleService extends BlockTypeService<
       user
     );
 
-    await this.moduleActionService.createDefaultModuleActionsForEntity(
+    await this.moduleActionService.createDefaultActionsForEntityModule(
       entity,
-      module.id,
+      module,
       user
     );
 
