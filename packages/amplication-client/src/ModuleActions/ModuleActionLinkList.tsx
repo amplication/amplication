@@ -1,13 +1,9 @@
 import {
   CircularProgress,
   EnabledIndicator,
-  EnumFlexDirection,
   EnumItemsAlign,
-  EnumTextColor,
-  EnumTextStyle,
   FlexItem,
   Snackbar,
-  Text,
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -17,7 +13,6 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 
 import useModuleAction from "./hooks/useModuleAction";
-import { Flex } from "@primer/react/lib/deprecated";
 
 const CLASS_NAME = "module-action-link-list";
 
