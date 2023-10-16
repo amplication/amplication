@@ -11,7 +11,8 @@
           "error",
           {
             "enforceBuildableLibDependency": true,
-            "allow": [],
+            "allow": ["@amplication/ui/design-system"], //exclude @amplication/ui/design-system because we use a mix of Static imports and lazy loading
+
             "depConstraints": [
               {
                 "sourceTag": "*",
