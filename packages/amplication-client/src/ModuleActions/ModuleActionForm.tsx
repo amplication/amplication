@@ -71,7 +71,11 @@ const ModuleActionForm = ({ onSubmit, defaultValues, disabled }: Props) => {
     >
       <Form childrenAsBlocks>
         {!disabled && <FormikAutoSave debounceMS={1000} />}
-        <DisplayNameField name="displayName" label="Display Name" />
+        <DisplayNameField
+          name="displayName"
+          label="Display Name"
+          disabled={disabled}
+        />
         <NameField label="Name" name="name" disabled={disabled} />
         <OptionalDescriptionField
           name="description"
@@ -79,7 +83,7 @@ const ModuleActionForm = ({ onSubmit, defaultValues, disabled }: Props) => {
           disabled={disabled}
         />
         <div>
-          <ToggleField name="enabled" label="Enabled" disabled={disabled} />
+          <ToggleField name="enabled" label="Enabled" />
         </div>
       </Form>
     </Formik>
