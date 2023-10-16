@@ -1,0 +1,14 @@
+$size: 8px;
+
+.amp-enabled-indicator {
+  display: inline-block;
+  width: $size;
+  height: $size;
+  border-radius: 50%;
+  background-color: var(--theme-green);
+  margin: var(--icon-spacing);
+
+  &--disabled {
+    background-color: var(--theme-light-red);
+  }
+}

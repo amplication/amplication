@@ -216,3 +216,8 @@ export {
   TabContentTitle,
   Props as TabContentTitleProps,
 } from "./components/TabContentTitle/TabContentTitle";
+
+export {
+  default as EnabledIndicator,
+  Props as EnabledIndicatorProps,
+} from "./components/EnabledIndicator/EnabledIndicator";
