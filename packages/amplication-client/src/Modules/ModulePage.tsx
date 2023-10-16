@@ -7,6 +7,7 @@ import { AppRouteProps } from "../routes/routesUtil";
 import "./Module.scss";
 import useModule from "./hooks/useModule";
 import Module from "./Module";
+import { ModuleActionLinkList } from "../ModuleActions/ModuleActionLinkList";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -53,6 +54,9 @@ const ModulePage = ({ match, innerRoutes }: Props) => {
           >
             Actions
           </InnerTabLink>
+          <div className="sub-list">
+            <ModuleActionLinkList resourceId={resourceId} moduleId={moduleId} />
+          </div>
         </>
       }
     >

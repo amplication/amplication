@@ -13,6 +13,7 @@ import { ModuleActionUpdateInput } from "./dto/ModuleActionUpdateInput";
 import { PrismaService } from "../../prisma";
 import { pascalCase } from "pascal-case";
 import { Module } from "../module/dto/Module";
+import { prepareEntityPluralName } from "libs/util/dsg-utils/src";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -182,27 +183,78 @@ export class ModuleActionService extends BlockTypeService<
   async getDefaultActionsForEntity(
     entity: Entity
   ): Promise<ModuleActionData[]> {
-    const pascalCaseName = pascalCase(entity.name);
+    const entityPluralName = pascalCase(prepareEntityPluralName(entity.name));
+    const entityName = entity.name;
+
+    const entityDisplayName = entity.displayName;
+    const entityPluralDisplayName = entity.pluralDisplayName;
+
+    //-----common-----
+    //findMany
+    //findOne
+    //count
+    //create
+    //update
+    //delete
+
+    //-----to one child RESOLVER ONLY-----
+    //resolve field child (based on field name not entity name)
+
+    //-----to many children RESOLVER ONLY-----
+    //resolve field children (based on field name not entity name)
+
+    //-----to many child CONTROLLER ONLY-----
+    //findMany (based on field name not entity name)
+    //connect (based on field name not entity name)
+    //update (based on field name not entity name)
+    //disconnect (based on field name not entity name)
+
+    //-----to many children SERVICE ONLY-----
+    //find children (based on field name not entity name)
+
+    //-----to one child SERVICE ONLY-----
+    //get child (based on field name not entity name)
 
     return [
       {
-        name: `count${pascalCaseName}`,
-        displayName: `Count ${entity.displayName}`,
-        description: `Count ${entity.displayName}`,
+        name: `count${entityPluralName}`,
+        displayName: `Count ${entityPluralDisplayName}`,
+        description: `Count ${entityPluralDisplayName}`,
         enabled: true,
         isDefault: true,
       },
       {
-        name: `findMany${pascalCaseName}`,
-        displayName: `Find Many ${entity.displayName}`,
-        description: `Find many ${entity.displayName}`,
+        name: `findMany${entityPluralName}`,
+        displayName: `Find Many ${entityPluralDisplayName}`,
+        description: `Find many ${entityPluralDisplayName}`,
         enabled: true,
         isDefault: true,
       },
       {
-        name: `findOne${pascalCaseName}`,
-        displayName: `Find One ${entity.displayName}`,
-        description: `Find one ${entity.displayName}`,
+        name: `findOne${entityName}`,
+        displayName: `Find One ${entityDisplayName}`,
+        description: `Find one ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        name: `create${entityName}`,
+        displayName: `Create ${entityDisplayName}`,
+        description: `Create ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        name: `update${entityName}`,
+        displayName: `Update ${entityDisplayName}`,
+        description: `Update ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      {
+        name: `delete${entityName}`,
+        displayName: `Delete ${entityDisplayName}`,
+        description: `Delete ${entityDisplayName}`,
         enabled: true,
         isDefault: true,
       },

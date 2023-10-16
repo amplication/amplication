@@ -15,6 +15,7 @@ type Props = {
   onSubmit: (values: models.Module) => void;
   defaultValues?: models.Module;
   disabled?: boolean;
+  isDefaultAction: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -50,7 +51,12 @@ const FORM_SCHEMA = {
   },
 };
 
-const ModuleActionForm = ({ onSubmit, defaultValues, disabled }: Props) => {
+const ModuleActionForm = ({
+  onSubmit,
+  defaultValues,
+  disabled,
+  isDefaultAction,
+}: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
       defaultValues,
@@ -74,17 +80,17 @@ const ModuleActionForm = ({ onSubmit, defaultValues, disabled }: Props) => {
         <DisplayNameField
           name="displayName"
           label="Display Name"
-          disabled={disabled}
+          disabled={disabled || isDefaultAction}
         />
         <NameField label="Name" name="name" disabled={disabled} />
+        <div>
+          <ToggleField name="enabled" label="Enabled" disabled={disabled} />
+        </div>
         <OptionalDescriptionField
           name="description"
           label="Description"
           disabled={disabled}
         />
-        <div>
-          <ToggleField name="enabled" label="Enabled" />
-        </div>
       </Form>
     </Formik>
   );

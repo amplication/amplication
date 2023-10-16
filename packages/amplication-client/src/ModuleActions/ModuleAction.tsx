@@ -123,7 +123,7 @@ const ModuleAction = ({ match }: Props) => {
 
       {!loading && (
         <ModuleActionForm
-          disabled={isDefaultAction}
+          isDefaultAction={isDefaultAction}
           onSubmit={handleSubmit}
           defaultValues={data?.ModuleAction}
         />
