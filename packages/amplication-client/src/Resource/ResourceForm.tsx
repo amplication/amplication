@@ -1,8 +1,14 @@
-import { Snackbar, TextField } from "@amplication/ui/design-system";
+import {
+  EnumFlexItemMargin,
+  EnumTextStyle,
+  FlexItem,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
 import { Form, Formik } from "formik";
 import React, { useCallback } from "react";
-import { match } from "react-router-dom";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
@@ -14,11 +20,10 @@ import {
 } from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
 import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
-import "./ResourceForm.scss";
 import { GET_RESOURCE } from "./ResourceHome";
 
 type Props = {
-  match: match<{ resource: string }>;
+  resourceId: string;
 };
 
 type TData = {
@@ -47,9 +52,7 @@ const FORM_SCHEMA = {
 
 const CLASS_NAME = "resource-form";
 
-function ResourceForm({ match }: Props) {
-  const resourceId = match.params.resource;
-
+function ResourceForm({ resourceId }: Props) {
   const { data, error } = useQuery<{
     resource: models.Resource;
   }>(GET_RESOURCE, {
@@ -103,10 +106,15 @@ function ResourceForm({ match }: Props) {
           {() => {
             return (
               <Form>
-                <div className={`${CLASS_NAME}__header`}>
-                  <h3>General Settings</h3>
-                  <h5>Enter a name and description for your app.</h5>
-                </div>
+                <FlexItem margin={EnumFlexItemMargin.Bottom}>
+                  <Text textStyle={EnumTextStyle.H4}>
+                    {data.resource.resourceType ===
+                    models.EnumResourceType.ProjectConfiguration
+                      ? "Project"
+                      : "Resource"}{" "}
+                    Settings
+                  </Text>
+                </FlexItem>
                 <FormikAutoSave debounceMS={1000} />
                 <TextField name="name" label="Name" />
                 <TextField

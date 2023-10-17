@@ -5,40 +5,102 @@ $tabs-width: 300px;
 .amp-page-content {
   display: flex;
   flex: 1;
-  gap: var(--large-spacing);
-  padding: var(--large-spacing);
-  padding-right: 0;
   background: var(--page-content-background);
   box-sizing: border-box;
+  flex-direction: column;
+  min-height: 100%;
   overflow: hidden;
 
-  &__tabs {
+  &__header {
+    box-sizing: border-box;
+    max-width: var(--page-content-width-default);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  &__body {
     display: flex;
-    flex-direction: column;
+    box-sizing: border-box;
+    flex: 1;
+    max-width: var(--page-content-width-default);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    overflow: hidden;
+  }
+
+  &--width-default {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+    .amp-page-content__main {
+      max-width: var(--page-content-width-default);
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &--width-wide {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &--width-full {
+    .amp-page-content__header {
+      max-width: 100%;
+    }
+
+    .amp-page-content__body {
+      max-width: 100%;
+    }
+  }
+
+  &__side {
     width: $tabs-width;
-    background: var(--page-content-tab-background);
+    border: $border-dark;
+    background-color: var(--gray-full);
     border-radius: var(--default-border-radius);
-    border: $border-black10;
-    padding: var(--large-spacing);
+    padding: var(--default-spacing);
+    margin-right: var(--default-spacing);
     box-sizing: border-box;
     overflow-y: auto;
-    @include scrollbars(16px, var(--black60), transparent);
+    margin: var(--double-spacing);
+    margin-right: 0;
+    @include scrollbars(16px, var(--gray-30), transparent);
 
     .sub-list {
       margin-left: var(--triple-spacing);
     }
   }
 
-  &__main {
-    @include scrollbars(16px, var(--black60), transparent);
-    padding-right: var(--large-spacing);
+  //This element provides scroll experience without margin on the top of bottom,
+  //and also the bar is location on the right side on extremely large screens
+  &__main-scroll {
+    padding-right: var(--double-spacing);
+    padding-left: var(--double-spacing);
     flex: 1;
-    overflow: auto;
     position: relative;
     box-sizing: border-box;
+    overflow-y: auto;
+    @include scrollbars(16px, var(--gray-30), transparent);
+  }
 
-    @media only screen and (max-width: $page-content-min-width) {
-      min-width: calc(#{$page-content-min-width} - var(--menu-width));
-    }
+  &__main {
+    margin-left: auto;
+    margin-right: auto;
+    box-sizing: border-box;
+    margin-top: var(--double-spacing);
+    margin-bottom: var(--double-spacing);
+    padding-top: var(--default-spacing);
+    min-height: calc(100% - (var(--double-spacing) * 2));
+    height: 1px; //this is needed to allow the main content to grow
   }
 }

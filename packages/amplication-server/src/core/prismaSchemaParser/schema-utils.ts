@@ -11,13 +11,15 @@ import {
   Enum,
   Enumerator,
   ConcretePrismaSchemaBuilder,
+  getSchema,
+  Datasource,
+  Assignment,
 } from "@mrleebo/prisma-ast";
 import {
   ARG_KEY_FIELD_NAME,
   RELATION_ATTRIBUTE_NAME,
   ARRAY_ARG_TYPE_NAME,
   KEY_VALUE_ARG_TYPE_NAME,
-  UNIQUE_ATTRIBUTE_NAME,
   MODEL_TYPE_NAME,
   FIELD_TYPE_NAME,
   ATTRIBUTE_TYPE_NAME,
@@ -27,12 +29,16 @@ import {
   FUNCTION_ARG_TYPE_NAME,
   ID_FIELD_NAME,
   ID_ATTRIBUTE_NAME,
+  DEFAULT_ATTRIBUTE_NAME,
+  prismaIdTypeToDefaultIdType,
+  UNIQUE_ATTRIBUTE_NAME,
 } from "./constants";
 import {
-  filterOutAmplicationAttributes,
+  filterOutAmplicationAttributesBasedOnFieldDataType,
   findOriginalModelName,
   formatDisplayName,
   formatModelName,
+  isValidIdFieldType,
   lookupField,
 } from "./helpers";
 import { ExistingEntitySelect, Mapper } from "./types";
@@ -43,33 +49,56 @@ import { ActionContext } from "../userAction/types";
 import cuid from "cuid";
 import { camelCase } from "lodash";
 
+export function getDatasourceProviderFromSchema(schema: string): string | null {
+  const schemaObject = getSchema(schema);
+
+  const datasourceAssignments = (
+    schemaObject.list.find((item) => item.type === "datasource") as Datasource
+  )?.assignments;
+
+  const provider = (
+    datasourceAssignments?.find(
+      (assignment: Assignment) => assignment.key === "provider"
+    ) as Assignment
+  )?.value
+    .toString()
+    .replace(/"/g, "");
+
+  return provider ?? null;
+}
+
 /**
  * create the common properties of one entity field from model field
  * @param field the current field to prepare
  * @param fieldDataType the field data type
+ * @datasourceProvider the datasource provider from the schema. Make sure to pass it only if you want to filter out the datasource specific attributes.
+ * Currently only use it for the id data type (EnumDataType.Id) for handling the id attributes for mongodb
  * @returns the field in a structure of CreateBulkFieldsInput
  */
 export function createOneEntityFieldCommonProperties(
   field: Field,
-  fieldDataType: EnumDataType
+  fieldDataType: EnumDataType,
+  datasourceProvider = null
 ): CreateBulkFieldsInput {
-  const fieldDisplayName = formatDisplayName(field.name);
+  const fieldDisplayName =
+    field.name === ID_FIELD_NAME
+      ? field.name.toUpperCase()
+      : formatDisplayName(field.name);
+
+  // in Amplication id fields are uniques and from prisma schema perspective unique field is a field that has the @unique attribute
   const isUniqueField =
-    field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME) ??
+    (fieldDataType === EnumDataType.Id ||
+      field.attributes?.some((attr) => attr.name === UNIQUE_ATTRIBUTE_NAME)) ??
     false;
 
-  const fieldAttributes = filterOutAmplicationAttributes(
-    prepareFieldAttributes(field.attributes)
+  const fieldAttributes = filterOutAmplicationAttributesBasedOnFieldDataType(
+    fieldDataType,
+    prepareFieldAttributes(field.attributes),
+    datasourceProvider
   )
-    // in some case we get "@default()" as an attribute, we want to filter it out
+    // in some case we get "@default()" (without any value) as an attribute, we want to filter it out
     .filter((attr) => attr !== "@default()")
     .join(" ");
-
-  if (fieldDataType === EnumDataType.Lookup && fieldAttributes !== "") {
-    throw new Error(
-      `Custom attributes are not allowed on relation fields. Only @relation attribute is allowed`
-    );
-  }
 
   return {
     permanentId: cuid(),
@@ -179,11 +208,21 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
         if (isKeyValue(arg.value)) {
           if (isRelationArray(arg.value.value)) {
             return `${arg.value.key}: [${arg.value.value.args.join(", ")}]`;
+          } else if (isFunction(arg.value.value)) {
+            const functionArgs =
+              arg.value.value.params && arg.value.value.params.length
+                ? arg.value.value.params.join(", ")
+                : "";
+            return `${arg.value.key}: ${arg.value.value.name}(${functionArgs})`;
           } else {
             return `${arg.value.key}: ${arg.value.value}`;
           }
         } else if (isFunction(arg.value)) {
-          return `${arg.value.name}()`;
+          const functionArgs =
+            arg.value.params && arg.value.params.length
+              ? arg.value.params.join(", ")
+              : "";
+          return `${arg.value.name}(${functionArgs})`;
         } else if (typeof arg.value === "string") {
           return arg.value;
         } else {
@@ -192,14 +231,47 @@ export function prepareFieldAttributes(attributes: Attribute[]): string[] {
       });
     }
 
-    if (attributeGroup) {
+    // if there's an attribute group and args are present
+    if (attributeGroup && args.length > 0) {
       return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}(${args.join(
         ", "
       )})`;
-    } else {
+    }
+    // if there's an attribute group but no args are present
+    else if (attributeGroup) {
+      return `${fieldAttrPrefix}${attributeGroup}.${attribute.name}`;
+    }
+    // if there's no attribute group but args are present
+    else if (args.length > 0) {
       return `${fieldAttrPrefix}${attribute.name}(${args.join(", ")})`;
     }
+    // if no args are present (@id, @unique)
+    else {
+      return `${fieldAttrPrefix}${attribute.name}`;
+    }
   });
+}
+
+export function findRelationAttributeName(
+  relationAttribute: Attribute
+): string | undefined {
+  if (!relationAttribute.args) {
+    throw new Error(
+      `Missing args attribute on relation attribute on field ${relationAttribute.name}`
+    );
+  }
+
+  const keyRelationAttributeName = (
+    relationAttribute.args.find(
+      (arg) => (arg.value as KeyValue)?.key === "name"
+    )?.value as KeyValue
+  )?.value as string;
+
+  const valueRelationAttributeName = relationAttribute.args.find(
+    (arg) => typeof arg.value === "string"
+  )?.value as string;
+
+  return valueRelationAttributeName || keyRelationAttributeName;
 }
 
 /**
@@ -215,22 +287,15 @@ export function findRemoteRelatedModelAndField(
 ): { remoteModel: Model; remoteField: Field } | undefined {
   let relationAttributeName: string | undefined;
   let remoteField: Field | undefined;
-  let relationAttributeStringArgument: AttributeArgument | undefined;
 
-  // in the main relation, check if the relation annotation has a name
-  field.attributes?.find((attr) => {
-    const relationAttribute = attr.name === RELATION_ATTRIBUTE_NAME;
+  const relationAttribute = field.attributes?.find(
+    (attr) => attr.name === RELATION_ATTRIBUTE_NAME
+  );
 
-    if (relationAttribute) {
-      relationAttributeStringArgument = attr.args?.find(
-        (arg) => typeof arg.value === "string"
-      );
-    }
-
-    relationAttributeName =
-      relationAttributeStringArgument &&
-      (relationAttributeStringArgument.value as string);
-  });
+  if (relationAttribute) {
+    // in the main relation, check if the relation annotation has a name
+    relationAttributeName = findRelationAttributeName(relationAttribute);
+  }
 
   const remoteModel = schema.list.find(
     (item) =>
@@ -250,34 +315,41 @@ export function findRemoteRelatedModelAndField(
 
   if (relationAttributeName) {
     // find the remote field in the remote model that has the relation attribute with the name we found
-    remoteField = remoteModelFields.find((field: Field) => {
-      return field.attributes?.some(
-        (attr) =>
-          attr.name === RELATION_ATTRIBUTE_NAME &&
-          attr.args?.find((arg) => arg.value === relationAttributeName)
+    // and make sure that the field is not the current field because we don't want to return the current field
+    // in cases where the relation is self relation
+    remoteField = remoteModelFields.find((fieldOnRelatedModel: Field) => {
+      return (
+        field.name !== fieldOnRelatedModel.name &&
+        fieldOnRelatedModel.attributes?.find(
+          (attr) =>
+            attr.name === RELATION_ATTRIBUTE_NAME &&
+            findRelationAttributeName(attr) === relationAttributeName
+        )
       );
     });
   } else {
-    const remoteFields = remoteModelFields.filter((remoteField: Field) => {
-      const hasRelationAttribute = remoteField.attributes?.some(
+    // in this block the current field is a relation field that doesn't have a relation attribute with name
+    // but, because there could be more than one field in the remote model that reference the current model
+    // we still need to find the field that reference the current model and *doesn't* have a relation attribute with name
+    // it can still have a relation attribute *without* a name (for one to one relation for example) and this case is still valid,
+    // meaning it can be the remote field we are looking for
+    const remoteRelatedFields = remoteModelFields.filter(
+      (fieldOnRelatedModel: Field) =>
+        formatModelName(fieldOnRelatedModel.fieldType as string) ===
+        formatModelName(model.name)
+    );
+
+    remoteField = remoteRelatedFields.find((fieldOnRelatedModel: Field) => {
+      const relationAttribute = fieldOnRelatedModel.attributes?.find(
         (attr) => attr.name === RELATION_ATTRIBUTE_NAME
       );
-
-      return (
-        formatModelName(remoteField.fieldType as string) ===
-          formatModelName(model.name) && !hasRelationAttribute
-      );
+      if (
+        !relationAttribute ||
+        (relationAttribute && !findRelationAttributeName(relationAttribute))
+      ) {
+        return fieldOnRelatedModel;
+      }
     });
-
-    if (remoteFields.length > 1) {
-      throw new Error(
-        `Multiple fields found in model ${remoteModel.name} that reference ${model.name}`
-      );
-    }
-
-    if (remoteFields.length === 1) {
-      remoteField = remoteFields[0];
-    }
   }
 
   if (!remoteField) {
@@ -294,12 +366,10 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
     (attr) => attr.name === RELATION_ATTRIBUTE_NAME
   );
 
-  if (!relationAttribute) {
-    throw new Error(`Missing relation attribute on field ${field.name}`);
-  }
-
-  const fieldsArgs = relationAttribute.args?.find(
-    (arg) => (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
+  const fieldsArgs = relationAttribute?.args?.find(
+    (arg) =>
+      (arg.value as KeyValue).key &&
+      (arg.value as KeyValue).key === ARG_KEY_FIELD_NAME
   );
 
   if (!fieldsArgs) {
@@ -424,15 +494,73 @@ export function handleEnumMapAttribute(
   return enumOptions;
 }
 
+export function convertModelIdToFieldId(
+  model: Model,
+  originalPKField: Field,
+  builder: ConcretePrismaSchemaBuilder,
+  actionContext: ActionContext
+) {
+  // check if the original pk field can be converted to Amplication id field
+  const isValidIdField = isValidIdFieldType(
+    originalPKField?.fieldType as string
+  );
+
+  if (!isValidIdField) {
+    void actionContext.onEmitUserActionLog(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`,
+      EnumActionLogLevel.Error
+    );
+
+    throw new Error(
+      `The field "${originalPKField.name}" on model "${model.name}" cannot be converted to id field`
+    );
+  }
+
+  const hasDefaultAttribute =
+    originalPKField.attributes?.some(
+      (attr) => attr.name === DEFAULT_ATTRIBUTE_NAME
+    ) ?? false;
+
+  // if the original PK field is can be converted to id field: add @id and @default attributes to the field
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[originalPKField.fieldType as string];
+  builder
+    .model(model.name)
+    .field(originalPKField.name)
+    .attribute(ID_ATTRIBUTE_NAME);
+
+  void actionContext.onEmitUserActionLog(
+    `The field "${originalPKField.name}" on model "${model.name}" was converted to id field`,
+    EnumActionLogLevel.Info
+  );
+
+  // add the @default attribute to the field if it doesn't have it
+  if (!hasDefaultAttribute) {
+    builder
+      .model(model.name)
+      .field(originalPKField.name)
+      .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+    void actionContext.onEmitUserActionLog(
+      `The attribute "@default(${idDefaultType})" was added to the field "${originalPKField.name}" on model "${model.name}"`,
+      EnumActionLogLevel.Info
+    );
+  }
+}
+
 export function addIdFieldIfNotExists(
   builder: ConcretePrismaSchemaBuilder,
   model: Model,
-  actionContext: ActionContext
+  actionContext: ActionContext,
+  idType = "String"
 ) {
+  const idDefaultType: string = prismaIdTypeToDefaultIdType[idType];
+
   builder
     .model(model.name)
-    .field(ID_FIELD_NAME, "String")
-    .attribute(ID_ATTRIBUTE_NAME);
+    .field(ID_FIELD_NAME, idType)
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
 
   void actionContext.onEmitUserActionLog(
     `id field was added to model "${model.name}"`,
@@ -446,14 +574,11 @@ export function convertUniqueFieldNamedIdToIdField(
   uniqueFieldNamedId: Field,
   actionContext: ActionContext
 ) {
-  builder
-    .model(model.name)
-    .field(uniqueFieldNamedId.name)
-    .attribute(ID_ATTRIBUTE_NAME);
-
-  void actionContext.onEmitUserActionLog(
-    `attribute "@id" was added to the field "${uniqueFieldNamedId.name}" on model "${model.name}"`,
-    EnumActionLogLevel.Info
+  addIdAndDefaultAttributesToIdField(
+    builder,
+    model,
+    uniqueFieldNamedId,
+    actionContext
   );
 }
 
@@ -467,22 +592,11 @@ export function convertUniqueFieldNotNamedIdToIdField(
 ) {
   const originalModelName = findOriginalModelName(mapper, model.name);
 
-  addMapAttributeToField(
+  addIdAndDefaultAttributesToIdField(
     builder,
-    schema,
     model,
     uniqueFieldAsIdField,
     actionContext
-  );
-
-  builder
-    .model(model.name)
-    .field(uniqueFieldAsIdField.name)
-    .attribute(ID_ATTRIBUTE_NAME);
-
-  void actionContext.onEmitUserActionLog(
-    `attribute "@id" was added to the field "${uniqueFieldAsIdField.name}" on model "${model.name}"`,
-    EnumActionLogLevel.Info
   );
 
   mapper.idFields = {
@@ -496,20 +610,24 @@ export function convertUniqueFieldNotNamedIdToIdField(
     },
   };
 
-  void actionContext.onEmitUserActionLog(
-    `field ${uniqueFieldAsIdField.name} was renamed to ${ID_FIELD_NAME}`,
-    EnumActionLogLevel.Info
+  addMapAttributeToField(
+    builder,
+    schema,
+    model,
+    uniqueFieldAsIdField,
+    actionContext
   );
 
-  builder
-    .model(model.name)
-    .field(uniqueFieldAsIdField.name)
-    .then<Field>((field) => {
-      field.name = ID_FIELD_NAME;
-    });
+  renameField(
+    builder,
+    model,
+    uniqueFieldAsIdField,
+    ID_FIELD_NAME,
+    actionContext
+  );
 }
 
-export function handleIdFieldNotNamedId(
+export function handleNotIdFieldNameId(
   builder: ConcretePrismaSchemaBuilder,
   schema: Schema,
   model: Model,
@@ -518,47 +636,6 @@ export function handleIdFieldNotNamedId(
   actionContext: ActionContext
 ) {
   const originalModelName = findOriginalModelName(mapper, model.name);
-
-  void actionContext.onEmitUserActionLog(
-    `field name "${field.name}" on model name ${model.name} was changed to "id"`,
-    EnumActionLogLevel.Info
-  );
-
-  mapper.idFields = {
-    ...mapper.idFields,
-    [originalModelName]: {
-      ...mapper.idFields[originalModelName],
-      [field.name]: {
-        originalName: field.name,
-        newName: ID_FIELD_NAME,
-      },
-    },
-  };
-
-  addMapAttributeToField(builder, schema, model, field, actionContext);
-
-  builder
-    .model(model.name)
-    .field(field.name)
-    .then<Field>((field) => {
-      field.name = ID_FIELD_NAME;
-    });
-}
-
-export function handleNotIdFieldNotUniqueNamedId(
-  builder: ConcretePrismaSchemaBuilder,
-  schema: Schema,
-  model: Model,
-  field: Field,
-  mapper: Mapper,
-  actionContext: ActionContext
-) {
-  const originalModelName = findOriginalModelName(mapper, model.name);
-
-  void actionContext.onEmitUserActionLog(
-    `field name "${field.name}" on model name ${model.name} was changed to "${model.name}Id"`,
-    EnumActionLogLevel.Info
-  );
 
   mapper.idFields = {
     ...mapper.idFields,
@@ -573,11 +650,84 @@ export function handleNotIdFieldNotUniqueNamedId(
 
   addMapAttributeToField(builder, schema, model, field, actionContext);
 
+  renameField(
+    builder,
+    model,
+    field,
+    `${camelCase(model.name)}Id`,
+    actionContext
+  );
+}
+
+export function handleIdFieldNotNamedId(
+  builder: ConcretePrismaSchemaBuilder,
+  schema: Schema,
+  model: Model,
+  field: Field,
+  mapper: Mapper,
+  actionContext: ActionContext
+) {
+  const originalModelName = findOriginalModelName(mapper, model.name);
+
+  mapper.idFields = {
+    ...mapper.idFields,
+    [originalModelName]: {
+      ...mapper.idFields[originalModelName],
+      [field.name]: {
+        originalName: field.name,
+        newName: ID_FIELD_NAME,
+      },
+    },
+  };
+
+  addMapAttributeToField(builder, schema, model, field, actionContext);
+
+  renameField(builder, model, field, ID_FIELD_NAME, actionContext);
+}
+
+function addIdAndDefaultAttributesToIdField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  actionContext: ActionContext
+) {
+  const idDefaultType: string =
+    prismaIdTypeToDefaultIdType[field.fieldType as string];
+
+  builder
+    .model(model.name)
+    .field(field.name)
+    .attribute(ID_ATTRIBUTE_NAME)
+    .attribute(DEFAULT_ATTRIBUTE_NAME, [idDefaultType]);
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@id" was added to the field "${field.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+
+  void actionContext.onEmitUserActionLog(
+    `attribute "@default" was added to the field "${field.name}" on model "${model.name}"`,
+    EnumActionLogLevel.Info
+  );
+}
+
+function renameField(
+  builder: ConcretePrismaSchemaBuilder,
+  model: Model,
+  field: Field,
+  newFieldName: string,
+  actionContext: ActionContext
+) {
+  void actionContext.onEmitUserActionLog(
+    `field ${field.name} was renamed to ${newFieldName}`,
+    EnumActionLogLevel.Info
+  );
+
   builder
     .model(model.name)
     .field(field.name)
     .then<Field>((field) => {
-      field.name = `${camelCase(model.name)}Id`;
+      field.name = newFieldName;
     });
 }
 

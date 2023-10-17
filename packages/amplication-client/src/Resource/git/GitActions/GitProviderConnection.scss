@@ -7,11 +7,11 @@
   padding: var(--default-spacing);
   gap: var(--default-spacing-small);
 
-  border: 1px solid var(--black10);
+  border: 1px solid var(--gray-70);
   border-radius: var(--default-spacing-small);
 
   &.enabled {
-    background-color: var(--white);
+    background-color: var(--gray-full);
   }
 
   &__name {
@@ -55,6 +55,6 @@
 
   &__coming_soon {
     font-size: 10px;
-    color: (var(--black40));
+    color: (var(--gray-40));
   }
 }

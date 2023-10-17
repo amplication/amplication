@@ -1,6 +1,6 @@
 @import "../../../style/index.scss";
 
-.create-git-sync {
+.create-git-sync1 {
   display: flex;
   flex: 1;
 
@@ -39,6 +39,6 @@
   &__right {
     display: flex;
     flex: 1;
-    background: var(--white);
+    background: var(--gray-full);
   }
 }

@@ -3,7 +3,7 @@
 .purchase-menu-item {
   .amp-menu-item {
     i {
-      color: var(--black100);
+      color: var(--gray-base);
     }
 
     &:before {
@@ -15,18 +15,18 @@
 .purchase-menu-item__popover {
   .amp-popover {
     &__content {
-      background: var(--white) !important;
+      background: var(--gray-full) !important;
 
       padding: var(--default-spacing) !important;
-      border: $border-black100;
+      border: $border-dark0;
     }
 
     &__arrow {
-      color: var(--black100) !important;
+      color: var(--gray-base) !important;
     }
   }
 
   &__highlight {
-    color: var(--dark-secondary-turquoise);
+    color: var(--theme-turquoise);
   }
 }

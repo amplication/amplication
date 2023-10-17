@@ -40,7 +40,9 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
   const errorMessage = formatError(errorCreateMessageBroker);
 
   useEffect(() => {
-    if (!errorCreateMessageBroker) return;
+    if (!errorCreateMessageBroker) {
+      return;
+    }
 
     trackEvent({ eventName: AnalyticsEventNames.MessageBrokerErrorCreate });
   }, [errorCreateMessageBroker]);
@@ -108,7 +110,7 @@ const CreateMessageBrokerWizard: React.FC<Props> = ({ moduleClass }) => {
       )}
       <div className={`${moduleClass}__footer`}>
         <Button
-          buttonStyle={EnumButtonStyle.Secondary}
+          buttonStyle={EnumButtonStyle.Outline}
           icon="arrow_left"
           iconPosition={EnumIconPosition.Left}
           onClick={handleBackToProjectClick}

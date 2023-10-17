@@ -12,6 +12,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 @Injectable()
 export class VersionService extends VersionServiceBase {
   private readonly includeDevVersion: string;
+  private readonly devVersion: Version;
 
   constructor(
     protected readonly prisma: PrismaService,
@@ -21,6 +22,16 @@ export class VersionService extends VersionServiceBase {
   ) {
     super(prisma);
     this.includeDevVersion = configService.get<string>("DEV_VERSION_TAG");
+    this.devVersion = {
+      id: this.includeDevVersion,
+      name: this.includeDevVersion,
+      isActive: true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      changelog: `Latest development version from ${this.includeDevVersion}`,
+      deletedAt: null,
+      isDeprecated: false,
+    };
   }
 
   private sortVersions(versions: string[]): string[] {
@@ -94,6 +105,9 @@ export class VersionService extends VersionServiceBase {
         "codeGeneratorVersion is required when codeGeneratorStrategy is 'Specific' or 'LatestMinor'"
       );
     }
+    if (codeGeneratorVersion === this.includeDevVersion) {
+      return this.devVersion;
+    }
 
     if (codeGeneratorStrategy === CodeGeneratorVersionStrategy.Specific) {
       const foundVersion = await this.findOne({
@@ -141,16 +155,7 @@ export class VersionService extends VersionServiceBase {
     const result: Version[] = [];
 
     if (this.includeDevVersion) {
-      result.push({
-        id: this.includeDevVersion,
-        name: this.includeDevVersion,
-        isActive: true,
-        createdAt: new Date(),
-        updatedAt: new Date(),
-        changelog: `Latest development version from ${this.includeDevVersion}`,
-        deletedAt: null,
-        isDeprecated: false,
-      });
+      result.push(this.devVersion);
     }
     result.push(...(await super.findMany(args)));
     return result;

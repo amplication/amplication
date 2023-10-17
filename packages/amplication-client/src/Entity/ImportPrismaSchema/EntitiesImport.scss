@@ -32,7 +32,7 @@ $max-width: 700px;
     &__feature {
       @include body1;
       line-height: 1.5;
-      color: var(--black100);
+      color: var(--gray-base);
       margin-bottom: var(--triple-spacing);
       max-width: $max-width;
       text-align: center;
@@ -57,10 +57,17 @@ $max-width: 700px;
   &__message {
     @include body1;
     line-height: 1.5;
-    color: var(--black80);
+    color: var(--gray-20);
     margin-bottom: var(--triple-spacing);
     max-width: $max-width;
     text-align: center;
     margin: var(--default-spacing);
+  }
+
+  &__link-button {
+    @include body2;
+    a {
+      color: var(--theme-turquoise);
+    }
   }
 }

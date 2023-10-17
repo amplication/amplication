@@ -13,8 +13,8 @@ $entity-width: 200px;
   position: absolute;
   left: calc(100% + var(--default-spacing-small));
   top: 0;
-  background: var(--black5);
-  border: $border-black10;
+  background: var(--gray-80);
+  border: $border-dark;
   border-radius: var(--default-border-radius);
   padding: var(--default-spacing-small);
   width: $entity-width;
@@ -59,9 +59,9 @@ $entity-width: 200px;
   &__entities {
     &__entity {
       margin: var(--default-spacing);
-      background-color: var(--white);
+      background-color: var(--gray-full);
       overflow: hidden;
-      border: $border-black10;
+      border: $border-dark;
       border-radius: var(--default-border-radius);
       width: $entity-width;
       overflow: visible;
@@ -93,7 +93,7 @@ $entity-width: 200px;
       &__name-wrapper {
         @include flexFullRowWithSpacing;
         padding: var(--default-spacing);
-        background-color: var(--black5);
+        background-color: var(--gray-80);
 
         label {
           margin: 0;
@@ -130,7 +130,7 @@ $entity-width: 200px;
       @include flexFullRowWithSpacing;
       padding: 0 var(--default-spacing-small);
       border-radius: var(--default-border-radius);
-      border: $border-black10;
+      border: $border-dark;
       border-color: transparent;
       position: relative;
       margin-bottom: 2px;
@@ -138,11 +138,11 @@ $entity-width: 200px;
 
       &--selected,
       &--dragged {
-        background-color: var(--black5);
+        background-color: var(--gray-80);
       }
 
       &:hover {
-        background-color: var(--black5);
+        background-color: var(--gray-80);
       }
 
       &__edit {
@@ -154,7 +154,7 @@ $entity-width: 200px;
       }
 
       &--static {
-        color: var(--black60);
+        color: var(--gray-30);
         &:hover {
           background-color: transparent;
         }

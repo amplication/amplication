@@ -191,7 +191,7 @@ export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
   archiveURI: Scalars['String']['output'];
-  codeGeneratorVersion: Scalars['String']['output'];
+  codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
   commit: Commit;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
@@ -302,6 +302,14 @@ export type ConnectGitRepositoryInput = {
   isOverrideGitRepository?: InputMaybe<Scalars['Boolean']['input']>;
   name: Scalars['String']['input'];
   resourceId: Scalars['String']['input'];
+};
+
+export type Coupon = {
+  code: Scalars['String']['output'];
+  couponType?: Maybe<Scalars['String']['output']>;
+  durationMonths: Scalars['Int']['output'];
+  id: Scalars['String']['output'];
+  subscriptionPlan: EnumSubscriptionPlan;
 };
 
 export type CreateGitRepositoryBaseInput = {
@@ -636,6 +644,7 @@ export enum EnumActionStepStatus {
 }
 
 export enum EnumAuthProviderType {
+  Auth0 = 'Auth0',
   Http = 'Http',
   Jwt = 'Jwt'
 }
@@ -966,6 +975,7 @@ export type Mutation = {
   lockEntity?: Maybe<Entity>;
   login: Auth;
   provisionSubscription?: Maybe<ProvisionSubscriptionResult>;
+  redeemCoupon: Coupon;
   resendInvitation?: Maybe<Invitation>;
   revokeInvitation?: Maybe<Invitation>;
   setCurrentWorkspace: Auth;
@@ -1239,6 +1249,11 @@ export type MutationProvisionSubscriptionArgs = {
 };
 
 
+export type MutationRedeemCouponArgs = {
+  data: RedeemCouponInput;
+};
+
+
 export type MutationResendInvitationArgs = {
   where: WhereUniqueInput;
 };
@@ -1499,6 +1514,7 @@ export type PluginSetOrderInput = {
 export type Project = {
   createdAt: Scalars['DateTime']['output'];
   demoRepoName?: Maybe<Scalars['String']['output']>;
+  description?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   name: Scalars['String']['output'];
   resources?: Maybe<Array<Resource>>;
@@ -1814,6 +1830,10 @@ export enum QueryMode {
   Insensitive = 'Insensitive'
 }
 
+export type RedeemCouponInput = {
+  code: Scalars['String']['input'];
+};
+
 export type RemoteGitRepos = {
   pagination: Pagination;
   repos: Array<RemoteGitRepository>;
@@ -2030,7 +2050,6 @@ export type ServiceSettingsUpdateInput = {
   adminUISettings: AdminUiSettingsUpdateInput;
   authEntityName?: InputMaybe<Scalars['String']['input']>;
   authProvider: EnumAuthProviderType;
-  codeGeneratorVersionOptions: CodeGeneratorVersionOptionsInput;
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   serverSettings: ServerSettingsUpdateInput;

@@ -1,44 +1,43 @@
 import {
-  HorizontalRule,
+  Breadcrumbs,
+  Dialog,
+  Icon,
   SelectMenu,
   SelectMenuItem,
   SelectMenuList,
   SelectMenuModal,
   Tooltip,
-  Dialog,
 } from "@amplication/ui/design-system";
 import { useApolloClient } from "@apollo/client";
+import {
+  ButtonTypeEnum,
+  IMessage,
+  NotificationBell,
+  NovuProvider,
+  PopoverNotificationCenter,
+} from "@novu/notification-center";
+import { useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useState } from "react";
 import { isMacOs } from "react-device-detect";
-import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import GitHubBanner from "./GitHubBanner";
-import { unsetToken } from "../../authentication/authentication";
+import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
 import { Button, EnumButtonStyle } from "../../Components/Button";
-import ResourceCircleBadge from "../../Components/ResourceCircleBadge";
 import UserBadge from "../../Components/UserBadge";
-import { AppContext } from "../../context/appContext";
-import MenuItem from "../../Layout/MenuItem";
-import * as models from "../../models";
-import HeaderMenuStaticOptions from "./HeaderMenuStaticOptions";
-import { AnalyticsEventNames } from "../../util/analytics-events.types";
-import "./WorkspaceHeader.scss";
-import { useTracking } from "../../util/analytics";
+import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
-import { version } from "../../util/version";
+import { unsetToken } from "../../authentication/authentication";
+import { AppContext } from "../../context/appContext";
+import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
+import { BillingFeature } from "../../util/BillingFeature";
+import { useTracking } from "../../util/analytics";
+import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
   AMPLICATION_DISCORD_URL,
   AMPLICATION_DOC_URL,
 } from "../../util/constants";
-import {
-  NovuProvider,
-  PopoverNotificationCenter,
-  NotificationBell,
-  IMessage,
-} from "@novu/notification-center";
-import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
-import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../../util/BillingFeature";
+import { version } from "../../util/version";
+import GitHubBanner from "./GitHubBanner";
+import "./WorkspaceHeader.scss";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -68,54 +67,17 @@ const HELP_MENU_LIST: HelpMenuItem[] = [
   },
 ];
 
-// eslint-disable-next-line @typescript-eslint/ban-types
-const WorkspaceHeader: React.FC<{}> = () => {
-  const {
-    currentWorkspace,
-    currentProject,
-    currentResource,
-    setResource,
-    resources,
-    currentProjectConfiguration,
-    openHubSpotChat,
-  } = useContext(AppContext);
+const WorkspaceHeader: React.FC = () => {
+  const { currentWorkspace, currentProject, openHubSpotChat } =
+    useContext(AppContext);
   const apolloClient = useApolloClient();
   const history = useHistory();
   const { stigg } = useStiggContext();
   const { trackEvent } = useTracking();
-  const isProjectRoute = useRouteMatch(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})"
-  );
-  const isResourceRoute = useRouteMatch(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})"
-  );
-  const isCommitsRoute = useRouteMatch(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/commits/:commit([A-Za-z0-9-]{20,})?"
-  );
-  const isCodeViewRoute = useRouteMatch(
-    "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/code-view"
-  );
+
+  const breadcrumbsContext = useContext(BreadcrumbsContext);
+
   const [versionAlert, setVersionAlert] = useState(false);
-  const getSelectedEntities = useCallback(() => {
-    if (
-      (isResourceRoute && currentResource) ||
-      (isResourceRoute && currentProjectConfiguration)
-    )
-      return currentResource?.resourceType ===
-        models.EnumResourceType.ProjectConfiguration
-        ? PROJECT_CONFIGURATION_RESOURCE_NAME
-        : currentResource?.name;
-
-    if (isCommitsRoute) return "Commits";
-
-    if (isCodeViewRoute) return "View Code";
-  }, [
-    currentResource,
-    isCodeViewRoute,
-    isCommitsRoute,
-    isResourceRoute,
-    currentProjectConfiguration,
-  ]);
 
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
@@ -137,6 +99,15 @@ const WorkspaceHeader: React.FC<{}> = () => {
       window.location.href = message.cta.data.url;
     }
   }, []);
+
+  const onBuildNotificationClick = useCallback(
+    (templateIdentifier: string, type: ButtonTypeEnum, message: IMessage) => {
+      if (templateIdentifier === "build-completed") {
+        window.location.href = message.cta.data.url;
+      }
+    },
+    []
+  );
 
   const handleUpgradeClick = useCallback(() => {
     history.push(`/${currentWorkspace.id}/purchase`, {
@@ -172,6 +143,8 @@ const WorkspaceHeader: React.FC<{}> = () => {
     setShowProfileFormDialog(!showProfileFormDialog);
   }, [showProfileFormDialog, setShowProfileFormDialog]);
 
+  const Footer = () => <div></div>;
+
   return (
     <>
       <Dialog
@@ -186,127 +159,29 @@ const WorkspaceHeader: React.FC<{}> = () => {
       <div className={CLASS_NAME}>
         <div className={`${CLASS_NAME}__left`}>
           <div className={`${CLASS_NAME}__logo`}>
-            <MenuItem
-              title="Home"
-              icon="logo"
-              to={`/${currentWorkspace?.id}/${currentProject?.id}`}
-              disableHover
-            />
+            <Link to={`/${currentWorkspace?.id}`}>
+              <Icon icon="logo" size="medium" />
+            </Link>
           </div>
-          <Tooltip
-            aria-label="Version number copied successfully"
-            direction="e"
-            noDelay
-            show={versionAlert}
-          >
-            <Button
+          <span>
+            <a
+              href="https://github.com/amplication/amplication/releases"
+              target="_blank"
+              rel="noopener noreferrer"
               className={`${CLASS_NAME}__version`}
-              buttonStyle={EnumButtonStyle.Clear}
-              onClick={async () => {
-                setVersionAlert(true);
-                await navigator.clipboard.writeText(version);
-              }}
-              onMouseLeave={() => {
-                setVersionAlert(false);
-              }}
             >
-              <span>v{version}</span>
-            </Button>
-          </Tooltip>
+              v{version}
+            </a>
+          </span>
+          <Breadcrumbs>
+            {breadcrumbsContext.breadcrumbsItems.map((item, index) => (
+              <Breadcrumbs.Item key={item.url} to={item.url}>
+                {item.name}
+              </Breadcrumbs.Item>
+            ))}
+          </Breadcrumbs>
         </div>
-        <div className={`${CLASS_NAME}__center`}>
-          <div className={`${CLASS_NAME}__breadcrumbs`}>
-            {currentProject && (
-              <>
-                <div
-                  className={`${CLASS_NAME}__breadcrumbs__project ${
-                    isProjectRoute ? "highlight" : ""
-                  }`}
-                >
-                  <Link to={`/${currentWorkspace?.id}/${currentProject?.id}`}>
-                    {currentProject?.name}
-                  </Link>
-                </div>
-                <div>
-                  <hr className={`${CLASS_NAME}__vertical_border`} />
-                </div>
-                <div className={`${CLASS_NAME}__breadcrumbs__resource`}>
-                  <SelectMenu
-                    title={
-                      <p
-                        className={`${CLASS_NAME}__breadcrumbs__resource__title`}
-                      >
-                        {getSelectedEntities() || "Resource List"}
-                      </p>
-                    }
-                    buttonStyle={EnumButtonStyle.Text}
-                    buttonClassName={isResourceRoute ? "highlight" : ""}
-                    icon="chevron_down"
-                    openIcon="chevron_up"
-                    className={`${CLASS_NAME}__breadcrumbs__menu`}
-                  >
-                    <SelectMenuModal align="right">
-                      <SelectMenuList>
-                        {resources.length > 0 && (
-                          <>
-                            {resources.length &&
-                              resources.map((resource: models.Resource) => (
-                                <SelectMenuItem
-                                  closeAfterSelectionChange
-                                  selected={currentResource?.id === resource.id}
-                                  key={resource.id}
-                                  onSelectionChange={() => {
-                                    setResource(resource);
-                                  }}
-                                >
-                                  <div
-                                    className={`${CLASS_NAME}__breadcrumbs__resource__item`}
-                                  >
-                                    <ResourceCircleBadge
-                                      type={
-                                        resource.resourceType as models.EnumResourceType
-                                      }
-                                      size="xsmall"
-                                    />
-                                    <div
-                                      className={`${CLASS_NAME}__breadcrumbs__resource__text`}
-                                    >
-                                      <div
-                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__name`}
-                                      >
-                                        {resource.name}
-                                      </div>
-                                      <div
-                                        className={`${CLASS_NAME}__breadcrumbs__resource__text__desc`}
-                                      >
-                                        {resource.description}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </SelectMenuItem>
-                              ))}
-
-                            <HorizontalRule />
-                          </>
-                        )}
-
-                        <HeaderMenuStaticOptions
-                          currentProjectConfigurationId={
-                            currentProjectConfiguration?.id
-                          }
-                          currentProjectId={currentProject.id}
-                          currentWorkspaceId={currentWorkspace?.id}
-                          history={history}
-                          path={isCommitsRoute?.url}
-                        />
-                      </SelectMenuList>
-                    </SelectMenuModal>
-                  </SelectMenu>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
+        <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
             <Button
@@ -381,6 +256,8 @@ const WorkspaceHeader: React.FC<{}> = () => {
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
                     onNotificationClick={onNotificationClick}
+                    onActionClick={onBuildNotificationClick}
+                    footer={() => <Footer />}
                   >
                     {({ unseenCount }) => (
                       <NotificationBell unseenCount={unseenCount} />
@@ -414,7 +291,7 @@ const WorkspaceHeader: React.FC<{}> = () => {
           code. For a full personalized experience, please&nbsp;
           <Link
             title={"Go to project settings"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentProjectConfiguration?.id}/git-sync`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/git-sync`}
           >
             connect to your own repository
           </Link>

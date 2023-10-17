@@ -8,7 +8,7 @@ import {
   SelectMenuList,
   SelectMenuItem,
 } from "@amplication/ui/design-system";
-import { isValidJSON } from "@amplication/util/json";
+import { JsonFormatting, isValidJSON } from "@amplication/util/json";
 import * as monaco from "monaco-editor/esm/vs/editor/editor.api";
 import React, {
   useCallback,
@@ -60,6 +60,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
   const [selectedVersion, setSelectedVersion] = useState(
     pluginInstallation?.PluginInstallation.version
   );
+  const [value, setEditorValue] = useState<string>(
+    JsonFormatting(pluginInstallation?.PluginInstallation.settings)
+  );
 
   useEffect(() => {
     editorRef.current = JSON.stringify(
@@ -89,6 +92,9 @@ const InstalledPluginSettings: React.FC<Props> = ({
     ev: monaco.editor.IModelContentChangedEvent
   ) => {
     const validateChange = isValidJSON(value);
+    if (validateChange) {
+      setEditorValue(JsonFormatting(value));
+    }
     editorRef.current = validateChange ? value : undefined;
     setIsValid(!validateChange);
   };
@@ -158,7 +164,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
                   selectedVersion ||
                   pluginInstallation.PluginInstallation.version
                 }
-                buttonStyle={EnumButtonStyle.Secondary}
+                buttonStyle={EnumButtonStyle.Outline}
                 className={`${moduleClass}__menu`}
                 icon="chevron_down"
               >
@@ -187,6 +193,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           <HorizontalRule />
           <CodeEditor
             defaultValue={pluginInstallation?.PluginInstallation.settings}
+            value={value}
             resetKey={resetKey}
             onChange={onEditorChange}
             defaultLanguage={"json"}
@@ -194,7 +201,7 @@ const InstalledPluginSettings: React.FC<Props> = ({
           <div className={`${moduleClass}__row`}>
             <Button
               className={`${moduleClass}__reset`}
-              buttonStyle={EnumButtonStyle.Secondary}
+              buttonStyle={EnumButtonStyle.Outline}
               onClick={handleResetClick}
             >
               Reset to default

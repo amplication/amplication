@@ -11,9 +11,9 @@ $svg-img-height: 200px;
     flex: 1;
     background: var(--page-content-tab-background);
     border-radius: var(--default-border-radius);
-    border: $border-black10;
+    border: $border-dark;
     box-sizing: border-box;
-    overflow: auto;
+    overflow: hidden;
     height: 100%;
   }
 
@@ -32,7 +32,7 @@ $svg-img-height: 200px;
 
     span {
       @include regular-12;
-      color: var(--black20);
+      color: var(--gray-60);
     }
   }
 }

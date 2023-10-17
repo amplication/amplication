@@ -6,8 +6,8 @@ import Stigg, {
   MeteredEntitlement,
   NumericEntitlement,
   ReportUsageAck,
+  SubscriptionStatus,
 } from "@stigg/node-server-sdk";
-import { SubscriptionStatus } from "@stigg/node-server-sdk/dist/api/generated/types";
 import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
@@ -21,7 +21,7 @@ import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscript
 import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
-import { User } from "../../models";
+import { Project, User } from "../../models";
 
 @Injectable()
 export class BillingService {
@@ -279,7 +279,9 @@ export class BillingService {
   //todo: wrap with a try catch and return an object with the details about the limitations
   async validateSubscriptionPlanLimitationsForWorkspace(
     workspaceId: string,
-    currentUser: User
+    currentUser: User,
+    currentProjectId: string,
+    projects: Project[]
   ): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
@@ -289,6 +291,34 @@ export class BillingService {
 
       //check whether the workspace has entitlement to bypass code generation limitation
       if (!isIgnoreValidationCodeGeneration.hasAccess) {
+        const projectsEntitlement = await this.getMeteredEntitlement(
+          workspaceId,
+          BillingFeature.Projects
+        );
+
+        const projectsUnderLimitation = projects.slice(
+          0,
+          projectsEntitlement.usageLimit
+        );
+        const canCurrentProjectCommit = projectsUnderLimitation.some(
+          (project) => project.id === currentProjectId
+        );
+
+        if (!projectsEntitlement.hasAccess && !canCurrentProjectCommit) {
+          const message = `Allowed projects per workspace: ${projectsEntitlement.usageLimit}`;
+
+          await this.analytics.track({
+            userId: currentUser.account.id,
+            properties: {
+              workspaceId,
+              reason: message,
+            },
+            event: EnumEventType.SubscriptionLimitPassed,
+          });
+
+          throw new ValidationError(`LimitationError: ${message}`);
+        }
+
         const servicesEntitlement = await this.getMeteredEntitlement(
           workspaceId,
           BillingFeature.Services
@@ -344,6 +374,12 @@ export class BillingService {
     if (this.isBillingEnabled) {
       await this.setUsage(
         workspaceId,
+        BillingFeature.Projects,
+        currentUsage.projects
+      );
+
+      await this.setUsage(
+        workspaceId,
         BillingFeature.Services,
         currentUsage.services
       );
@@ -380,6 +416,8 @@ export class BillingService {
       case BillingPlan.Free:
         return EnumSubscriptionPlan.Free;
       case BillingPlan.Pro:
+        return EnumSubscriptionPlan.Pro;
+      case BillingPlan.ProWithTrial:
         return EnumSubscriptionPlan.Pro;
       case BillingPlan.Enterprise:
         return EnumSubscriptionPlan.Enterprise;

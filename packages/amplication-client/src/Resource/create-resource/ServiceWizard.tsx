@@ -24,7 +24,7 @@ export type WizardStep = {
   hideFooter?: boolean;
   hideBackButton?: boolean;
   analyticsEventName: AnalyticsEventNames;
-  stepName?: string;
+  stepName: string;
 };
 
 interface ServiceWizardProps {
@@ -244,12 +244,10 @@ const ServiceWizard: React.FC<ServiceWizardProps> = ({
 
       {defineUser === "Create Service" && (
         <Button
-          buttonStyle={EnumButtonStyle.Clear}
+          buttonStyle={EnumButtonStyle.Text}
           className={`${moduleCss}__close`}
           onClick={() =>
-            handleCloseWizard(
-              (currentPage.type as React.JSXElementConstructor<any>).name
-            )
+            handleCloseWizard(wizardSteps[currWizardPatternIndex]?.stepName)
           }
         >
           <Icon icon="close" size="xsmall"></Icon>

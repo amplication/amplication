@@ -1,18 +1,16 @@
-import { EnumPanelStyle, Panel, Toggle } from "@amplication/ui/design-system";
-import React, { useCallback, useState } from "react";
-import "./SyncWithGithubPage.scss";
-import "./ServiceConfigurationGitSettings.scss";
-import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
+import { Toggle } from "@amplication/ui/design-system";
 import { useMutation } from "@apollo/client";
-import * as models from "../../models";
-import { useTracking } from "../../util/analytics";
+import React, { useCallback, useState } from "react";
 import {
   CONNECT_RESOURCE_PROJECT_REPO,
   DISCONNECT_GIT_REPOSITORY,
   UPDATE_RESOURCE,
 } from "../../Workspaces/queries/resourcesQueries";
+import * as models from "../../models";
+import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import AuthWithGitProvider from "./AuthWithGitProvider";
+import ProjectConfigurationGitSettings from "./ProjectConfigurationGitSettings";
 import {
   GitRepositoryCreatedData,
   GitRepositorySelected,
@@ -42,10 +40,6 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
   );
 
   const { trackEvent } = useTracking();
-
-  const settingsClassName = isOverride
-    ? "gitSettingsPanel"
-    : "gitSettingsFromProject";
 
   const [connectResourceToProjectRepository] = useMutation<TData>(
     CONNECT_RESOURCE_PROJECT_REPO,
@@ -107,33 +101,25 @@ const ServiceConfigurationGitSettings: React.FC<Props> = ({
 
   return (
     <div className={CLASS_NAME}>
-      <div className={`${CLASS_NAME}__panelWarper`}>
-        <ProjectConfigurationGitSettings isOverride={isOverride} />
-        <Panel
-          className={`${CLASS_NAME}__${settingsClassName}`}
-          panelStyle={EnumPanelStyle.Transparent}
-        >
-          <div className={`${CLASS_NAME}__defaultSettings`}>
-            <div>Override default settings</div>
+      <ProjectConfigurationGitSettings isOverride={isOverride} />
 
-            <div>
-              <Toggle onValueChange={handleToggleChange} checked={isOverride} />
-            </div>
-          </div>
-          {isOverride && (
-            <div className={`${CLASS_NAME}__AuthWithGit`}>
-              <hr />
-              <AuthWithGitProvider
-                type="resource"
-                resource={resource}
-                onDone={onDone}
-                gitRepositorySelectedCb={gitRepositorySelectedCb}
-                gitRepositoryCreatedCb={gitRepositoryCreatedCb}
-              />
-            </div>
-          )}
-        </Panel>
-      </div>
+      <Toggle
+        label="Override default settings"
+        onValueChange={handleToggleChange}
+        checked={isOverride}
+      />
+
+      {isOverride && (
+        <>
+          <AuthWithGitProvider
+            type="resource"
+            resource={resource}
+            onDone={onDone}
+            gitRepositorySelectedCb={gitRepositorySelectedCb}
+            gitRepositoryCreatedCb={gitRepositoryCreatedCb}
+          />
+        </>
+      )}
     </div>
   );
 };

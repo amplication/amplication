@@ -1,9 +1,10 @@
 import "./index.scss";
-import "./style/css-variables.scss";
+//import "./style/css-variables.scss"; // Do not load the css-variables here, instead load them in the client(s)
 import "./style/icon.scss";
 export {
   Button,
   EnumButtonStyle,
+  EnumButtonState,
   EnumIconPosition,
 } from "./components/Button/Button";
 
@@ -130,7 +131,7 @@ export type { Props as RadioButtonFieldProps } from "./components/RadioButton/Ra
 
 export { Label } from "./components/Label/Label";
 export type { Props as LabelProps } from "./components/Label/Label";
-export { CircularProgress } from "./components/CircularProgress/CircularProgress";
+export { default as CircularProgress } from "./components/CircularProgress/CircularProgress";
 
 export type { Props as CircularProgressProps } from "./components/CircularProgress/CircularProgress";
 
@@ -157,7 +158,7 @@ export {
   EnumHorizontalRuleStyle,
 } from "./components/HorizontalRule/HorizontalRule";
 
-export { FullScreenLoader } from "./components/Loader/FullScreenLoader";
+export { default as FullScreenLoader } from "./components/Loader/FullScreenLoader";
 export type { Props as FullScreenLoaderProps } from "./components/Loader/FullScreenLoader";
 
 export { Loader, AnimationType } from "./components/Loader/Loader";
@@ -175,5 +176,43 @@ export type { LinkProps as UpgradeLinkProps } from "./components/LimitationNotif
 export { ContactUsLinkForEnterprise } from "./components/LimitationNotification/LimitationNotification";
 export type { LinkProps as ContactUsLinkForEnterpriseProps } from "./components/LimitationNotification/LimitationNotification";
 
-export { PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+export { default as PlanUpgradeConfirmation } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
 export type { Props as PlanUpgradeConfirmationProps } from "./components/PlanUpgradeConfirmation/PlanUpgradeConfirmation";
+
+export { default as Tabs } from "./components/Tabs/Tabs";
+export { Props as TabsProps, TabProps, TabItem } from "./components/Tabs/Tabs";
+
+export {
+  FlexItem,
+  Props as FlexItemProps,
+  EnumFlexItemMargin,
+  EnumFlexDirection,
+  EnumContentAlign,
+  EnumItemsAlign,
+  FlexStartProps,
+  FlexEndProps,
+  EnumGapSize,
+} from "./components/FlexItem/FlexItem";
+
+export {
+  Text,
+  Props as TextProps,
+  EnumTextColor,
+  EnumTextStyle,
+  EnumTextWeight,
+  EnumTextAlign,
+} from "./components/Text/Text";
+
+export {
+  Chip,
+  Props as ChipProps,
+  EnumChipStyle,
+} from "./components/Chip/Chip";
+
+export { List, Props as ListProps } from "./components/List/List";
+export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
+
+export {
+  TabContentTitle,
+  Props as TabContentTitleProps,
+} from "./components/TabContentTitle/TabContentTitle";

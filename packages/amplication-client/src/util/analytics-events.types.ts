@@ -63,6 +63,7 @@ export enum AnalyticsEventNames {
 
   RelatedEntityFix = "fixRelatedEntity",
   EntitiesTileClick = "entitiesTileClick",
+  PluginsTileClick = "pluginsTileClick",
   ImportPrismaSchemaClick = "importPrismaSchemaClick",
   ImportPrismaSchemaJoinBetaClick = "importPrismaSchemaJoinBetaClick",
   ImportPrismaSchemaSelectFile = "importPrismaSchemaSelectFile",
@@ -120,8 +121,10 @@ export enum AnalyticsEventNames {
   UpgradeOnPassedLimitsClick = "UpgradeOnPassedLimitsClick",
   PricingPageChangeWorkspace = "PricingPageChangeWorkspace",
   UpgradeOnTopBarClick = "UpgradeOnTopBarClick",
+  UpgradeFromCodeGeneratorVersionClick = "UpgradeFromCodeGeneratorVersionClick",
   ContactUsButtonClick = "ContactUsButtonClick",
   UpgradeOnSideBarClick = "UpgradeOnSideBarClick",
+  ProFeatureLockClick = "ProFeatureLockClick",
 
   // Chat widget
   HelpMenuItemClick = "HelpMenuItemClick",

@@ -6,12 +6,12 @@
 .amp-radio-field {
   .MuiFormControlLabel-label {
     font-size: var(--normal-font-size);
-    color: var(--black100);
+    color: var(--gray-base);
     padding-left: var(--default-spacing-small);
   }
 
   .PrivateSwitchBase-root {
-    color: var(--black20);
+    color: var(--gray-60);
 
     &.Mui-checked {
       color: var(--primary);

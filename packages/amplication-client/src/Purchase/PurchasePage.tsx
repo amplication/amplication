@@ -35,7 +35,9 @@ const getPlanPrice = (
   const unknownPrice: PriceParam = { currency: UNKNOWN, price: 0 };
 
   // If there are no price points, return the unknown price
-  if (!pricePoints.length) return unknownPrice;
+  if (!pricePoints.length) {
+    return unknownPrice;
+  }
 
   // Return the price point with the selected billing period
   return pricePoints.reduce(
@@ -71,7 +73,7 @@ const PurchasePage = (props) => {
     useMutation<DType>(PROVISION_SUBSCRIPTION, {
       onCompleted: (data) => {
         const { provisionStatus, checkoutUrl } = data.provisionSubscription;
-        if (provisionStatus === "PaymentRequired")
+        if (provisionStatus === "PAYMENT_REQUIRED")
           window.location.href = checkoutUrl;
       },
       onError: (error: ApolloError) => {

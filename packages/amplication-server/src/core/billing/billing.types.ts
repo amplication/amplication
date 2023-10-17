@@ -2,6 +2,7 @@ export enum BillingPlan {
   Free = "plan-amplication-free",
   Pro = "plan-amplication-pro",
   Enterprise = "plan-amplication-enterprise",
+  ProWithTrial = "plan-amplication-pro-with-trial",
 }
 
 export enum BillingFeature {
@@ -11,6 +12,7 @@ export enum BillingFeature {
   HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
   IgnoreValidationCodeGeneration = "feature-ignore-validation-code-generation",
   Services = "feature-services",
+  Projects = "feature-projects",
   ServicesAboveEntitiesPerServiceLimit = "feature-services-above-entities-per-service-limit",
   ServicesWithManyEntities = "feature-services-wth-many-entities",
   SmartGitSync = "feature-smart-git-sync",
@@ -21,4 +23,5 @@ export enum BillingFeature {
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",
   BranchPerResource = "feature-branch-per-resource",
+  CodeGeneratorVersion = "feature-code-generator-version",
 }

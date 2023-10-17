@@ -1,16 +1,24 @@
-import React from "react";
-import { Panel, EnumPanelStyle, Icon } from "@amplication/ui/design-system";
-import "./OverviewSecondaryTile.scss";
+import {
+  EnumItemsAlign,
+  EnumTextColor,
+  EnumTextStyle,
+  FlexItem,
+  Icon,
+  ListItem,
+  Text,
+  EnumFlexItemMargin,
+  EnumGapSize,
+  EnumFlexDirection,
+} from "@amplication/ui/design-system";
 
-const CLASS_NAME = "overview-secondary-tile";
+import React from "react";
 
 interface Props {
   title: string;
   icon: string;
   message: string;
-  footer: React.ReactNode;
+  footer?: React.ReactNode;
   headerExtra?: React.ReactNode;
-  showComingSoon?: boolean;
   onClick?: (e) => void;
 }
 const OverviewSecondaryTile: React.FC<Props> = ({
@@ -19,32 +27,24 @@ const OverviewSecondaryTile: React.FC<Props> = ({
   message,
   footer,
   headerExtra,
-  showComingSoon,
   onClick,
 }) => {
   return (
-    <Panel
-      clickable={!!onClick}
-      panelStyle={EnumPanelStyle.Bordered}
-      className={CLASS_NAME}
-      onClick={onClick}
-    >
-      <>
-        <div className={`${CLASS_NAME}__header`}>
-          <Icon icon={icon} size="small" />
-          <h2 className={`${CLASS_NAME}__header__title`}>{title}</h2>
+    <ListItem onClick={onClick} end={footer}>
+      <FlexItem direction={EnumFlexDirection.Column} gap={EnumGapSize.Default}>
+        <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+          <FlexItem itemsAlign={EnumItemsAlign.Center}>
+            <Icon icon={icon} size="small" />
+            {title}
+          </FlexItem>
+        </Text>
 
-          {headerExtra && (
-            <div className={`${CLASS_NAME}__header__extra`}>{headerExtra}</div>
-          )}
-        </div>
-        <div className={`${CLASS_NAME}__message`}>{message}</div>
-        <div className={`${CLASS_NAME}__footer`}>{footer}</div>
-        {showComingSoon && (
-          <div className={`${CLASS_NAME}__ribbon`}>Coming Soon</div>
-        )}
-      </>
-    </Panel>
+        <Text textStyle={EnumTextStyle.Description}>{message}</Text>
+      </FlexItem>
+      {headerExtra && (
+        <FlexItem margin={EnumFlexItemMargin.Top}>{headerExtra}</FlexItem>
+      )}
+    </ListItem>
   );
 };
 

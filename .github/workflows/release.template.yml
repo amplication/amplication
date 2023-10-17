@@ -1,4 +1,4 @@
-name: Reusable Release template
+name: _Reusable Release template
 
 on:
   workflow_call:
@@ -41,7 +41,6 @@ on:
 env:
   NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
   BRANCH: ${{ inputs.branch }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   package:
@@ -87,6 +86,7 @@ jobs:
       - name: Login to Amazon ECR (operations account)
         uses: aws-actions/amazon-ecr-login@v1
         with:
+          mask-password: "true"
           registries: "439403303254"
 
       # https://github.com/docker/metadata-action

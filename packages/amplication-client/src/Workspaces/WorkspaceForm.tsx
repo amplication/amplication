@@ -1,20 +1,26 @@
-import { useCallback, useContext } from "react";
+import {
+  EnumFlexDirection,
+  EnumTextStyle,
+  FlexItem,
+  HorizontalRule,
+  Snackbar,
+  Text,
+  TextField,
+} from "@amplication/ui/design-system";
 import { gql, useMutation } from "@apollo/client";
-import { Formik, Form } from "formik";
+import { Form, Formik } from "formik";
+import { useCallback, useContext } from "react";
+import PageContent from "../Layout/PageContent";
+import { AppContext } from "../context/appContext";
+import * as models from "../models";
+import { useTracking } from "../util/analytics";
+import { AnalyticsEventNames } from "../util/analytics-events.types";
+import { formatError } from "../util/error";
+import FormikAutoSave from "../util/formikAutoSave";
 import {
   validate,
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
-import * as models from "../models";
-import { formatError } from "../util/error";
-import FormikAutoSave from "../util/formikAutoSave";
-import { TextField, Snackbar } from "@amplication/ui/design-system";
-import { useTracking } from "../util/analytics";
-import "./WorkspaceForm.scss";
-import { AppContext } from "../context/appContext";
-import PageContent from "../Layout/PageContent";
-import ProjectSideBar from "../Project/ProjectSideBar";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 type TData = {
   updateWorkspace: models.Workspace;
@@ -38,6 +44,8 @@ const FORM_SCHEMA = {
 };
 
 const CLASS_NAME = "workspace-form";
+
+const PAGE_TITLE = "Workspace Settings";
 
 function WorkspaceForm() {
   const { currentWorkspace } = useContext(AppContext);
@@ -69,37 +77,35 @@ function WorkspaceForm() {
   const errorMessage = formatError(updateError);
 
   return (
-    <PageContent
-      pageTitle="Workspace settings"
-      sideContent={<ProjectSideBar />}
-    >
-      <div className={CLASS_NAME}>
-        <h2>Workspace Settings</h2>
-        <div className={`${CLASS_NAME}__separator`} />
-        {currentWorkspace && (
-          <Formik
-            initialValues={currentWorkspace}
-            validate={(values: models.Workspace) =>
-              validate(values, FORM_SCHEMA)
-            }
-            enableReinitialize
-            onSubmit={handleSubmit}
-          >
-            {(formik) => {
-              return (
-                <Form>
-                  <FormikAutoSave debounceMS={1000} />
-                  <TextField name="name" label="Workspace Name" />
-                </Form>
-              );
-            }}
-          </Formik>
-        )}
-        <label className={`${CLASS_NAME}__label`}>Workspace ID </label>
-        {currentWorkspace && <div>{currentWorkspace.id}</div>}
+    <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
+      <Text textStyle={EnumTextStyle.H4}>Workspace Settings</Text>
 
-        <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
-      </div>
+      <HorizontalRule doubleSpacing />
+
+      {currentWorkspace && (
+        <Formik
+          initialValues={currentWorkspace}
+          validate={(values: models.Workspace) => validate(values, FORM_SCHEMA)}
+          enableReinitialize
+          onSubmit={handleSubmit}
+        >
+          {(formik) => {
+            return (
+              <Form>
+                <FormikAutoSave debounceMS={1000} />
+                <TextField name="name" label="Workspace Name" />
+              </Form>
+            );
+          }}
+        </Formik>
+      )}
+
+      <FlexItem direction={EnumFlexDirection.Column}>
+        <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
+        <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
+      </FlexItem>
+
+      <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
     </PageContent>
   );
 }

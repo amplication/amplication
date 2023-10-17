@@ -73,7 +73,7 @@ export const CodeEditor: React.FC<CodeEditorProps> = ({
   useEffect(() => {
     if (!resetKey) return;
 
-    setEditorValue(JSON.stringify(defaultValue));
+    setEditorValue(JSON.stringify(defaultValue, null, 2));
   }, [resetKey, defaultValue]);
 
   const handleBeforeMount = (monaco: Monaco) => {

@@ -178,7 +178,7 @@ describe("Data Service Generator", () => {
         // Cleanup Docker Compose before run
         await down(dockerComposeOptions);
 
-        logger.info("Running docker compose up...");
+        logger.info("Running Docker Compose up...");
         await compose.upAll({
           ...dockerComposeOptions,
           commandOptions: ["--build", "--force-recreate"],

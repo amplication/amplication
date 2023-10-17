@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from "react";
+import React, { lazy, useCallback, useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
@@ -7,13 +7,26 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import {
-  AnimationType,
-  FullScreenLoader,
-  PlanUpgradeConfirmation,
-} from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
+import BreadcrumbsContext, {
+  BreadcrumbItem,
+} from "./Layout/BreadcrumbsContext";
+import { sortBy } from "lodash";
+
+//use specific import path to prevent inclusion of all the design-system CSS in the main bundle
+import { AnimationType } from "@amplication/ui/design-system/components/Loader/Loader";
+//use lazy loading imports to prevent inclusion of the components CSS in the main bundle
+const FullScreenLoader = lazy(
+  () =>
+    import("@amplication/ui/design-system/components/Loader/FullScreenLoader")
+);
+const PlanUpgradeConfirmation = lazy(
+  () =>
+    import(
+      "@amplication/ui/design-system/components/PlanUpgradeConfirmation/PlanUpgradeConfirmation"
+    )
+);
 
 declare global {
   interface Window {
@@ -24,6 +37,7 @@ declare global {
 }
 
 export const LOCAL_STORAGE_KEY_INVITATION_TOKEN = "invitationToken";
+export const LOCAL_STORAGE_KEY_COUPON_CODE = "couponCode";
 
 const GeneratedRoutes = routesGenerator(Routes);
 const context = {
@@ -61,15 +75,66 @@ function App() {
     undefined
   );
 
+  const [, setCouponCode] = useLocalStorage(
+    LOCAL_STORAGE_KEY_COUPON_CODE,
+    undefined
+  );
+
+  const [breadcrumbsItems, setBreadcrumbsItems] = useState<BreadcrumbItem[]>(
+    []
+  );
+
+  const registerBreadcrumbItem = useCallback(
+    (addItem: BreadcrumbItem) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          [...items.filter((item) => item.url !== addItem.url), addItem],
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const unregisterBreadcrumbItem = useCallback(
+    (url: string) => {
+      setBreadcrumbsItems((items) => {
+        return sortBy(
+          items.filter((item) => item.url !== url),
+          (sortItem) => sortItem.url
+        );
+      });
+    },
+    [setBreadcrumbsItems]
+  );
+
+  const breadcrumbsContextValue = useMemo(
+    () => ({
+      breadcrumbsItems,
+      registerItem: registerBreadcrumbItem,
+      unregisterItem: unregisterBreadcrumbItem,
+    }),
+    [breadcrumbsItems, registerBreadcrumbItem, unregisterBreadcrumbItem]
+  );
+
   useEffect(() => {
     const params = queryString.parse(location.search);
     if (params.invitation) {
       //save the invitation token in local storage to be validated by
       //<CompleteInvitation/> after signup or sign in
-      //we user local storage since github-passport does not support dynamic callback
+      //we use local storage since github-passport does not support dynamic callback
       setInvitationToken(params.invitation as string);
     }
   }, [setInvitationToken, location.search]);
+
+  useEffect(() => {
+    const params = queryString.parse(location.search);
+    if (params["coupon-code"]) {
+      //save the coupon code token in local storage to be validated by
+      //<CompleteCoupon/> after signup or sign in
+      setCouponCode(params["coupon-code"] as string);
+    }
+  }, [setCouponCode, location.search]);
 
   const [workspaceUpgradeConfirmation, setWorkspaceUpgradeConfirmation] =
     useState<boolean>(false);
@@ -94,21 +159,23 @@ function App() {
 
   return (
     <ThemeProvider>
-      {showLoadingAnimation && (
-        <FullScreenLoader
-          animationType={AnimationType.Full}
-          minimumLoadTimeMS={MIN_ANIMATION_TIME}
-          onTimeout={handleTimeout}
-        />
-      )}
-      {!currentWorkspaceLoading && GeneratedRoutes}
-      {workspaceUpgradeConfirmation && (
-        <PlanUpgradeConfirmation
-          isOpen={workspaceUpgradeConfirmation}
-          onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
-          onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
-        />
-      )}
+      <BreadcrumbsContext.Provider value={breadcrumbsContextValue}>
+        {showLoadingAnimation && (
+          <FullScreenLoader
+            animationType={AnimationType.Full}
+            minimumLoadTimeMS={MIN_ANIMATION_TIME}
+            onTimeout={handleTimeout}
+          />
+        )}
+        {!currentWorkspaceLoading && GeneratedRoutes}
+        {workspaceUpgradeConfirmation && (
+          <PlanUpgradeConfirmation
+            isOpen={workspaceUpgradeConfirmation}
+            onConfirm={() => setWorkspaceUpgradeConfirmation(false)}
+            onDismiss={() => setWorkspaceUpgradeConfirmation(false)}
+          />
+        )}
+      </BreadcrumbsContext.Provider>
     </ThemeProvider>
   );
 }
