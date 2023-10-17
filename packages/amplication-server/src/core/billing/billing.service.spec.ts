@@ -113,7 +113,7 @@ describe("BillingService", () => {
       {
         id: projectId,
         name: "project-1",
-        workspaceId: "workspace-id",
+        workspaceId: workspaceId,
         useDemoRepo: false,
         createdAt: new Date(),
         updatedAt: new Date(),
@@ -221,7 +221,7 @@ describe("BillingService", () => {
       {
         id: projectId,
         name: "project-1",
-        workspaceId: "workspace-id",
+        workspaceId: workspaceId,
         useDemoRepo: false,
         createdAt: new Date(),
         updatedAt: new Date(),
