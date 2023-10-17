@@ -41,6 +41,7 @@ import {
   SYSTEM_DATA_TYPES,
   DATA_TYPE_TO_DEFAULT_PROPERTIES,
   INITIAL_ID_TYPE_FIELDS,
+  MANIPULABLE_SYSTEM_DATA_TYPES,
 } from "./constants";
 import {
   prepareDeletedItemName,
@@ -2209,7 +2210,7 @@ export class EntityService {
     // Validate the field's dataType is not a system data type
     if (
       isSystemDataType(data.dataType as EnumDataType) &&
-      data.dataType !== EnumDataType.Id
+      !isManipulableSystemDataType(data.dataType as EnumDataType)
     ) {
       throw new DataConflictError(
         `The data type ${data.dataType} cannot be used for non-system fields`
@@ -2515,7 +2516,7 @@ export class EntityService {
 
     if (
       isSystemDataType(field.dataType as EnumDataType) &&
-      field.dataType !== EnumDataType.Id
+      !isManipulableSystemDataType(field.dataType as EnumDataType)
     ) {
       throw new ConflictException(
         `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
@@ -2758,6 +2759,10 @@ function validateFieldName(name: string): void {
 
 function isSystemDataType(dataType: EnumDataType): boolean {
   return SYSTEM_DATA_TYPES.has(dataType);
+}
+
+function isManipulableSystemDataType(dataType: EnumDataType): boolean {
+  return MANIPULABLE_SYSTEM_DATA_TYPES.has(dataType);
 }
 
 function isReservedUserEntityFieldName(name: string): boolean {

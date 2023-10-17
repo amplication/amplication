@@ -58,6 +58,12 @@ export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
   EnumDataType.Roles,
 ]);
 
+export const MANIPULABLE_SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
+  EnumDataType.Id,
+  EnumDataType.Roles,
+  EnumDataType.Password,
+]);
+
 export const INITIAL_ID_TYPE_FIELDS: EntityFieldData = {
   dataType: EnumDataType.Id,
   name: "id",
