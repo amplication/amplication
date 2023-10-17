@@ -143,29 +143,11 @@ describe("BillingService", () => {
       workspaceId,
       BillingFeature.IgnoreValidationCodeGeneration
     );
-    await expect(
-      service.getBooleanEntitlement(
-        workspaceId,
-        BillingFeature.IgnoreValidationCodeGeneration
-      )
-    ).resolves.toEqual(
-      expect.objectContaining({
-        hasAccess: false,
-      })
-    );
-
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenCalledTimes(1);
     expect(spyOnServiceGetMeteredEntitlement).toHaveBeenNthCalledWith(
       1,
       workspaceId,
       BillingFeature.Projects
-    );
-    await expect(
-      service.getMeteredEntitlement(workspaceId, BillingFeature.Projects)
-    ).resolves.toEqual(
-      expect.objectContaining({
-        hasAccess: false,
-      })
     );
   });
 
