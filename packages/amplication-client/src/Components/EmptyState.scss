@@ -9,6 +9,7 @@ $svg-img-height: 200px;
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  height: 100%;
 
   p {
     @include regular-12;
