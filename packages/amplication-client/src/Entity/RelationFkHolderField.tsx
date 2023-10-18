@@ -54,14 +54,14 @@ const RelationFkHolderField = ({ entity, ...props }: Props) => {
       relatedField,
       isOneToOne:
         !formik.values?.properties?.allowMultipleSelection &&
-        !relatedField.properties?.allowMultipleSelection,
+        !relatedField?.properties?.allowMultipleSelection,
       entityListOptions: [
         {
           value: formik.values.permanentId,
           label: `${entity.displayName} (this side)`,
         },
         {
-          value: relatedField.permanentId,
+          value: relatedField?.permanentId,
           label: `${data.entity.displayName} (Other side)`,
         },
       ],

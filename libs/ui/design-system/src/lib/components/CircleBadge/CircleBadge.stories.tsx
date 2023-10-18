@@ -10,6 +10,8 @@ export default {
   },
 } as Meta;
 
-export const Default = (args: any) => {
-  return <CircleBadge name="Amplication" {...args} />;
+export const Default = {
+  render: (args: any) => {
+    return <CircleBadge name="Amplication" {...args} />;
+  },
 };

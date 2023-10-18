@@ -618,10 +618,12 @@ export class EntityService {
         );
       } catch (error) {
         this.logger.error(error.message, error, { entity: entity.name });
-
         void actionContext.onEmitUserActionLog(
           `Failed to create entity "${entity.name}". ${error.message}`,
           EnumActionLogLevel.Error
+        );
+        throw new Error(
+          `Failed to create entity "${entity.name}" due to ${error.message}`
         );
       }
     }
@@ -665,7 +667,12 @@ export class EntityService {
           });
           void actionContext.onEmitUserActionLog(
             `Failed to create entity field "${field.name}" on entity "${entity.name}". ${error.message}`,
-            EnumActionLogLevel.Error
+            EnumActionLogLevel.Error,
+            EnumActionStepStatus.Failed,
+            true
+          );
+          throw new Error(
+            `Failed to create entity field "${field.name}" on entity "${entity.name}" due to ${error.message}`
           );
         }
       }

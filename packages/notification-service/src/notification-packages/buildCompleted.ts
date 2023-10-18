@@ -10,12 +10,19 @@ export const buildCompleted = async (notificationCtx: NotificationContext) => {
       return notificationCtx;
 
     const { externalId, ...restParams } = notificationCtx.message;
+    const shortBuildId = restParams?.buildId.slice(-8);
+
     notificationCtx.notifications.push({
       notificationMethod:
         notificationCtx.novuService.triggerNotificationToSubscriber,
       subscriberId: externalId,
       eventName: "build-completed",
-      payload: { payload: restParams },
+      payload: {
+        payload: {
+          ...restParams,
+          shortBuildId,
+        },
+      },
     });
 
     return notificationCtx;
