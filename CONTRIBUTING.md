@@ -1,29 +1,27 @@
-# Contributing
+# How to Contribute to Amplication 🚀
 
-We would ❤️ it if you contributed to the project and helped make Amplication even better. We will make sure that contributing to Amplication is easy, enjoyable, and educational for anyone and everyone. All contributions are welcome, including features, issues, documentation, guides, and more.
+Welcome, amazing human! 🎉 We're thrilled that you're considering contributing to Amplication. Join us on this exciting journey to make Amplication even better for everyone. We're committed to ensuring that contributing to Amplication is a delightful and educational experience for all. 💡
 
-## Got a question?
+## 🙋 Got Questions? Need Help?
 
-You can ask questions, consult with more experienced Amplication users, and discuss Amplication-related topics in the our [Discord channel](https://amplication.com/discord).
+Got burning questions? Looking for expert advice? Or just want to chat about Amplication? Join our friendly community in our [Discord channel](https://amplication.com/discord).
 
-## Found a bug?
+## 🐞 Found a Bug? Found Gremlins? 👾
 
-If you find a bug in the source code, you can help us by [submitting an issue](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=) to our GitHub Repository. Even better, you can submit a Pull Request with a fix.
+If you've spotted a pesky bug lurking in the code, you can become our hero! Help us out by reporting the issue. Just head over to our [GitHub Repository](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20bug&template=bug_report.md&title=) and submit a detailed bug report. And if you're feeling extra heroic, send us a Pull Request to vanquish that bug! 🦸‍♀️🦸‍♂️
 
-## Missing a feature?
+## 🚀 Dreaming of a New Feature? Got Crazy Ideas? 🚁
 
-You can request a new feature by [submitting an issue](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=) to our GitHub Repository.
+Dreaming big? Have a fantastic feature in mind? We're all ears! You can request a new feature by creating an issue in our [GitHub Repository](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A%20feature%20request&template=feature_request.md&title=). If you're feeling daring and want to implement it yourself, that's even better! Reach out to us, and we'll ensure your dreams align with our project's vision. 🌟
 
-If you'd like to implement a new feature, it's always good to be in touch with us before you invest time and effort, since not all features can be supported.
+- For Major Features: Start by opening an issue and outlining your proposal. This allows us to coordinate efforts, prevent duplicated work, and help you craft a change that successfully integrates with the project.
+- For Smaller Features: Craft the feature and submit it directly as a Pull Request (more details in the "How to Submit a Pull Request" section below).
 
-- For a Major Feature, first open an issue and outline your proposal. This will let us coordinate efforts, prevent duplication of work, and help you craft the change so that it's successfully integrated into the project.
-- Small Features can be crafted and directly [submitted as a Pull Request](#submit-pr).
+## Ready to Contribute Code? 💻
 
-## What do you need to know to help?
+Eager to dive into the code? Excellent! To help you navigate the labyrinth of code, here's a map to our tech stack:
 
-If you want to help out with a code contribution, our project uses the following stack:
-
-### Server-side
+### 🏢 Server-side
 
 - [Node.JS](https://nodejs.org/)
 - [TypeScript](https://www.typescriptlang.org/docs)
@@ -32,136 +30,97 @@ If you want to help out with a code contribution, our project uses the following
 - [GraphQL API](https://docs.nestjs.com/graphql/quick-start)
 - [Jest](https://docs.nestjs.com/fundamentals/testing) (for testing)
 
-### Client-side
+### 🖥️ Client-side
 
 - [React](https://reactjs.org/docs/getting-started.html)
 - [TypeScript](https://www.typescriptlang.org/docs)
 - [Apollo Client](https://www.apollographql.com/docs/react/)
 
-If you don't feel ready to make a code contribution yet, no problem! You can also check out the [documentation issues](https://github.com/amplication/amplication/labels/type%3A%20docs).
+Feeling excited yet? Let's go!
 
-# <a name="submit-pr"></a> How do I make a code contribution?
+If you're not quite ready to jump into code just yet, that's completely okay. You can also check out the [documentation issues](https://github.com/amplication/amplication/labels/type%3A%20docs). 📚
 
-## Open to community
+# How to Make a Code Contribution 🌟
 
-You can check all the issues that are open for community contributions. Check [here](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22open+to+community%22).
+Ready to dive into the code? Excellent! Here's how you can make a code contribution:
 
-## Good first issues
+## Issues Open to the Community 🔍
 
-Are you new to open source contribution? Wondering how contributions work in our project? Here's a quick rundown.
+We have a list of issues that are open and ready for community contributions. Check them out [here](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22open+to+community%22).
 
-Find an issue that you're interested in addressing, or a feature that you'd like to add.
-You can use [this view](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22good+first+issue%22) which helps new contributors find easy gateways into our project.
+## Good First Issues 🥇
 
-## Step 1: Make a fork
+If you're new to open source contributions or want to understand how contributions work in our project, here's a quick start guide:
 
-Fork the Amplication repository to your GitHub organization. This means that you'll have a copy of the repository under _your-GitHub-username/repository-name_.
+1. Find an issue that you'd like to address or a feature you'd like to add. You can use [this view](https://github.com/amplication/amplication/issues?q=is%3Aopen+is%3Aissue+label%3A%22good%20first%20issue%22) to find issues tailored for new contributors. 🌈
 
-> :accessibility: Un-check "Copy the DEFAULT branch only"
+## How to Contribute - Step by Step 🚶‍♂️🚶‍♀️
 
-## Step 2: Clone the repository to your local machine
+Follow these steps to contribute to Amplication:
 
-```sh
+### Step 1: Make a Fork 🍴
+
+Fork the Amplication repository to your GitHub organization. This will create a copy of the repository under your GitHub username/repository name. 🚀
+
+> **Note:** Be sure to uncheck "Copy the DEFAULT branch only" for accessibility. ♿
+
+### Step 2: Clone the Repository 📥
+
+Use the following command to clone the repository to your local machine. We recommend cloning the `next` branch:
+
+```bash
 git clone -b next https://github.com/{your-GitHub-username}/amplication.git
-
 ```
 
-## Step 3: Prepare the development environment
+### Step 3: Set Up the Development Environment 💼
 
-Set up and run the development environment on your local machine following the [README](./README.md#Development)
+Set up and run the development environment on your local machine by following the instructions in the [README](./README.md#Development). 🛠️
 
-## Step 4: Create a branch
-Create a new branch for your changes.
-In order to keep branch names uniform and easy-to-understand, please use the following conventions for branch naming.
-Generally speaking, it is a good idea to add a group/type prefix to a branch.
-Here is a list of good examples:
-- for docs change : `docs/{ISSUE_NUMBER}-{CUSTOM_NAME}` for e.g. docs/2233-update-contributing-docs
-- for new features : `feat/{ISSUE_NUMBER}-{CUSTOM_NAME}` for e.g. feat/1144-add-plugins
-- for bug fixes : `fix/{ISSUE_NUMBER}-{CUSTOM_NAME}` for e.g. fix/9878-fix-invite-wrong-url
-- for anything else: `chore/{ISSUE_NUMBER}-{CUSTOM_NAME}` for e.g. chore/111-update-ci-url
+### Step 4: Create a Branch 🌿
 
-```sh
+Create a new branch for your changes. To keep branch names uniform and easy to understand, use the following conventions:
+
+- For documentation changes: `docs/{ISSUE_NUMBER}-{CUSTOM_NAME}` (e.g., `docs/2233-update-contributing-docs`)
+- For new features: `feat/{ISSUE_NUMBER}-{CUSTOM_NAME}` (e.g., `feat/1144-add-plugins`)
+- For bug fixes: `fix/{ISSUE_NUMBER}-{CUSTOM_NAME}` (e.g., `fix/9878-fix-invite-wrong-url`)
+- For anything else: `chore/{ISSUE_NUMBER}-{CUSTOM_NAME}` (e.g., `chore/111-update-ci-url`) 📌
+
+Use this command to create a branch:
+
+```bash
 git checkout -b branch-name-here
 ```
 
-## Step 5: Make your changes
+### Step 5: Make Your Changes 🛠️
 
-Update the code with your bug fix or new feature.
+Update the code with your bug fix or new feature. You're making Amplication better, one line of code at a time! 🧙‍♂️🪄
 
-## Step 6: Add the changes that are ready to be committed
+### Step 6: Stage Changes 🛤️
 
-Stage the changes that are ready to be committed:
+Stage the changes that are ready to be committed using this command:
 
-```sh
+```bash
 git add .
 ```
 
-## Step 7: Commit the changes (Git)
+### Step 7: Commit Changes (Git) 📝
 
-Commit the changes with a short message. (See below for more details on how we structure our commit messages)
+Commit the changes with a short message following the structure `<type>(<package>): <subject>`. Here's an example:
 
-```sh
-git commit -m "<type>(<package>): <subject>"
+```bash
+git commit -m "fix(server): missing entity on init"
 ```
 
-## Step 8: Push the changes to the remote repository
+### Step 8: Push Changes to the Remote Repository 🚀
 
-Push the changes to the remote repository using:
+Push your changes to the remote repository:
 
-```sh
+```bash
 git push origin branch-name-here
 ```
 
-## Step 9: Create Pull Request
+### Step 9: Create a Pull Request 🌈
 
-In GitHub, do the following to submit a pull request to the upstream repository:
+To submit a pull request to the upstream repository on GitHub:
 
-1.  Give the pull request a title and a short description of the changes made following the template. Include also the issue or bug number associated with your change. Explain the changes that you made, any issues you think exist with the pull request you made, and any questions you have for the maintainer.  <br/> ⚠️ **Make sure your pull request target the `next` branch.**
- 
-  > Pull request title should be in the form of `<type>(<package>): <subject>` as per commit messages.
-Remember, it's okay if your pull request is not perfect (no pull request ever is). The reviewer will be able to help you fix any problems and improve it!
-
-2.  Wait for the pull request to be reviewed by a maintainer.
-
-3.  Make changes to the pull request if the reviewing maintainer recommends them.
-
-Celebrate your success after your pull request is merged :-)
-
-## Git Commit Messages
-
-We structure our commit messages like this:
-
-```
-<type>(<package>): <subject>
-```
-
-Example
-
-```
-fix(server): missing entity on init
-```
-
-### Types:
-
-- **feat**: A new feature
-- **fix**: A bug fix
-- **docs**: Changes to the documentation
-- **style**: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc.)
-- **refactor**: A code change that neither fixes a bug nor adds a feature
-- **perf**: A code change that improves performance
-- **test**: Adding missing or correcting existing tests
-- **chore**: Changes to the build process or auxiliary tools and libraries such as documentation generation
-
-### Packages:
-
-- **server**
-- **client**
-- **data-service-gen**
-
-## Code of conduct
-
-Please note that this project is released with a Contributor Code of Conduct. By participating in this project you agree to abide by its terms.
-
-[Code of Conduct](https://github.com/amplication/amplication/blob/master/CODE_OF_CONDUCT.md)
-
-Our Code of Conduct means that you are responsible for treating everyone on the project with respect and courtesy.
+1. Provide a title and a brief description of your changes using the template. Include the issue or bug number related to your change. Be
