@@ -8,11 +8,19 @@ export default {
   component: ToggleButton,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <ToggleButton label="Click me!" onClick={props.onClick} selected={false} />
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <ToggleButton
+        label="Click me!"
+        onClick={props.onClick}
+        selected={false}
+      />
+    );
+  },
 };
-export const Selected = (props: any) => {
-  return <ToggleButton label="Click me!" onClick={props.onClick} selected />;
+export const Selected = {
+  render: (props: any) => {
+    return <ToggleButton label="Click me!" onClick={props.onClick} selected />;
+  },
 };

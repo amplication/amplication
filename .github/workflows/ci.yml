@@ -60,20 +60,8 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache other node modules
-        id: cache-other-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-other-node-modules
-        with:
-          path: |
-            libs/util/code-gen-utils/node_modules
-            packages/amplication-cli/node_modules
-             /home/runner/.cache/Cypress
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
-
       - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
       - name: Nx Workspace Lint
