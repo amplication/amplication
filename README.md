@@ -8,7 +8,7 @@
 </h1>
 
 <p align="center">
-  <i align="center">Instantly generate production-ready Node.js backend apps 🚀</i>
+  <i align="center"> 🪄 Instantly generate production-ready Node.js backend apps 🚀</i>
 </p>
 
 <h4 align="center">
@@ -37,7 +37,7 @@
     <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard"/>
 </p>
 
-## Introduction
+## Introduction 📑
 
 `Amplication` is a robust, open-source development platform designed to revolutionize the creation of scalable and secure Node.js applications. We eliminate repetitive coding tasks and deliver production-ready infrastructure code, meticulously tailored to your specifications and adhering to industry best practices.
 
@@ -72,9 +72,9 @@ Experience the fastest way to develop Node.js applications with Amplication.
     
 </details>
 
-## Usage 
+## Usage 🔦
 
-To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found on the [docs](https://docs.amplication.com).
+To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page, you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found on the [docs](https://docs.amplication.com).
 
 <details>
 <summary>
@@ -85,7 +85,7 @@ To get started with Amplication, the hosted version of the product can be used. 
 - [To-do application using Amplication and React](https://docs.amplication.com/tutorials/react-todos)
 </details>
 
-## Development
+## Development 👨‍💻
 
 Alternatively, instead of using the hosted version of the product, Amplication can be run locally for code generation purposes or contributions - if so, please refer to our [contributing](#contributing_anchor) section.
 
@@ -170,7 +170,7 @@ npm run serve:plugins
 The development environment should now be set up. Additional information on the different application components can be found under packages/`[application]`/README.md file. Happy hacking! 👾
 </details>
 
-## Resources
+## Resources 📚💾🔧
 
 - **[Website](https://amplication.com)** overview of the product.
 - **[Docs](https://docs.amplication.com)** for comprehensive documentation.
@@ -182,7 +182,7 @@ The development environment should now be set up. Additional information on the 
 - **[YouTube](https://www.youtube.com/c/Amplicationcom)** for guides and technical talks.
 
 <a name="contributing_anchor"></a>
-## Contributing
+## Contributing 📝➡️📄
 
 Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community. Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
@@ -196,7 +196,7 @@ Not sure where to start? Join our discord and we will help you get started!
 
 <a href="https://amplication.com/discord"><img src="https://amplication.com/images/discord_banner_purple.svg" /></a>
 
-## Contributors
+## Contributors 👥
 
 <!---
 npx contributer-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
@@ -264,6 +264,6 @@ change the height and width for each of the contributors from 80 to 50.
 
 [//]: contributor-faces
 
-## License
+## License 👮‍♂️🚨
 
 A large part of this project is licensed under the [Apache 2.0](./LICENSE) license. The only exception are the components under the `ee` (enterprise edition) directory, these are licensed under the [Amplication Enterprise Edition](./ee/LICENSE) license.
