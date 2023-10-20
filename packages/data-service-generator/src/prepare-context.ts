@@ -255,7 +255,7 @@ function prepareEntityActions(
         actionKeys.map((key) => {
           const moduleAction = moduleActions.find(
             (moduleAction) =>
-              moduleAction.parentBlock.id === moduleContainerId &&
+              moduleAction.parentBlockId === moduleContainerId &&
               moduleAction.actionType === key
           );
           //return the defaultAction if the relevant actions was not provided

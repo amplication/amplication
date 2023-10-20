@@ -287,7 +287,6 @@ export type ModuleAction = Omit<
   id?: string;
   displayName: string;
   description: string;
-  parentBlock?: models.Block;
   actionType: keyof typeof models.EnumModuleActionType;
 };
 
