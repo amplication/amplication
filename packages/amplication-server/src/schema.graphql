@@ -694,6 +694,21 @@ enum EnumMessagePatternConnectionOptions {
   Send
 }
 
+enum EnumModuleActionType {
+  ChildrenConnect
+  ChildrenDisconnect
+  ChildrenFind
+  ChildrenUpdate
+  Create
+  Custom
+  Delete
+  Find
+  Meta
+  ParentGet
+  Read
+  Update
+}
+
 enum EnumPendingChangeAction {
   Create
   Delete
@@ -919,6 +934,7 @@ type Module implements IBlock {
 }
 
 type ModuleAction implements IBlock {
+  actionType: EnumModuleActionType!
   blockType: EnumBlockType!
   createdAt: DateTime!
   description: String

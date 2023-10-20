@@ -737,6 +737,21 @@ export enum EnumMessagePatternConnectionOptions {
   Send = 'Send'
 }
 
+export enum EnumModuleActionType {
+  ChildrenConnect = 'ChildrenConnect',
+  ChildrenDisconnect = 'ChildrenDisconnect',
+  ChildrenFind = 'ChildrenFind',
+  ChildrenUpdate = 'ChildrenUpdate',
+  Create = 'Create',
+  Custom = 'Custom',
+  Delete = 'Delete',
+  Find = 'Find',
+  Meta = 'Meta',
+  ParentGet = 'ParentGet',
+  Read = 'Read',
+  Update = 'Update'
+}
+
 export enum EnumPendingChangeAction {
   Create = 'Create',
   Delete = 'Delete',
@@ -952,6 +967,7 @@ export type Module = IBlock & {
 };
 
 export type ModuleAction = IBlock & {
+  actionType: EnumModuleActionType;
   blockType: EnumBlockType;
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
