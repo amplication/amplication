@@ -15,6 +15,7 @@ $icon-font-size-xlarge: 32px;
   line-height: 1;
   font-size: $icon-font-size-small;
   display: inline-block;
+  white-space: nowrap;
 
   /* Enable Ligatures ================ */
   letter-spacing: 0;

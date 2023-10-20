@@ -387,6 +387,8 @@ export class BuildService {
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
+            projectName: commitWithAccount.commit.project.name,
+            createdAt: Date.now(),
             externalId: encryptString(commitWithAccount.commit.user.id),
             envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
           },

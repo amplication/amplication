@@ -153,7 +153,7 @@
     "rc": "^1.2.8",
     "react-animate-height": "^3.0.4",
     "react-beautiful-dnd": "^13.1.1",
-    "react-command-palette": "^0.21.1",
+    "react-command-palette": "^0.22.1",
     "react-device-detect": "^2.2.2",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",
