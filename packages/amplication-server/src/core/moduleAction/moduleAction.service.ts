@@ -1,35 +1,20 @@
+import * as CodeGenTypes from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
+import { getDefaultActionsForEntity } from "@amplication/dsg-utils";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
+import { AmplicationError } from "../../errors/AmplicationError";
 import { Entity, User } from "../../models";
+import { PrismaService } from "../../prisma";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
+import { Module } from "../module/dto/Module";
 import { CreateModuleActionArgs } from "./dto/CreateModuleActionArgs";
 import { DeleteModuleActionArgs } from "./dto/DeleteModuleActionArgs";
+import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
-import { ModuleActionUpdateInput } from "./dto/ModuleActionUpdateInput";
-import { PrismaService } from "../../prisma";
-import { pascalCase } from "pascal-case";
-import { Module } from "../module/dto/Module";
-import { getDefaultActionsForEntity } from "libs/util/dsg-utils/src";
-import { AmplicationError } from "../../errors/AmplicationError";
-import { EnumModuleActionType } from "./dto/EnumModuleActionType";
-import * as CodeGenTypes from "@amplication/code-gen-types";
-
-const DEFAULT_MODULE_DESCRIPTION =
-  "This module was automatically created as the default module for an entity";
-
-type ModuleActionData = Pick<
-  ModuleAction,
-  | "description"
-  | "displayName"
-  | "enabled"
-  | "isDefault"
-  | "name"
-  | "actionType"
->;
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
