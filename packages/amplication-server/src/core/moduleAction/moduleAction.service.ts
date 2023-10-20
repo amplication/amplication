@@ -13,9 +13,10 @@ import { ModuleActionUpdateInput } from "./dto/ModuleActionUpdateInput";
 import { PrismaService } from "../../prisma";
 import { pascalCase } from "pascal-case";
 import { Module } from "../module/dto/Module";
-import { prepareEntityPluralName } from "libs/util/dsg-utils/src";
+import { getDefaultActionsForEntity } from "libs/util/dsg-utils/src";
 import { AmplicationError } from "../../errors/AmplicationError";
 import { EnumModuleActionType } from "./dto/EnumModuleActionType";
+import * as CodeGenTypes from "@amplication/code-gen-types";
 
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
@@ -121,115 +122,33 @@ export class ModuleActionService extends BlockTypeService<
     module: Module,
     user: User
   ): Promise<ModuleAction[]> {
-    const defaultActions = await this.getDefaultActionsForEntity(entity);
+    const defaultActions = await getDefaultActionsForEntity(
+      entity as unknown as CodeGenTypes.Entity
+    );
     return await Promise.all(
-      defaultActions.map((action) =>
-        super.create(
-          {
-            data: {
-              ...action,
-              parentBlock: {
-                connect: {
-                  id: module.id,
+      Object.keys(defaultActions).map((action) => {
+        return (
+          defaultActions[action] &&
+          super.create(
+            {
+              data: {
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: module.id,
+                  },
                 },
-              },
-              resource: {
-                connect: {
-                  id: entity.resourceId,
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
                 },
               },
             },
-          },
-          user
-        )
-      )
+            user
+          )
+        );
+      })
     );
-  }
-
-  async getDefaultActionsForEntity(
-    entity: Entity
-  ): Promise<ModuleActionData[]> {
-    const entityPluralName = pascalCase(prepareEntityPluralName(entity.name));
-    const entityName = entity.name;
-
-    const entityDisplayName = entity.displayName;
-    const entityPluralDisplayName = entity.pluralDisplayName;
-
-    //-----common-----
-    //findMany
-    //findOne
-    //count
-    //create
-    //update
-    //delete
-
-    //-----to one child RESOLVER ONLY-----
-    //resolve field child (based on field name not entity name)
-
-    //-----to many children RESOLVER ONLY-----
-    //resolve field children (based on field name not entity name)
-
-    //-----to many child CONTROLLER ONLY-----
-    //findMany (based on field name not entity name)
-    //connect (based on field name not entity name)
-    //update (based on field name not entity name)
-    //disconnect (based on field name not entity name)
-
-    //-----to many children SERVICE ONLY-----
-    //find children (based on field name not entity name)
-
-    //-----to one child SERVICE ONLY-----
-    //get child (based on field name not entity name)
-
-    return [
-      {
-        actionType: EnumModuleActionType.Meta,
-        name: `_${entityPluralName}Meta`,
-        displayName: `${entityPluralDisplayName} Meta`,
-        description: `Meta data about ${entityDisplayName} records`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        actionType: EnumModuleActionType.Create,
-        name: `create${entityName}`,
-        displayName: `Create ${entityDisplayName}`,
-        description: `Create one ${entityDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        actionType: EnumModuleActionType.Read,
-        name: `${entityName}`,
-        displayName: `Get ${entityDisplayName}`,
-        description: `Get one ${entityDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        actionType: EnumModuleActionType.Update,
-        name: `update${entityName}`,
-        displayName: `Update ${entityDisplayName}`,
-        description: `Update one ${entityDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        actionType: EnumModuleActionType.Delete,
-        name: `delete${entityName}`,
-        displayName: `Delete ${entityDisplayName}`,
-        description: `Delete one ${entityDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-      {
-        actionType: EnumModuleActionType.Find,
-        name: `${entityPluralName}`,
-        displayName: `Find ${entityPluralDisplayName}`,
-        description: `Find many ${entityPluralDisplayName}`,
-        enabled: true,
-        isDefault: true,
-      },
-    ];
   }
 }

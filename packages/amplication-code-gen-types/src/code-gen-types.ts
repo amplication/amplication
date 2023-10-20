@@ -9,6 +9,7 @@ export {
   EnumEntityAction,
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
+  EnumModuleActionType,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -277,6 +278,30 @@ export type ResourceGenerationConfig = {
 };
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
+
+export type ModuleContainer = BlockOmittedFields<models.Module>;
+export type ModuleAction = Omit<
+  BlockOmittedFields<models.ModuleAction>,
+  "id" | "actionType"
+> & {
+  id?: string;
+  displayName: string;
+  description: string;
+  parentBlock?: models.Block;
+  actionType: keyof typeof models.EnumModuleActionType;
+};
+
+export type entityDefaultActions = {
+  [key in models.EnumModuleActionType]: ModuleAction | undefined;
+};
+
+export type EntityActionsMap = Record<
+  string, //module name/ entity name
+  entityDefaultActions
+  // & {
+  //   custom: ModuleAction[];
+  // }
+>;
 
 type BlockOmittedFields<T> = Omit<
   T,

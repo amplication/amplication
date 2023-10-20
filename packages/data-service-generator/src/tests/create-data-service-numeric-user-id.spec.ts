@@ -1,12 +1,11 @@
 import { types } from "@amplication/code-gen-types";
-import { createDataService } from "../create-data-service";
-import { EnumDataType, EnumResourceType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
-import roles from "./roles";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { createDataService } from "../create-data-service";
+import { EnumDataType } from "../models";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import entities from "./entities";
+import { TEST_DATA } from "./test-data";
 
 jest.setTimeout(100000);
 
@@ -29,17 +28,7 @@ describe("createDataService", () => {
     jest.clearAllMocks();
   });
   test("creates resource as expected", async () => {
-    const modules = await createDataService(
-      {
-        entities,
-        buildId: "example_build_id",
-        roles,
-        resourceInfo: appInfo,
-        resourceType: EnumResourceType.Service,
-        pluginInstallations: installedPlugins,
-      },
-      MockedLogger
-    );
+    const modules = await createDataService(TEST_DATA, MockedLogger);
     const modulesToSnapshot = modules
       .modules()
       .filter((module) =>
