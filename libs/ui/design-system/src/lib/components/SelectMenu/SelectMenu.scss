@@ -6,7 +6,7 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 .select-menu {
   & &__item {
     border-bottom: none;
-    color: var(--gray-20);
+    color: var(--gray-base);
     background-color: var(--gray-90);
     flex-direction: row-reverse;
     justify-content: space-between;

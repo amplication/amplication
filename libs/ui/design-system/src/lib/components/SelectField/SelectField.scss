@@ -1,5 +1,8 @@
 @import "../../style/index.scss";
 
+$dropdown-box-shadow: 0 36px 34px -24px #15102c70;
+$dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
+
 .select-field {
   max-width: var(--form-field-long);
   label {
@@ -7,7 +10,9 @@
   }
 
   &__menu-list {
-    background-color: var(--gray-full);
+    border: $border-dark;
+    background-color: var(--gray-90);
+    box-shadow: $dropdown-box-shadow;
     padding: 0;
   }
 
@@ -66,10 +71,10 @@
   }
 
   .select-field__option {
-    color: var(--gray-30);
-    background-color: var(--gray-full);
+    color: var(--gray-base);
+    background-color: var(--gray-90);
     @include flexFullRow;
-    justify-content: flex-start;
+    justify-content: space-between;
     padding: var(--default-spacing-small);
 
     i {
@@ -81,9 +86,15 @@
     &--is-focused {
       background-color: var(--gray-80);
     }
+    &-tick {
+      display: none;
+    }
     &--is-selected {
-      color: var(--primary);
+      color: var(--gray-base);
       font-weight: 500;
+      .select-field__option-tick {
+        display: flex;
+      }
     }
   }
 }

@@ -62,7 +62,7 @@ $select-menu-max-width: 300px;
     &__name {
       @include regular-12();
       width: 100%;
-      color: var(--gray-20);
+      color: var(--gray-base);
       white-space: nowrap;
       padding: 2px var(--default-spacing-small);
     }

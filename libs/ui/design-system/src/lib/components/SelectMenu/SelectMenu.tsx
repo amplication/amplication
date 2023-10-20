@@ -62,6 +62,7 @@ export const SelectMenu = ({
   selectRef,
   ...rest
 }: Props) => {
+  console.log(icon);
   if (disabled) {
     return (
       <div className={classNames("select-menu", className)}>
@@ -70,7 +71,7 @@ export const SelectMenu = ({
           buttonStyle={buttonStyle}
           buttonClassName={buttonClassName}
           icon={icon}
-          openIcon={openIcon}
+          openIcon={openIcon ? openIcon : "chevron_up"}
           title={title}
         />
       </div>
@@ -87,7 +88,7 @@ export const SelectMenu = ({
           buttonStyle={buttonStyle}
           buttonClassName={buttonClassName}
           icon={icon}
-          openIcon={openIcon}
+          openIcon={openIcon ? openIcon : "chevron_up"}
           title={title}
         />
         {children}

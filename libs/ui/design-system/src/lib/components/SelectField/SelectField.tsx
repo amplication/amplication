@@ -4,15 +4,18 @@ import { Icon } from "../Icon/Icon";
 import classNames from "classnames";
 
 import Select, {
+  components,
   OptionProps,
   GroupBase,
   MultiValue,
   SingleValue,
+  DropdownIndicatorProps,
 } from "react-select";
 import { OptionItem } from "../types";
 import { LABEL_CLASS, LABEL_VALUE_CLASS } from "../constants";
 
 import "./SelectField.scss";
+import { EnumTextColor } from "../Text/Text";
 
 export type Props = {
   label: string;
@@ -65,7 +68,10 @@ export const SelectField = ({
       <label className={LABEL_CLASS}>
         <span className={LABEL_VALUE_CLASS}>{label}</span>
         <Select
-          components={{ Option: CustomOption }}
+          components={{
+            Option: CustomOption,
+            DropdownIndicator: CustomDropdownIndicator,
+          }}
           className="select-field__container"
           classNamePrefix="select-field"
           {...field}
@@ -118,8 +124,27 @@ const CustomOption = <
       aria-disabled={isDisabled}
       {...innerProps}
     >
-      {icon && <Icon icon={icon} />}
-      {children}
+      <div>
+        {icon && <Icon icon={icon} />}
+        {children}
+      </div>
+      <div className="select-field__option-tick">
+        <Icon icon="check" size="xsmall" />
+      </div>
     </div>
+  );
+};
+
+const CustomDropdownIndicator = (
+  props: DropdownIndicatorProps<OptionItem, true>
+) => {
+  let icon;
+  props.selectProps.menuIsOpen
+    ? (icon = "chevron_up")
+    : (icon = "chevron_down");
+  return (
+    <components.DropdownIndicator {...props}>
+      <Icon icon={icon} size="xsmall" color={EnumTextColor.White} />
+    </components.DropdownIndicator>
   );
 };
