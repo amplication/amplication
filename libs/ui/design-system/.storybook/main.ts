@@ -1,26 +1,24 @@
-import { rootMain } from "../../../../.storybook/main";
+import type { StorybookConfig } from "@storybook/react-vite";
 
-import type { StorybookConfig, Options } from "@storybook/core-common";
+import { nxViteTsPaths } from "@nx/vite/plugins/nx-tsconfig-paths.plugin";
+import { mergeConfig } from "vite";
 
 const config: StorybookConfig = {
-  ...rootMain,
-  core: { ...rootMain.core, builder: "webpack5" },
-  stories: [
-    ...rootMain.stories,
-    "../src/lib/**/*.stories.mdx",
-    "../src/lib/**/*.stories.@(js|jsx|ts|tsx)",
-  ],
-  addons: [...(rootMain.addons || []), "@nrwl/react/plugins/storybook"],
-  webpackFinal: async (config, { configType }: Options) => {
-    // apply any global webpack configs that might have been specified in .storybook/main.ts
-    if (rootMain.webpackFinal) {
-      config = await rootMain.webpackFinal(config, { configType } as Options);
-    }
-
-    // add your own webpack tweaks if needed
-
-    return config;
+  stories: ["../src/lib/**/*.stories.@(js|jsx|ts|tsx|mdx)"],
+  addons: ["@storybook/addon-essentials", "@storybook/addon-interactions"],
+  framework: {
+    name: "@storybook/react-vite",
+    options: {},
   },
+
+  viteFinal: async (config) =>
+    mergeConfig(config, {
+      plugins: [nxViteTsPaths()],
+    }),
 };
 
-module.exports = config;
+export default config;
+
+// To customize your Vite configuration you can use the viteFinal field.
+// Check https://storybook.js.org/docs/react/builders/vite#configuration
+// and https://nx.dev/recipes/storybook/custom-builder-configs

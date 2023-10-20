@@ -17,5 +17,13 @@
       "files": ["*.js", "*.jsx"],
       "rules": {}
     }
-  ]
+  ],
+  "rules": {
+    "@nx/dependency-checks": [
+      "error",
+      {
+        "ignoredFiles": ["**/scripts/generate-types.ts"]
+      }
+    ]
+  }
 }

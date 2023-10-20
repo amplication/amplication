@@ -49,9 +49,10 @@ const CodeViewExplorer: React.FC<Props> = ({ onFileSelected }) => {
   }, [resources]);
 
   const selectedBuild = useMemo(() => {
-    return selectedCommit?.builds?.find(
-      (b) => b.resource.id === selectedResource?.id
+    const filteredBuilds = selectedCommit?.builds?.filter(
+      (b) => b.resource !== null
     );
+    return filteredBuilds?.find((b) => b.resource.id === selectedResource?.id);
   }, [selectedCommit, selectedResource]);
 
   return (

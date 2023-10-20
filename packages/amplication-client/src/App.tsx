@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, useMemo } from "react";
+import React, { lazy, useCallback, useState, useEffect, useMemo } from "react";
 import { useLocation } from "react-router-dom";
 import * as reactHotkeys from "react-hotkeys";
 import ThemeProvider from "./Layout/ThemeProvider";
@@ -7,17 +7,27 @@ import { Routes } from "./routes/appRoutes";
 import { routesGenerator } from "./routes/routesUtil";
 import useAuthenticated from "./authentication/use-authenticated";
 import useCurrentWorkspace from "./Workspaces/hooks/useCurrentWorkspace";
-import {
-  AnimationType,
-  FullScreenLoader,
-  PlanUpgradeConfirmation,
-} from "@amplication/ui/design-system";
 import useLocalStorage from "react-use-localstorage";
 import queryString from "query-string";
 import BreadcrumbsContext, {
   BreadcrumbItem,
 } from "./Layout/BreadcrumbsContext";
 import { sortBy } from "lodash";
+
+//use specific import path to prevent inclusion of all the design-system CSS in the main bundle
+import { AnimationType } from "@amplication/ui/design-system/components/Loader/Loader";
+//use lazy loading imports to prevent inclusion of the components CSS in the main bundle
+const FullScreenLoader = lazy(
+  () =>
+    import("@amplication/ui/design-system/components/Loader/FullScreenLoader")
+);
+const PlanUpgradeConfirmation = lazy(
+  () =>
+    import(
+      "@amplication/ui/design-system/components/PlanUpgradeConfirmation/PlanUpgradeConfirmation"
+    )
+);
+
 declare global {
   interface Window {
     HubSpotConversations: any;

@@ -20,6 +20,8 @@ export default {
   },
 } as Meta;
 
-export const Default = (args: any) => {
-  return <CircleIcon icon="check" {...args} />;
+export const Default = {
+  render: (args: any) => {
+    return <CircleIcon icon="check" {...args} />;
+  },
 };
