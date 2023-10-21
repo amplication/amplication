@@ -527,26 +527,6 @@ const UPDATE_ENTITY_FIELD_MUTATION = gql`
   }
 `;
 
-const CREATE_DEFAULT_RELATED_FIELD_MUTATION = gql`
-  mutation ($fieldId: String!) {
-    createDefaultRelatedField(where: { id: $fieldId }) {
-      id
-      permanentId
-      createdAt
-      updatedAt
-      name
-      displayName
-      dataType
-      required
-      unique
-      searchable
-      customAttributes
-      description
-      properties
-    }
-  }
-`;
-
 const GET_VERSION_COMMIT_QUERY = gql`
   query ($entityId: String!) {
     entity(where: { id: $entityId }) {
@@ -622,9 +602,6 @@ const createFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const createFieldByDisplayNameMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const deleteFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
 const updateFieldMock = jest.fn(() => EXAMPLE_ENTITY_FIELD);
-const createDefaultRelatedFieldMock = jest.fn(
-  () => EXAMPLE_ENTITY_FIELD_WITH_RELATION
-);
 const entityServiceGetVersionMock = jest.fn(() => EXAMPLE_VERSION);
 const entityServiceGetVersionCommitMock = jest.fn(() => EXAMPLE_COMMIT);
 const entityServiceGetVersionFieldsMock = jest.fn(() => [EXAMPLE_ENTITY_FIELD]);
@@ -666,7 +643,6 @@ describe("EntityResolver", () => {
             createFieldByDisplayName: createFieldByDisplayNameMock,
             deleteField: deleteFieldMock,
             updateField: updateFieldMock,
-            createDefaultRelatedField: createDefaultRelatedFieldMock,
             getVersion: entityServiceGetVersionMock,
             getVersionCommit: entityServiceGetVersionCommitMock,
             getVersionFields: entityServiceGetVersionFieldsMock,
@@ -1162,26 +1138,6 @@ describe("EntityResolver", () => {
     expect(updateFieldMock).toBeCalledTimes(1);
     expect(updateFieldMock).toBeCalledWith(
       { data: {}, where: { id: EXAMPLE_ENTITY_FIELD_ID } },
-      EXAMPLE_USER
-    );
-  });
-
-  it("should create a default related field", async () => {
-    const res = await apolloClient.executeOperation({
-      query: CREATE_DEFAULT_RELATED_FIELD_MUTATION,
-      variables: { fieldId: EXAMPLE_ENTITY_FIELD_ID },
-    });
-    expect(res.errors).toBeUndefined();
-    expect(res.data).toEqual({
-      createDefaultRelatedField: {
-        ...EXAMPLE_ENTITY_FIELD_WITH_RELATION,
-        createdAt: EXAMPLE_ENTITY_FIELD.createdAt.toISOString(),
-        updatedAt: EXAMPLE_ENTITY_FIELD.updatedAt.toISOString(),
-      },
-    });
-    expect(createDefaultRelatedFieldMock).toBeCalledTimes(1);
-    expect(createDefaultRelatedFieldMock).toBeCalledWith(
-      { where: { id: EXAMPLE_ENTITY_FIELD_ID } },
       EXAMPLE_USER
     );
   });

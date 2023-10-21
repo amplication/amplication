@@ -1,7 +1,10 @@
 import {
   Entity,
   entityDefaultActions,
+  EntityField,
+  entityRelatedFieldDefaultActions,
   EnumModuleActionType,
+  types,
 } from "@amplication/code-gen-types";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
@@ -76,4 +79,64 @@ export const getDefaultActionsForEntity = (
       isDefault: true,
     },
   };
+};
+
+export const getDefaultActionsForRelatedField = (
+  entity: Entity,
+  relatedField: EntityField
+): entityRelatedFieldDefaultActions => {
+  const fieldName = pascalCase(relatedField.name);
+  const fieldDisplayName = relatedField.displayName;
+  const entityDisplayName = entity.displayName;
+
+  const isToMany = (relatedField.properties as unknown as types.Lookup)
+    .allowMultipleSelection;
+
+  if (isToMany) {
+    return {
+      [EnumModuleActionType.ChildrenConnect]: {
+        actionType: EnumModuleActionType.ChildrenConnect,
+        name: `connect${fieldName}`,
+        displayName: `Connect ${fieldDisplayName}`,
+        description: `Connect multiple ${fieldDisplayName} records to ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      [EnumModuleActionType.ChildrenDisconnect]: {
+        actionType: EnumModuleActionType.ChildrenDisconnect,
+        name: `disconnect${fieldName}`,
+        displayName: `Disconnect ${fieldDisplayName}`,
+        description: `Disconnect multiple ${fieldDisplayName} records from ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      [EnumModuleActionType.ChildrenFind]: {
+        actionType: EnumModuleActionType.ChildrenFind,
+        name: `find${fieldName}`,
+        displayName: `Find ${fieldDisplayName}`,
+        description: `Find multiple ${fieldDisplayName} records for ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+      [EnumModuleActionType.ChildrenUpdate]: {
+        actionType: EnumModuleActionType.ChildrenUpdate,
+        name: `update${fieldName}`,
+        displayName: `Update ${fieldDisplayName}`,
+        description: `Update multiple ${fieldDisplayName} records for ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+    };
+  } else {
+    return {
+      [EnumModuleActionType.ParentGet]: {
+        actionType: EnumModuleActionType.ParentGet,
+        name: `get${fieldName}`,
+        displayName: `Get ${fieldDisplayName}`,
+        description: `Get a ${fieldDisplayName} record for ${entityDisplayName}`,
+        enabled: true,
+        isDefault: true,
+      },
+    };
+  }
 };

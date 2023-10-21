@@ -300,11 +300,11 @@ export type entityDefaultActions = {
 };
 
 export type entityRelatedFieldDefaultActions = {
-  [models.EnumModuleActionType.ChildrenConnect]: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenDisconnect]: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenFind]: ModuleAction | undefined;
-  [models.EnumModuleActionType.ChildrenUpdate]: ModuleAction | undefined;
-  [models.EnumModuleActionType.ParentGet]: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenConnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenDisconnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
 };
 
 export type entityActions = {

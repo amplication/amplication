@@ -1,10 +1,13 @@
 import * as CodeGenTypes from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
-import { getDefaultActionsForEntity } from "@amplication/dsg-utils";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelatedField,
+} from "@amplication/dsg-utils";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
 import { AmplicationError } from "../../errors/AmplicationError";
-import { Entity, User } from "../../models";
+import { Entity, EntityField, User } from "../../models";
 import { PrismaService } from "../../prisma";
 import { BlockService } from "../block/block.service";
 import { BlockTypeService } from "../block/blockType.service";
@@ -121,6 +124,44 @@ export class ModuleActionService extends BlockTypeService<
                 parentBlock: {
                   connect: {
                     id: module.id,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+  }
+
+  async createDefaultActionsForRelatedField(
+    entity: Entity,
+    field: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleAction[]> {
+    const defaultActions = await getDefaultActionsForRelatedField(
+      entity as unknown as CodeGenTypes.Entity,
+      field as unknown as CodeGenTypes.EntityField
+    );
+    return await Promise.all(
+      Object.keys(defaultActions).map((action) => {
+        return (
+          defaultActions[action] &&
+          super.create(
+            {
+              data: {
+                fieldPermanentId: field.permanentId,
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: moduleId,
                   },
                 },
                 resource: {
