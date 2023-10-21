@@ -290,15 +290,27 @@ export type ModuleAction = Omit<
   actionType: keyof typeof models.EnumModuleActionType;
 };
 
-export type entityDefaultActions = Omit<
-  {
-    [key in models.EnumModuleActionType]: ModuleAction | undefined;
-  },
-  "Custom"
->;
+export type entityDefaultActions = {
+  [models.EnumModuleActionType.Create]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Find]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Meta]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Read]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Update]: ModuleAction | undefined;
+};
 
-export type entityActions = entityDefaultActions & {
-  [models.EnumModuleActionType.Custom]: ModuleAction[];
+export type entityRelatedFieldDefaultActions = {
+  [models.EnumModuleActionType.ChildrenConnect]: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenDisconnect]: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenFind]: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenUpdate]: ModuleAction | undefined;
+  [models.EnumModuleActionType.ParentGet]: ModuleAction | undefined;
+};
+
+export type entityActions = {
+  entityDefaultActions: entityDefaultActions;
+  relatedFieldsDefaultActions: entityRelatedFieldDefaultActions[];
+  customActions: ModuleAction[];
 };
 
 export type EntityActionsMap = Record<

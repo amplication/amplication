@@ -1,6 +1,6 @@
 import {
   Entity,
-  entityActions,
+  entityDefaultActions,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
 import { camelCase } from "camel-case";
@@ -21,7 +21,9 @@ export const prepareEntityPluralName = (entityName: string): string => {
   return pluralName;
 };
 
-export const getDefaultActionsForEntity = (entity: Entity): entityActions => {
+export const getDefaultActionsForEntity = (
+  entity: Entity
+): entityDefaultActions => {
   const entityPluralName = pascalCase(prepareEntityPluralName(entity.name));
   const entityName = entity.name;
 
@@ -77,11 +79,5 @@ export const getDefaultActionsForEntity = (entity: Entity): entityActions => {
       enabled: true,
       isDefault: true,
     },
-    [EnumModuleActionType.ChildrenConnect]: undefined,
-    [EnumModuleActionType.ChildrenDisconnect]: undefined,
-    [EnumModuleActionType.ChildrenFind]: undefined,
-    [EnumModuleActionType.ChildrenUpdate]: undefined,
-    [EnumModuleActionType.ParentGet]: undefined,
-    [EnumModuleActionType.Custom]: undefined,
   };
 };

@@ -86,11 +86,21 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-  const createEntityId = builders.identifier(entityActions.Create.name);
-  const findManyEntityId = builders.identifier(entityActions.Find.name);
-  const findOneEntityId = builders.identifier(entityActions.Read.name);
-  const updateEntityId = builders.identifier(entityActions.Update.name);
-  const deleteEntityId = builders.identifier(entityActions.Delete.name);
+  const createEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Create.name
+  );
+  const findManyEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Find.name
+  );
+  const findOneEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Read.name
+  );
+  const updateEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Update.name
+  );
+  const deleteEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Delete.name
+  );
 
   const templateMapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -284,12 +294,10 @@ async function createControllerBaseModule({
     },
   ];
 
-  Object.keys(entityActions).forEach((key) => {
-    if (!Array.isArray(entityActions)) {
-      const action = entityActions[key];
-      if (action && !action.enabled) {
-        const removed = removeClassMethodByName(classDeclaration, action.name);
-      }
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (action && !action.enabled) {
+      removeClassMethodByName(classDeclaration, action.name);
     }
   });
 

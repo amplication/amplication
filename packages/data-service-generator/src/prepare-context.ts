@@ -11,7 +11,7 @@ import {
   EntityActionsMap,
   EnumModuleActionType,
   ModuleContainer,
-  entityActions,
+  entityDefaultActions,
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
@@ -242,7 +242,14 @@ function prepareEntityActions(
 
       //return the defaultActions if the relevant module was not provided
       if (moduleContainer === undefined) {
-        return [entity.name, defaultActions];
+        return [
+          entity.name,
+          {
+            entityDefaultActions: defaultActions,
+            relatedFieldsDefaultActions: [],
+            customActions: [],
+          },
+        ];
       }
 
       const moduleContainerId = moduleContainer.id;
@@ -261,9 +268,16 @@ function prepareEntityActions(
           //return the defaultAction if the relevant actions was not provided
           return [key, moduleAction || defaultActions[key]];
         })
-      ) as entityActions;
+      ) as entityDefaultActions;
 
-      return [entity.name, entries];
+      return [
+        entity.name,
+        {
+          entityDefaultActions: entries,
+          relatedFieldsDefaultActions: [],
+          customActions: [],
+        },
+      ];
     })
   );
 }

@@ -1,11 +1,11 @@
-import pluralize from "pluralize";
-import { camelCase } from "camel-case";
 import {
   Entity,
   entityDefaultActions,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import pluralize from "pluralize";
 
 //returns the plural name of the entity, based on its name, in a camelCase format
 //in case the plural name is the same as the name, it adds the suffix "Items"
@@ -75,11 +75,5 @@ export const getDefaultActionsForEntity = (
       enabled: true,
       isDefault: true,
     },
-    [EnumModuleActionType.ChildrenConnect]: undefined,
-    [EnumModuleActionType.ChildrenDisconnect]: undefined,
-    [EnumModuleActionType.ChildrenFind]: undefined,
-    [EnumModuleActionType.ChildrenUpdate]: undefined,
-    [EnumModuleActionType.ParentGet]: undefined,
-    [EnumModuleActionType.Custom]: undefined,
   };
 };
