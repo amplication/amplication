@@ -942,6 +942,7 @@ type ModuleAction implements IBlock {
   description: String
   displayName: String!
   enabled: Boolean!
+  fieldPermanentId: String
   id: String!
   inputParameters: [BlockInputOutput!]!
   isDefault: Boolean!
@@ -1040,7 +1041,6 @@ type Mutation {
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
-  createDefaultRelatedField(relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!

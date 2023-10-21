@@ -96,7 +96,7 @@ export type Block = {
   displayName: Scalars['String']['output'];
   id: Scalars['String']['output'];
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser?: Maybe<User>;
+  lockedByUser: User;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   parentBlock?: Maybe<Block>;
   resource?: Maybe<Resource>;
@@ -972,6 +972,7 @@ export type ModuleAction = IBlock & {
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
   enabled: Scalars['Boolean']['output'];
+  fieldPermanentId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   isDefault: Scalars['Boolean']['output'];
@@ -1070,7 +1071,6 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
-  createDefaultRelatedField: EntityField;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1191,14 +1191,6 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDefaultEntitiesArgs = {
   data: DefaultEntitiesInput;
-};
-
-
-export type MutationCreateDefaultRelatedFieldArgs = {
-  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']['input']>;
-  relatedFieldDisplayName?: InputMaybe<Scalars['String']['input']>;
-  relatedFieldName?: InputMaybe<Scalars['String']['input']>;
-  where: WhereUniqueInput;
 };
 
 
