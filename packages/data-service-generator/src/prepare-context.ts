@@ -11,7 +11,7 @@ import {
   EntityActionsMap,
   EnumModuleActionType,
   ModuleContainer,
-  entityDefaultActions,
+  entityActions,
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
@@ -261,7 +261,7 @@ function prepareEntityActions(
           //return the defaultAction if the relevant actions was not provided
           return [key, moduleAction || defaultActions[key]];
         })
-      ) as entityDefaultActions;
+      ) as entityActions;
 
       return [entity.name, entries];
     })

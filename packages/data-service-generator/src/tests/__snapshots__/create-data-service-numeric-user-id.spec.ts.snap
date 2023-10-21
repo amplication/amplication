@@ -5022,11 +5022,10 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { CustomerService } from "../customer.service";
 import { Public } from "../../decorators/public.decorator";
 import { CustomerCreateInput } from "./CustomerCreateInput";
-import { CustomerWhereInput } from "./CustomerWhereInput";
-import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
-import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { Customer } from "./Customer";
+import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
+import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+import { CustomerUpdateInput } from "./CustomerUpdateInput";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { OrderWhereUniqueInput } from "../../order/base/OrderWhereUniqueInput";
@@ -5035,7 +5034,9 @@ export class CustomerControllerBase {
   constructor(protected readonly service: CustomerService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Customer })
-  async create(@common.Body() data: CustomerCreateInput): Promise<Customer> {
+  async createCustomer(
+    @common.Body() data: CustomerCreateInput
+  ): Promise<Customer> {
     return await this.service.create({
       data: {
         ...data,
@@ -5086,7 +5087,7 @@ export class CustomerControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Customer[]> {
+  async Customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -5124,7 +5125,7 @@ export class CustomerControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async Customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     const result = await this.service.findOne({
@@ -5169,7 +5170,7 @@ export class CustomerControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateCustomer(
     @common.Param() params: CustomerWhereUniqueInput,
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
@@ -5233,7 +5234,7 @@ export class CustomerControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteCustomer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
@@ -6416,17 +6417,16 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { EmptyService } from "../empty.service";
 import { EmptyCreateInput } from "./EmptyCreateInput";
-import { EmptyWhereInput } from "./EmptyWhereInput";
-import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
-import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
-import { EmptyUpdateInput } from "./EmptyUpdateInput";
 import { Empty } from "./Empty";
+import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
+import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+import { EmptyUpdateInput } from "./EmptyUpdateInput";
 
 export class EmptyControllerBase {
   constructor(protected readonly service: EmptyService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
-  async create(@common.Body() data: EmptyCreateInput): Promise<Empty> {
+  async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
     return await this.service.create({
       data: data,
       select: {
@@ -6440,7 +6440,7 @@ export class EmptyControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Empty[]> {
+  async Empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -6455,7 +6455,7 @@ export class EmptyControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async Empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     const result = await this.service.findOne({
@@ -6477,7 +6477,7 @@ export class EmptyControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateEmpty(
     @common.Param() params: EmptyWhereUniqueInput,
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
@@ -6504,7 +6504,7 @@ export class EmptyControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteEmpty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
@@ -7895,18 +7895,17 @@ import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrderService } from "../order.service";
 import { Public } from "../../decorators/public.decorator";
 import { OrderCreateInput } from "./OrderCreateInput";
-import { OrderWhereInput } from "./OrderWhereInput";
-import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-import { OrderFindManyArgs } from "./OrderFindManyArgs";
-import { OrderUpdateInput } from "./OrderUpdateInput";
 import { Order } from "./Order";
+import { OrderFindManyArgs } from "./OrderFindManyArgs";
+import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+import { OrderUpdateInput } from "./OrderUpdateInput";
 
 export class OrderControllerBase {
   constructor(protected readonly service: OrderService) {}
   @Public()
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
-  async create(@common.Body() data: OrderCreateInput): Promise<Order> {
+  async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
     return await this.service.create({
       data: {
         ...data,
@@ -7936,7 +7935,7 @@ export class OrderControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Order[]> {
+  async Orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -7961,7 +7960,7 @@ export class OrderControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async Order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     const result = await this.service.findOne({
@@ -7993,7 +7992,7 @@ export class OrderControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrder(
     @common.Param() params: OrderWhereUniqueInput,
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
@@ -8036,7 +8035,7 @@ export class OrderControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrder(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
@@ -9397,11 +9396,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { OrganizationService } from "../organization.service";
 import { OrganizationCreateInput } from "./OrganizationCreateInput";
-import { OrganizationWhereInput } from "./OrganizationWhereInput";
-import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
-import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { Organization } from "./Organization";
+import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
+import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { UserWhereUniqueInput } from "../../user/base/UserWhereUniqueInput";
@@ -9413,7 +9411,7 @@ export class OrganizationControllerBase {
   constructor(protected readonly service: OrganizationService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Organization })
-  async create(
+  async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
     return await this.service.create({
@@ -9430,7 +9428,7 @@ export class OrganizationControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Organization[]> {
+  async Organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -9446,7 +9444,7 @@ export class OrganizationControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async Organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     const result = await this.service.findOne({
@@ -9469,7 +9467,7 @@ export class OrganizationControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateOrganization(
     @common.Param() params: OrganizationWhereUniqueInput,
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
@@ -9497,7 +9495,7 @@ export class OrganizationControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteOrganization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
@@ -11152,17 +11150,18 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { ProfileService } from "../profile.service";
 import { ProfileCreateInput } from "./ProfileCreateInput";
-import { ProfileWhereInput } from "./ProfileWhereInput";
-import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
-import { ProfileUpdateInput } from "./ProfileUpdateInput";
 import { Profile } from "./Profile";
+import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
+import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+import { ProfileUpdateInput } from "./ProfileUpdateInput";
 
 export class ProfileControllerBase {
   constructor(protected readonly service: ProfileService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Profile })
-  async create(@common.Body() data: ProfileCreateInput): Promise<Profile> {
+  async createProfile(
+    @common.Body() data: ProfileCreateInput
+  ): Promise<Profile> {
     return await this.service.create({
       data: {
         ...data,
@@ -11193,7 +11192,7 @@ export class ProfileControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<Profile[]> {
+  async Profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -11217,7 +11216,7 @@ export class ProfileControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async Profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     const result = await this.service.findOne({
@@ -11248,7 +11247,7 @@ export class ProfileControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateProfile(
     @common.Param() params: ProfileWhereUniqueInput,
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
@@ -11292,7 +11291,7 @@ export class ProfileControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteProfile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
@@ -13425,11 +13424,10 @@ import { plainToClass } from "class-transformer";
 import { ApiNestedQuery } from "../../decorators/api-nested-query.decorator";
 import { UserService } from "../user.service";
 import { UserCreateInput } from "./UserCreateInput";
-import { UserWhereInput } from "./UserWhereInput";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserFindManyArgs } from "./UserFindManyArgs";
-import { UserUpdateInput } from "./UserUpdateInput";
 import { User } from "./User";
+import { UserFindManyArgs } from "./UserFindManyArgs";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateInput } from "./UserUpdateInput";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { OrganizationWhereUniqueInput } from "../../organization/base/OrganizationWhereUniqueInput";
@@ -13438,7 +13436,7 @@ export class UserControllerBase {
   constructor(protected readonly service: UserService) {}
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
-  async create(@common.Body() data: UserCreateInput): Promise<User> {
+  async createUser(@common.Body() data: UserCreateInput): Promise<User> {
     return await this.service.create({
       data: {
         ...data,
@@ -13488,7 +13486,7 @@ export class UserControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  async findMany(@common.Req() request: Request): Promise<User[]> {
+  async Users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -13525,7 +13523,7 @@ export class UserControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async findOne(
+  async User(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     const result = await this.service.findOne({
@@ -13569,7 +13567,7 @@ export class UserControllerBase {
   @common.Patch("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async update(
+  async updateUser(
     @common.Param() params: UserWhereUniqueInput,
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
@@ -13632,7 +13630,7 @@ export class UserControllerBase {
   @common.Delete("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async delete(
+  async deleteUser(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {

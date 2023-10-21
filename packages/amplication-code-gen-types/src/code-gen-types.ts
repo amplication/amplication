@@ -290,16 +290,20 @@ export type ModuleAction = Omit<
   actionType: keyof typeof models.EnumModuleActionType;
 };
 
-export type entityDefaultActions = {
-  [key in models.EnumModuleActionType]: ModuleAction | undefined;
+export type entityDefaultActions = Omit<
+  {
+    [key in models.EnumModuleActionType]: ModuleAction | undefined;
+  },
+  "Custom"
+>;
+
+export type entityActions = entityDefaultActions & {
+  [models.EnumModuleActionType.Custom]: ModuleAction[];
 };
 
 export type EntityActionsMap = Record<
   string, //module name/ entity name
-  entityDefaultActions
-  // & {
-  //   custom: ModuleAction[];
-  // }
+  entityActions
 >;
 
 type BlockOmittedFields<T> = Omit<

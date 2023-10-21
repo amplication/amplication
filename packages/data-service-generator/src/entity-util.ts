@@ -1,11 +1,11 @@
-import pluralize from "pluralize";
-import { camelCase } from "camel-case";
 import {
   Entity,
-  entityDefaultActions,
+  entityActions,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import pluralize from "pluralize";
 
 //This file is a copy of the file from the @amplication/dsg-util package
 //due to constraints in nx, we cannot import it from the package, so we copied it here
@@ -21,9 +21,7 @@ export const prepareEntityPluralName = (entityName: string): string => {
   return pluralName;
 };
 
-export const getDefaultActionsForEntity = (
-  entity: Entity
-): entityDefaultActions => {
+export const getDefaultActionsForEntity = (entity: Entity): entityActions => {
   const entityPluralName = pascalCase(prepareEntityPluralName(entity.name));
   const entityName = entity.name;
 

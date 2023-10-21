@@ -29,7 +29,7 @@ export function setEndpointPermissions(
   if (!publicAction) return;
 
   const classMethod = getClassMethodById(classDeclaration, methodId);
-  assert(classMethod);
+  if (!classMethod) return;
 
   if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
     removeIdentifierFromUseInterceptorDecorator(
