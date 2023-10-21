@@ -2423,7 +2423,7 @@ export class EntityService {
           entity.id
         );
 
-        this.moduleActionService.createDefaultActionsForRelatedField(
+        await this.moduleActionService.createDefaultActionsForRelatedField(
           entity,
           newField,
           moduleId,
@@ -2481,7 +2481,7 @@ export class EntityService {
         entityId
       );
 
-      this.moduleActionService.createDefaultActionsForRelatedField(
+      await this.moduleActionService.createDefaultActionsForRelatedField(
         entity,
         newField,
         moduleId,

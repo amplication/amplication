@@ -81,13 +81,6 @@ const EXAMPLE_ENTITY_FIELD: EntityField = {
   properties: {},
 };
 
-const EXAMPLE_ENTITY_FIELD_WITH_RELATION: EntityField = {
-  ...EXAMPLE_ENTITY_FIELD,
-  properties: {
-    relatedFieldId: "exampleRelatedFieldId",
-  },
-};
-
 const EXAMPLE_USER: User = {
   id: EXAMPLE_USER_ID,
   createdAt: new Date(),
