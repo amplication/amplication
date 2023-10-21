@@ -20,7 +20,6 @@
     "@prisma/client": "^4.16.2",
     "@testing-library/jest-dom": "5.17.0",
     "apollo-server-express": "^3.10.2",
-    "assert": "^2.0.0",
     "ast-types": "^0.14.2",
     "axios": "^0.27.2",
     "base-64": "^1.0.0",
