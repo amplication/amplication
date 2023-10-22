@@ -1,5 +1,9 @@
 import {
+  Button,
+  EnumButtonStyle,
   EnumFlexDirection,
+  EnumFlexItemMargin,
+  EnumIconPosition,
   EnumTextStyle,
   FlexItem,
   HorizontalRule,
@@ -103,6 +107,19 @@ function WorkspaceForm() {
       <FlexItem direction={EnumFlexDirection.Column}>
         <Text textStyle={EnumTextStyle.Label}>Workspace ID</Text>
         <Text textStyle={EnumTextStyle.Normal}>{currentWorkspace?.id}</Text>
+      </FlexItem>
+
+      <FlexItem
+        direction={EnumFlexDirection.Column}
+        margin={EnumFlexItemMargin.Top}
+      >
+        <Button
+          buttonStyle={EnumButtonStyle.Primary}
+          icon="trash-2"
+          iconPosition={EnumIconPosition.Left}
+        >
+          Delete Workspace
+        </Button>
       </FlexItem>
 
       <Snackbar open={Boolean(errorMessage)} message={errorMessage} />
