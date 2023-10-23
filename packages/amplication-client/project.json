@@ -50,7 +50,6 @@
             "output": "/scripts"
           }
         ],
-        "styles": ["packages/amplication-client/src/index.scss"],
         "scripts": [],
         "isolatedConfig": true,
         "webpackConfig": "packages/amplication-client/webpack.config.js"

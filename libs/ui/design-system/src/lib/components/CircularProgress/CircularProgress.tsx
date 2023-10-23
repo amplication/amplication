@@ -10,7 +10,7 @@ export type Props = CircularProgressProps &
     centerToParent?: boolean;
   };
 
-export function CircularProgress({
+function CircularProgress({
   size = 20,
   centerToParent = false,
   ...rest
@@ -26,3 +26,5 @@ export function CircularProgress({
     </span>
   );
 }
+
+export default CircularProgress;
