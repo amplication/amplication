@@ -11,7 +11,7 @@ export type Props = LoaderProps & {
   onTimeout?: () => void;
 };
 
-export const FullScreenLoader: React.FC<Props> = ({
+const FullScreenLoader: React.FC<Props> = ({
   className,
   minimumLoadTimeMS,
   onTimeout,
@@ -37,3 +37,5 @@ export const FullScreenLoader: React.FC<Props> = ({
     </div>
   );
 };
+
+export default FullScreenLoader;

@@ -12,6 +12,7 @@ import {
 import { setContext } from "@apollo/client/link/context";
 import { getToken, setTokenFromCookie } from "./authentication/authentication";
 import "@amplication/ui/design-system/icons";
+import "@amplication/ui/design-system/style/variables";
 import "./index.scss";
 import App from "./App";
 import {
