@@ -46,9 +46,7 @@ export async function createModules(
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);
 
-  const morganModuleId = builders.identifier("MorganModule");
-
-  const importArray = builders.arrayExpression([morganModuleId]);
+  const importArray = builders.arrayExpression([]);
 
   const providersArray = builders.arrayExpression([serviceId, resolverId]);
 
