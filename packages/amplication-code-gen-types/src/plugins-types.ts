@@ -73,6 +73,8 @@ export type PluginMap = {
 export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
+  CreateEntityControllerGrpc = "CreateEntityControllerGrpc",
+  CreateEntityControllerGrpcBase = "CreateEntityControllerGrpcBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminAppModule = "CreateAdminAppModule",
@@ -104,6 +106,7 @@ export enum EventNames {
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
   CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
+  CreateEntityControllerGrpcToManyRelationMethods = "createEntityControllerGrpcToManyRelationMethods",
   CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
   CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
   CreateDTOs = "CreateDTOs",

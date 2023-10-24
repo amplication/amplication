@@ -13,6 +13,7 @@ import { createEntityControllerSpec } from "./test/create-controller-spec";
 import { createResolverModules } from "./resolver/create-resolver";
 import { builders } from "ast-types";
 import DsgContext from "../../dsg-context";
+import { createControllerGrpcModules } from "./controller-grpc/create-controller-grpc";
 
 export async function createResourcesModules(
   entities: Entity[]
@@ -63,6 +64,20 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
 
   const [controllerModule, controllerBaseModule] = controllerModules.modules();
 
+  const controllerGrpcModules =
+    (appInfo.settings.serverSettings.generateRestApi &&
+      (await createControllerGrpcModules(
+        resource,
+        entityName,
+        entityType,
+        serviceModule.path,
+        entity
+      ))) ||
+    new ModuleMap(DsgContext.getInstance.logger);
+
+  //todo: add this line for test file.
+  //const [controllerGrpcModule] = controllerGrpcModules.modules();
+
   const resolverModules =
     (appInfo.settings.serverSettings.generateGraphQL &&
       (await createResolverModules(
@@ -98,6 +113,7 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
   await moduleMap.mergeMany([
     serviceModules,
     controllerModules,
+    controllerGrpcModules,
     resolverModules,
     resourceModules,
     testModule,

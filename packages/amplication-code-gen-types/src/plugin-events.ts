@@ -37,6 +37,9 @@ import {
   CreateConnectMicroservicesParams,
   CreateAdminAppModuleParams,
   CreateAdminDotEnvParams,
+  CreateEntityControllerGrpcParams,
+  CreateEntityControllerGrpcBaseParams,
+  CreateEntityControllerGrpcToManyRelationMethodsParams,
 } from "./plugin-events-params";
 import { EventNames, PluginEventType } from "./plugins-types";
 
@@ -52,6 +55,8 @@ export type Events = {
   [EventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [EventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;
   [EventNames.CreateEntityControllerBase]?: PluginEventType<CreateEntityControllerBaseParams>;
+  [EventNames.CreateEntityControllerGrpc]?: PluginEventType<CreateEntityControllerGrpcParams>;
+  [EventNames.CreateEntityControllerGrpcBase]?: PluginEventType<CreateEntityControllerGrpcBaseParams>;
   [EventNames.CreateServerDockerCompose]?: PluginEventType<CreateServerDockerComposeParams>;
   [EventNames.CreateServerDockerComposeDB]?: PluginEventType<CreateServerDockerComposeDBParams>;
   [EventNames.CreateServerDockerComposeDev]?: PluginEventType<CreateServerDockerComposeDevParams>;
@@ -75,6 +80,7 @@ export type Events = {
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
+  [EventNames.CreateEntityControllerGrpcToManyRelationMethods]?: PluginEventType<CreateEntityControllerGrpcToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
   [EventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;
