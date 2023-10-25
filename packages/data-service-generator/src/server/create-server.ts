@@ -38,9 +38,6 @@ async function createServerInternal(
   const { serverDirectories, entities } = DsgContext.getInstance;
 
   const context = DsgContext.getInstance;
-  const grpcPlugin = context.pluginInstallations.find(
-    (p) => p.pluginId === "transport-grpc"
-  );
 
   await context.logger.info(`Server path: ${serverDirectories.baseDirectory}`);
   await context.logger.info("Creating server...");
@@ -63,7 +60,7 @@ async function createServerInternal(
   const dtoModules = await createDTOModules(dtos);
 
   await context.logger.info("Creating resources...");
-  const resourcesModules = await createResourcesModules(entities, grpcPlugin);
+  const resourcesModules = await createResourcesModules(entities);
 
   await context.logger.info("Creating auth module...");
   const authModules = await createAuthModules();

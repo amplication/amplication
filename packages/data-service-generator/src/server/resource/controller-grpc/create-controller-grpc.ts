@@ -135,7 +135,7 @@ export async function createControllerGrpcModules(
   );
 
   const controllerBaseGrpcModule = await pluginWrapper(
-    createControllerBaseModule,
+    createControllerGrpcBaseModule,
     EventNames.CreateEntityControllerGrpcBase,
     {
       template: templateBase,
@@ -198,7 +198,7 @@ async function createControllerGrpcModule({
   return moduleMap;
 }
 
-async function createControllerBaseModule({
+async function createControllerGrpcBaseModule({
   template,
   entityName,
   entityType,
