@@ -218,9 +218,11 @@ export class ModuleMap {
    * Replace all modules code using a function
    * @param fn A function that receives a module code and returns a new code
    */
-  async replaceModulesCode(fn: (code: string) => string): Promise<void> {
+  async replaceModulesCode(
+    fn: (path: string, code: string) => string
+  ): Promise<void> {
     for await (const module of Object.values(this.map)) {
-      module.code = fn(module.code);
+      module.code = fn(module.path, module.code);
       this.map[module.path] = module;
     }
   }
