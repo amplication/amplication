@@ -22,6 +22,7 @@ export type AppInfo = {
   version: string;
   id: string;
   url: string;
+  generateGrpc: boolean;
   settings: ServiceSettings;
   codeGeneratorVersionOptions: models.CodeGeneratorVersionOptionsInput;
 };
