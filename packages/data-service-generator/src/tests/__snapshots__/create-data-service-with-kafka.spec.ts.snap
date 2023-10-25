@@ -3256,8 +3256,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "server/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+  "server/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
@@ -3291,7 +3290,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      useFactory: (configService) => {
+      useFactory: (configService: ConfigService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
