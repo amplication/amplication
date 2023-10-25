@@ -199,7 +199,7 @@ Not sure where to start? Join our discord and we will help you get started!
 ## Contributors
 
 <!---
-npx contributer-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
+npx contributor-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
 
 change the height and width for each of the contributors from 80 to 50.
 --->
