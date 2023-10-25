@@ -11,6 +11,9 @@ export const formatCode = (path: string, code: string): string => {
   if (path.endsWith(".json")) {
     return format(code, { parser: "json" });
   }
+  if (path.endsWith(".yml") || path.endsWith(".yaml")) {
+    return format(code, { parser: "yaml" });
+  }
   return code;
 };
 
