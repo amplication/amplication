@@ -14,6 +14,9 @@ export const formatCode = (path: string, code: string): string => {
   if (path.endsWith(".yml") || path.endsWith(".yaml")) {
     return format(code, { parser: "yaml" });
   }
+  if (path.endsWith(".md")) {
+    return format(code, { parser: "markdown" });
+  }
   return code;
 };
 
