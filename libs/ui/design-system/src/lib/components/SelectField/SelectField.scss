@@ -11,6 +11,8 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 
   &__menu-list {
     border: $border-dark;
+    border-color: #444b66;
+    border-radius: var(--default-border-radius);
     background-color: var(--gray-90);
     box-shadow: $dropdown-box-shadow;
     padding: 0;
@@ -30,7 +32,7 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
 
     &--is-focused,
     &:hover {
-      border-color: var(--primary);
+      border-color: var(--gray-base);
       box-shadow: none;
       transition: border-color 0.2s ease-in, color 0.2s ease-in;
 
@@ -54,7 +56,12 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
     }
   }
 
+  .select-field__value-container {
+    padding: 0px;
+  }
+
   .select-field__single-value {
+    padding: 6px 8px 6px 12px;
     color: var(--gray-30);
   }
 

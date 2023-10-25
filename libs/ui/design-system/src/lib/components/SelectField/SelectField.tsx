@@ -70,6 +70,7 @@ export const SelectField = ({
         <Select
           components={{
             Option: CustomOption,
+            IndicatorSeparator: () => null,
             DropdownIndicator: CustomDropdownIndicator,
           }}
           className="select-field__container"

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from "react";
+import React, { useCallback, useContext, useEffect, useRef } from "react";
 
 import { SelectMenu as PrimerSelectMenu } from "@primer/react/deprecated";
 import type {
@@ -62,7 +62,13 @@ export const SelectMenu = ({
   selectRef,
   ...rest
 }: Props) => {
-  console.log(icon);
+  const selectMenuRef = useRef(null);
+  useEffect(() => {
+    if (selectMenuRef.current) {
+      selectMenuRef.current.lastChild.lastChild.style.width =
+        selectMenuRef.current.offsetWidth.toString() + "px";
+    }
+  }, []);
   if (disabled) {
     return (
       <div className={classNames("select-menu", className)}>
@@ -81,6 +87,7 @@ export const SelectMenu = ({
       <PrimerSelectMenu
         className={classNames("select-menu", className)}
         {...(selectRef ? { ref: selectRef } : {})}
+        ref={selectMenuRef}
         {...rest}
       >
         <SelectButton

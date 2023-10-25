@@ -24,6 +24,7 @@ $dropdown-box-shadow: 0px 18px 28px -8px rgba(9, 11, 20, 0.6);
   & &__modal {
     > div {
       border: $border-dark;
+      border-color: #444b66;
       box-shadow: $dropdown-box-shadow;
       border-radius: var(--default-border-radius);
       position: relative;
