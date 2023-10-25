@@ -4,12 +4,14 @@ import { memoize } from "lodash";
 import { format } from "prettier";
 import { parse } from "./parse/main";
 
-export const formatCode = (code: string): string => {
-  return format(code, { parser: "typescript" });
-};
-
-export const formatJson = (code: string): string => {
-  return format(code, { parser: "json" });
+export const formatCode = (path: string, code: string): string => {
+  if (path.endsWith(".ts") || path.endsWith(".tsx")) {
+    return format(code, { parser: "typescript" });
+  }
+  if (path.endsWith(".json")) {
+    return format(code, { parser: "json" });
+  }
+  return code;
 };
 
 export const readCode = memoize((path: string): Promise<string> => {
