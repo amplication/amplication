@@ -22,7 +22,12 @@ function ProjectFormPage() {
         <Text textStyle={EnumTextStyle.H4}>Delete Project</Text>
       </FlexItem>
 
-      <Panel>
+      <Panel
+        style={{
+          border: "1px solid red",
+          background: "rgba(255, 20, 70, 0.4)",
+        }}
+      >
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
             <Text textStyle={EnumTextStyle.Description}>
