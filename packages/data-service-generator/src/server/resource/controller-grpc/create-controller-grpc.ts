@@ -72,8 +72,8 @@ export async function createControllerGrpcModules(
   const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
 
-  const template = undefined; // await readFile(controllerGrpcTemplatePath);
-  const templateBase = undefined; // await readFile(controllerBaseGrpcTemplatePath);
+  const template = undefined;
+  const templateBase = undefined;
 
   const controllerId = createControllerGrpcId(entityType);
   const controllerBaseId = createControllerGrpcBaseId(entityType);

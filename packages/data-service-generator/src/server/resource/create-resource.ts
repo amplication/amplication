@@ -1,6 +1,10 @@
 import { plural } from "pluralize";
 import { camelCase } from "camel-case";
-import { Entity, ModuleMap } from "@amplication/code-gen-types";
+import {
+  Entity,
+  ModuleMap,
+  PluginInstallation,
+} from "@amplication/code-gen-types";
 import { validateEntityName } from "../../utils/entity";
 import {
   createServiceBaseId,
@@ -16,17 +20,21 @@ import DsgContext from "../../dsg-context";
 import { createControllerGrpcModules } from "./controller-grpc/create-controller-grpc";
 
 export async function createResourcesModules(
-  entities: Entity[]
+  entities: Entity[],
+  grcPlugin: PluginInstallation
 ): Promise<ModuleMap> {
   const resourceModules = new ModuleMap(DsgContext.getInstance.logger);
   for await (const entity of entities) {
-    await resourceModules.merge(await createResourceModules(entity));
+    await resourceModules.merge(await createResourceModules(entity, grcPlugin));
   }
 
   return resourceModules;
 }
 
-async function createResourceModules(entity: Entity): Promise<ModuleMap> {
+async function createResourceModules(
+  entity: Entity,
+  grpcPlugin: PluginInstallation
+): Promise<ModuleMap> {
   const entityType = entity.name;
   const context = DsgContext.getInstance;
   const { appInfo } = context;
@@ -65,7 +73,7 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
   const [controllerModule, controllerBaseModule] = controllerModules.modules();
 
   const controllerGrpcModules =
-    (appInfo.settings.serverSettings.generateRestApi &&
+    (grpcPlugin &&
       (await createControllerGrpcModules(
         resource,
         entityName,
