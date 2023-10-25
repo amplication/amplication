@@ -17,6 +17,9 @@ export const formatCode = (path: string, code: string): string => {
   if (path.endsWith(".md")) {
     return format(code, { parser: "markdown" });
   }
+  if (path.endsWith(".graphql")) {
+    return format(code, { parser: "graphql" });
+  }
   return code;
 };
 
