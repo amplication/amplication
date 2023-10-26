@@ -79,7 +79,7 @@ type Block {
   displayName: String!
   id: String!
   lockedAt: DateTime
-  lockedByUser: [User!]!
+  lockedByUser: User!
   lockedByUserId: String
   parentBlock: Block
   resource: Resource
@@ -865,6 +865,7 @@ interface IBlock {
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -928,6 +929,7 @@ type Module implements IBlock {
   name: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -940,6 +942,7 @@ type ModuleAction implements IBlock {
   description: String
   displayName: String!
   enabled: Boolean!
+  fieldPermanentId: String
   id: String!
   inputParameters: [BlockInputOutput!]!
   isDefault: Boolean!
@@ -949,6 +952,7 @@ type ModuleAction implements IBlock {
   name: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1037,7 +1041,6 @@ type Mutation {
   createApiToken(data: ApiTokenCreateInput!): ApiToken!
   createBuild(data: BuildCreateInput!): Build!
   createDefaultEntities(data: DefaultEntitiesInput!): [Entity!]
-  createDefaultRelatedField(relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String, where: WhereUniqueInput!): EntityField!
   createEntitiesFromPrismaSchema(data: DBSchemaImportCreateInput!, file: Upload!): UserAction!
   createEntityField(data: EntityFieldCreateInput!, relatedFieldAllowMultipleSelection: Boolean, relatedFieldDisplayName: String, relatedFieldName: String): EntityField!
   createEntityFieldByDisplayName(data: EntityFieldCreateByDisplayNameInput!): EntityField!
@@ -1158,6 +1161,7 @@ type PluginInstallation implements IBlock {
   npm: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   pluginId: String!
   resourceId: String
   settings: JSONObject
@@ -1226,6 +1230,7 @@ type PluginOrder implements IBlock {
   order: [PluginOrderItem!]!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1264,6 +1269,7 @@ type ProjectConfigurationSettings implements IBlock {
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!
@@ -1567,6 +1573,7 @@ type ServiceSettings implements IBlock {
   lockedByUserId: String
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   serverSettings: ServerSettings!
   updatedAt: DateTime!
@@ -1596,6 +1603,7 @@ type ServiceTopics implements IBlock {
   messageBrokerId: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   patterns: [MessagePattern!]!
   resourceId: String
   updatedAt: DateTime!
@@ -1697,6 +1705,7 @@ type Topic implements IBlock {
   name: String!
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
+  parentBlockId: String
   resourceId: String
   updatedAt: DateTime!
   versionNumber: Float!

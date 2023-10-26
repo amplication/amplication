@@ -96,7 +96,7 @@ export type Block = {
   displayName: Scalars['String']['output'];
   id: Scalars['String']['output'];
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
-  lockedByUser: Array<User>;
+  lockedByUser: User;
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   parentBlock?: Maybe<Block>;
   resource?: Maybe<Resource>;
@@ -900,6 +900,7 @@ export type IBlock = {
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -958,6 +959,7 @@ export type Module = IBlock & {
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -970,6 +972,7 @@ export type ModuleAction = IBlock & {
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
   enabled: Scalars['Boolean']['output'];
+  fieldPermanentId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   isDefault: Scalars['Boolean']['output'];
@@ -979,6 +982,7 @@ export type ModuleAction = IBlock & {
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1067,7 +1071,6 @@ export type Mutation = {
   createApiToken: ApiToken;
   createBuild: Build;
   createDefaultEntities?: Maybe<Array<Entity>>;
-  createDefaultRelatedField: EntityField;
   createEntitiesFromPrismaSchema: UserAction;
   createEntityField: EntityField;
   createEntityFieldByDisplayName: EntityField;
@@ -1188,14 +1191,6 @@ export type MutationCreateBuildArgs = {
 
 export type MutationCreateDefaultEntitiesArgs = {
   data: DefaultEntitiesInput;
-};
-
-
-export type MutationCreateDefaultRelatedFieldArgs = {
-  relatedFieldAllowMultipleSelection?: InputMaybe<Scalars['Boolean']['input']>;
-  relatedFieldDisplayName?: InputMaybe<Scalars['String']['input']>;
-  relatedFieldName?: InputMaybe<Scalars['String']['input']>;
-  where: WhereUniqueInput;
 };
 
 
@@ -1598,6 +1593,7 @@ export type PluginInstallation = IBlock & {
   npm: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   pluginId: Scalars['String']['output'];
   resourceId?: Maybe<Scalars['String']['output']>;
   settings?: Maybe<Scalars['JSONObject']['output']>;
@@ -1666,6 +1662,7 @@ export type PluginOrder = IBlock & {
   order: Array<PluginOrderItem>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -1704,6 +1701,7 @@ export type ProjectConfigurationSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
@@ -2241,6 +2239,7 @@ export type ServiceSettings = IBlock & {
   lockedByUserId?: Maybe<Scalars['String']['output']>;
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   serverSettings: ServerSettings;
   updatedAt: Scalars['DateTime']['output'];
@@ -2270,6 +2269,7 @@ export type ServiceTopics = IBlock & {
   messageBrokerId: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   patterns: Array<MessagePattern>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
@@ -2371,6 +2371,7 @@ export type Topic = IBlock & {
   name: Scalars['String']['output'];
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
+  parentBlockId?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];

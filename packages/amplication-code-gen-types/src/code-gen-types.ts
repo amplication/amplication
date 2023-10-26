@@ -9,6 +9,7 @@ export {
   EnumEntityAction,
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
+  EnumModuleActionType,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -218,9 +219,11 @@ export class ModuleMap {
    * Replace all modules code using a function
    * @param fn A function that receives a module code and returns a new code
    */
-  async replaceModulesCode(fn: (code: string) => string): Promise<void> {
+  async replaceModulesCode(
+    fn: (path: string, code: string) => string
+  ): Promise<void> {
     for await (const module of Object.values(this.map)) {
-      module.code = fn(module.code);
+      module.code = fn(module.path, module.code);
       this.map[module.path] = module;
     }
   }
@@ -277,6 +280,45 @@ export type ResourceGenerationConfig = {
 };
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
+
+export type ModuleContainer = BlockOmittedFields<models.Module>;
+export type ModuleAction = Omit<
+  BlockOmittedFields<models.ModuleAction>,
+  "id" | "actionType"
+> & {
+  id?: string;
+  displayName: string;
+  description: string;
+  actionType: keyof typeof models.EnumModuleActionType;
+};
+
+export type entityDefaultActions = {
+  [models.EnumModuleActionType.Create]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Find]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Meta]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Read]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Update]: ModuleAction | undefined;
+};
+
+export type entityRelatedFieldDefaultActions = {
+  [models.EnumModuleActionType.ChildrenConnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenDisconnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
+};
+
+export type entityActions = {
+  entityDefaultActions: entityDefaultActions;
+  relatedFieldsDefaultActions: entityRelatedFieldDefaultActions[];
+  customActions: ModuleAction[];
+};
+
+export type EntityActionsMap = Record<
+  string, //module name/ entity name
+  entityActions
+>;
 
 type BlockOmittedFields<T> = Omit<
   T,

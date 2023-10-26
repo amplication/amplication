@@ -6,9 +6,8 @@ import {
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { TEST_DATA } from "./test-data";
 
 jest.setTimeout(100000);
 
@@ -38,11 +37,7 @@ describe("createDataService", () => {
       pluginInstallations: [],
     };
     const service: DSGResourceData = {
-      entities,
-      roles,
-      resourceInfo: appInfo,
-      buildId: "example_build_id",
-      resourceType: EnumResourceType.Service,
+      ...TEST_DATA,
       serviceTopics: [
         {
           enabled: true,

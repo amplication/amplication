@@ -319,7 +319,7 @@ model Block {
   blocks         Block[]        @relation("BlockToBlock")
   versions       BlockVersion[]
 
-  @@unique([resourceId, displayName], map: "Block.resourceId_displayName_unique")
+  @@unique([resourceId, displayName, blockType, parentBlockId], map: "Block.resourceId_displayName_unique")
 }
 
 model BlockVersion {

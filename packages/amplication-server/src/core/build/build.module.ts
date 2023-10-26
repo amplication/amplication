@@ -21,6 +21,8 @@ import { PluginInstallationModule } from "../pluginInstallation/pluginInstallati
 import { BillingModule } from "../billing/billing.module";
 import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { GitProviderModule } from "../git/git.provider.module";
+import { ModuleModule } from "../module/module.module";
+import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 
 @Module({
   imports: [
@@ -42,6 +44,8 @@ import { GitProviderModule } from "../git/git.provider.module";
     ServiceTopicsModule,
     BillingModule,
     GitProviderModule,
+    ModuleModule,
+    ModuleActionModule,
   ],
   providers: [BuildService, BuildResolver, BuildFilesSaver],
   exports: [BuildService, BuildResolver],

@@ -5,8 +5,8 @@
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "2.0.12",
-    "@amplication/code-gen-utils": "0.0.6",
+    "@amplication/code-gen-types": "2.0.13",
+    "@amplication/code-gen-utils": "0.0.7",
     "@apollo/client": "^3.7.1",
     "@babel/parser": "7.23.0",
     "@babel/types": "7.23.0",
@@ -19,7 +19,6 @@
     "@nestjs/testing": "^9.4.0",
     "@prisma/client": "^4.16.2",
     "@testing-library/jest-dom": "5.17.0",
-    "apollo-server-express": "^3.10.2",
     "assert": "^2.0.0",
     "ast-types": "^0.14.2",
     "axios": "^0.27.2",
@@ -45,7 +44,6 @@
     "lodash": "^4.17.21",
     "logform": "2.5.1",
     "nest-access-control": "^2.2.0",
-    "nest-morgan": "^2.0.0",
     "normalize-path": "^3.0.0",
     "pacote": "^15.0.8",
     "param-case": "3.0.4",

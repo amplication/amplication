@@ -1,11 +1,8 @@
-import entities from "./entities";
-import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import { EnumResourceType } from "../models";
-import { installedPlugins } from "./pluginInstallation";
-import { createDataService } from "../create-data-service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { createDataService } from "../create-data-service";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { TEST_DATA } from "./test-data";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -28,12 +25,8 @@ describe("createDataService", () => {
   test("creates app as expected", async () => {
     const modules = await createDataService(
       {
-        entities,
-        buildId: "example_build_id",
-        roles,
+        ...TEST_DATA,
         resourceInfo: newAppInfo,
-        resourceType: EnumResourceType.Service,
-        pluginInstallations: installedPlugins,
       },
       MockedLogger
     );

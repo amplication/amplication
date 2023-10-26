@@ -1,7 +1,6 @@
-import assert from "assert";
-import { EnumEntityAction, EnumEntityPermissionType } from "../models";
-import { namedTypes } from "ast-types";
 import { Entity } from "@amplication/code-gen-types";
+import { namedTypes } from "ast-types";
+import { EnumEntityAction, EnumEntityPermissionType } from "../models";
 import { getClassMethodById, removeDecoratorByName } from "./ast";
 import { createPublicDecorator } from "./create-public-decorator";
 import { removeIdentifierFromUseInterceptorDecorator } from "./nestjs-code-generation";
@@ -29,7 +28,7 @@ export function setEndpointPermissions(
   if (!publicAction) return;
 
   const classMethod = getClassMethodById(classDeclaration, methodId);
-  assert(classMethod);
+  if (!classMethod) return;
 
   if (action === EnumEntityAction.Search || action === EnumEntityAction.View) {
     removeIdentifierFromUseInterceptorDecorator(

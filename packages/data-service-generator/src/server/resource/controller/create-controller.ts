@@ -21,6 +21,7 @@ import {
   CreateEntityControllerToManyRelationMethodsParams,
   EnumEntityAction,
   ModuleMap,
+  ModuleAction,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -32,6 +33,7 @@ import {
   getClassDeclarationById,
   importContainedIdentifiers,
   getMethods,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import { isToManyRelationField } from "../../../utils/field";
 import { getDTONameToPath } from "../create-dtos";
@@ -70,11 +72,13 @@ export async function createControllerModules(
   entity: Entity
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { appInfo, DTOs } = DsgContext.getInstance;
+  const { appInfo, DTOs, entityActionsMap } = DsgContext.getInstance;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const entityDTOs = DTOs[entity.name];
   const entityDTO = entityDTOs.entity;
+
+  const entityActions = entityActionsMap[entity.name];
 
   const template = await readFile(controllerTemplatePath);
   const templateBase = await readFile(controllerBaseTemplatePath);
@@ -82,11 +86,21 @@ export async function createControllerModules(
   const controllerId = createControllerId(entityType);
   const controllerBaseId = createControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
-  const createEntityId = builders.identifier("create");
-  const findManyEntityId = builders.identifier("findMany");
-  const findOneEntityId = builders.identifier("findOne");
-  const updateEntityId = builders.identifier("update");
-  const deleteEntityId = builders.identifier("delete");
+  const createEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Create.name
+  );
+  const findManyEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Find.name
+  );
+  const findOneEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Read.name
+  );
+  const updateEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Update.name
+  );
+  const deleteEntityId = builders.identifier(
+    entityActions.entityDefaultActions.Delete.name
+  );
 
   const templateMapping = {
     RESOURCE: builders.stringLiteral(resource),
@@ -136,6 +150,7 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
+        entityActions,
       }
     ),
     await pluginWrapper(
@@ -150,6 +165,7 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
+        entityActions,
       }
     ),
   ]);
@@ -208,6 +224,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  entityActions,
 }: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
@@ -277,11 +294,24 @@ async function createControllerBaseModule({
     },
   ];
 
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (action && !action.enabled) {
+      removeClassMethodByName(classDeclaration, action.name);
+    }
+  });
+
   methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
     setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
 
   classDeclaration.body.body.push(...toManyRelationMethods);
+
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
+  removeTSClassDeclares(template);
 
   const dtoNameToPath = getDTONameToPath(DTOs);
   const dtoImports = importContainedIdentifiers(
@@ -294,11 +324,6 @@ async function createControllerBaseModule({
   );
   addImports(template, [serviceImport, ...identifiersImports, ...dtoImports]);
 
-  removeTSIgnoreComments(template);
-  removeESLintComments(template);
-  removeTSVariableDeclares(template);
-  removeTSInterfaceDeclares(template);
-  removeTSClassDeclares(template);
   addAutoGenerationComment(template);
 
   const module: Module = {
