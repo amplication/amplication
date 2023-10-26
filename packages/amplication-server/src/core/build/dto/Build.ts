@@ -10,50 +10,50 @@ import { EnumBuildStatus } from "./EnumBuildStatus";
   isAbstract: true,
 })
 export class Build {
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   id!: string;
 
-  @Field(() => Date, { nullable : false, })
+  @Field(() => Date, { nullable: false })
   createdAt!: Date;
 
-  @Field(() => Resource, { nullable : true })
+  @Field(() => Resource, { nullable: true })
   resource?: Resource;
 
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   resourceId!: string;
 
-  @Field(() => User, { nullable : true })
+  @Field(() => User, { nullable: true })
   createdBy?: User;
 
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   userId!: string;
 
-  @Field(() => EnumBuildStatus, { nullable : true })
+  @Field(() => EnumBuildStatus, { nullable: true })
   status?: keyof typeof EnumBuildStatus;
 
-  @Field(() => String, { nullable : true })
+  @Field(() => String, { nullable: true })
   archiveURI?: string;
 
   blockVersions?: BlockVersion[] | null | undefined;
 
   entityVersions?: EntityVersion[] | null | undefined;
 
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   version: string;
 
-  @Field(() => String, { nullable : true })
+  @Field(() => String, { nullable: true })
   message?: string;
 
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   actionId: string;
 
-  @Field(() => Action, { nullable : true })
+  @Field(() => Action, { nullable: true })
   action?: Action;
 
-  @Field(() => Commit, { nullable : true})
+  @Field(() => Commit, { nullable: true })
   commit?: Commit;
 
-  @Field(() => String, { nullable : false })
+  @Field(() => String, { nullable: false })
   commitId!: string;
 
   @Field(() => String, { nullable: true })
