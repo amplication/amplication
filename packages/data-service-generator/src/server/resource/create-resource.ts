@@ -75,8 +75,7 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
       ))) ||
     new ModuleMap(DsgContext.getInstance.logger);
 
-  //todo: add this line for test file.
-  //const [controllerGrpcModule] = controllerGrpcModules.modules();
+  const [controllerGrpcModule] = controllerGrpcModules.modules();
 
   const resolverModules =
     (appInfo.settings.serverSettings.generateGraphQL &&
@@ -94,6 +93,7 @@ async function createResourceModules(entity: Entity): Promise<ModuleMap> {
     entityType,
     serviceModule.path,
     controllerModule?.path,
+    controllerGrpcModule?.path,
     resolverModule?.path
   );
 
