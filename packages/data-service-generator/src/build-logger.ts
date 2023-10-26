@@ -19,7 +19,7 @@ export class BuildLogger implements IBuildLogger {
         logContext
       );
     } catch (error) {
-      applicationLogger.error(`Failed to send log to build manager`, error);
+      applicationLogger.error("Failed to send log to build manager", error);
     }
   }
 
