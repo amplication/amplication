@@ -22,7 +22,7 @@ export async function createTypesRelatedFiles(): Promise<ModuleMap> {
   await createDecimalFilters(moduleMap);
 
   await logger.info("Formatting types related files...");
-  await moduleMap.replaceModulesCode((code) => formatCode(code));
+  await moduleMap.replaceModulesCode((path, code) => formatCode(path, code));
 
   return moduleMap;
 }
