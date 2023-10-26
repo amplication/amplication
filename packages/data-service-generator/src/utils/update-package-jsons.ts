@@ -14,7 +14,7 @@ export async function updatePackageJSONs(
   baseDirectory: string,
   update: { [key: string]: any }[]
 ): Promise<ModuleMap> {
-  await modules.replaceModulesCode((code) =>
+  await modules.replaceModulesCode((path, code) =>
     preparePackageJsonFile(code, update)
   );
 
