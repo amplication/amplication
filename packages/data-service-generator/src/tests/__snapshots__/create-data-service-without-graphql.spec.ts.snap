@@ -3040,47 +3040,53 @@ services:
     "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@nestjs/common": "8.4.7",
-    "@nestjs/config": "1.1.5",
-    "@nestjs/core": "8.4.7",
-    "@nestjs/graphql": "9.1.2",
-    "@nestjs/platform-express": "8.4.7",
-    "@nestjs/serve-static": "2.2.2",
-    "@nestjs/swagger": "5.1.5",
+    "@amplication/nest-access-control": "2.2.1",
+    "@apollo/server": "^4.9.4",
+    "@nestjs/apollo": "12.0.9",
+    "@nestjs/common": "10.2.7",
+    "@nestjs/config": "3.1.1",
+    "@nestjs/core": "10.2.7",
+    "@nestjs/graphql": "12.0.9",
+    "@nestjs/jwt": "^10.1.1",
+    "@nestjs/passport": "^10.0.2",
+    "@nestjs/platform-express": "10.2.7",
+    "@nestjs/serve-static": "4.0.0",
+    "@nestjs/swagger": "7.1.13",
+    "@prisma/client": "^5.4.2",
     "@types/bcrypt": "5.0.0",
-    "@prisma/client": "4.6.1",
-    "apollo-server-express": "3.6.1",
-    "bcrypt": "5.0.1",
+    "bcrypt": "5.1.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
-    "dotenv": "^16.1.4",
-    "graphql": "15.7.2",
+    "dotenv": "16.3.1",
     "graphql-type-json": "0.3.2",
-    "nest-access-control": "2.0.3",
-    "nest-morgan": "1.0.1",
+    "graphql": "^16.8.1",
     "npm-run-all": "4.1.5",
+    "passport-http": "0.3.0",
+    "passport-jwt": "4.0.1",
+    "passport": "0.6.0",
     "reflect-metadata": "0.1.13",
-    "swagger-ui-express": "4.3.0",
     "ts-node": "10.9.1",
-    "type-fest": "0.13.1",
-    "validator": "^13.9.0",
+    "type-fest": "2.19.0",
+    "validator": "13.11.0",
     "decimal.js": "10.4.3"
   },
   "devDependencies": {
-    "@nestjs/cli": "8.2.5",
-    "@nestjs/testing": "8.4.7",
-    "@types/express": "4.17.9",
-    "@types/graphql-type-json": "0.3.2",
-    "@types/jest": "26.0.19",
+    "@nestjs/cli": "^10.1.18",
+    "@nestjs/testing": "^10.2.7",
+    "@types/express": "^4.17.19",
+    "@types/graphql-type-json": "0.3.3",
+    "@types/jest": "^29.5.5",
     "@types/normalize-path": "3.0.0",
-    "@types/supertest": "2.0.11",
-    "@types/validator": "^13.7.15",
-    "jest": "27.0.6",
-    "jest-mock-extended": "^2.0.4",
-    "prisma": "4.6.1",
-    "supertest": "4.0.2",
-    "ts-jest": "27.0.3",
-    "typescript": "4.3.5"
+    "@types/passport-http": "0.3.9",
+    "@types/passport-jwt": "3.0.10",
+    "@types/supertest": "^2.0.14",
+    "@types/validator": "^13.11.2",
+    "jest-mock-extended": "^3.0.5",
+    "jest": "^29.7.0",
+    "prisma": "^5.4.2",
+    "supertest": "^6.3.3",
+    "ts-jest": "^29.1.1",
+    "typescript": "^5.2.2"
   },
   "jest": {
     "preset": "ts-jest",
@@ -3252,7 +3258,6 @@ async function seed() {
 ",
   "server/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
 import { APP_INTERCEPTOR } from "@nestjs/core";
-import { MorganInterceptor, MorganModule } from "nest-morgan";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
@@ -3278,19 +3283,12 @@ import { ConfigModule } from "@nestjs/config";
     HealthModule,
     PrismaModule,
     SecretsManagerModule,
-    MorganModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
   ],
-  providers: [
-    {
-      provide: APP_INTERCEPTOR,
-      scope: Scope.REQUEST,
-      useClass: MorganInterceptor("combined"),
-    },
-  ],
+  providers: [],
 })
 export class AppModule {}
 ",
@@ -4762,7 +4760,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -4892,7 +4889,7 @@ describe("Customer", () => {
         },
       ],
       controllers: [CustomerController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -5361,11 +5358,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class CustomerModuleBase {}
 ",
@@ -6008,7 +6004,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -6102,7 +6097,7 @@ describe("Empty", () => {
         },
       ],
       controllers: [EmptyController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -6334,11 +6329,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class EmptyModuleBase {}
 ",
@@ -7405,7 +7399,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -7499,7 +7492,7 @@ describe("Order", () => {
         },
       ],
       controllers: [OrderController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -7794,11 +7787,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrderModuleBase {}
 ",
@@ -8760,7 +8752,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -8858,7 +8849,7 @@ describe("Organization", () => {
         },
       ],
       controllers: [OrganizationController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -9393,11 +9384,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class OrganizationModuleBase {}
 ",
@@ -9548,10 +9538,9 @@ describe("isRecordNotFoundError", () => {
   "server/src/prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
 export const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
-export function isRecordNotFoundError(
-  error: Error & { code?: string }
-): boolean {
+export function isRecordNotFoundError(error: any): boolean {
   return (
+    error instanceof Error &&
     "code" in error &&
     error.code === PRISMA_QUERY_INTERPRETATION_ERROR &&
     error.message.includes(PRISMA_RECORD_NOT_FOUND)
@@ -9593,12 +9582,6 @@ import { PrismaClient } from "@prisma/client";
 export class PrismaService extends PrismaClient implements OnModuleInit {
   async onModuleInit() {
     await this.$connect();
-  }
-
-  async enableShutdownHooks(app: INestApplication) {
-    this.$on("beforeExit", async () => {
-      await app.close();
-    });
   }
 }
 ",
@@ -10339,7 +10322,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -10445,7 +10427,7 @@ describe("Profile", () => {
         },
       ],
       controllers: [ProfileController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -10748,11 +10730,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class ProfileModuleBase {}
 ",
@@ -12464,7 +12445,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
 import { ACLModule } from "../../auth/acl.module";
@@ -12582,7 +12562,7 @@ describe("User", () => {
         },
       ],
       controllers: [UserController],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
@@ -13122,11 +13102,10 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { Module } from "@nestjs/common";
-import { MorganModule } from "nest-morgan";
 
 @Module({
-  imports: [MorganModule],
-  exports: [MorganModule],
+  imports: [],
+  exports: [],
 })
 export class UserModuleBase {}
 ",
@@ -14811,8 +14790,8 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "removeComments": true,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "target": "es2017",
-    "lib": ["ES2020"],
+    "target": "es2022",
+    "lib": ["es2023"],
     "sourceMap": true,
     "outDir": "./dist",
     "incremental": true,

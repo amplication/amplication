@@ -10,7 +10,6 @@ import {
   CallHandler,
 } from "@nestjs/common";
 import request from "supertest";
-import { MorganModule } from "nest-morgan";
 import { ACGuard } from "nest-access-control";
 // @ts-ignore
 import { DefaultAuthGuard } from "../../auth/defaultAuth.guard";
@@ -113,7 +112,7 @@ describe(TEST_NAME, () => {
         },
       ],
       controllers: [CONTROLLER],
-      imports: [MorganModule.forRoot(), ACLModule],
+      imports: [ACLModule],
     })
       .overrideGuard(DefaultAuthGuard)
       .useValue(basicAuthGuard)
