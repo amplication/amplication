@@ -1,18 +1,14 @@
 import { join, dirname } from "node:path";
 import { MakeDirectoryOptions, promises } from "node:fs";
-
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
-import fsExtra from "fs-extra";
-
 import { DSGResourceData } from "@amplication/code-gen-types";
-
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
-const spyOnFsExtraCopy = jest.spyOn(fsExtra, "copy");
 
 spyOnMkdir.mockImplementation(
   (dirName: string, options: MakeDirectoryOptions) => {
@@ -22,9 +18,6 @@ spyOnMkdir.mockImplementation(
   }
 );
 spyOnWriteFile.mockResolvedValue(undefined);
-spyOnFsExtraCopy.mockImplementation((src: string, dest: string) =>
-  Promise.resolve()
-);
 
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
@@ -55,6 +48,7 @@ describe("BuildRunnerService", () => {
             },
           },
         },
+        MockedAmplicationLoggerProvider,
         BuildRunnerService,
       ],
     }).compile();
@@ -104,26 +98,5 @@ describe("BuildRunnerService", () => {
         JSON.stringify({ ...dsgResourceDataMock, codeGeneratorVersion })
       )
     ).resolves.not.toThrow();
-  });
-
-  it("should copy file and/or directories from `jobPath` to `artifactPath`", async () => {
-    const resourceId = "resourceId";
-    const buildId = "buildId";
-
-    await service.copyFromJobToArtifact(resourceId, buildId);
-
-    const jobPath = join(
-      configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      buildId,
-      configService.get(Env.DSG_JOBS_CODE_FOLDER)
-    );
-    const artifactPath = join(
-      configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
-      resourceId,
-      buildId
-    );
-
-    expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
-    await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
   });
 });
