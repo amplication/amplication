@@ -5,8 +5,15 @@ import { BlockModule } from "../block/block.module";
 import { PermissionsModule } from "../permissions/permissions.module";
 import { PrismaModule } from "../../prisma";
 import { UserModule } from "../user/user.module";
+import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 @Module({
-  imports: [UserModule, BlockModule, PermissionsModule, PrismaModule],
+  imports: [
+    UserModule,
+    BlockModule,
+    PermissionsModule,
+    PrismaModule,
+    ModuleActionModule,
+  ],
   providers: [ModuleService, ModuleResolver],
   exports: [ModuleService, ModuleResolver],
 })

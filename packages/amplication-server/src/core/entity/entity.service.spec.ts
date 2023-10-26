@@ -40,6 +40,7 @@ import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaPar
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
 import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -453,6 +454,17 @@ describe("EntityService", () => {
             }),
             updateDefaultModuleForEntity: jest.fn(() => {
               return {};
+            }),
+            getDefaultModuleIdForEntity: jest.fn(() => {
+              return "exampleModuleId";
+            }),
+          })),
+        },
+        {
+          provide: ModuleActionService,
+          useClass: jest.fn(() => ({
+            createDefaultActionsForRelatedField: jest.fn(() => {
+              return [];
             }),
           })),
         },

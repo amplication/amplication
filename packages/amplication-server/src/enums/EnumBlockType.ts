@@ -8,6 +8,7 @@ export enum EnumBlockType {
   PluginInstallation = "PluginInstallation",
   PluginOrder = "PluginOrder",
   Module = "Module",
+  ModuleAction = "ModuleAction",
 }
 
 registerEnumType(EnumBlockType, { name: "EnumBlockType" });

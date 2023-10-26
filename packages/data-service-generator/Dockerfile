@@ -14,6 +14,10 @@ RUN npm i --omit-dev
 # Copy unpublished logging library
 COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
 
+# Copy unpublished code-gen-types library
+COPY ./dist/packages/amplication-code-gen-types node_modules/@amplication/code-gen-types
+
+
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}
 

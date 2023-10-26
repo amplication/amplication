@@ -7,6 +7,11 @@ import {
   LookupResolvedProperties,
   serverDirectories,
   types,
+  ModuleAction,
+  EntityActionsMap,
+  EnumModuleActionType,
+  ModuleContainer,
+  entityDefaultActions,
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
@@ -19,6 +24,7 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
+import { getDefaultActionsForEntity } from "./entity-util";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -34,6 +40,8 @@ export async function prepareContext(
     roles,
     resourceInfo: appInfo,
     otherResources,
+    moduleActions,
+    moduleContainers,
   } = dSGResourceData;
 
   if (!entities || !roles || !appInfo) {
@@ -58,6 +66,12 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
+
+  context.entityActionsMap = prepareEntityActions(
+    entities,
+    moduleContainers,
+    moduleActions
+  );
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
     return entity.fields.some(
@@ -211,4 +225,59 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
       }),
     };
   });
+}
+
+function prepareEntityActions(
+  entities: Entity[],
+  moduleContainers: ModuleContainer[],
+  moduleActions: ModuleAction[]
+): EntityActionsMap {
+  return Object.fromEntries(
+    entities.map((entity) => {
+      const defaultActions = getDefaultActionsForEntity(entity);
+
+      const moduleContainer = moduleContainers?.find(
+        (moduleContainer) => moduleContainer.entityId === entity.id
+      );
+
+      //return the defaultActions if the relevant module was not provided
+      if (moduleContainer === undefined) {
+        return [
+          entity.name,
+          {
+            entityDefaultActions: defaultActions,
+            relatedFieldsDefaultActions: [],
+            customActions: [],
+          },
+        ];
+      }
+
+      const moduleContainerId = moduleContainer.id;
+
+      const actionKeys = Object.keys(EnumModuleActionType) as Array<
+        keyof typeof EnumModuleActionType
+      >;
+
+      const entries = Object.fromEntries(
+        actionKeys.map((key) => {
+          const moduleAction = moduleActions.find(
+            (moduleAction) =>
+              moduleAction.parentBlockId === moduleContainerId &&
+              moduleAction.actionType === key
+          );
+          //return the defaultAction if the relevant actions was not provided
+          return [key, moduleAction || defaultActions[key]];
+        })
+      ) as entityDefaultActions;
+
+      return [
+        entity.name,
+        {
+          entityDefaultActions: entries,
+          relatedFieldsDefaultActions: [],
+          customActions: [],
+        },
+      ];
+    })
+  );
 }

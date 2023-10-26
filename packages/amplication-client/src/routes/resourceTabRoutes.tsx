@@ -30,12 +30,22 @@ const resourceTabRoutes = [
         routes: [
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module/actions",
-            Component: lazy(() => import("../Modules/ActionList")),
+            Component: lazy(() => import("../ModuleActions/ModuleActionList")),
             moduleName: "",
             routeTrackType: "",
-            exactPath: true,
-            routes: [],
+            exactPath: false,
             isAnalytics: true,
+            routes: [
+              {
+                path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module/actions/:moduleAction",
+                Component: lazy(() => import("../ModuleActions/ModuleAction")),
+                moduleName: "",
+                routeTrackType: "",
+                exactPath: true,
+                routes: [],
+                isAnalytics: true,
+              },
+            ],
           },
           {
             path: "/:workspace([A-Za-z0-9-]{20,})/:project([A-Za-z0-9-]{20,})/:resource([A-Za-z0-9-]{20,})/modules/:module/types",

@@ -90,8 +90,8 @@ const NewModule = ({ resourceId, onSuccess }: Props) => {
     <div>
       <SvgThemeImage image={EnumImages.Entities} />
       <Text textAlign={EnumTextAlign.Center}>
-        Give your new entity a descriptive name. <br />
-        For example: Customer, Support Ticket, Purchase Order...
+        Give your new Module a descriptive name in a PascalCase format <br />
+        For example: Customer, SupportTicket, PurchaseOrder.
       </Text>
 
       <Formik
