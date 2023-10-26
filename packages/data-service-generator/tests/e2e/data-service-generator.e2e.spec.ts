@@ -30,6 +30,7 @@ const SERVER_START_TIMEOUT = 30000;
 
 const JSON_MIME = "application/json";
 const STATUS_OK = 200;
+const STATUS_NO_CONTENT = 204;
 const STATUS_CREATED = 201;
 const NOT_FOUND = 404;
 
@@ -194,7 +195,37 @@ describe("Data Service Generator", () => {
           });
 
         logger.info("Waiting for server to be ready...");
-        await sleep(SERVER_START_TIMEOUT);
+        let servicesNotReady = true;
+        const startTime = Date.now();
+
+        do {
+          try {
+            logger.info("Checking api/_health/live...");
+
+            const res = await fetch(`${host}/api/_health/live`, {
+              method: "GET",
+            });
+            if (res.status === STATUS_NO_CONTENT) {
+              const containers = await compose.ps(dockerComposeOptions);
+
+              if (
+                !containers.data.services.find((s) =>
+                  s.name.endsWith("migrate-1")
+                )
+              ) {
+                servicesNotReady = false;
+                logger.info("server ready!");
+                break;
+              }
+            }
+          } catch (error) {
+            /**/
+          }
+          await sleep(1000);
+        } while (
+          servicesNotReady ||
+          startTime + SERVER_START_TIMEOUT < Date.now()
+        );
       });
 
       afterAll(async () => {
