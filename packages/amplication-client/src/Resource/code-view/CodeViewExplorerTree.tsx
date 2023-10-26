@@ -43,15 +43,34 @@ const CodeViewExplorerTree = ({
   const { error, isError } = useQuery<StorageResponseType, AxiosError>(
     ["storage-folderList", selectedBuild.id, selectedFolder?.path],
     async () => {
-      return await StorageBaseAxios.instance.folderList(
-        resourceId,
-        selectedBuild.id,
-        selectedFolder?.path
-      );
+      const currentFolder = selectedFolder;
+      currentFolder.children = [
+        {
+          type: NodeTypeEnum.File,
+          name: "Loading...",
+          path: "/",
+          children: [],
+          expanded: true,
+        },
+      ];
+      setRootFile({ ...rootFile });
+
+      try {
+        const responseData = await StorageBaseAxios.instance.folderList(
+          resourceId,
+          selectedBuild.id,
+          selectedFolder?.path
+        );
+
+        currentFolder.children = responseData.result;
+        return responseData;
+      } catch (error) {
+        console.error(error);
+      }
     },
     {
       onSuccess: (data) => {
-        selectedFolder.children = data.result;
+        // selectedFolder.children = data.result;
         setRootFile({ ...rootFile });
       },
     }
@@ -113,6 +132,8 @@ const CodeViewExplorerTree = ({
                   file={child}
                   key={child.path + JSON.stringify(child.children)}
                   onSelect={handleNodeClick}
+                  currentFolder={selectedFolder.path}
+                  isLoading={selectedFolder.path === child.path}
                 />
               ))}
             </TreeView>
