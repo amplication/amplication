@@ -11,6 +11,7 @@ import { PrismaSchemaParserModule } from "../prismaSchemaParser/prismaSchemaPars
 import { BillingModule } from "../billing/billing.module";
 import { ServiceSettingsModule } from "../serviceSettings/serviceSettings.module";
 import { ModuleModule } from "../module/module.module";
+import { ModuleActionModule } from "../moduleAction/moduleAction.module";
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ModuleModule } from "../module/module.module";
     BillingModule,
     ServiceSettingsModule,
     ModuleModule,
+    ModuleActionModule,
   ],
   providers: [EntityService, EntityResolver, EntityVersionResolver],
   exports: [EntityService, EntityResolver, EntityVersionResolver],

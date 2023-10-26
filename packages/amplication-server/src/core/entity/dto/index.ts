@@ -27,4 +27,3 @@ export { CreateOneEntityFieldByDisplayNameArgs } from "./CreateOneEntityFieldByD
 export { UpdateOneEntityFieldArgs } from "./UpdateOneEntityFieldArgs";
 export { EntityFieldCreateInput } from "./EntityFieldCreateInput";
 export { EntityFieldUpdateInput } from "./EntityFieldUpdateInput";
-export { CreateDefaultRelatedFieldArgs } from "./CreateDefaultRelatedFieldArgs";
