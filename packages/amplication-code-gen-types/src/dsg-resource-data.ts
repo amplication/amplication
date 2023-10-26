@@ -18,8 +18,8 @@ export class DSGResourceData {
   roles?: Role[];
 
   pluginInstallations!: PluginInstallation[];
-  moduleContainers!: ModuleContainer[];
-  moduleActions!: ModuleAction[];
+  moduleContainers?: ModuleContainer[];
+  moduleActions?: ModuleAction[];
 
   //#region Blocks
   serviceTopics?: ServiceTopics[];

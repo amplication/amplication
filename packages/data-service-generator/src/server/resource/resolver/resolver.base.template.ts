@@ -1,5 +1,5 @@
 import * as graphql from "@nestjs/graphql";
-import * as apollo from "apollo-server-express";
+import { GraphQLError } from "graphql";
 // @ts-ignore
 import { isRecordNotFoundError } from "../../prisma.util";
 // @ts-ignore
@@ -102,7 +102,7 @@ export class RESOLVER_BASE {
       });
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }
@@ -119,7 +119,7 @@ export class RESOLVER_BASE {
       return await this.service.delete(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
-        throw new apollo.ApolloError(
+        throw new GraphQLError(
           `No resource was found for ${JSON.stringify(args.where)}`
         );
       }

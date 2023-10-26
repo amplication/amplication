@@ -26,4 +26,9 @@ export class ModuleAction extends IBlock {
     nullable: false,
   })
   actionType!: keyof typeof EnumModuleActionType;
+
+  @Field(() => String, {
+    nullable: true,
+  })
+  fieldPermanentId?: string;
 }

@@ -242,7 +242,14 @@ function prepareEntityActions(
 
       //return the defaultActions if the relevant module was not provided
       if (moduleContainer === undefined) {
-        return [entity.name, defaultActions];
+        return [
+          entity.name,
+          {
+            entityDefaultActions: defaultActions,
+            relatedFieldsDefaultActions: [],
+            customActions: [],
+          },
+        ];
       }
 
       const moduleContainerId = moduleContainer.id;
@@ -263,7 +270,14 @@ function prepareEntityActions(
         })
       ) as entityDefaultActions;
 
-      return [entity.name, entries];
+      return [
+        entity.name,
+        {
+          entityDefaultActions: entries,
+          relatedFieldsDefaultActions: [],
+          customActions: [],
+        },
+      ];
     })
   );
 }

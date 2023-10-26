@@ -8,6 +8,7 @@ import {
   EnumDataType,
   ModuleMap,
   NamedClassDeclaration,
+  entityActions,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 import type {
@@ -43,6 +44,7 @@ export interface CreateEntityControllerParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  entityActions: entityActions;
 }
 export interface CreateEntityControllerBaseParams extends EventParams {
   template: namedTypes.File;
@@ -53,6 +55,7 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  entityActions: entityActions;
 }
 
 export interface CreateEntityControllerToManyRelationMethodsParams

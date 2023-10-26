@@ -1,11 +1,11 @@
-import pluralize from "pluralize";
-import { camelCase } from "camel-case";
 import {
   Entity,
   entityDefaultActions,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
+import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
+import pluralize from "pluralize";
 
 //This file is a copy of the file from the @amplication/dsg-util package
 //due to constraints in nx, we cannot import it from the package, so we copied it here
@@ -79,11 +79,5 @@ export const getDefaultActionsForEntity = (
       enabled: true,
       isDefault: true,
     },
-    [EnumModuleActionType.ChildrenConnect]: undefined,
-    [EnumModuleActionType.ChildrenDisconnect]: undefined,
-    [EnumModuleActionType.ChildrenFind]: undefined,
-    [EnumModuleActionType.ChildrenUpdate]: undefined,
-    [EnumModuleActionType.ParentGet]: undefined,
-    [EnumModuleActionType.Custom]: undefined,
   };
 };
