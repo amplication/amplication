@@ -11,7 +11,6 @@ import { plainToInstance } from "class-transformer";
 import { validateOrReject } from "class-validator";
 import { Env } from "../env";
 import { PullRequestService } from "./pull-request.service";
-import { KafkaTopics } from "./pull-request.type";
 import {
   KafkaProducerService,
   KafkaPacemaker,
@@ -20,6 +19,7 @@ import {
   CreatePrFailure,
   CreatePrRequest,
   CreatePrSuccess,
+  KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 
 @Controller()
@@ -32,7 +32,21 @@ export class PullRequestController {
     private readonly logger: AmplicationLogger
   ) {}
 
-  @EventPattern(KafkaTopics.CreatePrRequest)
+  private async logStartProcessing(buildId: string): Promise<void> {
+    const key = {
+      buildId: buildId,
+    };
+    await this.producerService.emitMessage(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC, {
+      key,
+      value: {
+        buildId: buildId,
+        level: "info",
+        message: "Worker assigned. Starting pull request creation...",
+      },
+    });
+  }
+
+  @EventPattern(KAFKA_TOPICS.CREATE_PR_REQUEST_TOPIC)
   async generatePullRequest(
     @Payload() message: CreatePrRequest.Value,
     @Ctx() context: KafkaContext
@@ -53,6 +67,7 @@ export class PullRequestController {
       buildId: validArgs.newBuildId,
     });
 
+    await this.logStartProcessing(validArgs.newBuildId);
     logger.info(`Got a new generate pull request item from queue.`, {
       topic,
       partition,
@@ -84,7 +99,7 @@ export class PullRequestController {
         },
       };
       await this.producerService.emitMessage(
-        KafkaTopics.CreatePrSuccess,
+        KAFKA_TOPICS.CREATE_PR_SUCCESS_TOPIC,
         successEvent
       );
     } catch (error) {
@@ -105,7 +120,7 @@ export class PullRequestController {
       };
 
       await this.producerService.emitMessage(
-        KafkaTopics.CreatePrFailure,
+        KAFKA_TOPICS.CREATE_PR_FAILURE_TOPIC,
         failureEvent
       );
     }

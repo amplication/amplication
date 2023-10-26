@@ -2,14 +2,15 @@
 export default {
   displayName: 'amplication-git-push-webhook-service',
   preset: '../../../jest.preset.js',
-  globals: {
-    'ts-jest': {
-      tsconfig: '<rootDir>/tsconfig.spec.json',
-    },
-  },
+  globals: {},
   testEnvironment: 'node',
   transform: {
-    '^.+\\.[tj]s$': 'ts-jest',
+    '^.+\\.[tj]s$': [
+      'ts-jest',
+      {
+        tsconfig: '<rootDir>/tsconfig.spec.json',
+      },
+    ],
   },
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory:

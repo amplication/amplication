@@ -205,12 +205,24 @@ export class ModuleMap {
   }
 
   /**
+   * Remove modules from the map
+   * @param paths An array of module paths to remove
+   */
+  removeMany(paths: string[]): void {
+    for (const path of paths) {
+      delete this.map[path];
+    }
+  }
+
+  /**
    * Replace all modules code using a function
    * @param fn A function that receives a module code and returns a new code
    */
-  async replaceModulesCode(fn: (code: string) => string): Promise<void> {
+  async replaceModulesCode(
+    fn: (path: string, code: string) => string
+  ): Promise<void> {
     for await (const module of Object.values(this.map)) {
-      module.code = fn(module.code);
+      module.code = fn(module.path, module.code);
       this.map[module.path] = module;
     }
   }
@@ -314,4 +326,17 @@ export type BuildContext = {
   resourceId: string;
   projectId: string;
   data: DSGResourceData;
+};
+
+export type EntityComponent = {
+  name: string;
+  file: namedTypes.File;
+  modulePath: string;
+};
+
+export type EntityComponents = {
+  new: EntityComponent;
+  list: EntityComponent;
+  edit: EntityComponent;
+  show: EntityComponent;
 };

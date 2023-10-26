@@ -1,11 +1,10 @@
-import { Module } from "@amplication/code-gen-types";
+import { EntityComponent, Module } from "@amplication/code-gen-types";
 import {
   print,
   removeTSIgnoreComments,
   removeTSInterfaceDeclares,
   removeTSVariableDeclares,
 } from "@amplication/code-gen-utils";
-import { EntityComponent } from "../types";
 
 export async function createEntityComponentModule(
   component: EntityComponent

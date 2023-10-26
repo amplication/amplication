@@ -12,6 +12,7 @@ import {
   CodeGenerationLog,
   CodeGenerationSuccess,
   CreatePrFailure,
+  CreatePrLog,
   CreatePrSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
@@ -97,5 +98,18 @@ export class BuildController {
   async onDsgLog(@Payload() message: CodeGenerationLog.Value): Promise<void> {
     const logEntry = plainToInstance(CodeGenerationLog.Value, message);
     await this.buildService.onDsgLog(logEntry);
+  }
+
+  @EventPattern(KAFKA_TOPICS.CREATE_PR_LOG_TOPIC)
+  async onCreatePullRequestLog(
+    @Payload() message: CreatePrLog.Value
+  ): Promise<void> {
+    try {
+      const logEntry = plainToInstance(CreatePrLog.Value, message);
+
+      await this.buildService.onCreatePullRequestLog(logEntry);
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
   }
 }

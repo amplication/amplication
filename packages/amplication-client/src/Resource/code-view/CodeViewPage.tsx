@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import CodeViewBar from "./CodeViewBar";
 import CodeViewEditor from "./CodeViewEditor";
-import PageContent from "../../Layout/PageContent";
+import PageContent, { EnumPageWidth } from "../../Layout/PageContent";
 
 import "./CodeViewPage.scss";
 import { EnumImages, SvgThemeImage } from "../../Components/SvgThemeImage";
@@ -29,6 +29,7 @@ function CodeViewPage() {
     <PageContent
       pageTitle={pageTitle}
       sideContent={<CodeViewBar onFileSelected={setFileDetails} />}
+      pageWidth={EnumPageWidth.Full}
     >
       <div className={CLASS_NAME}>
         {fileDetails?.isFile ? (

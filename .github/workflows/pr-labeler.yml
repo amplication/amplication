@@ -1,0 +1,92 @@
+name: Pull Request Labeler
+# This workflows works in conjunction with the release.production.yml workflow to automate release notes based on labels.
+
+on:
+  pull_request_target:
+    types: [opened, edited, synchronize, reopened]
+
+env:
+  NX_CLOUD_ACCESS_TOKEN: ${{ secrets.NX_CLOUD_ACCESS_TOKEN }}
+
+jobs:
+  nx:
+    name: Nx
+    uses: ./.github/workflows/nx.template.yml
+    with:
+      nx-head: "refs/pull/${{ github.event.number }}/merge"
+      nx-base: ${{ github.base_ref }}
+
+  triage:
+    name: Triage changes
+    needs: nx
+    if: ${{ (needs.nx.outputs.affected-lib != '[]' && needs.nx.outputs.affected-lib != '') || (needs.nx.outputs.affected-apps != '[]' && needs.nx.outputs.affected-apps != '') }}
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate label configuration
+        id: labeler-config
+        run: |
+          LABELER_CONFIG=labeler.yml
+          # Function to generate the YAML block for an project
+          generate_yaml_block() {
+            project="$1"
+            prefix="$2"
+            color="#CDD3DE"
+
+            if [[ $project == 'data-service-generator' ]]; then
+              color='#B60205'
+            elif [[ $prefix == 'app' ]]; then
+              color='#5319E7'
+            fi
+
+            cat <<EOF
+          ${prefix}:${project}:
+            pattern:
+              - '**'
+            color: '${color}'
+          EOF
+          }
+
+          LIBS=($(echo '${{ needs.nx.outputs.affected-lib }}' | jq -r '.[]'))
+          # run the loop only if LIBS is not empty
+          if [ -n "$LIBS" ]; then
+            for entry in "${LIBS[@]}"; do
+              generate_yaml_block "$entry" "lib" >> ${LABELER_CONFIG}
+            done
+          fi
+
+          APPS=($(echo '${{ needs.nx.outputs.affected-apps }}' | jq -r '.[]'))
+          if [ -n "$APPS" ]; then
+            for entry in "${APPS[@]}"; do
+              generate_yaml_block "$entry" "app" >> ${LABELER_CONFIG}
+            done
+          fi
+          echo "config-file=${LABELER_CONFIG}" >> $GITHUB_OUTPUT
+      - uses: overbit/labeler@main
+        with:
+          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
+          dot: true
+
+  triage-branch-sync-prs:
+    name: Triage PR for branches sync
+    if: ( github.head_ref == 'master' && github.base_ref == 'next' ) || ( github.head_ref == 'next' && github.base_ref == 'master' )
+    permissions:
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - name: Generate label configuration
+        id: labeler-config
+        run: |
+          FILENAME=branch-sync-labeler.yml
+          echo "ignore-from-release-notes:
+                  pattern:
+                    - '**'
+                  color: '#000000'" > $FILENAME
+          echo "config-file=$FILENAME" >> $GITHUB_OUTPUT
+      - uses: overbit/labeler@main
+        with:
+          configuration-path: ${{ steps.labeler-config.outputs.config-file }}
+          dot: true

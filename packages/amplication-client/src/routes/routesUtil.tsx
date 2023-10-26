@@ -1,16 +1,24 @@
-import React, { Suspense } from "react";
+import React, { Suspense, lazy } from "react";
 import { Redirect, Route, Switch } from "react-router-dom";
 import { RouteDef } from "./appRoutes";
 import useAuthenticated from "../authentication/use-authenticated";
 import * as analytics from "../util/analytics";
-import { CircularProgress } from "@amplication/ui/design-system";
-import NotFoundPage from "../404/NotFoundPage";
+
+//use lazy loading imports to prevent inclusion of the components CSS in the main bundle
+const CircularProgress = lazy(
+  () =>
+    import(
+      "@amplication/ui/design-system/components/CircularProgress/CircularProgress"
+    )
+);
+const NotFoundPage = lazy(() => import("../404/NotFoundPage"));
 
 export type AppRouteProps = {
   moduleName: string | undefined;
   moduleClass: string;
-  // eslint-disable-next-line no-undef
   innerRoutes: JSX.Element | undefined;
+  tabRoutes: JSX.Element | undefined;
+  tabRoutesDef: RouteDef[] | undefined;
 };
 
 export const PURCHASE_URL = "@@purchase";
@@ -37,13 +45,18 @@ const LazyRouteWrapper: React.FC<{
 
           route.isAnalytics &&
             pageTracking(match.path, match.url, match.params);
+
           const nestedRoutes =
             route.routes && routesGenerator(route.routes, route.path);
+          const tabRoutes =
+            route.tabRoutes && routesGenerator(route.tabRoutes, route.path);
 
           const appRouteProps: AppRouteProps = {
             moduleName: route.moduleName,
             moduleClass: route.moduleClass || "",
             innerRoutes: nestedRoutes,
+            tabRoutes: tabRoutes,
+            tabRoutesDef: route.tabRoutes,
           };
 
           if (route.path === "/purchase" && props.history.action === "POP")
@@ -81,10 +94,13 @@ const LazyRouteWrapper: React.FC<{
                 }}
               />
             ) : (
-              React.createElement(route.Component, {
-                ...props,
-                ...appRouteProps,
-              })
+              <>
+                {/* <div>{route.path}</div> */}
+                {React.createElement(route.Component, {
+                  ...props,
+                  ...appRouteProps,
+                })}
+              </>
             ))
           );
         }}

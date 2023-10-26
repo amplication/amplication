@@ -24,14 +24,16 @@ export default {
   component: MultiStateToggle,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <MultiStateToggle
-      label=""
-      name="action_"
-      options={OPTIONS}
-      onChange={props.onChange}
-      selectedValue={OPTIONS[0].value}
-    />
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <MultiStateToggle
+        label=""
+        name="action_"
+        options={OPTIONS}
+        onChange={props.onChange}
+        selectedValue={OPTIONS[0].value}
+      />
+    );
+  },
 };

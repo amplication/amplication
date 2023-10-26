@@ -1,0 +1,83 @@
+@import "../../style/index.scss";
+
+.amp-text {
+  line-height: 1.2;
+  color: var(--gray-base);
+  margin: 0;
+
+  &--h1,
+  &--h1 a {
+    font-size: var(--h1-font-size);
+    font-style: normal;
+    font-weight: 600;
+    line-height: 1.3;
+  }
+
+  &--h2,
+  &--h2 a {
+    font-size: var(--h2-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--h3,
+  &--h3 a {
+    font-size: var(--h3-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--h4,
+  &--h4 a {
+    font-size: var(--h4-font-size);
+    font-style: normal;
+    font-weight: 600;
+  }
+
+  &--normal,
+  &--normal a {
+    font-size: var(--normal-font-size);
+    font-style: normal;
+    font-weight: 400;
+  }
+
+  &--tag,
+  &--tag a {
+    font-size: var(--tag-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--gray-20);
+  }
+
+  &--subtle,
+  &--subtle a {
+    font-size: var(--subtle-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--gray-20);
+  }
+
+  &--description,
+  &--description a {
+    font-size: var(--tag-font-size);
+    font-style: normal;
+    font-weight: 400;
+    color: var(--gray-20);
+  }
+
+  &--label {
+    @include label;
+    margin: 0;
+    display: inline;
+  }
+
+  &--weight-regular {
+    font-weight: 400;
+  }
+  &--weight-semi-bold {
+    font-weight: 500;
+  }
+  &--weight-bold {
+    font-weight: 600;
+  }
+}

@@ -5,14 +5,14 @@
   "projectType": "application",
   "targets": {
     "lint": {
-      "executor": "@nrwl/linter:eslint",
+      "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
       "options": {
         "lintFilePatterns": ["ee/packages/amplication-git-pull-service/**/*.ts"]
       }
     },
     "test": {
-      "executor": "@nrwl/jest:jest",
+      "executor": "@nx/jest:jest",
       "outputs": [
         "{workspaceRoot}/coverage/ee/packages/amplication-git-pull-service"
       ],
@@ -22,7 +22,7 @@
       }
     },
     "build": {
-      "executor": "@nrwl/node:webpack",
+      "executor": "@nx/webpack:webpack",
       "inputs": ["{projectRoot}/**/*"],
       "outputs": ["{options.outputPath}"],
       "options": {
@@ -36,7 +36,9 @@
             "input": "ee/packages/amplication-git-pull-service",
             "output": "prisma"
           }
-        ]
+        ],
+        "compiler": "tsc",
+        "target": "node"
       },
       "configurations": {
         "production": {
@@ -47,7 +49,7 @@
       }
     },
     "serve": {
-      "executor": "@nrwl/node:node",
+      "executor": "@nx/js:node",
       "options": {
         "buildTarget": "amplication-git-pull-service:build",
         "inspect": true,

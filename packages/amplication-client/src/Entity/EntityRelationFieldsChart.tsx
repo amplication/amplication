@@ -1,16 +1,13 @@
 import { Icon } from "@amplication/ui/design-system";
 import classNames from "classnames";
-import { Link } from "react-router-dom";
 import { Formik } from "formik";
 import { isEmpty } from "lodash";
-import React, { useContext } from "react";
-import { Button, EnumButtonStyle } from "../Components/Button";
-import { DisplayNameField } from "../Components/DisplayNameField";
+import { useContext } from "react";
+import { Link } from "react-router-dom";
 import { Form } from "../Components/Form";
+import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import "./EntityRelationFieldsChart.scss";
-import { AppContext } from "../context/appContext";
-import { AnalyticsEventNames } from "../util/analytics-events.types";
 
 export type FormValues = {
   fieldId: string;
@@ -24,7 +21,6 @@ type Props = {
   entityName: string;
   relatedEntityName: string;
   relatedField: models.EntityField;
-  fixInPlace: boolean;
   onSubmit: (data: FormValues) => void;
 };
 
@@ -37,7 +33,6 @@ export const EntityRelationFieldsChart = ({
   entityName,
   relatedEntityName,
   relatedField,
-  fixInPlace,
   onSubmit,
 }: Props) => {
   const initialValues: FormValues = {
@@ -105,21 +100,12 @@ export const EntityRelationFieldsChart = ({
           </div>
           <div className={`${CLASS_NAME}__field ${CLASS_NAME}__field--target`}>
             {relatedFieldIsMissing ? (
-              fixInPlace ? (
-                <DisplayNameField
-                  className={`${CLASS_NAME}__field__textbox`}
-                  name="relatedFieldDisplayName"
-                  placeholder="Display name for the new field"
-                  required
-                />
-              ) : (
-                <Link
-                  className={`${CLASS_NAME}__field__textbox`}
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/fix-related-entities`}
-                >
-                  Fix it
-                </Link>
-              )
+              <Link
+                className={`${CLASS_NAME}__field__textbox`}
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/fix-related-entities`}
+              >
+                Fix it
+              </Link>
             ) : (
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/entities/${field.properties.relatedEntityId}/fields/${relatedField?.id}`}
@@ -128,19 +114,6 @@ export const EntityRelationFieldsChart = ({
               </Link>
             )}
           </div>
-          {fixInPlace && (
-            <Button
-              className={`${CLASS_NAME}__fix`}
-              buttonStyle={EnumButtonStyle.Clear}
-              type="submit"
-              eventData={{
-                eventName: AnalyticsEventNames.RelatedEntityFix,
-                fieldId: field.id,
-              }}
-            >
-              Fix Relation
-            </Button>
-          )}
         </div>
       </Form>
     </Formik>

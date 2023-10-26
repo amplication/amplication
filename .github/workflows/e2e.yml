@@ -36,13 +36,12 @@ env:
   NX_FORCE_ALL: ${{ fromJSON('["", "--all"]')[ inputs.nx-force-all ] }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
   NX_SKIP_NX_CACHE: ${{ inputs.nx-skip-cache || false }}
   BASE: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
-  CYPRESS_CACHE_FOLDER: node_modules/.cache/Cypress
 
 jobs:
   nx:
     uses: ./.github/workflows/nx.template.yml
     with:
-      nx-head: ${{ github.head_ref || github.ref_name }}
+      nx-head: ${{ github.head_ref && format('refs/pull/{0}/merge', github.event.number) || github.ref_name  }}
       nx-base: ${{ github.base_ref || inputs.nx-base || github.event.repository.default_branch }}
       nx-skip-cache: ${{ inputs.nx-skip-cache || false }} # This relies on type coercion, an implicit cast from boolean true to 1 or false to 0, which is then used as array index.
       nx-force-all: ${{ inputs.nx-force-all || false }}
@@ -75,20 +74,10 @@ jobs:
           path: node_modules
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('package-lock.json') }}
 
-      - name: Cache other node modules
-        id: cache-other-node-modules
-        uses: actions/cache@v3
-        env:
-          cache-name: cache-other-node-modules
-        with:
-          path: |
-            libs/util/code-gen-utils/node_modules
-            packages/amplication-cli/node_modules
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('./**/package-lock.json') }}
-
       - name: Install Dependencies
-        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' || steps.cache-other-node-modules.outputs.cache-hit != 'true' }}
+        if: ${{ steps.cache-node-modules.outputs.cache-hit != 'true' }}
         run: npm ci
 
       - name: e2e
+        if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
         run: npx nx e2e ${{ matrix.project }} --prod

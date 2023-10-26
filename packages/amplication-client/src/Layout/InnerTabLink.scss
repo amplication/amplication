@@ -1,8 +1,8 @@
 @import "../style/index.scss";
 
 @mixin active-link {
-  background-color: var(--black10);
-  color: var(--black100);
+  background-color: var(--gray-70);
+  color: var(--gray-base);
   padding: var(--default-spacing-small);
 }
 
@@ -13,12 +13,8 @@
   justify-content: flex-start;
   margin-bottom: var(--default-spacing-small);
   padding: var(--default-spacing-small);
-  border-radius: var(--small-border-radius);
+  border-radius: var(--default-border-radius);
   gap: var(--user-badge-spacing);
-
-  .amp-icon {
-    font-size: var(--title3-font-size);
-  }
 
   &:last-child {
     margin-bottom: 0;

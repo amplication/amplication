@@ -1,9 +1,9 @@
+import { HorizontalRule } from "@amplication/ui/design-system";
 import { gql, useQuery } from "@apollo/client";
 import { useFormikContext } from "formik";
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import * as models from "../models";
 import { EntityRelationFieldsChart } from "./EntityRelationFieldsChart";
-import { HorizontalRule } from "@amplication/ui/design-system";
 import "./RelatedEntityFieldField.scss";
 
 const CLASS_NAME = "related-entity-field-field";
@@ -41,11 +41,10 @@ const RelatedEntityFieldField = ({ entityDisplayName }: Props) => {
 
   return (
     <div className={CLASS_NAME}>
-      {entityField && (
+      {entityField && data && (
         <>
           <HorizontalRule />
           <EntityRelationFieldsChart
-            fixInPlace={false}
             resourceId={data.entity.resourceId}
             entityId={data.entity.id}
             field={formik.values}

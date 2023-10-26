@@ -1,15 +1,12 @@
-import type { ComponentStory, ComponentMeta } from "@storybook/react";
+import type { StoryFn, Meta } from "@storybook/react";
 import { TreeItem } from "./TreeView";
 
-const Story: ComponentMeta<typeof TreeItem> = {
+const Story: Meta<typeof TreeItem> = {
   component: TreeItem,
   title: "TreeItem",
 };
 export default Story;
 
-const Template: ComponentStory<typeof TreeItem> = (args) => (
-  <TreeItem {...args} />
-);
-
-export const Primary = Template.bind({});
-Primary.args = {};
+export const Primary = {
+  args: {},
+};

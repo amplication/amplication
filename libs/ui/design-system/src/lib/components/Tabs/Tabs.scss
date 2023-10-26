@@ -1,0 +1,73 @@
+@import "../../style/index.scss";
+
+$tab-height: 26px;
+
+.amp-tabs {
+  padding: 0 var(--large-spacing);
+  min-height: calc($tab-height + var(--default-spacing-small) * 2) !important;
+  background-color: var(--gray-full);
+
+  .MuiTabs-flexContainer {
+    align-items: baseline;
+  }
+
+  .amp-tab {
+    text-transform: none;
+    color: var(--gray-20);
+    margin: var(--default-spacing-small) var(--double-spacing);
+    font-size: var(--tag-font-size);
+    position: relative;
+    min-height: $tab-height;
+    padding: 0;
+    overflow: visible; //allow for the separator to overflow
+    display: flex;
+    flex-direction: row;
+    min-width: 0;
+
+    .amp-icon {
+      margin-right: var(--icon-spacing);
+    }
+
+    &__indicator {
+      font-size: var(--tag-font-size);
+      background-color: var(--theme-orange);
+      border-radius: 50%;
+      width: 16px;
+      height: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-left: var(--icon-spacing);
+      font-weight: 500;
+      color: var(--gray-full);
+    }
+
+    &:not(:last-child):before {
+      content: "";
+      position: absolute;
+      height: 100%;
+      width: 1px;
+      bottom: 0;
+      right: calc(-1 * var(--double-spacing));
+      background-color: var(--gray-70);
+    }
+
+    &.active {
+      color: var(--gray-base);
+      position: relative;
+      overflow: visible;
+      font-weight: 500;
+
+      &:after {
+        content: "";
+        z-index: 10;
+        position: absolute;
+        display: block;
+        width: 100%;
+        bottom: calc(var(--default-spacing-small) * -1);
+        height: 3px;
+        background-color: var(--primary);
+      }
+    }
+  }
+}

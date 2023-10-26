@@ -1,9 +1,15 @@
 import {
   Button,
   EnumButtonStyle,
+  EnumFlexDirection,
+  EnumGapSize,
+  EnumItemsAlign,
   EnumPanelStyle,
+  EnumTextColor,
+  FlexItem,
   Icon,
   Panel,
+  Text,
 } from "@amplication/ui/design-system";
 import React from "react";
 import { EnumGitOrganizationType } from "../../../../models";
@@ -21,7 +27,6 @@ type Props = {
   selectedGitRepository: GitRepositorySelected;
 };
 
-const CLASS_NAME = "repository-actions";
 export default function WizardRepositoryActions({
   onCreateRepository,
   onSelectRepository,
@@ -30,71 +35,71 @@ export default function WizardRepositoryActions({
   onDisconnectGitRepository,
 }: Props) {
   return (
-    <div className={`${CLASS_NAME}`}>
-      <Panel
-        className={`${CLASS_NAME}__wizard_auth`}
-        panelStyle={EnumPanelStyle.Bordered}
-      >
-        {selectedGitRepository?.gitOrganizationId ? (
-          <WizardGithubSyncDetails
-            repositorySelected={selectedGitRepository}
-            onDisconnectGitRepository={onDisconnectGitRepository}
-          />
-        ) : (
-          <div className={`${CLASS_NAME}__select-repo`}>
-            <div className={`${CLASS_NAME}__select-repo__details`}>
-              <Icon icon="info_circle" />
-              No repository was selected
-            </div>
-            <div className={`${CLASS_NAME}__actions`}>
-              {selectedGitOrganization && (
-                <>
-                  <div className={`${CLASS_NAME}__action`}>
-                    <Button
-                      type="button"
-                      buttonStyle={EnumButtonStyle.Outline}
-                      onClick={onSelectRepository}
-                    >
-                      Select repository
-                    </Button>
-                  </div>
+    <Panel panelStyle={EnumPanelStyle.Bold}>
+      {selectedGitRepository?.gitOrganizationId ? (
+        <WizardGithubSyncDetails
+          repositorySelected={selectedGitRepository}
+          onDisconnectGitRepository={onDisconnectGitRepository}
+        />
+      ) : (
+        <>
+          <FlexItem
+            itemsAlign={EnumItemsAlign.Center}
+            start={
+              <Text textColor={EnumTextColor.ThemeRed}>
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  direction={EnumFlexDirection.Row}
+                  gap={EnumGapSize.Small}
+                >
+                  <Icon icon="info_circle" />
+                  No repository was selected
+                </FlexItem>
+              </Text>
+            }
+            end={
+              selectedGitOrganization && (
+                <FlexItem>
+                  <Button
+                    type="button"
+                    buttonStyle={EnumButtonStyle.Outline}
+                    onClick={onSelectRepository}
+                  >
+                    Select repository
+                  </Button>
                   {selectedGitOrganization.type ===
                     EnumGitOrganizationType.Organization && (
-                    <div className={`${CLASS_NAME}__action`}>
-                      <Button
-                        type="button"
-                        buttonStyle={EnumButtonStyle.Primary}
-                        onClick={onCreateRepository}
-                      >
-                        Create repository
-                      </Button>
-                    </div>
+                    <Button
+                      type="button"
+                      buttonStyle={EnumButtonStyle.Primary}
+                      onClick={onCreateRepository}
+                    >
+                      Create repository
+                    </Button>
                   )}
                   {selectedGitOrganization.type ===
                     EnumGitOrganizationType.User &&
                     selectedGitOrganization.provider ===
                       EnumGitProvider.Github && (
-                      <div className={`${CLASS_NAME}__action`}>
-                        <a
-                          href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
-                          target="_blank"
-                          rel="noreferrer"
+                      <a
+                        href={`https://github.com/new?&owner=${selectedGitOrganization.name}`}
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        <Button
+                          type="button"
+                          buttonStyle={EnumButtonStyle.Primary}
                         >
-                          <Button
-                            type="button"
-                            buttonStyle={EnumButtonStyle.Primary}
-                          >
-                            Create repository
-                          </Button>
-                        </a>
-                      </div>
+                          Create repository
+                        </Button>
+                      </a>
                     )}
-                </>
-              )}
-            </div>
-          </div>
-        )}
-      </Panel>
-    </div>
+                </FlexItem>
+              )
+            }
+          ></FlexItem>
+        </>
+      )}
+    </Panel>
   );
 }

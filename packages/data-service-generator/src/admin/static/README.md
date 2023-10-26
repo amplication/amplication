@@ -6,7 +6,7 @@
 
 # Introduction
 
-This service was generated with Amplication. It serves as the client-side for the generated server component. The client-side consist of a React application with ready-made forms for creating and editing the different data models of the application. It is pre-conffigured to work with the server and comes with the boilerplate and foundation for the client - i.e., routing, navigation, authentication, premissions, menu, breadcrumbs, error handling and much more. Additional information about the admin component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site. This side of the generated project was bootstrapped with [create-react-app](https://github.com/facebook/create-react-app) and built with [react-admin](https://marmelab.com/react-admin/).
+This service was generated with Amplication. It serves as the client-side for the generated server component. The client-side consist of a React application with ready-made forms for creating and editing the different data models of the application. It is pre-conffigured to work with the server and comes with the boilerplate and foundation for the client - i.e., routing, navigation, authentication, permissions, menu, breadcrumbs, error handling and much more. Additional information about the admin component and the architecture around it, can be found on the [documentation](https://docs.amplication.com/guides/getting-started) site. This side of the generated project was bootstrapped with [create-react-app](https://github.com/facebook/create-react-app) and built with [react-admin](https://marmelab.com/react-admin/).
 
 
 <p align="center">
