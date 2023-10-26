@@ -7,10 +7,12 @@ export default {
   component: Tooltip,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <div>
-      <Tooltip>hello</Tooltip>
-    </div>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <div>
+        <Tooltip>hello</Tooltip>
+      </div>
+    );
+  },
 };

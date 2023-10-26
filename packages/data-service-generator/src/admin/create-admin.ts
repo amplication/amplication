@@ -111,7 +111,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
   await context.logger.info("Creating application module...");
   const appModuleMap = await createAppModule(entitiesComponents);
 
-  await context.logger.info("Creating Dot Env...");
+  await context.logger.info("Creating Dotenv...");
   const dotEnvModuleMap = await createDotEnvModule();
 
   await context.logger.info("Formatting code...");
@@ -124,7 +124,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entityTitleComponentsModules,
     entityComponentsModules,
   ]);
-  await tsModules.replaceModulesCode((code) => formatCode(code));
+  await tsModules.replaceModulesCode((path, code) => formatCode(path, code));
   const typesRelatedFiles = await createTypesRelatedFiles();
   await context.logger.info("Finalizing admin creation...");
 

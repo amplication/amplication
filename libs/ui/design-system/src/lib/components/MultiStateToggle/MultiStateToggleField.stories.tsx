@@ -24,19 +24,21 @@ export default {
   component: MultiStateToggleField,
 } as Meta;
 
-export const Default = (props: any) => {
-  return (
-    <Formik
-      initialValues={{ multiStateFieldName: "Yellow" }}
-      onSubmit={() => {}}
-    >
-      <Form>
-        <MultiStateToggleField
-          label=""
-          name="multiStateFieldName"
-          options={OPTIONS}
-        />
-      </Form>
-    </Formik>
-  );
+export const Default = {
+  render: (props: any) => {
+    return (
+      <Formik
+        initialValues={{ multiStateFieldName: "Yellow" }}
+        onSubmit={() => {}}
+      >
+        <Form>
+          <MultiStateToggleField
+            label=""
+            name="multiStateFieldName"
+            options={OPTIONS}
+          />
+        </Form>
+      </Formik>
+    );
+  },
 };

@@ -5,7 +5,7 @@ import {
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
-import { formatCode, formatJson } from "@amplication/code-gen-utils";
+import { formatCode } from "@amplication/code-gen-utils";
 import { createDTOModules, createDTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
@@ -81,28 +81,34 @@ async function createServerInternal(
   const appModule = await createAppModule(appModuleInputModules);
 
   await context.logger.info("Formatting resources code...");
-  await resourcesModules.replaceModulesCode((code) => formatCode(code));
-  await context.logger.info("Formatting dtos code...");
-  await dtoModules.replaceModulesCode((code) => formatCode(code));
+  await resourcesModules.replaceModulesCode((path, code) =>
+    formatCode(path, code)
+  );
+  await context.logger.info("Formatting DTOs code...");
+  await dtoModules.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting swagger code...");
-  await swagger.replaceModulesCode((code) => formatCode(code));
+  await swagger.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting application module code...");
-  await appModule.replaceModulesCode((code) => formatCode(code));
+  await appModule.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting seed code...");
-  await seedModule.replaceModulesCode((code) => formatCode(code));
+  await seedModule.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting auth module code...");
-  await authModules.replaceModulesCode((code) => formatCode(code));
+  await authModules.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting message broker code...");
-  await messageBrokerModules.replaceModulesCode((code) => formatCode(code));
+  await messageBrokerModules.replaceModulesCode((path, code) =>
+    formatCode(path, code)
+  );
   await context.logger.info("Formatting package.json code...");
-  await packageJsonModule.replaceModulesCode((code) => formatJson(code));
+  await packageJsonModule.replaceModulesCode((path, code) =>
+    formatCode(path, code)
+  );
 
   const typesRelatedFiles = await createTypesRelatedFiles();
   const mainFile = await createMainFile();
   await context.logger.info("Creating Prisma schema...");
   const prismaSchemaModule = await createPrismaSchemaModule(entities);
 
-  await context.logger.info("Creating Dot Env...");
+  await context.logger.info("Creating Dotenv...");
   const dotEnvModule = await createDotEnvModule({
     envVariables: ENV_VARIABLES,
   });
@@ -110,7 +116,7 @@ async function createServerInternal(
   await context.logger.info("Creating connectMicroservices function...");
   const connectMicroservicesModule = await connectMicroservices();
 
-  await context.logger.info("Creating Docker compose configurations...");
+  await context.logger.info("Creating Docker Compose configurations...");
   const dockerComposeFile = await createDockerComposeFile();
   const dockerComposeDevFile = await createDockerComposeDevFile();
 
