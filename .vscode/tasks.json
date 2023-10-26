@@ -21,9 +21,9 @@
     },
     {
       "type": "shell",
-      "command": "npx nx run amplication-git-pull-request-service:serve",
+      "command": "npx nx run git-sync-manager:serve",
       "problemMatcher": [],
-      "label": "Serve amplication-git-pull-request-service"
+      "label": "Serve git-sync-manager"
     },
     {
       "type": "shell",
