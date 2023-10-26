@@ -81,3 +81,5 @@ jobs:
       - name: e2e
         if: github.event_name == 'push' || ( github.event_name == 'pull_request' && github.head_ref != 'next' )
         run: npx nx e2e ${{ matrix.project }} --prod
+        env:
+          VERBOSE: true
