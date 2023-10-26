@@ -51,7 +51,7 @@
         "Serve amplication-server",
         "Serve amplication-client",
         "Serve amplication-build-manager",
-        "Serve amplication-git-pull-request-service",
+        "Serve git-sync-manager",
         "Serve data-service-generator-catalog",
         "Serve local-data-service-generator-controller"
       ],
