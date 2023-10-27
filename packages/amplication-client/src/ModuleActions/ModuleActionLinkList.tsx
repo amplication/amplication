@@ -4,6 +4,8 @@ import {
   EnumItemsAlign,
   FlexItem,
   Snackbar,
+  VerticalNavigation,
+  VerticalNavigationItem,
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
@@ -13,8 +15,6 @@ import * as models from "../models";
 import { formatError } from "../util/error";
 
 import useModuleAction from "./hooks/useModuleAction";
-
-const CLASS_NAME = "module-action-link-list";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -58,23 +58,22 @@ export const ModuleActionLinkList = React.memo(
         {loading ? (
           <CircularProgress />
         ) : (
-          <div className={CLASS_NAME}>
+          <VerticalNavigation>
             {data?.ModuleActions.map((action) => (
-              <div key={action.id}>
-                <InnerTabLink
-                  icon="box"
-                  to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
+              <VerticalNavigationItem
+                key={action.id}
+                icon="git_commit"
+                to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions/${action.id}`}
+              >
+                <FlexItem
+                  itemsAlign={EnumItemsAlign.Center}
+                  end={<EnabledIndicator enabled={action.enabled} />}
                 >
-                  <FlexItem
-                    itemsAlign={EnumItemsAlign.Center}
-                    end={<EnabledIndicator enabled={action.enabled} />}
-                  >
-                    {action.displayName}
-                  </FlexItem>
-                </InnerTabLink>
-              </div>
+                  {action.displayName}
+                </FlexItem>
+              </VerticalNavigationItem>
             ))}
-          </div>
+          </VerticalNavigation>
         )}
 
         <Snackbar open={Boolean(errorLoading)} message={errorMessage} />

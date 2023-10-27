@@ -10,6 +10,7 @@ import {
   SearchField,
   Snackbar,
   Text,
+  VerticalNavigation,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import * as models from "../models";
@@ -118,10 +119,15 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
             {pluralize(data?.Modules.length, "Module", "Modules")}
           </Text>
         </FlexItem>
-
-        {data?.Modules.map((module) => (
-          <ModuleListItem key={module.id} module={module} onError={setError} />
-        ))}
+        <VerticalNavigation>
+          {data?.Modules.map((module) => (
+            <ModuleListItem
+              key={module.id}
+              module={module}
+              onError={setError}
+            />
+          ))}
+        </VerticalNavigation>
       </>
 
       <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
