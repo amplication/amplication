@@ -16,6 +16,7 @@ const RESERVED_NAMES = [
   "export",
   "extends",
   "false",
+  "field",
   "finally",
   "for",
   "function",
