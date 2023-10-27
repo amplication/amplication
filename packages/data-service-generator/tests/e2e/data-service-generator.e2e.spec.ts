@@ -220,26 +220,26 @@ describe("Data Service Generator", () => {
         let servicesNotReady = true;
         startTime = Date.now();
         do {
-          try {
-            logger.info("...");
-            const res = await fetch(`${host}/api/_health/live`, {
-              method: "GET",
-            });
-            if (res.status === STATUS_NO_CONTENT) {
-              const containers = await compose.ps(dockerComposeOptions);
-
-              if (
-                containers.data.services.find((s) =>
-                  s.name.endsWith("server-1")
-                )
-              ) {
+          logger.info("...");
+          const containers = await compose.ps(dockerComposeOptions);
+          logger.debug("containers", {
+            "docker-services": containers.data.services,
+          });
+          if (
+            containers.data.services.find((s) => s.name.endsWith("server-1"))
+          ) {
+            try {
+              const res = await fetch(`${host}/api/_health/live`, {
+                method: "GET",
+              });
+              if (res.status === STATUS_NO_CONTENT) {
                 servicesNotReady = false;
                 logger.info("server ready!");
                 break;
               }
+            } catch (error) {
+              /**/
             }
-          } catch (error) {
-            /**/
           }
           await sleep(1000);
         } while (
