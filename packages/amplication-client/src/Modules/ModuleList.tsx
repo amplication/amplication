@@ -7,14 +7,11 @@ import {
   EnumItemsAlign,
   EnumTextStyle,
   FlexItem,
-  HorizontalRule,
-  List,
   SearchField,
   Snackbar,
   Text,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
-import PageContent from "../Layout/PageContent";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { ModuleListItem } from "./ModuleListItem";
@@ -23,9 +20,7 @@ import NewModule from "./NewModule";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { pluralize } from "../util/pluralize";
 import useModule from "./hooks/useModule";
-const TITLE = "Modules";
-const SUB_TITLE =
-  "Modules are used to group services, actions, DTOs and other code components.";
+
 type Props = {
   resourceId: string;
 };
@@ -81,72 +76,56 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
     (error && formatError(error));
 
   return (
-    <PageContent
-      pageTitle={pageTitle}
-      contentTitle={TITLE}
-      contentSubTitle={SUB_TITLE}
-    >
+    <>
+      <Dialog
+        isOpen={newModule}
+        onDismiss={handleNewModuleClick}
+        title="New Module"
+      >
+        <NewModule resourceId={resourceId} onSuccess={handleNewModuleClick} />
+      </Dialog>
+
+      <FlexItem
+        contentAlign={EnumContentAlign.Center}
+        itemsAlign={EnumItemsAlign.Center}
+        margin={EnumFlexItemMargin.Bottom}
+      >
+        <FlexItem.FlexStart>
+          <SearchField
+            label="search"
+            placeholder="search"
+            onChange={handleSearchChange}
+          />
+        </FlexItem.FlexStart>
+
+        <FlexItem.FlexEnd>
+          <FlexItem direction={EnumFlexDirection.Row}>
+            <Button
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleNewModuleClick}
+            >
+              Add Module
+            </Button>
+          </FlexItem>
+        </FlexItem.FlexEnd>
+      </FlexItem>
+
+      {loading && <CircularProgress centerToParent />}
       <>
-        <Dialog
-          isOpen={newModule}
-          onDismiss={handleNewModuleClick}
-          title="New Module"
-        >
-          <NewModule resourceId={resourceId} onSuccess={handleNewModuleClick} />
-        </Dialog>
-
-        <FlexItem
-          contentAlign={EnumContentAlign.Center}
-          itemsAlign={EnumItemsAlign.Center}
-        >
-          <FlexItem.FlexStart>
-            <SearchField
-              label="search"
-              placeholder="search"
-              onChange={handleSearchChange}
-            />
-          </FlexItem.FlexStart>
-
-          <FlexItem.FlexEnd>
-            <FlexItem direction={EnumFlexDirection.Row}>
-              <Button
-                buttonStyle={EnumButtonStyle.Primary}
-                onClick={handleNewModuleClick}
-              >
-                Add Module
-              </Button>
-            </FlexItem>
-          </FlexItem.FlexEnd>
+        <FlexItem margin={EnumFlexItemMargin.Bottom}>
+          <Text textStyle={EnumTextStyle.Tag}>
+            {data?.Modules.length}{" "}
+            {pluralize(data?.Modules.length, "Module", "Modules")}
+          </Text>
         </FlexItem>
 
-        <HorizontalRule doubleSpacing />
-
-        {loading && <CircularProgress centerToParent />}
-        <>
-          <FlexItem margin={EnumFlexItemMargin.Bottom}>
-            <Text textStyle={EnumTextStyle.Tag}>
-              {data?.Modules.length}{" "}
-              {pluralize(data?.Modules.length, "Module", "Modules")}
-            </Text>
-          </FlexItem>
-
-          <List>
-            {data?.Modules.map((module) => (
-              <ModuleListItem
-                key={module.id}
-                module={module}
-                onError={setError}
-              />
-            ))}
-          </List>
-        </>
-
-        <Snackbar
-          open={Boolean(error || errorLoading)}
-          message={errorMessage}
-        />
+        {data?.Modules.map((module) => (
+          <ModuleListItem key={module.id} module={module} onError={setError} />
+        ))}
       </>
-    </PageContent>
+
+      <Snackbar open={Boolean(error || errorLoading)} message={errorMessage} />
+    </>
   );
 };
 

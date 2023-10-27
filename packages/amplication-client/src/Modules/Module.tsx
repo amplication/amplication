@@ -17,10 +17,6 @@ import "./Module.scss";
 import ModuleForm from "./ModuleForm";
 import useModule from "./hooks/useModule";
 
-const TITLE = "Modules";
-const SUB_TITLE =
-  "Modules are used to group services, actions, DTOs and other code components.";
-
 const Module = () => {
   const match = useRouteMatch<{
     resource: string;
@@ -100,7 +96,10 @@ const Module = () => {
   return (
     <>
       <FlexItem>
-        <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
+        <TabContentTitle
+          title={data?.Module?.displayName}
+          subTitle={data?.Module?.description}
+        />
         <FlexItem.FlexEnd>
           {data?.Module && !isEntityModule && (
             <DeleteModule module={data?.Module} onDelete={handleDeleteModule} />

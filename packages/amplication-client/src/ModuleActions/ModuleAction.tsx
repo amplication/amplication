@@ -15,10 +15,6 @@ import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
 
-const TITLE = "Module Actions";
-const SUB_TITLE =
-  "Module Actions are the actions that can be performed on the module. For example, create a new record, update an existing record, etc.";
-
 type Props = AppRouteProps & {
   match: match<{
     workspace: string;
@@ -103,7 +99,10 @@ const ModuleAction = ({ match }: Props) => {
   return (
     <>
       <FlexItem>
-        <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
+        <TabContentTitle
+          title={data?.ModuleAction?.displayName}
+          subTitle={data?.ModuleAction?.description}
+        />
         <FlexItem.FlexEnd>
           {data?.ModuleAction && !isDefaultAction && (
             <DeleteModuleAction

@@ -31,38 +31,7 @@ const ModulePage = ({ match, innerRoutes }: Props) => {
     }).catch(console.error);
   }, [moduleId, getModule]);
 
-  return (
-    <PageContent
-      pageTitle={data?.Module.name}
-      sideContent={
-        <>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}`}
-            icon="settings"
-          >
-            General Settings
-          </InnerTabLink>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/types`}
-            icon="lock"
-          >
-            Types
-          </InnerTabLink>
-          <InnerTabLink
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${resourceId}/modules/${moduleId}/actions`}
-            icon="option_set"
-          >
-            Actions
-          </InnerTabLink>
-          <div className="sub-list">
-            <ModuleActionLinkList resourceId={resourceId} moduleId={moduleId} />
-          </div>
-        </>
-      }
-    >
-      {match.isExact ? <Module /> : innerRoutes}
-    </PageContent>
-  );
+  return match.isExact ? <Module /> : innerRoutes;
 };
 
 export default ModulePage;
