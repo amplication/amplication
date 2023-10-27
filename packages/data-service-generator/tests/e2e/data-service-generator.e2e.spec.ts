@@ -196,11 +196,12 @@ describe("Data Service Generator", () => {
 
         // Wait for the server to be ready and for database migration before running tests.
         // TODO replace with a better docker-compose solution that waits for the migraton to be completd before starting the server
-        logger.info("Waiting for server to be ready...");
+        logger.info("Waiting for db migration to be ...");
         let migrationCompleted = false;
         let startTime = Date.now();
 
         do {
+          logger.info("...");
           const containers = await compose.ps(dockerComposeOptions);
           if (
             !containers.data.services.find((s) => s.name.endsWith("migrate-1"))
@@ -215,10 +216,12 @@ describe("Data Service Generator", () => {
           startTime + SERVER_START_TIMEOUT < Date.now()
         );
 
+        logger.info("Waiting for server to be ready...");
         let servicesNotReady = true;
         startTime = Date.now();
         do {
           try {
+            logger.info("...");
             const res = await fetch(`${host}/api/_health/live`, {
               method: "GET",
             });
