@@ -221,3 +221,13 @@ export {
   default as EnabledIndicator,
   Props as EnabledIndicatorProps,
 } from "./components/EnabledIndicator/EnabledIndicator";
+
+export {
+  VerticalNavigation,
+  Props as VerticalNavigationProps,
+} from "./components/VerticalNavigation/VerticalNavigation";
+
+export {
+  VerticalNavigationItem,
+  Props as VerticalNavigationItemProps,
+} from "./components/VerticalNavigation/VerticalNavigationItem";
