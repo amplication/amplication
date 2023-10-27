@@ -6,6 +6,8 @@ import { EnumResourceType } from "./models";
 import { prepareContext } from "./prepare-context";
 import { createServer } from "./server/create-server";
 import { ILogger } from "@amplication/util/logging";
+import { createDTOModules, createDTOs } from "./server/resource/create-dtos";
+import { formatCode } from "@amplication/code-gen-utils";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
@@ -39,6 +41,14 @@ export async function createDataService(
     const { appInfo } = context;
     const { settings } = appInfo;
 
+    await context.logger.info("Creating DTOs...");
+    const dtos = await createDTOs(context.entities);
+    context.DTOs = dtos;
+    const dtoModules = await createDTOModules(dtos);
+
+    await context.logger.info("Formatting DTOs code...");
+    await dtoModules.replaceModulesCode((path, code) => formatCode(path, code));
+
     const serverModules = await createServer();
 
     const { adminUISettings } = settings;
@@ -48,7 +58,7 @@ export async function createDataService(
       (generateAdminUI && (await createAdminModules())) ||
       new ModuleMap(context.logger);
 
-    const modules = serverModules;
+    const modules = await serverModules.merge(dtoModules);
     await modules.merge(adminUIModules);
 
     // This code normalizes the path of each module to always use Unix path separator.

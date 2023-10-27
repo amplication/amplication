@@ -6,7 +6,6 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules, createDTOs } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -54,11 +53,6 @@ async function createServerInternal(
   await context.logger.info("Creating package.json...");
   const packageJsonModule = await createServerPackageJson();
 
-  await context.logger.info("Creating DTOs...");
-  const dtos = await createDTOs(context.entities);
-  context.DTOs = dtos;
-  const dtoModules = await createDTOModules(dtos);
-
   await context.logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(entities);
 
@@ -84,8 +78,6 @@ async function createServerInternal(
   await resourcesModules.replaceModulesCode((path, code) =>
     formatCode(path, code)
   );
-  await context.logger.info("Formatting DTOs code...");
-  await dtoModules.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting swagger code...");
   await swagger.replaceModulesCode((path, code) => formatCode(path, code));
   await context.logger.info("Formatting application module code...");
@@ -127,7 +119,6 @@ async function createServerInternal(
     gitIgnore,
     packageJsonModule,
     resourcesModules,
-    dtoModules,
     swagger,
     appModule,
     seedModule,
