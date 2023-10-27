@@ -208,9 +208,9 @@ describe("Data Service Generator", () => {
             "docker-services": containers.data.services,
           });
           const migrateContainer = containers.data.services.find((s) =>
-            s.name.indexOf("migrate")
+            s.name.endsWith("migrate-1")
           );
-          if (!migrateContainer || migrateContainer.state === "Exit 0") {
+          if (migrateContainer.state.indexOf("Exited (0)")) {
             migrationCompleted = true;
             logger.info("migration completed!");
             break;
@@ -226,26 +226,17 @@ describe("Data Service Generator", () => {
         startTime = Date.now();
         do {
           logger.info("...");
-          const containers = await compose.ps(dockerComposeOptions);
-          logger.debug("containers", {
-            "docker-services": containers.data.services,
-          });
-          const serverContainer = containers.data.services.find((s) =>
-            s.name.endsWith("server-1")
-          );
-          if (serverContainer?.state === "running") {
-            try {
-              const res = await fetch(`${host}/api/_health/live`, {
-                method: "GET",
-              });
-              if (res.status === STATUS_NO_CONTENT) {
-                servicesNotReady = false;
-                logger.info("server ready!");
-                break;
-              }
-            } catch (error) {
-              /**/
+          try {
+            const res = await fetch(`${host}/api/_health/live`, {
+              method: "GET",
+            });
+            if (res.status === STATUS_NO_CONTENT) {
+              servicesNotReady = false;
+              logger.info("server ready!");
+              break;
             }
+          } catch (error) {
+            /**/
           }
           await sleep(1000);
         } while (
