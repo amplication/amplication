@@ -204,9 +204,6 @@ describe("Data Service Generator", () => {
             ...dockerComposeOptions,
             commandOptions: ["--all"],
           });
-          logger.debug("containers", {
-            "docker-services": containers.data.services,
-          });
           const migrateContainer = containers.data.services.find((s) =>
             s.name.endsWith("migrate-1")
           );
@@ -397,7 +394,6 @@ describe("Data Service Generator", () => {
           // TODO uncomment once issue is fixed https://github.com/amplication/amplication/issues/5437
           xit("creates GET /api/customers/:id endpoint", async () => {
             const customerId = 1;
-            logger.debug(`${host}/api/customers/${customerId}`);
             const res = await fetch(`${host}/api/customers/${customerId}`, {
               headers: {
                 Authorization: APP_BASIC_AUTHORIZATION,
