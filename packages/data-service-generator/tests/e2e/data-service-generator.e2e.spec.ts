@@ -210,7 +210,7 @@ describe("Data Service Generator", () => {
           const migrateContainer = containers.data.services.find((s) =>
             s.name.endsWith("migrate-1")
           );
-          if (migrateContainer.state.indexOf("Exited (0)")) {
+          if (migrateContainer.state.indexOf("Exited (0)") !== -1) {
             migrationCompleted = true;
             logger.info("migration completed!");
             break;
