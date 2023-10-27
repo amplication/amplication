@@ -1,7 +1,7 @@
 import * as os from "os";
 import * as fs from "fs";
 import * as path from "path";
-import * as compose from "docker-compose";
+import { v2 as compose } from "docker-compose";
 import getPort from "get-port";
 import sleep from "sleep-promise";
 import fetch from "cross-fetch";
@@ -170,8 +170,6 @@ describe("Data Service Generator", () => {
             // // See: https://www.docker.com/blog/faster-builds-in-compose-thanks-to-buildkit-support/
             PORT: String(port),
             DB_PORT: String(dbPort),
-            COMPOSE_DOCKER_CLI_BUILD: "1",
-            DOCKER_BUILDKIT: "1",
           },
         };
         logger.debug("dockerComposeOptions", { dockerComposeDir });
@@ -202,10 +200,17 @@ describe("Data Service Generator", () => {
 
         do {
           logger.info("...");
-          const containers = await compose.ps(dockerComposeOptions);
-          if (
-            !containers.data.services.find((s) => s.name.endsWith("migrate-1"))
-          ) {
+          const containers = await compose.ps({
+            ...dockerComposeOptions,
+            commandOptions: ["--all"],
+          });
+          logger.debug("containers", {
+            "docker-services": containers.data.services,
+          });
+          const migrateContainer = containers.data.services.find((s) =>
+            s.name.indexOf("migrate")
+          );
+          if (!migrateContainer || migrateContainer.state === "Exit 0") {
             migrationCompleted = true;
             logger.info("migration completed!");
             break;
@@ -225,9 +230,10 @@ describe("Data Service Generator", () => {
           logger.debug("containers", {
             "docker-services": containers.data.services,
           });
-          if (
-            containers.data.services.find((s) => s.name.endsWith("server-1"))
-          ) {
+          const serverContainer = containers.data.services.find((s) =>
+            s.name.endsWith("server-1")
+          );
+          if (serverContainer?.state === "running") {
             try {
               const res = await fetch(`${host}/api/_health/live`, {
                 method: "GET",
