@@ -195,13 +195,28 @@ describe("Data Service Generator", () => {
           });
 
         logger.info("Waiting for server to be ready...");
-        let servicesNotReady = true;
-        const startTime = Date.now();
+        let migrationCompleted = false;
+        let startTime = Date.now();
 
         do {
-          try {
-            logger.info("Checking api/_health/live...");
+          const containers = await compose.ps(dockerComposeOptions);
+          if (
+            !containers.data.services.find((s) => s.name.endsWith("migrate-1"))
+          ) {
+            migrationCompleted = true;
+            logger.info("migration completed!");
+            break;
+          }
+          await sleep(1000);
+        } while (
+          !migrationCompleted ||
+          startTime + SERVER_START_TIMEOUT < Date.now()
+        );
 
+        let servicesNotReady = true;
+        startTime = Date.now();
+        do {
+          try {
             const res = await fetch(`${host}/api/_health/live`, {
               method: "GET",
             });
@@ -209,8 +224,8 @@ describe("Data Service Generator", () => {
               const containers = await compose.ps(dockerComposeOptions);
 
               if (
-                !containers.data.services.find((s) =>
-                  s.name.endsWith("migrate-1")
+                containers.data.services.find((s) =>
+                  s.name.endsWith("server-1")
                 )
               ) {
                 servicesNotReady = false;
