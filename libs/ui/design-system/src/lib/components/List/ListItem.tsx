@@ -39,6 +39,7 @@ export function ListItem(props: Props) {
     direction = EnumFlexDirection.Column,
     contentAlign = EnumContentAlign.Start,
     itemsAlign = EnumItemsAlign.Start,
+    gap = EnumGapSize.Small,
     margin,
 
     ...rest
@@ -69,7 +70,7 @@ export function ListItem(props: Props) {
           direction={direction}
           contentAlign={contentAlign}
           itemsAlign={itemsAlign}
-          gap={EnumGapSize.Small}
+          gap={gap}
         >
           {children}
         </FlexItem>

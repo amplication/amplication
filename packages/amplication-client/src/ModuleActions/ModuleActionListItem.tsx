@@ -1,7 +1,10 @@
 import {
   ApiOperationTag,
   EnumApiOperationTagStyle,
+  EnumFlexDirection,
+  EnumGapSize,
   EnumGqlApiOperationTagType,
+  EnumItemsAlign,
   EnumRestApiOperationTagType,
   EnumTextColor,
   EnumTextStyle,
@@ -59,6 +62,9 @@ export const ModuleActionListItem = ({
     <ListItem
       to={actionUrl}
       showDefaultActionIcon={true}
+      direction={EnumFlexDirection.Row}
+      itemsAlign={EnumItemsAlign.Center}
+      gap={EnumGapSize.Default}
       start={
         <ApiOperationTag
           gqlTagType={GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]}
@@ -67,12 +73,12 @@ export const ModuleActionListItem = ({
         />
       }
     >
-      <Text textStyle={EnumTextStyle.Description}>
-        {moduleAction.displayName}
-      </Text>
-      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+      <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.White}>
         /api/{kebabCase(module.name)}
         {moduleAction.path}
+      </Text>
+      <Text textStyle={EnumTextStyle.Description}>
+        {moduleAction.displayName}
       </Text>
     </ListItem>
   );
