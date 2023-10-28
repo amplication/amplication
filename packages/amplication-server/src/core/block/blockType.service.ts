@@ -10,6 +10,7 @@ import {
 } from "../block/dto";
 import { UserEntity } from "../../decorators/user.decorator";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
+import { JsonFilter } from "../../dto/JsonFilter";
 @Injectable()
 export abstract class BlockTypeService<
   T extends IBlock,
@@ -28,6 +29,17 @@ export abstract class BlockTypeService<
 
   async findMany(args: FindManyArgs): Promise<T[]> {
     return this.blockService.findManyByBlockType(args, this.blockType);
+  }
+
+  async findManyBySettings(
+    args: FindManyArgs,
+    settingsFilter: JsonFilter
+  ): Promise<T[]> {
+    return this.blockService.findManyByBlockTypeAndSettings(
+      args,
+      this.blockType,
+      settingsFilter
+    );
   }
 
   async create(args: CreateArgs, @UserEntity() user: User): Promise<T> {

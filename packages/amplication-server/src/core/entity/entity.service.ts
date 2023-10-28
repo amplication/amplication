@@ -982,45 +982,7 @@ export class EntityService {
         event: EnumEventType.EntityUpdate,
       });
 
-      try {
-        await this.moduleService.updateDefaultModuleForEntity(
-          {
-            name: args.data.name,
-            displayName: args.data.name,
-          },
-          entity.resourceId,
-          entity.id,
-          user
-        );
-      } catch (error) {
-        if (error instanceof DefaultModuleForEntityNotFoundError) {
-          //create a default module if it does not exist
-          //This is done in order to allow the user to workaround issues in any case when a default module is missing
-          this.logger.error(
-            "Creating a default module and continue with UpdateEntity even though the default module could not be found ",
-            error
-          );
-          await this.moduleService.createDefaultModuleForEntity(
-            {
-              data: {
-                name: args.data.name,
-                displayName: args.data.name,
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
-                  },
-                },
-              },
-            },
-            entity,
-            user
-          );
-        } else {
-          throw error;
-        }
-      }
-
-      return this.prisma.entity.update({
+      const updatedEntity = await this.prisma.entity.update({
         where: { ...args.where },
         data: {
           ...args.data,
@@ -1044,6 +1006,45 @@ export class EntityService {
           },
         },
       });
+
+      try {
+        await this.moduleService.updateDefaultModuleForEntity(
+          {
+            name: args.data.name,
+            displayName: args.data.name,
+          },
+          updatedEntity,
+          user
+        );
+      } catch (error) {
+        if (error instanceof DefaultModuleForEntityNotFoundError) {
+          //create a default module if it does not exist
+          //This is done in order to allow the user to workaround issues in any case when a default module is missing
+          this.logger.error(
+            "Creating a default module and continue with UpdateEntity even though the default module could not be found ",
+            error
+          );
+          await this.moduleService.createDefaultModuleForEntity(
+            {
+              data: {
+                name: args.data.name,
+                displayName: args.data.name,
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            updatedEntity,
+            user
+          );
+        } else {
+          throw error;
+        }
+      }
+
+      return updatedEntity;
     });
   }
 

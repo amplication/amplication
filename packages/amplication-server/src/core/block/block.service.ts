@@ -41,6 +41,7 @@ import {
   PendingChange,
 } from "../resource/dto";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
+import { JsonFilter } from "../../dto/JsonFilter";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -317,6 +318,39 @@ export class BlockService {
         ...args.where,
         deletedAt: null,
       },
+    });
+  }
+
+  async findManyByBlockTypeAndSettings<T extends IBlock>(
+    args: FindManyBlockTypeArgs,
+    blockType: EnumBlockType,
+    settingsFilter?: JsonFilter
+  ): Promise<T[]> {
+    const blocks = this.prisma.block.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        blockType: { equals: blockType },
+        deletedAt: null,
+        versions: {
+          some: {
+            versionNumber: CURRENT_VERSION_NUMBER,
+            settings: settingsFilter,
+          },
+        },
+      },
+      include: {
+        versions: {
+          where: {
+            versionNumber: CURRENT_VERSION_NUMBER,
+          },
+        },
+        parentBlock: true,
+      },
+    });
+    return (await blocks).map((block) => {
+      const [version] = block.versions;
+      return this.versionToIBlock({ ...version, block });
     });
   }
 

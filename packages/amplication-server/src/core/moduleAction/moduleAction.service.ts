@@ -139,32 +139,46 @@ export class ModuleActionService extends BlockTypeService<
     );
   }
 
+  //call this function when the entity names changes, and we need to update the default actions
   async updateDefaultActionsForEntityModule(
     entity: Entity,
     module: Module,
     user: User
   ): Promise<ModuleAction[]> {
+    //get the updated default actions (with updated names)
     const defaultActions = await getDefaultActionsForEntity(
       entity as unknown as CodeGenTypes.Entity
     );
+
+    //get the current default actions
+    const existingDefaultActions = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: module.id,
+          },
+        },
+      },
+      {
+        path: ["actionType"],
+        not: EnumModuleActionType.Custom,
+      }
+    );
+
     return await Promise.all(
-      Object.keys(defaultActions).map((action) => {
+      existingDefaultActions.map((action) => {
         return (
-          defaultActions[action] &&
-          super.create(
+          defaultActions[action.actionType] &&
+          super.update(
             {
+              where: {
+                id: action.id,
+              },
               data: {
-                ...defaultActions[action],
-                parentBlock: {
-                  connect: {
-                    id: module.id,
-                  },
-                },
-                resource: {
-                  connect: {
-                    id: entity.resourceId,
-                  },
-                },
+                name: defaultActions[action.actionType].name,
+                displayName: defaultActions[action.actionType].displayName,
+                description: defaultActions[action.actionType].description,
+                enabled: action.enabled,
               },
             },
             user

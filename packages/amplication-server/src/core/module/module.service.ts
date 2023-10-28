@@ -10,7 +10,6 @@ import { FindManyModuleArgs } from "./dto/FindManyModuleArgs";
 import { Module } from "./dto/Module";
 import { UpdateModuleArgs } from "./dto/UpdateModuleArgs";
 import { ModuleUpdateInput } from "./dto/ModuleUpdateInput";
-import { PrismaService } from "../../prisma";
 import { DefaultModuleForEntityNotFoundError } from "./DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationError } from "../../errors/AmplicationError";
@@ -29,7 +28,6 @@ export class ModuleService extends BlockTypeService<
 
   constructor(
     protected readonly blockService: BlockService,
-    private readonly prisma: PrismaService,
     private readonly moduleActionService: ModuleActionService
   ) {
     super(blockService);
@@ -115,22 +113,19 @@ export class ModuleService extends BlockTypeService<
     resourceId: string,
     entityId: string
   ): Promise<string> {
-    const [module] = await this.prisma.block.findMany({
-      where: {
-        blockType: EnumBlockType.Module,
-        resourceId: resourceId,
-        deletedAt: null,
-        versions: {
-          some: {
-            versionNumber: 0,
-            settings: {
-              path: ["entityId"],
-              equals: entityId,
-            },
+    const [module] = await this.findManyBySettings(
+      {
+        where: {
+          resource: {
+            id: resourceId,
           },
         },
       },
-    });
+      {
+        path: ["entityId"],
+        equals: entityId,
+      }
+    );
 
     if (!module) {
       throw new DefaultModuleForEntityNotFoundError(entityId);
@@ -141,16 +136,15 @@ export class ModuleService extends BlockTypeService<
 
   async updateDefaultModuleForEntity(
     args: ModuleUpdateInput,
-    resourceId: string,
-    entityId: string,
+    entity: Entity,
     user: User
   ): Promise<Module> {
     const moduleId = await this.getDefaultModuleIdForEntity(
-      resourceId,
-      entityId
+      entity.resourceId,
+      entity.id
     );
 
-    return this.update(
+    const module = await this.update(
       {
         where: {
           id: moduleId,
@@ -159,6 +153,14 @@ export class ModuleService extends BlockTypeService<
       },
       user
     );
+
+    await this.moduleActionService.updateDefaultActionsForEntityModule(
+      entity,
+      module,
+      user
+    );
+
+    return module;
   }
 
   async deleteDefaultModuleForEntity(
