@@ -7,6 +7,9 @@ export const MODULE_ACTION_FIELDS_FRAGMENT = gql`
     displayName
     description
     enabled
+    gqlOperation
+    restVerb
+    path
     lockedByUserId
     lockedAt
     lockedByUser {

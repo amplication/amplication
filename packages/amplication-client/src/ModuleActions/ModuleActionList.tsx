@@ -1,7 +1,11 @@
 import {
   CircularProgress,
+  EnumApiOperationTagStyle,
+  EnumContentAlign,
+  EnumFlexDirection,
   EnumFlexItemMargin,
   EnumItemsAlign,
+  EnumListStyle,
   EnumTextStyle,
   FlexItem,
   List,
@@ -9,12 +13,14 @@ import {
   Snackbar,
   TabContentTitle,
   Text,
+  Toggle,
 } from "@amplication/ui/design-system";
 import React, { useCallback, useEffect, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 
 import { match } from "react-router-dom";
+import useModule from "../Modules/hooks/useModule";
 import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
 import { ModuleActionListItem } from "./ModuleActionListItem";
@@ -33,6 +39,9 @@ const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
+  const [displayMode, setDisplayMode] = useState<EnumApiOperationTagStyle>(
+    EnumApiOperationTagStyle.REST
+  );
 
   const {
     findModuleActions,
@@ -40,6 +49,8 @@ const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
     findModuleActionsError: errorLoading,
     findModuleActionsLoading: loading,
   } = useModuleAction();
+
+  const { getModule, getModuleData: moduleData } = useModule();
 
   useEffect(() => {
     findModuleActions({
@@ -60,6 +71,12 @@ const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
         },
       },
     });
+
+    getModule({
+      variables: {
+        moduleId,
+      },
+    }).catch(console.error);
   }, [moduleId, searchPhrase, findModuleActions]);
 
   const handleSearchChange = useCallback(
@@ -94,6 +111,26 @@ const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
             placeholder="Search"
             onChange={handleSearchChange}
           />
+
+          <FlexItem
+            direction={EnumFlexDirection.Row}
+            contentAlign={EnumContentAlign.Center}
+            itemsAlign={EnumItemsAlign.Center}
+          >
+            GraphQL API
+            <Toggle
+              value={displayMode === EnumApiOperationTagStyle.REST}
+              defaultChecked={displayMode === EnumApiOperationTagStyle.REST}
+              onValueChange={(checked) =>
+                setDisplayMode(
+                  checked
+                    ? EnumApiOperationTagStyle.REST
+                    : EnumApiOperationTagStyle.GQL
+                )
+              }
+            />
+            REST API
+          </FlexItem>
           <FlexItem margin={EnumFlexItemMargin.Both}>
             <Text textStyle={EnumTextStyle.Tag}>
               {data?.ModuleActions?.length}{" "}
@@ -101,16 +138,18 @@ const ModuleActionList = React.memo(({ match, innerRoutes }: Props) => {
             </Text>
           </FlexItem>
           {loading && <CircularProgress centerToParent />}
-          <List>
+
+          <List listStyle={EnumListStyle.Dark} collapsible>
             {data?.ModuleActions?.map((action) => (
               <ModuleActionListItem
                 key={action.id}
-                moduleId={moduleId}
+                module={moduleData?.Module}
                 moduleAction={action}
-                onError={setError}
+                tagStyle={displayMode}
               />
             ))}
           </List>
+
           <Snackbar
             open={Boolean(error || errorLoading)}
             message={errorMessage}

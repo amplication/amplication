@@ -1,91 +1,79 @@
 import {
-  Chip,
-  EnumChipStyle,
-  EnumFlexDirection,
-  EnumGapSize,
-  EnumItemsAlign,
+  ApiOperationTag,
+  EnumApiOperationTagStyle,
+  EnumGqlApiOperationTagType,
+  EnumRestApiOperationTagType,
   EnumTextColor,
   EnumTextStyle,
-  FlexItem,
-  Icon,
   ListItem,
   Text,
 } from "@amplication/ui/design-system";
-import { isEmpty } from "lodash";
-import { useCallback, useContext } from "react";
-import { Link, useHistory } from "react-router-dom";
+import { kebabCase } from "lodash";
+import { useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { DeleteModuleAction } from "./DeleteModuleAction";
-import { EntityFieldProperty } from "../Entity/EntityFieldProperty";
 
 type Props = {
-  moduleId: string;
+  module: models.Module;
   moduleAction: models.ModuleAction;
-  onDelete?: () => void;
-  onError: (error: Error) => void;
+  tagStyle: EnumApiOperationTagStyle;
+};
+
+const REST_VERB_TO_API_OPERATION: {
+  [key in models.EnumModuleActionRestVerb]: EnumRestApiOperationTagType;
+} = {
+  [models.EnumModuleActionRestVerb.Get]: EnumRestApiOperationTagType.Get,
+  [models.EnumModuleActionRestVerb.Post]: EnumRestApiOperationTagType.Post,
+  [models.EnumModuleActionRestVerb.Put]: EnumRestApiOperationTagType.Put,
+  [models.EnumModuleActionRestVerb.Patch]: EnumRestApiOperationTagType.Patch,
+  [models.EnumModuleActionRestVerb.Delete]: EnumRestApiOperationTagType.Delete,
+  [models.EnumModuleActionRestVerb.Head]: EnumRestApiOperationTagType.Head,
+  [models.EnumModuleActionRestVerb.Options]:
+    EnumRestApiOperationTagType.Options,
+  [models.EnumModuleActionRestVerb.Trace]: EnumRestApiOperationTagType.Trace,
+};
+
+const GQL_OPERATION_TO_API_OPERATION: {
+  [key in models.EnumModuleActionGqlOperation]: EnumGqlApiOperationTagType;
+} = {
+  [models.EnumModuleActionGqlOperation.Mutation]:
+    EnumGqlApiOperationTagType.Mutation,
+  [models.EnumModuleActionGqlOperation.Query]: EnumGqlApiOperationTagType.Query,
 };
 
 export const ModuleActionListItem = ({
-  moduleId,
+  module,
   moduleAction,
-  onDelete,
-  onError,
+  tagStyle,
 }: Props) => {
   const history = useHistory();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
 
-  const actionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${moduleId}/actions/${moduleAction.id}`;
+  if (!module) return null;
 
-  const handleRowClick = useCallback(() => {
-    history.push(actionUrl);
-  }, [
-    history,
-    currentWorkspace,
-    currentProject,
-    currentResource,
-    moduleId,
-    moduleAction,
-  ]);
+  const actionUrl = `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions/${moduleAction.id}`;
 
   return (
-    <ListItem onClick={handleRowClick} showDefaultActionIcon={true}>
-      <FlexItem
-        start={
-          <FlexItem
-            gap={EnumGapSize.Small}
-            direction={EnumFlexDirection.Row}
-            itemsAlign={EnumItemsAlign.Center}
-          >
-            <Icon
-              className="amp-data-grid-item__icon"
-              icon={"box"}
-              size="xsmall"
-            />
-            <Link title={moduleAction.displayName} to={actionUrl}>
-              <Text>{moduleAction.displayName}</Text>
-            </Link>
-            <Text textColor={EnumTextColor.ThemeTurquoise}>
-              {moduleAction.name}
-            </Text>
-          </FlexItem>
-        }
-      />
-
-      {!isEmpty(moduleAction.description) && (
-        <Text textStyle={EnumTextStyle.Description}>
-          {moduleAction.description}
-        </Text>
-      )}
-      {moduleAction.actionType !== models.EnumModuleActionType.Custom && (
-        <Chip chipStyle={EnumChipStyle.ThemePurple}>Default Action</Chip>
-      )}
-      {!moduleAction.enabled ? (
-        <Chip chipStyle={EnumChipStyle.ThemeRed}>Disabled</Chip>
-      ) : (
-        <Chip chipStyle={EnumChipStyle.ThemeGreen}>Enabled</Chip>
-      )}
+    <ListItem
+      to={actionUrl}
+      showDefaultActionIcon={true}
+      start={
+        <ApiOperationTag
+          gqlTagType={GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]}
+          restTagType={REST_VERB_TO_API_OPERATION[moduleAction.restVerb]}
+          tagStyle={tagStyle}
+        />
+      }
+    >
+      <Text textStyle={EnumTextStyle.Description}>
+        {moduleAction.displayName}
+      </Text>
+      <Text textStyle={EnumTextStyle.Tag} textColor={EnumTextColor.White}>
+        /api/{kebabCase(module.name)}
+        {moduleAction.path}
+      </Text>
     </ListItem>
   );
 };
