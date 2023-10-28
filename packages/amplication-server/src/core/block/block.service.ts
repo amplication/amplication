@@ -249,6 +249,7 @@ export class BlockService {
       lockedAt,
       lockedByUserId,
       resourceId,
+      parentBlockId,
     } = version.block;
     const block: IBlock = {
       id,
@@ -261,6 +262,7 @@ export class BlockService {
       resourceId,
       lockedAt,
       lockedByUserId,
+      parentBlockId,
       versionNumber: version.versionNumber,
       inputParameters: (
         version.inputParameters as unknown as {

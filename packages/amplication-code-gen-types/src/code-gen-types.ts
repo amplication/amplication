@@ -10,6 +10,8 @@ export {
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
   EnumModuleActionType,
+  EnumModuleActionGqlOperation,
+  EnumModuleActionRestVerb,
 } from "./models";
 
 export type ServiceSettings = Omit<

@@ -5,11 +5,10 @@ import {
   entityRelatedFieldDefaultActions,
   EnumModuleActionType,
   types,
-} from "@amplication/code-gen-types";
-import {
   EnumModuleActionGqlOperation,
   EnumModuleActionRestVerb,
-} from "@amplication/code-gen-types/models";
+} from "@amplication/code-gen-types";
+
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
