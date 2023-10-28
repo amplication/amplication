@@ -975,7 +975,6 @@ export type ModuleAction = IBlock & {
   fieldPermanentId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
-  isDefault: Scalars['Boolean']['output'];
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
   lockedByUser?: Maybe<User>;
   lockedByUserId?: Maybe<Scalars['String']['output']>;

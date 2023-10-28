@@ -55,7 +55,6 @@ export class ModuleActionService extends BlockTypeService<
         data: {
           ...args.data,
           enabled: true,
-          isDefault: false,
           type: EnumModuleActionType.Custom,
         },
       },
@@ -80,7 +79,7 @@ export class ModuleActionService extends BlockTypeService<
       );
     }
 
-    if (existingAction.isDefault) {
+    if (existingAction.actionType !== EnumModuleActionType.Custom) {
       if (existingAction.name !== args.data.name) {
         throw new AmplicationError(
           "Cannot update the name of a default Action for entity."
@@ -97,7 +96,7 @@ export class ModuleActionService extends BlockTypeService<
   ): Promise<ModuleAction> {
     const moduleAction = await super.findOne(args);
 
-    if (moduleAction?.isDefault) {
+    if (moduleAction?.actionType !== EnumModuleActionType.Custom) {
       throw new AmplicationError(
         "Cannot delete a default Action for entity. To delete it, you must delete the entity"
       );
@@ -106,6 +105,41 @@ export class ModuleActionService extends BlockTypeService<
   }
 
   async createDefaultActionsForEntityModule(
+    entity: Entity,
+    module: Module,
+    user: User
+  ): Promise<ModuleAction[]> {
+    const defaultActions = await getDefaultActionsForEntity(
+      entity as unknown as CodeGenTypes.Entity
+    );
+    return await Promise.all(
+      Object.keys(defaultActions).map((action) => {
+        return (
+          defaultActions[action] &&
+          super.create(
+            {
+              data: {
+                ...defaultActions[action],
+                parentBlock: {
+                  connect: {
+                    id: module.id,
+                  },
+                },
+                resource: {
+                  connect: {
+                    id: entity.resourceId,
+                  },
+                },
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+  }
+
+  async updateDefaultActionsForEntityModule(
     entity: Entity,
     module: Module,
     user: User

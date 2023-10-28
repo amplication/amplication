@@ -78,7 +78,7 @@ export const ModuleActionListItem = ({
           {moduleAction.description}
         </Text>
       )}
-      {moduleAction.isDefault && (
+      {moduleAction.actionType !== models.EnumModuleActionType.Custom && (
         <Chip chipStyle={EnumChipStyle.ThemePurple}>Default Action</Chip>
       )}
       {!moduleAction.enabled ? (

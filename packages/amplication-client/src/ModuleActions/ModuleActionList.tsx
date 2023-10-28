@@ -14,13 +14,12 @@ import React, { useCallback, useEffect, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 
+import { match } from "react-router-dom";
+import { AppRouteProps } from "../routes/routesUtil";
 import { pluralize } from "../util/pluralize";
 import { ModuleActionListItem } from "./ModuleActionListItem";
-import useModuleAction from "../Modules/hooks/useModuleAction";
-import { AppRouteProps } from "../routes/routesUtil";
-import { match } from "react-router-dom";
 import NewModuleAction from "./NewModuleAction";
-import ModuleActionForm from "./ModuleActionForm";
+import useModuleAction from "./hooks/useModuleAction";
 
 const DATE_CREATED_FIELD = "createdAt";
 

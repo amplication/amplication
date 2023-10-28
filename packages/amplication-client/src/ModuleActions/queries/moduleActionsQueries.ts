@@ -7,7 +7,6 @@ export const MODULE_ACTION_FIELDS_FRAGMENT = gql`
     displayName
     description
     enabled
-    isDefault
     lockedByUserId
     lockedAt
     lockedByUser {

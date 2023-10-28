@@ -945,7 +945,6 @@ type ModuleAction implements IBlock {
   fieldPermanentId: String
   id: String!
   inputParameters: [BlockInputOutput!]!
-  isDefault: Boolean!
   lockedAt: DateTime
   lockedByUser: User
   lockedByUserId: String

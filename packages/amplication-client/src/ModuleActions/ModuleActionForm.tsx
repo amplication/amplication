@@ -15,7 +15,7 @@ type Props = {
   onSubmit: (values: models.Module) => void;
   defaultValues?: models.Module;
   disabled?: boolean;
-  isDefaultAction: boolean;
+  isCustomAction: boolean;
 };
 
 const NON_INPUT_GRAPHQL_PROPERTIES = [
@@ -23,7 +23,6 @@ const NON_INPUT_GRAPHQL_PROPERTIES = [
   "createdAt",
   "updatedAt",
   "__typename",
-  "isDefault",
   "lockedByUserId",
   "lockedAt",
   "lockedByUser",
@@ -55,7 +54,7 @@ const ModuleActionForm = ({
   onSubmit,
   defaultValues,
   disabled,
-  isDefaultAction,
+  isCustomAction,
 }: Props) => {
   const initialValues = useMemo(() => {
     const sanitizedDefaultValues = omit(
@@ -85,7 +84,7 @@ const ModuleActionForm = ({
         <NameField
           label="Name"
           name="name"
-          disabled={disabled || isDefaultAction}
+          disabled={disabled || !isCustomAction}
         />
         <div>
           <ToggleField name="enabled" label="Enabled" disabled={disabled} />

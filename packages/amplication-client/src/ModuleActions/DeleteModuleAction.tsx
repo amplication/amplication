@@ -2,7 +2,7 @@ import React, { useCallback, useState } from "react";
 import * as models from "../models";
 import { ConfirmationDialog, Snackbar } from "@amplication/ui/design-system";
 import { Button, EnumButtonStyle } from "../Components/Button";
-import useModuleAction from "../Modules/hooks/useModuleAction";
+import useModuleAction from "./hooks/useModuleAction";
 import { formatError } from "../util/error";
 
 const CONFIRM_BUTTON = { label: "Delete" };

@@ -36,7 +36,6 @@ export const getDefaultActionsForEntity = (
       displayName: `${entityPluralDisplayName} Meta`,
       description: `Meta data about ${entityDisplayName} records`,
       enabled: true,
-      isDefault: true,
     },
     [EnumModuleActionType.Create]: {
       actionType: EnumModuleActionType.Create,
@@ -44,7 +43,6 @@ export const getDefaultActionsForEntity = (
       displayName: `Create ${entityDisplayName}`,
       description: `Create one ${entityDisplayName}`,
       enabled: true,
-      isDefault: true,
     },
     [EnumModuleActionType.Read]: {
       actionType: EnumModuleActionType.Read,
@@ -52,7 +50,6 @@ export const getDefaultActionsForEntity = (
       displayName: `Get ${entityDisplayName}`,
       description: `Get one ${entityDisplayName}`,
       enabled: true,
-      isDefault: true,
     },
     [EnumModuleActionType.Update]: {
       actionType: EnumModuleActionType.Update,
@@ -60,7 +57,6 @@ export const getDefaultActionsForEntity = (
       displayName: `Update ${entityDisplayName}`,
       description: `Update one ${entityDisplayName}`,
       enabled: true,
-      isDefault: true,
     },
     [EnumModuleActionType.Delete]: {
       actionType: EnumModuleActionType.Delete,
@@ -68,7 +64,6 @@ export const getDefaultActionsForEntity = (
       displayName: `Delete ${entityDisplayName}`,
       description: `Delete one ${entityDisplayName}`,
       enabled: true,
-      isDefault: true,
     },
     [EnumModuleActionType.Find]: {
       actionType: EnumModuleActionType.Find,
@@ -76,7 +71,6 @@ export const getDefaultActionsForEntity = (
       displayName: `Find ${entityPluralDisplayName}`,
       description: `Find many ${entityPluralDisplayName}`,
       enabled: true,
-      isDefault: true,
     },
   };
 };
@@ -100,7 +94,6 @@ export const getDefaultActionsForRelatedField = (
         displayName: `Connect ${fieldDisplayName}`,
         description: `Connect multiple ${fieldDisplayName} records to ${entityDisplayName}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenDisconnect]: {
         actionType: EnumModuleActionType.ChildrenDisconnect,
@@ -108,7 +101,6 @@ export const getDefaultActionsForRelatedField = (
         displayName: `Disconnect ${fieldDisplayName}`,
         description: `Disconnect multiple ${fieldDisplayName} records from ${entityDisplayName}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenFind]: {
         actionType: EnumModuleActionType.ChildrenFind,
@@ -116,7 +108,6 @@ export const getDefaultActionsForRelatedField = (
         displayName: `Find ${fieldDisplayName}`,
         description: `Find multiple ${fieldDisplayName} records for ${entityDisplayName}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenUpdate]: {
         actionType: EnumModuleActionType.ChildrenUpdate,
@@ -124,7 +115,6 @@ export const getDefaultActionsForRelatedField = (
         displayName: `Update ${fieldDisplayName}`,
         description: `Update multiple ${fieldDisplayName} records for ${entityDisplayName}`,
         enabled: true,
-        isDefault: true,
       },
     };
   } else {
@@ -135,7 +125,6 @@ export const getDefaultActionsForRelatedField = (
         displayName: `Get ${fieldDisplayName}`,
         description: `Get a ${fieldDisplayName} record for ${entityDisplayName}`,
         enabled: true,
-        isDefault: true,
       },
     };
   }

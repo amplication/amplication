@@ -14,6 +14,7 @@ import { formatError } from "../util/error";
 import { DeleteModuleAction } from "./DeleteModuleAction";
 import ModuleActionForm from "./ModuleActionForm";
 import useModuleAction from "./hooks/useModuleAction";
+import * as models from "../models";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -94,7 +95,8 @@ const ModuleAction = ({ match }: Props) => {
     );
   }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
 
-  const isDefaultAction = data?.ModuleAction?.isDefault;
+  const isCustomAction =
+    data?.ModuleAction?.actionType === models.EnumModuleActionType.Custom;
 
   return (
     <>
@@ -104,7 +106,7 @@ const ModuleAction = ({ match }: Props) => {
           subTitle={data?.ModuleAction?.description}
         />
         <FlexItem.FlexEnd>
-          {data?.ModuleAction && !isDefaultAction && (
+          {data?.ModuleAction && isCustomAction && (
             <DeleteModuleAction
               moduleAction={data?.ModuleAction}
               onDelete={handleDeleteModuleAction}
@@ -112,7 +114,7 @@ const ModuleAction = ({ match }: Props) => {
           )}
         </FlexItem.FlexEnd>
       </FlexItem>
-      {data?.ModuleAction && isDefaultAction && (
+      {data?.ModuleAction && !isCustomAction && (
         <FlexItem margin={EnumFlexItemMargin.Bottom}>
           <Text textStyle={EnumTextStyle.Description}>
             This is a default action that was created automatically with the
@@ -123,7 +125,7 @@ const ModuleAction = ({ match }: Props) => {
 
       {!loading && (
         <ModuleActionForm
-          isDefaultAction={isDefaultAction}
+          isCustomAction={isCustomAction}
           onSubmit={handleSubmit}
           defaultValues={data?.ModuleAction}
         />

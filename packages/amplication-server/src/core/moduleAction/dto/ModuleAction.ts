@@ -17,11 +17,6 @@ export class ModuleAction extends IBlock {
   })
   enabled!: boolean;
 
-  @Field(() => Boolean, {
-    nullable: false,
-  })
-  isDefault!: boolean;
-
   @Field(() => EnumModuleActionType, {
     nullable: false,
   })

@@ -86,7 +86,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME} Meta`,
         description: `Meta data about ${EXAMPLE_ENTITY_DISPLAY_NAME} records`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.Create]: {
         actionType: EnumModuleActionType.Create,
@@ -94,7 +93,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Create ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Create one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.Read]: {
         actionType: EnumModuleActionType.Read,
@@ -102,7 +100,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Get ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Get one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.Update]: {
         actionType: EnumModuleActionType.Update,
@@ -110,7 +107,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Update ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Update one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.Delete]: {
         actionType: EnumModuleActionType.Delete,
@@ -118,7 +114,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Delete ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Delete one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.Find]: {
         actionType: EnumModuleActionType.Find,
@@ -126,7 +121,6 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Find ${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME}`,
         description: `Find many ${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
     });
   });
@@ -146,7 +140,6 @@ describe("getDefaultActionsForRelatedField", () => {
         displayName: `Connect ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Connect multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records to ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenDisconnect]: {
         actionType: EnumModuleActionType.ChildrenDisconnect,
@@ -154,7 +147,6 @@ describe("getDefaultActionsForRelatedField", () => {
         displayName: `Disconnect ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Disconnect multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records from ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenFind]: {
         actionType: EnumModuleActionType.ChildrenFind,
@@ -162,7 +154,6 @@ describe("getDefaultActionsForRelatedField", () => {
         displayName: `Find ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Find multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
       [EnumModuleActionType.ChildrenUpdate]: {
         actionType: EnumModuleActionType.ChildrenUpdate,
@@ -170,7 +161,6 @@ describe("getDefaultActionsForRelatedField", () => {
         displayName: `Update ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Update multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
     });
   });
@@ -188,7 +178,6 @@ describe("getDefaultActionsForRelatedField", () => {
         displayName: `Get ${EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE}`,
         description: `Get a ${EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE} record for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
-        isDefault: true,
       },
     });
   });
