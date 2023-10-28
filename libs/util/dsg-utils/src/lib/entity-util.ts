@@ -6,9 +6,14 @@ import {
   EnumModuleActionType,
   types,
 } from "@amplication/code-gen-types";
+import {
+  EnumModuleActionGqlOperation,
+  EnumModuleActionRestVerb,
+} from "@amplication/code-gen-types/models";
 import { camelCase } from "camel-case";
 import { pascalCase } from "pascal-case";
 import pluralize from "pluralize";
+import { kebabCase } from "lodash";
 
 //returns the plural name of the entity, based on its name, in a camelCase format
 //in case the plural name is the same as the name, it adds the suffix "Items"
@@ -36,6 +41,9 @@ export const getDefaultActionsForEntity = (
       displayName: `${entityPluralDisplayName} Meta`,
       description: `Meta data about ${entityDisplayName} records`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Query,
+      restVerb: EnumModuleActionRestVerb.Get,
+      path: `/:id/meta`,
     },
     [EnumModuleActionType.Create]: {
       actionType: EnumModuleActionType.Create,
@@ -43,6 +51,9 @@ export const getDefaultActionsForEntity = (
       displayName: `Create ${entityDisplayName}`,
       description: `Create one ${entityDisplayName}`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Mutation,
+      restVerb: EnumModuleActionRestVerb.Post,
+      path: ``,
     },
     [EnumModuleActionType.Read]: {
       actionType: EnumModuleActionType.Read,
@@ -50,6 +61,9 @@ export const getDefaultActionsForEntity = (
       displayName: `Get ${entityDisplayName}`,
       description: `Get one ${entityDisplayName}`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Query,
+      restVerb: EnumModuleActionRestVerb.Get,
+      path: `/:id`,
     },
     [EnumModuleActionType.Update]: {
       actionType: EnumModuleActionType.Update,
@@ -57,6 +71,9 @@ export const getDefaultActionsForEntity = (
       displayName: `Update ${entityDisplayName}`,
       description: `Update one ${entityDisplayName}`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Mutation,
+      restVerb: EnumModuleActionRestVerb.Patch,
+      path: `/:id`,
     },
     [EnumModuleActionType.Delete]: {
       actionType: EnumModuleActionType.Delete,
@@ -64,6 +81,9 @@ export const getDefaultActionsForEntity = (
       displayName: `Delete ${entityDisplayName}`,
       description: `Delete one ${entityDisplayName}`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Mutation,
+      restVerb: EnumModuleActionRestVerb.Delete,
+      path: `/:id`,
     },
     [EnumModuleActionType.Find]: {
       actionType: EnumModuleActionType.Find,
@@ -71,6 +91,9 @@ export const getDefaultActionsForEntity = (
       displayName: `Find ${entityPluralDisplayName}`,
       description: `Find many ${entityPluralDisplayName}`,
       enabled: true,
+      gqlOperation: EnumModuleActionGqlOperation.Query,
+      restVerb: EnumModuleActionRestVerb.Get,
+      path: ``,
     },
   };
 };
@@ -80,6 +103,7 @@ export const getDefaultActionsForRelationField = (
   relatedField: EntityField
 ): entityRelatedFieldDefaultActions => {
   const fieldName = pascalCase(relatedField.name);
+  const kebabFieldName = kebabCase(relatedField.name);
   const fieldDisplayName = relatedField.displayName;
   const entityDisplayName = entity.displayName;
 
@@ -94,6 +118,9 @@ export const getDefaultActionsForRelationField = (
         displayName: `${entityDisplayName} Connect ${fieldDisplayName}`,
         description: `Connect multiple ${fieldDisplayName} records to ${entityDisplayName}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Post,
+        path: `/:id/${kebabFieldName}`,
       },
       [EnumModuleActionType.ChildrenDisconnect]: {
         actionType: EnumModuleActionType.ChildrenDisconnect,
@@ -101,6 +128,9 @@ export const getDefaultActionsForRelationField = (
         displayName: `${entityDisplayName} Disconnect ${fieldDisplayName}`,
         description: `Disconnect multiple ${fieldDisplayName} records from ${entityDisplayName}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Delete,
+        path: `/:id/${kebabFieldName}`,
       },
       [EnumModuleActionType.ChildrenFind]: {
         actionType: EnumModuleActionType.ChildrenFind,
@@ -108,6 +138,9 @@ export const getDefaultActionsForRelationField = (
         displayName: `${entityDisplayName} Find ${fieldDisplayName}`,
         description: `Find multiple ${fieldDisplayName} records for ${entityDisplayName}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id/${kebabFieldName}`,
       },
       [EnumModuleActionType.ChildrenUpdate]: {
         actionType: EnumModuleActionType.ChildrenUpdate,
@@ -115,6 +148,9 @@ export const getDefaultActionsForRelationField = (
         displayName: `${entityDisplayName} Update ${fieldDisplayName}`,
         description: `Update multiple ${fieldDisplayName} records for ${entityDisplayName}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Patch,
+        path: `/:id/${kebabFieldName}`,
       },
     };
   } else {
@@ -125,6 +161,9 @@ export const getDefaultActionsForRelationField = (
         displayName: `${entityDisplayName} Get ${fieldDisplayName}`,
         description: `Get a ${fieldDisplayName} record for ${entityDisplayName}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id/${kebabFieldName}`,
       },
     };
   }

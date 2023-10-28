@@ -694,6 +694,22 @@ enum EnumMessagePatternConnectionOptions {
   Send
 }
 
+enum EnumModuleActionGqlOperation {
+  Mutation
+  Query
+}
+
+enum EnumModuleActionRestVerb {
+  Delete
+  Get
+  Head
+  Options
+  Patch
+  Post
+  Put
+  Trace
+}
+
 enum EnumModuleActionType {
   ChildrenConnect
   ChildrenDisconnect
@@ -943,6 +959,7 @@ type ModuleAction implements IBlock {
   displayName: String!
   enabled: Boolean!
   fieldPermanentId: String
+  gqlOperation: EnumModuleActionGqlOperation!
   id: String!
   inputParameters: [BlockInputOutput!]!
   lockedAt: DateTime
@@ -952,7 +969,9 @@ type ModuleAction implements IBlock {
   outputParameters: [BlockInputOutput!]!
   parentBlock: Block
   parentBlockId: String
+  path: String
   resourceId: String
+  restVerb: EnumModuleActionRestVerb!
   updatedAt: DateTime!
   versionNumber: Float!
 }
@@ -960,11 +979,14 @@ type ModuleAction implements IBlock {
 input ModuleActionCreateInput {
   description: String
   displayName: String!
+  gqlOperation: EnumModuleActionGqlOperation!
   inputParameters: [BlockInputOutputInput!]
   name: String
   outputParameters: [BlockInputOutputInput!]
   parentBlock: WhereParentIdInput
+  path: String
   resource: WhereParentIdInput!
+  restVerb: EnumModuleActionRestVerb!
 }
 
 input ModuleActionOrderByInput {
@@ -980,7 +1002,10 @@ input ModuleActionUpdateInput {
   description: String
   displayName: String
   enabled: Boolean!
+  gqlOperation: EnumModuleActionGqlOperation!
   name: String
+  path: String
+  restVerb: EnumModuleActionRestVerb!
 }
 
 input ModuleActionWhereInput {

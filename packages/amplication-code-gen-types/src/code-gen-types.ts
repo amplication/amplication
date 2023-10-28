@@ -284,12 +284,14 @@ export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 export type ModuleContainer = BlockOmittedFields<models.Module>;
 export type ModuleAction = Omit<
   BlockOmittedFields<models.ModuleAction>,
-  "id" | "actionType"
+  "id" | "actionType" | "restVerb" | "gqlOperation"
 > & {
   id?: string;
   displayName: string;
   description: string;
   actionType: keyof typeof models.EnumModuleActionType;
+  restVerb: keyof typeof models.EnumModuleActionRestVerb;
+  gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
 };
 
 export type entityDefaultActions = {

@@ -18,6 +18,7 @@ import { EnumModuleActionType } from "./dto/EnumModuleActionType";
 import { FindManyModuleActionArgs } from "./dto/FindManyModuleActionArgs";
 import { ModuleAction } from "./dto/ModuleAction";
 import { UpdateModuleActionArgs } from "./dto/UpdateModuleActionArgs";
+import { omit } from "lodash";
 
 @Injectable()
 export class ModuleActionService extends BlockTypeService<
@@ -179,6 +180,9 @@ export class ModuleActionService extends BlockTypeService<
                 displayName: defaultActions[action.actionType].displayName,
                 description: defaultActions[action.actionType].description,
                 enabled: action.enabled,
+                gqlOperation: defaultActions[action.actionType].gqlOperation,
+                restVerb: defaultActions[action.actionType].restVerb,
+                path: defaultActions[action.actionType].path,
               },
             },
             user
@@ -266,6 +270,9 @@ export class ModuleActionService extends BlockTypeService<
                 displayName: defaultActions[action.actionType].displayName,
                 description: defaultActions[action.actionType].description,
                 enabled: action.enabled,
+                gqlOperation: defaultActions[action.actionType].gqlOperation,
+                restVerb: defaultActions[action.actionType].restVerb,
+                path: defaultActions[action.actionType].path,
               },
             },
             user

@@ -734,6 +734,22 @@ export enum EnumMessagePatternConnectionOptions {
   Send = 'Send'
 }
 
+export enum EnumModuleActionGqlOperation {
+  Mutation = 'Mutation',
+  Query = 'Query'
+}
+
+export enum EnumModuleActionRestVerb {
+  Delete = 'Delete',
+  Get = 'Get',
+  Head = 'Head',
+  Options = 'Options',
+  Patch = 'Patch',
+  Post = 'Post',
+  Put = 'Put',
+  Trace = 'Trace'
+}
+
 export enum EnumModuleActionType {
   ChildrenConnect = 'ChildrenConnect',
   ChildrenDisconnect = 'ChildrenDisconnect',
@@ -973,6 +989,7 @@ export type ModuleAction = IBlock & {
   displayName: Scalars['String']['output'];
   enabled: Scalars['Boolean']['output'];
   fieldPermanentId?: Maybe<Scalars['String']['output']>;
+  gqlOperation: EnumModuleActionGqlOperation;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
   lockedAt?: Maybe<Scalars['DateTime']['output']>;
@@ -982,7 +999,9 @@ export type ModuleAction = IBlock & {
   outputParameters: Array<BlockInputOutput>;
   parentBlock?: Maybe<Block>;
   parentBlockId?: Maybe<Scalars['String']['output']>;
+  path?: Maybe<Scalars['String']['output']>;
   resourceId?: Maybe<Scalars['String']['output']>;
+  restVerb: EnumModuleActionRestVerb;
   updatedAt: Scalars['DateTime']['output'];
   versionNumber: Scalars['Float']['output'];
 };
@@ -990,11 +1009,14 @@ export type ModuleAction = IBlock & {
 export type ModuleActionCreateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName: Scalars['String']['input'];
+  gqlOperation: EnumModuleActionGqlOperation;
   inputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   name?: InputMaybe<Scalars['String']['input']>;
   outputParameters?: InputMaybe<Array<BlockInputOutputInput>>;
   parentBlock?: InputMaybe<WhereParentIdInput>;
+  path?: InputMaybe<Scalars['String']['input']>;
   resource: WhereParentIdInput;
+  restVerb: EnumModuleActionRestVerb;
 };
 
 export type ModuleActionOrderByInput = {
@@ -1010,7 +1032,10 @@ export type ModuleActionUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
   enabled: Scalars['Boolean']['input'];
+  gqlOperation: EnumModuleActionGqlOperation;
   name?: InputMaybe<Scalars['String']['input']>;
+  path?: InputMaybe<Scalars['String']['input']>;
+  restVerb: EnumModuleActionRestVerb;
 };
 
 export type ModuleActionWhereInput = {
