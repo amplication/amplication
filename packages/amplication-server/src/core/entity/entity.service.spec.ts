@@ -463,7 +463,7 @@ describe("EntityService", () => {
         {
           provide: ModuleActionService,
           useClass: jest.fn(() => ({
-            createDefaultActionsForRelatedField: jest.fn(() => {
+            createDefaultActionsForRelationField: jest.fn(() => {
               return [];
             }),
           })),

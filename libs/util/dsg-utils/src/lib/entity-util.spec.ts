@@ -7,7 +7,7 @@ import {
 import {
   prepareEntityPluralName,
   getDefaultActionsForEntity,
-  getDefaultActionsForRelatedField,
+  getDefaultActionsForRelationField,
 } from "./entity-util";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -126,10 +126,10 @@ describe("getDefaultActionsForEntity", () => {
   });
 });
 
-describe("getDefaultActionsForRelatedField", () => {
+describe("getDefaultActionsForRelationField", () => {
   it("should return a list of default actions for relation field - To-Many ", () => {
     expect(
-      getDefaultActionsForRelatedField(
+      getDefaultActionsForRelationField(
         EXAMPLE_ENTITY,
         EXAMPLE_FIELD_RELATED_TO_MANY
       )
@@ -167,7 +167,7 @@ describe("getDefaultActionsForRelatedField", () => {
 
   it("should return a list of default actions for relation field - To-One ", () => {
     expect(
-      getDefaultActionsForRelatedField(
+      getDefaultActionsForRelationField(
         EXAMPLE_ENTITY,
         EXAMPLE_FIELD_RELATED_TO_ONE
       )

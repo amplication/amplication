@@ -2,7 +2,7 @@ import * as CodeGenTypes from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import {
   getDefaultActionsForEntity,
-  getDefaultActionsForRelatedField,
+  getDefaultActionsForRelationField,
 } from "@amplication/dsg-utils";
 import { UserEntity } from "../../decorators/user.decorator";
 import { EnumBlockType } from "../../enums/EnumBlockType";
@@ -188,13 +188,13 @@ export class ModuleActionService extends BlockTypeService<
     );
   }
 
-  async createDefaultActionsForRelatedField(
+  async createDefaultActionsForRelationField(
     entity: Entity,
     field: EntityField,
     moduleId: string,
     user: User
   ): Promise<ModuleAction[]> {
-    const defaultActions = await getDefaultActionsForRelatedField(
+    const defaultActions = await getDefaultActionsForRelationField(
       entity as unknown as CodeGenTypes.Entity,
       field as unknown as CodeGenTypes.EntityField
     );
@@ -226,13 +226,13 @@ export class ModuleActionService extends BlockTypeService<
     );
   }
 
-  async updateDefaultActionsForRelatedField(
+  async updateDefaultActionsForRelationField(
     entity: Entity,
     field: EntityField,
     moduleId: string,
     user: User
   ): Promise<ModuleAction[]> {
-    const defaultActions = await getDefaultActionsForRelatedField(
+    const defaultActions = await getDefaultActionsForRelationField(
       entity as unknown as CodeGenTypes.Entity,
       field as unknown as CodeGenTypes.EntityField
     );
@@ -272,6 +272,41 @@ export class ModuleActionService extends BlockTypeService<
           )
         );
       })
+    );
+  }
+
+  async deleteDefaultActionsForRelationField(
+    field: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<Module[]> {
+    //get the current default actions
+    const existingDefaultActions = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["fieldPermanentId"],
+        equals: field.permanentId,
+      }
+    );
+
+    return await Promise.all(
+      existingDefaultActions.map((action) =>
+        super.delete(
+          {
+            where: {
+              id: action.id,
+            },
+          },
+          user,
+          true
+        )
+      )
     );
   }
 }

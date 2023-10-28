@@ -75,7 +75,7 @@ export const getDefaultActionsForEntity = (
   };
 };
 
-export const getDefaultActionsForRelatedField = (
+export const getDefaultActionsForRelationField = (
   entity: Entity,
   relatedField: EntityField
 ): entityRelatedFieldDefaultActions => {

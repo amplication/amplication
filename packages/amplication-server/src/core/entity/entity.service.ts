@@ -2419,17 +2419,19 @@ export class EntityService {
           },
         });
 
-        const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
-          entity.resourceId,
-          entity.id
-        );
+        if (args.data.dataType === EnumDataType.Lookup) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
 
-        await this.moduleActionService.createDefaultActionsForRelatedField(
-          entity,
-          newField,
-          moduleId,
-          user
-        );
+          await this.moduleActionService.createDefaultActionsForRelationField(
+            entity,
+            newField,
+            moduleId,
+            user
+          );
+        }
 
         return newField;
       }
@@ -2482,7 +2484,7 @@ export class EntityService {
         entityId
       );
 
-      await this.moduleActionService.createDefaultActionsForRelatedField(
+      await this.moduleActionService.createDefaultActionsForRelationField(
         entity,
         newField,
         moduleId,
@@ -2498,7 +2500,7 @@ export class EntityService {
     entityId: string,
     user: User
   ): Promise<void> {
-    await this.useLocking(entityId, user, async () => {
+    await this.useLocking(entityId, user, async (entity) => {
       // Get field to delete
       const field = await this.getField({
         where: {
@@ -2507,7 +2509,7 @@ export class EntityService {
       });
 
       // Delete the related field from the database
-      await this.prisma.entityField.delete({
+      const deletedField = await this.prisma.entityField.delete({
         where: {
           // eslint-disable-next-line @typescript-eslint/naming-convention
           entityVersionId_permanentId: {
@@ -2516,6 +2518,17 @@ export class EntityService {
           },
         },
       });
+
+      const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+        entity.resourceId,
+        entity.id
+      );
+
+      this.moduleActionService.deleteDefaultActionsForRelationField(
+        deletedField,
+        moduleId,
+        user
+      );
     });
   }
 
@@ -2649,7 +2662,7 @@ export class EntityService {
             entity.id
           );
 
-          this.moduleActionService.updateDefaultActionsForRelatedField(
+          this.moduleActionService.updateDefaultActionsForRelationField(
             entity,
             updatedField,
             moduleId,
@@ -2739,7 +2752,7 @@ export class EntityService {
     return await this.useLocking(
       field.entityVersion.entityId,
       user,
-      async () => {
+      async (entity) => {
         if (field.dataType === EnumDataType.Lookup) {
           // Cast the field properties as Lookup properties
           const properties = field.properties as unknown as types.Lookup;
@@ -2759,7 +2772,20 @@ export class EntityService {
           }
         }
 
-        return this.prisma.entityField.delete(args);
+        const deletedField = await this.prisma.entityField.delete(args);
+
+        const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+          entity.resourceId,
+          entity.id
+        );
+
+        this.moduleActionService.deleteDefaultActionsForRelationField(
+          deletedField,
+          moduleId,
+          user
+        );
+
+        return deletedField;
       }
     );
   }
