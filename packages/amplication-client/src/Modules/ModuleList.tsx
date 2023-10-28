@@ -11,8 +11,9 @@ import {
   Snackbar,
   Text,
   VerticalNavigation,
+  VerticalNavigationItem,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { ModuleListItem } from "./ModuleListItem";
@@ -21,6 +22,7 @@ import NewModule from "./NewModule";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { pluralize } from "../util/pluralize";
 import useModule from "./hooks/useModule";
+import { AppContext } from "../context/appContext";
 
 type Props = {
   resourceId: string;
@@ -33,7 +35,8 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newModule, setNewModule] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
-
+  const { currentWorkspace, currentProject, currentResource } =
+    useContext(AppContext);
   const {
     findModules,
     findModulesData: data,
@@ -120,6 +123,12 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
           </Text>
         </FlexItem>
         <VerticalNavigation>
+          <VerticalNavigationItem
+            icon={"box"}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`}
+          >
+            All
+          </VerticalNavigationItem>
           {data?.Modules.map((module) => (
             <ModuleListItem
               key={module.id}
