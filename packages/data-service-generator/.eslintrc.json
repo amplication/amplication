@@ -131,7 +131,10 @@
         "@nx/dependency-checks": [
           "error",
           {
-            "ignoredDependencies": ["@amplication/util/logging"],
+            "ignoredDependencies": [
+              "@amplication/util/logging",
+              "@amplication/dsg-utils"
+            ],
             "includeTransitiveDependencies": true
           }
         ]
