@@ -225,4 +225,53 @@ export class ModuleActionService extends BlockTypeService<
       })
     );
   }
+
+  async updateDefaultActionsForRelatedField(
+    entity: Entity,
+    field: EntityField,
+    moduleId: string,
+    user: User
+  ): Promise<ModuleAction[]> {
+    const defaultActions = await getDefaultActionsForRelatedField(
+      entity as unknown as CodeGenTypes.Entity,
+      field as unknown as CodeGenTypes.EntityField
+    );
+
+    //get the current default actions
+    const existingDefaultActions = await this.findManyBySettings(
+      {
+        where: {
+          parentBlock: {
+            id: moduleId,
+          },
+        },
+      },
+      {
+        path: ["fieldPermanentId"],
+        equals: field.permanentId,
+      }
+    );
+
+    return await Promise.all(
+      existingDefaultActions.map((action) => {
+        return (
+          defaultActions[action.actionType] &&
+          super.update(
+            {
+              where: {
+                id: action.id,
+              },
+              data: {
+                name: defaultActions[action.actionType].name,
+                displayName: defaultActions[action.actionType].displayName,
+                description: defaultActions[action.actionType].description,
+                enabled: action.enabled,
+              },
+            },
+            user
+          )
+        );
+      })
+    );
+  }
 }

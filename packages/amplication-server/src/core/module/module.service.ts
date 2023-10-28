@@ -173,6 +173,6 @@ export class ModuleService extends BlockTypeService<
       entityId
     );
 
-    return super.delete({ where: { id: moduleId } }, user);
+    return super.delete({ where: { id: moduleId } }, user, true); //delete the module and all its children (actions/type...)
   }
 }

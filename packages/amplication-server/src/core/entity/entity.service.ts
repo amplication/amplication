@@ -2578,6 +2578,12 @@ export class EntityService {
       args.data.properties?.relatedEntityId !==
         (field.properties as unknown as types.Lookup)?.relatedEntityId;
 
+    const shouldUpdateRelatedFieldActions =
+      args.data.dataType === EnumDataType.Lookup &&
+      field.dataType === EnumDataType.Lookup &&
+      (field.name !== args.data.name ||
+        field.displayName !== args.data.displayName);
+
     return await this.useLocking(
       field.entityVersion.entityId,
       user,
@@ -2635,6 +2641,21 @@ export class EntityService {
             "relatedFieldAllowMultipleSelection",
           ])
         );
+
+        //update the names of the related field actions, in case the field name was changed
+        if (shouldUpdateRelatedFieldActions) {
+          const moduleId = await this.moduleService.getDefaultModuleIdForEntity(
+            entity.resourceId,
+            entity.id
+          );
+
+          this.moduleActionService.updateDefaultActionsForRelatedField(
+            entity,
+            updatedField,
+            moduleId,
+            user
+          );
+        }
 
         const updateFieldProperties =
           updatedField.properties as unknown as types.Lookup;

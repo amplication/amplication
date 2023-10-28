@@ -522,7 +522,9 @@ export class BlockService {
 
   async delete<T extends IBlock>(
     args: DeleteBlockArgs,
-    user: User
+    user: User,
+    deleteChildBlocks: boolean = false,
+    deleteChildBlocksRecursive: boolean = true
   ): Promise<T | null> {
     const blockVersion = await this.prisma.blockVersion.findUnique({
       where: {
@@ -572,6 +574,32 @@ export class BlockService {
         },
       });
     });
+
+    if (deleteChildBlocks) {
+      const childBlocks = await this.findMany({
+        where: {
+          parentBlock: {
+            id: args.where.id,
+          },
+        },
+      });
+
+      await Promise.all(
+        childBlocks.map((childBlock) =>
+          this.delete(
+            {
+              where: {
+                id: childBlock.id,
+              },
+            },
+            user,
+            deleteChildBlocksRecursive, // if recursive is true, delete the child blocks of the child block
+            deleteChildBlocksRecursive
+          )
+        )
+      );
+    }
+
     return this.versionToIBlock<T>(blockVersion);
   }
 

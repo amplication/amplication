@@ -64,7 +64,17 @@ export abstract class BlockTypeService<
     );
   }
 
-  async delete(args: DeleteArgs, @UserEntity() user: User): Promise<T> {
-    return await this.blockService.delete(args, user);
+  async delete(
+    args: DeleteArgs,
+    @UserEntity() user: User,
+    deleteChildBlocks: boolean = false,
+    deleteChildBlocksRecursive: boolean = true
+  ): Promise<T> {
+    return await this.blockService.delete(
+      args,
+      user,
+      deleteChildBlocks,
+      deleteChildBlocksRecursive
+    );
   }
 }
