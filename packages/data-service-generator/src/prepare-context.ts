@@ -24,7 +24,7 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
-import { getDefaultActionsForEntity } from "./entity-util";
+import { getDefaultActionsForEntity } from "@amplication/dsg-utils";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(

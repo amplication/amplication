@@ -4,6 +4,17 @@
   "sourceRoot": "libs/util/dsg-utils/src",
   "projectType": "library",
   "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/util/dsg-utils",
+        "main": "libs/util/dsg-utils/src/index.ts",
+        "tsConfig": "libs/util/dsg-utils/tsconfig.lib.json",
+        "assets": ["libs/util/dsg-utils/*.md"],
+        "updateBuildableProjectDepsInPackageJson": true
+      }
+    },
     "lint": {
       "executor": "@nx/linter:eslint",
       "outputs": ["{options.outputFile}"],
