@@ -18,6 +18,7 @@ import { formatError } from "../util/error";
 import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import useModuleAction from "./hooks/useModuleAction";
+import { kebabCase } from "lodash";
 
 type Props = {
   resourceId: string;
@@ -71,6 +72,9 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
             ...data,
             displayName,
             name,
+            gqlOperation: models.EnumModuleActionGqlOperation.Query,
+            restVerb: models.EnumModuleActionRestVerb.Get,
+            path: `/:id/${kebabCase(name)}`,
             resource: { connect: { id: resourceId } },
             parentBlock: { connect: { id: moduleId } },
           },
