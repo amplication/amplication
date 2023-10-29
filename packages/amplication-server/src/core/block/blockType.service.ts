@@ -67,8 +67,8 @@ export abstract class BlockTypeService<
   async delete(
     args: DeleteArgs,
     @UserEntity() user: User,
-    deleteChildBlocks: boolean = false,
-    deleteChildBlocksRecursive: boolean = true
+    deleteChildBlocks = false,
+    deleteChildBlocksRecursive = true
   ): Promise<T> {
     return await this.blockService.delete(
       args,

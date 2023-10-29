@@ -525,8 +525,8 @@ export class BlockService {
   async delete<T extends IBlock>(
     args: DeleteBlockArgs,
     user: User,
-    deleteChildBlocks: boolean = false,
-    deleteChildBlocksRecursive: boolean = true
+    deleteChildBlocks = false,
+    deleteChildBlocksRecursive = true
   ): Promise<T | null> {
     const blockVersion = await this.prisma.blockVersion.findUnique({
       where: {

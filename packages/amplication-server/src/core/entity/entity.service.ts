@@ -2524,7 +2524,7 @@ export class EntityService {
         entity.id
       );
 
-      this.moduleActionService.deleteDefaultActionsForRelationField(
+      await this.moduleActionService.deleteDefaultActionsForRelationField(
         deletedField,
         moduleId,
         user
@@ -2662,7 +2662,7 @@ export class EntityService {
             entity.id
           );
 
-          this.moduleActionService.updateDefaultActionsForRelationField(
+          await this.moduleActionService.updateDefaultActionsForRelationField(
             entity,
             updatedField,
             moduleId,
@@ -2779,7 +2779,7 @@ export class EntityService {
           entity.id
         );
 
-        this.moduleActionService.deleteDefaultActionsForRelationField(
+        await this.moduleActionService.deleteDefaultActionsForRelationField(
           deletedField,
           moduleId,
           user
