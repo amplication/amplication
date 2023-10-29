@@ -830,10 +830,6 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
-    const generateGRPC =
-      plugins.filter((p) => p.configurations["generateGRPC"] === "true")
-        .length > 0;
-
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -878,7 +874,6 @@ export class BuildService {
         version: buildVersion,
         id: resourceId,
         url,
-        generateGrpc: generateGRPC,
         settings: serviceSettings,
         codeGeneratorVersionOptions: {
           codeGeneratorVersion: resource.codeGeneratorVersion,

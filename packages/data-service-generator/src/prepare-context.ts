@@ -52,12 +52,17 @@ export async function prepareContext(
   const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
 
   const context = DsgContext.getInstance;
+
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
+  context.generateGrpc =
+    context.pluginInstallations.filter(
+      (p) => p.configurations && p.configurations["generateGRPC"] === "true"
+    ).length > 0;
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
     return entity.fields.some(
