@@ -2,6 +2,8 @@ import {
   Entity,
   EntityField,
   EnumDataType,
+  EnumModuleActionGqlOperation,
+  EnumModuleActionRestVerb,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
 import {
@@ -16,8 +18,10 @@ const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 
 const EXAMPLE_FIELD_NAME_TO_MANY = "ExampleFieldNames";
+const EXAMPLE_FIELD_NAME_TO_MANY_KEBAB = "example-field-names";
 const EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY = "Example Field Names";
 const EXAMPLE_FIELD_NAME_TO_ONE = "ExampleFieldName";
+const EXAMPLE_FIELD_NAME_TO_ONE_KEBAB = "example-field-name";
 const EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE = "Example Field Name";
 
 const EXAMPLE_FIELD_RELATED_TO_MANY: EntityField = {
@@ -86,6 +90,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME} Meta`,
         description: `Meta data about ${EXAMPLE_ENTITY_DISPLAY_NAME} records`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id/meta`,
       },
       [EnumModuleActionType.Create]: {
         actionType: EnumModuleActionType.Create,
@@ -93,6 +100,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Create ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Create one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Post,
+        path: ``,
       },
       [EnumModuleActionType.Read]: {
         actionType: EnumModuleActionType.Read,
@@ -100,6 +110,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Get ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Get one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id`,
       },
       [EnumModuleActionType.Update]: {
         actionType: EnumModuleActionType.Update,
@@ -107,6 +120,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Update ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Update one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Patch,
+        path: `/:id`,
       },
       [EnumModuleActionType.Delete]: {
         actionType: EnumModuleActionType.Delete,
@@ -114,6 +130,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Delete ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Delete one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Delete,
+        path: `/:id`,
       },
       [EnumModuleActionType.Find]: {
         actionType: EnumModuleActionType.Find,
@@ -121,6 +140,9 @@ describe("getDefaultActionsForEntity", () => {
         displayName: `Find ${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME}`,
         description: `Find many ${EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: ``,
       },
     });
   });
@@ -140,6 +162,9 @@ describe("getDefaultActionsForRelationField", () => {
         displayName: `${EXAMPLE_ENTITY_DISPLAY_NAME} Connect ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Connect multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records to ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Post,
+        path: `/:id/${EXAMPLE_FIELD_NAME_TO_MANY_KEBAB}`,
       },
       [EnumModuleActionType.ChildrenDisconnect]: {
         actionType: EnumModuleActionType.ChildrenDisconnect,
@@ -147,13 +172,20 @@ describe("getDefaultActionsForRelationField", () => {
         displayName: `${EXAMPLE_ENTITY_DISPLAY_NAME} Disconnect ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Disconnect multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records from ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Delete,
+        path: `/:id/${EXAMPLE_FIELD_NAME_TO_MANY_KEBAB}`,
       },
+
       [EnumModuleActionType.ChildrenFind]: {
         actionType: EnumModuleActionType.ChildrenFind,
         name: `find${EXAMPLE_FIELD_NAME_TO_MANY}`,
         displayName: `${EXAMPLE_ENTITY_DISPLAY_NAME} Find ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Find multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id/${EXAMPLE_FIELD_NAME_TO_MANY_KEBAB}`,
       },
       [EnumModuleActionType.ChildrenUpdate]: {
         actionType: EnumModuleActionType.ChildrenUpdate,
@@ -161,6 +193,9 @@ describe("getDefaultActionsForRelationField", () => {
         displayName: `${EXAMPLE_ENTITY_DISPLAY_NAME} Update ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY}`,
         description: `Update multiple ${EXAMPLE_FIELD_DISPLAY_NAME_TO_MANY} records for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Mutation,
+        restVerb: EnumModuleActionRestVerb.Patch,
+        path: `/:id/${EXAMPLE_FIELD_NAME_TO_MANY_KEBAB}`,
       },
     });
   });
@@ -178,6 +213,9 @@ describe("getDefaultActionsForRelationField", () => {
         displayName: `${EXAMPLE_ENTITY_DISPLAY_NAME} Get ${EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE}`,
         description: `Get a ${EXAMPLE_FIELD_DISPLAY_NAME_TO_ONE} record for ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
+        gqlOperation: EnumModuleActionGqlOperation.Query,
+        restVerb: EnumModuleActionRestVerb.Get,
+        path: `/:id/${EXAMPLE_FIELD_NAME_TO_ONE_KEBAB}`,
       },
     });
   });
