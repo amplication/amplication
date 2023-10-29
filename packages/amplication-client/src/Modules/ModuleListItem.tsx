@@ -26,7 +26,11 @@ export const ModuleListItem = ({ module, onDelete, onError }: Props) => {
           expandable
           childItems={
             <>
-              <VerticalNavigationItem
+              <ModuleActionLinkList
+                resourceId={currentResource?.id}
+                moduleId={module.id}
+              />
+              {/* <VerticalNavigationItem
                 expandable
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions`}
                 icon="api"
@@ -45,7 +49,7 @@ export const ModuleListItem = ({ module, onDelete, onError }: Props) => {
                 icon="zap"
               >
                 Types
-              </VerticalNavigationItem>
+              </VerticalNavigationItem> */}
             </>
           }
         >

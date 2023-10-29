@@ -49,13 +49,6 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
         variables: {
           where: {
             resource: { id: resourceId },
-            displayName:
-              searchPhrase !== ""
-                ? {
-                    contains: searchPhrase,
-                    mode: models.QueryMode.Insensitive,
-                  }
-                : undefined,
           },
           orderBy: {
             [DATE_CREATED_FIELD]: models.SortOrder.Asc,
@@ -63,7 +56,7 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
         },
       });
     }
-  }, [resourceId, searchPhrase, findModules, moduleId]);
+  }, [resourceId, findModules, moduleId]);
 
   return (
     <>
