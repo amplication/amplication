@@ -27,7 +27,7 @@ import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
-import { createControllerGrpcId } from "../controller-grpc/create-controller-grpc";
+import { createGrpcControllerId } from "../grpc-controller/create-grpc-controller";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
@@ -44,7 +44,7 @@ export async function createModules(
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
   const controllerId = createControllerId(entityType);
-  const controllerGrpcId = createControllerGrpcId(entityType);
+  const controllerGrpcId = createGrpcControllerId(entityType);
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);

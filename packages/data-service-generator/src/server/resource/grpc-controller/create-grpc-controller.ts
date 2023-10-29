@@ -1,6 +1,5 @@
 import {
   print,
-  readFile,
   removeESLintComments,
   removeTSVariableDeclares,
   removeTSClassDeclares,
@@ -56,9 +55,9 @@ export type MethodsIdsActionEntityTriplet = {
 const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
-const toManyTemplatePath = require.resolve("./to-many.template.ts");
+const toManyFile = undefined;
 
-export async function createControllerGrpcModules(
+export async function createGrpcControllerModules(
   resource: string,
   entityName: string,
   entityType: string,
@@ -75,8 +74,8 @@ export async function createControllerGrpcModules(
   const template = undefined;
   const templateBase = undefined;
 
-  const controllerId = createControllerGrpcId(entityType);
-  const controllerBaseId = createControllerGrpcBaseId(entityType);
+  const controllerId = createGrpcControllerId(entityType);
+  const controllerBaseId = createGrpcControllerBaseId(entityType);
   const serviceId = createServiceId(entityType);
   const createEntityId = builders.identifier("create");
   const findManyEntityId = builders.identifier("findMany");
@@ -122,7 +121,7 @@ export async function createControllerGrpcModules(
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
   const controllerGrpcModule = await pluginWrapper(
-    createControllerGrpcModule,
+    createGrpcControllerModule,
     EventNames.CreateEntityControllerGrpc,
     {
       template,
@@ -135,7 +134,7 @@ export async function createControllerGrpcModules(
   );
 
   const controllerBaseGrpcModule = await pluginWrapper(
-    createControllerGrpcBaseModule,
+    createGrpcControllerBaseModule,
     EventNames.CreateEntityControllerGrpcBase,
     {
       template: templateBase,
@@ -155,7 +154,7 @@ export async function createControllerGrpcModules(
   return moduleMap;
 }
 
-async function createControllerGrpcModule({
+async function createGrpcControllerModule({
   template,
   entityName,
   entityServiceModule,
@@ -165,8 +164,8 @@ async function createControllerGrpcModule({
 }: CreateEntityControllerGrpcParams): Promise<ModuleMap> {
   if (!template) return;
   const { serverDirectories } = DsgContext.getInstance;
-  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.controller.grpc.ts`;
-  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.grpc.base.ts`;
+  const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.grpc.controller.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.grpc.controller.base.ts`;
 
   interpolate(template, templateMapping);
 
@@ -198,7 +197,7 @@ async function createControllerGrpcModule({
   return moduleMap;
 }
 
-async function createControllerGrpcBaseModule({
+async function createGrpcControllerBaseModule({
   template,
   entityName,
   entityType,
@@ -211,7 +210,7 @@ async function createControllerGrpcBaseModule({
   if (!template) return;
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories } = DsgContext.getInstance;
-  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.controller.grpc.base.ts`;
+  const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.grpc.controller.base.ts`;
 
   const entityDTOs = DTOs[entity.name];
 
@@ -228,6 +227,7 @@ async function createControllerGrpcBaseModule({
           entityType,
           entityDTOs.whereUniqueInput,
           DTOs,
+          toManyFile,
           serviceId
         )
       )
@@ -311,16 +311,16 @@ async function createControllerGrpcBaseModule({
   return moduleMap;
 }
 
-export function createControllerGrpcId(
+export function createGrpcControllerId(
   entityType: string
 ): namedTypes.Identifier {
-  return builders.identifier(`${entityType}ControllerGrpc`);
+  return builders.identifier(`${entityType}GrpcController`);
 }
 
-export function createControllerGrpcBaseId(
+export function createGrpcControllerBaseId(
   entityType: string
 ): namedTypes.Identifier {
-  return builders.identifier(`${entityType}ControllerGrpcBase`);
+  return builders.identifier(`${entityType}GrpcControllerBase`);
 }
 
 async function createToManyRelationMethods(
@@ -329,9 +329,9 @@ async function createToManyRelationMethods(
   entityType: string,
   whereUniqueInput: NamedClassDeclaration,
   dtos: DTOs,
+  toManyFile: namedTypes.File,
   serviceId: namedTypes.Identifier
 ) {
-  const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
 
@@ -380,7 +380,9 @@ async function createToManyRelationMethods(
 async function createToManyRelationMethodsInternal(
   eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams
 ): Promise<ModuleMap> {
-  const { toManyFile, toManyMapping, entity, field } = eventParams;
+  const { toManyMapping, entity, field } = eventParams;
+  const toManyFile = eventParams.toManyFile;
+  if (!toManyFile) return;
   const { relatedEntity } = field.properties;
 
   interpolate(toManyFile, toManyMapping);
