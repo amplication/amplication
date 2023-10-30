@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService creates resource as expected 1`] = `
+exports[`createDataService when kafka plugin is installed creates resource as expected 1`] = `
 {
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -2974,7 +2974,16 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000",
+PORT=3000
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+DB_PASSWORD=admin
+DB_PORT=5432
+DB_NAME=my-db
+KAFKA_BROKERS=localhost:9092
+KAFKA_ENABLE_SSL=false
+KAFKA_CLIENT_ID=sample-application
+KAFKA_GROUP_ID=sample-application",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2982,6 +2991,54 @@ PORT=3000",
 .DS_Store
 ",
   "server/docker-compose.dev.yml": "version: "3"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  kafka:
+    image: confluentinc/cp-kafka:7.3.1
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9997:9997
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9997
+volumes:
+  postgres: ~
 ",
   "server/docker-compose.yml": "version: "3"
 services:
@@ -2996,6 +3053,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
     restart: on-failure
@@ -3008,9 +3066,65 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+      POSTGRES_DB: \${DB_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $\${POSTGRES_DB} -U $\${POSTGRES_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+  zookeeper:
+    image: confluentinc/cp-zookeeper:5.2.4
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    ports:
+      - 2181:2181
+  kafka:
+    image: confluentinc/cp-kafka:7.3.1
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+      - 9997:9997
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:latest
+    ports:
+      - 8080:8080
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      KAFKA_CLUSTERS_0_NAME: local
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+      KAFKA_CLUSTERS_0_JMXPORT: 9997
+volumes:
+  postgres: ~
 ",
   "server/nest-cli.json": "{
   "sourceRoot": "src",
@@ -3069,6 +3183,8 @@ services:
     "ts-node": "10.9.1",
     "type-fest": "2.19.0",
     "validator": "13.11.0",
+    "@nestjs/microservices": "8.2.3",
+    "kafkajs": "2.2.0",
     "decimal.js": "10.4.3"
   },
   "devDependencies": {
@@ -3096,7 +3212,7 @@ services:
   }
 }
 ",
-  "server/prisma/schema.prisma": "datasource postgres {
+  "server/prisma/schema.prisma": "datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -3268,6 +3384,7 @@ import { EmptyModule } from "./empty/empty.module";
 import { HealthModule } from "./health/health.module";
 import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
+import { KafkaModule } from "./kafka/kafka.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
@@ -3277,6 +3394,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 @Module({
   controllers: [],
   imports: [
+    KafkaModule,
     UserModule,
     ProfileModule,
     OrderModule,
@@ -3312,9 +3430,12 @@ export class AppModule {}
 ",
   "server/src/connectMicroservices.ts": "import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { generateKafkaClientOptions } from "./kafka/generateKafkaClientOptions";
+import { MicroserviceOptions } from "@nestjs/microservices";
 
 export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
+  app.connectMicroservice<MicroserviceOptions>(generateKafkaClientOptions(configService));
 }
 ",
   "server/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
@@ -6887,6 +7008,134 @@ export class HealthService extends HealthServiceBase {
   }
 }
 ",
+  "server/src/kafka/KafkaMessage.ts": "import { KafkaMessageHeaders } from "./KafkaMessageHeaders";
+
+export interface KafkaMessage {
+  key: string | Record<string, any> | null;
+  value: string | Record<string, any>;
+  headers?: KafkaMessageHeaders;
+}
+",
+  "server/src/kafka/KafkaMessageHeaders.ts": "export interface KafkaMessageHeaders {
+  [key: string]: Buffer | string | undefined;
+}
+",
+  "server/src/kafka/generateKafkaClientOptions.ts": "import { ConfigService } from "@nestjs/config";
+import { KafkaOptions, Transport } from "@nestjs/microservices";
+
+export const generateKafkaClientOptions = (
+  configService: ConfigService
+): KafkaOptions => {
+  const kafkaBrokersString = configService.get("KAFKA_BROKERS");
+  const kafkaEnableSSL = configService.get("KAFKA_ENABLE_SSL") === "true";
+  const kafkaClientId = configService.get("KAFKA_CLIENT_ID");
+  const kafkaGroupId = configService.get("KAFKA_GROUP_ID");
+
+  if (!kafkaBrokersString) {
+    throw new Error("KAFKA_BROKERS environment variable must be defined");
+  }
+
+  if (!kafkaClientId) {
+    throw new Error("KAFKA_CLIENT_ID environment variable must be defined");
+  }
+
+  if (!kafkaGroupId) {
+    throw new Error("KAFKA_GROUP_ID environment variable must be defined");
+  }
+
+  return {
+    transport: Transport.KAFKA,
+    options: {
+      client: {
+        clientId: kafkaClientId,
+        brokers: [...kafkaBrokersString.split(",")],
+        ssl: kafkaEnableSSL,
+      },
+      producer: {
+        metadataMaxAge: 3000,
+      },
+      consumer: {
+        rebalanceTimeout: 3000,
+        groupId: kafkaGroupId,
+      },
+    },
+  };
+};
+",
+  "server/src/kafka/kafka.controller.ts": "import { EventPattern, Payload } from "@nestjs/microservices";
+import { KafkaMessage } from "./KafkaMessage";
+import { Controller } from "@nestjs/common";
+
+@Controller("kafka-controller")
+export class KafkaController {
+  @EventPattern("git.pull")
+  async onGitPull(
+    @Payload()
+    message: KafkaMessage
+  ): Promise<void> {}
+}
+",
+  "server/src/kafka/kafka.module.ts": "import { Global, Module } from "@nestjs/common";
+import { ClientProxyFactory } from "@nestjs/microservices";
+import { generateKafkaClientOptions } from "./generateKafkaClientOptions";
+import { KafkaProducerService } from "./kafka.producer.service";
+import { KafkaController } from "./kafka.controller";
+import { ConfigService } from "@nestjs/config";
+
+@Global()
+@Module({
+  imports: [],
+  providers: [
+    {
+      provide: "KAFKA_CLIENT",
+      useFactory: (configService: ConfigService) => {
+        return ClientProxyFactory.create(
+          generateKafkaClientOptions(configService)
+        );
+      },
+      inject: [ConfigService],
+    },
+    KafkaProducerService,
+  ],
+  controllers: [KafkaController],
+  exports: [KafkaProducerService],
+})
+export class KafkaModule {}
+",
+  "server/src/kafka/kafka.producer.service.ts": "import { Inject, Injectable } from "@nestjs/common";
+import { ClientKafka } from "@nestjs/microservices";
+import { KafkaMessage } from "./KafkaMessage";
+import { MyMessageBrokerTopics } from "./topics";
+
+@Injectable()
+export class KafkaProducerService {
+  constructor(@Inject("KAFKA_CLIENT") private kafkaClient: ClientKafka) {}
+
+  async emitMessage(
+    topic: MyMessageBrokerTopics,
+    message: KafkaMessage
+  ): Promise<void> {
+    return await new Promise((resolve, reject) => {
+      this.kafkaClient.emit(topic, message).subscribe({
+        error: (err: Error) => {
+          reject(err);
+        },
+        next: () => {
+          resolve();
+        },
+      });
+    });
+  }
+
+  async onModuleInit() {
+    await this.kafkaClient.connect();
+  }
+}
+",
+  "server/src/kafka/topics.ts": "export enum KafkaBrokerTopics {
+  GitPull = "git.pull",
+}
+",
   "server/src/main.ts": "import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
@@ -6947,10 +7196,6 @@ async function main() {
 }
 
 module.exports = main();
-",
-  "server/src/message-broker/topics.ts": "export enum KafkaBrokerTopics {
-  GitPull = "git.pull",
-}
 ",
   "server/src/order/base/CreateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
