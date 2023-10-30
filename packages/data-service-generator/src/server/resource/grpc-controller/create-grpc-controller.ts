@@ -35,8 +35,6 @@ import {
 import { isToManyRelationField } from "../../../utils/field";
 import { getDTONameToPath } from "../create-dtos";
 import { getImportableDTOs } from "../dto/create-dto-module";
-import { createDataMapping } from "./create-data-mapping";
-import { createSelect } from "./create-select";
 import { getSwaggerAuthDecorationIdForClass } from "../../swagger/create-swagger";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
 import DsgContext from "../../../dsg-context";
@@ -46,6 +44,8 @@ import {
   createServiceId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
+import { createSelect } from "../controller/create-select";
+import { createDataMapping } from "../controller/create-data-mapping";
 
 export type MethodsIdsActionEntityTriplet = {
   methodId: namedTypes.Identifier;
@@ -56,6 +56,8 @@ const TO_MANY_MIXIN_ID = builders.identifier("Mixin");
 export const DATA_ID = builders.identifier("data");
 
 const toManyFile = undefined;
+const GRPC_GENERATE_ERROR =
+  "gRPC template is undefined, can't generate Grpc controllers, process is abort";
 
 export async function createGrpcControllerModules(
   resource: string,
@@ -162,8 +164,11 @@ async function createGrpcControllerModule({
   controllerBaseId,
   serviceId,
 }: CreateEntityControllerGrpcParams): Promise<ModuleMap> {
+  const { serverDirectories, generateGrpc } = DsgContext.getInstance;
+  if (generateGrpc && !template) {
+    throw new Error(GRPC_GENERATE_ERROR);
+  }
   if (!template) return;
-  const { serverDirectories } = DsgContext.getInstance;
   const modulePath = `${serverDirectories.srcDirectory}/${entityName}/${entityName}.grpc.controller.ts`;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.grpc.controller.base.ts`;
 
@@ -207,9 +212,13 @@ async function createGrpcControllerBaseModule({
   controllerBaseId,
   serviceId,
 }: CreateEntityControllerGrpcBaseParams): Promise<ModuleMap> {
-  if (!template) return;
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs, serverDirectories } = DsgContext.getInstance;
+  const { DTOs, serverDirectories, generateGrpc } = DsgContext.getInstance;
+
+  if (generateGrpc && !template) {
+    throw new Error(GRPC_GENERATE_ERROR);
+  }
+  if (!template) return;
   const moduleBasePath = `${serverDirectories.srcDirectory}/${entityName}/base/${entityName}.grpc.controller.base.ts`;
 
   const entityDTOs = DTOs[entity.name];
@@ -380,8 +389,14 @@ async function createToManyRelationMethods(
 async function createToManyRelationMethodsInternal(
   eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams
 ): Promise<ModuleMap> {
+  const { generateGrpc } = DsgContext.getInstance;
   const { toManyMapping, entity, field } = eventParams;
   const toManyFile = eventParams.toManyFile;
+
+  if (generateGrpc && !toManyFile) {
+    throw new Error(GRPC_GENERATE_ERROR);
+  }
+
   if (!toManyFile) return;
   const { relatedEntity } = field.properties;
 
