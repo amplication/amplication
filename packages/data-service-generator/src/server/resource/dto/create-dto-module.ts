@@ -8,6 +8,7 @@ import {
   addImports,
   importContainedIdentifiers,
   exportNames,
+  importContainedIdentifiers2,
 } from "../../../utils/ast";
 import {
   CLASS_VALIDATOR_MODULE,
@@ -103,6 +104,8 @@ export function getImportableNames() {
   return importableNames;
 }
 
+const importableNamesVar = getImportableNames();
+
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
@@ -130,14 +133,14 @@ export function createDTOFile(
     namedTypes.Identifier.check(dto.id)
       ? [dto, exportNames([dto.id])]
       : [builders.exportNamedDeclaration(dto)];
+
   const file = builders.file(builders.program(statements));
+  const importableDTOs = getImportableDTOs(modulePath, dtoNameToPath);
   const moduleToIds = {
-    ...getImportableNames(),
-    ...getImportableDTOs(modulePath, dtoNameToPath),
+    ...importableNamesVar,
+    ...importableDTOs,
   };
-
-  addImports(file, importContainedIdentifiers(dto, moduleToIds));
-
+  addImports(file, importContainedIdentifiers2(dto, moduleToIds));
   return file;
 }
 

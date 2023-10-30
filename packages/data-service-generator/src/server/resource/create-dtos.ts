@@ -54,9 +54,7 @@ export async function createDTOModulesInternal({
     Object.values(entityDTOs)
   );
 
-  // const dtosModules =
-  // })
-  const start = new Date();
+  console.time(`createDTOModulesInternal-ALL ${dtos.length}`);
   await Promise.all(
     entityDTOs.map((dto) => {
       const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
@@ -66,23 +64,8 @@ export async function createDTOModulesInternal({
     })
   ).then((modulesRes) => modulesRes.forEach((module) => moduleMap.set(module)));
 
-  // for (const dto of entityDTOs) {
-  //   const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
-  //   let module: Module;
-  //   if (isEnumDTO) {
-  //     module = createEnumDTOModule(dto, dtoNameToPath);
-  //   } else {
-  //     module = createDTOModule(dto, dtoNameToPath);
-  //   }
+  console.timeEnd(`createDTOModulesInternal-ALL ${dtos.length}`);
 
-  //   await moduleMap.set(module);
-  // }
-  const end = new Date();
-  console.log(
-    `createDTOModulesInternal 3 Execution time: ${
-      end.getTime() - start.getTime()
-    } ms`
-  );
   return moduleMap;
 }
 
@@ -97,48 +80,22 @@ export function getDTONameToPath(dtos: DTOs): Record<string, string> {
   );
 }
 
-const createEntityDTOGroup = async (entity: Entity) => {
-  return await Promise.all([
-    createEntityDTOs(entity),
-    createEntityEnumDTOs(entity),
-    createToManyDTOs(entity),
-  ]).then(
-    ([createEntityDTOsRes, createEntityEnumDTOsRes, createToManyDTOsRes]) => [
-      entity.name,
-      {
-        ...createEntityDTOsRes,
-        ...createEntityEnumDTOsRes,
-        ...createToManyDTOsRes,
-      },
-    ]
+export async function createDTOs(entities: Entity[]): Promise<DTOs> {
+  const entitiesDTOsMap = await Promise.all(
+    entities.map(async (entity) => {
+      const entityDTOs = await createEntityDTOs(entity);
+      const entityEnumDTOs = createEntityEnumDTOs(entity);
+      const toManyDTOs = createToManyDTOs(entity);
+      const dtos = {
+        ...entityDTOs,
+        ...entityEnumDTOs,
+        ...toManyDTOs,
+      };
+      return [entity.name, dtos];
+    })
   );
-};
-
-export const createDTOs = async (entities: Entity[]): Promise<DTOs> => {
-  const DTOsCreate = entities.map((entity: Entity) =>
-    createEntityDTOGroup(entity)
-  );
-  const entitiesDTOsMap = await Promise.all(DTOsCreate);
-
   return Object.fromEntries(entitiesDTOsMap);
-};
-
-// export async function createDTOs(entities: Entity[]): Promise<DTOs> {
-//   const entitiesDTOsMap = await Promise.all(
-//     entities.map(async (entity) => {
-//       const entityDTOs = await createEntityDTOs(entity);
-//       const entityEnumDTOs = createEntityEnumDTOs(entity);
-//       const toManyDTOs = createToManyDTOs(entity);
-//       const dtos = {
-//         ...entityDTOs,
-//         ...entityEnumDTOs,
-//         ...toManyDTOs,
-//       };
-//       return [entity.name, dtos];
-//     })
-//   );
-//   return Object.fromEntries(entitiesDTOsMap);
-// }
+}
 
 async function createEntityDTOs(entity: Entity): Promise<EntityDTOs> {
   const entityDTO = createEntityDTO(entity);
