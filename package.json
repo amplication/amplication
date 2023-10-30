@@ -170,7 +170,7 @@
     "react-use-localstorage": "^3.5.3",
     "react-xarrows": "^1.7.2",
     "reactflow": "^11.7.4",
-    "recast": "0.20.5",
+    "recast": "0.23.4",
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.11",
     "replace-ext": "2.0.0",
