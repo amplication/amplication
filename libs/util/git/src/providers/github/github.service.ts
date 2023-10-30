@@ -455,7 +455,7 @@ export class GithubService implements GitProvider {
       return { url: pullRequest.html_url, number: pullRequest.number };
     } catch (error) {
       if (error.status === 422) {
-        throw new Error(
+        this.logger.warn(
           `Hey there! Looks like your code hasn't changed since the last build. We skipped creating a new pull request to keep things tidy.`
         );
       }

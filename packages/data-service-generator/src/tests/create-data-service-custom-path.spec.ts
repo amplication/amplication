@@ -6,6 +6,8 @@ import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { AMPLICATION_MODULES } from "../generate-code";
+import { join } from "path";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -29,29 +31,32 @@ describe("createDataService", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  test("creates app as expected", async () => {
-    const modules = await createDataService(
-      {
-        entities,
-        buildId: "example_build_id",
-        roles,
-        resourceInfo: newAppInfo,
-        resourceType: EnumResourceType.Service,
-        pluginInstallations: installedPlugins,
-      },
-      MockedLogger
-    );
-
-    const modulesToSnapshot = modules
-      .modules()
-      .filter((module) =>
-        MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-          module.path.endsWith(extension)
-        )
+  describe("when server and admin are configured with custom path", () => {
+    test("creates app as expected", async () => {
+      const modules = await createDataService(
+        {
+          entities,
+          buildId: "example_build_id",
+          roles,
+          resourceInfo: newAppInfo,
+          resourceType: EnumResourceType.Service,
+          pluginInstallations: installedPlugins,
+        },
+        MockedLogger,
+        join(__dirname, "../../", AMPLICATION_MODULES)
       );
-    const pathToCode = Object.fromEntries(
-      modulesToSnapshot.map((module) => [module.path, module.code])
-    );
-    expect(pathToCode).toMatchSnapshot();
+
+      const modulesToSnapshot = modules
+        .modules()
+        .filter((module) =>
+          MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
+            module.path.endsWith(extension)
+          )
+        );
+      const pathToCode = Object.fromEntries(
+        modulesToSnapshot.map((module) => [module.path, module.code])
+      );
+      expect(pathToCode).toMatchSnapshot();
+    });
   });
 });
