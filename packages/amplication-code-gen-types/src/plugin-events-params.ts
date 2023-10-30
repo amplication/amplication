@@ -55,7 +55,7 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 
-export interface CreateEntityControllerGrpcParams extends EventParams {
+export interface CreateEntityGrpcControllerParams extends EventParams {
   template: namedTypes.File;
   entityName: string;
   entityServiceModule: string;
@@ -63,7 +63,7 @@ export interface CreateEntityControllerGrpcParams extends EventParams {
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
 }
-export interface CreateEntityControllerGrpcBaseParams extends EventParams {
+export interface CreateEntityGrpcControllerBaseParams extends EventParams {
   template: namedTypes.File;
   entity: Entity;
   entityName: string;
@@ -86,7 +86,7 @@ export interface CreateEntityControllerToManyRelationMethodsParams
   toManyMapping: { [key: string]: any };
 }
 
-export interface CreateEntityControllerGrpcToManyRelationMethodsParams
+export interface CreateEntityGrpcControllerToManyRelationMethodsParams
   extends EventParams {
   field: EntityLookupField;
   entity: Entity;
@@ -118,6 +118,18 @@ export interface CreateEntityResolverToOneRelationMethodsParams
   toOneMapping: { [key: string]: any };
 }
 export interface CreateEntityControllerSpecParams extends EventParams {
+  entity: Entity;
+  entityType: string;
+  template: namedTypes.File;
+  templateMapping: { [key: string]: any };
+  entityServiceModulePath: string;
+  entityControllerModulePath: string;
+  entityControllerBaseModulePath: string;
+  controllerId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+
+export interface CreateEntityGrpcControllerSpecParams extends EventParams {
   entity: Entity;
   entityType: string;
   template: namedTypes.File;
