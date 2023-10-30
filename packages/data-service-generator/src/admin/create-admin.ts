@@ -124,7 +124,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
     entityTitleComponentsModules,
     entityComponentsModules,
   ]);
-  await tsModules.replaceModulesCode((code) => formatCode(code));
+  await tsModules.replaceModulesCode((path, code) => formatCode(path, code));
   const typesRelatedFiles = await createTypesRelatedFiles();
   await context.logger.info("Finalizing admin creation...");
 
