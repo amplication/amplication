@@ -37,10 +37,10 @@ describe("createDataService", () => {
           resourceType: EnumResourceType.Service,
           pluginInstallations: [
             {
-              id: "clb3p3ov800cplc01a8f4uwje",
-              npm: "@amplication/transport-grpc",
+              id: "transport-grpc",
+              npm: "@amplication/plugin-transport-grpc",
               enabled: true,
-              version: "0.0.1-beta.130",
+              version: "0.0.1",
               pluginId: "transport-grpc",
               configurations: {
                 generateGRPC: "true",
