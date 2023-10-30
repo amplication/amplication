@@ -6,8 +6,10 @@ import {
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
-import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { TEST_DATA } from "./test-data";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { join } from "path";
+import { AMPLICATION_MODULES } from "../generate-code";
 
 jest.setTimeout(100000);
 
@@ -15,64 +17,70 @@ describe("createDataService", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  test("creates resource as expected", async () => {
-    const gitPullTopic: Topic = { id: "topicId", name: "git.pull" };
-    const messageBroker: DSGResourceData = {
-      resourceType: EnumResourceType.MessageBroker,
-      entities: [],
-      otherResources: [],
-      roles: [],
-      serviceTopics: [],
-      topics: [gitPullTopic],
-      buildId: "example_build_id",
-      resourceInfo: {
-        id: "messageBrokerId",
-        description: "This is the message broker description",
-        name: "Kafka broker",
-        url: "",
-        //@ts-ignore
-        settings: {},
-        version: "1.0.0",
-      },
-      pluginInstallations: [],
-    };
-    const service: DSGResourceData = {
-      ...TEST_DATA,
-      serviceTopics: [
-        {
-          enabled: true,
-          id: "serviceTopicId",
-          messageBrokerId: messageBroker.resourceInfo!.id,
-          patterns: [
-            {
-              topicId: gitPullTopic.id,
-              type: EnumMessagePatternConnectionOptions.Receive,
-            },
-          ],
+  describe("when kafka plugin is installed", () => {
+    test("creates resource as expected", async () => {
+      const gitPullTopic: Topic = { id: "topicId", name: "git.pull" };
+      const messageBroker: DSGResourceData = {
+        resourceType: EnumResourceType.MessageBroker,
+        entities: [],
+        otherResources: [],
+        roles: [],
+        serviceTopics: [],
+        topics: [gitPullTopic],
+        buildId: "example_build_id",
+        resourceInfo: {
+          id: "messageBrokerId",
+          description: "This is the message broker description",
+          name: "Kafka broker",
+          url: "",
+          //@ts-ignore
+          settings: {},
+          version: "1.0.0",
         },
-      ],
-      otherResources: [messageBroker],
-      pluginInstallations: [
-        {
-          id: "broker-kafka",
-          npm: "@amplication/plugin-broker-kafka",
-          enabled: true,
-          pluginId: "broker-kafka",
-          version: "latest",
-        },
-      ],
-    };
-    const modules = await createDataService(service, MockedLogger);
-    const modulesToSnapshot = modules
-      .modules()
-      .filter((module) =>
-        MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-          module.path.endsWith(extension)
-        )
+        pluginInstallations: [],
+      };
+      const service: DSGResourceData = {
+        ...TEST_DATA,
+        serviceTopics: [
+          {
+            enabled: true,
+            id: "serviceTopicId",
+            messageBrokerId: messageBroker.resourceInfo!.id,
+            patterns: [
+              {
+                topicId: gitPullTopic.id,
+                type: EnumMessagePatternConnectionOptions.Receive,
+              },
+            ],
+          },
+        ],
+        otherResources: [messageBroker],
+        pluginInstallations: [
+          {
+            id: "broker-kafka",
+            npm: "@amplication/plugin-broker-kafka",
+            enabled: true,
+            pluginId: "broker-kafka",
+            version: "latest",
+          },
+        ],
+      };
+      const modules = await createDataService(
+        service,
+        MockedLogger,
+        join(__dirname, "../../", AMPLICATION_MODULES)
       );
-    const pathToCode = Object.fromEntries(
-      modulesToSnapshot.map((module) => [module.path, module.code])
-    );
-    expect(pathToCode).toMatchSnapshot();
+      const modulesToSnapshot = modules
+        .modules()
+        .filter((module) =>
+          MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
+            module.path.endsWith(extension)
+          )
+        );
+      const pathToCode = Object.fromEntries(
+        modulesToSnapshot.map((module) => [module.path, module.code])
+      );
+      expect(pathToCode).toMatchSnapshot();
+    });
   });
 });
