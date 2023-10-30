@@ -76,7 +76,6 @@ export enum EventNames {
   CreateEntityGrpcController = "CreateEntityGrpcController",
   CreateEntityGrpcControllerBase = "CreateEntityGrpcControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
-  CreateEntityGrpcControllerSpec = "CreateEntityGrpcControllerSpec",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminAppModule = "CreateAdminAppModule",
   CreateAdminDotEnv = "CreateAdminDotEnv",

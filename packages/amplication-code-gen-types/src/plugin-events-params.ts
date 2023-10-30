@@ -129,18 +129,6 @@ export interface CreateEntityControllerSpecParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 
-export interface CreateEntityGrpcControllerSpecParams extends EventParams {
-  entity: Entity;
-  entityType: string;
-  template: namedTypes.File;
-  templateMapping: { [key: string]: any };
-  entityServiceModulePath: string;
-  entityControllerModulePath: string;
-  entityControllerBaseModulePath: string;
-  controllerId: namedTypes.Identifier;
-  serviceId: namedTypes.Identifier;
-}
-
 export interface CreateServerAuthParams extends EventParams {}
 
 export interface CreateAdminAppModuleParams extends EventParams {

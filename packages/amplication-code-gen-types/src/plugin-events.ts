@@ -37,7 +37,6 @@ import {
   CreateConnectMicroservicesParams,
   CreateAdminAppModuleParams,
   CreateAdminDotEnvParams,
-  CreateEntityGrpcControllerSpecParams,
   CreateEntityGrpcControllerToManyRelationMethodsParams,
   CreateEntityGrpcControllerParams,
   CreateEntityGrpcControllerBaseParams,
@@ -80,7 +79,6 @@ export type Events = {
   [EventNames.CreateSwagger]?: PluginEventType<CreateSwaggerParams>;
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
-  [EventNames.CreateEntityGrpcControllerSpec]?: PluginEventType<CreateEntityGrpcControllerSpecParams>;
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityGrpcControllerToManyRelationMethods]?: PluginEventType<CreateEntityGrpcControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
