@@ -13,6 +13,7 @@ services:
       JWT_EXPIRATION: "${JWT_EXPIRATION}"
     depends_on:
       - migrate
+    restart: on-failure
   migrate:
     build:
       context: .
