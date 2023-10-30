@@ -57,7 +57,7 @@ export const DATA_ID = builders.identifier("data");
 
 const toManyFile = undefined;
 const GRPC_GENERATE_ERROR =
-  "gRPC template is undefined, can't generate Grpc controllers, process is abort";
+  "gRPC template is undefined, can't generate gRPC controllers, aborting the code generation process";
 
 export async function createGrpcControllerModules(
   resource: string,
