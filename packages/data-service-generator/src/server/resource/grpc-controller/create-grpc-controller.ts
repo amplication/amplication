@@ -17,9 +17,9 @@ import {
   EventNames,
   EnumEntityAction,
   ModuleMap,
-  CreateEntityControllerGrpcParams,
-  CreateEntityControllerGrpcBaseParams,
-  CreateEntityControllerGrpcToManyRelationMethodsParams,
+  CreateEntityGrpcControllerParams,
+  CreateEntityGrpcControllerBaseParams,
+  CreateEntityGrpcControllerToManyRelationMethodsParams,
 } from "@amplication/code-gen-types";
 import { relativeImportPath } from "../../../utils/module";
 
@@ -122,9 +122,9 @@ export async function createGrpcControllerModules(
     SWAGGER_API_AUTH_FUNCTION: getSwaggerAuthDecorationIdForClass(authProvider),
   };
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
-  const controllerGrpcModule = await pluginWrapper(
+  const grpcControllerModule = await pluginWrapper(
     createGrpcControllerModule,
-    EventNames.CreateEntityControllerGrpc,
+    EventNames.CreateEntityGrpcController,
     {
       template,
       entityName,
@@ -135,9 +135,9 @@ export async function createGrpcControllerModules(
     }
   );
 
-  const controllerBaseGrpcModule = await pluginWrapper(
+  const grpcControllerBaseModule = await pluginWrapper(
     createGrpcControllerBaseModule,
-    EventNames.CreateEntityControllerGrpcBase,
+    EventNames.CreateEntityGrpcControllerBase,
     {
       template: templateBase,
       entityName,
@@ -149,9 +149,9 @@ export async function createGrpcControllerModules(
       serviceId,
     }
   );
-  if (!controllerGrpcModule || !controllerBaseGrpcModule) return moduleMap;
+  if (!grpcControllerModule || !grpcControllerBaseModule) return moduleMap;
 
-  await moduleMap.mergeMany([controllerGrpcModule, controllerBaseGrpcModule]);
+  await moduleMap.mergeMany([grpcControllerModule, grpcControllerBaseModule]);
 
   return moduleMap;
 }
@@ -163,7 +163,7 @@ async function createGrpcControllerModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerGrpcParams): Promise<ModuleMap> {
+}: CreateEntityGrpcControllerParams): Promise<ModuleMap> {
   const { serverDirectories, generateGrpc } = DsgContext.getInstance;
   if (generateGrpc && !template) {
     throw new Error(GRPC_GENERATE_ERROR);
@@ -211,7 +211,7 @@ async function createGrpcControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
-}: CreateEntityControllerGrpcBaseParams): Promise<ModuleMap> {
+}: CreateEntityGrpcControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
   const { DTOs, serverDirectories, generateGrpc } = DsgContext.getInstance;
 
@@ -366,7 +366,7 @@ async function createToManyRelationMethods(
     SELECT: createSelect(relatedEntityDTOs.entity, relatedEntity),
   };
 
-  const eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams = {
+  const eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams = {
     field: field,
     entity: entity,
     entityType: entityType,
@@ -379,7 +379,7 @@ async function createToManyRelationMethods(
 
   await pluginWrapper(
     createToManyRelationMethodsInternal,
-    EventNames.CreateEntityControllerGrpcToManyRelationMethods,
+    EventNames.CreateEntityGrpcControllerToManyRelationMethods,
     eventParams
   );
 
@@ -387,7 +387,7 @@ async function createToManyRelationMethods(
 }
 
 async function createToManyRelationMethodsInternal(
-  eventParams: CreateEntityControllerGrpcToManyRelationMethodsParams
+  eventParams: CreateEntityGrpcControllerToManyRelationMethodsParams
 ): Promise<ModuleMap> {
   const { generateGrpc } = DsgContext.getInstance;
   const { toManyMapping, entity, field } = eventParams;
