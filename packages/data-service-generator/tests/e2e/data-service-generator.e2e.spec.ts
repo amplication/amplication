@@ -194,7 +194,7 @@ describe("Data Service Generator", () => {
 
         // Wait for the server to be ready and for database migration before running tests.
         // TODO replace with a better docker-compose solution that waits for the migraton to be completd before starting the server
-        logger.info("Waiting for db migration to be ...");
+        logger.info("Waiting for db migration to be completed...");
         let migrationCompleted = false;
         let startTime = Date.now();
 
