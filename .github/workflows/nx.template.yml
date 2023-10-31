@@ -55,6 +55,7 @@ jobs:
       affected-apps: ${{ steps.configure-nx.outputs.affected-apps }}
       affected-lib: ${{ steps.configure-nx.outputs.affected-lib }}
       affected-e2e: ${{ steps.configure-nx.outputs.affected-e2e }}
+      affected-performance: ${{ steps.configure-nx.outputs.affected-performance }}
       affected-package-container: ${{ steps.configure-nx.outputs.affected-package-container }}
       affected-deploy-static: ${{ steps.configure-nx.outputs.affected-deploy-static }}
       affected-deploy-container: ${{ steps.configure-nx.outputs.affected-deploy-container }}
@@ -93,6 +94,7 @@ jobs:
           echo affected-apps=$(bunx nx print-affected --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-lib=$(bunx nx print-affected --type=lib $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-e2e=$(bunx nx print-affected --target=e2e $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
+          echo affected-performance=$(bunx nx print-affected --target=performance $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-package-container=$(bunx nx print-affected --target=package:container --type=app $NX_FORCE_ALL | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-deploy-static=$(bunx nx print-affected --target=deploy:static --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
           echo affected-deploy-container=$(bunx nx print-affected --target=deploy:container --type=app $NX_FORCE_ALL  | jq -c .projects) >> $GITHUB_OUTPUT
