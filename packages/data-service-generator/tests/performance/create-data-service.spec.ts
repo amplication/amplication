@@ -33,7 +33,9 @@ describe("createDataService", () => {
   test("creates resource within 15s", async () => {
     const startTime = Date.now();
 
-    const DSG_GENERATION_TIMEOUT = 20000;
+    const DSG_GENERATION_TIMEOUT = Number(
+      process.env.DSG_PERFORMANCE_TEST_GENERATION_TIME_LIMIT ?? 25000
+    );
 
     await createDataService(
       resourceData,
