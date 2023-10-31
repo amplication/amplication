@@ -13,7 +13,11 @@ export default {
     "src/server/static",
     "src/admin/static",
   ],
-  testPathIgnorePatterns: ["amplication_modules", "tests/e2e"],
+  testPathIgnorePatterns: [
+    "amplication_modules",
+    "tests/e2e",
+    "tests/performance",
+  ],
   moduleNameMapper: {
     "^axios$": require.resolve("axios"),
   },
