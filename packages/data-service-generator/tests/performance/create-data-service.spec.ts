@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../../src/create-data-service";
 import path, { join } from "path";
@@ -40,6 +41,8 @@ describe("createDataService", () => {
       join(__dirname, "../../", AMPLICATION_MODULES)
     );
 
-    expect(Date.now() - startTime).toBeLessThan(DSG_GENERATION_TIMEOUT);
+    const timeTaken = Date.now() - startTime;
+    console.log(`Generation time: ${timeTaken}`);
+    expect(timeTaken).toBeLessThan(DSG_GENERATION_TIMEOUT);
   });
 });
