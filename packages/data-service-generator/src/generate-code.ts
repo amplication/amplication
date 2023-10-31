@@ -82,6 +82,7 @@ export const generateCode = async (): Promise<void> => {
   try {
     const resourceData = await readInputJson(buildSpecPath);
     await generateCodeByResourceData(resourceData, buildOutputPath);
+
     await buildManagerNotifier.success();
   } catch (error) {
     await buildManagerNotifier.failure();
