@@ -3,7 +3,6 @@ import { camelCase } from "camel-case";
 import {
   DTOs,
   Entity,
-  Module,
   NamedClassDeclaration,
   EntityEnumDTOs,
   EntityDTOs,
@@ -54,7 +53,6 @@ export async function createDTOModulesInternal({
     Object.values(entityDTOs)
   );
 
-  console.time(`createDTOModulesInternal-ALL ${dtos.length}`);
   await Promise.all(
     entityDTOs.map((dto) => {
       const isEnumDTO = namedTypes.TSEnumDeclaration.check(dto);
@@ -63,8 +61,6 @@ export async function createDTOModulesInternal({
         : createDTOModule(dto, dtoNameToPath);
     })
   ).then((modulesRes) => modulesRes.forEach((module) => moduleMap.set(module)));
-
-  console.timeEnd(`createDTOModulesInternal-ALL ${dtos.length}`);
 
   return moduleMap;
 }

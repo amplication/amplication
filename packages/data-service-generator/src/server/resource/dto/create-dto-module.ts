@@ -6,7 +6,6 @@ import { relativeImportPath } from "../../../utils/module";
 import {
   addAutoGenerationComment,
   addImports,
-  importContainedIdentifiers,
   exportNames,
   importContainedIdentifiers2,
 } from "../../../utils/ast";
