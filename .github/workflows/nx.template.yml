@@ -30,6 +30,9 @@ on:
       affected-e2e:
         description: Nx e2e projects affected by the changes
         value: ${{ jobs.nx.outputs.affected-e2e }}
+      affected-performance:
+        description: Nx projects with performance tests affected by the changes
+        value: ${{ jobs.nx.outputs.affected-performance }}
       affected-package-container:
         description: Nx projects configured with package:container affected by the changes
         value: ${{ jobs.nx.outputs.affected-package-container }}
