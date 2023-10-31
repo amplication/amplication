@@ -78,6 +78,7 @@
     },
     "performance": {
       "executor": "@nx/jest:jest",
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
       "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
       "options": {
         "jestConfig": "packages/data-service-generator/jest.performance.config.ts",
