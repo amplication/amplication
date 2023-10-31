@@ -35,12 +35,11 @@
   "targetDefaults": {
     "test": {
       "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
-      "inputs": [
-        "default",
-        "^default",
-        "{workspaceRoot}/jest.preset.js",
-        "{workspaceRoot}/jest.preset.js"
-      ]
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
+    },
+    "performance": {
+      "dependsOn": ["db:prisma:generate", "^db:prisma:generate", "^prebuild"],
+      "inputs": ["default", "^default", "{workspaceRoot}/jest.preset.js"]
     },
     "prebuild": {
       "dependsOn": ["^prebuild"]
