@@ -76,6 +76,14 @@
         "passWithNoTests": false
       }
     },
+    "performance": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/data-service-generator"],
+      "options": {
+        "jestConfig": "packages/data-service-generator/jest.performance.config.ts",
+        "passWithNoTests": false
+      }
+    },
     "generate-example-input-json": {
       "executor": "nx:run-commands",
       "options": {
