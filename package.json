@@ -174,7 +174,7 @@
     "reflect-metadata": "^0.1.13",
     "regenerator-runtime": "0.13.11",
     "replace-ext": "2.0.0",
-    "rimraf": "^3.0.2",
+    "rimraf": "^5.0.5",
     "rooks": "^7.14.1",
     "rxjs": "^7.5.7",
     "sentence-case": "^3.0.4",
