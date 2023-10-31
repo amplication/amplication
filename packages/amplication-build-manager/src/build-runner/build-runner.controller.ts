@@ -34,14 +34,10 @@ export class BuildRunnerController {
       await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
     try {
-      const start = Date.now();
       await this.buildRunnerService.copyFromJobToArtifact(
         dto.resourceId,
         dto.buildId
       );
-
-      const end = Date.now();
-      console.log(`copyFromJobToArtifact Execution time: ${end - start} ms`);
 
       const successEvent: CodeGenerationSuccess.KafkaEvent = {
         key: null,
@@ -112,14 +108,11 @@ export class BuildRunnerController {
           });
       }
 
-      const start = Date.now();
       await this.buildRunnerService.saveDsgResourceData(
         message.buildId,
         message.dsgResourceData,
         containerImageTag ?? null
       );
-      const end = Date.now();
-      console.log(`saveDsgResourceData Execution time: ${end - start} ms`);
 
       const url = this.configService.get(Env.DSG_RUNNER_URL);
       try {
