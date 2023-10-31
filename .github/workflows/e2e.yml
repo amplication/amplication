@@ -1,4 +1,4 @@
-name: E2E
+name: Test E2E
 concurrency: ${{ github.ref }}-e2e
 
 on:
