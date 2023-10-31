@@ -26,7 +26,7 @@
     <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
   </a>
   <a href="https://twitter.com/amplication">
-    <img src="https://img.shields.io/badge/twitter-18a1d6.svg?style=flat-square" alt="twitter">
+    <img src="https://img.shields.io/badge/𝕏 (Twitter)-black.svg?style=flat-square" alt="x">
   </a>
   <a href="https://www.youtube.com/c/Amplicationcom">
     <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&" alt="youtube">
