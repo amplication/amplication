@@ -6,6 +6,7 @@ export default {
     doNotFake: ["fast-glob"],
   },
   testEnvironment: "node",
+  moduleFileExtensions: ["ts", "tsx", "js", "json"],
   modulePathIgnorePatterns: [
     "lint",
     "generated",
