@@ -6,6 +6,5 @@ export default {
   moduleFileExtensions: ["js", "json", "ts"],
   testMatch: ["**/performance/**/*.spec.ts"],
   collectCoverage: false,
-  reporters: ["default"],
   maxWorkers: 1,
 };
