@@ -40,8 +40,8 @@ import {
   CreateEntityGrpcControllerToManyRelationMethodsParams,
   CreateEntityGrpcControllerParams,
   CreateEntityGrpcControllerBaseParams,
-} from "./plugin-events-params";
-import { EventNames, PluginEventType } from "./plugins-types";
+} from "./plugin-events-params.types";
+import { EventNames, PluginEventType } from "./plugins.types";
 
 export type Events = {
   [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;

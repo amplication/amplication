@@ -9,7 +9,7 @@ import {
   ModuleMap,
   NamedClassDeclaration,
 } from "./code-gen-types";
-import { EventParams } from "./plugins-types";
+import { EventParams } from "./plugins.types";
 import type {
   Generator,
   DataSource,

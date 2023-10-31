@@ -7,7 +7,7 @@ import {
   serverDirectories,
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
-import { Events } from "./plugin-events";
+import { Events } from "./plugin-events.types";
 
 export interface EventParams {}
 
