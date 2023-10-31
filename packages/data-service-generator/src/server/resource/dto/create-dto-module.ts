@@ -103,8 +103,6 @@ export function getImportableNames() {
   return importableNames;
 }
 
-const importableNamesVar = getImportableNames();
-
 export function createDTOModule(
   dto: NamedClassDeclaration | namedTypes.TSEnumDeclaration,
   dtoNameToPath: Record<string, string>
@@ -134,10 +132,9 @@ export function createDTOFile(
       : [builders.exportNamedDeclaration(dto)];
 
   const file = builders.file(builders.program(statements));
-  const importableDTOs = getImportableDTOs(modulePath, dtoNameToPath);
   const moduleToIds = {
-    ...importableNamesVar,
-    ...importableDTOs,
+    ...getImportableNames(),
+    ...getImportableDTOs(modulePath, dtoNameToPath),
   };
   addImports(file, importContainedIdentifiers2(dto, moduleToIds));
   return file;
