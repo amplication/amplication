@@ -74,7 +74,7 @@ Experience the fastest way to develop Node.js applications with Amplication.
 
 ## Usage 
 
-To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found on the [docs](https://docs.amplication.com).
+To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found in the [docs](https://docs.amplication.com).
 
 <details>
 <summary>
@@ -113,7 +113,7 @@ Running Amplication
 Amplication is using a monorepo architecture - powered by <a href="https://nx.dev">Nx Workspaces</a> - where multiple applications and libraries exist in a single repository. To setup a local development environment the following steps can be followed:
 
 **BEFORE** you run the following steps make sure:
-1. You have typescript installed locally on you machine ```npm install -g typescript```
+1. You have typescript installed locally on your machine ```npm install -g typescript```
 2. You are using a supported node version (check `engines` `node` in the [package.json](./package.json))
 3. You are using a supported npm version (check `engines` `npm` in the [package.json](./package.json))
 4. You have `docker` installed and running on your machine
