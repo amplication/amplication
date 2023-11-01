@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService creates app as expected 1`] = `
+exports[`createDataService when graphql is disabled creates app as expected 1`] = `
 {
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -2974,7 +2974,12 @@ export class StringNullableFilter {
 ",
   "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000",
+PORT=3000
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+DB_PASSWORD=admin
+DB_PORT=5432
+DB_NAME=my-db",
   "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2982,6 +2987,18 @@ PORT=3000",
 .DS_Store
 ",
   "server/docker-compose.dev.yml": "version: "3"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "server/docker-compose.yml": "version: "3"
 services:
@@ -2996,6 +3013,7 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
     restart: on-failure
@@ -3008,9 +3026,29 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+      POSTGRES_DB: \${DB_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $\${POSTGRES_DB} -U $\${POSTGRES_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "server/nest-cli.json": "{
   "sourceRoot": "src",
@@ -3058,18 +3096,18 @@ services:
     "bcrypt": "5.1.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
+    "decimal.js": "10.4.3",
     "dotenv": "16.3.1",
-    "graphql-type-json": "0.3.2",
     "graphql": "^16.8.1",
+    "graphql-type-json": "0.3.2",
     "npm-run-all": "4.1.5",
+    "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.1",
-    "passport": "0.6.0",
     "reflect-metadata": "0.1.13",
     "ts-node": "10.9.1",
     "type-fest": "2.19.0",
-    "validator": "13.11.0",
-    "decimal.js": "10.4.3"
+    "validator": "13.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.18",
@@ -3082,8 +3120,8 @@ services:
     "@types/passport-jwt": "3.0.10",
     "@types/supertest": "^2.0.14",
     "@types/validator": "^13.11.2",
-    "jest-mock-extended": "^3.0.5",
     "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
     "prisma": "^5.4.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
@@ -3096,7 +3134,7 @@ services:
   }
 }
 ",
-  "server/prisma/schema.prisma": "datasource postgres {
+  "server/prisma/schema.prisma": "datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -3257,8 +3295,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "server/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+  "server/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
