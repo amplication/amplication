@@ -8,6 +8,8 @@ import { MicroserviceOptions } from "@nestjs/microservices";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { SERVICE_NAME } from "./constants";
 import { Logger } from "@amplication/util/logging";
+import * as fs from "fs";
+import * as https from "https";
 
 async function bootstrap() {
   /**
@@ -52,7 +54,16 @@ async function bootstrap() {
     app.enableCors();
   }
 
-  await app.listen(process.env.PORT || 3000);
+  const appMode = process.env.APP_MODE || "http";
+  if (appMode === "https") {
+    const httpsServer = https.createServer(httpsOptions, app.getHttpServer());
+    httpsServer.listen(443);
+    console.log("HTTPS server is running on port 443");
+  } else {
+    const port = process.env.PORT || 3000;
+    app.listen(port);
+    console.log(`HTTP server is running on port ${port}`);
+  }
 }
 
 bootstrap().catch((error) => {
