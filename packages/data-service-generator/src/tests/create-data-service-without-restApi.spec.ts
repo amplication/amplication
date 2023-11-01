@@ -6,6 +6,8 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
+import { AMPLICATION_MODULES } from "../generate-code";
+import { join } from "path";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -22,31 +24,34 @@ const newAppInfo: AppInfo = {
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
-  afterEach(() => {
-    jest.clearAllMocks();
-  });
-  test("creates app as expected", async () => {
-    const modules = await createDataService(
-      {
-        entities,
-        buildId: "example_build_id",
-        roles,
-        resourceInfo: newAppInfo,
-        resourceType: EnumResourceType.Service,
-        pluginInstallations: installedPlugins,
-      },
-      MockedLogger
-    );
-    const modulesToSnapshot = modules
-      .modules()
-      .filter((module) =>
-        MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
-          module.path.endsWith(extension)
-        )
+  describe("when restapi is disabled", () => {
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
+    test("creates app as expected", async () => {
+      const modules = await createDataService(
+        {
+          entities,
+          buildId: "example_build_id",
+          roles,
+          resourceInfo: newAppInfo,
+          resourceType: EnumResourceType.Service,
+          pluginInstallations: installedPlugins,
+        },
+        MockedLogger,
+        join(__dirname, "../../", AMPLICATION_MODULES)
       );
-    const pathToCode = Object.fromEntries(
-      modulesToSnapshot.map((module) => [module.path, module.code])
-    );
-    expect(pathToCode).toMatchSnapshot();
+      const modulesToSnapshot = modules
+        .modules()
+        .filter((module) =>
+          MODULE_EXTENSIONS_TO_SNAPSHOT.some((extension) =>
+            module.path.endsWith(extension)
+          )
+        );
+      const pathToCode = Object.fromEntries(
+        modulesToSnapshot.map((module) => [module.path, module.code])
+      );
+      expect(pathToCode).toMatchSnapshot();
+    });
   });
 });

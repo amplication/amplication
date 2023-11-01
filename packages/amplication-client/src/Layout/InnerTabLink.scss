@@ -16,10 +16,6 @@
   border-radius: var(--default-border-radius);
   gap: var(--user-badge-spacing);
 
-  .amp-icon {
-    font-size: var(--title3-font-size);
-  }
-
   &:last-child {
     margin-bottom: 0;
   }

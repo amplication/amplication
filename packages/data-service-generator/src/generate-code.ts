@@ -2,10 +2,8 @@ import { DSGResourceData, ModuleMap } from "@amplication/code-gen-types";
 import { mkdir, readFile, writeFile } from "fs/promises";
 import { dirname, join } from "path";
 import { createDataService } from "./create-data-service";
-import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { BuildManagerNotifier } from "./notify-build-manager";
 import { logger as internalLogger } from "./logging";
-import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { getFileEncoding } from "./utils/get-file-encoding";
 
 export const AMPLICATION_MODULES = "amplication_modules";
@@ -51,14 +49,8 @@ export const generateCodeByResourceData = async (
   destination: string
 ): Promise<void> => {
   try {
-    const { pluginInstallations } = resourceData;
-
-    const allPlugins = prepareDefaultPlugins(pluginInstallations);
-
-    await dynamicPackagesInstallations(allPlugins, internalLogger);
-
     const modules = await createDataService(
-      { ...resourceData, pluginInstallations: allPlugins },
+      resourceData,
       internalLogger,
       join(__dirname, "..", AMPLICATION_MODULES)
     );
@@ -90,6 +82,7 @@ export const generateCode = async (): Promise<void> => {
   try {
     const resourceData = await readInputJson(buildSpecPath);
     await generateCodeByResourceData(resourceData, buildOutputPath);
+
     await buildManagerNotifier.success();
   } catch (error) {
     await buildManagerNotifier.failure();
