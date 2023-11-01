@@ -3096,18 +3096,18 @@ volumes:
     "bcrypt": "5.1.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
+    "decimal.js": "10.4.3",
     "dotenv": "16.3.1",
-    "graphql-type-json": "0.3.2",
     "graphql": "^16.8.1",
+    "graphql-type-json": "0.3.2",
     "npm-run-all": "4.1.5",
+    "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.1",
-    "passport": "0.6.0",
     "reflect-metadata": "0.1.13",
     "ts-node": "10.9.1",
     "type-fest": "2.19.0",
-    "validator": "13.11.0",
-    "decimal.js": "10.4.3"
+    "validator": "13.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.18",
@@ -3120,8 +3120,8 @@ volumes:
     "@types/passport-jwt": "3.0.10",
     "@types/supertest": "^2.0.14",
     "@types/validator": "^13.11.2",
-    "jest-mock-extended": "^3.0.5",
     "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
     "prisma": "^5.4.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
@@ -3295,8 +3295,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "server/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+  "server/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
