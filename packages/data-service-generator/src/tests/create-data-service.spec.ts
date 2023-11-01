@@ -5,6 +5,8 @@ import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
+import { join } from "path";
+import { AMPLICATION_MODULES } from "../generate-code";
 
 jest.setTimeout(100000);
 
@@ -22,7 +24,8 @@ describe("createDataService", () => {
         resourceType: EnumResourceType.Service,
         pluginInstallations: installedPlugins,
       },
-      MockedLogger
+      MockedLogger,
+      join(__dirname, "../../", AMPLICATION_MODULES)
     );
     const modulesToSnapshot = modules
       .modules()

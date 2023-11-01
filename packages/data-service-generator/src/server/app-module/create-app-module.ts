@@ -28,7 +28,6 @@ import pluginWrapper from "../../plugin-wrapper";
 const appModuleTemplatePath = require.resolve("./app.module.template.ts");
 const MODULE_PATTERN = /\.module\.ts$/;
 const PRISMA_MODULE_ID = builders.identifier("PrismaModule");
-const MORGAN_MODULE_ID = builders.identifier("MorganModule");
 const CONFIG_MODULE_ID = builders.identifier("ConfigModule");
 const CONFIG_SERVICE_ID = builders.identifier("ConfigService");
 const SERVE_STATIC_MODULE_ID = builders.identifier("ServeStaticModule");
@@ -36,6 +35,9 @@ const SERVE_STATIC_OPTIONS_SERVICE_ID = builders.identifier(
   "ServeStaticOptionsService"
 );
 const GRAPHQL_MODULE_ID = builders.identifier("GraphQLModule");
+const APOLLO_DRIVER_MODULE_ID = builders.identifier("ApolloDriver");
+const APOLLO_DRIVER_CONFIG_MODULE_ID =
+  builders.identifier("ApolloDriverConfig");
 
 type CodeGenerationOptions = {
   createGraphQLModule: boolean;
@@ -69,7 +71,6 @@ export async function createAppModule(
 
   const importModules = [
     ...nestModulesIds,
-    MORGAN_MODULE_ID,
     callExpression`${CONFIG_MODULE_ID}.forRoot({ isGlobal: true })`,
     callExpression`${SERVE_STATIC_MODULE_ID}.forRootAsync({
     useClass: ${SERVE_STATIC_OPTIONS_SERVICE_ID}
@@ -137,7 +138,6 @@ export async function createAppModuleInternal({
   const defaultImports = [
     ...moduleImports,
     importDeclaration`import { ${PRISMA_MODULE_ID} } from "./prisma/prisma.module"`,
-    importDeclaration`import { ${MORGAN_MODULE_ID} } from "nest-morgan"`,
     importDeclaration`import { ${SERVE_STATIC_MODULE_ID} } from "@nestjs/serve-static"`,
     importDeclaration`import { ${SERVE_STATIC_OPTIONS_SERVICE_ID} } from "./serveStaticOptions.service"`,
   ];
@@ -174,8 +174,9 @@ function createModuleImportsArrayExpression(
   { createGraphQLModule = true }: CodeGenerationOptions
 ) {
   if (createGraphQLModule) {
-    const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync({
-      useFactory: (configService) => {
+    const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync<${APOLLO_DRIVER_CONFIG_MODULE_ID}>({
+      driver: ${APOLLO_DRIVER_MODULE_ID},
+      useFactory: (configService: ConfigService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
@@ -206,7 +207,8 @@ function addCustomModuleImports(
   if (createGraphQLModule) {
     defaultImports.push(
       importDeclaration`import { ${CONFIG_MODULE_ID}, ${CONFIG_SERVICE_ID} } from "@nestjs/config"`,
-      importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`
+      importDeclaration`import { ${GRAPHQL_MODULE_ID} } from "@nestjs/graphql"`,
+      importDeclaration`import { ${APOLLO_DRIVER_MODULE_ID}, ${APOLLO_DRIVER_CONFIG_MODULE_ID} } from "@nestjs/apollo"`
     );
   } else {
     defaultImports.push(
