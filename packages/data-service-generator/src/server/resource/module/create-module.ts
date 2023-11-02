@@ -44,7 +44,7 @@ export async function createModules(
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
   const controllerId = createControllerId(entityType);
-  const controllerGrpcId = createGrpcControllerId(entityType);
+  const grpcControllerId = createGrpcControllerId(entityType);
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);
@@ -58,7 +58,7 @@ export async function createModules(
     PROVIDERS_ARRAY: providersArray,
     SERVICE: serviceId,
     CONTROLLER: controllerId,
-    CONTROLLER_GRPC: controllerGrpcId,
+    CONTROLLER_GRPC: grpcControllerId,
     RESOLVER: resolverId,
     MODULE: moduleId,
     MODULE_BASE: moduleBaseId,
@@ -80,7 +80,7 @@ export async function createModules(
       entityResolverModule,
       moduleBaseId,
       controllerId,
-      controllerGrpcId,
+      grpcControllerId,
       serviceId,
       resolverId,
       template: moduleTemplate,
@@ -103,7 +103,7 @@ async function createModule({
   entityResolverModule,
   moduleBaseId,
   controllerId,
-  controllerGrpcId,
+  grpcControllerId,
   serviceId,
   resolverId,
   template,
@@ -139,14 +139,14 @@ async function createModule({
 
   const controllerGrpcImport = entityGrpcControllerModule
     ? importNames(
-        [controllerGrpcId],
+        [grpcControllerId],
         relativeImportPath(modulePath, entityGrpcControllerModule)
       )
     : undefined;
 
   // if we are not generating the controller grpc, remove the controller property
   if (!entityGrpcControllerModule) {
-    removeIdentifierFromModuleDecorator(template, controllerGrpcId);
+    removeIdentifierFromModuleDecorator(template, grpcControllerId);
   }
 
   const resolverImport = entityResolverModule
