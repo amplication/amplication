@@ -27,6 +27,7 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   serviceBaseId: namedTypes.Identifier;
   delegateId: namedTypes.Identifier;
   template: namedTypes.File;
+  entityActions: entityActions;
 }
 
 export interface CreateEntityServiceParams extends EventParams {
@@ -36,6 +37,7 @@ export interface CreateEntityServiceParams extends EventParams {
   serviceId: namedTypes.Identifier;
   serviceBaseId: namedTypes.Identifier;
   template: namedTypes.File;
+  entityActions: entityActions;
 }
 export interface CreateEntityControllerParams extends EventParams {
   template: namedTypes.File;
@@ -222,6 +224,7 @@ export interface CreateEntityResolverParams extends EventParams {
   serviceId: namedTypes.Identifier;
   resolverBaseId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
+  entityActions: entityActions;
 }
 
 export interface CreateEntityResolverBaseParams extends EventParams {
@@ -237,6 +240,7 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   createMutationId: namedTypes.Identifier;
   updateMutationId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
+  entityActions: entityActions;
 }
 export interface CreateSwaggerParams extends EventParams {
   template: namedTypes.File;

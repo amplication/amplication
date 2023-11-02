@@ -18,6 +18,8 @@ import {
   CreateEntityServiceBaseParams,
   types,
   ModuleMap,
+  ModuleAction,
+  entityActions,
 } from "@amplication/code-gen-types";
 import {
   addAutoGenerationComment,
@@ -27,6 +29,7 @@ import {
   getMethods,
   importNames,
   interpolate,
+  removeClassMethodByName,
 } from "../../../utils/ast";
 import {
   isOneToOneRelationField,
@@ -55,11 +58,15 @@ export async function createServiceModules(
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
 
+  const { entityActionsMap } = DsgContext.getInstance;
+  const entityActions = entityActionsMap[entity.name];
+
   const templateMapping = createTemplateMapping(
     entityType,
     serviceId,
     serviceBaseId,
-    delegateId
+    delegateId,
+    entityActions
   );
 
   const moduleMap = new ModuleMap(DsgContext.getInstance.logger);
@@ -71,6 +78,7 @@ export async function createServiceModules(
       serviceId,
       serviceBaseId,
       template,
+      entityActions,
     }),
     await pluginWrapper(
       createServiceBaseModule,
@@ -83,6 +91,7 @@ export async function createServiceModules(
         serviceBaseId,
         delegateId,
         template: templateBase,
+        entityActions,
       }
     ),
   ]);
@@ -134,6 +143,7 @@ async function createServiceBaseModule({
   serviceBaseId,
   delegateId,
   template,
+  entityActions,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
 
@@ -189,8 +199,20 @@ async function createServiceBaseModule({
   classDeclaration.body.body.push(
     ...toManyRelations.flatMap((relation) => relation.methods),
     ...toOneRelations.flatMap((relation) => relation.methods)
-    //...
   );
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (action && !action.enabled) {
+      removeClassMethodByName(classDeclaration, action.name);
+    }
+  });
+
+  removeTSClassDeclares(template);
+  removeTSIgnoreComments(template);
+  removeESLintComments(template);
+  removeTSVariableDeclares(template);
+  removeTSInterfaceDeclares(template);
 
   addImports(
     template,
@@ -201,11 +223,6 @@ async function createServiceBaseModule({
     toOneRelations.flatMap((relation) => relation.imports)
   );
 
-  removeTSClassDeclares(template);
-  removeTSIgnoreComments(template);
-  removeESLintComments(template);
-  removeTSVariableDeclares(template);
-  removeTSInterfaceDeclares(template);
   addAutoGenerationComment(template);
 
   const module: Module = {
@@ -299,7 +316,8 @@ function createTemplateMapping(
   entityType: string,
   serviceId: namedTypes.Identifier,
   serviceBaseId: namedTypes.Identifier,
-  delegateId: namedTypes.Identifier
+  delegateId: namedTypes.Identifier,
+  entityActions: entityActions
 ): { [key: string]: any } {
   return {
     SERVICE: serviceId,
@@ -314,5 +332,20 @@ function createTemplateMapping(
     DELEGATE: delegateId,
     CREATE_ARGS_MAPPING: ARGS_ID,
     UPDATE_ARGS_MAPPING: ARGS_ID,
+    CREATE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Create.name
+    ),
+    FIND_MANY_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Find.name
+    ),
+    FIND_ONE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Read.name
+    ),
+    UPDATE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Update.name
+    ),
+    DELETE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Delete.name
+    ),
   };
 }
