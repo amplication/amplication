@@ -13,25 +13,27 @@
 
 <h4 align="center">
   <a href="https://github.com/amplication/amplication/actions/workflows/ci.yml">
-    <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration">
+    <img src="https://img.shields.io/github/actions/workflow/status/amplication/amplication/ci.yml?branch=master&label=pipeline&style=flat-square" alt="continuous integration" style="height: 20px;">
   </a>
   <a href="https://github.com/amplication/amplication/graphs/contributors">
-    <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributors">
+    <img src="https://img.shields.io/github/contributors-anon/amplication/amplication?color=yellow&style=flat-square" alt="contributors" style="height: 20px;">
   </a>
   <a href="https://opensource.org/licenses/Apache-2.0">
-    <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license">
+    <img src="https://img.shields.io/badge/apache%202.0-blue.svg?style=flat-square&label=license" alt="license" style="height: 20px;">
   </a>
   <br>
   <a href="https://amplication.com/discord">
-    <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square" alt="discord">
+    <img src="https://img.shields.io/badge/discord-7289da.svg?style=flat-square&logo=discord" alt="discord" style="height: 20px;">
   </a>
   <a href="https://twitter.com/amplication">
-    <img src="https://img.shields.io/badge/𝕏 (Twitter)-black.svg?style=flat-square" alt="x">
+    <img src="https://img.shields.io/twitter/follow/amplication?style=social" alt="twitter" style="height: 20px;">
   </a>
   <a href="https://www.youtube.com/c/Amplicationcom">
-    <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&" alt="youtube">
+    <img src="https://img.shields.io/badge/youtube-d95652.svg?style=flat-square&logo=youtube" alt="youtube" style="height: 20px;">
   </a>
 </h4>
+
+
 
 <p align="center">
     <img src="https://github.com/amplication/amplication/assets/73097785/c7ed2bbc-8954-46a1-a520-91a4711a9320.png" alt="dashboard"/>
@@ -74,7 +76,7 @@ Experience the fastest way to develop Node.js applications with Amplication.
 
 ## Usage 
 
-To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found on the [docs](https://docs.amplication.com).
+To get started with Amplication, the hosted version of the product can be used. You can get started immediately at [app.amplication.com](https://app.amplication.com). After the login page, you will be guided through creating your first service. The [website](https://amplication.com) provides an overview of the application, additional information on the product and guides can be found in the [docs](https://docs.amplication.com).
 
 <details>
 <summary>
@@ -186,7 +188,7 @@ The development environment should now be set up. Additional information on the 
 
 Amplication is an open-source project. We are committed to a fully transparent development process and highly appreciate any contributions. Whether you are helping us fix bugs, proposing new features, improving our documentation or spreading the word - we would love to have you as a part of the Amplication community. Please refer to our [contribution guidelines](./CONTRIBUTING.md) and [code of conduct](./CODE_OF_CONDUCT.md).
 
-- Bug Report: If you see an error message or encounter an issue while using Amplication, please create a[bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+).
+- Bug Report: If you see an error message or encounter an issue while using Amplication, please create a [bug report](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+bug&template=bug.yaml&title=%F0%9F%90%9B+Bug+Report%3A+).
 
 - Feature Request: If you have an idea or if there is a capability that is missing and would make development easier and more robust, please submit a[feature request](https://github.com/amplication/amplication/issues/new?assignees=&labels=type%3A+feature+request&template=feature.yml).
 
@@ -199,7 +201,7 @@ Not sure where to start? Join our discord and we will help you get started!
 ## Contributors
 
 <!---
-npx contributer-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
+npx contributor-faces --exclude "*bot*" --limit 70 --repo "https://github.com/amplication/amplication"
 
 change the height and width for each of the contributors from 80 to 50.
 --->

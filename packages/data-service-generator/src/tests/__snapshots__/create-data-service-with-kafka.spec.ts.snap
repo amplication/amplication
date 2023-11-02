@@ -3155,7 +3155,6 @@ volumes:
     "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@amplication/nest-access-control": "2.2.1",
     "@apollo/server": "^4.9.4",
     "@nestjs/apollo": "12.0.9",
     "@nestjs/common": "10.2.7",
@@ -3163,7 +3162,7 @@ volumes:
     "@nestjs/core": "10.2.7",
     "@nestjs/graphql": "12.0.9",
     "@nestjs/jwt": "^10.1.1",
-    "@nestjs/microservices": "8.2.3",
+    "@nestjs/microservices": "10.2.7",
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "10.2.7",
     "@nestjs/serve-static": "4.0.0",
@@ -3177,7 +3176,7 @@ volumes:
     "dotenv": "16.3.1",
     "graphql": "^16.8.1",
     "graphql-type-json": "0.3.2",
-    "kafkajs": "2.2.0",
+    "kafkajs": "^2.2.4",
     "npm-run-all": "4.1.5",
     "passport": "0.6.0",
     "passport-http": "0.3.0",
@@ -7061,8 +7060,12 @@ export const generateKafkaClientOptions = (
   };
 };
 ",
-  "server/src/kafka/kafka.controller.ts": "import { EventPattern, Payload } from "@nestjs/microservices";
-import { KafkaMessage } from "./KafkaMessage";
+  "server/src/kafka/kafka.controller.ts": "import {
+  Ctx,
+  EventPattern,
+  KafkaContext,
+  Payload,
+} from "@nestjs/microservices";
 import { Controller } from "@nestjs/common";
 
 @Controller("kafka-controller")
@@ -7070,8 +7073,12 @@ export class KafkaController {
   @EventPattern("git.pull")
   async onGitPull(
     @Payload()
-    message: KafkaMessage
-  ): Promise<void> {}
+    value: string | Record<string, any> | null,
+    @Ctx()
+    context: KafkaContext
+  ): Promise<void> {
+    const message = context.getMessage();
+  }
 }
 ",
   "server/src/kafka/kafka.module.ts": "import { Global, Module } from "@nestjs/common";
@@ -7104,14 +7111,14 @@ export class KafkaModule {}
   "server/src/kafka/kafka.producer.service.ts": "import { Inject, Injectable } from "@nestjs/common";
 import { ClientKafka } from "@nestjs/microservices";
 import { KafkaMessage } from "./KafkaMessage";
-import { MyMessageBrokerTopics } from "./topics";
+import { KafkaBrokerTopics } from "./topics";
 
 @Injectable()
 export class KafkaProducerService {
   constructor(@Inject("KAFKA_CLIENT") private kafkaClient: ClientKafka) {}
 
   async emitMessage(
-    topic: MyMessageBrokerTopics,
+    topic: KafkaBrokerTopics,
     message: KafkaMessage
   ): Promise<void> {
     return await new Promise((resolve, reject) => {

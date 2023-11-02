@@ -3079,7 +3079,6 @@ volumes:
     "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@amplication/nest-access-control": "2.2.1",
     "@apollo/server": "^4.9.4",
     "@nestjs/apollo": "12.0.9",
     "@nestjs/common": "10.2.7",
