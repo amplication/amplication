@@ -42,7 +42,7 @@ describe("prepareContext", () => {
     expect(result).toEqual(entities);
   });
 
-  it("should return false when no gRPC plugin", () => {
+  it("should return false when no gRPC plugin is present", () => {
     const pluginInstallations: PluginInstallation[] = [];
 
     const generateGrpc = isGrpcGenerate(pluginInstallations);
