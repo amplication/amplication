@@ -60,7 +60,7 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
-  context.generateGrpc = isGrpcGenerate(context.pluginInstallations);
+  context.generateGrpc = shouldGenerateGrpc(context.pluginInstallations);
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
     return entity.fields.some(
@@ -129,7 +129,7 @@ export function prepareEntityPluralName(entities: Entity[]): Entity[] {
   return currentEntities;
 }
 
-export function isGrpcGenerate(
+export function shouldGenerateGrpc(
   pluginInstallations: PluginInstallation[]
 ): boolean {
   return (
