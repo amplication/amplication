@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService when graphql is disabled creates app as expected 1`] = `
+exports[`createDataService when grpc is enabled creates app as expected 1`] = `
 {
   "admin-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -5899,6 +5899,109 @@ import { CustomerGrpcController } from "./customer.grpc.controller";
 })
 export class CustomerModule {}
 ",
+  "server/src/customer/customer.proto": "syntax = "proto3";
+
+                 package customer;
+service CustomerService {
+ rpc create (CustomerCreateInput) returns (Customer) {}
+rpc findMany (findManyParams) returns (stream Customer) {}
+rpc findOne (CustomerWhereUniqueInput) returns (Customer) {}
+rpc update (CustomerUpdateInput) returns (Customer) {}
+rpc delete (CustomerWhereUniqueInput) returns (Customer) {}
+rpc findManyCustomer (CustomerWhereUniqueInput) returns (stream Order) {}
+rpc updateCustomer (OrderParams) returns (stream Order) {}
+rpc connectCustomer (OrderParams) returns (Order) {}
+rpc disconnectCustomer (OrderParams) returns (Order) {} 
+ }
+message CustomerCreateInput {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+repeated Order orders = 15;
+};
+message Customer {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+repeated Order orders = 15;
+};
+message CustomerWhereUniqueInput {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+repeated Order orders = 15;
+};
+message CustomerUpdateInput {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+repeated Order orders = 15;
+};
+message findManyParams {
+
+};
+message Order {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message OrderWhereUniqueInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message OrderParams {
+CustomerWhereUniqueInput customerWhereUniqueInput = 1;
+OrderWhereUniqueInput orderWhereUniqueInput = 2;
+};",
   "server/src/customer/customer.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomerServiceBase } from "./base/customer.service.base";
@@ -6995,6 +7098,39 @@ import { EmptyGrpcController } from "./empty.grpc.controller";
 })
 export class EmptyModule {}
 ",
+  "server/src/empty/empty.proto": "syntax = "proto3";
+
+                 package empty;
+service EmptyService {
+ rpc create (EmptyCreateInput) returns (Empty) {}
+rpc findMany (findManyParams) returns (stream Empty) {}
+rpc findOne (EmptyWhereUniqueInput) returns (Empty) {}
+rpc update (EmptyUpdateInput) returns (Empty) {}
+rpc delete (EmptyWhereUniqueInput) returns (Empty) {} 
+ }
+message EmptyCreateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+};
+message Empty {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+};
+message EmptyWhereUniqueInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+};
+message EmptyUpdateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+};
+message findManyParams {
+
+};",
   "server/src/empty/empty.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmptyServiceBase } from "./base/empty.service.base";
@@ -8697,6 +8833,47 @@ import { OrderGrpcController } from "./order.grpc.controller";
 })
 export class OrderModule {}
 ",
+  "server/src/order/order.proto": "syntax = "proto3";
+
+                 package order;
+service OrderService {
+ rpc create (OrderCreateInput) returns (Order) {}
+rpc findMany (findManyParams) returns (stream Order) {}
+rpc findOne (OrderWhereUniqueInput) returns (Order) {}
+rpc update (OrderUpdateInput) returns (Order) {}
+rpc delete (OrderWhereUniqueInput) returns (Order) {} 
+ }
+message OrderCreateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message Order {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message OrderWhereUniqueInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message OrderUpdateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+repeated string status = 4;
+repeated string label = 5;
+};
+message findManyParams {
+
+};",
   "server/src/order/order.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrderServiceBase } from "./base/order.service.base";
@@ -10786,6 +10963,135 @@ import { OrganizationGrpcController } from "./organization.grpc.controller";
 })
 export class OrganizationModule {}
 ",
+  "server/src/organization/organization.proto": "syntax = "proto3";
+
+                 package organization;
+service OrganizationService {
+ rpc create (OrganizationCreateInput) returns (Organization) {}
+rpc findMany (findManyParams) returns (stream Organization) {}
+rpc findOne (OrganizationWhereUniqueInput) returns (Organization) {}
+rpc update (OrganizationUpdateInput) returns (Organization) {}
+rpc delete (OrganizationWhereUniqueInput) returns (Organization) {}
+rpc findManyOrganizations (OrganizationWhereUniqueInput) returns (stream User) {}
+rpc updateOrganizations (UserParams) returns (stream User) {}
+rpc connectOrganizations (UserParams) returns (User) {}
+rpc disconnectOrganizations (UserParams) returns (User) {}
+rpc findManyOrganization (OrganizationWhereUniqueInput) returns (stream Customer) {}
+rpc updateOrganization (CustomerParams) returns (stream Customer) {}
+rpc connectOrganization (CustomerParams) returns (Customer) {}
+rpc disconnectOrganization (CustomerParams) returns (Customer) {}
+rpc findManyVipOrganization (OrganizationWhereUniqueInput) returns (stream Customer) {}
+rpc updateVipOrganization (CustomerParams) returns (stream Customer) {}
+rpc connectVipOrganization (CustomerParams) returns (Customer) {}
+rpc disconnectVipOrganization (CustomerParams) returns (Customer) {} 
+ }
+message OrganizationCreateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+repeated User users = 5;
+repeated Customer customers = 6;
+repeated Customer vipCustomers = 7;
+};
+message Organization {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+repeated User users = 5;
+repeated Customer customers = 6;
+repeated Customer vipCustomers = 7;
+};
+message OrganizationWhereUniqueInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+repeated User users = 5;
+repeated Customer customers = 6;
+repeated Customer vipCustomers = 7;
+};
+message OrganizationUpdateInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+repeated User users = 5;
+repeated Customer customers = 6;
+repeated Customer vipCustomers = 7;
+};
+message findManyParams {
+
+};
+message User {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated string interests = 8;
+repeated string priority = 9;
+bool isCurious = 10;
+string location = 11;
+string extendedProperties = 12;
+};
+message UserWhereUniqueInput {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated string interests = 8;
+repeated string priority = 9;
+bool isCurious = 10;
+string location = 11;
+string extendedProperties = 12;
+};
+message UserParams {
+OrganizationWhereUniqueInput organizationWhereUniqueInput = 1;
+UserWhereUniqueInput userWhereUniqueInput = 2;
+};
+message Customer {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+};
+message CustomerWhereUniqueInput {
+int32 id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string email = 4;
+string firstName = 5;
+string lastName = 6;
+bool isVip = 7;
+string birthData = 8;
+int32 averageSale = 9;
+int32 favoriteNumber = 10;
+string geoLocation = 11;
+string comments = 12;
+repeated string favoriteColors = 13;
+repeated string customerType = 14;
+};
+message CustomerParams {
+OrganizationWhereUniqueInput organizationWhereUniqueInput = 1;
+CustomerWhereUniqueInput customerWhereUniqueInput = 2;
+};",
   "server/src/organization/organization.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrganizationServiceBase } from "./base/organization.service.base";
@@ -12318,6 +12624,55 @@ import { ProfileGrpcController } from "./profile.grpc.controller";
 })
 export class ProfileModule {}
 ",
+  "server/src/profile/profile.proto": "syntax = "proto3";
+
+                 package profile;
+service ProfileService {
+ rpc create (ProfileCreateInput) returns (Profile) {}
+rpc findMany (findManyParams) returns (stream Profile) {}
+rpc findOne (ProfileWhereUniqueInput) returns (Profile) {}
+rpc update (ProfileUpdateInput) returns (Profile) {}
+rpc delete (ProfileWhereUniqueInput) returns (Profile) {} 
+ }
+message ProfileCreateInput {
+int32 id = 1;
+string createdIn = 2;
+string createdAt = 3;
+string updatedIn = 4;
+string updatedAt = 5;
+string email = 6;
+User user = 7;
+};
+message Profile {
+int32 id = 1;
+string createdIn = 2;
+string createdAt = 3;
+string updatedIn = 4;
+string updatedAt = 5;
+string email = 6;
+User user = 7;
+};
+message ProfileWhereUniqueInput {
+int32 id = 1;
+string createdIn = 2;
+string createdAt = 3;
+string updatedIn = 4;
+string updatedAt = 5;
+string email = 6;
+User user = 7;
+};
+message ProfileUpdateInput {
+int32 id = 1;
+string createdIn = 2;
+string createdAt = 3;
+string updatedIn = 4;
+string updatedAt = 5;
+string email = 6;
+User user = 7;
+};
+message findManyParams {
+
+};",
   "server/src/profile/profile.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProfileServiceBase } from "./base/profile.service.base";
@@ -15192,6 +15547,103 @@ import { UserGrpcController } from "./user.grpc.controller";
 })
 export class UserModule {}
 ",
+  "server/src/user/user.proto": "syntax = "proto3";
+
+                 package user;
+service UserService {
+ rpc create (UserCreateInput) returns (User) {}
+rpc findMany (findManyParams) returns (stream User) {}
+rpc findOne (UserWhereUniqueInput) returns (User) {}
+rpc update (UserUpdateInput) returns (User) {}
+rpc delete (UserWhereUniqueInput) returns (User) {}
+rpc findManyUsers (UserWhereUniqueInput) returns (stream Organization) {}
+rpc updateUsers (OrganizationParams) returns (stream Organization) {}
+rpc connectUsers (OrganizationParams) returns (Organization) {}
+rpc disconnectUsers (OrganizationParams) returns (Organization) {} 
+ }
+message UserCreateInput {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated User employees = 8;
+repeated Organization organizations = 9;
+repeated string interests = 10;
+repeated string priority = 11;
+bool isCurious = 12;
+string location = 13;
+string extendedProperties = 14;
+};
+message User {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated User employees = 8;
+repeated Organization organizations = 9;
+repeated string interests = 10;
+repeated string priority = 11;
+bool isCurious = 12;
+string location = 13;
+string extendedProperties = 14;
+};
+message UserWhereUniqueInput {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated User employees = 8;
+repeated Organization organizations = 9;
+repeated string interests = 10;
+repeated string priority = 11;
+bool isCurious = 12;
+string location = 13;
+string extendedProperties = 14;
+};
+message UserUpdateInput {
+string id = 1;
+string name = 2;
+string bio = 3;
+string email = 4;
+int32 age = 5;
+string birthDate = 6;
+int32 score = 7;
+repeated User employees = 8;
+repeated Organization organizations = 9;
+repeated string interests = 10;
+repeated string priority = 11;
+bool isCurious = 12;
+string location = 13;
+string extendedProperties = 14;
+};
+message findManyParams {
+
+};
+message Organization {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+};
+message OrganizationWhereUniqueInput {
+string id = 1;
+string createdAt = 2;
+string updatedAt = 3;
+string name = 4;
+};
+message OrganizationParams {
+UserWhereUniqueInput userWhereUniqueInput = 1;
+OrganizationWhereUniqueInput organizationWhereUniqueInput = 2;
+};",
   "server/src/user/user.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserServiceBase } from "./base/user.service.base";

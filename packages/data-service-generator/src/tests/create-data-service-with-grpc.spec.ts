@@ -26,7 +26,7 @@ describe("createDataService", () => {
   afterEach(() => {
     jest.clearAllMocks();
   });
-  describe("when graphql is disabled", () => {
+  describe("when grpc is enabled", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {

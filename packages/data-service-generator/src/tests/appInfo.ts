@@ -10,6 +10,7 @@ export const MODULE_EXTENSIONS_TO_SNAPSHOT = [
   ".yml",
   ".json",
   ".gitignore",
+  ".proto",
 ];
 
 export const appInfo: AppInfo = {
