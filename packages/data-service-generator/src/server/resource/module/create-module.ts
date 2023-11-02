@@ -58,7 +58,7 @@ export async function createModules(
     PROVIDERS_ARRAY: providersArray,
     SERVICE: serviceId,
     CONTROLLER: controllerId,
-    CONTROLLER_GRPC: grpcControllerId,
+    GRPC_CONTROLLER: grpcControllerId,
     RESOLVER: resolverId,
     MODULE: moduleId,
     MODULE_BASE: moduleBaseId,
