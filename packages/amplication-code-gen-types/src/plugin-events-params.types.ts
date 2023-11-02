@@ -227,7 +227,7 @@ export interface CreateEntityModuleParams extends EventParams {
   entityType: string;
   entityServiceModule: string;
   entityControllerModule: string | undefined;
-  entityControllerGrpcModule: string | undefined;
+  entityGrpcControllerModule: string | undefined;
   entityResolverModule: string | undefined;
   moduleBaseId: namedTypes.Identifier;
   controllerId: namedTypes.Identifier;

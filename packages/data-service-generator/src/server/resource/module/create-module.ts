@@ -37,7 +37,7 @@ export async function createModules(
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string | undefined,
-  entityControllerGrpcModule: string | undefined,
+  entityGrpcControllerModule: string | undefined,
   entityResolverModule: string | undefined
 ): Promise<ModuleMap> {
   const moduleBaseId = createBaseModuleId(entityType);
@@ -76,7 +76,7 @@ export async function createModules(
       entityType,
       entityServiceModule,
       entityControllerModule,
-      entityControllerGrpcModule,
+      entityGrpcControllerModule,
       entityResolverModule,
       moduleBaseId,
       controllerId,
@@ -99,7 +99,7 @@ async function createModule({
   entityName,
   entityServiceModule,
   entityControllerModule,
-  entityControllerGrpcModule,
+  entityGrpcControllerModule,
   entityResolverModule,
   moduleBaseId,
   controllerId,
@@ -137,15 +137,15 @@ async function createModule({
     removeIdentifierFromModuleDecorator(template, controllerId);
   }
 
-  const controllerGrpcImport = entityControllerGrpcModule
+  const controllerGrpcImport = entityGrpcControllerModule
     ? importNames(
         [controllerGrpcId],
-        relativeImportPath(modulePath, entityControllerGrpcModule)
+        relativeImportPath(modulePath, entityGrpcControllerModule)
       )
     : undefined;
 
   // if we are not generating the controller grpc, remove the controller property
-  if (!entityControllerGrpcModule) {
+  if (!entityGrpcControllerModule) {
     removeIdentifierFromModuleDecorator(template, controllerGrpcId);
   }
 
