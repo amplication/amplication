@@ -176,7 +176,7 @@ function createModuleImportsArrayExpression(
   if (createGraphQLModule) {
     const graphqlCallExpression = callExpression`${GRAPHQL_MODULE_ID}.forRootAsync<${APOLLO_DRIVER_CONFIG_MODULE_ID}>({
       driver: ${APOLLO_DRIVER_MODULE_ID},
-      useFactory: (configService) => {
+      useFactory: (configService: ConfigService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
