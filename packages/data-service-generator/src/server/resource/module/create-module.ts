@@ -137,7 +137,7 @@ async function createModule({
     removeIdentifierFromModuleDecorator(template, controllerId);
   }
 
-  const controllerGrpcImport = entityGrpcControllerModule
+  const grpcControllerImport = entityGrpcControllerModule
     ? importNames(
         [grpcControllerId],
         relativeImportPath(modulePath, entityGrpcControllerModule)
@@ -167,7 +167,7 @@ async function createModule({
       moduleBaseImport,
       serviceImport,
       controllerImport,
-      controllerGrpcImport,
+      grpcControllerImport,
       resolverImport,
     ].filter(
       (x) => x //remove nulls and undefined
