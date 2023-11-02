@@ -1,5 +1,5 @@
 import { Entity, PluginInstallation } from "@amplication/code-gen-types";
-import { isGrpcGenerate, prepareEntityPluralName } from "./prepare-context";
+import { shouldGenerateGrpc, prepareEntityPluralName } from "./prepare-context";
 
 describe("prepareContext", () => {
   it('should pluralize entity names and add "Items" if necessary', () => {
@@ -45,7 +45,7 @@ describe("prepareContext", () => {
   it("should return false when no gRPC plugin is present", () => {
     const pluginInstallations: PluginInstallation[] = [];
 
-    const generateGrpc = isGrpcGenerate(pluginInstallations);
+    const generateGrpc = shouldGenerateGrpc(pluginInstallations);
     expect(generateGrpc).toEqual(false);
   });
 
@@ -63,7 +63,7 @@ describe("prepareContext", () => {
       },
     ];
 
-    const generateGrpc = isGrpcGenerate(pluginInstallations);
+    const generateGrpc = shouldGenerateGrpc(pluginInstallations);
     expect(generateGrpc).toEqual(true);
   });
 
