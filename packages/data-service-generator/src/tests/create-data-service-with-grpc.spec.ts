@@ -40,7 +40,7 @@ describe("createDataService", () => {
               id: "transport-grpc",
               npm: "@amplication/plugin-transport-grpc",
               enabled: true,
-              version: "0.0.1",
+              version: "latest",
               pluginId: "transport-grpc",
               configurations: {
                 generateGRPC: "true",
