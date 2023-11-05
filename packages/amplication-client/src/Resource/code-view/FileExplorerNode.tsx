@@ -2,6 +2,7 @@ import { Icon, TreeItem } from "@amplication/ui/design-system";
 import React, { useCallback, useMemo } from "react";
 import { NodeTypeEnum } from "./NodeTypeEnum";
 import { FileMeta } from "./CodeViewExplorer";
+import { CircularProgress } from "@mui/material";
 
 export type FileExplorerNodeProps = {
   file: FileMeta;
@@ -32,7 +33,7 @@ export const FileExplorerNode = ({
     if (file.type !== NodeTypeEnum.Folder) return null;
 
     return (
-      <div className={`folder-icon ${isLoading ? "spin" : ""}`}>
+      <div className={`folder-icon ${isLoading ? CircularProgress : ""}`}>
         {file.expanded ? (
           <Icon icon="chevron_down" />
         ) : (
