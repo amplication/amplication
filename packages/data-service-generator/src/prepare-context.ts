@@ -12,6 +12,7 @@ import {
   EnumModuleActionType,
   ModuleContainer,
   entityDefaultActions,
+  entityRelatedFieldDefaultActions,
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
@@ -24,7 +25,10 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
-import { getDefaultActionsForEntity } from "@amplication/dsg-utils";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -235,6 +239,11 @@ function prepareEntityActions(
   return Object.fromEntries(
     entities.map((entity) => {
       const defaultActions = getDefaultActionsForEntity(entity);
+      const relatedActions: entityRelatedFieldDefaultActions[] = [];
+
+      entity.fields.forEach((field) => {
+        relatedActions.push(getDefaultActionsForRelationField(entity, field));
+      });
 
       const moduleContainer = moduleContainers?.find(
         (moduleContainer) => moduleContainer.entityId === entity.id
@@ -246,7 +255,7 @@ function prepareEntityActions(
           entity.name,
           {
             entityDefaultActions: defaultActions,
-            relatedFieldsDefaultActions: [],
+            relatedFieldsDefaultActions: relatedActions,
             customActions: [],
           },
         ];
@@ -274,7 +283,7 @@ function prepareEntityActions(
         entity.name,
         {
           entityDefaultActions: entries,
-          relatedFieldsDefaultActions: [],
+          relatedFieldsDefaultActions: entries,
           customActions: [],
         },
       ];
