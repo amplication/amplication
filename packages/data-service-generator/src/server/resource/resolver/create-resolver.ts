@@ -320,13 +320,6 @@ async function createResolverBaseModule({
     },
   ];
 
-  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
-    const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (action && !action.enabled) {
-      removeClassMethodByName(classDeclaration, action.name);
-    }
-  });
-
   methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
     setEndpointPermissions(classDeclaration, methodId, action, entity);
   });
@@ -335,6 +328,13 @@ async function createResolverBaseModule({
     ...toManyRelationMethods,
     ...toOneRelationMethods
   );
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    if (action && !action.enabled) {
+      removeClassMethodByName(classDeclaration, action.name);
+    }
+  });
 
   removeTSIgnoreComments(template);
   removeImportsTSIgnoreComments(template);
@@ -398,7 +398,7 @@ async function createToOneRelationMethods(
   const toOneFile = await readFile(toOneTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const findOneMethodName = `resolveField${pascalCase(field.name)}`;
+  const findOneMethodName = `get${pascalCase(field.name)}`;
 
   const toOneMapping = {
     SERVICE: serviceId,
@@ -462,8 +462,6 @@ async function createToManyRelationMethods(
   const toManyFile = await readFile(toManyTemplatePath);
   const { relatedEntity } = field.properties;
   const relatedEntityDTOs = dtos[relatedEntity.name];
-  const findManyMethodName = `resolveField${pascalCase(field.name)}`;
-
   const toManyMapping = {
     SERVICE: serviceId,
     ENTITY: entityDTO.id,
@@ -471,7 +469,7 @@ async function createToManyRelationMethods(
     RELATED_ENTITY: builders.identifier(relatedEntity.name),
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
-    FIND_MANY: builders.identifier(findManyMethodName),
+    FIND_MANY: builders.identifier(camelCase(`find ${field.name}`)),
     FIND_MANY_FIELD_NAME: builders.stringLiteral(camelCase(field.name)),
     ARGS: relatedEntityDTOs.findManyArgs.id,
   };

@@ -294,18 +294,18 @@ async function createControllerBaseModule({
     },
   ];
 
+  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
+    setEndpointPermissions(classDeclaration, methodId, action, entity);
+  });
+
+  classDeclaration.body.body.push(...toManyRelationMethods);
+
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
     if (action && !action.enabled) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });
-
-  methodsIdsActionPairs.forEach(({ methodId, action, entity }) => {
-    setEndpointPermissions(classDeclaration, methodId, action, entity);
-  });
-
-  classDeclaration.body.body.push(...toManyRelationMethods);
 
   removeTSIgnoreComments(template);
   removeESLintComments(template);
@@ -369,7 +369,7 @@ async function createToManyRelationMethods(
     ENTITY_NAME: builders.stringLiteral(entityType),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
-    FIND_MANY: builders.identifier(camelCase(`findMany ${field.name}`)),
+    FIND_MANY: builders.identifier(camelCase(`find ${field.name}`)),
     FIND_MANY_PATH: builders.stringLiteral(`/:id/${field.name}`),
     CONNECT: builders.identifier(camelCase(`connect ${field.name}`)),
     CREATE_PATH: builders.stringLiteral(`/:id/${field.name}`),
