@@ -1,21 +1,20 @@
-import { AppInfo } from "@amplication/code-gen-types";
-import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { createDataService } from "../create-data-service";
-import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { AppInfo } from "@amplication/code-gen-types";
+import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { EnumResourceType } from "../models";
+import { createDataService } from "../create-data-service";
+import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { join } from "path";
+import { AMPLICATION_MODULES } from "../generate-code";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
   settings: {
     ...appInfo.settings,
     serverSettings: {
-      generateGraphQL: true,
-      generateRestApi: false,
+      generateGraphQL: false,
+      generateRestApi: true,
       serverPath: "",
     },
   },
@@ -24,10 +23,10 @@ const newAppInfo: AppInfo = {
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
-  describe("when restapi is disabled", () => {
-    afterEach(() => {
-      jest.clearAllMocks();
-    });
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
+  describe("when grpc is enabled", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
@@ -36,7 +35,18 @@ describe("createDataService", () => {
           roles,
           resourceInfo: newAppInfo,
           resourceType: EnumResourceType.Service,
-          pluginInstallations: installedPlugins,
+          pluginInstallations: [
+            {
+              id: "transport-grpc",
+              npm: "@amplication/plugin-transport-grpc",
+              enabled: true,
+              version: "latest",
+              pluginId: "transport-grpc",
+              configurations: {
+                generateGRPC: "true",
+              },
+            },
+          ],
         },
         MockedLogger,
         join(__dirname, "../../", AMPLICATION_MODULES)

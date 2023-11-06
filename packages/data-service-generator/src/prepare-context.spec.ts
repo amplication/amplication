@@ -1,5 +1,5 @@
-import { Entity } from "@amplication/code-gen-types";
-import { prepareEntityPluralName } from "./prepare-context";
+import { Entity, PluginInstallation } from "@amplication/code-gen-types";
+import { shouldGenerateGrpc, prepareEntityPluralName } from "./prepare-context";
 
 describe("prepareContext", () => {
   it('should pluralize entity names and add "Items" if necessary', () => {
@@ -40,6 +40,31 @@ describe("prepareContext", () => {
     const result = prepareEntityPluralName(entities);
 
     expect(result).toEqual(entities);
+  });
+
+  it("should return false when no gRPC plugin is present", () => {
+    const pluginInstallations: PluginInstallation[] = [];
+
+    const generateGrpc = shouldGenerateGrpc(pluginInstallations);
+    expect(generateGrpc).toEqual(false);
+  });
+
+  it("should return true for gRPC plugin", () => {
+    const pluginInstallations: PluginInstallation[] = [
+      {
+        id: "clb3p3ov800cplc01a8f4uwje",
+        npm: "@amplication/transport-grpc",
+        enabled: true,
+        version: "0.0.1",
+        pluginId: "transport-grpc",
+        configurations: {
+          generateGRPC: "true",
+        },
+      },
+    ];
+
+    const generateGrpc = shouldGenerateGrpc(pluginInstallations);
+    expect(generateGrpc).toEqual(true);
   });
 
   it("should not modify the original array", () => {

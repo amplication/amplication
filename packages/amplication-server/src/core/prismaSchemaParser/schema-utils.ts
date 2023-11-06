@@ -257,7 +257,7 @@ export function findRelationAttributeName(
 ): string | undefined {
   if (!relationAttribute.args) {
     throw new Error(
-      `Missing args attribute on relation attribute on field ${relationAttribute.name}`
+      `Missing the 'args' attribute in the relation attribute "${relationAttribute.name}"`
     );
   }
 
@@ -305,7 +305,7 @@ export function findRemoteRelatedModelAndField(
 
   if (!remoteModel) {
     throw new Error(
-      `Model ${field.fieldType} not found in the schema. Please check your schema.prisma file`
+      `The model "${field.fieldType}" referenced in the schema was not found. Please ensure the model is defined in your schema.prisma file`
     );
   }
 
@@ -354,7 +354,7 @@ export function findRemoteRelatedModelAndField(
 
   if (!remoteField) {
     throw new Error(
-      `No field found in model ${remoteModel.name} that reference ${model.name}`
+      `In the entity "${remoteModel.name}", there is no field referencing the entity "${model.name}"`
     );
   }
 
@@ -374,7 +374,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
 
   if (!fieldsArgs) {
     throw new Error(
-      `Missing fields attribute on relation attribute on field ${field.name}`
+      `The field "${field.name}" is missing the 'fields' attribute in the relation attribute`
     );
   }
 
@@ -384,7 +384,7 @@ export function findFkFieldNameOnAnnotatedField(field: Field): string {
 
   if (fieldsArgsValues.length > 1) {
     throw new Error(
-      `Relation attribute on field ${field.name} has more than one field, which is not supported`
+      `The relation attribute on field "${field.name}" contains multiple fields. Only one single field is supported`
     );
   }
 
