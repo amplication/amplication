@@ -76,7 +76,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -89,6 +90,7 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
+        "watch": true,
         "port": 7000,
         "buildTarget": "amplication-server:build"
       },
