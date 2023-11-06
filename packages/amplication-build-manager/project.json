@@ -30,7 +30,8 @@
         "tsConfig": "packages/amplication-build-manager/tsconfig.app.json",
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -45,7 +46,8 @@
       "options": {
         "buildTarget": "amplication-build-manager:build",
         "inspect": true,
-        "port": 7010
+        "port": 7010,
+        "watch": true
       },
       "configurations": {
         "production": {
