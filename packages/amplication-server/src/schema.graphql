@@ -165,14 +165,14 @@ input BooleanFilter {
 type Build {
   action: Action
   actionId: String!
-  archiveURI: String!
+  archiveURI: String
   codeGeneratorVersion: String
-  commit: Commit!
+  commit: Commit
   commitId: String!
   createdAt: DateTime!
-  createdBy: User!
+  createdBy: User
   id: String!
-  message: String!
+  message: String
   resource: Resource
   resourceId: String!
   status: EnumBuildStatus

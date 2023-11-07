@@ -27,6 +27,7 @@ import { createServiceId } from "../service/create-service";
 import { createResolverId } from "../resolver/create-resolver";
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
+import { createGrpcControllerId } from "../grpc-controller/create-grpc-controller";
 
 const moduleTemplatePath = require.resolve("./module.template.ts");
 const moduleBaseTemplatePath = require.resolve("./module.base.template.ts");
@@ -36,12 +37,14 @@ export async function createModules(
   entityType: string,
   entityServiceModule: string,
   entityControllerModule: string | undefined,
+  entityGrpcControllerModule: string | undefined,
   entityResolverModule: string | undefined
 ): Promise<ModuleMap> {
   const moduleBaseId = createBaseModuleId(entityType);
   const moduleTemplate = await readFile(moduleTemplatePath);
   const moduleBaseTemplate = await readFile(moduleBaseTemplatePath);
   const controllerId = createControllerId(entityType);
+  const grpcControllerId = createGrpcControllerId(entityType);
   const serviceId = createServiceId(entityType);
   const resolverId = createResolverId(entityType);
   const moduleId = createModuleId(entityType);
@@ -55,6 +58,7 @@ export async function createModules(
     PROVIDERS_ARRAY: providersArray,
     SERVICE: serviceId,
     CONTROLLER: controllerId,
+    GRPC_CONTROLLER: grpcControllerId,
     RESOLVER: resolverId,
     MODULE: moduleId,
     MODULE_BASE: moduleBaseId,
@@ -72,9 +76,11 @@ export async function createModules(
       entityType,
       entityServiceModule,
       entityControllerModule,
+      entityGrpcControllerModule,
       entityResolverModule,
       moduleBaseId,
       controllerId,
+      grpcControllerId,
       serviceId,
       resolverId,
       template: moduleTemplate,
@@ -93,9 +99,11 @@ async function createModule({
   entityName,
   entityServiceModule,
   entityControllerModule,
+  entityGrpcControllerModule,
   entityResolverModule,
   moduleBaseId,
   controllerId,
+  grpcControllerId,
   serviceId,
   resolverId,
   template,
@@ -129,6 +137,18 @@ async function createModule({
     removeIdentifierFromModuleDecorator(template, controllerId);
   }
 
+  const grpcControllerImport = entityGrpcControllerModule
+    ? importNames(
+        [grpcControllerId],
+        relativeImportPath(modulePath, entityGrpcControllerModule)
+      )
+    : undefined;
+
+  // if we are not generating the controller grpc, remove the controller property
+  if (!entityGrpcControllerModule) {
+    removeIdentifierFromModuleDecorator(template, grpcControllerId);
+  }
+
   const resolverImport = entityResolverModule
     ? importNames(
         [resolverId],
@@ -143,7 +163,13 @@ async function createModule({
 
   addImports(
     template,
-    [moduleBaseImport, serviceImport, controllerImport, resolverImport].filter(
+    [
+      moduleBaseImport,
+      serviceImport,
+      controllerImport,
+      grpcControllerImport,
+      resolverImport,
+    ].filter(
       (x) => x //remove nulls and undefined
     ) as namedTypes.ImportDeclaration[]
   );
