@@ -683,6 +683,7 @@ enum EnumGitOrganizationType {
 enum EnumGitProvider {
   AwsCodeCommit
   Bitbucket
+  GitLab
   Github
 }
 
