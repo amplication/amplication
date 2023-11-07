@@ -28,7 +28,8 @@
         "tsConfig": "packages/notification-service/tsconfig.app.json",
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -42,7 +43,8 @@
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "notification-service:build",
-        "inspect": true
+        "inspect": true,
+        "watch": true
       },
       "configurations": {
         "production": {
