@@ -92,9 +92,15 @@ export async function createControllerModules(
   const findManyEntityId = builders.identifier(
     entityActions.entityDefaultActions.Find.name
   );
+
   const findOneEntityId = builders.identifier(
     entityActions.entityDefaultActions.Read.name
   );
+
+  const findOneEntityPathId = builders.stringLiteral(
+    entityActions.entityDefaultActions.Read.path
+  );
+
   const updateEntityId = builders.identifier(
     entityActions.entityDefaultActions.Update.name
   );
@@ -131,7 +137,7 @@ export async function createControllerModules(
     UPDATE_ENTITY_FUNCTION: updateEntityId,
     DELETE_ENTITY_FUNCTION: deleteEntityId,
     /** @todo make dynamic */
-    FINE_ONE_PATH: builders.stringLiteral("/:id"),
+    FINE_ONE_PATH: findOneEntityPathId,
     UPDATE_PATH: builders.stringLiteral("/:id"),
     DELETE_PATH: builders.stringLiteral("/:id"),
     WHERE_UNIQUE_INPUT: entityDTOs.whereUniqueInput.id,

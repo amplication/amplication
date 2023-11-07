@@ -10,6 +10,7 @@ import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
+import PathField from "../Components/PathField";
 
 type Props = {
   onSubmit: (values: models.Module) => void;
@@ -86,6 +87,7 @@ const ModuleActionForm = ({
           name="name"
           disabled={disabled || !isCustomAction}
         />
+        <PathField label="Path" name="path" />
         <div>
           <ToggleField name="enabled" label="Enabled" disabled={disabled} />
         </div>
