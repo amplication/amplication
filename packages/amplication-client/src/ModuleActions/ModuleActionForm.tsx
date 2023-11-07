@@ -12,6 +12,7 @@ import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PathField from "../Components/PathField";
 import RestVerbSelectField from "../Components/RestVerbSelectField";
+import GqlOperationSelectField from "../Components/GqlOperationSelectField";
 
 type Props = {
   onSubmit: (values: models.Module) => void;
@@ -94,6 +95,11 @@ const ModuleActionForm = ({
           name={"restVerb"}
           disabled={disabled || !isCustomAction}
         ></RestVerbSelectField>
+        <GqlOperationSelectField
+          name={"gqlOperation"}
+          label={"Operation type"}
+          disabled={disabled || !isCustomAction}
+        ></GqlOperationSelectField>
         <div>
           <ToggleField name="enabled" label="Enabled" disabled={disabled} />
         </div>
