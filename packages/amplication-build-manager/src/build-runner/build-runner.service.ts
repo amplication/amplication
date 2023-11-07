@@ -73,11 +73,17 @@ export class BuildRunnerService {
 
     const tarFile = join(compressPath, "archive.tar");
 
-    this.logger.debug(`Compressing ${jobPath} to ${tarFile}`);
-    await this.tarService.tar(jobPath, tarFile);
-    this.logger.debug(`Created tar file ${tarFile}`);
+    try {
+      this.logger.debug(`Compressing ${jobPath} to ${tarFile}`);
+      await this.tarService.tar(jobPath, tarFile);
+      this.logger.debug(`Created tar file ${tarFile}`);
 
-    await this.tarService.extract(tarFile, artifactPath);
-    this.logger.debug(`Extracted tar file ${tarFile} to ${artifactPath}`);
+      await this.tarService.extract(tarFile, artifactPath);
+      this.logger.debug(`Extracted tar file ${tarFile} to ${artifactPath}`);
+    } catch (error) {
+      this.logger.error(`Error copying from job to artifact`, error);
+      // passing the error to the caller, there we handle it (code-generation-success/failure)
+      throw new Error(`Error copying from job to artifact`);
+    }
   }
 }
