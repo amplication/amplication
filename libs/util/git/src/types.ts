@@ -17,9 +17,10 @@ export enum EnumGitProvider {
   GitLab = "GitLab",
 }
 
-export interface BitBucketConfiguration {
+export interface OAuthConfiguration {
   clientId: string;
   clientSecret: string;
+  domain?: string;
 }
 
 export interface GitHubConfiguration {
@@ -32,7 +33,8 @@ export interface GitHubConfiguration {
 
 export interface GitProvidersConfiguration {
   gitHubConfiguration: GitHubConfiguration;
-  bitBucketConfiguration: BitBucketConfiguration;
+  bitBucketConfiguration: OAuthConfiguration;
+  gitLabConfiguration: OAuthConfiguration;
 }
 export type GitProviderProperties =
   | GitHubProviderOrganizationProperties
@@ -57,7 +59,7 @@ export const isOAuthProviderOrganizationProperties = (
     )
   ) {
     throw new Error(
-      "Missing mandatory param. Bitbucket provider requires OAuth configuration"
+      "Missing mandatory param. OAuth provider requires OAuth configuration"
     );
   }
   return true;
@@ -278,6 +280,7 @@ export interface OAuthTokens {
   tokenType: string;
   expiresAt: number; // Unix timestamp
   scopes: string[];
+  redirectUri?: string;
 }
 
 export interface OAuth2FlowArgs {

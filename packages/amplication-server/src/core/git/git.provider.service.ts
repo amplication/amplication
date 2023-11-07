@@ -77,6 +77,10 @@ export class GitProviderService {
     const bitbucketClientSecret = this.configService.get<string>(
       Env.BITBUCKET_CLIENT_SECRET
     );
+    const gitlabClientId = this.configService.get<string>(Env.GITLAB_CLIENT_ID);
+    const gitlabClientSecret = this.configService.get<string>(
+      Env.GITLAB_CLIENT_SECRET
+    );
     const githubClientId = this.configService.get<string>(
       Env.GITHUB_APP_CLIENT_ID
     );
@@ -103,6 +107,10 @@ export class GitProviderService {
         clientId: bitbucketClientId,
         clientSecret: bitbucketClientSecret,
       },
+      gitLabConfiguration: {
+        clientId: gitlabClientId,
+        clientSecret: gitlabClientSecret,
+      },
     };
   }
 
@@ -126,32 +134,55 @@ export class GitProviderService {
    * @returns git client service
    */
   async createGitClientWithoutProperties(
-    provider: EnumGitProvider
+    provider: EnumGitProvider,
+    authRedirectUriHost?: string
   ): Promise<GitClientService> {
     let providerOrganizationProperties: GitProviderProperties;
 
-    if (provider === EnumGitProvider.AwsCodeCommit) {
-      throw new AmplicationError(
-        "AWS CodeCommit is not supported without provider properties"
-      );
-    } else if (provider === EnumGitProvider.Github) {
-      providerOrganizationProperties = <GitHubProviderOrganizationProperties>{
-        installationId: null,
-      };
-    } else if (provider === EnumGitProvider.Bitbucket) {
-      providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
-        links: null,
-        username: null,
-        useGroupingForRepositories: null,
-        uuid: null,
-        displayName: null,
-        accessToken: null,
-        refreshToken: null,
-        tokenType: null,
-        expiresAt: null,
-        scopes: null,
-      };
+    switch (provider) {
+      case EnumGitProvider.AwsCodeCommit:
+        throw new AmplicationError(
+          "AWS CodeCommit is not supported without provider properties"
+        );
+      case EnumGitProvider.Github:
+        providerOrganizationProperties = <GitHubProviderOrganizationProperties>{
+          installationId: null,
+        };
+        break;
+      case EnumGitProvider.Bitbucket:
+        providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
+          links: null,
+          username: null,
+          useGroupingForRepositories: null,
+          uuid: null,
+          displayName: null,
+          accessToken: null,
+          refreshToken: null,
+          tokenType: null,
+          expiresAt: null,
+          scopes: null,
+          redirectUri: `${authRedirectUriHost}/bitbucket-auth-app/callback`,
+        };
+        break;
+      case EnumGitProvider.GitLab:
+        providerOrganizationProperties = <OAuthProviderOrganizationProperties>{
+          links: null,
+          username: null,
+          useGroupingForRepositories: null,
+          uuid: null,
+          displayName: null,
+          accessToken: null,
+          refreshToken: null,
+          tokenType: null,
+          expiresAt: null,
+          scopes: null,
+          redirectUri: `${authRedirectUriHost}/gitlab-auth-app/callback`,
+        };
+        break;
+      default:
+        throw new AmplicationError(`${provider} Provider missing`);
     }
+
     return new GitClientService().create(
       { provider, providerOrganizationProperties },
       this.gitProvidersConfiguration,
@@ -548,8 +579,10 @@ export class GitProviderService {
     args: GetGitInstallationUrlArgs
   ): Promise<string> {
     const { gitProvider, workspaceId } = args.data;
+    const redirectUriHost = this.configService.getOrThrow(Env.CLIENT_HOST);
     const gitClientService = await this.createGitClientWithoutProperties(
-      gitProvider
+      gitProvider,
+      redirectUriHost
     );
     return await gitClientService.getGitInstallationUrl(workspaceId);
   }
@@ -598,13 +631,16 @@ export class GitProviderService {
           BillingFeature.Bitbucket
         )
       : false;
-    if (!bitbucketEntitlement)
+    if (!bitbucketEntitlement && gitProvider === EnumGitProvider.Bitbucket)
       throw new AmplicationError(
         "In order to connect Bitbucket service should upgrade its plan"
       );
 
+    const redirectUriHost = this.configService.getOrThrow(Env.CLIENT_HOST);
+
     const gitClientService = await this.createGitClientWithoutProperties(
-      gitProvider
+      gitProvider,
+      redirectUriHost
     );
 
     const oAuthTokens = await gitClientService.getOAuthTokens(code);

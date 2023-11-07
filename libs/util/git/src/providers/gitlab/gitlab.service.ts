@@ -1,4 +1,5 @@
 import { ILogger } from "@amplication/util/logging";
+import { Gitlab } from "@gitbeaker/rest";
 import { GitProvider } from "../../git-provider.interface";
 import {
   EnumGitProvider,
@@ -25,6 +26,7 @@ import {
   CreatePullRequestCommentArgs,
   Bot,
   OAuthProviderOrganizationProperties,
+  OAuthConfiguration,
 } from "../../types";
 import { NotImplementedError } from "../../utils/custom-error";
 
@@ -37,7 +39,8 @@ export class GitLabService implements GitProvider {
   private readonly client;
 
   constructor(
-    readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
+    private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
+    private readonly providerConfiguration: OAuthConfiguration,
     private readonly logger: ILogger
   ) {
     this.logger = logger.child({
@@ -45,20 +48,66 @@ export class GitLabService implements GitProvider {
         className: GitLabService.name,
       },
     });
+    this.providerConfiguration.domain =
+      providerConfiguration.domain ?? "https://gitlab.com";
   }
-  domain: string;
 
   async init(): Promise<void> {
-    throw NotImplementedError;
+    this.logger.info("GitLab init");
   }
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
-    throw NotImplementedError;
+    const { redirectUri } = this.providerOrganizationProperties;
+    if (!redirectUri) {
+      throw new Error("providerConfiguration.redirectUri is required");
+    }
+    const scopes = "api";
+    // const scopes =
+    //   "api+read_user+read_repository+write_repository+email+profile";
+    const parameters = `client_id=${this.providerConfiguration.clientId}&redirect_uri=${redirectUri}&response_type=code&state=${amplicationWorkspaceId}&scope=${scopes}`;
+
+    return `${this.providerConfiguration.domain}/oauth/authorize?${parameters}`;
   }
   async getCurrentOAuthUser(accessToken: string): Promise<CurrentUser> {
-    throw NotImplementedError;
+    const api = new Gitlab({
+      oauthToken: accessToken,
+    });
+    const user = await api.Users.showCurrentUser();
+
+    return {
+      displayName: user.name,
+      uuid: user.id.toString(),
+      username: user.username,
+      useGroupingForRepositories: false,
+      links: {
+        avatar: {
+          href: user.avatar_url,
+          name: user.name,
+        },
+      },
+    };
   }
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
-    throw NotImplementedError;
+    const url = `${this.providerConfiguration.domain}/oauth/token`;
+    const { redirectUri } = this.providerOrganizationProperties;
+    const parameters = `client_id=${this.providerConfiguration.clientId}&client_secret=${this.providerConfiguration.clientSecret}&code=${authorizationCode}&grant_type=authorization_code&redirect_uri=${redirectUri}`;
+
+    const response = await fetch(`${url}?${parameters}`, {
+      method: "POST",
+    });
+    if (response?.ok) {
+      const authData = await response.json();
+
+      return {
+        accessToken: authData.access_token,
+        refreshToken: authData.refresh_token,
+        tokenType: authData.token_type,
+        expiresAt: Date.now() + authData.expires_in * 1000, // 7200 seconds = 2 hours
+        scopes: [],
+        redirectUri,
+      };
+    } else {
+      throw new Error(`Failed to get OAuth tokens: ${response.statusText}`);
+    }
   }
   async refreshAccessToken(): Promise<OAuthTokens> {
     throw NotImplementedError;
