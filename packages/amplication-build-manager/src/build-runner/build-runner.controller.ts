@@ -3,7 +3,6 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Controller, Post } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { EventPattern, Payload } from "@nestjs/microservices";
-import axios from "axios";
 import { Env } from "../env";
 import { BuildRunnerService } from "./build-runner.service";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
@@ -15,6 +14,7 @@ import {
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
+import { UtilsService } from "../utils.service";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -23,25 +23,27 @@ export class BuildRunnerController {
     private readonly buildRunnerService: BuildRunnerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly producerService: KafkaProducerService,
-    private readonly logger: AmplicationLogger
+    private readonly logger: AmplicationLogger,
+    private readonly utilsService: UtilsService
   ) {}
 
   @Post("code-generation-success")
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
+    const buildId = this.utilsService.extractBuildId(dto.buildId);
     const codeGeneratorVersion =
       await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
     try {
       await this.buildRunnerService.copyFromJobToArtifact(
         dto.resourceId,
-        dto.buildId
+        buildId
       );
 
       const successEvent: CodeGenerationSuccess.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId, codeGeneratorVersion },
+        value: { buildId, codeGeneratorVersion },
       };
 
       await this.producerService.emitMessage(
@@ -53,7 +55,11 @@ export class BuildRunnerController {
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId, error, codeGeneratorVersion },
+        value: {
+          buildId,
+          error,
+          codeGeneratorVersion,
+        },
       };
 
       await this.producerService.emitMessage(
@@ -67,13 +73,14 @@ export class BuildRunnerController {
   async onCodeGenerationFailure(
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
+    const buildId = this.utilsService.extractBuildId(dto.buildId);
     try {
       const codeGeneratorVersion =
         await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
-        value: { buildId: dto.buildId, error: dto.error, codeGeneratorVersion },
+        value: { buildId, error: dto.error, codeGeneratorVersion },
       };
 
       await this.producerService.emitMessage(
@@ -108,35 +115,19 @@ export class BuildRunnerController {
           });
       }
 
-      await this.buildRunnerService.saveDsgResourceData(
+      await this.buildRunnerService.runJobs(
+        message.resourceId,
         message.buildId,
         message.dsgResourceData,
         containerImageTag ?? null
       );
-
-      const url = this.configService.get(Env.DSG_RUNNER_URL);
-      try {
-        await axios.post(url, {
-          resourceId: message.resourceId,
-          buildId: message.buildId,
-          containerImageTag,
-        });
-      } catch (error) {
-        throw new Error(error.message, {
-          cause: {
-            code: error.response?.status,
-            message: error.response?.data?.message,
-            data: error.config?.data,
-          },
-        });
-      }
     } catch (error) {
       this.logger.error(error.message, error);
-
+      const buildId = this.utilsService.extractBuildId(message.buildId);
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
         value: {
-          buildId: message.buildId,
+          buildId,
           error,
           codeGeneratorVersion: containerImageTag ?? null,
         },
