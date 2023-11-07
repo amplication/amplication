@@ -30,6 +30,7 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
+
   const [displayMode, setDisplayMode] = useState<EnumApiOperationTagStyle>(
     EnumApiOperationTagStyle.REST
   );
@@ -39,6 +40,17 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
       setSearchPhrase(value);
     },
     [setSearchPhrase]
+  );
+
+  const handleDisplayModeChange = useCallback(
+    (checked: boolean) => {
+      const value = checked
+        ? EnumApiOperationTagStyle.REST
+        : EnumApiOperationTagStyle.GQL;
+
+      setDisplayMode(value);
+    },
+    [displayMode]
   );
 
   const { findModules, findModulesData: moduleListData } = useModule();
@@ -88,15 +100,8 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
           >
             GraphQL API
             <Toggle
-              value={displayMode === EnumApiOperationTagStyle.REST}
-              defaultChecked={displayMode === EnumApiOperationTagStyle.REST}
-              onValueChange={(checked) =>
-                setDisplayMode(
-                  checked
-                    ? EnumApiOperationTagStyle.REST
-                    : EnumApiOperationTagStyle.GQL
-                )
-              }
+              checked={displayMode === EnumApiOperationTagStyle.REST}
+              onValueChange={handleDisplayModeChange}
             />
             REST API
           </FlexItem>
