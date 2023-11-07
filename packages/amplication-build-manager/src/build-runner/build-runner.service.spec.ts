@@ -6,6 +6,7 @@ import { ConfigService } from "@nestjs/config";
 import { DSGResourceData } from "@amplication/code-gen-types";
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
+import { TarService } from "./tar.service";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -22,6 +23,7 @@ spyOnWriteFile.mockResolvedValue(undefined);
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
   let configService: ConfigService;
+  let tarService: TarService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -48,6 +50,13 @@ describe("BuildRunnerService", () => {
             },
           },
         },
+        {
+          provide: TarService,
+          useValue: {
+            tar: jest.fn(),
+            extract: jest.fn(),
+          },
+        },
         MockedAmplicationLoggerProvider,
         BuildRunnerService,
       ],
@@ -55,6 +64,7 @@ describe("BuildRunnerService", () => {
 
     service = module.get<BuildRunnerService>(BuildRunnerService);
     configService = module.get<ConfigService>(ConfigService);
+    tarService = module.get<TarService>(TarService);
   });
 
   it("should be defined", () => {
@@ -98,5 +108,33 @@ describe("BuildRunnerService", () => {
         JSON.stringify({ ...dsgResourceDataMock, codeGeneratorVersion })
       )
     ).resolves.not.toThrow();
+  });
+
+  it("should copy file and/or directories from `jobPath` to `artifactPath`", async () => {
+    const resourceId = "resourceId";
+    const buildId = "buildId";
+
+    await service.copyFromJobToArtifact(resourceId, buildId);
+
+    const jobPath = join(
+      configService.get(Env.DSG_JOBS_BASE_FOLDER),
+      buildId,
+      configService.get(Env.DSG_JOBS_CODE_FOLDER)
+    );
+    const artifactPath = join(
+      configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
+      resourceId,
+      buildId
+    );
+
+    const compressPath = join(
+      configService.get(Env.DSG_JOBS_BASE_FOLDER),
+      buildId
+    );
+
+    const tarFile = join(compressPath, "archive.tar");
+
+    expect(tarService.tar).toBeCalledWith(jobPath, tarFile);
+    expect(tarService.extract).toBeCalledWith(tarFile, artifactPath);
   });
 });
