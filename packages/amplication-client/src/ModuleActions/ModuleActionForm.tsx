@@ -11,6 +11,7 @@ import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
 import PathField from "../Components/PathField";
+import RestVerbSelectField from "../Components/RestVerbSelectField";
 
 type Props = {
   onSubmit: (values: models.Module) => void;
@@ -88,6 +89,11 @@ const ModuleActionForm = ({
           disabled={disabled || !isCustomAction}
         />
         <PathField label="Path" name="path" />
+        <RestVerbSelectField
+          label={"Method"}
+          name={"restVerb"}
+          disabled={disabled || !isCustomAction}
+        ></RestVerbSelectField>
         <div>
           <ToggleField name="enabled" label="Enabled" disabled={disabled} />
         </div>
