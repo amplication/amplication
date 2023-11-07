@@ -47,7 +47,7 @@ export default function RepositoryActions({
                   direction={EnumFlexDirection.Row}
                   gap={EnumGapSize.Small}
                 >
-                  <Icon icon="info_circle" />
+                  <Icon icon="info_circle" color={EnumTextColor.White} />
                   No repository was selected
                 </FlexItem>
               </Text>
