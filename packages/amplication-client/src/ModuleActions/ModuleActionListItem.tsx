@@ -73,10 +73,13 @@ export const ModuleActionListItem = ({
         />
       }
     >
-      <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.White}>
-        /api/{kebabCase(module.name)}
-        {moduleAction.path}
-      </Text>
+      {tagStyle === EnumApiOperationTagStyle.REST && (
+        <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.White}>
+          /api/{kebabCase(module.name)}
+          {moduleAction.path}
+        </Text>
+      )}
+
       <Text textStyle={EnumTextStyle.Description}>
         {moduleAction.displayName}
       </Text>
