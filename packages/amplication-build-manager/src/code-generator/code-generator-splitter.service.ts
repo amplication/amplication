@@ -2,7 +2,7 @@ import { DSGResourceData } from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
 
-enum EnumDomainType {
+export enum EnumDomainType {
   Server = "server",
   AdminUI = "admin-ui",
 }
