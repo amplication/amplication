@@ -23,7 +23,10 @@ export class BuildRunnerService {
     dsgResourceData: DSGResourceData,
     codeGeneratorVersion: string
   ) {
-    const jobs = this.codeGeneratorSplitterService.splitJobs(dsgResourceData);
+    const jobs = this.codeGeneratorSplitterService.splitJobs(
+      dsgResourceData,
+      buildId
+    );
     for (const [domainType, data] of jobs) {
       const jobBuildId = `${buildId}-${domainType}`;
       await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
@@ -83,33 +86,36 @@ export class BuildRunnerService {
     return config.codeGeneratorVersion;
   }
 
-  async copyFromJobToArtifact(resourceId: string, buildId: string) {
-    const serverBuildId = `${buildId}-server`;
-    const adminBuildId = `${buildId}-admin`;
-
-    const serverJobPath = join(
-      this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      serverBuildId,
-      this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
+  async copyFromJobToArtifact(
+    resourceId: string,
+    buildIdWithDomainName: string
+  ): Promise<[string, boolean]> {
+    const domainName = this.codeGeneratorSplitterService.extractDomainName(
+      buildIdWithDomainName
+    );
+    const buildId = this.codeGeneratorSplitterService.extractBuildId(
+      buildIdWithDomainName
     );
 
-    const adminJobPath = join(
-      this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      adminBuildId,
-      this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
-    );
+    try {
+      const jobPath = join(
+        this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
+        buildIdWithDomainName,
+        this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
+      );
 
-    const artifactPath = join(
-      this.configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
-      resourceId,
-      buildId
-    );
+      const artifactPath = join(
+        this.configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
+        resourceId,
+        buildId
+      );
 
-    const isServerJobExists = await this.isPathExists(serverJobPath);
-    const isAdminJobExists = await this.isPathExists(adminJobPath);
-
-    isServerJobExists && (await copy(serverJobPath, artifactPath));
-    isAdminJobExists && (await copy(adminJobPath, artifactPath));
+      await copy(jobPath, artifactPath);
+      return [domainName, true];
+      return;
+    } catch (error) {
+      return [domainName, false];
+    }
   }
 
   async isPathExists(path: string): Promise<boolean> {

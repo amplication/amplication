@@ -15,6 +15,7 @@ import {
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { EnumDomainName, EnumEventStatus } from "../types";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -38,20 +39,56 @@ export class BuildRunnerController {
       await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
     try {
-      await this.buildRunnerService.copyFromJobToArtifact(
-        dto.resourceId,
+      const [domainName, isSuccess] =
+        await this.buildRunnerService.copyFromJobToArtifact(
+          dto.resourceId,
+          dto.buildId
+        );
+
+      if (isSuccess) {
+        if (domainName === EnumDomainName.Server) {
+          await this.codeGeneratorSplitterService.serverJobSuccess(buildId);
+        } else if (domainName === EnumDomainName.AdminUI) {
+          await this.codeGeneratorSplitterService.adminUIJobSuccess(buildId);
+        }
+      } else {
+        if (domainName === EnumDomainName.Server) {
+          await this.codeGeneratorSplitterService.serverJobFailure(buildId);
+        } else if (domainName === EnumDomainName.AdminUI) {
+          await this.codeGeneratorSplitterService.adminUIJobFailure(buildId);
+        }
+        // TODO: do we want to throw an error here or wait for the job status?
+      }
+
+      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
         buildId
       );
 
-      const successEvent: CodeGenerationSuccess.KafkaEvent = {
-        key: null,
-        value: { buildId, codeGeneratorVersion },
-      };
+      if (jobStatus === EnumEventStatus.Success) {
+        const successEvent: CodeGenerationSuccess.KafkaEvent = {
+          key: null,
+          value: { buildId, codeGeneratorVersion },
+        };
 
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-        successEvent
-      );
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+          successEvent
+        );
+      } else {
+        const failureEvent: CodeGenerationFailure.KafkaEvent = {
+          key: null,
+          value: {
+            buildId,
+            error: new Error(`Code generation failed for ${domainName}`),
+            codeGeneratorVersion,
+          },
+        };
+
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+          failureEvent
+        );
+      }
     } catch (error) {
       this.logger.error(error.message, error);
 
