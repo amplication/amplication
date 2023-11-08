@@ -382,7 +382,6 @@ const buildId = "cloo1bi5t0001p5888jj5wle9";
 
 describe("CodeGeneratorSplitter", () => {
   let service: CodeGeneratorSplitterService;
-  let redisService: RedisService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -391,8 +390,8 @@ describe("CodeGeneratorSplitter", () => {
         {
           provide: RedisService,
           useValue: {
-            setServerJobInProgress: jest.fn(),
-            setAdminUIJobInProgress: jest.fn(),
+            get: jest.fn(),
+            set: jest.fn(),
           },
         },
       ],
@@ -401,7 +400,6 @@ describe("CodeGeneratorSplitter", () => {
     service = module.get<CodeGeneratorSplitterService>(
       CodeGeneratorSplitterService
     );
-    redisService = module.get<RedisService>(RedisService);
   });
 
   it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", () => {
@@ -420,25 +418,25 @@ describe("CodeGeneratorSplitter", () => {
       false
     );
 
-    expect(redisService.setServerJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(redisService.setServerJobInProgress).toBeCalledTimes(1);
-    expect(redisService.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(redisService.setAdminUIJobInProgress).toBeCalledTimes(1);
+    expect(service.setServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(service.setServerJobInProgress).toBeCalledTimes(1);
+    expect(service.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(service.setAdminUIJobInProgress).toBeCalledTimes(1);
   });
 
-  it("should build only server, it will create one request to start a jobs with onlyServerInputJson", () => {
+  it("should build onlyserviceserver, it will create one request to start a jobs with onlyServerInputJson", () => {
     const jobs = service.splitJobs(onlyServerInputJson, buildId);
     expect(jobs.length).toBe(1);
     expect(jobs).toEqual([[EnumDomainName.Server, onlyServerInputJson]]);
-    expect(redisService.setServerJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(redisService.setServerJobInProgress).toBeCalledTimes(1);
+    expect(service.setServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(service.setServerJobInProgress).toBeCalledTimes(1);
   });
 
   it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", () => {
     const jobs = service.splitJobs(onlyAdminInputJson, buildId);
     expect(jobs.length).toBe(1);
     expect(jobs).toEqual([[EnumDomainName.AdminUI, onlyAdminInputJson]]);
-    expect(redisService.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(redisService.setAdminUIJobInProgress).toBeCalledTimes(1);
+    expect(service.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(service.setAdminUIJobInProgress).toBeCalledTimes(1);
   });
 });
