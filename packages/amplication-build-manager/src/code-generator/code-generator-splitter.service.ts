@@ -132,6 +132,27 @@ export class CodeGeneratorSplitterService {
     }
   }
 
+  async setJobStatusBasedOnArtifact(
+    domainName: string,
+    isSuccess: boolean,
+    buildId: string
+  ) {
+    if (isSuccess) {
+      if (domainName === EnumDomainName.Server) {
+        await this.setServerJobSuccess(buildId);
+      } else if (domainName === EnumDomainName.AdminUI) {
+        await this.setAdminUIJobSuccess(buildId);
+      }
+    } else {
+      if (domainName === EnumDomainName.Server) {
+        await this.setServerJobFailure(buildId);
+      } else if (domainName === EnumDomainName.AdminUI) {
+        await this.setAdminUIJobFailure(buildId);
+      }
+      // TODO: do we want to throw (and the caller will catch) an error here or wait for the job status?
+    }
+  }
+
   /**
    * This function extracts the buildId from the buildId with suffix.
    * It's needed because the buildId is used as a key in the Kafka messages and and as a folder name in the artifacts and when it

@@ -15,7 +15,7 @@ import {
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
-import { EnumDomainName, EnumEventStatus } from "../types";
+import { EnumEventStatus } from "../types";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -39,56 +39,11 @@ export class BuildRunnerController {
       await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
     try {
-      const [domainName, isSuccess] =
-        await this.buildRunnerService.copyFromJobToArtifact(
-          dto.resourceId,
-          dto.buildId
-        );
-
-      if (isSuccess) {
-        if (domainName === EnumDomainName.Server) {
-          await this.codeGeneratorSplitterService.setServerJobSuccess(buildId);
-        } else if (domainName === EnumDomainName.AdminUI) {
-          await this.codeGeneratorSplitterService.setAdminUIJobSuccess(buildId);
-        }
-      } else {
-        if (domainName === EnumDomainName.Server) {
-          await this.codeGeneratorSplitterService.setServerJobFailure(buildId);
-        } else if (domainName === EnumDomainName.AdminUI) {
-          await this.codeGeneratorSplitterService.setAdminUIJobFailure(buildId);
-        }
-        // TODO: do we want to throw an error here or wait for the job status?
-      }
-
-      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
-        buildId
+      await this.emitKafkaEventBasedOnJobStatus(
+        dto.resourceId,
+        dto.buildId,
+        codeGeneratorVersion
       );
-
-      if (jobStatus === EnumEventStatus.Success) {
-        const successEvent: CodeGenerationSuccess.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-          successEvent
-        );
-      } else {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: {
-            buildId,
-            error: new Error(`Code generation failed for ${domainName}`),
-            codeGeneratorVersion,
-          },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
-        );
-      }
     } catch (error) {
       this.logger.error(error.message, error);
 
@@ -170,6 +125,63 @@ export class BuildRunnerController {
           buildId: message.buildId,
           error,
           codeGeneratorVersion: containerImageTag ?? null,
+        },
+      };
+
+      await this.producerService.emitMessage(
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+        failureEvent
+      );
+    }
+  }
+
+  /**
+   * Emits a kafka event based on the job status (success / failure) from the redis cache
+   * @param resourceId the resource id
+   * @param buildId the original buildId without the suffix (domain name)
+   * @param codeGeneratorVersion the code generator version
+   */
+  private async emitKafkaEventBasedOnJobStatus(
+    resourceId: string,
+    buildIdWithDomainName: string,
+    codeGeneratorVersion: string
+  ) {
+    const buildId = this.codeGeneratorSplitterService.extractBuildId(
+      buildIdWithDomainName
+    );
+    const [domainName, isSuccess] =
+      await this.buildRunnerService.copyFromJobToArtifact(
+        resourceId,
+        buildIdWithDomainName
+      );
+
+    await this.codeGeneratorSplitterService.setJobStatusBasedOnArtifact(
+      domainName,
+      isSuccess,
+      buildId
+    );
+
+    const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
+      buildId
+    );
+
+    if (jobStatus === EnumEventStatus.Success) {
+      const successEvent: CodeGenerationSuccess.KafkaEvent = {
+        key: null,
+        value: { buildId, codeGeneratorVersion },
+      };
+
+      await this.producerService.emitMessage(
+        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+        successEvent
+      );
+    } else {
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: {
+          buildId,
+          error: new Error(`Code generation failed for ${domainName}`),
+          codeGeneratorVersion,
         },
       };
 
