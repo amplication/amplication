@@ -14,7 +14,7 @@ import {
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
-import { UtilsService } from "../utils.service";
+import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -24,14 +24,16 @@ export class BuildRunnerController {
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly producerService: KafkaProducerService,
     private readonly logger: AmplicationLogger,
-    private readonly utilsService: UtilsService
+    private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService
   ) {}
 
   @Post("code-generation-success")
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
-    const buildId = this.utilsService.extractBuildId(dto.buildId);
+    const buildId = this.codeGeneratorSplitterService.extractBuildId(
+      dto.buildId
+    );
     const codeGeneratorVersion =
       await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
 
@@ -73,7 +75,9 @@ export class BuildRunnerController {
   async onCodeGenerationFailure(
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
-    const buildId = this.utilsService.extractBuildId(dto.buildId);
+    const buildId = this.codeGeneratorSplitterService.extractBuildId(
+      dto.buildId
+    );
     try {
       const codeGeneratorVersion =
         await this.buildRunnerService.getCodeGeneratorVersion(dto.buildId);
@@ -123,11 +127,10 @@ export class BuildRunnerController {
       );
     } catch (error) {
       this.logger.error(error.message, error);
-      const buildId = this.utilsService.extractBuildId(message.buildId);
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
         value: {
-          buildId,
+          buildId: message.buildId,
           error,
           codeGeneratorVersion: containerImageTag ?? null,
         },

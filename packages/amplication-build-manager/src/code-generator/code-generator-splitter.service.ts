@@ -12,10 +12,14 @@ type ResourceTuple = [EnumDomainType, DSGResourceData];
 @Injectable()
 export class CodeGeneratorSplitterService {
   splitJobs(dsgResourceData: DSGResourceData): ResourceTuple[] {
-    const generateServer =
-      dsgResourceData.resourceInfo.settings.serverSettings.generateServer;
-    const generateAdminUI =
-      dsgResourceData.resourceInfo.settings.adminUISettings.generateAdminUI;
+    const {
+      resourceInfo: {
+        settings: {
+          serverSettings: { generateServer },
+          adminUISettings: { generateAdminUI },
+        },
+      },
+    } = dsgResourceData;
 
     const jobs: ResourceTuple[] = [];
     if (generateServer) {
@@ -34,5 +38,19 @@ export class CodeGeneratorSplitterService {
     }
 
     return jobs;
+  }
+
+  /**
+   * This function extracts the buildId from the buildId with suffix.
+   * It's needed because the buildId is used as a key in the Kafka messages and and as a folder name in the artifacts and when it
+   * interacts with the data-service-generator and the server it needs to be without the suffix.
+   * @param buildIdWithSuffix the buildId with suffix which in this case could be "-server" or "-admin-ui"
+   * @returns return the substring before the first hyphen or the whole string if there is no hyphen
+   */
+  extractBuildId(buildIdWithSuffix: string): string {
+    const regexPattern = `-(?:${EnumDomainType.Server}|${EnumDomainType.AdminUI})$`;
+    const regex = new RegExp(regexPattern);
+
+    return buildIdWithSuffix.replace(regex, "");
   }
 }

@@ -7,7 +7,6 @@ import { copy } from "fs-extra";
 import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
-import { UtilsService } from "../utils.service";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
 
 @Traceable()
@@ -15,7 +14,6 @@ import { CodeGeneratorSplitterService } from "../code-generator/code-generator-s
 export class BuildRunnerService {
   constructor(
     private readonly configService: ConfigService<Env, true>,
-    private readonly utilsService: UtilsService,
     private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService
   ) {}
 
@@ -107,12 +105,19 @@ export class BuildRunnerService {
       buildId
     );
 
-    const isServerJobExists = await this.utilsService.isPathExists(
-      serverJobPath
-    );
-    const isAdminJobExists = await this.utilsService.isPathExists(adminJobPath);
+    const isServerJobExists = await this.isPathExists(serverJobPath);
+    const isAdminJobExists = await this.isPathExists(adminJobPath);
 
     isServerJobExists && (await copy(serverJobPath, artifactPath));
     isAdminJobExists && (await copy(adminJobPath, artifactPath));
+  }
+
+  async isPathExists(path: string): Promise<boolean> {
+    try {
+      await fs.access(path);
+      return true;
+    } catch {
+      return false;
+    }
   }
 }
