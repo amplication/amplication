@@ -4,6 +4,11 @@ export class Env {
 
   static readonly DSG_RUNNER_URL = "DSG_RUNNER_URL";
 
+  static readonly REDIS_HOST = "REDIS_HOST";
+  static readonly REDIS_PORT = "REDIS_PORT";
+  static readonly REDIS_USERNAME = "REDIS_USERNAME";
+  static readonly REDIS_PASSWORD = "REDIS_PASSWORD";
+
   static readonly BUILD_ARTIFACTS_BASE_FOLDER = "BUILD_ARTIFACTS_BASE_FOLDER";
   static readonly BUILD_ARTIFACTS_CODE_FOLDER = "BUILD_ARTIFACTS_CODE_FOLDER";
 
