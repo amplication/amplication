@@ -17,6 +17,8 @@ import ModuleActionList from "./ModuleActionList";
 import NewModuleAction from "./NewModuleAction";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
+import { useQuery } from "@apollo/client";
+import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -34,6 +36,27 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
   const [displayMode, setDisplayMode] = useState<EnumApiOperationTagStyle>(
     EnumApiOperationTagStyle.REST
   );
+
+  const { data, error: serviceSettingsError } = useQuery<{
+    serviceSettings: models.ServiceSettings;
+  }>(GET_RESOURCE_SETTINGS, {
+    variables: {
+      id: resourceId,
+    },
+  });
+  const { generateRestApi, generateGraphQL } =
+    data.serviceSettings.serverSettings;
+
+  useEffect(() => {
+    if (generateRestApi) {
+      setDisplayMode(EnumApiOperationTagStyle.REST);
+      return;
+    }
+
+    if (generateGraphQL) {
+      setDisplayMode(EnumApiOperationTagStyle.GQL);
+    }
+  }, [displayMode, setDisplayMode]);
 
   const handleSearchChange = useCallback(
     (value) => {
@@ -54,6 +77,7 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
   );
 
   const { findModules, findModulesData: moduleListData } = useModule();
+  const generateGraphQlAndRestApi = generateRestApi && generateGraphQL;
 
   useEffect(() => {
     if (!moduleId) {
@@ -74,8 +98,14 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
     <>
       {match.isExact ? (
         <>
+          <SearchField
+            label="search"
+            placeholder="Search"
+            onChange={handleSearchChange}
+          />
           <FlexItem
             itemsAlign={EnumItemsAlign.Center}
+            margin={EnumFlexItemMargin.Top}
             start={
               <TabContentTitle
                 title="Module Actions"
@@ -87,24 +117,20 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
             }
           ></FlexItem>
 
-          <SearchField
-            label="search"
-            placeholder="Search"
-            onChange={handleSearchChange}
-          />
-
-          <FlexItem
-            direction={EnumFlexDirection.Row}
-            contentAlign={EnumContentAlign.Center}
-            itemsAlign={EnumItemsAlign.Center}
-          >
-            GraphQL API
-            <Toggle
-              checked={displayMode === EnumApiOperationTagStyle.REST}
-              onValueChange={handleDisplayModeChange}
-            />
-            REST API
-          </FlexItem>
+          {generateGraphQlAndRestApi && (
+            <FlexItem
+              direction={EnumFlexDirection.Row}
+              contentAlign={EnumContentAlign.Center}
+              itemsAlign={EnumItemsAlign.Center}
+            >
+              GraphQL API
+              <Toggle
+                checked={displayMode === EnumApiOperationTagStyle.REST}
+                onValueChange={handleDisplayModeChange}
+              />
+              REST API
+            </FlexItem>
+          )}
 
           {moduleId ? (
             <FlexItem margin={EnumFlexItemMargin.Top}>
