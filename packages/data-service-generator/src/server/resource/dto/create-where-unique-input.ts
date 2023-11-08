@@ -5,7 +5,7 @@ import {
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
-import { classDeclaration } from "packages/data-service-generator/src/utils/ast";
+import { classDeclaration } from "../../../utils/ast";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
 import { createFieldClassProperty } from "./create-field-class-property";
 

@@ -3,7 +3,7 @@ import { NamedClassDeclaration } from "@amplication/code-gen-types";
 import { isEditableField } from "../../../utils/field";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-import { classDeclaration } from "packages/data-service-generator/src/utils/ast";
+import { classDeclaration } from "../../../utils/ast";
 import { createFieldClassProperty } from "./create-field-class-property";
 
 export const createUpdateInput = (entityDTOsFilesObj) => {

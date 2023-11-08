@@ -7,7 +7,7 @@ import { isScalarListField, isPasswordField } from "../../../utils/field";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { createFieldClassProperty } from "./create-field-class-property";
 import { INPUT_TYPE_DECORATOR } from "./nestjs-graphql.util";
-import { classDeclaration } from "packages/data-service-generator/src/utils/ast";
+import { classDeclaration } from "../../../utils/ast";
 
 export const createWhereInput = (entityDTOsFilesObj) => {
   if (isQueryableField(entityDTOsFilesObj.field)) {
