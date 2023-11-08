@@ -6,15 +6,14 @@ import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
-import { TarService } from "./tar.service";
+import * as tar from "tar";
 
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
   constructor(
     private readonly configService: ConfigService<Env, true>,
-    private readonly logger: AmplicationLogger,
-    private readonly tarService: TarService
+    private readonly logger: AmplicationLogger
   ) {}
 
   async saveDsgResourceData(
@@ -71,14 +70,25 @@ export class BuildRunnerService {
       buildId
     );
 
+    await fsPromises.mkdir(artifactPath, { recursive: true });
+
     const tarFile = join(compressPath, "archive.tar");
 
     try {
-      this.logger.debug(`Compressing ${jobPath} to ${tarFile}`);
-      await this.tarService.tar(jobPath, tarFile);
+      this.logger.debug(`Compressing ${jobPath} to ${tarFile}...`);
+      await tar.c(
+        {
+          file: tarFile,
+        },
+        [jobPath]
+      );
       this.logger.debug(`Created tar file ${tarFile}`);
 
-      await this.tarService.extract(tarFile, artifactPath);
+      this.logger.debug(`Extracting ${tarFile} to ${artifactPath}...`);
+      await tar.x({
+        file: tarFile,
+        cwd: artifactPath,
+      });
       this.logger.debug(`Extracted tar file ${tarFile} to ${artifactPath}`);
     } catch (error) {
       this.logger.error(`Error copying from job to artifact`, error);
