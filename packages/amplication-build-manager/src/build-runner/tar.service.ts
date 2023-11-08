@@ -22,9 +22,6 @@ export class TarService {
     try {
       const files = await fsPromises.readdir(source, { withFileTypes: true });
       for (const dirent of files) {
-        if (dirent.name.startsWith(".")) {
-          continue;
-        }
         const filePath = join(source, dirent.name);
         const relFilePath = join(relativePath, dirent.name);
         const stat = await fsPromises.stat(filePath);
