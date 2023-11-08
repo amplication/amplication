@@ -1,17 +1,18 @@
 import { DSGResourceData } from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
+import { BuildId, EnumDomainName, EnumEventStatus } from "../types";
+import { RedisService } from "../redis/redis.service";
 
-export enum EnumDomainType {
-  Server = "server",
-  AdminUI = "admin-ui",
-}
-
-type ResourceTuple = [EnumDomainType, DSGResourceData];
-
+type ResourceTuple = [EnumDomainName, DSGResourceData];
 @Injectable()
 export class CodeGeneratorSplitterService {
-  splitJobs(dsgResourceData: DSGResourceData): ResourceTuple[] {
+  constructor(private readonly redisService: RedisService) {}
+
+  splitJobs(
+    dsgResourceData: DSGResourceData,
+    buildId: BuildId
+  ): ResourceTuple[] {
     const {
       resourceInfo: {
         settings: {
@@ -26,7 +27,8 @@ export class CodeGeneratorSplitterService {
       const serverDSGResourceData: DSGResourceData = cloneDeep(dsgResourceData);
       serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
         false;
-      jobs.push([EnumDomainType.Server, serverDSGResourceData]);
+      this.redisService.setServerJobInProgress(buildId);
+      jobs.push([EnumDomainName.Server, serverDSGResourceData]);
     }
 
     if (generateAdminUI) {
@@ -34,10 +36,31 @@ export class CodeGeneratorSplitterService {
         cloneDeep(dsgResourceData);
       adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
         false;
-      jobs.push([EnumDomainType.AdminUI, adminUiDSGResourceData]);
+      this.redisService.setAdminUIJobInProgress(buildId);
+      jobs.push([EnumDomainName.AdminUI, adminUiDSGResourceData]);
     }
 
     return jobs;
+  }
+
+  serverJobSuccess(buildId: BuildId): Promise<string | null> {
+    return this.redisService.setServerJobSuccess(buildId);
+  }
+
+  adminUIJobSuccess(buildId: BuildId): Promise<string | null> {
+    return this.redisService.setAdminUIJobSuccess(buildId);
+  }
+
+  serverJobFailure(buildId: BuildId): Promise<string | null> {
+    return this.redisService.setServerJobFailure(buildId);
+  }
+
+  adminUIJobFailure(buildId: BuildId): Promise<string | null> {
+    return this.redisService.setAdminUIJobFailure(buildId);
+  }
+
+  getJobStatus(buildId: BuildId): Promise<EnumEventStatus> {
+    return this.redisService.getJobStatus(buildId);
   }
 
   /**
@@ -48,9 +71,17 @@ export class CodeGeneratorSplitterService {
    * @returns return the substring before the first hyphen or the whole string if there is no hyphen
    */
   extractBuildId(buildIdWithSuffix: string): string {
-    const regexPattern = `-(?:${EnumDomainType.Server}|${EnumDomainType.AdminUI})$`;
+    const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
     const regex = new RegExp(regexPattern);
 
     return buildIdWithSuffix.replace(regex, "");
+  }
+
+  extractDomainName(buildIdWithSuffix: string): string {
+    const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
+    const regex = new RegExp(regexPattern);
+
+    const [, domainType] = buildIdWithSuffix.split(regex).pop();
+    return domainType;
   }
 }
