@@ -1,12 +1,13 @@
 import { DSGResourceData } from "@amplication/code-gen-types";
 import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
-import { BuildId, EnumDomainName, EnumEventStatus } from "../types";
+import { BuildId, EnumDomainName, EnumEventStatus, RedisValue } from "../types";
 import { RedisService } from "../redis/redis.service";
 
 type ResourceTuple = [EnumDomainName, DSGResourceData];
 @Injectable()
 export class CodeGeneratorSplitterService {
+  // TODO: rename to CodeGeneratorJobHandlerService (?)
   constructor(private readonly redisService: RedisService) {}
 
   splitJobs(
@@ -27,7 +28,7 @@ export class CodeGeneratorSplitterService {
       const serverDSGResourceData: DSGResourceData = cloneDeep(dsgResourceData);
       serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
         false;
-      this.redisService.setServerJobInProgress(buildId);
+      this.setServerJobInProgress(buildId);
       jobs.push([EnumDomainName.Server, serverDSGResourceData]);
     }
 
@@ -36,31 +37,99 @@ export class CodeGeneratorSplitterService {
         cloneDeep(dsgResourceData);
       adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
         false;
-      this.redisService.setAdminUIJobInProgress(buildId);
+      this.setAdminUIJobInProgress(buildId);
       jobs.push([EnumDomainName.AdminUI, adminUiDSGResourceData]);
     }
 
     return jobs;
   }
 
-  serverJobSuccess(buildId: BuildId): Promise<string | null> {
-    return this.redisService.setServerJobSuccess(buildId);
+  async setServerJobInProgress(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.InProgress,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
   }
 
-  adminUIJobSuccess(buildId: BuildId): Promise<string | null> {
-    return this.redisService.setAdminUIJobSuccess(buildId);
+  async setAdminUIJobInProgress(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.InProgress,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
   }
 
-  serverJobFailure(buildId: BuildId): Promise<string | null> {
-    return this.redisService.setServerJobFailure(buildId);
+  async setServerJobSuccess(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.Success,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
   }
 
-  adminUIJobFailure(buildId: BuildId): Promise<string | null> {
-    return this.redisService.setAdminUIJobFailure(buildId);
+  async setAdminUIJobSuccess(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.Success,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
   }
 
-  getJobStatus(buildId: BuildId): Promise<EnumEventStatus> {
-    return this.redisService.getJobStatus(buildId);
+  async setServerJobFailure(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.Failure,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
+  }
+
+  async setAdminUIJobFailure(key: BuildId): Promise<string | null> {
+    const value = {
+      [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.Failure,
+    };
+
+    return this.redisService.set<RedisValue>(key, value);
+  }
+
+  async getJobStatus(key: BuildId): Promise<EnumEventStatus> {
+    const value = await this.redisService.get<RedisValue>(key);
+    const hasServerAndAdmin =
+      value.hasOwnProperty(`${key}-${EnumDomainName.Server}`) &&
+      value.hasOwnProperty(`${key}-${EnumDomainName.AdminUI}`);
+
+    const hasOnlyServer =
+      value.hasOwnProperty(`${key}-${EnumDomainName.Server}`) &&
+      !value.hasOwnProperty(`${key}-${EnumDomainName.AdminUI}`);
+
+    const hasOnlyAdmin =
+      !value.hasOwnProperty(`${key}-${EnumDomainName.Server}`) &&
+      value.hasOwnProperty(`${key}-${EnumDomainName.AdminUI}`);
+
+    if (hasServerAndAdmin) {
+      const serverStatus = value[`${key}-${EnumDomainName.Server}`];
+      const adminUIStatus = value[`${key}-${EnumDomainName.AdminUI}`];
+
+      if (
+        serverStatus === EnumEventStatus.Success &&
+        adminUIStatus === EnumEventStatus.Success
+      ) {
+        return EnumEventStatus.Success;
+      } else if (
+        serverStatus === EnumEventStatus.Failure ||
+        adminUIStatus === EnumEventStatus.Failure
+      ) {
+        return EnumEventStatus.Failure;
+      }
+    }
+
+    if (hasOnlyServer) {
+      return value[`${key}-${EnumDomainName.Server}`];
+    }
+
+    if (hasOnlyAdmin) {
+      return value[`${key}-${EnumDomainName.AdminUI}`];
+    }
   }
 
   /**

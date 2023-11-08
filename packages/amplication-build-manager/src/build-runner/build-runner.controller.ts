@@ -47,15 +47,15 @@ export class BuildRunnerController {
 
       if (isSuccess) {
         if (domainName === EnumDomainName.Server) {
-          await this.codeGeneratorSplitterService.serverJobSuccess(buildId);
+          await this.codeGeneratorSplitterService.setServerJobSuccess(buildId);
         } else if (domainName === EnumDomainName.AdminUI) {
-          await this.codeGeneratorSplitterService.adminUIJobSuccess(buildId);
+          await this.codeGeneratorSplitterService.setAdminUIJobSuccess(buildId);
         }
       } else {
         if (domainName === EnumDomainName.Server) {
-          await this.codeGeneratorSplitterService.serverJobFailure(buildId);
+          await this.codeGeneratorSplitterService.setServerJobFailure(buildId);
         } else if (domainName === EnumDomainName.AdminUI) {
-          await this.codeGeneratorSplitterService.adminUIJobFailure(buildId);
+          await this.codeGeneratorSplitterService.setAdminUIJobFailure(buildId);
         }
         // TODO: do we want to throw an error here or wait for the job status?
       }
