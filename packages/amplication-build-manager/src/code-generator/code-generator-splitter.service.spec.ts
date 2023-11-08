@@ -7,10 +7,9 @@ import {
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types/models";
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  CodeGeneratorSplitterService,
-  EnumDomainType,
-} from "./code-generator-splitter.service";
+import { CodeGeneratorSplitterService } from "./code-generator-splitter.service";
+import { EnumDomainName } from "../types";
+import { RedisService } from "../redis/redis.service";
 
 const adminAndServerInputJson: DSGResourceData = {
   entities: [
@@ -379,25 +378,38 @@ const onlyAdminInputJson: DSGResourceData = {
   },
 };
 
+const buildId = "cloo1bi5t0001p5888jj5wle9";
+
 describe("CodeGeneratorSplitter", () => {
   let service: CodeGeneratorSplitterService;
+  let redisService: RedisService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CodeGeneratorSplitterService],
+      providers: [
+        CodeGeneratorSplitterService,
+        {
+          provide: RedisService,
+          useValue: {
+            setServerJobInProgress: jest.fn(),
+            setAdminUIJobInProgress: jest.fn(),
+          },
+        },
+      ],
     }).compile();
 
     service = module.get<CodeGeneratorSplitterService>(
       CodeGeneratorSplitterService
     );
+    redisService = module.get<RedisService>(RedisService);
   });
 
   it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", () => {
-    const jobs = service.splitJobs(adminAndServerInputJson);
+    const jobs = service.splitJobs(adminAndServerInputJson, buildId);
     expect(jobs.length).toBe(2);
     expect(jobs).toEqual([
-      [EnumDomainType.Server, onlyServerInputJson],
-      [EnumDomainType.AdminUI, onlyAdminInputJson],
+      [EnumDomainName.Server, onlyServerInputJson],
+      [EnumDomainName.AdminUI, onlyAdminInputJson],
     ]);
 
     expect(
@@ -407,17 +419,26 @@ describe("CodeGeneratorSplitter", () => {
     expect(jobs[1][1].resourceInfo.settings.serverSettings.generateServer).toBe(
       false
     );
+
+    expect(redisService.setServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(redisService.setServerJobInProgress).toBeCalledTimes(1);
+    expect(redisService.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(redisService.setAdminUIJobInProgress).toBeCalledTimes(1);
   });
 
   it("should build only server, it will create one request to start a jobs with onlyServerInputJson", () => {
-    const jobs = service.splitJobs(onlyServerInputJson);
+    const jobs = service.splitJobs(onlyServerInputJson, buildId);
     expect(jobs.length).toBe(1);
-    expect(jobs).toEqual([[EnumDomainType.Server, onlyServerInputJson]]);
+    expect(jobs).toEqual([[EnumDomainName.Server, onlyServerInputJson]]);
+    expect(redisService.setServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(redisService.setServerJobInProgress).toBeCalledTimes(1);
   });
 
   it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", () => {
-    const jobs = service.splitJobs(onlyAdminInputJson);
+    const jobs = service.splitJobs(onlyAdminInputJson, buildId);
     expect(jobs.length).toBe(1);
-    expect(jobs).toEqual([[EnumDomainType.AdminUI, onlyAdminInputJson]]);
+    expect(jobs).toEqual([[EnumDomainName.AdminUI, onlyAdminInputJson]]);
+    expect(redisService.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(redisService.setAdminUIJobInProgress).toBeCalledTimes(1);
   });
 });
