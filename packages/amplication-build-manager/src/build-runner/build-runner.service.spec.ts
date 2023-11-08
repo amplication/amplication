@@ -6,7 +6,9 @@ import { ConfigService } from "@nestjs/config";
 import { DSGResourceData } from "@amplication/code-gen-types";
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
-import { TarService } from "./tar.service";
+import * as tar from "tar";
+
+jest.mock("tar");
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -23,7 +25,6 @@ spyOnWriteFile.mockResolvedValue(undefined);
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
   let configService: ConfigService;
-  let tarService: TarService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -50,13 +51,6 @@ describe("BuildRunnerService", () => {
             },
           },
         },
-        {
-          provide: TarService,
-          useValue: {
-            tar: jest.fn(),
-            extract: jest.fn(),
-          },
-        },
         MockedAmplicationLoggerProvider,
         BuildRunnerService,
       ],
@@ -64,7 +58,6 @@ describe("BuildRunnerService", () => {
 
     service = module.get<BuildRunnerService>(BuildRunnerService);
     configService = module.get<ConfigService>(ConfigService);
-    tarService = module.get<TarService>(TarService);
   });
 
   it("should be defined", () => {
@@ -134,7 +127,17 @@ describe("BuildRunnerService", () => {
 
     const tarFile = join(compressPath, "archive.tar");
 
-    expect(tarService.tar).toBeCalledWith(jobPath, tarFile);
-    expect(tarService.extract).toBeCalledWith(tarFile, artifactPath);
+    expect(tar.c).toBeCalledWith(
+      {
+        file: tarFile,
+      },
+      [jobPath]
+    );
+    expect(tar.c).toBeCalledTimes(1);
+    expect(tar.x).toBeCalledWith({
+      file: tarFile,
+      cwd: artifactPath,
+    });
+    expect(tar.x).toBeCalledTimes(1);
   });
 });
