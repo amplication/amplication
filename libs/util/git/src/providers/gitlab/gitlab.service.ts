@@ -1,4 +1,5 @@
 import { ILogger } from "@amplication/util/logging";
+import * as Resources from "@gitbeaker/core";
 import { Gitlab } from "@gitbeaker/rest";
 import { GitProvider } from "../../git-provider.interface";
 import {
@@ -36,7 +37,7 @@ export class GitLabService implements GitProvider {
     username: string;
     password: string;
   };
-  private readonly client;
+  private readonly client: Resources.Gitlab;
 
   constructor(
     private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
@@ -48,8 +49,11 @@ export class GitLabService implements GitProvider {
         className: GitLabService.name,
       },
     });
-    this.providerConfiguration.domain =
-      providerConfiguration.domain ?? "https://gitlab.com";
+
+    this.client = new Gitlab({
+      oauthToken: providerOrganizationProperties.accessToken,
+      host: this.providerConfiguration.domain,
+    });
   }
 
   async init(): Promise<void> {
@@ -123,7 +127,36 @@ export class GitLabService implements GitProvider {
   async getRepositories(
     getRepositoriesArgs: GetRepositoriesArgs
   ): Promise<RemoteGitRepos> {
-    throw NotImplementedError;
+    getRepositoriesArgs.pagination.perPage = 100;
+    const projects = await this.client.Projects.all({
+      archived: false,
+      orderBy: "updated_at",
+      sort: "asc",
+      membership: true,
+      pagination: "offset",
+      perPage: getRepositoriesArgs.pagination.perPage,
+      page: getRepositoriesArgs.pagination.page,
+    });
+
+    return {
+      pagination: {
+        page: 1,
+        perPage: projects.length,
+      },
+      total: projects.length,
+      repos: projects.map(
+        (project) =>
+          <RemoteGitRepository>{
+            name: project.path_with_namespace,
+            defaultBranch: project.default_branch,
+            fullName: project.path_with_namespace,
+            private: project.visibility === "private",
+            url: project.http_url_to_repo,
+            groupName: "",
+            admin: false,
+          }
+      ),
+    };
   }
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
