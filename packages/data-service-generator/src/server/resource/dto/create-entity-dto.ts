@@ -1,5 +1,5 @@
 import { builders } from "ast-types";
-import { Entity, NamedClassDeclaration } from "@amplication/code-gen-types";
+import { NamedClassDeclaration } from "@amplication/code-gen-types";
 import { classDeclaration } from "../../../utils/ast";
 import { isPasswordField } from "../../../utils/field";
 import { createFieldClassProperty } from "./create-field-class-property";
@@ -10,24 +10,28 @@ export const OBJECT_TYPE_DECORATOR = builders.decorator(
   builders.callExpression(OBJECT_TYPE_ID, [])
 );
 
-export function createEntityDTO(entity: Entity): NamedClassDeclaration {
-  // make all the ast properties that inject to the entity class
-  const properties = entity.fields
-    .filter((field) => !isPasswordField(field))
-    .map((field) =>
-      createFieldClassProperty(
-        field,
-        entity,
-        !field.required,
-        false,
-        true,
-        EntityDtoTypeEnum.Entity
-      )
+export const createEntityDTO = (entityDTOsFilesObj) => {
+  if (!isPasswordField(entityDTOsFilesObj.field)) {
+    const property = createFieldClassProperty(
+      entityDTOsFilesObj.field,
+      entityDTOsFilesObj.entity,
+      !entityDTOsFilesObj.field.required,
+      false,
+      true,
+      EntityDtoTypeEnum.Entity
     );
-  return classDeclaration(
-    builders.identifier(entity.name),
-    builders.classBody(properties),
-    null,
-    [OBJECT_TYPE_DECORATOR]
-  ) as NamedClassDeclaration;
-}
+
+    entityDTOsFilesObj.entityDTO.properties.push(property);
+  }
+
+  if (entityDTOsFilesObj.fieldsLen - 1 === entityDTOsFilesObj.index) {
+    entityDTOsFilesObj.entityDTO.DTO = classDeclaration(
+      builders.identifier(entityDTOsFilesObj.entity.name),
+      builders.classBody(entityDTOsFilesObj.entityDTO.properties),
+      null,
+      [OBJECT_TYPE_DECORATOR]
+    ) as NamedClassDeclaration;
+  }
+
+  return entityDTOsFilesObj;
+};
