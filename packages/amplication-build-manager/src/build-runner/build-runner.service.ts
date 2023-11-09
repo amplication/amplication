@@ -8,45 +8,166 @@ import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import {
+  CodeGenerationFailure,
+  CodeGenerationSuccess,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
+import { EnumEventStatus } from "../types";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
   constructor(
     private readonly configService: ConfigService<Env, true>,
-    private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService
+    private readonly producerService: KafkaProducerService,
+    private readonly codeGeneratorService: CodeGeneratorService,
+    private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService,
+    private readonly logger: AmplicationLogger
   ) {}
 
   async runJobs(
     resourceId: string,
     buildId: string,
-    dsgResourceData: DSGResourceData,
-    codeGeneratorVersion: string
+    dsgResourceData: DSGResourceData
   ) {
-    const jobs = await this.codeGeneratorSplitterService.splitJobs(
-      dsgResourceData,
-      buildId
-    );
-    for (const [domainType, data] of jobs) {
-      const jobBuildId = `${buildId}-${domainType}`;
-      await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+    try {
+      const codeGeneratorVersion =
+        await this.codeGeneratorService.getCodeGeneratorVersion({
+          codeGeneratorVersion:
+            dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+              .codeGeneratorVersion,
+          codeGeneratorStrategy:
+            dsgResourceData.resourceInfo.codeGeneratorVersionOptions
+              .codeGeneratorStrategy,
+        });
 
-      const url = this.configService.get(Env.DSG_RUNNER_URL);
-      try {
-        await axios.post(url, {
-          resourceId: resourceId,
-          buildId: jobBuildId,
+      const jobs = await this.codeGeneratorSplitterService.splitJobs(
+        dsgResourceData,
+        buildId
+      );
+      for (const [domainType, data] of jobs) {
+        const jobBuildId = `${buildId}-${domainType}`;
+        this.logger.debug(`Running job for ${domainType}...`);
+        await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+
+        const url = this.configService.get(Env.DSG_RUNNER_URL);
+        try {
+          await axios.post(url, {
+            resourceId: resourceId,
+            buildId: jobBuildId,
+            codeGeneratorVersion,
+          });
+        } catch (error) {
+          throw new Error(error.message, {
+            cause: {
+              code: error.response?.status,
+              message: error.response?.data?.message,
+              data: error.config?.data,
+            },
+          });
+        }
+      }
+    } catch (error) {
+      this.logger.error(error.message, error);
+      await this.emitCodeGenerationFailureEvent(buildId, error);
+    }
+  }
+
+  /**
+   * Emits a kafka event based on the job status (success / failure) from the redis cache
+   * @param resourceId the resource id
+   * @param buildId the original buildId without the suffix (domain name)
+   * @param codeGeneratorVersion the code generator version
+   */
+  async emitKafkaEventBasedOnJobStatus(
+    resourceId: string,
+    buildIdWithDomainName: string
+  ) {
+    const buildId = this.codeGeneratorSplitterService.extractBuildId(
+      buildIdWithDomainName
+    );
+    const codeGeneratorVersion = await this.getCodeGeneratorVersion(
+      buildIdWithDomainName
+    );
+    try {
+      const [domainName, isSuccess] = await this.copyFromJobToArtifact(
+        resourceId,
+        buildIdWithDomainName
+      );
+
+      await this.codeGeneratorSplitterService.setJobStatusBasedOnArtifact(
+        domainName,
+        isSuccess,
+        buildId
+      );
+
+      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
+        buildId
+      );
+
+      if (jobStatus === EnumEventStatus.Success) {
+        await this.emitCodeGenerationSuccessEvent({
+          buildId,
           codeGeneratorVersion,
         });
-      } catch (error) {
-        throw new Error(error.message, {
-          cause: {
-            code: error.response?.status,
-            message: error.response?.data?.message,
-            data: error.config?.data,
-          },
-        });
+      } else {
+        await this.emitCodeGenerationFailureEvent(
+          buildId,
+          new Error(`Code generation failed for ${domainName}`)
+        );
       }
+    } catch (error) {
+      this.logger.error(error.message, error);
+      await this.emitCodeGenerationFailureEvent(buildId, error);
+    }
+  }
+
+  async emitCodeGenerationSuccessEvent(
+    codeGenerationSuccess: CodeGenerationSuccess.Value
+  ) {
+    try {
+      const successEvent: CodeGenerationSuccess.KafkaEvent = {
+        key: null,
+        value: codeGenerationSuccess,
+      };
+
+      await this.producerService.emitMessage(
+        KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
+        successEvent
+      );
+    } catch (error) {
+      this.logger.error(error.message, error);
+    }
+  }
+
+  async emitCodeGenerationFailureEvent(
+    buildIdWithDomainName: string,
+    error: Error
+  ) {
+    try {
+      const buildId = this.codeGeneratorSplitterService.extractBuildId(
+        buildIdWithDomainName
+      );
+
+      const codeGeneratorVersion = await this.getCodeGeneratorVersion(
+        buildIdWithDomainName
+      );
+
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId, codeGeneratorVersion, error },
+      };
+
+      await this.producerService.emitMessage(
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+        failureEvent
+      );
+    } catch (error) {
+      this.logger.error(error.message, error);
     }
   }
 
