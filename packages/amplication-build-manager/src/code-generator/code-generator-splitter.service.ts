@@ -3,12 +3,16 @@ import { Injectable } from "@nestjs/common";
 import { cloneDeep } from "lodash";
 import { BuildId, EnumDomainName, EnumEventStatus, RedisValue } from "../types";
 import { RedisService } from "../redis/redis.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 type ResourceTuple = [EnumDomainName, DSGResourceData];
 @Injectable()
 export class CodeGeneratorSplitterService {
   // TODO: rename to CodeGeneratorJobHandlerService (?)
-  constructor(private readonly redisService: RedisService) {}
+  constructor(
+    private readonly redisService: RedisService,
+    private readonly logger: AmplicationLogger
+  ) {}
 
   async splitJobs(
     dsgResourceData: DSGResourceData,
@@ -104,7 +108,18 @@ export class CodeGeneratorSplitterService {
     return this.redisService.set<RedisValue>(key, value);
   }
 
-  async getJobStatus(key: BuildId): Promise<EnumEventStatus> {
+  /**
+   * This function calculate the job status for a given build id.
+   * It checks if the redis key (build id) holds the server and admin-ui jobs, or only one of them.
+   * It checks the status of each job and returns the relevant status of the whole build.
+   * Only when both jobs are in success it will return success
+   * If one of the jobs failed it will set the other job as failure and return failure.
+   * When we check again for the status and 2 jobs are in failure it will return null in order to know that we don't want to emit
+   * Otherwise it will return in progress. (we are doing it to prevent 2 emits of the same event)
+   * @param key the build id
+   * @returns the job status of the build id.
+   */
+  async getJobStatus(key: BuildId): Promise<EnumEventStatus | null> {
     const value = await this.redisService.get<RedisValue>(key);
     const hasServerAndAdmin =
       value.hasOwnProperty(`${key}-${EnumDomainName.Server}`) &&
@@ -126,21 +141,49 @@ export class CodeGeneratorSplitterService {
         serverStatus === EnumEventStatus.Success &&
         adminUIStatus === EnumEventStatus.Success
       ) {
+        this.logger.debug("success status:", { serverStatus, adminUIStatus });
         return EnumEventStatus.Success;
       } else if (
         serverStatus === EnumEventStatus.Failure ||
         adminUIStatus === EnumEventStatus.Failure
       ) {
+        if (
+          serverStatus === EnumEventStatus.Failure &&
+          adminUIStatus === EnumEventStatus.Failure
+        ) {
+          // at this point, as we want to emit a failure event when one of the jobs failed, we don't care about the other job status
+          return null;
+        }
+        // check who failed and set the other job as failure
+        if (serverStatus === EnumEventStatus.Failure) {
+          await this.setAdminUIJobFailure(key);
+        } else {
+          await this.setServerJobFailure(key);
+        }
+        this.logger.debug("failure status:", { serverStatus, adminUIStatus });
         return EnumEventStatus.Failure;
+      } else {
+        // for any other case we return in progress
+        this.logger.debug("in progress status:", {
+          serverStatus,
+          adminUIStatus,
+        });
+        return EnumEventStatus.InProgress;
       }
     }
 
     if (hasOnlyServer) {
-      return value[`${key}-${EnumDomainName.Server}`];
+      const serverStatus = value[`${key}-${EnumDomainName.Server}`];
+      this.logger.debug("job status has only server", {
+        serverStatus,
+      });
+      return serverStatus;
     }
 
     if (hasOnlyAdmin) {
-      return value[`${key}-${EnumDomainName.AdminUI}`];
+      const adminUIStatus = value[`${key}-${EnumDomainName.AdminUI}`];
+      this.logger.debug("job status has only admin-ui", { adminUIStatus });
+      return adminUIStatus;
     }
   }
 
@@ -155,12 +198,14 @@ export class CodeGeneratorSplitterService {
       } else if (domainName === EnumDomainName.AdminUI) {
         await this.setAdminUIJobSuccess(buildId);
       }
+      this.logger.debug(`${domainName} status set to success}`);
     } else {
       if (domainName === EnumDomainName.Server) {
         await this.setServerJobFailure(buildId);
       } else if (domainName === EnumDomainName.AdminUI) {
         await this.setAdminUIJobFailure(buildId);
       }
+      this.logger.debug(`${domainName} status set to failure`);
       // TODO: do we want to throw (and the caller will catch) an error here or wait for the job status?
     }
   }

@@ -146,6 +146,9 @@ export class BuildRunnerService {
         buildId
       );
 
+      // that means that if we have 2 jobs and one of them already failed, set the other job as failure as well and emit a failure event
+      if (!jobStatus) return;
+
       if (jobStatus === EnumEventStatus.Failure) {
         await this.emitCodeGenerationFailureEvent(buildId, error);
       }
