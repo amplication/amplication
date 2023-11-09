@@ -84,40 +84,18 @@ export class BuildRunnerService {
   }
 
   async copyFromJobToArtifact(resourceId: string, buildId: string) {
-    const serverBuildId = `${buildId}-server`;
-    const adminBuildId = `${buildId}-admin`;
-
-    const serverJobPath = join(
+    const jobPath = join(
       this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      serverBuildId,
-      this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
-    );
-
-    const adminJobPath = join(
-      this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      adminBuildId,
+      buildId,
       this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
     );
 
     const artifactPath = join(
       this.configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
       resourceId,
-      buildId
+      this.codeGeneratorSplitterService.extractBuildId(buildId)
     );
 
-    const isServerJobExists = await this.isPathExists(serverJobPath);
-    const isAdminJobExists = await this.isPathExists(adminJobPath);
-
-    isServerJobExists && (await copy(serverJobPath, artifactPath));
-    isAdminJobExists && (await copy(adminJobPath, artifactPath));
-  }
-
-  async isPathExists(path: string): Promise<boolean> {
-    try {
-      await fs.access(path);
-      return true;
-    } catch {
-      return false;
-    }
+    await copy(jobPath, artifactPath);
   }
 }
