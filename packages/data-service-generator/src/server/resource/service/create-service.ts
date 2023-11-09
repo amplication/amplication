@@ -58,7 +58,7 @@ export async function createServiceModules(
   const template = await readFile(serviceTemplatePath);
   const templateBase = await readFile(serviceBaseTemplatePath);
 
-  const { entityActionsMap } = DsgContext.getInstance;
+  const { entityActionsMap, moduleContainers } = DsgContext.getInstance;
   const entityActions = entityActionsMap[entity.name];
 
   const templateMapping = createTemplateMapping(
@@ -91,6 +91,7 @@ export async function createServiceModules(
         serviceBaseId,
         delegateId,
         template: templateBase,
+        moduleContainers,
         entityActions,
       }
     ),
@@ -143,6 +144,7 @@ async function createServiceBaseModule({
   serviceBaseId,
   delegateId,
   template,
+  moduleContainers,
   entityActions,
 }: CreateEntityServiceBaseParams): Promise<ModuleMap> {
   const { serverDirectories } = DsgContext.getInstance;
@@ -201,9 +203,13 @@ async function createServiceBaseModule({
     ...toOneRelations.flatMap((relation) => relation.methods)
   );
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (action && !action.enabled) {
+    if ((!moduleContainer?.enabled && action) || (action && !action.enabled)) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });

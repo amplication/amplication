@@ -75,7 +75,7 @@ export async function createResolverModules(
   const resolverId = createResolverId(entityType);
   const resolverBaseId = createResolverBaseId(entityType);
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { DTOs, entityActionsMap } = DsgContext.getInstance;
+  const { DTOs, entityActionsMap, moduleContainers } = DsgContext.getInstance;
   const entityDTOs = DTOs[entity.name];
   const {
     entity: entityDTO,
@@ -171,6 +171,7 @@ export async function createResolverModules(
         createMutationId,
         updateMutationId,
         templateMapping,
+        moduleContainers,
         entityActions,
       }
     ),
@@ -248,6 +249,7 @@ async function createResolverBaseModule({
   createMutationId,
   updateMutationId,
   templateMapping,
+  moduleContainers,
   entityActions,
 }: CreateEntityResolverBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -329,9 +331,13 @@ async function createResolverBaseModule({
     ...toOneRelationMethods
   );
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (action && !action.enabled) {
+    if ((!moduleContainer?.enabled && action) || (action && !action.enabled)) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });

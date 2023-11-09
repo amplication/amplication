@@ -72,7 +72,8 @@ export async function createControllerModules(
   entity: Entity
 ): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
-  const { appInfo, DTOs, entityActionsMap } = DsgContext.getInstance;
+  const { appInfo, DTOs, entityActionsMap, moduleContainers } =
+    DsgContext.getInstance;
   const { settings } = appInfo;
   const { authProvider } = settings;
   const entityDTOs = DTOs[entity.name];
@@ -171,6 +172,7 @@ export async function createControllerModules(
         templateMapping,
         controllerBaseId,
         serviceId,
+        moduleContainers,
         entityActions,
       }
     ),
@@ -230,6 +232,7 @@ async function createControllerBaseModule({
   templateMapping,
   controllerBaseId,
   serviceId,
+  moduleContainers,
   entityActions,
 }: CreateEntityControllerBaseParams): Promise<ModuleMap> {
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -306,9 +309,13 @@ async function createControllerBaseModule({
 
   classDeclaration.body.body.push(...toManyRelationMethods);
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if (action && !action.enabled) {
+    if ((!moduleContainer?.enabled && action) || (action && !action.enabled)) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });

@@ -70,7 +70,7 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
-
+  context.moduleContainers = moduleContainers;
   context.entityActionsMap = prepareEntityActions(
     entities,
     moduleContainers,
