@@ -1,8 +1,5 @@
 import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
-import * as classTransformer from "class-transformer";
-import axios from "axios";
-
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
@@ -23,17 +20,12 @@ import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { AppInfo } from "@amplication/code-gen-types";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
 
-const { plainToInstance } = classTransformer;
-const spyOnAxiosPost = jest.spyOn(axios, "post");
-
 describe("BuildRunnerController", () => {
   let controller: BuildRunnerController;
   let loggerService: AmplicationLogger;
-  let configService: ConfigService;
   let codeGeneratorSplitterService: CodeGeneratorSplitterService;
 
   const mockRunnerServiceCopyFromJobToArtifact = jest.fn();
-  const mockRunnerServiceSaveDsgResourceData = jest.fn();
   const mockRunnerServiceGetCodeGeneratorVersion = jest.fn();
   const mockRunnerServiceRunJobs = jest.fn();
   const mockCodeGeneratorServiceGetCodeGeneratorVersion = jest.fn();
@@ -55,7 +47,6 @@ describe("BuildRunnerController", () => {
         {
           provide: BuildRunnerService,
           useClass: jest.fn(() => ({
-            saveDsgResourceData: mockRunnerServiceSaveDsgResourceData,
             copyFromJobToArtifact: mockRunnerServiceCopyFromJobToArtifact,
             getCodeGeneratorVersion: mockRunnerServiceGetCodeGeneratorVersion,
             runJobs: mockRunnerServiceRunJobs,
@@ -98,7 +89,6 @@ describe("BuildRunnerController", () => {
     }).compile();
 
     controller = module.get<BuildRunnerController>(BuildRunnerController);
-    configService = module.get<ConfigService>(ConfigService);
     loggerService = module.get<AmplicationLogger>(AmplicationLogger);
     codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
       CodeGeneratorSplitterService
@@ -240,152 +230,95 @@ describe("BuildRunnerController", () => {
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
-  it("On code generation failure and unhandled exception thrown log `error.message` with log level `error`", async () => {
-    const errorMock = new Error("Test error");
-    const buildId = "buildId";
-    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
-      .spyOn(codeGeneratorSplitterService, "extractBuildId")
-      .mockReturnValue(buildId);
-    const codeGenerationFailureDTOMock: CodeGenerationFailureDto = {
-      resourceId: "resourceId",
-      buildId: buildId,
-      error: errorMock,
-    };
-    const expectedCodeGeneratorVersion = "v1.2.2";
-    mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
-      expectedCodeGeneratorVersion
-    );
+  describe("on code generation request", () => {
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+    it("should successfully trigger DSG jobs", async () => {
+      const expectedCodeGeneratorVersion = "v1.2.2";
+      const expectedResourceId = "resourceId";
+      const expectedBuildId = "buildId";
+      const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
+        resourceId: expectedResourceId,
+        buildId: expectedBuildId,
+        dsgResourceData: {
+          resourceType: "Service",
+          buildId: "12345",
+          pluginInstallations: [],
+          resourceInfo: {
+            codeGeneratorVersionOptions: {
+              version: expectedCodeGeneratorVersion,
+              selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+            },
+          } as unknown as AppInfo,
+        },
+      };
 
-    const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
-      key: null,
-      value: {
-        buildId: codeGenerationFailureDTOMock.buildId,
-        error: errorMock,
-        codeGeneratorVersion: expectedCodeGeneratorVersion,
-      },
-    } as unknown as CodeGenerationFailure.KafkaEvent;
+      mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
+        expectedCodeGeneratorVersion
+      );
 
-    mockKafkaServiceEmitMessage.mockRejectedValue(errorMock);
-
-    await controller.onCodeGenerationFailure(codeGenerationFailureDTOMock);
-
-    expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-      kafkaFailureEventMock
-    );
-    await expect(
-      async () => await mockKafkaServiceEmitMessage()
-    ).rejects.toThrow(errorMock);
-
-    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
-    expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
-  });
-
-  it("On code generation request save DSG resource data and send it to DSG runner", async () => {
-    const expectedCodeGeneratorVersion = "v1.2.2";
-    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
-      resourceId: "resourceId",
-      buildId: "buildId",
-      dsgResourceData: {
-        resourceType: "Service",
-        buildId: "12345",
-        pluginInstallations: [],
-        resourceInfo: {
-          codeGeneratorVersionOptions: {
-            version: expectedCodeGeneratorVersion,
-            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
-          },
-        } as unknown as AppInfo,
-      },
-    };
-    const args = plainToInstance(
-      CodeGenerationRequest.Value,
-      codeGenerationRequestDTOMock
-    );
-
-    mockRunnerServiceSaveDsgResourceData.mockResolvedValue(undefined);
-    spyOnAxiosPost.mockResolvedValue({
-      data: {
-        message: "Success",
-      },
+      mockRunnerServiceRunJobs.mockResolvedValue(undefined);
+      await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
+      expect(mockRunnerServiceRunJobs).toBeCalledWith(
+        expectedResourceId,
+        expectedBuildId,
+        codeGenerationRequestDTOMock.dsgResourceData,
+        expectedCodeGeneratorVersion
+      );
     });
 
-    mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
-      expectedCodeGeneratorVersion
-    );
-
-    await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
-
-    expect(loggerService.info).toBeCalled();
-    expect(mockRunnerServiceSaveDsgResourceData).toBeCalledWith(
-      args.buildId,
-      args.dsgResourceData,
-      expectedCodeGeneratorVersion
-    );
-    expect(spyOnAxiosPost).toBeCalledWith(
-      configService.get(Env.DSG_RUNNER_URL),
-      {
-        resourceId: args.resourceId,
-        buildId: args.buildId,
-        containerImageTag: expectedCodeGeneratorVersion,
-      }
-    );
-    await expect(
-      axios.post(configService.get(Env.DSG_RUNNER_URL), {
-        resourceId: args.resourceId,
-        buildId: args.buildId,
-        containerImageTag: expectedCodeGeneratorVersion,
-      })
-    ).resolves.toEqual(
-      expect.objectContaining({
-        data: {
-          message: "Success",
+    it("should emit code generation failure event when the trigger DSG jobs fails", async () => {
+      //const errorMock = new Error("Test error");
+      const expectedCodeGeneratorVersion = "v1.2.2";
+      const expectedResourceId = "resourceId";
+      const expectedBuildId = "buildId";
+      const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
+        resourceId: expectedResourceId,
+        buildId: expectedBuildId,
+        dsgResourceData: {
+          resourceType: "Service",
+          buildId: expectedBuildId,
+          pluginInstallations: [],
+          resourceInfo: {
+            codeGeneratorVersionOptions: {
+              version: expectedCodeGeneratorVersion,
+              selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+            },
+          } as unknown as AppInfo,
         },
-      })
-    );
-  });
+      };
+      mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
+        expectedCodeGeneratorVersion
+      );
+      const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: <CodeGenerationFailure.Value>{
+          buildId: codeGenerationRequestDTOMock.buildId,
+          error: new Error("Test error"),
+          codeGeneratorVersion: expectedCodeGeneratorVersion,
+        },
+      } as unknown as CodeGenerationFailure.KafkaEvent;
 
-  it("On code generation request with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
-    const errorMock = new Error("Test error");
-    const expectedCodeGeneratorVersion = "v1.2.2";
-    const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
-      resourceId: "resourceId",
-      buildId: "buildId",
-      dsgResourceData: {
-        resourceType: "Service",
-        buildId: "12345",
-        pluginInstallations: [],
-        resourceInfo: {
-          codeGeneratorVersionOptions: {
-            version: expectedCodeGeneratorVersion,
-            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
-          },
-        } as unknown as AppInfo,
-      },
-    };
+      mockRunnerServiceRunJobs.mockRejectedValue(new Error("Test error"));
 
-    const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
-      key: null,
-      value: <CodeGenerationFailure.Value>{
-        buildId: codeGenerationRequestDTOMock.buildId,
-        error: errorMock,
-        codeGeneratorVersion: expectedCodeGeneratorVersion,
-      },
-    } as unknown as CodeGenerationFailure.KafkaEvent;
+      await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
 
-    mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
-    mockRunnerServiceSaveDsgResourceData.mockRejectedValue(errorMock);
-    mockCodeGeneratorServiceGetCodeGeneratorVersion.mockResolvedValue(
-      expectedCodeGeneratorVersion
-    );
+      expect(mockRunnerServiceRunJobs).toBeCalledWith(
+        expectedResourceId,
+        expectedBuildId,
+        codeGenerationRequestDTOMock.dsgResourceData,
+        expectedCodeGeneratorVersion
+      );
 
-    await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
-
-    expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
-    expect(mockKafkaServiceEmitMessage).toBeCalledWith(
-      KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-      kafkaFailureEventMock
-    );
-    await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
+      expect(loggerService.error).toBeCalledWith(
+        "Test error",
+        new Error("Test error")
+      );
+      expect(mockKafkaServiceEmitMessage).toBeCalledWith(
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+        kafkaFailureEventMock
+      );
+    });
   });
 });
