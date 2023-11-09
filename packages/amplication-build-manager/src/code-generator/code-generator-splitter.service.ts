@@ -144,16 +144,15 @@ export class CodeGeneratorSplitterService {
         this.logger.debug("success status:", { serverStatus, adminUIStatus });
         return EnumEventStatus.Success;
       } else if (
+        serverStatus === EnumEventStatus.Failure &&
+        adminUIStatus === EnumEventStatus.Failure
+      ) {
+        // at this point, as we want to emit a failure event when one of the jobs failed, we don't care about the other job status
+        return null;
+      } else if (
         serverStatus === EnumEventStatus.Failure ||
         adminUIStatus === EnumEventStatus.Failure
       ) {
-        if (
-          serverStatus === EnumEventStatus.Failure &&
-          adminUIStatus === EnumEventStatus.Failure
-        ) {
-          // at this point, as we want to emit a failure event when one of the jobs failed, we don't care about the other job status
-          return null;
-        }
         // check who failed and set the other job as failure
         if (serverStatus === EnumEventStatus.Failure) {
           await this.setAdminUIJobFailure(key);
