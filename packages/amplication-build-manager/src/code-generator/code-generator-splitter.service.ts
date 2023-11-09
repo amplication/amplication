@@ -45,7 +45,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setServerJobInProgress(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.InProgress,
     };
 
@@ -53,7 +55,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setAdminUIJobInProgress(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.InProgress,
     };
 
@@ -61,7 +65,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setServerJobSuccess(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.Success,
     };
 
@@ -69,7 +75,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setAdminUIJobSuccess(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.Success,
     };
 
@@ -77,7 +85,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setServerJobFailure(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.Server}`]: EnumEventStatus.Failure,
     };
 
@@ -85,7 +95,9 @@ export class CodeGeneratorSplitterService {
   }
 
   async setAdminUIJobFailure(key: BuildId): Promise<string | null> {
+    const prevValue = await this.redisService.get<RedisValue>(key);
     const value = {
+      ...prevValue,
       [`${key}-${EnumDomainName.AdminUI}`]: EnumEventStatus.Failure,
     };
 
@@ -171,7 +183,7 @@ export class CodeGeneratorSplitterService {
     const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
     const regex = new RegExp(regexPattern);
 
-    const [, domainType] = buildIdWithSuffix.split(regex).pop();
-    return domainType;
+    // return the suffix without the hyphen
+    return buildIdWithSuffix.match(regex)?.[0].slice(1);
   }
 }
