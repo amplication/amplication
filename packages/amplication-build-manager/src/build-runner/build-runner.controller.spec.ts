@@ -21,6 +21,7 @@ import { CodeGeneratorService } from "../code-generator/code-generator-catalog.s
 import { CodeGenerationSuccessDto } from "./dto/CodeGenerationSuccess";
 import { CodeGenerationFailureDto } from "./dto/CodeGenerationFailure";
 import { AppInfo } from "@amplication/code-gen-types";
+import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
 
 const { plainToInstance } = classTransformer;
 const spyOnAxiosPost = jest.spyOn(axios, "post");
@@ -29,10 +30,12 @@ describe("BuildRunnerController", () => {
   let controller: BuildRunnerController;
   let loggerService: AmplicationLogger;
   let configService: ConfigService;
+  let codeGeneratorSplitterService: CodeGeneratorSplitterService;
 
   const mockRunnerServiceCopyFromJobToArtifact = jest.fn();
   const mockRunnerServiceSaveDsgResourceData = jest.fn();
   const mockRunnerServiceGetCodeGeneratorVersion = jest.fn();
+  const mockRunnerServiceRunJobs = jest.fn();
   const mockCodeGeneratorServiceGetCodeGeneratorVersion = jest.fn();
   const mockKafkaServiceEmitMessage = jest.fn();
 
@@ -55,6 +58,7 @@ describe("BuildRunnerController", () => {
             saveDsgResourceData: mockRunnerServiceSaveDsgResourceData,
             copyFromJobToArtifact: mockRunnerServiceCopyFromJobToArtifact,
             getCodeGeneratorVersion: mockRunnerServiceGetCodeGeneratorVersion,
+            runJobs: mockRunnerServiceRunJobs,
           })),
         },
         {
@@ -83,6 +87,12 @@ describe("BuildRunnerController", () => {
             },
           },
         },
+        {
+          provide: CodeGeneratorSplitterService,
+          useValue: {
+            extractBuildId: jest.fn(),
+          },
+        },
         MockedAmplicationLoggerProvider,
       ],
     }).compile();
@@ -90,6 +100,9 @@ describe("BuildRunnerController", () => {
     controller = module.get<BuildRunnerController>(BuildRunnerController);
     configService = module.get<ConfigService>(ConfigService);
     loggerService = module.get<AmplicationLogger>(AmplicationLogger);
+    codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
+      CodeGeneratorSplitterService
+    );
   });
 
   it("should be defined", () => {
@@ -97,9 +110,14 @@ describe("BuildRunnerController", () => {
   });
 
   it("On code generation success, copy file and/or directories from `jobPath` to `artifactPath` and emit Kafka success event", async () => {
+    const buildId = "buildId";
+    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      .mockReturnValue(buildId);
+
     const codeGenerationSuccessDTOMock: CodeGenerationSuccessDto = {
       resourceId: "resourceId",
-      buildId: "buildId",
+      buildId: buildId,
     };
 
     const expectedCodeGeneratorVersion = "v1.2.2";
@@ -132,14 +150,21 @@ describe("BuildRunnerController", () => {
       KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
       kafkaSuccessEventMock
     );
+
+    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation success with unhandled exception thrown, log `error.message` with log level `error` and emit Kafka failure event", async () => {
+    const buildId = "buildId";
+    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      .mockReturnValue(buildId);
+
     const errorMock = new Error("Test error");
     const codeGenerationSuccessDTOMock: CodeGenerationSuccessDto = {
       resourceId: "resourceId",
-      buildId: "buildId",
+      buildId: buildId,
     };
     const expectedCodeGeneratorVersion = "v1.2.2";
     mockRunnerServiceGetCodeGeneratorVersion.mockResolvedValue(
@@ -172,14 +197,20 @@ describe("BuildRunnerController", () => {
       KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
+
+    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation failure, log `error.message` with log level `error` and emit Kafka failure event", async () => {
     const errorMock = new Error("Test error");
+    const buildId = "buildId";
+    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      .mockReturnValue(buildId);
     const codeGenerationFailureDTOMock: CodeGenerationFailureDto = {
       resourceId: "resourceId",
-      buildId: "buildId",
+      buildId: buildId,
       error: errorMock,
     };
     const expectedCodeGeneratorVersion = "v1.2.2";
@@ -204,14 +235,20 @@ describe("BuildRunnerController", () => {
       KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
       kafkaFailureEventMock
     );
+
+    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockKafkaServiceEmitMessage()).resolves.not.toThrow();
   });
 
   it("On code generation failure and unhandled exception thrown log `error.message` with log level `error`", async () => {
     const errorMock = new Error("Test error");
+    const buildId = "buildId";
+    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      .mockReturnValue(buildId);
     const codeGenerationFailureDTOMock: CodeGenerationFailureDto = {
       resourceId: "resourceId",
-      buildId: "buildId",
+      buildId: buildId,
       error: errorMock,
     };
     const expectedCodeGeneratorVersion = "v1.2.2";
@@ -240,6 +277,7 @@ describe("BuildRunnerController", () => {
       async () => await mockKafkaServiceEmitMessage()
     ).rejects.toThrow(errorMock);
 
+    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
     expect(loggerService.error).toBeCalledWith(errorMock.message, errorMock);
   });
 
