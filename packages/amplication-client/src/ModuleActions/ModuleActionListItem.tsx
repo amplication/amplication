@@ -90,7 +90,7 @@ export const ModuleActionListItem = ({
   return (
     <ListItem
       //to={actionUrl} TODO: return in phase 2 (custom actions implementation)
-      showDefaultActionIcon={true}
+      showDefaultActionIcon={false}
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}

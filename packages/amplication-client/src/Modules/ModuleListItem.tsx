@@ -23,7 +23,7 @@ export const ModuleListItem = ({ module, onDelete, onError }: Props) => {
         <VerticalNavigationItem
           icon={"box"}
           to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}`}
-          expandable
+          expandable={false}
           childItems={
             <>
               <ModuleActionLinkList

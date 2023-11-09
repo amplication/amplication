@@ -107,6 +107,7 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
             <Button
               buttonStyle={EnumButtonStyle.Primary}
               onClick={handleNewModuleClick}
+              disabled={true}
             >
               Add Module
             </Button>

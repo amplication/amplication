@@ -144,6 +144,7 @@ const NewModuleAction = ({ resourceId, moduleId }: Props) => {
       <Button
         buttonStyle={EnumButtonStyle.Primary}
         onClick={handleDialogStateChange}
+        disabled={true}
       >
         Add Action
       </Button>
