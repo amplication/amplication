@@ -114,7 +114,7 @@ export class BuildRunnerService {
           buildId,
           codeGeneratorVersion,
         });
-      } else {
+      } else if (jobStatus === EnumEventStatus.Failure) {
         await this.emitCodeGenerationFailureEvent(
           buildId,
           new Error(`Code generation failed for ${domainName}`)
@@ -130,9 +130,14 @@ export class BuildRunnerService {
     codeGenerationSuccess: CodeGenerationSuccess.Value
   ) {
     try {
+      // extract build id although sometimes it is not needed because the build id is already extracted
+      const buildId = this.codeGeneratorSplitterService.extractBuildId(
+        codeGenerationSuccess.buildId
+      );
+
       const successEvent: CodeGenerationSuccess.KafkaEvent = {
         key: null,
-        value: codeGenerationSuccess,
+        value: { ...codeGenerationSuccess, buildId },
       };
 
       await this.producerService.emitMessage(
@@ -149,6 +154,7 @@ export class BuildRunnerService {
     error: Error
   ) {
     try {
+      // extract build id although sometimes it is not needed because the build id is already extracted
       const buildId = this.codeGeneratorSplitterService.extractBuildId(
         buildIdWithDomainName
       );
