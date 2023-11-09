@@ -1,8 +1,17 @@
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import Redis from "ioredis";
 @Injectable()
 export class RedisService {
-  constructor(@Inject("REDIS_CLIENT") private readonly redisClient: Redis) {}
+  private redisClient: Redis;
+  constructor(private readonly configService: ConfigService) {
+    this.redisClient = new Redis({
+      host: this.configService.get<string>("REDIS_HOST"),
+      port: this.configService.get<number>("REDIS_PORT"),
+      username: this.configService.get<string>("REDIS_USERNAME"),
+      password: this.configService.get<string>("REDIS_PASSWORD"),
+    });
+  }
 
   async get<T>(key: string): Promise<T | null> {
     const value = await this.redisClient.get(key);
