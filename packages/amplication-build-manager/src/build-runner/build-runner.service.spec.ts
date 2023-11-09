@@ -9,6 +9,7 @@ import { DSGResourceData } from "@amplication/code-gen-types";
 
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
+import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -29,6 +30,7 @@ spyOnFsExtraCopy.mockImplementation((src: string, dest: string) =>
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
   let configService: ConfigService;
+  let codeGeneratorSplitterService: CodeGeneratorSplitterService;
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -55,12 +57,21 @@ describe("BuildRunnerService", () => {
             },
           },
         },
+        {
+          provide: CodeGeneratorSplitterService,
+          useValue: {
+            extractBuildId: jest.fn(),
+          },
+        },
         BuildRunnerService,
       ],
     }).compile();
 
     service = module.get<BuildRunnerService>(BuildRunnerService);
     configService = module.get<ConfigService>(ConfigService);
+    codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
+      CodeGeneratorSplitterService
+    );
   });
 
   it("should be defined", () => {
@@ -110,6 +121,10 @@ describe("BuildRunnerService", () => {
     const resourceId = "resourceId";
     const buildId = "buildId";
 
+    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      .mockReturnValue(buildId);
+
     await service.copyFromJobToArtifact(resourceId, buildId);
 
     const jobPath = join(
@@ -123,6 +138,7 @@ describe("BuildRunnerService", () => {
       buildId
     );
 
+    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
     expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
     await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
   });
