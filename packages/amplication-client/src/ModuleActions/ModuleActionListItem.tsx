@@ -10,17 +10,20 @@ import {
   EnumTextStyle,
   ListItem,
   Text,
+  Toggle,
 } from "@amplication/ui/design-system";
 import { kebabCase } from "lodash";
-import { useContext } from "react";
+import { useCallback, useContext } from "react";
 import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
+import useModuleAction from "./hooks/useModuleAction";
 
 type Props = {
   module: models.Module;
   moduleAction: models.ModuleAction;
   tagStyle: EnumApiOperationTagStyle;
+  disabled?: boolean;
 };
 
 const REST_VERB_TO_API_OPERATION: {
@@ -49,10 +52,36 @@ export const ModuleActionListItem = ({
   module,
   moduleAction,
   tagStyle,
+  disabled,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource } =
+  const { currentWorkspace, currentProject, currentResource, addEntity } =
     useContext(AppContext);
+  const { updateModuleAction } = useModuleAction();
+
+  const onEnableChanged = useCallback(
+    (value: boolean) => {
+      updateModuleAction({
+        onCompleted: () => {
+          addEntity(moduleAction.id);
+        },
+        variables: {
+          where: {
+            id: moduleAction.id,
+          },
+          data: {
+            enabled: value,
+            gqlOperation: moduleAction.gqlOperation,
+            restVerb: moduleAction.restVerb,
+            name: moduleAction.name,
+            displayName: moduleAction.displayName,
+            description: moduleAction.description,
+          },
+        },
+      }).catch(console.error);
+    },
+    [updateModuleAction, moduleAction.id, moduleAction]
+  );
 
   if (!module) return null;
 
@@ -60,19 +89,25 @@ export const ModuleActionListItem = ({
 
   return (
     <ListItem
-      to={actionUrl}
+      //to={actionUrl} TODO: return in phase 2 (custom actions implementation)
       showDefaultActionIcon={true}
       direction={EnumFlexDirection.Row}
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
       start={
-        <ApiOperationTag
-          gqlTagType={GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]}
-          restTagType={REST_VERB_TO_API_OPERATION[moduleAction.restVerb]}
-          tagStyle={tagStyle}
-        />
+        <Toggle
+          name={"enabled"}
+          onValueChange={onEnableChanged}
+          checked={moduleAction.enabled}
+          disabled={disabled}
+        ></Toggle>
       }
     >
+      <ApiOperationTag
+        gqlTagType={GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]}
+        restTagType={REST_VERB_TO_API_OPERATION[moduleAction.restVerb]}
+        tagStyle={tagStyle}
+      />
       {tagStyle === EnumApiOperationTagStyle.REST && (
         <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.White}>
           /api/{kebabCase(module.name)}

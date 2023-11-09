@@ -44,19 +44,18 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
       id: resourceId,
     },
   });
-  const { generateRestApi, generateGraphQL } =
-    data.serviceSettings.serverSettings;
 
   useEffect(() => {
-    if (generateRestApi) {
+    if (!data) return;
+    if (data.serviceSettings.serverSettings.generateRestApi) {
       setDisplayMode(EnumApiOperationTagStyle.REST);
       return;
     }
 
-    if (generateGraphQL) {
+    if (data.serviceSettings.serverSettings.generateGraphQL) {
       setDisplayMode(EnumApiOperationTagStyle.GQL);
     }
-  }, [displayMode, setDisplayMode]);
+  }, [setDisplayMode, data]);
 
   const handleSearchChange = useCallback(
     (value) => {
@@ -77,7 +76,9 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
   );
 
   const { findModules, findModulesData: moduleListData } = useModule();
-  const generateGraphQlAndRestApi = generateRestApi && generateGraphQL;
+  const generateGraphQlAndRestApi =
+    data?.serviceSettings?.serverSettings?.generateRestApi &&
+    data?.serviceSettings?.serverSettings?.generateGraphQL;
 
   useEffect(() => {
     if (!moduleId) {

@@ -4,6 +4,7 @@ export const MODULE_FIELDS_FRAGMENT = gql`
   fragment ModuleFields on Module {
     id
     name
+    enabled
     displayName
     description
     entityId
