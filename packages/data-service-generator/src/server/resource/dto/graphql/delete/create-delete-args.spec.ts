@@ -18,23 +18,23 @@ const EXAMPLE_ENTITY: Entity = {
   permissions: [],
 };
 const EXAMPLE_WHERE_UNIQUE_INPUT = createEntityInputFiles(EXAMPLE_ENTITY);
-const ExampleWhereUniqueInput = EXAMPLE_WHERE_UNIQUE_INPUT.whereUniqueInput;
+const exampleWhereUniqueInput = EXAMPLE_WHERE_UNIQUE_INPUT.whereUniqueInput;
 
 describe("createDeleteArgs", () => {
   test("creates delete args", async () => {
     expect(
-      print(await createDeleteArgs(EXAMPLE_ENTITY, ExampleWhereUniqueInput))
+      print(await createDeleteArgs(EXAMPLE_ENTITY, exampleWhereUniqueInput))
         .code
     ).toEqual(`@ArgsType()
 class ${createDeleteArgsId(EXAMPLE_ENTITY.name).name} {
   @ApiProperty({
     required: true,
-    type: () => ${ExampleWhereUniqueInput.id.name},
+    type: () => ${exampleWhereUniqueInput.id.name},
   })
   @ValidateNested()
-  @Type(() => ${ExampleWhereUniqueInput.id.name})
-  @Field(() => ${ExampleWhereUniqueInput.id.name}, { nullable: false })
-  where!: ${ExampleWhereUniqueInput.id.name};
+  @Type(() => ${exampleWhereUniqueInput.id.name})
+  @Field(() => ${exampleWhereUniqueInput.id.name}, { nullable: false })
+  where!: ${exampleWhereUniqueInput.id.name};
 }`);
   });
 });

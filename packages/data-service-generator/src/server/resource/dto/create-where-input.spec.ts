@@ -6,7 +6,7 @@ import {
   EXAMPLE_NON_SEARCHABLE_SINGLE_LINE_TEXT_FIELD,
 } from "../util/test-data";
 import { createInput } from "./create-input";
-import { createWhereInput, createWhereInputID } from "./create-where-input";
+import { createWhereInputID } from "./create-where-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
 import { createEntityInputFiles } from "../create-dtos";
 

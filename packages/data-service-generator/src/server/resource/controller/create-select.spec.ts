@@ -6,7 +6,6 @@ import {
   EnumDataType,
   NamedClassDeclaration,
 } from "@amplication/code-gen-types";
-import { createEntityDTO } from "../dto/create-entity-dto";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import {
   createObjectSelectProperty,
