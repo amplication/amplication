@@ -38,9 +38,10 @@ export class GitLabService implements GitProvider {
     password: string;
   };
   private readonly client: Resources.Gitlab;
+  private auth: OAuthTokens;
 
   constructor(
-    private readonly providerOrganizationProperties: OAuthProviderOrganizationProperties,
+    providerOrganizationProperties: OAuthProviderOrganizationProperties,
     private readonly providerConfiguration: OAuthConfiguration,
     private readonly logger: ILogger
   ) {
@@ -60,7 +61,7 @@ export class GitLabService implements GitProvider {
     this.logger.info("GitLab init");
   }
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
-    const { redirectUri } = this.providerOrganizationProperties;
+    const { redirectUri } = this.auth;
     if (!redirectUri) {
       throw new Error("providerConfiguration.redirectUri is required");
     }
@@ -92,7 +93,7 @@ export class GitLabService implements GitProvider {
   }
   async getOAuthTokens(authorizationCode: string): Promise<OAuthTokens> {
     const url = `${this.providerConfiguration.domain}/oauth/token`;
-    const { redirectUri } = this.providerOrganizationProperties;
+    const { redirectUri } = this.auth;
     const parameters = `client_id=${this.providerConfiguration.clientId}&client_secret=${this.providerConfiguration.clientSecret}&code=${authorizationCode}&grant_type=authorization_code&redirect_uri=${redirectUri}`;
 
     const response = await fetch(`${url}?${parameters}`, {
