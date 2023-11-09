@@ -26,7 +26,7 @@ export const createUpdateInput = (entityDTOsFilesObj) => {
 
     entityDTOsFilesObj.updateInput.DTO = classDeclaration(
       createUpdateInputID(entityDTOsFilesObj.entity.name),
-      builders.classBody(entityDTOsFilesObj.createInput.properties),
+      builders.classBody(entityDTOsFilesObj.updateInput.properties),
       null,
       decorators
     ) as NamedClassDeclaration;

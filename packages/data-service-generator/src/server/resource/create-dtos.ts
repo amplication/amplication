@@ -97,7 +97,7 @@ const pipe =
   (...fns) =>
   (x) =>
     fns.reduce((y, f) => f(y), x);
-const createEntityInputFiles = (entity: Entity): Partial<EntityDTOs> => {
+export const createEntityInputFiles = (entity: Entity): Partial<EntityDTOs> => {
   const fieldsLen = entity.fields.length;
   const entityDTOsFilesObj = {
     fieldsLen,

@@ -26,6 +26,7 @@ import {
   NESTJS_GRAPHQL_MODULE,
 } from "./nestjs-graphql.util";
 import DsgContext from "../../../dsg-context";
+import { createEntityInputFiles } from "../create-dtos";
 
 const context = DsgContext.getInstance;
 context.serverDirectories = {
@@ -64,7 +65,7 @@ const EXAMPLE_DTO_NAME_TO_PATH = {
 
 describe("createDTOModule", () => {
   test("creates module", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createEntityInputFiles(EXAMPLE_ENTITY).createInput;
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name
@@ -80,7 +81,7 @@ describe("createDTOModule", () => {
 
 describe("createDTOFile", () => {
   test("creates file", () => {
-    const dto = createCreateInput(EXAMPLE_ENTITY);
+    const dto = createEntityInputFiles(EXAMPLE_ENTITY).createInput;
     const modulePath = createDTOModulePath(
       EXAMPLE_ENTITY_NAME_DIRECTORY,
       dto.id.name

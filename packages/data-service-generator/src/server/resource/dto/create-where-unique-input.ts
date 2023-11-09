@@ -28,7 +28,7 @@ export const createWhereUniqueInput = (entityDTOsFilesObj) => {
       : [];
     entityDTOsFilesObj.whereUniqueInput.DTO = classDeclaration(
       createWhereUniqueInputID(entityDTOsFilesObj.entity.name),
-      builders.classBody(entityDTOsFilesObj.createInput.properties),
+      builders.classBody(entityDTOsFilesObj.whereUniqueInput.properties),
       null,
       decorators
     ) as NamedClassDeclaration;
