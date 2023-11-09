@@ -166,6 +166,21 @@ export class CodeGeneratorSplitterService {
   }
 
   /**
+   * This function is called when the code generation job failed. We set the job status of the relevant domain to failure.
+   * For 2 build jobs this function might be called twice (once for each domain), but after we call it we also call the getJobStatus
+   * function which will return the relevant status of the whole build.
+   * @param key the build id
+   * @param domainName server / admin-ui
+   */
+  async setJobStatusWhenCodeGenerationFailed(key: BuildId, domainName: string) {
+    if (domainName === EnumDomainName.Server) {
+      await this.setServerJobFailure(key);
+    } else if (domainName === EnumDomainName.AdminUI) {
+      await this.setAdminUIJobFailure(key);
+    }
+  }
+
+  /**
    * This function extracts the buildId from the buildId with suffix.
    * It's needed because the buildId is used as a key in the Kafka messages and and as a folder name in the artifacts and when it
    * interacts with the data-service-generator and the server it needs to be without the suffix.

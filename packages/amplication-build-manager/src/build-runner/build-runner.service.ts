@@ -126,6 +126,35 @@ export class BuildRunnerService {
     }
   }
 
+  async emitCodeGenerationFailureWhenJobStatusSetAsFailed(
+    buildIdWithDomainName: string,
+    error: Error
+  ) {
+    try {
+      const domainName = this.codeGeneratorSplitterService.extractDomainName(
+        buildIdWithDomainName
+      );
+      const buildId = this.codeGeneratorSplitterService.extractBuildId(
+        buildIdWithDomainName
+      );
+      await this.codeGeneratorSplitterService.setJobStatusWhenCodeGenerationFailed(
+        buildId,
+        domainName
+      );
+
+      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
+        buildId
+      );
+
+      if (jobStatus === EnumEventStatus.Failure) {
+        await this.emitCodeGenerationFailureEvent(buildId, error);
+      }
+    } catch (error) {
+      this.logger.error(error.message, error);
+      await this.emitCodeGenerationFailureEvent(buildIdWithDomainName, error);
+    }
+  }
+
   async emitCodeGenerationSuccessEvent(
     codeGenerationSuccess: CodeGenerationSuccess.Value
   ) {

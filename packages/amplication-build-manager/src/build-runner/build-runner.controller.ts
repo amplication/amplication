@@ -30,7 +30,7 @@ export class BuildRunnerController {
   async onCodeGenerationFailure(
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
-    await this.buildRunnerService.emitCodeGenerationFailureEvent(
+    await this.buildRunnerService.emitCodeGenerationFailureWhenJobStatusSetAsFailed(
       dto.buildId,
       dto.error
     );
