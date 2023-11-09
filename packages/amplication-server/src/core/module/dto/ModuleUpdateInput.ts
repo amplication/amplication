@@ -9,4 +9,9 @@ export class ModuleUpdateInput extends BlockUpdateInput {
     nullable: true,
   })
   name!: string | null;
+
+  @Field(() => Boolean, {
+    nullable: true,
+  })
+  enabled?: boolean;
 }

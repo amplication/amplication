@@ -49,6 +49,7 @@ export class ModuleService extends BlockTypeService<
         data: {
           ...args.data,
           displayName: args.data.name,
+          enabled: true,
         },
       },
       user

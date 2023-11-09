@@ -15,4 +15,9 @@ export class Module extends IBlock {
     nullable: true,
   })
   entityId?: string;
+
+  @Field(() => Boolean, {
+    nullable: false,
+  })
+  enabled!: boolean;
 }

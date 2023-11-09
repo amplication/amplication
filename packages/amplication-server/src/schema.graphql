@@ -936,6 +936,7 @@ type Module implements IBlock {
   createdAt: DateTime!
   description: String
   displayName: String!
+  enabled: Boolean!
   entityId: String
   id: String!
   inputParameters: [BlockInputOutput!]!
@@ -1040,6 +1041,7 @@ input ModuleOrderByInput {
 input ModuleUpdateInput {
   description: String
   displayName: String
+  enabled: Boolean
   name: String
 }
 
