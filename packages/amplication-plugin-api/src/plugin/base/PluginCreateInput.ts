@@ -19,6 +19,14 @@ import { InputJsonValue } from "../../types";
 @InputType()
 class PluginCreateInput {
   @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  categories!: string;
+
+  @ApiProperty({
     required: false,
     type: String,
   })

@@ -21,6 +21,14 @@ import type { JsonValue } from "type-fest";
 class Plugin {
   @ApiProperty({
     required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  categories!: string;
+
+  @ApiProperty({
+    required: true,
   })
   @IsDate()
   @Type(() => Date)

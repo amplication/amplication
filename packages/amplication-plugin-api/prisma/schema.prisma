@@ -21,6 +21,7 @@ model User {
 }
 
 model Plugin {
+  categories     String   @default("")
   createdAt      DateTime @default(now())
   description    String?
   github         String?
