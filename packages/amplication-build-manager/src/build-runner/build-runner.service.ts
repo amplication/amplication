@@ -23,7 +23,7 @@ export class BuildRunnerService {
     dsgResourceData: DSGResourceData,
     codeGeneratorVersion: string
   ) {
-    const jobs = this.codeGeneratorSplitterService.splitJobs(
+    const jobs = await this.codeGeneratorSplitterService.splitJobs(
       dsgResourceData,
       buildId
     );

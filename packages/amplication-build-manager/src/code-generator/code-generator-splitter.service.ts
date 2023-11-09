@@ -10,10 +10,10 @@ export class CodeGeneratorSplitterService {
   // TODO: rename to CodeGeneratorJobHandlerService (?)
   constructor(private readonly redisService: RedisService) {}
 
-  splitJobs(
+  async splitJobs(
     dsgResourceData: DSGResourceData,
     buildId: BuildId
-  ): ResourceTuple[] {
+  ): Promise<ResourceTuple[]> {
     const {
       resourceInfo: {
         settings: {
@@ -28,7 +28,7 @@ export class CodeGeneratorSplitterService {
       const serverDSGResourceData: DSGResourceData = cloneDeep(dsgResourceData);
       serverDSGResourceData.resourceInfo.settings.adminUISettings.generateAdminUI =
         false;
-      this.setServerJobInProgress(buildId);
+      await this.setServerJobInProgress(buildId);
       jobs.push([EnumDomainName.Server, serverDSGResourceData]);
     }
 
@@ -37,7 +37,7 @@ export class CodeGeneratorSplitterService {
         cloneDeep(dsgResourceData);
       adminUiDSGResourceData.resourceInfo.settings.serverSettings.generateServer =
         false;
-      this.setAdminUIJobInProgress(buildId);
+      await this.setAdminUIJobInProgress(buildId);
       jobs.push([EnumDomainName.AdminUI, adminUiDSGResourceData]);
     }
 
