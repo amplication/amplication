@@ -9,6 +9,7 @@ import {
   ModuleMap,
   NamedClassDeclaration,
   entityActions,
+  ModuleContainer,
 } from "./code-gen-types";
 import { EventParams } from "./plugins-types";
 import type {
@@ -27,6 +28,7 @@ export interface CreateEntityServiceBaseParams extends EventParams {
   serviceBaseId: namedTypes.Identifier;
   delegateId: namedTypes.Identifier;
   template: namedTypes.File;
+  moduleContainers: ModuleContainer[];
   entityActions: entityActions;
 }
 
@@ -57,6 +59,7 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   templateMapping: { [key: string]: any };
   controllerBaseId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
+  moduleContainers: ModuleContainer[];
   entityActions: entityActions;
 }
 
@@ -240,6 +243,7 @@ export interface CreateEntityResolverBaseParams extends EventParams {
   createMutationId: namedTypes.Identifier;
   updateMutationId: namedTypes.Identifier;
   templateMapping: { [key: string]: any };
+  moduleContainers: ModuleContainer[];
   entityActions: entityActions;
 }
 export interface CreateSwaggerParams extends EventParams {
