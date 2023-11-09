@@ -123,7 +123,7 @@ export class BuildRunnerController {
         message.resourceId,
         message.buildId,
         message.dsgResourceData,
-        containerImageTag ?? null
+        containerImageTag
       );
     } catch (error) {
       this.logger.error(error.message, error);
@@ -132,7 +132,7 @@ export class BuildRunnerController {
         value: {
           buildId: message.buildId,
           error,
-          codeGeneratorVersion: containerImageTag ?? null,
+          codeGeneratorVersion: containerImageTag,
         },
       };
 
