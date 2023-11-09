@@ -402,8 +402,16 @@ describe("CodeGeneratorSplitter", () => {
     );
   });
 
-  it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", () => {
-    const jobs = service.splitJobs(adminAndServerInputJson, buildId);
+  it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", async () => {
+    const spyOnSetServerJobInProgress = jest
+      .spyOn(service, "setServerJobInProgress")
+      .mockResolvedValue("OK");
+
+    const spyOnSetAdminUIJobInProgress = jest
+      .spyOn(service, "setAdminUIJobInProgress")
+      .mockResolvedValue("OK");
+
+    const jobs = await service.splitJobs(adminAndServerInputJson, buildId);
     expect(jobs.length).toBe(2);
     expect(jobs).toEqual([
       [EnumDomainName.Server, onlyServerInputJson],
@@ -418,25 +426,35 @@ describe("CodeGeneratorSplitter", () => {
       false
     );
 
-    expect(service.setServerJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(service.setServerJobInProgress).toBeCalledTimes(1);
-    expect(service.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(service.setAdminUIJobInProgress).toBeCalledTimes(1);
+    expect(spyOnSetServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(spyOnSetServerJobInProgress).toBeCalledTimes(1);
+    expect(spyOnSetAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(spyOnSetAdminUIJobInProgress).toBeCalledTimes(1);
   });
 
-  it("should build onlyserviceserver, it will create one request to start a jobs with onlyServerInputJson", () => {
-    const jobs = service.splitJobs(onlyServerInputJson, buildId);
+  it("should build only server, it will create one request to start a jobs with onlyServerInputJson", async () => {
+    const spyOnSetServerJobInProgress = jest
+      .spyOn(service, "setServerJobInProgress")
+      .mockResolvedValue("OK");
+
+    const jobs = await service.splitJobs(onlyServerInputJson, buildId);
     expect(jobs.length).toBe(1);
     expect(jobs).toEqual([[EnumDomainName.Server, onlyServerInputJson]]);
-    expect(service.setServerJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(service.setServerJobInProgress).toBeCalledTimes(1);
+
+    expect(spyOnSetServerJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(spyOnSetServerJobInProgress).toBeCalledTimes(1);
   });
 
-  it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", () => {
-    const jobs = service.splitJobs(onlyAdminInputJson, buildId);
+  it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", async () => {
+    const spyOnSetAdminUIJobInProgress = jest
+      .spyOn(service, "setAdminUIJobInProgress")
+      .mockResolvedValue("OK");
+
+    const jobs = await service.splitJobs(onlyAdminInputJson, buildId);
     expect(jobs.length).toBe(1);
     expect(jobs).toEqual([[EnumDomainName.AdminUI, onlyAdminInputJson]]);
-    expect(service.setAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
-    expect(service.setAdminUIJobInProgress).toBeCalledTimes(1);
+
+    expect(spyOnSetAdminUIJobInProgress).toHaveBeenCalledWith(buildId);
+    expect(spyOnSetAdminUIJobInProgress).toBeCalledTimes(1);
   });
 });
