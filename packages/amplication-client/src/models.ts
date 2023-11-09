@@ -969,6 +969,7 @@ export type Module = IBlock & {
   createdAt: Scalars['DateTime']['output'];
   description?: Maybe<Scalars['String']['output']>;
   displayName: Scalars['String']['output'];
+  enabled: Scalars['Boolean']['output'];
   entityId?: Maybe<Scalars['String']['output']>;
   id: Scalars['String']['output'];
   inputParameters: Array<BlockInputOutput>;
@@ -1073,6 +1074,7 @@ export type ModuleOrderByInput = {
 export type ModuleUpdateInput = {
   description?: InputMaybe<Scalars['String']['input']>;
   displayName?: InputMaybe<Scalars['String']['input']>;
+  enabled?: InputMaybe<Scalars['Boolean']['input']>;
   name?: InputMaybe<Scalars['String']['input']>;
 };
 
