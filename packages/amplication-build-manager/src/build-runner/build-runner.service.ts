@@ -49,9 +49,9 @@ export class BuildRunnerService {
         dsgResourceData,
         buildId
       );
-      for (const [domainType, data] of jobs) {
-        const jobBuildId = `${buildId}-${domainType}`;
-        this.logger.debug(`Running job for ${domainType}...`);
+      for (const [domainName, data] of jobs) {
+        const jobBuildId = `${buildId}-${domainName}`;
+        this.logger.debug("Running job for...", { domainName, buildId });
         await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
 
         const url = this.configService.get(Env.DSG_RUNNER_URL);
