@@ -98,6 +98,7 @@ export const GET_PLUGIN_VERSIONS_CATALOG = gql`
       npm
       github
       website
+      categories
       versions(where: $where, orderBy: { createdAt: Desc }) {
         id
         pluginId
