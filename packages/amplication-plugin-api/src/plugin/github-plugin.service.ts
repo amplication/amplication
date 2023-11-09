@@ -101,6 +101,10 @@ export class GitPluginService {
           pluginConfig.npm
         );
 
+        const categories: string[] = JSON.parse(
+          JSON.stringify(pluginConfig.categories)
+        );
+
         pluginsArr.push({
           id: "",
           createdAt: new Date(npmManifest.time.created),
@@ -113,6 +117,7 @@ export class GitPluginService {
           taggedVersions: npmManifest["dist-tags"],
           website: pluginConfig.website,
           updatedAt: new Date(npmManifest.time.modified),
+          categories: categories.join(","),
         });
       }
 

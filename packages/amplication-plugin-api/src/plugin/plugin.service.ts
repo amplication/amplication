@@ -41,6 +41,7 @@ export class PluginService extends PluginServiceBase {
           pluginId: plugin.pluginId,
           createdAt: plugin.createdAt,
           updatedAt: plugin.updatedAt,
+          categories: plugin.categories,
         })),
         skipDuplicates: true,
       });
@@ -60,6 +61,7 @@ export class PluginService extends PluginServiceBase {
             name: plugin.name,
             npm: plugin.npm,
             website: plugin.website,
+            categories: plugin.categories,
           },
         })
       );
