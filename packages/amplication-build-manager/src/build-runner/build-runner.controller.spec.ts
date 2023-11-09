@@ -35,7 +35,7 @@ describe("BuildRunnerController", () => {
   const mockRunnerServiceCopyFromJobToArtifact = jest.fn();
   const mockRunnerServiceSaveDsgResourceData = jest.fn();
   const mockRunnerServiceGetCodeGeneratorVersion = jest.fn();
-  const mockRunnerSErviceRunJobs = jest.fn();
+  const mockRunnerServiceRunJobs = jest.fn();
   const mockCodeGeneratorServiceGetCodeGeneratorVersion = jest.fn();
   const mockKafkaServiceEmitMessage = jest.fn();
 
@@ -58,7 +58,7 @@ describe("BuildRunnerController", () => {
             saveDsgResourceData: mockRunnerServiceSaveDsgResourceData,
             copyFromJobToArtifact: mockRunnerServiceCopyFromJobToArtifact,
             getCodeGeneratorVersion: mockRunnerServiceGetCodeGeneratorVersion,
-            runJobs: mockRunnerSErviceRunJobs,
+            runJobs: mockRunnerServiceRunJobs,
           })),
         },
         {
@@ -302,8 +302,6 @@ describe("BuildRunnerController", () => {
       CodeGenerationRequest.Value,
       codeGenerationRequestDTOMock
     );
-
-    mockRunnerSErviceRunJobs.mockResolvedValue(undefined);
 
     mockRunnerServiceSaveDsgResourceData.mockResolvedValue(undefined);
     spyOnAxiosPost.mockResolvedValue({
