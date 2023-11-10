@@ -11684,6 +11684,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
+  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
   "server/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
