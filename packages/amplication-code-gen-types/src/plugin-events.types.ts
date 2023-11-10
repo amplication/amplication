@@ -37,8 +37,11 @@ import {
   CreateConnectMicroservicesParams,
   CreateAdminAppModuleParams,
   CreateAdminDotEnvParams,
-} from "./plugin-events-params";
-import { EventNames, PluginEventType } from "./plugins-types";
+  CreateEntityGrpcControllerToManyRelationMethodsParams,
+  CreateEntityGrpcControllerParams,
+  CreateEntityGrpcControllerBaseParams,
+} from "./plugin-events-params.types";
+import { EventNames, PluginEventType } from "./plugins.types";
 
 export type Events = {
   [EventNames.CreateServerAuth]?: PluginEventType<CreateServerAuthParams>;
@@ -52,6 +55,8 @@ export type Events = {
   [EventNames.CreateEntityServiceBase]?: PluginEventType<CreateEntityServiceBaseParams>;
   [EventNames.CreateEntityController]?: PluginEventType<CreateEntityControllerParams>;
   [EventNames.CreateEntityControllerBase]?: PluginEventType<CreateEntityControllerBaseParams>;
+  [EventNames.CreateEntityGrpcController]?: PluginEventType<CreateEntityGrpcControllerParams>;
+  [EventNames.CreateEntityGrpcControllerBase]?: PluginEventType<CreateEntityGrpcControllerBaseParams>;
   [EventNames.CreateServerDockerCompose]?: PluginEventType<CreateServerDockerComposeParams>;
   [EventNames.CreateServerDockerComposeDB]?: PluginEventType<CreateServerDockerComposeDBParams>;
   [EventNames.CreateServerDockerComposeDev]?: PluginEventType<CreateServerDockerComposeDevParams>;
@@ -75,6 +80,7 @@ export type Events = {
   [EventNames.CreateSeed]?: PluginEventType<CreateSeedParams>;
   [EventNames.CreateEntityControllerSpec]?: PluginEventType<CreateEntityControllerSpecParams>;
   [EventNames.CreateEntityControllerToManyRelationMethods]?: PluginEventType<CreateEntityControllerToManyRelationMethodsParams>;
+  [EventNames.CreateEntityGrpcControllerToManyRelationMethods]?: PluginEventType<CreateEntityGrpcControllerToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToManyRelationMethods]?: PluginEventType<CreateEntityResolverToManyRelationMethodsParams>;
   [EventNames.CreateEntityResolverToOneRelationMethods]?: PluginEventType<CreateEntityResolverToOneRelationMethodsParams>;
   [EventNames.CreateDTOs]?: PluginEventType<CreateDTOsParams>;

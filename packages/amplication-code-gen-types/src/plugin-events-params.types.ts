@@ -9,7 +9,7 @@ import {
   ModuleMap,
   NamedClassDeclaration,
 } from "./code-gen-types";
-import { EventParams } from "./plugins-types";
+import { EventParams } from "./plugins.types";
 import type {
   Generator,
   DataSource,
@@ -55,7 +55,38 @@ export interface CreateEntityControllerBaseParams extends EventParams {
   serviceId: namedTypes.Identifier;
 }
 
+export interface CreateEntityGrpcControllerParams extends EventParams {
+  template: namedTypes.File;
+  entityName: string;
+  entityServiceModule: string;
+  templateMapping: { [key: string]: any };
+  controllerBaseId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+export interface CreateEntityGrpcControllerBaseParams extends EventParams {
+  template: namedTypes.File;
+  entity: Entity;
+  entityName: string;
+  entityType: string;
+  entityServiceModule: string;
+  templateMapping: { [key: string]: any };
+  controllerBaseId: namedTypes.Identifier;
+  serviceId: namedTypes.Identifier;
+}
+
 export interface CreateEntityControllerToManyRelationMethodsParams
+  extends EventParams {
+  field: EntityLookupField;
+  entity: Entity;
+  entityType: string;
+  whereUniqueInput: NamedClassDeclaration;
+  serviceId: namedTypes.Identifier;
+  methods: namedTypes.ClassMethod[];
+  toManyFile: namedTypes.File;
+  toManyMapping: { [key: string]: any };
+}
+
+export interface CreateEntityGrpcControllerToManyRelationMethodsParams
   extends EventParams {
   field: EntityLookupField;
   entity: Entity;
@@ -196,9 +227,11 @@ export interface CreateEntityModuleParams extends EventParams {
   entityType: string;
   entityServiceModule: string;
   entityControllerModule: string | undefined;
+  entityGrpcControllerModule: string | undefined;
   entityResolverModule: string | undefined;
   moduleBaseId: namedTypes.Identifier;
   controllerId: namedTypes.Identifier;
+  grpcControllerId: namedTypes.Identifier;
   serviceId: namedTypes.Identifier;
   resolverId: namedTypes.Identifier;
   template: namedTypes.File;
