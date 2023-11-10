@@ -8,6 +8,7 @@ import {
   CodeGenerationRequest,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
+import { EnumJobStatus } from "../types";
 
 @Controller("build-runner")
 export class BuildRunnerController {
@@ -20,9 +21,10 @@ export class BuildRunnerController {
   async onCodeGenerationSuccess(
     @Payload() dto: CodeGenerationSuccessDto
   ): Promise<void> {
-    await this.buildRunnerService.emitKafkaEventBasedOnJobStatus(
+    await this.buildRunnerService.processBuildResult(
       dto.resourceId,
-      dto.buildId
+      dto.buildId, // jobBuildId
+      EnumJobStatus.Success
     );
   }
 
@@ -30,8 +32,10 @@ export class BuildRunnerController {
   async onCodeGenerationFailure(
     @Payload() dto: CodeGenerationFailureDto
   ): Promise<void> {
-    await this.buildRunnerService.emitCodeGenerationFailureWhenJobStatusSetAsFailed(
-      dto.buildId,
+    await this.buildRunnerService.processBuildResult(
+      dto.resourceId,
+      dto.buildId, // jobBuildId
+      EnumJobStatus.Failure,
       dto.error
     );
   }
@@ -45,7 +49,7 @@ export class BuildRunnerController {
       resourceId: message.resourceId,
     });
 
-    await this.buildRunnerService.runJobs(
+    await this.buildRunnerService.runBuilds(
       message.resourceId,
       message.buildId,
       message.dsgResourceData

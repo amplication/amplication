@@ -3,15 +3,12 @@ export enum EnumDomainName {
   AdminUI = "admin-ui",
 }
 
-export enum EnumEventStatus {
+export enum EnumJobStatus {
   InProgress = "in-progress",
   Success = "success",
   Failure = "failure",
 }
 
-export type BuildIdWithDomainName<T extends string> = `${T}-${EnumDomainName}`;
+export type JobBuildId<T extends string> = `${T}-${EnumDomainName}`;
 export type BuildId = string;
-export type RedisValue = Record<
-  BuildIdWithDomainName<BuildId>,
-  EnumEventStatus
->;
+export type RedisValue = Record<JobBuildId<BuildId>, EnumJobStatus>;

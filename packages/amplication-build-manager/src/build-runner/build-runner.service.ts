@@ -14,7 +14,7 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { EnumEventStatus } from "../types";
+import { BuildId, JobBuildId, EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
@@ -29,7 +29,7 @@ export class BuildRunnerService {
     private readonly logger: AmplicationLogger
   ) {}
 
-  async runJobs(
+  async runBuilds(
     resourceId: string,
     buildId: string,
     dsgResourceData: DSGResourceData
@@ -45,13 +45,12 @@ export class BuildRunnerService {
               .codeGeneratorStrategy,
         });
 
-      const jobs = await this.codeGeneratorSplitterService.splitJobs(
+      const jobs = await this.codeGeneratorSplitterService.splitBuildsIntoJobs(
         dsgResourceData,
         buildId
       );
-      for (const [domainName, data] of jobs) {
-        const jobBuildId = `${buildId}-${domainName}`;
-        this.logger.debug("Running job for...", { domainName, buildId });
+      for (const [jobBuildId, data] of jobs) {
+        this.logger.debug("Running job for...", { jobBuildId });
         await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
 
         const url = this.configService.get(Env.DSG_RUNNER_URL);
@@ -77,6 +76,30 @@ export class BuildRunnerService {
     }
   }
 
+  async processBuildResult(
+    resourceId: string,
+    jobBuildId: string,
+    jobStatus: EnumJobStatus,
+    error?: Error
+  ) {
+    switch (jobStatus) {
+      case EnumJobStatus.Failure:
+        return this.emitCodeGenerationFailureWhenJobStatusSetAsFailed(
+          jobBuildId as JobBuildId<BuildId>,
+          error
+        );
+      case EnumJobStatus.Success:
+        return this.emitKafkaEventBasedOnJobStatus(
+          resourceId,
+          jobBuildId as JobBuildId<BuildId>
+        );
+      default:
+        throw new Error("Unexpected EnumJobStatus", {
+          cause: { jobBuildId, jobStatus, error },
+        });
+    }
+  }
+
   /**
    * Emits a kafka event based on the job status (success / failure) from the redis cache
    * @param resourceId the resource id
@@ -85,39 +108,44 @@ export class BuildRunnerService {
    */
   async emitKafkaEventBasedOnJobStatus(
     resourceId: string,
-    buildIdWithDomainName: string
+    jobBuildId: JobBuildId<BuildId>
   ) {
-    const buildId = this.codeGeneratorSplitterService.extractBuildId(
-      buildIdWithDomainName
-    );
-    const codeGeneratorVersion = await this.getCodeGeneratorVersion(
-      buildIdWithDomainName
-    );
+    const buildId =
+      this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
+    const codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
     try {
-      const [domainName, isSuccess] = await this.copyFromJobToArtifact(
+      const isCopySucceeded = await this.copyFromJobToArtifact(
         resourceId,
-        buildIdWithDomainName
+        jobBuildId
       );
 
-      await this.codeGeneratorSplitterService.setJobStatusBasedOnArtifact(
-        domainName,
-        isSuccess,
-        buildId
-      );
+      isCopySucceeded
+        ? await this.codeGeneratorSplitterService.setJobStatus(
+            jobBuildId,
+            EnumJobStatus.Success
+          )
+        : await this.codeGeneratorSplitterService.setJobStatus(
+            jobBuildId,
+            EnumJobStatus.Failure
+          );
 
-      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
-        buildId
-      );
+      const buildStatus =
+        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
 
-      if (jobStatus === EnumEventStatus.Success) {
+      if (buildStatus === EnumJobStatus.InProgress) {
+        // do nothing
+        return;
+      }
+
+      if (buildStatus === EnumJobStatus.Success) {
         await this.emitCodeGenerationSuccessEvent({
           buildId,
           codeGeneratorVersion,
         });
-      } else if (jobStatus === EnumEventStatus.Failure) {
+      } else if (buildStatus === EnumJobStatus.Failure) {
         await this.emitCodeGenerationFailureEvent(
           buildId,
-          new Error(`Code generation failed for ${domainName}`)
+          new Error(`Code generation failed for ${buildId}`)
         );
       }
     } catch (error) {
@@ -127,34 +155,35 @@ export class BuildRunnerService {
   }
 
   async emitCodeGenerationFailureWhenJobStatusSetAsFailed(
-    buildIdWithDomainName: string,
+    jobBuildId: JobBuildId<BuildId>,
     error: Error
   ) {
     try {
-      const domainName = this.codeGeneratorSplitterService.extractDomainName(
-        buildIdWithDomainName
-      );
-      const buildId = this.codeGeneratorSplitterService.extractBuildId(
-        buildIdWithDomainName
-      );
-      await this.codeGeneratorSplitterService.setJobStatusWhenCodeGenerationFailed(
-        buildId,
-        domainName
+      const buildId =
+        this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
+
+      const getCurrentJobStatus =
+        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
+
+      if (getCurrentJobStatus === EnumJobStatus.Failure) {
+        // do nothing because that means that we already set the build status as failure and emitted the event
+        return;
+      }
+
+      await this.codeGeneratorSplitterService.setJobStatus(
+        jobBuildId,
+        EnumJobStatus.Failure
       );
 
-      const jobStatus = await this.codeGeneratorSplitterService.getJobStatus(
-        buildId
-      );
+      const buildStatus =
+        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
 
-      // that means that if we have 2 jobs and one of them already failed, set the other job as failure as well and emit a failure event
-      if (!jobStatus) return;
-
-      if (jobStatus === EnumEventStatus.Failure) {
+      if (buildStatus === EnumJobStatus.Failure) {
         await this.emitCodeGenerationFailureEvent(buildId, error);
       }
     } catch (error) {
       this.logger.error(error.message, error);
-      await this.emitCodeGenerationFailureEvent(buildIdWithDomainName, error);
+      await this.emitCodeGenerationFailureEvent(jobBuildId, error);
     }
   }
 
@@ -164,7 +193,7 @@ export class BuildRunnerService {
     try {
       // extract build id although sometimes it is not needed because the build id is already extracted
       const buildId = this.codeGeneratorSplitterService.extractBuildId(
-        codeGenerationSuccess.buildId
+        codeGenerationSuccess.buildId as JobBuildId<BuildId>
       );
 
       const successEvent: CodeGenerationSuccess.KafkaEvent = {
@@ -181,18 +210,15 @@ export class BuildRunnerService {
     }
   }
 
-  async emitCodeGenerationFailureEvent(
-    buildIdWithDomainName: string,
-    error: Error
-  ) {
+  async emitCodeGenerationFailureEvent(jobBuildId: string, error: Error) {
     try {
       // extract build id although sometimes it is not needed because the build id is already extracted
       const buildId = this.codeGeneratorSplitterService.extractBuildId(
-        buildIdWithDomainName
+        jobBuildId as JobBuildId<BuildId>
       );
 
       const codeGeneratorVersion = await this.getCodeGeneratorVersion(
-        buildIdWithDomainName
+        jobBuildId
       );
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
@@ -247,19 +273,16 @@ export class BuildRunnerService {
 
   async copyFromJobToArtifact(
     resourceId: string,
-    buildIdWithDomainName: string
-  ): Promise<[string, boolean]> {
-    const domainName = this.codeGeneratorSplitterService.extractDomainName(
-      buildIdWithDomainName
-    );
+    jobBuildId: string
+  ): Promise<boolean> {
     const buildId = this.codeGeneratorSplitterService.extractBuildId(
-      buildIdWithDomainName
+      jobBuildId as JobBuildId<BuildId>
     );
 
     try {
       const jobPath = join(
         this.configService.get(Env.DSG_JOBS_BASE_FOLDER),
-        buildIdWithDomainName,
+        jobBuildId,
         this.configService.get(Env.DSG_JOBS_CODE_FOLDER)
       );
 
@@ -270,10 +293,10 @@ export class BuildRunnerService {
       );
 
       await copy(jobPath, artifactPath);
-      return [domainName, true];
-      return;
+      return true;
     } catch (error) {
-      return [domainName, false];
+      this.logger.error(error.message, error);
+      return false;
     }
   }
 }
