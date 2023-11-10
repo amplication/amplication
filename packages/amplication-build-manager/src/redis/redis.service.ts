@@ -25,10 +25,6 @@ export class RedisService {
       : this.redisClient.set(key, serializedValue);
   }
 
-  async delete(key: string): Promise<number> {
-    return this.redisClient.del(key);
-  }
-
   private serializeValue<T>(value: T): string {
     return JSON.stringify(value);
   }
