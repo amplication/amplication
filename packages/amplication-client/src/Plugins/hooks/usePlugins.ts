@@ -33,7 +33,7 @@ export type Plugin = {
   icon: string;
   github: string;
   website: string;
-  category: string;
+  categories: string;
   type: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
@@ -152,6 +152,10 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
           };
         } else return plugin;
       }
+    );
+
+    pluginsWithLatestVersion.sort((pluginA, pluginB) =>
+      pluginA.name.localeCompare(pluginB.name)
     );
 
     const sortedPlugins = keyBy(

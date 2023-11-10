@@ -1,8 +1,8 @@
 import { List, Snackbar, TabContentTitle } from "@amplication/ui/design-system";
 import { useMutation, useQuery } from "@apollo/client";
-import { keyBy } from "lodash";
+import { isNil, keyBy } from "lodash";
 import React, { useCallback, useContext, useMemo, useState } from "react";
-import { match } from "react-router-dom";
+import { match, useLocation } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import { USER_ENTITY } from "../Entity/constants";
 import { GET_ENTITIES } from "../Entity/EntityList";
@@ -167,6 +167,23 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
     return keyBy(pluginInstallations, (plugin) => plugin && plugin.pluginId);
   }, [pluginInstallations]);
 
+  const categoryPlugins = useMemo(() => {
+    if (!pluginCatalog) return {};
+
+    const location = useLocation();
+    const queryCategory = new URLSearchParams(location.search).get("category");
+
+    const pluginsForCategory = Object.entries(pluginCatalog)
+      .filter(([_, plugin]) => {
+        return (
+          isNil(queryCategory) || plugin.categories.search(queryCategory) != -1
+        );
+      })
+      .map(([_, plugin]) => plugin);
+
+    return keyBy(pluginsForCategory, (plugin) => plugin.pluginId);
+  }, [pluginCatalog, location.search]);
+
   const errorMessage = formatError(createError) || formatError(updateError);
 
   const [createDefaultEntities] = useMutation<TEntities>(
@@ -244,7 +261,7 @@ const PluginsCatalog: React.FC<Props> = ({ match }: Props) => {
       ></PluginInstallConfirmationDialog>
       <TabContentTitle title={TITLE} subTitle={SUB_TITLE} />
       <List>
-        {Object.entries(pluginCatalog).map(([pluginId, plugin]) => (
+        {Object.entries(categoryPlugins).map(([pluginId, plugin]) => (
           <PluginsCatalogItem
             key={pluginId}
             plugin={plugin}

@@ -14,3 +14,33 @@
     }
   }
 }
+
+.plugin-list__list {
+  .category-filter {
+    position: relative;
+  }
+
+  .filter-dropdown-icon {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+  }
+
+  .category-list {
+    background-color: var(--gray-90);
+    padding: 6px 10px;
+    border-radius: 5px;
+    margin: -2px 0 10px 0;
+
+    a.inner-tab-link {
+      &.active {
+        background: inherit;
+      }
+      &.highlighted {
+        background: var(--gray-70);
+      }
+      padding: 0 25px 0 10px;
+      margin: 4px 0;
+    }
+  }
+}
