@@ -9247,9 +9247,6 @@ export interface ISecretsManager {
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
   async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
-    if (!key) {
-      throw new Error("Didn't got the key");
-    }
     const value = this.configService.get(key.toString());
     if (value) {
       return value;
