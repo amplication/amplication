@@ -203,10 +203,10 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
 
-      const buildStatus =
-        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
+      const currentJobStatus =
+        await this.codeGeneratorSplitterService.getJobStatus(jobBuildId);
 
-      if (buildStatus === EnumJobStatus.Failure) {
+      if (currentJobStatus === EnumJobStatus.Failure) {
         const failureEvent: CodeGenerationFailure.KafkaEvent = {
           key: null,
           value: { buildId, codeGeneratorVersion, error },
