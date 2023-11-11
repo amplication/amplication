@@ -16,6 +16,7 @@ const newAppInfo: AppInfo = {
     serverSettings: {
       generateGraphQL: false,
       generateRestApi: true,
+      generateServer: true,
       serverPath: "",
     },
   },

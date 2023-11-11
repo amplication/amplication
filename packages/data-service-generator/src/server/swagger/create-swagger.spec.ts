@@ -18,6 +18,7 @@ const EXAMPLE_APP_INFO: AppInfo = {
     serverSettings: {
       generateGraphQL: false,
       generateRestApi: false,
+      generateServer: true,
       serverPath: "",
     },
     adminUISettings: {
