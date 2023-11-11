@@ -92,6 +92,14 @@ export class CodeGeneratorSplitterService {
     return value[jobBuildId];
   }
 
+  /**
+   * Set / update the status of a job
+   * First it gets the current value of the key (buildId)
+   * Then it updates the value by accessing the jobBuildId property
+   * If the key yet doesn't exist, currentVal will return null, but it won't throw an error because spreading null is ok (obj = {...null} = {})
+   * @param jobBuildId buildId with domain name suffix (server / admin-ui)
+   * @param status EnumJobStatus (in-progress / success / failure)
+   */
   async setJobStatus(
     jobBuildId: JobBuildId<BuildId>,
     status: EnumJobStatus
@@ -102,7 +110,7 @@ export class CodeGeneratorSplitterService {
       ...currentVal,
       [jobBuildId]: status,
     };
-    this.logger.debug("Setting new job status", { newVal });
+    this.logger.debug("Updating job status...", { newVal });
     await this.redisService.set<RedisValue>(key, newVal);
   }
 
