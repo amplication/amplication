@@ -92,7 +92,7 @@ export class BuildRunnerService {
   ) {
     switch (jobStatus) {
       case EnumJobStatus.Failure:
-        return this.emitCodeGenerationFailureWhenJobStatusSetAsFailed(
+        return this.emitCodeGenerationFailureWhenJobStatusFailed(
           jobBuildId as JobBuildId<BuildId>,
           error
         );
@@ -180,7 +180,7 @@ export class BuildRunnerService {
     }
   }
 
-  async emitCodeGenerationFailureWhenJobStatusSetAsFailed(
+  async emitCodeGenerationFailureWhenJobStatusFailed(
     jobBuildId: JobBuildId<BuildId>,
     error: Error
   ) {
@@ -189,11 +189,12 @@ export class BuildRunnerService {
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
       buildId = this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
-      const getCurrentJobStatus =
+
+      const buildStatus =
         await this.codeGeneratorSplitterService.getBuildStatus(buildId);
 
-      if (getCurrentJobStatus === EnumJobStatus.Failure) {
-        // do nothing because that means that we already set the build status as failure and emitted the event
+      if (buildStatus === EnumJobStatus.Failure) {
+        // do nothing - already emitted
         return;
       }
 
