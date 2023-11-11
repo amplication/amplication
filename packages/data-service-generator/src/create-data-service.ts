@@ -10,6 +10,7 @@ import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugi
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { createDTOModules, createDTOs } from "./server/resource/create-dtos";
 import { formatCode } from "@amplication/code-gen-utils";
+import { logger } from "./logging";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
@@ -58,6 +59,30 @@ export async function createDataService(
     const dtoModules = await createDTOModules(dtos);
     await context.logger.info("Formatting DTOs code...");
     await dtoModules.replaceModulesCode((path, code) => formatCode(path, code));
+
+    const {
+      appInfo: {
+        settings: {
+          serverSettings: { generateServer },
+          adminUISettings: { generateAdminUI },
+        },
+      },
+    } = context;
+
+    const modules = new ModuleMap(context.logger);
+
+    if (generateServer) {
+      logger.debug("Creating server...", { generateServer });
+      const serverModules = await createServer();
+      // merging the (server) dto modules with the server modules
+      await modules.mergeMany([dtoModules, serverModules]);
+    }
+
+    if (generateAdminUI) {
+      logger.debug("Creating admin...", { generateAdminUI });
+      const adminModules = await createAdminModules();
+      await modules.merge(adminModules); // for admin-ui we don't need to merge the (server) dto modules
+    }
 
     // This code normalizes the path of each module to always use Unix path separator.
     await context.logger.info(
