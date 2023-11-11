@@ -14,7 +14,11 @@ import { EnumDomainName, EnumJobStatus } from "../types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
-import { KAFKA_TOPICS } from "@amplication/schema-registry";
+import {
+  CodeGenerationFailure,
+  CodeGenerationSuccess,
+  KAFKA_TOPICS,
+} from "@amplication/schema-registry";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -152,52 +156,56 @@ describe("BuildRunnerService", () => {
     ).resolves.not.toThrow();
   });
 
-  it("should copy file and/or directories from `jobPath` to `artifactPath`", async () => {
-    const resourceId = "resourceId";
-    const buildId = "buildId";
+  describe("copyFromJobToArtifact", () => {
+    it("should copy file and/or directories from `jobPath` to `artifactPath` and return true", async () => {
+      const resourceId = "resourceId";
+      const buildId = "buildId";
 
-    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
-      .spyOn(codeGeneratorSplitterService, "extractBuildId")
-      .mockReturnValue(buildId);
+      const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+        .spyOn(codeGeneratorSplitterService, "extractBuildId")
+        .mockReturnValue(buildId);
 
-    await service.copyFromJobToArtifact(resourceId, buildId);
+      const jobPath = join(
+        configService.get(Env.DSG_JOBS_BASE_FOLDER),
+        buildId,
+        configService.get(Env.DSG_JOBS_CODE_FOLDER)
+      );
+      const artifactPath = join(
+        configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
+        resourceId,
+        buildId
+      );
 
-    const jobPath = join(
-      configService.get(Env.DSG_JOBS_BASE_FOLDER),
-      buildId,
-      configService.get(Env.DSG_JOBS_CODE_FOLDER)
-    );
-    const artifactPath = join(
-      configService.get(Env.BUILD_ARTIFACTS_BASE_FOLDER),
-      resourceId,
-      buildId
-    );
+      const result = await service.copyFromJobToArtifact(resourceId, buildId);
 
-    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
-    expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
-    await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
-  });
+      expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(
+        1
+      );
+      expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
+      expect(result).toBe(true);
+      await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
+    });
 
-  it("should call emitCodeGenerationFailureWhenJobStatusSetAsFailed on failure", async () => {
-    const resourceId = "some-resource-id";
-    const jobBuildId = "some-build-id";
-    const error = new Error("Sample error");
+    it("should return false when it gets to the catch block", async () => {
+      const resourceId = "resourceId";
+      const buildId = "buildId";
 
-    const spyOnEmitCodeGenerationFailureWhenJobStatusSetAsFailed = jest.spyOn(
-      service,
-      "emitCodeGenerationFailureWhenJobStatusSetAsFailed"
-    );
+      const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
+        .spyOn(codeGeneratorSplitterService, "extractBuildId")
+        .mockReturnValue(buildId);
 
-    await service.processBuildResult(
-      resourceId,
-      jobBuildId,
-      EnumJobStatus.Failure,
-      error
-    );
+      spyOnFsExtraCopy.mockImplementationOnce(() => {
+        throw new Error("Error");
+      });
 
-    expect(
-      spyOnEmitCodeGenerationFailureWhenJobStatusSetAsFailed
-    ).toHaveBeenCalledWith(jobBuildId, error);
+      const result = await service.copyFromJobToArtifact(resourceId, buildId);
+
+      expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(
+        1
+      );
+      expect(spyOnFsExtraCopy).toBeCalledTimes(1);
+      expect(result).toBe(false);
+    });
   });
 
   describe("emitKafkaEventBasedOnJobStatus", () => {
@@ -258,25 +266,44 @@ describe("BuildRunnerService", () => {
     for (const [input, expected] of testCases) {
       it(`When ${input.jobBuildId} returns ${input.jobStatus}, it should emit ${expected.eventEmission} event and updated the cache accordingly`, async () => {
         // Arrange
+        const codeGeneratorVersion = "v1.0.0";
+        const errorMock = new Error("Test error");
 
-        // spyon copyFromJobToArtifact
+        const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+          key: null,
+          value: <CodeGenerationFailure.Value>{
+            buildId,
+            error: errorMock,
+            codeGeneratorVersion,
+          },
+        } as unknown as CodeGenerationFailure.KafkaEvent;
+
+        const kafkaSuccessEventMock: CodeGenerationSuccess.KafkaEvent = {
+          key: null,
+          value: <CodeGenerationSuccess.Value>{
+            buildId,
+            codeGeneratorVersion,
+          },
+        };
+
+        jest
+          .spyOn(service, "getCodeGeneratorVersion")
+          .mockResolvedValue(codeGeneratorVersion);
+
         jest.spyOn(service, "copyFromJobToArtifact").mockResolvedValue(true);
-        // spyon setJobStatus
-        jest.spyOn(codeGeneratorSplitterService, "setJobStatus");
-        // spy on extractBuildId
-        jest.spyOn(codeGeneratorSplitterService, "extractBuildId");
-        // spyon getBuildStatus
+        jest
+          .spyOn(codeGeneratorSplitterService, "setJobStatus")
+          .mockResolvedValue(undefined);
+
+        jest
+          .spyOn(codeGeneratorSplitterService, "extractBuildId")
+          .mockReturnValue(buildId);
+
         jest
           .spyOn(codeGeneratorSplitterService, "getBuildStatus")
           .mockResolvedValue(input.otherJobsCombinedStatus);
-        // spyon emitCodeGenerationSuccessEvent
-        jest
-          .spyOn(service, "emitCodeGenerationSuccessEvent")
-          .mockResolvedValue(undefined);
-        // spyon emitCodeGenerationFailureEvent
-        jest
-          .spyOn(service, "emitCodeGenerationFailureEvent")
-          .mockResolvedValue(undefined);
+
+        mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
 
         // Act
         await service.processBuildResult(
@@ -286,7 +313,6 @@ describe("BuildRunnerService", () => {
         );
 
         // Assert
-
         switch (expected.eventEmission) {
           case "NONE":
             expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
@@ -295,14 +321,14 @@ describe("BuildRunnerService", () => {
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-              expect.any(Object)
+              kafkaFailureEventMock
             );
             break;
           case "SUCCESS":
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
-              expect.any(Object)
+              kafkaSuccessEventMock
             );
             break;
           default:
