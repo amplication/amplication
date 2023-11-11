@@ -44,11 +44,7 @@ const CreateResourceButtonItem = ({ item }: props) => {
       onSelectionChange={handleSelectItem}
       as="span"
     >
-      <Link
-        onClick={handleClick}
-        to={`/${currentWorkspace?.id}/${currentProject?.id}/${item.route}`}
-        className={CLASS_NAME}
-      >
+      <Link onClick={handleClick} to={{}} className={CLASS_NAME}>
         <ResourceCircleBadge type={item.type} size="medium" />
         <span>{item.label}</span>
         <span>{item.info}</span>

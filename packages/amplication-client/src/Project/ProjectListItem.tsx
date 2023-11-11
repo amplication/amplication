@@ -24,7 +24,7 @@ export const ProjectListItem = ({ project, workspaceId }: Props) => {
 
   return (
     <ListItem showDefaultActionIcon={true} onClick={handleClick}>
-      <Link to={`/${workspaceId}/${project.id}`}>
+      <Link to={{}}>
         <Text
           textStyle={EnumTextStyle.Normal}
           textWeight={EnumTextWeight.SemiBold}
