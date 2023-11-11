@@ -62,7 +62,7 @@ export class CodeGeneratorSplitterService {
   }
 
   // accumulate the status of the jobs and return the status of the whole build
-  async getBuildStatus(key: BuildId): Promise<EnumJobStatus | null> {
+  async getBuildStatus(key: BuildId): Promise<EnumJobStatus> {
     const buildValue = await this.redisService.get<RedisValue>(key);
     const jobsStatus = Object.values(buildValue);
 
@@ -92,7 +92,10 @@ export class CodeGeneratorSplitterService {
     return value[jobBuildId];
   }
 
-  async setJobStatus(jobBuildId: JobBuildId<BuildId>, status: EnumJobStatus) {
+  async setJobStatus(
+    jobBuildId: JobBuildId<BuildId>,
+    status: EnumJobStatus
+  ): Promise<void> {
     const key = this.extractBuildId(jobBuildId);
     const currentVal = await this.redisService.get<RedisValue>(key);
     const newVal = {
