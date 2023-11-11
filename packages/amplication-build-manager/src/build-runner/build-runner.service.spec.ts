@@ -80,7 +80,9 @@ describe("BuildRunnerService", () => {
           provide: CodeGeneratorSplitterService,
           useValue: {
             extractBuildId: jest.fn(),
+            splitBuildsIntoJobs: jest.fn(),
             getBuildStatus: jest.fn(),
+            getJobStatus: jest.fn(),
             setJobStatus: jest.fn(),
           },
         },
@@ -207,7 +209,6 @@ describe("BuildRunnerService", () => {
       expect(result).toBe(false);
     });
   });
-
   describe("emitKafkaEventBasedOnJobStatus", () => {
     const resourceId = "resourceId";
     const buildId = "buildId";
@@ -264,7 +265,7 @@ describe("BuildRunnerService", () => {
     ];
 
     for (const [input, expected] of testCases) {
-      it(`When ${input.jobBuildId} returns ${input.jobStatus}, it should emit ${expected.eventEmission} event and updated the cache accordingly`, async () => {
+      it(`When ${input.jobBuildId} returns ${input.jobStatus}, and the combined status is ${input.otherJobsCombinedStatus} it should emit ${expected.eventEmission} event and updated the cache accordingly`, async () => {
         // Arrange
         const codeGeneratorVersion = "v1.0.0";
         const errorMock = new Error("Test error");
@@ -296,6 +297,10 @@ describe("BuildRunnerService", () => {
           .mockResolvedValue(undefined);
 
         jest
+          .spyOn(codeGeneratorSplitterService, "getJobStatus")
+          .mockResolvedValue(input.jobStatus);
+
+        jest
           .spyOn(codeGeneratorSplitterService, "extractBuildId")
           .mockReturnValue(buildId);
 
@@ -303,13 +308,12 @@ describe("BuildRunnerService", () => {
           .spyOn(codeGeneratorSplitterService, "getBuildStatus")
           .mockResolvedValue(input.otherJobsCombinedStatus);
 
-        mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
-
         // Act
         await service.processBuildResult(
           resourceId,
           input.jobBuildId,
-          input.jobStatus
+          input.jobStatus,
+          input.jobStatus === EnumJobStatus.Failure ? errorMock : undefined
         );
 
         // Assert
@@ -318,6 +322,7 @@ describe("BuildRunnerService", () => {
             expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
             break;
           case "FAILURE":
+            mockKafkaServiceEmitMessage.mockRejectedValueOnce(errorMock);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
@@ -325,6 +330,7 @@ describe("BuildRunnerService", () => {
             );
             break;
           case "SUCCESS":
+            mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
