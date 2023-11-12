@@ -5,7 +5,7 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { ConfigService } from "@nestjs/config";
 import fsExtra from "fs-extra";
 
-import { DSGResourceData } from "@amplication/code-gen-types";
+import { AppInfo, DSGResourceData } from "@amplication/code-gen-types";
 
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
@@ -19,6 +19,8 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
+import { CodeGeneratorVersionStrategy } from "@amplication/code-gen-types/models";
+import axios from "axios";
 
 const spyOnMkdir = jest.spyOn(promises, "mkdir");
 const spyOnWriteFile = jest.spyOn(promises, "writeFile");
@@ -40,7 +42,7 @@ describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
   let configService: ConfigService;
   let codeGeneratorSplitterService: CodeGeneratorSplitterService;
-  const mockCodeGeneratorServiceGetCodeGeneratorVersion = jest.fn();
+  let codeGeneratorService: CodeGeneratorService;
   const mockKafkaServiceEmitMessage = jest.fn();
 
   beforeAll(async () => {
@@ -88,10 +90,9 @@ describe("BuildRunnerService", () => {
         },
         {
           provide: CodeGeneratorService,
-          useClass: jest.fn(() => ({
-            getCodeGeneratorVersion:
-              mockCodeGeneratorServiceGetCodeGeneratorVersion,
-          })),
+          useValue: {
+            getCodeGeneratorVersion: jest.fn(),
+          },
         },
         {
           provide: KafkaProducerService,
@@ -109,6 +110,8 @@ describe("BuildRunnerService", () => {
     codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
       CodeGeneratorSplitterService
     );
+    codeGeneratorService =
+      module.get<CodeGeneratorService>(CodeGeneratorService);
   });
 
   beforeEach(() => {
@@ -209,6 +212,193 @@ describe("BuildRunnerService", () => {
       expect(result).toBe(false);
     });
   });
+
+  describe("runBuild", () => {
+    it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner", async () => {
+      // Arrange
+      const resourceId = "resourceId";
+      const buildId = "buildId";
+      const expectedCodeGeneratorVersion = "v1.0.0";
+      const dsgResourceDataMock: DSGResourceData = {
+        resourceType: "Service",
+        buildId: buildId,
+        pluginInstallations: [],
+        resourceInfo: {
+          settings: {
+            serverSettings: {
+              generateServer: true,
+            },
+            adminUISettings: {
+              generateAdminUI: true,
+            },
+          },
+          codeGeneratorVersionOptions: {
+            version: expectedCodeGeneratorVersion,
+            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+          },
+        } as unknown as AppInfo,
+      };
+
+      jest
+        .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
+        .mockResolvedValue(expectedCodeGeneratorVersion);
+
+      jest
+        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .mockResolvedValue([
+          [
+            `${buildId}-${EnumDomainName.Server}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  adminUISettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings
+                      .adminUISettings,
+                    generateAdminUI: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+          [
+            `${buildId}-${EnumDomainName.AdminUI}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  serverSettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings.serverSettings,
+                    generateServer: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+        ]);
+
+      const spyOnSaveDsgResourceData = jest
+        .spyOn(service, "saveDsgResourceData")
+        .mockResolvedValue(undefined);
+
+      const spyOnAxiosPost = jest.spyOn(axios, "post").mockResolvedValue({
+        data: {
+          message: "Success",
+        },
+      });
+
+      // Act
+      await service.runBuilds(resourceId, buildId, dsgResourceDataMock);
+
+      // Assert
+      expect(spyOnSaveDsgResourceData).toBeCalledTimes(2);
+      expect(spyOnAxiosPost).toBeCalledTimes(2);
+      expect(spyOnAxiosPost).toHaveBeenNthCalledWith(1, "http://runner.url/", {
+        resourceId: resourceId,
+        buildId: `${buildId}-${EnumDomainName.Server}`,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      });
+      expect(spyOnAxiosPost).toHaveBeenNthCalledWith(2, "http://runner.url/", {
+        resourceId: resourceId,
+        buildId: `${buildId}-${EnumDomainName.AdminUI}`,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      });
+    });
+
+    it("On code generation request with exception, should emit Kafka failure event", async () => {
+      // Arrange
+      const errorMock = new Error("Test error");
+      const resourceId = "resourceId";
+      const buildId = "buildId";
+      const expectedCodeGeneratorVersion = "v1.0.0";
+      const dsgResourceDataMock: DSGResourceData = {
+        resourceType: "Service",
+        buildId: buildId,
+        pluginInstallations: [],
+        resourceInfo: {
+          settings: {
+            serverSettings: {
+              generateServer: true,
+            },
+            adminUISettings: {
+              generateAdminUI: true,
+            },
+          },
+          codeGeneratorVersionOptions: {
+            version: expectedCodeGeneratorVersion,
+            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+          },
+        } as unknown as AppInfo,
+      };
+
+      jest
+        .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
+        .mockResolvedValue(expectedCodeGeneratorVersion);
+
+      jest
+        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .mockResolvedValue([
+          [
+            `${buildId}-${EnumDomainName.Server}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  adminUISettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings
+                      .adminUISettings,
+                    generateAdminUI: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+          [
+            `${buildId}-${EnumDomainName.AdminUI}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  serverSettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings.serverSettings,
+                    generateServer: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+        ]);
+
+      jest.spyOn(service, "saveDsgResourceData").mockRejectedValue(errorMock);
+
+      const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: <CodeGenerationFailure.Value>{
+          buildId,
+          codeGeneratorVersion: expectedCodeGeneratorVersion,
+          error: errorMock,
+        },
+      } as unknown as CodeGenerationFailure.KafkaEvent;
+
+      // Act
+      await service.runBuilds(resourceId, buildId, dsgResourceDataMock);
+
+      // Assert
+      expect(mockKafkaServiceEmitMessage).toBeCalledWith(
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+        kafkaFailureEventMock
+      );
+    });
+  });
+
   describe("emitKafkaEventBasedOnJobStatus", () => {
     const resourceId = "resourceId";
     const buildId = "buildId";
