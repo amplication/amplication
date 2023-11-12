@@ -113,13 +113,18 @@
   --highlight-color: rgba(255, 255, 255, 0.1) !important;
 }
 
+.stigg-paywall-plans-layout {
+  width: 924px;
+}
+
 .stigg-plan-offering-container {
   border-radius: 8px !important;
   border: 1px solid #373d57 !important;
-  max-width: 244px !important;
-  min-width: 244px !important;
+  max-width: 9999px !important;
+  min-width: 1px !important;
   padding-top: 16px !important;
   box-sizing: content-box;
+  flex: 1;
 }
 
 .stigg-plan-offering-container * {
