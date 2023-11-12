@@ -203,20 +203,15 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
 
-      const currentJobStatus =
-        await this.codeGeneratorSplitterService.getJobStatus(jobBuildId);
+      const failureEvent: CodeGenerationFailure.KafkaEvent = {
+        key: null,
+        value: { buildId, codeGeneratorVersion, error },
+      };
 
-      if (currentJobStatus === EnumJobStatus.Failure) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: { buildId, codeGeneratorVersion, error },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
-        );
-      }
+      await this.producerService.emitMessage(
+        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+        failureEvent
+      );
     } catch (error) {
       this.logger.error(error.message, error);
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
