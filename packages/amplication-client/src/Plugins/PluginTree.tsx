@@ -31,9 +31,12 @@ export const PluginTree = React.memo(
 
     const pluginCategories = useMemo(() => {
       const categorySet = new Set<string>();
+
       Object.entries(pluginCatalog).forEach(([pluginId, plugin]) => {
-        categorySet.add(plugin.categories);
+        const categories = plugin.categories.split(",");
+        categories.forEach((category) => categorySet.add(category));
       });
+
       return Array.from(categorySet).sort();
     }, [pluginCatalog]);
 
