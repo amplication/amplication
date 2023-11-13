@@ -85,7 +85,7 @@ export class CodeGeneratorSplitterService {
     if (atLeastOneInProgress) return EnumJobStatus.InProgress;
   }
 
-  async getJobStatus(jobBuildId: JobBuildId<BuildId>) {
+  async getJobStatus(jobBuildId: JobBuildId<BuildId>): Promise<EnumJobStatus> {
     const key = this.extractBuildId(jobBuildId);
     const value = await this.redisService.get<RedisValue>(key);
     this.logger.debug("Job status", { value });

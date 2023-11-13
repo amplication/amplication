@@ -516,7 +516,7 @@ describe("CodeGeneratorSplitter", () => {
     });
   });
 
-  describe("getBuildStatus and setBuildStatus", () => {
+  describe("getJobStatus and setJobStatus", () => {
     it("should get the job status", async () => {
       const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
       const status = EnumJobStatus.Success;
