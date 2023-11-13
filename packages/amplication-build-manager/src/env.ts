@@ -8,6 +8,10 @@ export class Env {
   static readonly REDIS_PORT = "REDIS_PORT";
   static readonly REDIS_USERNAME = "REDIS_USERNAME";
   static readonly REDIS_PASSWORD = "REDIS_PASSWORD";
+  static readonly REDIS_TLS_CA = "REDIS_TLS_CA";
+  static readonly REDIS_TLS_CERT = "REDIS_TLS_CA";
+  static readonly REDIS_TLS_KEY = "REDIS_TLS_CA";
+  static readonly REDIS_TLS_ENABLED = "REDIS_TLS_ENABLED";
 
   static readonly BUILD_ARTIFACTS_BASE_FOLDER = "BUILD_ARTIFACTS_BASE_FOLDER";
   static readonly BUILD_ARTIFACTS_CODE_FOLDER = "BUILD_ARTIFACTS_CODE_FOLDER";
