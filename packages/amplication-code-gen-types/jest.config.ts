@@ -16,13 +16,14 @@ export default {
   coverageDirectory: "../../coverage/packages/amplication-code-gen-types",
   coverageThreshold: {
     global: {
-      branches: 87,
-      lines: 81,
+      branches: 92,
+      lines: 95,
     },
   },
   collectCoverageFrom: [
     "**/*.{ts,tsx}",
     "!**/*.types.{ts,tsx}",
+    "!**/scripts/**",
     "!**/*.spec.{ts,tsx}",
     "!**/*.e2e-spec.{ts,tsx}",
     "!**/types/**",

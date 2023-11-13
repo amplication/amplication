@@ -204,8 +204,8 @@ export class BillingService {
       awaitPaymentConfirmation: true,
       checkoutOptions: {
         allowPromoCodes: true,
-        cancelUrl: new URL(successUrl, this.clientHost).href,
-        successUrl: new URL(cancelUrl, this.clientHost).href,
+        cancelUrl: new URL(cancelUrl, this.clientHost).href,
+        successUrl: new URL(successUrl, this.clientHost).href,
       },
       metadata: {
         userId: userId,

@@ -7,7 +7,7 @@ import {
   serverDirectories,
 } from "./code-gen-types";
 import { DSGResourceData } from "./dsg-resource-data";
-import { Events } from "./plugin-events";
+import { Events } from "./plugin-events.types";
 
 export interface EventParams {}
 
@@ -73,6 +73,8 @@ export type PluginMap = {
 export enum EventNames {
   CreateEntityController = "CreateEntityController",
   CreateEntityControllerBase = "CreateEntityControllerBase",
+  CreateEntityGrpcController = "CreateEntityGrpcController",
+  CreateEntityGrpcControllerBase = "CreateEntityGrpcControllerBase",
   CreateEntityControllerSpec = "CreateEntityControllerSpec",
   CreateServerAuth = "CreateServerAuth",
   CreateAdminAppModule = "CreateAdminAppModule",
@@ -104,6 +106,7 @@ export enum EventNames {
   CreateSwagger = "CreateSwagger",
   CreateSeed = "CreateSeed",
   CreateEntityControllerToManyRelationMethods = "CreateEntityControllerToManyRelationMethods",
+  CreateEntityGrpcControllerToManyRelationMethods = "createEntityGrpcControllerToManyRelationMethods",
   CreateEntityResolverToManyRelationMethods = "CreateEntityResolverToManyRelationMethods",
   CreateEntityResolverToOneRelationMethods = "CreateEntityResolverToOneRelationMethods",
   CreateDTOs = "CreateDTOs",

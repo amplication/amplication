@@ -5,6 +5,7 @@ import {
   EntityField,
   EnumDataType,
   LookupResolvedProperties,
+  PluginInstallation,
   serverDirectories,
   types,
   ModuleAction,
@@ -64,6 +65,7 @@ export async function prepareContext(
   const serviceTopicsWithName = prepareServiceTopics(dSGResourceData);
 
   const context = DsgContext.getInstance;
+
   context.appInfo = appInfo;
   context.roles = roles;
   context.entities = normalizedEntities;
@@ -76,6 +78,7 @@ export async function prepareContext(
     moduleContainers,
     moduleActions
   );
+  context.generateGrpc = shouldGenerateGrpc(context.pluginInstallations);
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
     return entity.fields.some(
@@ -142,6 +145,16 @@ export function prepareEntityPluralName(entities: Entity[]): Entity[] {
     return entity;
   });
   return currentEntities;
+}
+
+export function shouldGenerateGrpc(
+  pluginInstallations: PluginInstallation[]
+): boolean {
+  return (
+    pluginInstallations.filter(
+      (p) => p.configurations && p.configurations["generateGRPC"] === "true"
+    ).length > 0
+  );
 }
 
 function prepareServiceTopics(dSGResourceData: DSGResourceData) {
