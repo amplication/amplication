@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import useModuleAction from "./hooks/useModuleAction";
+import "./ToggleModule.scss";
 
 type Props = {
   module: models.Module;
@@ -95,12 +96,14 @@ export const ModuleActionListItem = ({
       itemsAlign={EnumItemsAlign.Center}
       gap={EnumGapSize.Default}
       start={
-        <Toggle
-          name={"enabled"}
-          onValueChange={onEnableChanged}
-          checked={moduleAction.enabled}
-          disabled={disabled}
-        ></Toggle>
+        <div className="module-toggle-field">
+          <Toggle
+            name={"enabled"}
+            onValueChange={onEnableChanged}
+            checked={moduleAction.enabled}
+            disabled={disabled}
+          ></Toggle>
+        </div>
       }
     >
       <ApiOperationTag

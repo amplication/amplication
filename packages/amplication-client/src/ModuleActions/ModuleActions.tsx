@@ -19,6 +19,7 @@ import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { useQuery } from "@apollo/client";
 import { GET_RESOURCE_SETTINGS } from "../Resource/resourceSettings/GenerationSettingsForm";
+import "./ToggleModule.scss";
 
 const DATE_CREATED_FIELD = "createdAt";
 
@@ -99,11 +100,14 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
     <>
       {match.isExact ? (
         <>
-          <SearchField
-            label="search"
-            placeholder="Search"
-            onChange={handleSearchChange}
-          />
+          <div className="module-toggle-field__search-field">
+            <SearchField
+              label="search"
+              placeholder="Search"
+              onChange={handleSearchChange}
+            />
+          </div>
+
           <FlexItem
             itemsAlign={EnumItemsAlign.Center}
             margin={EnumFlexItemMargin.Top}
@@ -121,14 +125,16 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
           {generateGraphQlAndRestApi && (
             <FlexItem
               direction={EnumFlexDirection.Row}
-              contentAlign={EnumContentAlign.Center}
-              itemsAlign={EnumItemsAlign.Center}
+              contentAlign={EnumContentAlign.Start}
+              itemsAlign={EnumItemsAlign.Normal}
             >
               GraphQL API
-              <Toggle
-                checked={displayMode === EnumApiOperationTagStyle.REST}
-                onValueChange={handleDisplayModeChange}
-              />
+              <div className={`module-toggle-field__operation-toggle`}>
+                <Toggle
+                  checked={displayMode === EnumApiOperationTagStyle.REST}
+                  onValueChange={handleDisplayModeChange}
+                />
+              </div>
               REST API
             </FlexItem>
           )}
