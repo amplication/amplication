@@ -3,7 +3,6 @@ import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
 import { join } from "path";
 import { AMPLICATION_MODULES } from "../generate-code";
