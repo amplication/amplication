@@ -3,7 +3,7 @@ import { Entity, EntityField } from "@amplication/code-gen-types";
 import defaultEntity from "../constants/default-entity";
 import defaultJsonField from "../constants/json-field";
 import { printTypescript } from "../utils";
-import { createEntityInputFiles } from "packages/data-service-generator/src/server/resource/create-dtos";
+import { createEntityInputFiles } from "../../../../../server/resource/create-dtos";
 
 describe("Testing the <Entity>CreateInput class with json field", () => {
   let entity: Entity;

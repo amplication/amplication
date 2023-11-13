@@ -3,7 +3,7 @@ import { cloneDeep } from "lodash";
 import defaultEntity from "./constants/default-entity";
 import defaultJsonField from "./constants/json-field";
 import { printTypescript } from "./utils";
-import { createEntityInputFiles } from "packages/data-service-generator/src/server/resource/create-dtos";
+import { createEntityInputFiles } from "../../../../server/resource/create-dtos";
 
 describe("Test that the entity dto is creating properly", () => {
   let entity: Entity;
