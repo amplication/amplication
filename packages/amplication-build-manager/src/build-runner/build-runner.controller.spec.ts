@@ -24,7 +24,7 @@ describe("BuildRunnerController", () => {
         {
           provide: BuildRunnerService,
           useClass: jest.fn(() => ({
-            runBuilds: jest.fn(),
+            runBuild: jest.fn(),
             processBuildResult: jest.fn(),
           })),
         },
@@ -81,7 +81,7 @@ describe("BuildRunnerController", () => {
   });
 
   describe("onCodeGenerationRequest", () => {
-    it("should call runBuilds", async () => {
+    it("should call runBuild", async () => {
       const codeGenerationRequestDTOMock: CodeGenerationRequest.Value = {
         resourceId: "resourceId",
         buildId: "buildId",
@@ -97,9 +97,9 @@ describe("BuildRunnerController", () => {
           } as unknown as AppInfo,
         },
       };
-      const spyOnRunBuilds = jest.spyOn(buildRunnerService, "runBuilds");
+      const spyOnRunBuild = jest.spyOn(buildRunnerService, "runBuild");
       await controller.onCodeGenerationRequest(codeGenerationRequestDTOMock);
-      expect(spyOnRunBuilds).toHaveBeenCalledWith(
+      expect(spyOnRunBuild).toHaveBeenCalledWith(
         codeGenerationRequestDTOMock.resourceId,
         codeGenerationRequestDTOMock.buildId,
         codeGenerationRequestDTOMock.dsgResourceData
