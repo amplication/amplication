@@ -14,7 +14,6 @@ import "./PurchasePage.scss";
 import { useCallback, useContext, useState } from "react";
 
 import { AppContext } from "../context/appContext";
-import { PromoBanner } from "./PromoBanner";
 import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
@@ -174,7 +173,7 @@ const PurchasePage = (props) => {
         <div className={`${CLASS_NAME}__header`}>
           Pick the perfect plan for your needs
         </div>
-        <PromoBanner />
+
         <Paywall
           textOverrides={{
             entitlementsTitle: (plan) => {
