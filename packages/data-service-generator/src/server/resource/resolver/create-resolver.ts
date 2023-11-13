@@ -259,6 +259,10 @@ async function createResolverBaseModule({
   const { entity: entityDTO } = entityDTOs;
   interpolate(template, templateMapping);
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   const classDeclaration = getClassDeclarationById(template, resolverBaseId);
   const toManyRelationFields = entity.fields.filter(isToManyRelationField);
   const toManyRelationMethods = (
@@ -331,8 +335,36 @@ async function createResolverBaseModule({
     ...toOneRelationMethods
   );
 
-  const moduleContainer = moduleContainers?.find(
-    (moduleContainer) => moduleContainer.entityId === entity.id
+  toManyRelationFields.map((field) =>
+    Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
+      (key) => {
+        const action: ModuleAction =
+          entityActions.relatedFieldsDefaultActions[field.name][key];
+
+        if (
+          (moduleContainer && !moduleContainer?.enabled && action) ||
+          (action && !action.enabled)
+        ) {
+          removeClassMethodByName(classDeclaration, action.name);
+        }
+      }
+    )
+  );
+
+  toOneRelationFields.map((field) =>
+    Object.keys(entityActions.relatedFieldsDefaultActions[field.name]).forEach(
+      (key) => {
+        const action: ModuleAction =
+          entityActions.relatedFieldsDefaultActions[field.name][key];
+
+        if (
+          (moduleContainer && !moduleContainer?.enabled && action) ||
+          (action && !action.enabled)
+        ) {
+          removeClassMethodByName(classDeclaration, action.name);
+        }
+      }
+    )
   );
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
