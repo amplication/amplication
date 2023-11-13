@@ -315,7 +315,10 @@ export type entityRelatedFieldDefaultActions = {
 
 export type entityActions = {
   entityDefaultActions: entityDefaultActions;
-  relatedFieldsDefaultActions: entityRelatedFieldDefaultActions[];
+  relatedFieldsDefaultActions: Record<
+    string, //field name
+    entityRelatedFieldDefaultActions
+  >;
   customActions: ModuleAction[];
 };
 
