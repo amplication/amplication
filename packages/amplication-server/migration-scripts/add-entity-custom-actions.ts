@@ -4,9 +4,13 @@ import { IBlock, Block, Resource, Entity } from "../src/models";
 import { CreateBlockArgs } from "../src/core/block/dto";
 import { EnumBlockType } from "../src/enums/EnumBlockType";
 import { Module } from "../src/core/module/dto/Module";
-import { getDefaultActionsForEntity } from "../../../libs/util/dsg-utils/src";
 import { ModuleAction } from "../src/core/moduleAction/dto/ModuleAction";
 import * as CodeGenTypes from "../../amplication-code-gen-types";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "../../../libs/util/dsg-utils/src/lib/entity-util";
+import { EntityField, EnumDataType } from "../../amplication-code-gen-types";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -70,7 +74,24 @@ async function main() {
             },
           };
 
-          await createDefaultModuleForEntity(entityArgs, entity);
+          const module = await createDefaultModuleForEntity(entityArgs, entity);
+
+          const relationFields = await this.prisma.entityField.findMany({
+            where: {
+              entityVersion: {
+                entityId: entity.id,
+                versionNumber: 0,
+                EnumDataType: EnumDataType.Lookup,
+              },
+            },
+          });
+          relationFields.forEach(async (field) => {
+            await createDefaultActionsForRelationField(
+              entity,
+              field,
+              module.id
+            );
+          });
         });
       });
 
@@ -83,6 +104,40 @@ async function main() {
   await client.$disconnect();
 }
 
+async function createDefaultActionsForRelationField(
+  entity: Entity,
+  field: EntityField,
+  moduleId: string
+): Promise<ModuleAction[]> {
+  const defaultActions = await getDefaultActionsForRelationField(
+    entity as unknown as CodeGenTypes.Entity,
+    field as unknown as CodeGenTypes.EntityField
+  );
+  return await Promise.all(
+    Object.keys(defaultActions).map((action) => {
+      return (
+        defaultActions[action] &&
+        createModuleAction({
+          data: {
+            fieldPermanentId: field.permanentId,
+            ...defaultActions[action],
+            parentBlock: {
+              connect: {
+                id: moduleId,
+              },
+            },
+            resource: {
+              connect: {
+                id: entity.resourceId,
+              },
+            },
+          },
+        })
+      );
+    })
+  );
+}
+
 function chunkArrayInGroups(arr, size) {
   const myArray = [];
   for (let i = 0; i < arr.length; i += size) {
@@ -91,7 +146,10 @@ function chunkArrayInGroups(arr, size) {
   return myArray;
 }
 
-async function createDefaultModuleForEntity(args: any, entity: Entity) {
+async function createDefaultModuleForEntity(
+  args: any,
+  entity: Entity
+): Promise<Module> {
   const module = await createModule({
     ...args,
     data: {
@@ -102,6 +160,8 @@ async function createDefaultModuleForEntity(args: any, entity: Entity) {
   });
 
   await createDefaultActionsForEntityModule(entity, module);
+
+  return module;
 }
 
 async function createModule(args: any): Promise<Module> {
