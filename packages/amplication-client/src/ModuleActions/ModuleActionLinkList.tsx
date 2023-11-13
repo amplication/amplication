@@ -9,11 +9,9 @@ import {
 } from "@amplication/ui/design-system";
 import React, { useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
-import InnerTabLink from "../Layout/InnerTabLink";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
 import { formatError } from "../util/error";
-
 import useModuleAction from "./hooks/useModuleAction";
 
 const DATE_CREATED_FIELD = "createdAt";
