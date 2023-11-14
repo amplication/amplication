@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules, createDTOs } from "./resource/create-dtos";
+import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -54,8 +54,7 @@ async function createServerInternal(
   await context.logger.info("Creating package.json...");
   const packageJsonModule = await createServerPackageJson();
 
-  await context.logger.info("Creating DTOs...");
-  context.DTOs = await createDTOs(context.entities);
+  await context.logger.info("Creating server DTOs...");
   const dtoModules = await createDTOModules(context.DTOs);
 
   await context.logger.info("Creating resources...");

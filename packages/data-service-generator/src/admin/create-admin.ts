@@ -23,7 +23,6 @@ import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
 import { createGitIgnore } from "./gitignore/create-gitignore";
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
-import { createDTOs as createServerDTOs } from "../server/resource/create-dtos";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -41,15 +40,6 @@ export function createAdminModules(): Promise<ModuleMap> {
 async function createAdminModulesInternal(): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
   const { entities, roles, clientDirectories } = context;
-
-  /** From version 2.1.1 (TODO: make sure that this version number is the right one) of the DSG we run 2 DSG jobs when generateServer and generateAdminUI are true
-   * The admin-ui generation is depending on the server DTOs, so we need to create them on createAdmin as well.
-   * For older DSG versions, the server is being generated before the admin-ui, so the DTOs are already created, so we don't need to create them again.
-   * This check is to make sure that we don't create the DTOs twice when running a DSG version that is not supporting the split.
-   */
-  if (!Object.keys(context.DTOs).length) {
-    context.DTOs = await createServerDTOs(context.entities);
-  }
 
   await context.logger.info("Creating admin...");
   await context.logger.info(`Admin path: ${clientDirectories.baseDirectory}`);
@@ -82,7 +72,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
 
   await context.logger.info("Creating public files...");
   const publicFilesModules = await createPublicFiles();
-  await context.logger.info("Creating DTOs...");
+  await context.logger.info("Creating Admin UI DTOs...");
   const dtoNameToPath = createDTONameToPath(context.DTOs);
   const dtoModuleMap = await createDTOModules(context.DTOs, dtoNameToPath);
   const enumRolesModule = createEnumRolesModule(roles);

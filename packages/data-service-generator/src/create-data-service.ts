@@ -9,6 +9,7 @@ import { ILogger } from "@amplication/util/logging";
 import { prepareDefaultPlugins } from "./utils/dynamic-installation/defaultPlugins";
 import { dynamicPackagesInstallations } from "./dynamic-package-installation";
 import { logger } from "./logging";
+import { createDTOs } from "./server/resource/create-dtos";
 
 export async function createDataService(
   dSGResourceData: DSGResourceData,
@@ -47,6 +48,9 @@ export async function createDataService(
       resourceId: dSGResourceData.resourceInfo.id,
       buildId: dSGResourceData.buildId,
     });
+
+    await context.logger.info("Creating DTOs...");
+    context.DTOs = await createDTOs(context.entities);
 
     const {
       appInfo: {
