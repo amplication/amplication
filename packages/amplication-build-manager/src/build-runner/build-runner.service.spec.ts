@@ -200,7 +200,7 @@ describe("BuildRunnerService", () => {
       await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
     });
 
-    it("should return false when it gets to the catch block", async () => {
+    it("should return false something went wrong", async () => {
       const resourceId = "resourceId";
       const buildId = "buildId";
 
@@ -223,7 +223,7 @@ describe("BuildRunnerService", () => {
   });
 
   describe("runBuild", () => {
-    it("On code generation request, it should split the build into jobs when the comparison between the current version and the provided version is greater than or equal to 0", async () => {
+    it("should split the build into jobs when code generator version has support for the new split job functionality", async () => {
       // Arrange
       const resourceId = "resourceId";
       const buildId = "buildId";
@@ -320,7 +320,7 @@ describe("BuildRunnerService", () => {
       });
     });
 
-    it("On code generation request, it should NOT split the build into jobs when the comparison between the current version and the provided version is less than 1", async () => {
+    it("should NOT split the build into jobs when code generator version doesn't have support for the new split job functionality", async () => {
       // Arrange
       const resourceId = "resourceId";
       const buildId = "buildId";

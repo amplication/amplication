@@ -14,17 +14,11 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 type ResourceTuple = [JobBuildId<BuildId>, DSGResourceData];
 @Injectable()
 export class CodeGeneratorSplitterService {
-  // TODO: rename to CodeGeneratorJobHandlerService (?)
   constructor(
     private readonly redisService: RedisService,
     private readonly logger: AmplicationLogger
   ) {}
 
-  /**
-   * Splits the build into x jobs
-   * Currently we have 2 jobs: server and admin-ui
-   * Or only one if the user chose to build only one of them
-   */
   async splitBuildsIntoJobs(
     dsgResourceData: DSGResourceData,
     buildId: BuildId
@@ -100,10 +94,7 @@ export class CodeGeneratorSplitterService {
    * @param jobBuildId buildId with domain name suffix (server / admin-ui)
    * @param status EnumJobStatus (in-progress / success / failure)
    */
-  async setJobStatus(
-    jobBuildId: JobBuildId<BuildId>,
-    status: EnumJobStatus
-  ): Promise<void> {
+  async setJobStatus(jobBuildId: string, status: EnumJobStatus): Promise<void> {
     const key = this.extractBuildId(jobBuildId);
     const currentVal = await this.redisService.get<RedisValue>(key);
     const newVal = {
@@ -122,7 +113,7 @@ export class CodeGeneratorSplitterService {
    * @param buildId the buildId with suffix which in this case could be "-server" or "-admin-ui"
    * @returns return the substring before the first hyphen or the whole string if there is no hyphen
    */
-  extractBuildId(jobBuildId: JobBuildId<BuildId>): string {
+  extractBuildId(jobBuildId: string): string {
     const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
     const regex = new RegExp(regexPattern);
 

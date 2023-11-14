@@ -406,9 +406,16 @@ describe("CodeGeneratorSplitter", () => {
     redisService = module.get<RedisService>(RedisService);
   });
 
-  it("should extract build id from jobBuildId", () => {
-    const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
-    expect(service.extractBuildId(jobBuildId)).toBe(buildId);
+  describe("extractBuildId", () => {
+    it("should extract build id from jobBuildId", () => {
+      const jobBuildId = `${buildId}-${EnumDomainName.AdminUI}`;
+      expect(service.extractBuildId(jobBuildId)).toBe(buildId);
+    });
+
+    it("should return the same input when the buildId doesn't contain a domain name", () => {
+      const jobBuildId = `${buildId}`;
+      expect(service.extractBuildId(jobBuildId)).toBe(buildId);
+    });
   });
 
   describe("splitBuildsIntoJobs", () => {
@@ -516,34 +523,32 @@ describe("CodeGeneratorSplitter", () => {
     });
   });
 
-  describe("getJobStatus and setJobStatus", () => {
-    it("should get the job status", async () => {
-      const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
-      const status = EnumJobStatus.Success;
-      const value = {
-        [jobBuildId]: status,
-      };
-      const spyOnRedisGet = jest
-        .spyOn(redisService, "get")
-        .mockResolvedValue(value);
+  it("should get the job status based on the jobBuildId (key)", async () => {
+    const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+    const status = EnumJobStatus.Success;
+    const value = {
+      [jobBuildId]: status,
+    };
+    const spyOnRedisGet = jest
+      .spyOn(redisService, "get")
+      .mockResolvedValue(value);
 
-      const result = await service.getJobStatus(jobBuildId);
-      expect(spyOnRedisGet).toHaveBeenCalledWith(buildId);
-      expect(result).toBe(status);
-    });
+    const result = await service.getJobStatus(jobBuildId);
+    expect(spyOnRedisGet).toHaveBeenCalledWith(buildId);
+    expect(result).toBe(status);
+  });
 
-    it("should set the job status", async () => {
-      const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
-      const status = EnumJobStatus.Success;
-      const value = {
-        [jobBuildId]: status,
-      };
-      const spyOnRedisSet = jest
-        .spyOn(redisService, "set")
-        .mockResolvedValue(undefined);
+  it("should set a new job status with the relevant job build status", async () => {
+    const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+    const status = EnumJobStatus.Success;
+    const value = {
+      [jobBuildId]: status,
+    };
+    const spyOnRedisSet = jest
+      .spyOn(redisService, "set")
+      .mockResolvedValue(undefined);
 
-      await service.setJobStatus(jobBuildId, status);
-      expect(spyOnRedisSet).toHaveBeenCalledWith(buildId, value);
-    });
+    await service.setJobStatus(jobBuildId, status);
+    expect(spyOnRedisSet).toHaveBeenCalledWith(buildId, value);
   });
 });
