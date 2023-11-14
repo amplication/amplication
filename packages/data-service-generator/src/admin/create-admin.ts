@@ -23,10 +23,7 @@ import DsgContext from "../dsg-context";
 import { createAdminUIPackageJson } from "./package-json/create-package-json";
 import { createGitIgnore } from "./gitignore/create-gitignore";
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
-import {
-  createDTOs as createServerDTOs,
-  createDTOModules as createServerDTOModules,
-} from "../server/resource/create-dtos";
+import { createDTOs as createServerDTOs } from "../server/resource/create-dtos";
 
 const STATIC_MODULES_PATH = path.join(__dirname, "static");
 const API_PATHNAME = "/api";
@@ -51,9 +48,7 @@ async function createAdminModulesInternal(): Promise<ModuleMap> {
    * This check is to make sure that we don't create the DTOs twice when running a DSG version that is not supporting the split.
    */
   if (!Object.keys(context.DTOs).length) {
-    const dtos = await createServerDTOs(context.entities);
-    context.DTOs = dtos;
-    await createServerDTOModules(context.DTOs);
+    context.DTOs = await createServerDTOs(context.entities);
   }
 
   await context.logger.info("Creating admin...");
