@@ -7,10 +7,10 @@ import {
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types/models";
 import { Test, TestingModule } from "@nestjs/testing";
-import {
-  CodeGeneratorSplitterService,
-  EnumDomainType,
-} from "./code-generator-splitter.service";
+import { CodeGeneratorSplitterService } from "./code-generator-splitter.service";
+import { BuildId, EnumDomainName, EnumJobStatus, JobBuildId } from "../types";
+import { RedisService } from "../redis/redis.service";
+import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 
 const adminAndServerInputJson: DSGResourceData = {
   entities: [
@@ -379,45 +379,176 @@ const onlyAdminInputJson: DSGResourceData = {
   },
 };
 
+const buildId = "cloo1bi5t0001p5888jj5wle9";
+
 describe("CodeGeneratorSplitter", () => {
   let service: CodeGeneratorSplitterService;
+  let redisService: RedisService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
-      providers: [CodeGeneratorSplitterService],
+      providers: [
+        CodeGeneratorSplitterService,
+        {
+          provide: RedisService,
+          useValue: {
+            get: jest.fn(),
+            set: jest.fn(),
+          },
+        },
+        MockedAmplicationLoggerProvider,
+      ],
     }).compile();
 
     service = module.get<CodeGeneratorSplitterService>(
       CodeGeneratorSplitterService
     );
+    redisService = module.get<RedisService>(RedisService);
   });
 
-  it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", () => {
-    const jobs = service.splitJobs(adminAndServerInputJson);
-    expect(jobs.length).toBe(2);
-    expect(jobs).toEqual([
-      [EnumDomainType.Server, onlyServerInputJson],
-      [EnumDomainType.AdminUI, onlyAdminInputJson],
-    ]);
+  describe("extractBuildId", () => {
+    it("should extract build id from jobBuildId", () => {
+      const jobBuildId = `${buildId}-${EnumDomainName.AdminUI}`;
+      expect(service.extractBuildId(jobBuildId)).toBe(buildId);
+    });
 
-    expect(
-      jobs[0][1].resourceInfo.settings.adminUISettings.generateAdminUI
-    ).toBe(false);
-
-    expect(jobs[1][1].resourceInfo.settings.serverSettings.generateServer).toBe(
-      false
-    );
+    it("should return the same input when the buildId doesn't contain a domain name", () => {
+      const jobBuildId = `${buildId}`;
+      expect(service.extractBuildId(jobBuildId)).toBe(buildId);
+    });
   });
 
-  it("should build only server, it will create one request to start a jobs with onlyServerInputJson", () => {
-    const jobs = service.splitJobs(onlyServerInputJson);
-    expect(jobs.length).toBe(1);
-    expect(jobs).toEqual([[EnumDomainType.Server, onlyServerInputJson]]);
+  describe("splitBuildsIntoJobs", () => {
+    it("should create two requests to start two jobs, one for admin by passing onlyAdminInputJson and one for server by passing onlyServerInputJson", async () => {
+      const spyOnSetJobStatus = jest
+        .spyOn(service, "setJobStatus")
+        .mockResolvedValue(undefined);
+      const adminJobBuildId = `${buildId}-${EnumDomainName.AdminUI}`;
+      const serverJobBuildId = `${buildId}-${EnumDomainName.Server}`;
+
+      const jobs = await service.splitBuildsIntoJobs(
+        adminAndServerInputJson,
+        buildId
+      );
+      expect(jobs.length).toBe(2);
+      expect(jobs).toEqual([
+        [serverJobBuildId, onlyServerInputJson],
+        [adminJobBuildId, onlyAdminInputJson],
+      ]);
+
+      expect(
+        jobs[0][1].resourceInfo.settings.adminUISettings.generateAdminUI
+      ).toBe(false);
+
+      expect(
+        jobs[1][1].resourceInfo.settings.serverSettings.generateServer
+      ).toBe(false);
+
+      expect(spyOnSetJobStatus).toBeCalledTimes(2);
+    });
+
+    it("should build only server, it will create one request to start a jobs with onlyServerInputJson", async () => {
+      const spyOnSetJobStatus = jest
+        .spyOn(service, "setJobStatus")
+        .mockResolvedValue(undefined);
+      const serverJobBuildId = `${buildId}-${EnumDomainName.Server}`;
+
+      const jobs = await service.splitBuildsIntoJobs(
+        onlyServerInputJson,
+        buildId
+      );
+      expect(jobs.length).toBe(1);
+      expect(jobs).toEqual([[serverJobBuildId, onlyServerInputJson]]);
+
+      expect(spyOnSetJobStatus).toHaveBeenCalledWith(
+        serverJobBuildId,
+        EnumJobStatus.InProgress
+      );
+      expect(spyOnSetJobStatus).toBeCalledTimes(1);
+    });
+
+    it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", async () => {
+      const spyOnSetJobStatus = jest
+        .spyOn(service, "setJobStatus")
+        .mockResolvedValue(undefined);
+      const adminJobBuildId = `${buildId}-${EnumDomainName.AdminUI}`;
+
+      const jobs = await service.splitBuildsIntoJobs(
+        onlyAdminInputJson,
+        buildId
+      );
+      expect(jobs.length).toBe(1);
+      expect(jobs).toEqual([[adminJobBuildId, onlyAdminInputJson]]);
+
+      expect(spyOnSetJobStatus).toHaveBeenCalledWith(
+        adminJobBuildId,
+        EnumJobStatus.InProgress
+      );
+      expect(spyOnSetJobStatus).toBeCalledTimes(1);
+    });
   });
 
-  it("should build only admin, it will create one request to start a jobs with onlyAdminInputJson", () => {
-    const jobs = service.splitJobs(onlyAdminInputJson);
-    expect(jobs.length).toBe(1);
-    expect(jobs).toEqual([[EnumDomainType.AdminUI, onlyAdminInputJson]]);
+  describe("getBuildStatus", () => {
+    it("should return Success when all jobs have succeeded", async () => {
+      const buildId = "build-id";
+      jest.spyOn(redisService, "get").mockResolvedValue({
+        job1: EnumJobStatus.Success,
+        job2: EnumJobStatus.Success,
+      });
+
+      const status = await service.getBuildStatus(buildId);
+      expect(status).toBe(EnumJobStatus.Success);
+    });
+
+    it("should return Failure when at least one job has failed", async () => {
+      const buildId = "build-id";
+      jest.spyOn(redisService, "get").mockResolvedValue({
+        job1: EnumJobStatus.Success,
+        job2: EnumJobStatus.Failure,
+      });
+
+      const status = await service.getBuildStatus(buildId);
+      expect(status).toBe(EnumJobStatus.Failure);
+    });
+
+    it("should return InProgress when at least one job is in progress", async () => {
+      const buildId = "build-id";
+      jest.spyOn(redisService, "get").mockResolvedValue({
+        job1: EnumJobStatus.InProgress,
+        job2: EnumJobStatus.Success,
+      });
+
+      const status = await service.getBuildStatus(buildId);
+      expect(status).toBe(EnumJobStatus.InProgress);
+    });
+  });
+
+  it("should get the job status based on the jobBuildId (key)", async () => {
+    const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+    const status = EnumJobStatus.Success;
+    const value = {
+      [jobBuildId]: status,
+    };
+    const spyOnRedisGet = jest
+      .spyOn(redisService, "get")
+      .mockResolvedValue(value);
+
+    const result = await service.getJobStatus(jobBuildId);
+    expect(spyOnRedisGet).toHaveBeenCalledWith(buildId);
+    expect(result).toBe(status);
+  });
+
+  it("should set a new job status with the relevant job build status", async () => {
+    const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+    const status = EnumJobStatus.Success;
+    const value = {
+      [jobBuildId]: status,
+    };
+    const spyOnRedisSet = jest
+      .spyOn(redisService, "set")
+      .mockResolvedValue(undefined);
+
+    await service.setJobStatus(jobBuildId, status);
+    expect(spyOnRedisSet).toHaveBeenCalledWith(buildId, value);
   });
 });
