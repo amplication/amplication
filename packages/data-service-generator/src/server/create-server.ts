@@ -25,7 +25,7 @@ import { createDockerComposeDevFile } from "./docker-compose/create-docker-compo
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
 import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
-import { createSecretsManagerModule } from "./secrets-manager/create-secrets-manager";
+import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -76,7 +76,7 @@ async function createServerInternal(
   const messageBrokerModules = await createMessageBroker({});
 
   await context.logger.info("Creating SecretsManager...");
-  const secretsManagerModule = await createSecretsManagerModule({
+  const secretsManagerModule = await createSecretsManager({
     secretsNameKey: [],
   });
 

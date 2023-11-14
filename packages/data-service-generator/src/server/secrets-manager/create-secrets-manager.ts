@@ -15,17 +15,17 @@ import fg from "fast-glob";
 import { promises as fsPromises } from "fs";
 import { getFileEncoding } from "../../utils/get-file-encoding";
 
-export function createSecretsManagerModule(
+export function createSecretsManager(
   eventParams: CreateServerSecretsManagerParams
 ): ModuleMap {
   return pluginWrapper(
-    createSecretsManagerModuleInternal,
+    createSecretsManagerInternal,
     EventNames.CreateServerSecretsManager,
     eventParams
   );
 }
 
-export async function createSecretsManagerModuleInternal({
+export async function createSecretsManagerInternal({
   secretsNameKey,
 }: CreateServerSecretsManagerParams): Promise<ModuleMap> {
   const context = DsgContext.getInstance;
