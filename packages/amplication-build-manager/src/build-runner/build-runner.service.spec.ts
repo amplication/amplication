@@ -76,6 +76,14 @@ describe("BuildRunnerService", () => {
                   return "";
               }
             },
+            getOrThrow: (variable) => {
+              switch (variable) {
+                case Env.FEATURE_SPLIT_JOBS_MIN_DSG_VERSION:
+                  return "v2.1.1";
+                default:
+                  return "";
+              }
+            },
           },
         },
         {
@@ -92,6 +100,7 @@ describe("BuildRunnerService", () => {
           provide: CodeGeneratorService,
           useValue: {
             getCodeGeneratorVersion: jest.fn(),
+            compareVersions: jest.fn(),
           },
         },
         {
@@ -214,11 +223,11 @@ describe("BuildRunnerService", () => {
   });
 
   describe("runBuild", () => {
-    it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner", async () => {
+    it("On code generation request, it should split the build into jobs when the comparison between the current version and the provided version is greater than or equal to 0", async () => {
       // Arrange
       const resourceId = "resourceId";
       const buildId = "buildId";
-      const expectedCodeGeneratorVersion = "v1.0.0";
+      const expectedCodeGeneratorVersion = "v2.1.1";
       const dsgResourceDataMock: DSGResourceData = {
         resourceType: "Service",
         buildId: buildId,
@@ -242,6 +251,8 @@ describe("BuildRunnerService", () => {
       jest
         .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
         .mockResolvedValue(expectedCodeGeneratorVersion);
+
+      jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
 
       jest
         .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
@@ -292,7 +303,153 @@ describe("BuildRunnerService", () => {
       });
 
       // Act
-      await service.runBuilds(resourceId, buildId, dsgResourceDataMock);
+      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
+
+      // Assert
+      expect(spyOnSaveDsgResourceData).toBeCalledTimes(2);
+      expect(spyOnAxiosPost).toBeCalledTimes(2);
+      expect(spyOnAxiosPost).toHaveBeenNthCalledWith(1, "http://runner.url/", {
+        resourceId: resourceId,
+        buildId: `${buildId}-${EnumDomainName.Server}`,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      });
+      expect(spyOnAxiosPost).toHaveBeenNthCalledWith(2, "http://runner.url/", {
+        resourceId: resourceId,
+        buildId: `${buildId}-${EnumDomainName.AdminUI}`,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      });
+    });
+
+    it("On code generation request, it should NOT split the build into jobs when the comparison between the current version and the provided version is less than 1", async () => {
+      // Arrange
+      const resourceId = "resourceId";
+      const buildId = "buildId";
+      const expectedCodeGeneratorVersion = "v2.1.1";
+      const dsgResourceDataMock: DSGResourceData = {
+        resourceType: "Service",
+        buildId: buildId,
+        pluginInstallations: [],
+        resourceInfo: {
+          settings: {
+            serverSettings: {
+              generateServer: true,
+            },
+            adminUISettings: {
+              generateAdminUI: true,
+            },
+          },
+          codeGeneratorVersionOptions: {
+            version: expectedCodeGeneratorVersion,
+            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+          },
+        } as unknown as AppInfo,
+      };
+
+      jest
+        .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
+        .mockResolvedValue(expectedCodeGeneratorVersion);
+
+      jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(-1);
+
+      const spyOnAxiosPost = jest.spyOn(axios, "post").mockResolvedValue({
+        data: {
+          message: "Success",
+        },
+      });
+
+      // Act
+      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
+
+      // Assert
+      expect(spyOnAxiosPost).toBeCalledTimes(1);
+      expect(spyOnAxiosPost).toHaveBeenCalledWith("http://runner.url/", {
+        resourceId,
+        buildId,
+        codeGeneratorVersion: expectedCodeGeneratorVersion,
+      });
+    });
+
+    it("On code generation request, it should split the build into jobs, save the DSG resource data and send it to the runner", async () => {
+      // Arrange
+      const resourceId = "resourceId";
+      const buildId = "buildId";
+      const expectedCodeGeneratorVersion = "v2.1.1";
+      const dsgResourceDataMock: DSGResourceData = {
+        resourceType: "Service",
+        buildId: buildId,
+        pluginInstallations: [],
+        resourceInfo: {
+          settings: {
+            serverSettings: {
+              generateServer: true,
+            },
+            adminUISettings: {
+              generateAdminUI: true,
+            },
+          },
+          codeGeneratorVersionOptions: {
+            version: expectedCodeGeneratorVersion,
+            selectionStrategy: CodeGeneratorVersionStrategy.Specific,
+          },
+        } as unknown as AppInfo,
+      };
+
+      jest
+        .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
+        .mockResolvedValue(expectedCodeGeneratorVersion);
+
+      jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
+
+      jest
+        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .mockResolvedValue([
+          [
+            `${buildId}-${EnumDomainName.Server}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  adminUISettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings
+                      .adminUISettings,
+                    generateAdminUI: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+          [
+            `${buildId}-${EnumDomainName.AdminUI}`,
+            {
+              ...dsgResourceDataMock,
+              resourceInfo: {
+                ...dsgResourceDataMock.resourceInfo,
+                settings: {
+                  ...dsgResourceDataMock.resourceInfo.settings,
+                  serverSettings: {
+                    ...dsgResourceDataMock.resourceInfo.settings.serverSettings,
+                    generateServer: false,
+                  },
+                },
+              },
+            } as DSGResourceData,
+          ],
+        ]);
+
+      const spyOnSaveDsgResourceData = jest
+        .spyOn(service, "saveDsgResourceData")
+        .mockResolvedValue(undefined);
+
+      const spyOnAxiosPost = jest.spyOn(axios, "post").mockResolvedValue({
+        data: {
+          message: "Success",
+        },
+      });
+
+      // Act
+      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
 
       // Assert
       expect(spyOnSaveDsgResourceData).toBeCalledTimes(2);
@@ -339,6 +496,8 @@ describe("BuildRunnerService", () => {
         .spyOn(codeGeneratorService, "getCodeGeneratorVersion")
         .mockResolvedValue(expectedCodeGeneratorVersion);
 
+      jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
+
       jest
         .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
         .mockResolvedValue([
@@ -377,7 +536,7 @@ describe("BuildRunnerService", () => {
           ],
         ]);
 
-      jest.spyOn(service, "saveDsgResourceData").mockRejectedValue(errorMock);
+      jest.spyOn(service, "runJob").mockRejectedValue(errorMock);
 
       const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
         key: null,
@@ -389,7 +548,7 @@ describe("BuildRunnerService", () => {
       } as unknown as CodeGenerationFailure.KafkaEvent;
 
       // Act
-      await service.runBuilds(resourceId, buildId, dsgResourceDataMock);
+      await service.runBuild(resourceId, buildId, dsgResourceDataMock);
 
       // Assert
       expect(mockKafkaServiceEmitMessage).toBeCalledWith(

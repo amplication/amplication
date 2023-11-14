@@ -49,7 +49,7 @@ export class BuildRunnerController {
       resourceId: message.resourceId,
     });
 
-    await this.buildRunnerService.runBuilds(
+    await this.buildRunnerService.runBuild(
       message.resourceId,
       message.buildId,
       message.dsgResourceData

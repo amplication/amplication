@@ -21,15 +21,20 @@ import { CodeGeneratorService } from "../code-generator/code-generator-catalog.s
 @Traceable()
 @Injectable()
 export class BuildRunnerService {
+  private readonly minDsgVersionToSplitBuild: string;
   constructor(
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
     private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService,
     private readonly logger: AmplicationLogger
-  ) {}
+  ) {
+    this.minDsgVersionToSplitBuild = this.configService.getOrThrow(
+      Env.FEATURE_SPLIT_JOBS_MIN_DSG_VERSION
+    );
+  }
 
-  async runBuilds(
+  async runBuild(
     resourceId: string,
     buildId: string,
     dsgResourceData: DSGResourceData
@@ -45,30 +50,33 @@ export class BuildRunnerService {
             dsgResourceData.resourceInfo.codeGeneratorVersionOptions
               .codeGeneratorStrategy,
         });
-      const jobs = await this.codeGeneratorSplitterService.splitBuildsIntoJobs(
-        dsgResourceData,
-        buildId
-      );
-      for (const [jobBuildId, data] of jobs) {
-        this.logger.debug("Running job for...", { jobBuildId });
-        await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
 
-        const url = this.configService.get(Env.DSG_RUNNER_URL);
-        try {
-          await axios.post(url, {
-            resourceId: resourceId,
-            buildId: jobBuildId,
-            codeGeneratorVersion,
-          });
-        } catch (error) {
-          throw new Error(error.message, {
-            cause: {
-              code: error.response?.status,
-              message: error.response?.data?.message,
-              data: error.config?.data,
-            },
-          });
+      // check if we need to split the build based on the code generator version.
+      // If the code generator version is greater than, or equal to the minDsgVersionToSplitBuild, we need to split the build
+      // otherwise, we can run the build without splitting it
+      const shouldSplitBuild =
+        this.codeGeneratorService.compareVersions(
+          codeGeneratorVersion,
+          this.minDsgVersionToSplitBuild
+        ) >= 0;
+
+      if (shouldSplitBuild) {
+        const jobs =
+          await this.codeGeneratorSplitterService.splitBuildsIntoJobs(
+            dsgResourceData,
+            buildId
+          );
+        for (const [jobBuildId, data] of jobs) {
+          this.logger.debug("Running job for...", { jobBuildId });
+          await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
         }
+      } else {
+        await this.runJob(
+          resourceId,
+          buildId,
+          dsgResourceData,
+          codeGeneratorVersion
+        );
       }
     } catch (error) {
       this.logger.error(error.message, error);
@@ -81,6 +89,32 @@ export class BuildRunnerService {
         KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
         failureEvent
       );
+    }
+  }
+
+  async runJob(
+    resourceId: string,
+    jobBuildId: string,
+    data: DSGResourceData,
+    codeGeneratorVersion: string
+  ) {
+    await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
+
+    const url = this.configService.get(Env.DSG_RUNNER_URL);
+    try {
+      await axios.post(url, {
+        resourceId: resourceId,
+        buildId: jobBuildId,
+        codeGeneratorVersion,
+      });
+    } catch (error) {
+      throw new Error(error.message, {
+        cause: {
+          code: error.response?.status,
+          message: error.response?.data?.message,
+          data: error.config?.data,
+        },
+      });
     }
   }
 
