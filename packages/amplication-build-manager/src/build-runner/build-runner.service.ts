@@ -14,7 +14,7 @@ import {
   CodeGenerationSuccess,
   KAFKA_TOPICS,
 } from "@amplication/schema-registry";
-import { BuildId, JobBuildId, EnumJobStatus } from "../types";
+import { EnumJobStatus } from "../types";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
 
@@ -51,9 +51,6 @@ export class BuildRunnerService {
               .codeGeneratorStrategy,
         });
 
-      // check if we need to split the build based on the code generator version.
-      // If the code generator version is greater than, or equal to the minDsgVersionToSplitBuild, we need to split the build
-      // otherwise, we can run the build without splitting it
       const shouldSplitBuild =
         this.codeGeneratorService.compareVersions(
           codeGeneratorVersion,
@@ -127,14 +124,11 @@ export class BuildRunnerService {
     switch (jobStatus) {
       case EnumJobStatus.Failure:
         return this.emitCodeGenerationFailureWhenJobStatusFailed(
-          jobBuildId as JobBuildId<BuildId>,
+          jobBuildId,
           error
         );
       case EnumJobStatus.Success:
-        return this.emitKafkaEventBasedOnJobStatus(
-          resourceId,
-          jobBuildId as JobBuildId<BuildId>
-        );
+        return this.emitKafkaEventBasedOnJobStatus(resourceId, jobBuildId);
       default:
         throw new Error("Unexpected EnumJobStatus", {
           cause: { jobBuildId, jobStatus, error },
@@ -148,10 +142,7 @@ export class BuildRunnerService {
    * @param buildId the original buildId without the suffix (domain name)
    * @param codeGeneratorVersion the code generator version
    */
-  async emitKafkaEventBasedOnJobStatus(
-    resourceId: string,
-    jobBuildId: JobBuildId<BuildId>
-  ) {
+  async emitKafkaEventBasedOnJobStatus(resourceId: string, jobBuildId: string) {
     let codeGeneratorVersion: string;
     let buildId: string;
     try {
@@ -215,7 +206,7 @@ export class BuildRunnerService {
   }
 
   async emitCodeGenerationFailureWhenJobStatusFailed(
-    jobBuildId: JobBuildId<BuildId>,
+    jobBuildId: string,
     error: Error
   ) {
     let codeGeneratorVersion: string;
@@ -300,9 +291,8 @@ export class BuildRunnerService {
     resourceId: string,
     jobBuildId: string
   ): Promise<boolean> {
-    const buildId = this.codeGeneratorSplitterService.extractBuildId(
-      jobBuildId as JobBuildId<BuildId>
-    );
+    const buildId =
+      this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
 
     try {
       const jobPath = join(

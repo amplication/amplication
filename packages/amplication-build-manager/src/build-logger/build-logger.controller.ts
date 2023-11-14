@@ -3,7 +3,6 @@ import { Body, Controller, Post } from "@nestjs/common";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
-import { BuildId, JobBuildId } from "../types";
 
 @Controller("build-logger")
 export class BuildLoggerController {
@@ -17,7 +16,7 @@ export class BuildLoggerController {
     @Body() logEntry: CodeGenerationLogRequestDto
   ): Promise<void> {
     const buildId = this.codeGeneratorSplitterService.extractBuildId(
-      logEntry.buildId as JobBuildId<BuildId>
+      logEntry.buildId
     );
     const logEvent: CodeGenerationLog.KafkaEvent = {
       key: { buildId },
