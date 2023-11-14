@@ -25,6 +25,7 @@ import { createDockerComposeDevFile } from "./docker-compose/create-docker-compo
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
 import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
+import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -72,10 +73,19 @@ async function createServerInternal(
   await context.logger.info("Creating message broker...");
   const messageBrokerModules = await createMessageBroker({});
 
+  await context.logger.info("Creating SecretsManager...");
+  const secretsManagerModule = await createSecretsManager({
+    secretsNameKey: [],
+  });
+
   await context.logger.info("Creating application module...");
 
   const appModuleInputModules = new ModuleMap(context.logger);
-  await appModuleInputModules.mergeMany([resourcesModules, staticModules]);
+  await appModuleInputModules.mergeMany([
+    resourcesModules,
+    staticModules,
+    secretsManagerModule,
+  ]);
   const appModule = await createAppModule(appModuleInputModules);
 
   await context.logger.info("Formatting resources code...");
@@ -131,6 +141,7 @@ async function createServerInternal(
     seedModule,
     authModules,
     messageBrokerModules,
+    secretsManagerModule,
     prismaSchemaModule,
     dotEnvModule,
     dockerComposeFile,
