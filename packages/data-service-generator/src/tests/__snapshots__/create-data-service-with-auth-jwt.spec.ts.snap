@@ -1046,8 +1046,6 @@ export type User = {
   location: string;
   extendedProperties: JsonValue;
   profile?: Profile | null;
-  username: string;
-  roles: JsonValue;
 };
 ",
   "admin-ui/src/api/user/UserCountArgs.ts": "import { UserWhereInput } from "./UserWhereInput";
@@ -1078,9 +1076,6 @@ export type UserCreateInput = {
   location: string;
   extendedProperties: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
-  username: string;
-  password: string;
-  roles: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
@@ -1130,9 +1125,6 @@ export type UserOrderByInput = {
   location?: SortOrder;
   extendedProperties?: SortOrder;
   profileId?: SortOrder;
-  username?: SortOrder;
-  password?: SortOrder;
-  roles?: SortOrder;
 };
 ",
   "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
@@ -1157,9 +1149,6 @@ export type UserUpdateInput = {
   location?: string;
   extendedProperties?: InputJsonValue;
   profile?: ProfileWhereUniqueInput | null;
-  username?: string;
-  password?: string;
-  roles?: InputJsonValue;
 };
 ",
   "admin-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
@@ -2526,13 +2515,11 @@ import {
   ReferenceArrayInput,
   SelectArrayInput,
   BooleanInput,
-  PasswordInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
-import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
@@ -2590,14 +2577,6 @@ export const UserCreate = (props: CreateProps): React.ReactElement => {
         <ReferenceInput source="profile.id" reference="Profile" label="Profile">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
-        <TextInput label="Username" source="username" />
-        <PasswordInput label="Password" source="password" />
-        <SelectArrayInput
-          source="roles"
-          choices={ROLES_OPTIONS}
-          optionText="label"
-          optionValue="value"
-        />
       </SimpleForm>
     </Create>
   );
@@ -2617,13 +2596,11 @@ import {
   ReferenceArrayInput,
   SelectArrayInput,
   BooleanInput,
-  PasswordInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
-import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
@@ -2681,14 +2658,6 @@ export const UserEdit = (props: EditProps): React.ReactElement => {
         <ReferenceInput source="profile.id" reference="Profile" label="Profile">
           <SelectInput optionText={ProfileTitle} />
         </ReferenceInput>
-        <TextInput label="Username" source="username" />
-        <PasswordInput label="Password" source="password" />
-        <SelectArrayInput
-          source="roles"
-          choices={ROLES_OPTIONS}
-          optionText="label"
-          optionValue="value"
-        />
       </SimpleForm>
     </Edit>
   );
@@ -2735,8 +2704,6 @@ export const UserList = (props: ListProps): React.ReactElement => {
         <ReferenceField label="Profile" source="profile.id" reference="Profile">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="Username" source="username" />
-        <TextField label="Roles" source="roles" />
       </Datagrid>
     </List>
   );
@@ -2776,8 +2743,6 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
         <ReferenceField label="Profile" source="profile.id" reference="Profile">
           <TextField source={PROFILE_TITLE_FIELD} />
         </ReferenceField>
-        <TextField label="Username" source="username" />
-        <TextField label="Roles" source="roles" />
       </SimpleShowLayout>
     </Show>
   );
@@ -14239,21 +14204,6 @@ class User {
   @Type(() => Profile)
   @IsOptional()
   profile?: Profile | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  roles!: JsonValue;
 }
 
 export { User as User };
@@ -14465,29 +14415,6 @@ class UserCreateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  username!: string;
-
-  @ApiProperty({
-    required: true,
-    type: String,
-  })
-  @IsString()
-  @Field(() => String)
-  password!: string;
-
-  @ApiProperty({
-    required: true,
-  })
-  @IsJSONValue()
-  @Field(() => GraphQLJSON)
-  roles!: InputJsonValue;
 }
 
 export { UserCreateInput as UserCreateInput };
@@ -14846,39 +14773,6 @@ class UserOrderByInput {
     nullable: true,
   })
   profileId?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  username?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  password?: SortOrder;
-
-  @ApiProperty({
-    required: false,
-    enum: ["asc", "desc"],
-  })
-  @IsOptional()
-  @IsEnum(SortOrder)
-  @Field(() => SortOrder, {
-    nullable: true,
-  })
-  roles?: SortOrder;
 }
 
 export { UserOrderByInput as UserOrderByInput };
@@ -15091,38 +14985,6 @@ class UserUpdateInput {
     nullable: true,
   })
   profile?: ProfileWhereUniqueInput | null;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  username?: string;
-
-  @ApiProperty({
-    required: false,
-    type: String,
-  })
-  @IsString()
-  @IsOptional()
-  @Field(() => String, {
-    nullable: true,
-  })
-  password?: string;
-
-  @ApiProperty({
-    required: false,
-  })
-  @IsJSONValue()
-  @IsOptional()
-  @Field(() => GraphQLJSON, {
-    nullable: true,
-  })
-  roles?: InputJsonValue;
 }
 
 export { UserUpdateInput as UserUpdateInput };
@@ -15680,9 +15542,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        roles: true,
       },
     });
   }
@@ -15729,9 +15588,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        roles: true,
       },
     });
   }
@@ -15779,9 +15635,6 @@ export class UserControllerBase {
             id: true,
           },
         },
-
-        username: true,
-        roles: true,
       },
     });
     if (result === null) {
@@ -15852,9 +15705,6 @@ export class UserControllerBase {
               id: true,
             },
           },
-
-          username: true,
-          roles: true,
         },
       });
     } catch (error) {
@@ -15910,9 +15760,6 @@ export class UserControllerBase {
               id: true,
             },
           },
-
-          username: true,
-          roles: true,
         },
       });
     } catch (error) {
