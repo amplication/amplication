@@ -28,9 +28,7 @@ export function createSecretsManager(
 export async function createSecretsManagerInternal({
   secretsNameKey,
 }: CreateServerSecretsManagerParams): Promise<ModuleMap> {
-  const context = DsgContext.getInstance;
-
-  const { serverDirectories } = DsgContext.getInstance;
+  const { logger, serverDirectories } = DsgContext.getInstance;
 
   const basePath = `${serverDirectories.srcDirectory}/providers/secrets`;
   const secretManagerStaticFilesDirectory = path.resolve(__dirname, "static");
@@ -47,7 +45,7 @@ export async function createSecretsManagerInternal({
   const enumDeclaration = createTSEnumSecretsNameKey(secretsNameKey);
   const enumFile = createDTOFile(enumDeclaration, ENUM_MODULE_PATH, {});
 
-  const moduleMap = new ModuleMap(context.logger);
+  const moduleMap = new ModuleMap(logger);
   await moduleMap.set({
     path: ENUM_MODULE_PATH,
     code: print(enumFile).code,
