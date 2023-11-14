@@ -19,11 +19,6 @@ export class CodeGeneratorSplitterService {
     private readonly logger: AmplicationLogger
   ) {}
 
-  /**
-   * Splits the build into x jobs
-   * Currently we have 2 jobs: server and admin-ui
-   * Or only one if the user chose to build only one of them
-   */
   async splitBuildsIntoJobs(
     dsgResourceData: DSGResourceData,
     buildId: BuildId
