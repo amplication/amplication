@@ -1,22 +1,25 @@
-import { PrismaClient, EnumResourceType } from "../src/prisma";
+import {
+  PrismaClient,
+  EnumResourceType,
+} from "../prisma/generated-prisma-client";
 import { ConflictException, NotFoundException } from "@nestjs/common";
-import { IBlock, Block, Resource, Entity } from "../src/models";
-import { CreateBlockArgs } from "../src/core/block/dto";
-import { EnumBlockType } from "../src/enums/EnumBlockType";
-import { Module } from "../src/core/module/dto/Module";
-import { ModuleAction } from "../src/core/moduleAction/dto/ModuleAction";
-import * as CodeGenTypes from "../../amplication-code-gen-types";
+import { IBlock, Block, Resource, Entity } from "./models";
+import { CreateBlockArgs } from "./core/block/dto";
+import { EnumBlockType } from "./enums/EnumBlockType";
+import { Module } from "./core/module/dto/Module";
+import { ModuleAction } from "./core/moduleAction/dto/ModuleAction";
+import * as CodeGenTypes from "@amplication/code-gen-types";
 import {
   getDefaultActionsForEntity,
   getDefaultActionsForRelationField,
-} from "../../../libs/util/dsg-utils/src/lib/entity-util";
-import { EntityField, EnumDataType } from "../../amplication-code-gen-types";
+} from "@amplication/dsg-utils";
+import { EntityField, EnumDataType } from "@amplication/code-gen-types";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
 const DEFAULT_MODULE_DESCRIPTION =
   "This module was automatically created as the default module for an entity";
-const client = new PrismaClient();
+const prisma = new PrismaClient();
 
 /** use NULL in the set of allowed parents to allow the block to be created without a parent */
 const blockTypeAllowedParents: {
@@ -33,8 +36,8 @@ const blockTypeAllowedParents: {
   [EnumBlockType.ModuleAction]: ALLOW_NO_PARENT_ONLY,
 };
 
-async function main() {
-  const resources = await client.resource.findMany({
+export async function mainCreateEntitiesDefaultCustomActions() {
+  const resources = await prisma.resource.findMany({
     where: {
       resourceType: EnumResourceType.Service,
       deletedAt: null,
@@ -55,7 +58,7 @@ async function main() {
   async function migrateChunk(chunk: Resource[]) {
     try {
       const promises = chunk.map(async (resource) => {
-        const entities = await client.entity.findMany({
+        const entities = await prisma.entity.findMany({
           where: {
             resourceId: resource.id,
           },
@@ -76,15 +79,18 @@ async function main() {
 
           const module = await createDefaultModuleForEntity(entityArgs, entity);
 
-          const relationFields = await this.prisma.entityField.findMany({
+          const fields = (await prisma.entityField.findMany({
             where: {
               entityVersion: {
                 entityId: entity.id,
                 versionNumber: 0,
-                EnumDataType: EnumDataType.Lookup,
               },
             },
-          });
+          })) as EntityField[];
+
+          const relationFields = fields.filter(
+            (e) => e.dataType === EnumDataType.Lookup
+          );
           relationFields.forEach(async (field) => {
             await createDefaultActionsForRelationField(
               entity,
@@ -101,7 +107,7 @@ async function main() {
     }
   }
 
-  await client.$disconnect();
+  await prisma.$disconnect();
 }
 
 async function createDefaultActionsForRelationField(
@@ -245,7 +251,7 @@ async function create<T extends IBlock>(
   };
 
   // Create first entry on BlockVersion by default when new block is created
-  const version = await client.blockVersion.create({
+  const version = await prisma.blockVersion.create({
     data: {
       ...versionData,
       commit: undefined,
@@ -287,7 +293,7 @@ async function resolveParentBlock(
   blockId: string,
   resourceId: string
 ): Promise<Block> {
-  const matchingBlocks = await client.block.findMany({
+  const matchingBlocks = await prisma.block.findMany({
     where: {
       id: blockId,
       resourceId,
@@ -342,7 +348,7 @@ async function createDefaultActionsForEntityModule(
   );
 }
 
-main().catch(console.error);
+mainCreateEntitiesDefaultCustomActions().catch(console.error);
 
 // Execute from bash
 // $ POSTGRESQL_URL=postgres://[user]:[password]@127.0.0.1:5432/app-database npx ts-node install-auth-core-plugin.ts

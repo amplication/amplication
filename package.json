@@ -14,7 +14,7 @@
     "precommit": "lint-staged --relative",
     "help": "nx help",
     "serve:server": "npx nx serve amplication-server",
-    "test:custom:actions-migration": "POSTGRESQL_URL=postgresql://admin:admin@localhost:5432/amplication npx ts-node packages/amplication-server/src/migration-scripts/add-entity-custom-actions.ts",
+    "test:custom:actions-migration": "POSTGRESQL_URL=postgresql://admin:admin@localhost:5432/amplication npx ts-node packages/amplication-server/src/add-entity-custom-actions.ts",
     "serve:client": "npx nx serve amplication-client",
     "serve:dsg": "nx run-many --parallel --target=serve --projects=amplication-build-manager,local-data-service-generator-controller",
     "serve:git": "nx run-many --parallel --target=serve --projects=git-sync-manager",
