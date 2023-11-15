@@ -1,3042 +1,19 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService when server and admin are configured with custom path creates app as expected 1`] = `
+exports[`createDataService when admin-ui is disabled creates app as expected 1`] = `
 {
-  "test-ui/.env": "PORT=3001
-REACT_APP_SERVER_URL=http://localhost:3000",
-  "test-ui/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
- 
-# dependencies
-/node_modules
-/.pnp
-.pnp.js
- 
-# testing
-/coverage
- 
-# production
-/build
- 
-# misc
-.DS_Store
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
- 
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-",
-  "test-ui/package.json": "{
-  "name": "@sample-application/admin",
-  "version": "0.1.3",
-  "private": true,
-  "dependencies": {
-    "@apollo/client": "3.6.9",
-    "@material-ui/core": "4.12.4",
-    "graphql": "15.6.1",
-    "lodash": "4.17.21",
-    "pluralize": "8.0.0",
-    "ra-data-graphql-amplication": "0.0.14",
-    "react": "16.14.0",
-    "react-admin": "3.19.12",
-    "react-dom": "16.14.0",
-    "react-scripts": "5.0.0",
-    "sass": "^1.39.0",
-    "web-vitals": "1.1.2"
-  },
-  "overrides": {
-    "react-scripts": {
-      "@svgr/webpack": "6.5.1"
-    }
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject",
-    "package:container": "docker build ."
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
-  },
-  "devDependencies": {
-    "@testing-library/jest-dom": "5.14.1",
-    "@testing-library/react": "11.2.7",
-    "@testing-library/user-event": "13.2.0",
-    "@types/jest": "26.0.16",
-    "@types/lodash": "4.14.178",
-    "@types/node": "12.20.16",
-    "@types/react": "16.14.11",
-    "@types/react-dom": "17.0.0",
-    "type-fest": "0.13.1",
-    "typescript": "4.3.5"
-  }
-}",
-  "test-ui/public/manifest.json": "{
-  "short_name": "Sample Application",
-  "name": "Sample Application",
-  "icons": [
-    {
-      "src": "favicon.ico",
-      "sizes": "64x64 32x32 24x24 16x16",
-      "type": "image/x-icon"
-    },
-    {
-      "src": "logo192.png",
-      "type": "image/png",
-      "sizes": "192x192"
-    },
-    {
-      "src": "logo512.png",
-      "type": "image/png",
-      "sizes": "512x512"
-    }
-  ],
-  "start_url": ".",
-  "display": "standalone",
-  "theme_color": "#000000",
-  "background_color": "#ffffff"
-}",
-  "test-ui/src/App.tsx": "import React, { useEffect, useState } from "react";
-import { Admin, DataProvider, Resource } from "react-admin";
-import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
-import { theme } from "./theme/theme";
-import Login from "./Login";
-import "./App.scss";
-import Dashboard from "./pages/Dashboard";
-import { UserList } from "./user/UserList";
-import { UserCreate } from "./user/UserCreate";
-import { UserEdit } from "./user/UserEdit";
-import { UserShow } from "./user/UserShow";
-import { ProfileList } from "./profile/ProfileList";
-import { ProfileCreate } from "./profile/ProfileCreate";
-import { ProfileEdit } from "./profile/ProfileEdit";
-import { ProfileShow } from "./profile/ProfileShow";
-import { OrderList } from "./order/OrderList";
-import { OrderCreate } from "./order/OrderCreate";
-import { OrderEdit } from "./order/OrderEdit";
-import { OrderShow } from "./order/OrderShow";
-import { OrganizationList } from "./organization/OrganizationList";
-import { OrganizationCreate } from "./organization/OrganizationCreate";
-import { OrganizationEdit } from "./organization/OrganizationEdit";
-import { OrganizationShow } from "./organization/OrganizationShow";
-import { CustomerList } from "./customer/CustomerList";
-import { CustomerCreate } from "./customer/CustomerCreate";
-import { CustomerEdit } from "./customer/CustomerEdit";
-import { CustomerShow } from "./customer/CustomerShow";
-import { EmptyList } from "./empty/EmptyList";
-import { EmptyCreate } from "./empty/EmptyCreate";
-import { EmptyEdit } from "./empty/EmptyEdit";
-import { EmptyShow } from "./empty/EmptyShow";
-import { httpAuthProvider } from "./auth-provider/ra-auth-http";
-
-const App = (): React.ReactElement => {
-  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
-  useEffect(() => {
-    buildGraphQLProvider
-      .then((provider: any) => {
-        setDataProvider(() => provider);
-      })
-      .catch((error: any) => {
-        console.log(error);
-      });
-  }, []);
-  if (!dataProvider) {
-    return <div>Loading</div>;
-  }
-  return (
-    <div className="App">
-      <Admin
-        title={"Sample Application"}
-        dataProvider={dataProvider}
-        authProvider={httpAuthProvider}
-        theme={theme}
-        dashboard={Dashboard}
-        loginPage={Login}
-      >
-        <Resource
-          name="User"
-          list={UserList}
-          edit={UserEdit}
-          create={UserCreate}
-          show={UserShow}
-        />
-        <Resource
-          name="Profile"
-          list={ProfileList}
-          edit={ProfileEdit}
-          create={ProfileCreate}
-          show={ProfileShow}
-        />
-        <Resource
-          name="Order"
-          list={OrderList}
-          edit={OrderEdit}
-          create={OrderCreate}
-          show={OrderShow}
-        />
-        <Resource
-          name="Organization"
-          list={OrganizationList}
-          edit={OrganizationEdit}
-          create={OrganizationCreate}
-          show={OrganizationShow}
-        />
-        <Resource
-          name="Customer"
-          list={CustomerList}
-          edit={CustomerEdit}
-          create={CustomerCreate}
-          show={CustomerShow}
-        />
-        <Resource
-          name="Empty"
-          list={EmptyList}
-          edit={EmptyEdit}
-          create={EmptyCreate}
-          show={EmptyShow}
-        />
-      </Admin>
-    </div>
-  );
-};
-
-export default App;
-",
-  "test-ui/src/Components/Pagination.tsx": "import React from "react";
-import { Pagination as RAPagination, PaginationProps } from "react-admin";
-
-const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
-
-const Pagination = (props: PaginationProps) => (
-  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
-);
-
-export default Pagination;
-",
-  "test-ui/src/Login.tsx": "import * as React from "react";
-import { useState } from "react";
-import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
-import { ThemeProvider } from "@material-ui/styles";
-import { createTheme } from "@material-ui/core/styles";
-import { Button } from "@material-ui/core";
-import "./login.scss";
-
-const CLASS_NAME = "login-page";
-
-const Login = ({ theme }: any) => {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const login = useLogin();
-  const notify = useNotify();
-  const BASE_URI = process.env.REACT_APP_SERVER_URL;
-  const submit = (e: any) => {
-    e.preventDefault();
-    login({ username, password }).catch(() =>
-      notify("Invalid username or password")
-    );
-  };
-
-  return (
-    <ThemeProvider theme={createTheme(defaultTheme)}>
-      <div className={\`\${CLASS_NAME}\`}>
-        <div className={\`\${CLASS_NAME}__wrapper\`}>
-          <div className={\`\${CLASS_NAME}__box\`}>
-            <img
-              src="https://amplication.com/assets/graphql.png"
-              alt="GraphQL API"
-            />
-            <h2>Connect via GraphQL</h2>
-            <div className={\`\${CLASS_NAME}__box__message\`}>
-              Connect to the server using GraphQL API with a complete and
-              understandable description of the data in your API
-            </div>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              href={\`\${BASE_URI}/graphql\`}
-            >
-              Continue
-            </Button>
-          </div>
-          <div className={\`\${CLASS_NAME}__box\`}>
-            <img
-              src="https://amplication.com/assets/react-admin.png"
-              alt="React-Admin"
-            />
-            <h2>Admin UI</h2>
-            <div className={\`\${CLASS_NAME}__box__message\`}>
-              Sign in to a React-Admin client with ready-made forms for creating
-              and editing all the data models of your application
-            </div>
-            <form onSubmit={submit}>
-              <label>
-                <span>Username</span>
-
-                <input
-                  name="username"
-                  type="textbox"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
-              </label>
-              <label>
-                <span>Password</span>
-
-                <input
-                  name="password"
-                  type="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
-              </label>
-              <Button type="submit" variant="contained" color="primary">
-                Log in
-              </Button>
-            </form>
-          </div>
-          <div className={\`\${CLASS_NAME}__box\`}>
-            <img
-              src="https://amplication.com/assets/restapi.png"
-              alt="REST API"
-            />
-            <h2>Connect via REST API</h2>
-            <div className={\`\${CLASS_NAME}__box__message\`}>
-              Connect to the server using REST API with a built-in Swagger
-              documentation
-            </div>
-            <Button
-              type="button"
-              variant="contained"
-              color="primary"
-              href={\`\${BASE_URI}/api\`}
-            >
-              Continue
-            </Button>
-          </div>
-
-          <Notification />
-        </div>
-        <div className={\`\${CLASS_NAME}__read-more\`}>
-          <span>Read </span>
-          <a href="https://docs.amplication.com/api" target="docs">
-            Amplication docs
-          </a>
-          <span> to learn more</span>
-        </div>
-      </div>
-    </ThemeProvider>
-  );
-};
-
-export default Login;
-",
-  "test-ui/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from "./CustomerCreateInput";
-
-export type CreateCustomerArgs = {
-  data: CustomerCreateInput;
-};
-",
-  "test-ui/src/api/customer/Customer.ts": "import { Decimal } from "decimal.js";
-import { Organization } from "../organization/Organization";
-import { Order } from "../order/Order";
-
-export type Customer = {
-  id: bigint;
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  firstName: string | null;
-  lastName: string | null;
-  isVip: boolean | null;
-  birthData: Date | null;
-  averageSale: Decimal | null;
-  favoriteNumber: bigint | null;
-  geoLocation: string | null;
-  comments: string | null;
-  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
-  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
-  organization?: Organization | null;
-  vipOrganization?: Organization | null;
-  orders?: Array<Order>;
-};
-",
-  "test-ui/src/api/customer/CustomerCountArgs.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
-
-export type CustomerCountArgs = {
-  where?: CustomerWhereInput;
-};
-",
-  "test-ui/src/api/customer/CustomerCreateInput.ts": "import { Decimal } from "decimal.js";
-import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
-import { OrderCreateNestedManyWithoutCustomersInput } from "./OrderCreateNestedManyWithoutCustomersInput";
-
-export type CustomerCreateInput = {
-  email: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  isVip?: boolean | null;
-  birthData?: Date | null;
-  averageSale?: Decimal | null;
-  favoriteNumber?: bigint | null;
-  geoLocation?: string | null;
-  comments?: string | null;
-  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
-  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
-  organization?: OrganizationWhereUniqueInput | null;
-  vipOrganization?: OrganizationWhereUniqueInput | null;
-  orders?: OrderCreateNestedManyWithoutCustomersInput;
-};
-",
-  "test-ui/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
-import { CustomerOrderByInput } from "./CustomerOrderByInput";
-
-export type CustomerFindManyArgs = {
-  where?: CustomerWhereInput;
-  orderBy?: Array<CustomerOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/customer/CustomerFindUniqueArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-
-export type CustomerFindUniqueArgs = {
-  where: CustomerWhereUniqueInput;
-};
-",
-  "test-ui/src/api/customer/CustomerListRelationFilter.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
-
-export type CustomerListRelationFilter = {
-  every?: CustomerWhereInput;
-  some?: CustomerWhereInput;
-  none?: CustomerWhereInput;
-};
-",
-  "test-ui/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type CustomerOrderByInput = {
-  id?: SortOrder;
-  createdAt?: SortOrder;
-  updatedAt?: SortOrder;
-  email?: SortOrder;
-  firstName?: SortOrder;
-  lastName?: SortOrder;
-  isVip?: SortOrder;
-  birthData?: SortOrder;
-  averageSale?: SortOrder;
-  favoriteNumber?: SortOrder;
-  geoLocation?: SortOrder;
-  comments?: SortOrder;
-  favoriteColors?: SortOrder;
-  customerType?: SortOrder;
-  organizationId?: SortOrder;
-  vipOrganizationId?: SortOrder;
-};
-",
-  "test-ui/src/api/customer/CustomerUpdateInput.ts": "import { Decimal } from "decimal.js";
-import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
-import { OrderUpdateManyWithoutCustomersInput } from "./OrderUpdateManyWithoutCustomersInput";
-
-export type CustomerUpdateInput = {
-  email?: string;
-  firstName?: string | null;
-  lastName?: string | null;
-  isVip?: boolean | null;
-  birthData?: Date | null;
-  averageSale?: Decimal | null;
-  favoriteNumber?: bigint | null;
-  geoLocation?: string | null;
-  comments?: string | null;
-  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
-  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
-  organization?: OrganizationWhereUniqueInput | null;
-  vipOrganization?: OrganizationWhereUniqueInput | null;
-  orders?: OrderUpdateManyWithoutCustomersInput;
-};
-",
-  "test-ui/src/api/customer/CustomerWhereInput.ts": "import { BigIntFilter } from "../../util/BigIntFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-import { StringFilter } from "../../util/StringFilter";
-import { StringNullableFilter } from "../../util/StringNullableFilter";
-import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
-import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
-import { DecimalNullableFilter } from "../../util/DecimalNullableFilter";
-import { BigIntNullableFilter } from "../../util/BigIntNullableFilter";
-import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
-import { OrderListRelationFilter } from "../order/OrderListRelationFilter";
-
-export type CustomerWhereInput = {
-  id?: BigIntFilter;
-  createdAt?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
-  email?: StringFilter;
-  firstName?: StringNullableFilter;
-  lastName?: StringNullableFilter;
-  isVip?: BooleanNullableFilter;
-  birthData?: DateTimeNullableFilter;
-  averageSale?: DecimalNullableFilter;
-  favoriteNumber?: BigIntNullableFilter;
-  geoLocation?: StringNullableFilter;
-  comments?: StringNullableFilter;
-  customerType?: "platinum" | "gold" | "bronze" | "regular";
-  organization?: OrganizationWhereUniqueInput;
-  vipOrganization?: OrganizationWhereUniqueInput;
-  orders?: OrderListRelationFilter;
-};
-",
-  "test-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
-  id: bigint;
-};
-",
-  "test-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-
-export type DeleteCustomerArgs = {
-  where: CustomerWhereUniqueInput;
-};
-",
-  "test-ui/src/api/customer/EnumCustomerCustomerType.ts": "export enum EnumCustomerCustomerType {
-  Platinum = "platinum",
-  Gold = "gold",
-  Bronze = "bronze",
-  Regular = "regular",
-}
-",
-  "test-ui/src/api/customer/EnumCustomerFavoriteColors.ts": "export enum EnumCustomerFavoriteColors {
-  Red = "red",
-  Green = "green",
-  Purple = "purple",
-  Yellow = "yellow",
-}
-",
-  "test-ui/src/api/customer/OrderCreateNestedManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from "../order/OrderWhereUniqueInput";
-
-export type OrderCreateNestedManyWithoutCustomersInput = {
-  connect?: Array<OrderWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/customer/OrderUpdateManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from "../order/OrderWhereUniqueInput";
-
-export type OrderUpdateManyWithoutCustomersInput = {
-  connect?: Array<OrderWhereUniqueInput>;
-  disconnect?: Array<OrderWhereUniqueInput>;
-  set?: Array<OrderWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
-import { CustomerUpdateInput } from "./CustomerUpdateInput";
-
-export type UpdateCustomerArgs = {
-  where: CustomerWhereUniqueInput;
-  data: CustomerUpdateInput;
-};
-",
-  "test-ui/src/api/empty/DeleteEmptyArgs.ts": "import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
-
-export type DeleteEmptyArgs = {
-  where: EmptyWhereUniqueInput;
-};
-",
-  "test-ui/src/api/empty/Empty.ts": "export type Empty = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-};
-",
-  "test-ui/src/api/empty/EmptyCountArgs.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
-
-export type EmptyCountArgs = {
-  where?: EmptyWhereInput;
-};
-",
-  "test-ui/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
-",
-  "test-ui/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
-import { EmptyOrderByInput } from "./EmptyOrderByInput";
-
-export type EmptyFindManyArgs = {
-  where?: EmptyWhereInput;
-  orderBy?: Array<EmptyOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/empty/EmptyFindUniqueArgs.ts": "import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
-
-export type EmptyFindUniqueArgs = {
-  where: EmptyWhereUniqueInput;
-};
-",
-  "test-ui/src/api/empty/EmptyListRelationFilter.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
-
-export type EmptyListRelationFilter = {
-  every?: EmptyWhereInput;
-  some?: EmptyWhereInput;
-  none?: EmptyWhereInput;
-};
-",
-  "test-ui/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type EmptyOrderByInput = {
-  id?: SortOrder;
-  createdAt?: SortOrder;
-  updatedAt?: SortOrder;
-};
-",
-  "test-ui/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
-",
-  "test-ui/src/api/empty/EmptyWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-
-export type EmptyWhereInput = {
-  id?: StringFilter;
-  createdAt?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
-};
-",
-  "test-ui/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
-  id: string;
-};
-",
-  "test-ui/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from "./OrderCreateInput";
-
-export type CreateOrderArgs = {
-  data: OrderCreateInput;
-};
-",
-  "test-ui/src/api/order/DeleteOrderArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-
-export type DeleteOrderArgs = {
-  where: OrderWhereUniqueInput;
-};
-",
-  "test-ui/src/api/order/EnumOrderLabel.ts": "export enum EnumOrderLabel {
-  Fragile = "fragile",
-}
-",
-  "test-ui/src/api/order/EnumOrderStatus.ts": "export enum EnumOrderStatus {
-  Pending = "pending",
-  InProgress = "inProgress",
-  Done = "done",
-}
-",
-  "test-ui/src/api/order/Order.ts": "import { Customer } from "../customer/Customer";
-
-export type Order = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  customer?: Customer;
-  status?: "pending" | "inProgress" | "done";
-  label?: "fragile" | null;
-};
-",
-  "test-ui/src/api/order/OrderCountArgs.ts": "import { OrderWhereInput } from "./OrderWhereInput";
-
-export type OrderCountArgs = {
-  where?: OrderWhereInput;
-};
-",
-  "test-ui/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
-
-export type OrderCreateInput = {
-  customer: CustomerWhereUniqueInput;
-  status: "pending" | "inProgress" | "done";
-  label?: "fragile" | null;
-};
-",
-  "test-ui/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from "./OrderWhereInput";
-import { OrderOrderByInput } from "./OrderOrderByInput";
-
-export type OrderFindManyArgs = {
-  where?: OrderWhereInput;
-  orderBy?: Array<OrderOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/order/OrderFindUniqueArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-
-export type OrderFindUniqueArgs = {
-  where: OrderWhereUniqueInput;
-};
-",
-  "test-ui/src/api/order/OrderListRelationFilter.ts": "import { OrderWhereInput } from "./OrderWhereInput";
-
-export type OrderListRelationFilter = {
-  every?: OrderWhereInput;
-  some?: OrderWhereInput;
-  none?: OrderWhereInput;
-};
-",
-  "test-ui/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type OrderOrderByInput = {
-  id?: SortOrder;
-  createdAt?: SortOrder;
-  updatedAt?: SortOrder;
-  customerId?: SortOrder;
-  status?: SortOrder;
-  label?: SortOrder;
-};
-",
-  "test-ui/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
-
-export type OrderUpdateInput = {
-  customer?: CustomerWhereUniqueInput;
-  status?: "pending" | "inProgress" | "done";
-  label?: "fragile" | null;
-};
-",
-  "test-ui/src/api/order/OrderWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
-
-export type OrderWhereInput = {
-  id?: StringFilter;
-  createdAt?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
-  customer?: CustomerWhereUniqueInput;
-  status?: "pending" | "inProgress" | "done";
-  label?: "fragile";
-};
-",
-  "test-ui/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
-  id: string;
-};
-",
-  "test-ui/src/api/order/UpdateOrderArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
-import { OrderUpdateInput } from "./OrderUpdateInput";
-
-export type UpdateOrderArgs = {
-  where: OrderWhereUniqueInput;
-  data: OrderUpdateInput;
-};
-",
-  "test-ui/src/api/organization/CreateOrganizationArgs.ts": "import { OrganizationCreateInput } from "./OrganizationCreateInput";
-
-export type CreateOrganizationArgs = {
-  data: OrganizationCreateInput;
-};
-",
-  "test-ui/src/api/organization/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
-
-export type CustomerCreateNestedManyWithoutOrganizationsInput = {
-  connect?: Array<CustomerWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/organization/CustomerUpdateManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
-
-export type CustomerUpdateManyWithoutOrganizationsInput = {
-  connect?: Array<CustomerWhereUniqueInput>;
-  disconnect?: Array<CustomerWhereUniqueInput>;
-  set?: Array<CustomerWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-
-export type DeleteOrganizationArgs = {
-  where: OrganizationWhereUniqueInput;
-};
-",
-  "test-ui/src/api/organization/Organization.ts": "import { User } from "../user/User";
-import { Customer } from "../customer/Customer";
-
-export type Organization = {
-  id: string;
-  createdAt: Date;
-  updatedAt: Date;
-  name: string;
-  users?: Array<User>;
-  customers?: Array<Customer>;
-  vipCustomers?: Array<Customer>;
-};
-",
-  "test-ui/src/api/organization/OrganizationCountArgs.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
-
-export type OrganizationCountArgs = {
-  where?: OrganizationWhereInput;
-};
-",
-  "test-ui/src/api/organization/OrganizationCreateInput.ts": "import { UserCreateNestedManyWithoutOrganizationsInput } from "./UserCreateNestedManyWithoutOrganizationsInput";
-import { CustomerCreateNestedManyWithoutOrganizationsInput } from "./CustomerCreateNestedManyWithoutOrganizationsInput";
-
-export type OrganizationCreateInput = {
-  name: string;
-  users?: UserCreateNestedManyWithoutOrganizationsInput;
-  customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
-  vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
-};
-",
-  "test-ui/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
-import { OrganizationOrderByInput } from "./OrganizationOrderByInput";
-
-export type OrganizationFindManyArgs = {
-  where?: OrganizationWhereInput;
-  orderBy?: Array<OrganizationOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/organization/OrganizationFindUniqueArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-
-export type OrganizationFindUniqueArgs = {
-  where: OrganizationWhereUniqueInput;
-};
-",
-  "test-ui/src/api/organization/OrganizationListRelationFilter.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
-
-export type OrganizationListRelationFilter = {
-  every?: OrganizationWhereInput;
-  some?: OrganizationWhereInput;
-  none?: OrganizationWhereInput;
-};
-",
-  "test-ui/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type OrganizationOrderByInput = {
-  id?: SortOrder;
-  createdAt?: SortOrder;
-  updatedAt?: SortOrder;
-  name?: SortOrder;
-};
-",
-  "test-ui/src/api/organization/OrganizationUpdateInput.ts": "import { UserUpdateManyWithoutOrganizationsInput } from "./UserUpdateManyWithoutOrganizationsInput";
-import { CustomerUpdateManyWithoutOrganizationsInput } from "./CustomerUpdateManyWithoutOrganizationsInput";
-
-export type OrganizationUpdateInput = {
-  name?: string;
-  users?: UserUpdateManyWithoutOrganizationsInput;
-  customers?: CustomerUpdateManyWithoutOrganizationsInput;
-  vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
-};
-",
-  "test-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-import { UserListRelationFilter } from "../user/UserListRelationFilter";
-import { CustomerListRelationFilter } from "../customer/CustomerListRelationFilter";
-
-export type OrganizationWhereInput = {
-  id?: StringFilter;
-  createdAt?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
-  name?: StringFilter;
-  users?: UserListRelationFilter;
-  customers?: CustomerListRelationFilter;
-  vipCustomers?: CustomerListRelationFilter;
-};
-",
-  "test-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
-  id: string;
-};
-",
-  "test-ui/src/api/organization/UpdateOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
-import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
-
-export type UpdateOrganizationArgs = {
-  where: OrganizationWhereUniqueInput;
-  data: OrganizationUpdateInput;
-};
-",
-  "test-ui/src/api/organization/UserCreateNestedManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
-
-export type UserCreateNestedManyWithoutOrganizationsInput = {
-  connect?: Array<UserWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/organization/UserUpdateManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
-
-export type UserUpdateManyWithoutOrganizationsInput = {
-  connect?: Array<UserWhereUniqueInput>;
-  disconnect?: Array<UserWhereUniqueInput>;
-  set?: Array<UserWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/profile/CreateProfileArgs.ts": "import { ProfileCreateInput } from "./ProfileCreateInput";
-
-export type CreateProfileArgs = {
-  data: ProfileCreateInput;
-};
-",
-  "test-ui/src/api/profile/DeleteProfileArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-
-export type DeleteProfileArgs = {
-  where: ProfileWhereUniqueInput;
-};
-",
-  "test-ui/src/api/profile/Profile.ts": "import { User } from "../user/User";
-
-export type Profile = {
-  id: number;
-  createdIn: Date;
-  createdAt: Date;
-  updatedIn: Date;
-  updatedAt: Date;
-  email: string;
-  user?: User | null;
-};
-",
-  "test-ui/src/api/profile/ProfileCountArgs.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
-
-export type ProfileCountArgs = {
-  where?: ProfileWhereInput;
-};
-",
-  "test-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
-
-export type ProfileCreateInput = {
-  createdAt: Date;
-  updatedAt: Date;
-  email: string;
-  user?: UserWhereUniqueInput | null;
-};
-",
-  "test-ui/src/api/profile/ProfileFindManyArgs.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
-import { ProfileOrderByInput } from "./ProfileOrderByInput";
-
-export type ProfileFindManyArgs = {
-  where?: ProfileWhereInput;
-  orderBy?: Array<ProfileOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/profile/ProfileFindUniqueArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-
-export type ProfileFindUniqueArgs = {
-  where: ProfileWhereUniqueInput;
-};
-",
-  "test-ui/src/api/profile/ProfileListRelationFilter.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
-
-export type ProfileListRelationFilter = {
-  every?: ProfileWhereInput;
-  some?: ProfileWhereInput;
-  none?: ProfileWhereInput;
-};
-",
-  "test-ui/src/api/profile/ProfileOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type ProfileOrderByInput = {
-  id?: SortOrder;
-  createdIn?: SortOrder;
-  createdAt?: SortOrder;
-  updatedIn?: SortOrder;
-  updatedAt?: SortOrder;
-  email?: SortOrder;
-  userId?: SortOrder;
-};
-",
-  "test-ui/src/api/profile/ProfileUpdateInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
-
-export type ProfileUpdateInput = {
-  createdAt?: Date;
-  updatedAt?: Date;
-  email?: string;
-  user?: UserWhereUniqueInput | null;
-};
-",
-  "test-ui/src/api/profile/ProfileWhereInput.ts": "import { IntFilter } from "../../util/IntFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-import { StringFilter } from "../../util/StringFilter";
-import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
-
-export type ProfileWhereInput = {
-  id?: IntFilter;
-  createdIn?: DateTimeFilter;
-  createdAt?: DateTimeFilter;
-  updatedIn?: DateTimeFilter;
-  updatedAt?: DateTimeFilter;
-  email?: StringFilter;
-  user?: UserWhereUniqueInput;
-};
-",
-  "test-ui/src/api/profile/ProfileWhereUniqueInput.ts": "export type ProfileWhereUniqueInput = {
-  id: number;
-};
-",
-  "test-ui/src/api/profile/UpdateProfileArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
-import { ProfileUpdateInput } from "./ProfileUpdateInput";
-
-export type UpdateProfileArgs = {
-  where: ProfileWhereUniqueInput;
-  data: ProfileUpdateInput;
-};
-",
-  "test-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from "./UserCreateInput";
-
-export type CreateUserArgs = {
-  data: UserCreateInput;
-};
-",
-  "test-ui/src/api/user/DeleteUserArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-
-export type DeleteUserArgs = {
-  where: UserWhereUniqueInput;
-};
-",
-  "test-ui/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
-  Programming = "programming",
-  Design = "design",
-}
-",
-  "test-ui/src/api/user/EnumUserPriority.ts": "export enum EnumUserPriority {
-  High = "high",
-  Medium = "medium",
-  Low = "low",
-}
-",
-  "test-ui/src/api/user/OrganizationCreateNestedManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
-
-export type OrganizationCreateNestedManyWithoutUsersInput = {
-  connect?: Array<OrganizationWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/user/OrganizationUpdateManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
-
-export type OrganizationUpdateManyWithoutUsersInput = {
-  connect?: Array<OrganizationWhereUniqueInput>;
-  disconnect?: Array<OrganizationWhereUniqueInput>;
-  set?: Array<OrganizationWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserUpdateInput } from "./UserUpdateInput";
-
-export type UpdateUserArgs = {
-  where: UserWhereUniqueInput;
-  data: UserUpdateInput;
-};
-",
-  "test-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
-import { Organization } from "../organization/Organization";
-import { Profile } from "../profile/Profile";
-
-export type User = {
-  id: string;
-  username: string;
-  roles: JsonValue;
-  name: string;
-  bio: string;
-  email: string;
-  age: number;
-  birthDate: Date;
-  score: number;
-  manager?: User | null;
-  employees?: Array<User>;
-  organizations?: Array<Organization>;
-  interests?: Array<"programming" | "design">;
-  priority?: "high" | "medium" | "low";
-  isCurious: boolean;
-  location: string;
-  extendedProperties: JsonValue;
-  profile?: Profile | null;
-};
-",
-  "test-ui/src/api/user/UserCountArgs.ts": "import { UserWhereInput } from "./UserWhereInput";
-
-export type UserCountArgs = {
-  where?: UserWhereInput;
-};
-",
-  "test-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
-import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
-
-export type UserCreateInput = {
-  username: string;
-  roles: InputJsonValue;
-  password: string;
-  name: string;
-  bio: string;
-  email: string;
-  age: number;
-  birthDate: Date;
-  score: number;
-  manager?: UserWhereUniqueInput | null;
-  employees?: UserCreateNestedManyWithoutUsersInput;
-  organizations?: OrganizationCreateNestedManyWithoutUsersInput;
-  interests?: Array<"programming" | "design">;
-  priority: "high" | "medium" | "low";
-  isCurious: boolean;
-  location: string;
-  extendedProperties: InputJsonValue;
-  profile?: ProfileWhereUniqueInput | null;
-};
-",
-  "test-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-
-export type UserCreateNestedManyWithoutUsersInput = {
-  connect?: Array<UserWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from "./UserWhereInput";
-import { UserOrderByInput } from "./UserOrderByInput";
-
-export type UserFindManyArgs = {
-  where?: UserWhereInput;
-  orderBy?: Array<UserOrderByInput>;
-  skip?: number;
-  take?: number;
-};
-",
-  "test-ui/src/api/user/UserFindUniqueArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-
-export type UserFindUniqueArgs = {
-  where: UserWhereUniqueInput;
-};
-",
-  "test-ui/src/api/user/UserListRelationFilter.ts": "import { UserWhereInput } from "./UserWhereInput";
-
-export type UserListRelationFilter = {
-  every?: UserWhereInput;
-  some?: UserWhereInput;
-  none?: UserWhereInput;
-};
-",
-  "test-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
-
-export type UserOrderByInput = {
-  id?: SortOrder;
-  username?: SortOrder;
-  roles?: SortOrder;
-  password?: SortOrder;
-  name?: SortOrder;
-  bio?: SortOrder;
-  email?: SortOrder;
-  age?: SortOrder;
-  birthDate?: SortOrder;
-  score?: SortOrder;
-  managerId?: SortOrder;
-  interests?: SortOrder;
-  priority?: SortOrder;
-  isCurious?: SortOrder;
-  location?: SortOrder;
-  extendedProperties?: SortOrder;
-  profileId?: SortOrder;
-};
-",
-  "test-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
-import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
-
-export type UserUpdateInput = {
-  username?: string;
-  roles?: InputJsonValue;
-  password?: string;
-  name?: string;
-  bio?: string;
-  email?: string;
-  age?: number;
-  birthDate?: Date;
-  score?: number;
-  manager?: UserWhereUniqueInput | null;
-  employees?: UserUpdateManyWithoutUsersInput;
-  organizations?: OrganizationUpdateManyWithoutUsersInput;
-  interests?: Array<"programming" | "design">;
-  priority?: "high" | "medium" | "low";
-  isCurious?: boolean;
-  location?: string;
-  extendedProperties?: InputJsonValue;
-  profile?: ProfileWhereUniqueInput | null;
-};
-",
-  "test-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-
-export type UserUpdateManyWithoutUsersInput = {
-  connect?: Array<UserWhereUniqueInput>;
-  disconnect?: Array<UserWhereUniqueInput>;
-  set?: Array<UserWhereUniqueInput>;
-};
-",
-  "test-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
-import { IntFilter } from "../../util/IntFilter";
-import { DateTimeFilter } from "../../util/DateTimeFilter";
-import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
-import { OrganizationListRelationFilter } from "../organization/OrganizationListRelationFilter";
-import { BooleanFilter } from "../../util/BooleanFilter";
-import { JsonFilter } from "../../util/JsonFilter";
-import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
-
-export type UserWhereInput = {
-  id?: StringFilter;
-  username?: StringFilter;
-  name?: StringFilter;
-  bio?: StringFilter;
-  age?: IntFilter;
-  birthDate?: DateTimeFilter;
-  manager?: UserWhereUniqueInput;
-  organizations?: OrganizationListRelationFilter;
-  priority?: "high" | "medium" | "low";
-  isCurious?: BooleanFilter;
-  location?: StringFilter;
-  extendedProperties?: JsonFilter;
-  profile?: ProfileWhereUniqueInput;
-};
-",
-  "test-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
-  id: string;
-};
-",
-  "test-ui/src/auth-provider/ra-auth-http.ts": "import { gql } from "@apollo/client/core";
-import { AuthProvider } from "react-admin";
-import {
-  CREDENTIALS_LOCAL_STORAGE_ITEM,
-  USER_DATA_LOCAL_STORAGE_ITEM,
-} from "../constants";
-import { Credentials, LoginMutateResult } from "../types";
-import { apolloClient } from "../data-provider/graphqlDataProvider";
-
-const LOGIN = gql\`
-  mutation login($username: String!, $password: String!) {
-    login(credentials: { username: $username, password: $password }) {
-      username
-      roles
-    }
-  }
-\`;
-
-export const httpAuthProvider: AuthProvider = {
-  login: async (credentials: Credentials) => {
-    const userData = await apolloClient.mutate<LoginMutateResult>({
-      mutation: LOGIN,
-      variables: {
-        ...credentials,
-      },
-    });
-
-    if (userData && userData.data?.login.username) {
-      localStorage.setItem(
-        CREDENTIALS_LOCAL_STORAGE_ITEM,
-        createBasicAuthorizationHeader(
-          credentials.username,
-          credentials.password
-        )
-      );
-      localStorage.setItem(
-        USER_DATA_LOCAL_STORAGE_ITEM,
-        JSON.stringify(userData.data)
-      );
-      return Promise.resolve();
-    }
-    return Promise.reject();
-  },
-  logout: () => {
-    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-    return Promise.resolve();
-  },
-  checkError: ({ status }: any) => {
-    if (status === 401 || status === 403) {
-      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-      return Promise.reject();
-    }
-    return Promise.resolve();
-  },
-  checkAuth: () => {
-    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
-      ? Promise.resolve()
-      : Promise.reject();
-  },
-  getPermissions: () => Promise.reject("Unknown method"),
-  getIdentity: () => {
-    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    const userData: LoginMutateResult = JSON.parse(str || "");
-
-    return Promise.resolve({
-      id: userData.login.username,
-      fullName: userData.login.username,
-      avatar: undefined,
-    });
-  },
-};
-
-function createBasicAuthorizationHeader(
-  username: string,
-  password: string
-): string {
-  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
-}
-",
-  "test-ui/src/auth-provider/ra-auth-jwt.ts": "import { gql } from "@apollo/client/core";
-import { AuthProvider } from "react-admin";
-import {
-  CREDENTIALS_LOCAL_STORAGE_ITEM,
-  USER_DATA_LOCAL_STORAGE_ITEM,
-} from "../constants";
-import { Credentials, LoginMutateResult } from "../types";
-import { apolloClient } from "../data-provider/graphqlDataProvider";
-
-const LOGIN = gql\`
-  mutation login($username: String!, $password: String!) {
-    login(credentials: { username: $username, password: $password }) {
-      username
-      accessToken
-    }
-  }
-\`;
-
-export const jwtAuthProvider: AuthProvider = {
-  login: async (credentials: Credentials) => {
-    const userData = await apolloClient.mutate<LoginMutateResult>({
-      mutation: LOGIN,
-      variables: {
-        ...credentials,
-      },
-    });
-
-    if (userData && userData.data?.login.username) {
-      localStorage.setItem(
-        CREDENTIALS_LOCAL_STORAGE_ITEM,
-        createBearerAuthorizationHeader(userData.data.login?.accessToken)
-      );
-      localStorage.setItem(
-        USER_DATA_LOCAL_STORAGE_ITEM,
-        JSON.stringify(userData.data)
-      );
-      return Promise.resolve();
-    }
-    return Promise.reject();
-  },
-  logout: () => {
-    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-    return Promise.resolve();
-  },
-  checkError: ({ status }: any) => {
-    if (status === 401 || status === 403) {
-      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-      return Promise.reject();
-    }
-    return Promise.resolve();
-  },
-  checkAuth: () => {
-    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
-      ? Promise.resolve()
-      : Promise.reject();
-  },
-  getPermissions: () => Promise.reject("Unknown method"),
-  getIdentity: () => {
-    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
-    const userData: LoginMutateResult = JSON.parse(str || "");
-
-    return Promise.resolve({
-      id: userData.login.username,
-      fullName: userData.login.username,
-      avatar: undefined,
-    });
-  },
-};
-
-export function createBearerAuthorizationHeader(accessToken: string) {
-  return \`Bearer \${accessToken}\`;
-}
-",
-  "test-ui/src/auth.ts": "import { EventEmitter } from "events";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "./constants";
-import { Credentials } from "./types";
-
-const eventEmitter = new EventEmitter();
-
-export function isAuthenticated(): boolean {
-  return Boolean(getCredentials());
-}
-
-export function listen(listener: (authenticated: boolean) => void): void {
-  eventEmitter.on("change", () => {
-    listener(isAuthenticated());
-  });
-}
-
-export function setCredentials(credentials: Credentials) {
-  localStorage.setItem(
-    CREDENTIALS_LOCAL_STORAGE_ITEM,
-    JSON.stringify(credentials)
-  );
-}
-
-export function getCredentials(): Credentials | null {
-  const raw = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-  if (raw === null) {
-    return null;
-  }
-  return JSON.parse(raw);
-}
-
-export function removeCredentials(): void {
-  localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-}
-",
-  "test-ui/src/constants.ts": "export const CREDENTIALS_LOCAL_STORAGE_ITEM = "credentials";
-export const USER_DATA_LOCAL_STORAGE_ITEM = "userData";
-",
-  "test-ui/src/customer/CustomerCreate.tsx": "import * as React from "react";
-
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  TextInput,
-  BooleanInput,
-  DateInput,
-  NumberInput,
-  SelectArrayInput,
-  SelectInput,
-  ReferenceInput,
-  ReferenceArrayInput,
-} from "react-admin";
-
-import { OrganizationTitle } from "../organization/OrganizationTitle";
-import { OrderTitle } from "../order/OrderTitle";
-
-export const CustomerCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <TextInput label="Email" source="email" type="email" />
-        <TextInput label="First Name" source="firstName" />
-        <TextInput label="Last Name" source="lastName" />
-        <BooleanInput label="VIP" source="isVip" />
-        <DateInput label="Birth Data" source="birthData" />
-        <NumberInput
-          label="Average Sale (-1500.00 - 1500.00)"
-          source="averageSale"
-        />
-        <NumberInput
-          step={1}
-          label="Favorite Number (1 - 20)"
-          source="favoriteNumber"
-        />
-        <TextInput label="Geographic Location" source="geoLocation" />
-        <TextInput
-          label="Comments (up to 500 characters)"
-          multiline
-          source="comments"
-        />
-        <SelectArrayInput
-          label="Favorite Colors (multi-select)"
-          source="favoriteColors"
-          choices={[
-            { label: "Red", value: "red" },
-            { label: "Green", value: "green" },
-            { label: "Purple", value: "purple" },
-            { label: "yellow", value: "yellow" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="customerType"
-          label="Customer Type"
-          choices={[
-            { label: "Platinum", value: "platinum" },
-            { label: "Gold", value: "gold" },
-            { label: "Bronze", value: "bronze" },
-            { label: "Regular", value: "regular" },
-          ]}
-          optionText="label"
-          allowEmpty
-          optionValue="value"
-        />
-        <ReferenceInput
-          source="organization.id"
-          reference="Organization"
-          label="Organization"
-        >
-          <SelectInput optionText={OrganizationTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source="vipOrganization.id"
-          reference="Organization"
-          label="VIP Organization"
-        >
-          <SelectInput optionText={OrganizationTitle} />
-        </ReferenceInput>
-        <ReferenceArrayInput
-          source="orders"
-          reference="Order"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrderTitle} />
-        </ReferenceArrayInput>
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/customer/CustomerEdit.tsx": "import * as React from "react";
-
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  TextInput,
-  BooleanInput,
-  DateInput,
-  NumberInput,
-  SelectArrayInput,
-  SelectInput,
-  ReferenceInput,
-  ReferenceArrayInput,
-} from "react-admin";
-
-import { OrganizationTitle } from "../organization/OrganizationTitle";
-import { OrderTitle } from "../order/OrderTitle";
-
-export const CustomerEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <TextInput label="Email" source="email" type="email" />
-        <TextInput label="First Name" source="firstName" />
-        <TextInput label="Last Name" source="lastName" />
-        <BooleanInput label="VIP" source="isVip" />
-        <DateInput label="Birth Data" source="birthData" />
-        <NumberInput
-          label="Average Sale (-1500.00 - 1500.00)"
-          source="averageSale"
-        />
-        <NumberInput
-          step={1}
-          label="Favorite Number (1 - 20)"
-          source="favoriteNumber"
-        />
-        <TextInput label="Geographic Location" source="geoLocation" />
-        <TextInput
-          label="Comments (up to 500 characters)"
-          multiline
-          source="comments"
-        />
-        <SelectArrayInput
-          label="Favorite Colors (multi-select)"
-          source="favoriteColors"
-          choices={[
-            { label: "Red", value: "red" },
-            { label: "Green", value: "green" },
-            { label: "Purple", value: "purple" },
-            { label: "yellow", value: "yellow" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="customerType"
-          label="Customer Type"
-          choices={[
-            { label: "Platinum", value: "platinum" },
-            { label: "Gold", value: "gold" },
-            { label: "Bronze", value: "bronze" },
-            { label: "Regular", value: "regular" },
-          ]}
-          optionText="label"
-          allowEmpty
-          optionValue="value"
-        />
-        <ReferenceInput
-          source="organization.id"
-          reference="Organization"
-          label="Organization"
-        >
-          <SelectInput optionText={OrganizationTitle} />
-        </ReferenceInput>
-        <ReferenceInput
-          source="vipOrganization.id"
-          reference="Organization"
-          label="VIP Organization"
-        >
-          <SelectInput optionText={OrganizationTitle} />
-        </ReferenceInput>
-        <ReferenceArrayInput
-          source="orders"
-          reference="Order"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrderTitle} />
-        </ReferenceArrayInput>
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/customer/CustomerList.tsx": "import * as React from "react";
-
-import {
-  List,
-  Datagrid,
-  ListProps,
-  TextField,
-  DateField,
-  BooleanField,
-  ReferenceField,
-} from "react-admin";
-
-import Pagination from "../Components/Pagination";
-import { ORGANIZATION_TITLE_FIELD } from "../organization/OrganizationTitle";
-
-export const CustomerList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"The Customers"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Email" source="email" />
-        <TextField label="First Name" source="firstName" />
-        <TextField label="Last Name" source="lastName" />
-        <BooleanField label="VIP" source="isVip" />
-        <TextField label="Birth Data" source="birthData" />
-        <TextField
-          label="Average Sale (-1500.00 - 1500.00)"
-          source="averageSale"
-        />
-        <TextField label="Favorite Number (1 - 20)" source="favoriteNumber" />
-        <TextField label="Geographic Location" source="geoLocation" />
-        <TextField label="Comments (up to 500 characters)" source="comments" />
-        <TextField
-          label="Favorite Colors (multi-select)"
-          source="favoriteColors"
-        />
-        <TextField label="Customer Type" source="customerType" />
-        <ReferenceField
-          label="Organization"
-          source="organization.id"
-          reference="Organization"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
-        </ReferenceField>
-        <ReferenceField
-          label="VIP Organization"
-          source="organization.id"
-          reference="Organization"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
-        </ReferenceField>
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/customer/CustomerShow.tsx": "import * as React from "react";
-
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  DateField,
-  BooleanField,
-  ReferenceField,
-  ReferenceManyField,
-  Datagrid,
-} from "react-admin";
-
-import { CUSTOMER_TITLE_FIELD } from "./CustomerTitle";
-import { ORGANIZATION_TITLE_FIELD } from "../organization/OrganizationTitle";
-
-export const CustomerShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Email" source="email" />
-        <TextField label="First Name" source="firstName" />
-        <TextField label="Last Name" source="lastName" />
-        <BooleanField label="VIP" source="isVip" />
-        <TextField label="Birth Data" source="birthData" />
-        <TextField
-          label="Average Sale (-1500.00 - 1500.00)"
-          source="averageSale"
-        />
-        <TextField label="Favorite Number (1 - 20)" source="favoriteNumber" />
-        <TextField label="Geographic Location" source="geoLocation" />
-        <TextField label="Comments (up to 500 characters)" source="comments" />
-        <TextField
-          label="Favorite Colors (multi-select)"
-          source="favoriteColors"
-        />
-        <TextField label="Customer Type" source="customerType" />
-        <ReferenceField
-          label="Organization"
-          source="organization.id"
-          reference="Organization"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
-        </ReferenceField>
-        <ReferenceField
-          label="VIP Organization"
-          source="organization.id"
-          reference="Organization"
-        >
-          <TextField source={ORGANIZATION_TITLE_FIELD} />
-        </ReferenceField>
-        <ReferenceManyField
-          reference="Order"
-          target="customerId"
-          label="Orders"
-        >
-          <Datagrid rowClick="show">
-            <TextField label="Id" source="id" />
-            <DateField source="createdAt" label="Created At" />
-            <DateField source="updatedAt" label="Updated At" />
-            <ReferenceField
-              label="Customer"
-              source="customer.id"
-              reference="Customer"
-            >
-              <TextField source={CUSTOMER_TITLE_FIELD} />
-            </ReferenceField>
-            <TextField label="Status" source="status" />
-            <TextField label="Label" source="label" />
-          </Datagrid>
-        </ReferenceManyField>
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from "../api/customer/Customer";
-
-export const CUSTOMER_TITLE_FIELD = "firstName";
-
-export const CustomerTitle = (record: TCustomer): string => {
-  return record.firstName?.toString() || String(record.id);
-};
-",
-  "test-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from "ra-data-graphql-amplication";
-import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
-
-const httpLink = createHttpLink({
-  uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
-});
-
-// eslint-disable-next-line @typescript-eslint/naming-convention
-const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
-  return {
-    headers: {
-      ...headers,
-      authorization: token ? token : "",
-    },
-  };
-});
-
-export const apolloClient = new ApolloClient({
-  cache: new InMemoryCache(),
-  link: authLink.concat(httpLink),
-});
-
-export default buildGraphQLProvider({
-  client: apolloClient,
-});
-",
-  "test-ui/src/empty/EmptyCreate.tsx": "import * as React from "react";
-import { Create, SimpleForm, CreateProps } from "react-admin";
-
-export const EmptyCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <div />
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/empty/EmptyEdit.tsx": "import * as React from "react";
-import { Edit, SimpleForm, EditProps } from "react-admin";
-
-export const EmptyEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <div />
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/empty/EmptyList.tsx": "import * as React from "react";
-import { List, Datagrid, ListProps, TextField, DateField } from "react-admin";
-import Pagination from "../Components/Pagination";
-
-export const EmptyList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Empties"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/empty/EmptyShow.tsx": "import * as React from "react";
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  DateField,
-} from "react-admin";
-
-export const EmptyShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from "../api/empty/Empty";
-
-export const EMPTY_TITLE_FIELD = "id";
-
-export const EmptyTitle = (record: TEmpty): string => {
-  return record.id?.toString() || String(record.id);
-};
-",
-  "test-ui/src/index.tsx": "import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-// @ts-ignore
-// eslint-disable-next-line import/no-unresolved
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById("root")
-);
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
-",
-  "test-ui/src/order/OrderCreate.tsx": "import * as React from "react";
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
-import { CustomerTitle } from "../customer/CustomerTitle";
-
-export const OrderCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <ReferenceInput
-          source="customer.id"
-          reference="Customer"
-          label="Customer"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
-        <SelectInput
-          source="status"
-          label="Status"
-          choices={[
-            { label: "Pending", value: "pending" },
-            { label: "In Progress", value: "inProgress" },
-            { label: "Done", value: "done" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="label"
-          label="Label"
-          choices={[{ label: "Fragile", value: "fragile" }]}
-          optionText="label"
-          allowEmpty
-          optionValue="value"
-        />
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/order/OrderEdit.tsx": "import * as React from "react";
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
-import { CustomerTitle } from "../customer/CustomerTitle";
-
-export const OrderEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <ReferenceInput
-          source="customer.id"
-          reference="Customer"
-          label="Customer"
-        >
-          <SelectInput optionText={CustomerTitle} />
-        </ReferenceInput>
-        <SelectInput
-          source="status"
-          label="Status"
-          choices={[
-            { label: "Pending", value: "pending" },
-            { label: "In Progress", value: "inProgress" },
-            { label: "Done", value: "done" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="label"
-          label="Label"
-          choices={[{ label: "Fragile", value: "fragile" }]}
-          optionText="label"
-          allowEmpty
-          optionValue="value"
-        />
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/order/OrderList.tsx": "import * as React from "react";
-import {
-  List,
-  Datagrid,
-  ListProps,
-  TextField,
-  DateField,
-  ReferenceField,
-} from "react-admin";
-import Pagination from "../Components/Pagination";
-import { CUSTOMER_TITLE_FIELD } from "../customer/CustomerTitle";
-
-export const OrderList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Orders"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <ReferenceField
-          label="Customer"
-          source="customer.id"
-          reference="Customer"
-        >
-          <TextField source={CUSTOMER_TITLE_FIELD} />
-        </ReferenceField>
-        <TextField label="Status" source="status" />
-        <TextField label="Label" source="label" />
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/order/OrderShow.tsx": "import * as React from "react";
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  DateField,
-  ReferenceField,
-} from "react-admin";
-import { CUSTOMER_TITLE_FIELD } from "../customer/CustomerTitle";
-
-export const OrderShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <ReferenceField
-          label="Customer"
-          source="customer.id"
-          reference="Customer"
-        >
-          <TextField source={CUSTOMER_TITLE_FIELD} />
-        </ReferenceField>
-        <TextField label="Status" source="status" />
-        <TextField label="Label" source="label" />
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from "../api/order/Order";
-
-export const ORDER_TITLE_FIELD = "id";
-
-export const OrderTitle = (record: TOrder): string => {
-  return record.id?.toString() || String(record.id);
-};
-",
-  "test-ui/src/organization/OrganizationCreate.tsx": "import * as React from "react";
-
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  TextInput,
-  ReferenceArrayInput,
-  SelectArrayInput,
-} from "react-admin";
-
-import { UserTitle } from "../user/UserTitle";
-import { CustomerTitle } from "../customer/CustomerTitle";
-
-export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <TextInput label="Name" source="name" />
-        <ReferenceArrayInput
-          source="users"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="customers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="vipCustomers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
-        </ReferenceArrayInput>
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/organization/OrganizationEdit.tsx": "import * as React from "react";
-
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  TextInput,
-  ReferenceArrayInput,
-  SelectArrayInput,
-} from "react-admin";
-
-import { UserTitle } from "../user/UserTitle";
-import { CustomerTitle } from "../customer/CustomerTitle";
-
-export const OrganizationEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <TextInput label="Name" source="name" />
-        <ReferenceArrayInput
-          source="users"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="customers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="vipCustomers"
-          reference="Customer"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={CustomerTitle} />
-        </ReferenceArrayInput>
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/organization/OrganizationList.tsx": "import * as React from "react";
-import { List, Datagrid, ListProps, TextField, DateField } from "react-admin";
-import Pagination from "../Components/Pagination";
-
-export const OrganizationList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Organizations"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Name" source="name" />
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/organization/OrganizationShow.tsx": "import * as React from "react";
-
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  DateField,
-  ReferenceManyField,
-  Datagrid,
-  BooleanField,
-  ReferenceField,
-} from "react-admin";
-
-import { ORGANIZATION_TITLE_FIELD } from "./OrganizationTitle";
-
-export const OrganizationShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <DateField source="createdAt" label="Created At" />
-        <DateField source="updatedAt" label="Updated At" />
-        <TextField label="Name" source="name" />
-        <ReferenceManyField
-          reference="Customer"
-          target="organizationId"
-          label="The Customers"
-        >
-          <Datagrid rowClick="show">
-            <TextField label="Id" source="id" />
-            <DateField source="createdAt" label="Created At" />
-            <DateField source="updatedAt" label="Updated At" />
-            <TextField label="Email" source="email" />
-            <TextField label="First Name" source="firstName" />
-            <TextField label="Last Name" source="lastName" />
-            <BooleanField label="VIP" source="isVip" />
-            <TextField label="Birth Data" source="birthData" />
-            <TextField
-              label="Average Sale (-1500.00 - 1500.00)"
-              source="averageSale"
-            />
-            <TextField
-              label="Favorite Number (1 - 20)"
-              source="favoriteNumber"
-            />
-            <TextField label="Geographic Location" source="geoLocation" />
-            <TextField
-              label="Comments (up to 500 characters)"
-              source="comments"
-            />
-            <TextField
-              label="Favorite Colors (multi-select)"
-              source="favoriteColors"
-            />
-            <TextField label="Customer Type" source="customerType" />
-            <ReferenceField
-              label="Organization"
-              source="organization.id"
-              reference="Organization"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
-            </ReferenceField>
-            <ReferenceField
-              label="VIP Organization"
-              source="organization.id"
-              reference="Organization"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
-            </ReferenceField>
-          </Datagrid>
-        </ReferenceManyField>
-        <ReferenceManyField
-          reference="Customer"
-          target="vipOrganizationId"
-          label="The Customers"
-        >
-          <Datagrid rowClick="show">
-            <TextField label="Id" source="id" />
-            <DateField source="createdAt" label="Created At" />
-            <DateField source="updatedAt" label="Updated At" />
-            <TextField label="Email" source="email" />
-            <TextField label="First Name" source="firstName" />
-            <TextField label="Last Name" source="lastName" />
-            <BooleanField label="VIP" source="isVip" />
-            <TextField label="Birth Data" source="birthData" />
-            <TextField
-              label="Average Sale (-1500.00 - 1500.00)"
-              source="averageSale"
-            />
-            <TextField
-              label="Favorite Number (1 - 20)"
-              source="favoriteNumber"
-            />
-            <TextField label="Geographic Location" source="geoLocation" />
-            <TextField
-              label="Comments (up to 500 characters)"
-              source="comments"
-            />
-            <TextField
-              label="Favorite Colors (multi-select)"
-              source="favoriteColors"
-            />
-            <TextField label="Customer Type" source="customerType" />
-            <ReferenceField
-              label="Organization"
-              source="organization.id"
-              reference="Organization"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
-            </ReferenceField>
-            <ReferenceField
-              label="VIP Organization"
-              source="organization.id"
-              reference="Organization"
-            >
-              <TextField source={ORGANIZATION_TITLE_FIELD} />
-            </ReferenceField>
-          </Datagrid>
-        </ReferenceManyField>
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from "../api/organization/Organization";
-
-export const ORGANIZATION_TITLE_FIELD = "name";
-
-export const OrganizationTitle = (record: TOrganization): string => {
-  return record.name?.toString() || String(record.id);
-};
-",
-  "test-ui/src/pages/Dashboard.tsx": "import * as React from "react";
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import { Title } from "react-admin";
-const Dashboard = () => (
-  <Card>
-    <Title title="Welcome to the administration" />
-    <CardContent>Welcome</CardContent>
-  </Card>
-);
-
-export default Dashboard;
-",
-  "test-ui/src/profile/ProfileCreate.tsx": "import * as React from "react";
-
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  DateTimeInput,
-  TextInput,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
-
-import { UserTitle } from "../user/UserTitle";
-
-export const ProfileCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <DateTimeInput label="Created At" source="createdAt" />
-        <DateTimeInput label="Updated At" source="updatedAt" />
-        <TextInput label="Email" source="email" type="email" />
-        <ReferenceInput source="user.id" reference="User" label="User">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/profile/ProfileEdit.tsx": "import * as React from "react";
-
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  DateTimeInput,
-  TextInput,
-  ReferenceInput,
-  SelectInput,
-} from "react-admin";
-
-import { UserTitle } from "../user/UserTitle";
-
-export const ProfileEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <DateTimeInput label="Created At" source="createdAt" />
-        <DateTimeInput label="Updated At" source="updatedAt" />
-        <TextInput label="Email" source="email" type="email" />
-        <ReferenceInput source="user.id" reference="User" label="User">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/profile/ProfileList.tsx": "import * as React from "react";
-import {
-  List,
-  Datagrid,
-  ListProps,
-  TextField,
-  DateField,
-  ReferenceField,
-} from "react-admin";
-import Pagination from "../Components/Pagination";
-import { USER_TITLE_FIELD } from "../user/UserTitle";
-
-export const ProfileList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Profiles"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <DateField source="createdIn" label="Created In" />
-        <TextField label="Created At" source="createdAt" />
-        <DateField source="updatedIn" label="Updated In" />
-        <TextField label="Updated At" source="updatedAt" />
-        <TextField label="Email" source="email" />
-        <ReferenceField label="User" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/profile/ProfileShow.tsx": "import * as React from "react";
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  DateField,
-  ReferenceField,
-} from "react-admin";
-import { USER_TITLE_FIELD } from "../user/UserTitle";
-
-export const ProfileShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <DateField source="createdIn" label="Created In" />
-        <TextField label="Created At" source="createdAt" />
-        <DateField source="updatedIn" label="Updated In" />
-        <TextField label="Updated At" source="updatedAt" />
-        <TextField label="Email" source="email" />
-        <ReferenceField label="User" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/profile/ProfileTitle.ts": "import { Profile as TProfile } from "../api/profile/Profile";
-
-export const PROFILE_TITLE_FIELD = "id";
-
-export const ProfileTitle = (record: TProfile): string => {
-  return record.id?.toString() || String(record.id);
-};
-",
-  "test-ui/src/reportWebVitals.ts": "import { ReportHandler } from "web-vitals";
-
-const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
-  if (onPerfEntry && onPerfEntry instanceof Function) {
-    void import("web-vitals").then(
-      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
-        getCLS(onPerfEntry);
-        getFID(onPerfEntry);
-        getFCP(onPerfEntry);
-        getLCP(onPerfEntry);
-        getTTFB(onPerfEntry);
-      }
-    );
-  }
-};
-
-export default reportWebVitals;
-",
-  "test-ui/src/setupTests.ts": "// jest-dom adds custom jest matchers for asserting on DOM nodes.
-// allows you to do things like:
-// expect(element).toHaveTextContent(/react/i)
-// learn more: https://github.com/testing-library/jest-dom
-import "@testing-library/jest-dom";
-",
-  "test-ui/src/theme/theme.ts": "import { defaultTheme } from "react-admin";
-import { createTheme, ThemeOptions } from "@material-ui/core/styles";
-import { merge } from "lodash";
-import createPalette from "@material-ui/core/styles/createPalette";
-
-const palette = createPalette(
-  merge({}, defaultTheme.palette, {
-    primary: {
-      main: "#20a4f3",
-    },
-    secondary: {
-      main: "#7950ed",
-    },
-    error: {
-      main: "#e93c51",
-    },
-    warning: {
-      main: "#f6aa50",
-    },
-    info: {
-      main: "#144bc1",
-    },
-    success: {
-      main: "#31c587",
-    },
-  })
-);
-
-const themeOptions: ThemeOptions = {
-  palette,
-};
-
-export const theme = createTheme(merge({}, defaultTheme, themeOptions));
-",
-  "test-ui/src/types.ts": "import { JsonValue } from "type-fest";
-
-export type Credentials = {
-  username: string;
-  password: string;
-};
-export type LoginMutateResult = {
-  login: {
-    username: string;
-    accessToken: string;
-  };
-};
-export type InputJsonValue = Omit<JsonValue, "null">;
-",
-  "test-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
-  User = "user",
-  Admin = "admin",
-  AreaManager = "areaManager",
-}
-",
-  "test-ui/src/user/RolesOptions.ts": "//@ts-ignore
-import { ROLES } from "./roles";
-
-declare interface Role {
-  name: string;
-  displayName: string;
-}
-
-export const ROLES_OPTIONS = ROLES.map((role: Role) => ({
-  value: role.name,
-  label: role.displayName,
-}));
-",
-  "test-ui/src/user/UserCreate.tsx": "import * as React from "react";
-
-import {
-  Create,
-  SimpleForm,
-  CreateProps,
-  TextInput,
-  SelectArrayInput,
-  PasswordInput,
-  NumberInput,
-  DateTimeInput,
-  ReferenceInput,
-  SelectInput,
-  ReferenceArrayInput,
-  BooleanInput,
-} from "react-admin";
-
-import { UserTitle } from "./UserTitle";
-import { OrganizationTitle } from "../organization/OrganizationTitle";
-import { ProfileTitle } from "../profile/ProfileTitle";
-import { ROLES_OPTIONS } from "../user/RolesOptions";
-
-export const UserCreate = (props: CreateProps): React.ReactElement => {
-  return (
-    <Create {...props}>
-      <SimpleForm>
-        <TextInput label="Username" source="username" />
-        <SelectArrayInput
-          source="roles"
-          choices={ROLES_OPTIONS}
-          optionText="label"
-          optionValue="value"
-        />
-        <PasswordInput label="Password" source="password" />
-        <TextInput label="Name" source="name" />
-        <TextInput label="Bio" multiline source="bio" />
-        <TextInput label="Email" source="email" type="email" />
-        <NumberInput step={1} label="Age" source="age" />
-        <DateTimeInput label="Birth Date" source="birthDate" />
-        <NumberInput label="Score" source="score" />
-        <ReferenceInput source="manager.id" reference="User" label="Manager">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceArrayInput
-          source="employees"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="organizations"
-          reference="Organization"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrganizationTitle} />
-        </ReferenceArrayInput>
-        <SelectArrayInput
-          label="Interests"
-          source="interests"
-          choices={[
-            { label: "Programming", value: "programming" },
-            { label: "Design", value: "design" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="priority"
-          label="Priority"
-          choices={[
-            { label: "High", value: "high" },
-            { label: "Medium", value: "medium" },
-            { label: "Low", value: "low" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <BooleanInput label="Is Curious" source="isCurious" />
-        <TextInput label="Location" source="location" />
-        <div />
-        <ReferenceInput source="profile.id" reference="Profile" label="Profile">
-          <SelectInput optionText={ProfileTitle} />
-        </ReferenceInput>
-      </SimpleForm>
-    </Create>
-  );
-};
-",
-  "test-ui/src/user/UserEdit.tsx": "import * as React from "react";
-
-import {
-  Edit,
-  SimpleForm,
-  EditProps,
-  TextInput,
-  SelectArrayInput,
-  PasswordInput,
-  NumberInput,
-  DateTimeInput,
-  ReferenceInput,
-  SelectInput,
-  ReferenceArrayInput,
-  BooleanInput,
-} from "react-admin";
-
-import { UserTitle } from "./UserTitle";
-import { OrganizationTitle } from "../organization/OrganizationTitle";
-import { ProfileTitle } from "../profile/ProfileTitle";
-import { ROLES_OPTIONS } from "../user/RolesOptions";
-
-export const UserEdit = (props: EditProps): React.ReactElement => {
-  return (
-    <Edit {...props}>
-      <SimpleForm>
-        <TextInput label="Username" source="username" />
-        <SelectArrayInput
-          source="roles"
-          choices={ROLES_OPTIONS}
-          optionText="label"
-          optionValue="value"
-        />
-        <PasswordInput label="Password" source="password" />
-        <TextInput label="Name" source="name" />
-        <TextInput label="Bio" multiline source="bio" />
-        <TextInput label="Email" source="email" type="email" />
-        <NumberInput step={1} label="Age" source="age" />
-        <DateTimeInput label="Birth Date" source="birthDate" />
-        <NumberInput label="Score" source="score" />
-        <ReferenceInput source="manager.id" reference="User" label="Manager">
-          <SelectInput optionText={UserTitle} />
-        </ReferenceInput>
-        <ReferenceArrayInput
-          source="employees"
-          reference="User"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={UserTitle} />
-        </ReferenceArrayInput>
-        <ReferenceArrayInput
-          source="organizations"
-          reference="Organization"
-          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
-          format={(value: any) => value && value.map((v: any) => v.id)}
-        >
-          <SelectArrayInput optionText={OrganizationTitle} />
-        </ReferenceArrayInput>
-        <SelectArrayInput
-          label="Interests"
-          source="interests"
-          choices={[
-            { label: "Programming", value: "programming" },
-            { label: "Design", value: "design" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <SelectInput
-          source="priority"
-          label="Priority"
-          choices={[
-            { label: "High", value: "high" },
-            { label: "Medium", value: "medium" },
-            { label: "Low", value: "low" },
-          ]}
-          optionText="label"
-          optionValue="value"
-        />
-        <BooleanInput label="Is Curious" source="isCurious" />
-        <TextInput label="Location" source="location" />
-        <div />
-        <ReferenceInput source="profile.id" reference="Profile" label="Profile">
-          <SelectInput optionText={ProfileTitle} />
-        </ReferenceInput>
-      </SimpleForm>
-    </Edit>
-  );
-};
-",
-  "test-ui/src/user/UserList.tsx": "import * as React from "react";
-import {
-  List,
-  Datagrid,
-  ListProps,
-  TextField,
-  ReferenceField,
-  BooleanField,
-} from "react-admin";
-import Pagination from "../Components/Pagination";
-import { USER_TITLE_FIELD } from "./UserTitle";
-import { PROFILE_TITLE_FIELD } from "../profile/ProfileTitle";
-
-export const UserList = (props: ListProps): React.ReactElement => {
-  return (
-    <List
-      {...props}
-      bulkActionButtons={false}
-      title={"Users"}
-      perPage={50}
-      pagination={<Pagination />}
-    >
-      <Datagrid rowClick="show">
-        <TextField label="Id" source="id" />
-        <TextField label="Username" source="username" />
-        <TextField label="Roles" source="roles" />
-        <TextField label="Name" source="name" />
-        <TextField label="Bio" source="bio" />
-        <TextField label="Email" source="email" />
-        <TextField label="Age" source="age" />
-        <TextField label="Birth Date" source="birthDate" />
-        <TextField label="Score" source="score" />
-        <ReferenceField label="Manager" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-        <TextField label="Interests" source="interests" />
-        <TextField label="Priority" source="priority" />
-        <BooleanField label="Is Curious" source="isCurious" />
-        <TextField label="Location" source="location" />
-        <TextField label="Extended Properties" source="extendedProperties" />
-        <ReferenceField label="Profile" source="profile.id" reference="Profile">
-          <TextField source={PROFILE_TITLE_FIELD} />
-        </ReferenceField>
-      </Datagrid>
-    </List>
-  );
-};
-",
-  "test-ui/src/user/UserShow.tsx": "import * as React from "react";
-import {
-  Show,
-  SimpleShowLayout,
-  ShowProps,
-  TextField,
-  ReferenceField,
-  BooleanField,
-} from "react-admin";
-import { USER_TITLE_FIELD } from "./UserTitle";
-import { PROFILE_TITLE_FIELD } from "../profile/ProfileTitle";
-
-export const UserShow = (props: ShowProps): React.ReactElement => {
-  return (
-    <Show {...props}>
-      <SimpleShowLayout>
-        <TextField label="Id" source="id" />
-        <TextField label="Username" source="username" />
-        <TextField label="Roles" source="roles" />
-        <TextField label="Name" source="name" />
-        <TextField label="Bio" source="bio" />
-        <TextField label="Email" source="email" />
-        <TextField label="Age" source="age" />
-        <TextField label="Birth Date" source="birthDate" />
-        <TextField label="Score" source="score" />
-        <ReferenceField label="Manager" source="user.id" reference="User">
-          <TextField source={USER_TITLE_FIELD} />
-        </ReferenceField>
-        <TextField label="Interests" source="interests" />
-        <TextField label="Priority" source="priority" />
-        <BooleanField label="Is Curious" source="isCurious" />
-        <TextField label="Location" source="location" />
-        <TextField label="Extended Properties" source="extendedProperties" />
-        <ReferenceField label="Profile" source="profile.id" reference="Profile">
-          <TextField source={PROFILE_TITLE_FIELD} />
-        </ReferenceField>
-      </SimpleShowLayout>
-    </Show>
-  );
-};
-",
-  "test-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
-
-export const USER_TITLE_FIELD = "username";
-
-export const UserTitle = (record: TUser): string => {
-  return record.username?.toString() || String(record.id);
-};
-",
-  "test-ui/src/user/roles.ts": "export const ROLES = [
-  {
-    name: "user",
-    displayName: "User",
-  },
-  {
-    name: "admin",
-    displayName: "Admin",
-  },
-  {
-    name: "areaManager",
-    displayName: "Area Manager",
-  },
-];
-",
-  "test-ui/src/util/BigIntFilter.ts": "export class BigIntFilter {
-  equals?: number;
-  in?: number[];
-  notIn?: number[];
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/BigIntNullableFilter.ts": "export class BigIntNullableFilter {
-  equals?: number | null;
-  in?: number[] | null;
-  notIn?: number[] | null;
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
-  equals?: boolean;
-  not?: boolean;
-}
-",
-  "test-ui/src/util/BooleanNullableFilter.ts": "export class BooleanNullableFilter {
-  equals?: boolean | null;
-  not?: boolean | null;
-}
-",
-  "test-ui/src/util/DateTimeFilter.ts": "export class DateTimeFilter {
-  equals?: Date;
-  not?: Date;
-  in?: Date[];
-  notIn?: Date[];
-  lt?: Date;
-  lte?: Date;
-  gt?: Date;
-  gte?: Date;
-}
-",
-  "test-ui/src/util/DateTimeNullableFilter.ts": "export class DateTimeNullableFilter {
-  equals?: Date | null;
-  in?: Date[] | null;
-  notIn?: Date[] | null;
-  lt?: Date;
-  lte?: Date;
-  gt?: Date;
-  gte?: Date;
-  not?: Date;
-}
-",
-  "test-ui/src/util/DecimalFilter.ts": "export class DecimalFilter {
-  equals?: number;
-  in?: number[];
-  notIn?: number[];
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/DecimalNullableFilter.ts": "export class DecimalNullableFilter {
-  equals?: number | null;
-  in?: number[] | null;
-  notIn?: number[] | null;
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/FloatFilter.ts": "export class FloatFilter {
-  equals?: number;
-  in?: number[];
-  notIn?: number[];
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/FloatNullableFilter.ts": "export class FloatNullableFilter {
-  equals?: number | null;
-  in?: number[] | null;
-  notIn?: number[] | null;
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/IntFilter.ts": "export class IntFilter {
-  equals?: number;
-  in?: number[];
-  notIn?: number[];
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/IntNullableFilter.ts": "export class IntNullableFilter {
-  equals?: number | null;
-  in?: number[] | null;
-  notIn?: number[] | null;
-  lt?: number;
-  lte?: number;
-  gt?: number;
-  gte?: number;
-  not?: number;
-}
-",
-  "test-ui/src/util/JsonFilter.ts": "import { InputJsonValue } from "../types";
-export class JsonFilter {
-  equals?: InputJsonValue;
-  not?: InputJsonValue;
-}
-",
-  "test-ui/src/util/JsonNullableFilter.ts": "import { JsonValue } from "type-fest";
-export class JsonNullableFilter {
-  equals?: JsonValue | null;
-  not?: JsonValue | null;
-}
-",
-  "test-ui/src/util/MetaQueryPayload.ts": "export class MetaQueryPayload {
-  count!: number;
-}
-",
-  "test-ui/src/util/QueryMode.ts": "export enum QueryMode {
-  Default = "default",
-  Insensitive = "insensitive",
-}
-",
-  "test-ui/src/util/SortOrder.ts": "export enum SortOrder {
-  Asc = "asc",
-  Desc = "desc",
-}
-",
-  "test-ui/src/util/StringFilter.ts": "import { QueryMode } from "./QueryMode";
-
-export class StringFilter {
-  equals?: string;
-  in?: string[];
-  notIn?: string[];
-  lt?: string;
-  lte?: string;
-  gt?: string;
-  gte?: string;
-  contains?: string;
-  startsWith?: string;
-  endsWith?: string;
-  mode?: QueryMode;
-  not?: string;
-}
-",
-  "test-ui/src/util/StringNullableFilter.ts": "import { QueryMode } from "./QueryMode";
-export class StringNullableFilter {
-  equals?: string | null;
-  in?: string[] | null;
-  notIn?: string[] | null;
-  lt?: string;
-  lte?: string;
-  gt?: string;
-  gte?: string;
-  contains?: string;
-  startsWith?: string;
-  endsWith?: string;
-  mode?: QueryMode;
-  not?: string;
-}
-",
-  "test-ui/tsconfig.json": "{
-  "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "dom.iterable", "esnext"],
-    "allowJs": true,
-    "skipLibCheck": true,
-    "esModuleInterop": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    "noFallthroughCasesInSwitch": true,
-    "module": "esnext",
-    "moduleResolution": "node",
-    "resolveJsonModule": true,
-    "isolatedModules": true,
-    "noEmit": true,
-    "jsx": "react-jsx",
-    "strict": true
-  },
-  "include": ["src"],
-  "exclude": ["./node_modules"]
-}
-",
-  "test/.env": "BCRYPT_SALT=10
+  "server/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000
-DB_URL=postgres://admin:admin@localhost:5432/my-db
-DB_USER=admin
-DB_PASSWORD=admin
-DB_PORT=5432
-DB_NAME=my-db",
-  "test/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+PORT=3000",
+  "server/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
 /dist
 .DS_Store
 ",
-  "test/docker-compose.dev.yml": "version: "3"
-services:
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-volumes:
-  postgres: ~
+  "server/docker-compose.dev.yml": "version: "3"
 ",
-  "test/docker-compose.yml": "version: "3"
+  "server/docker-compose.yml": "version: "3"
 services:
   server:
     build:
@@ -3049,7 +26,6 @@ services:
       BCRYPT_SALT: \${BCRYPT_SALT}
       JWT_SECRET_KEY: \${JWT_SECRET_KEY}
       JWT_EXPIRATION: \${JWT_EXPIRATION}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
     restart: on-failure
@@ -3062,38 +38,18 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
-  db:
-    image: postgres:12
-    ports:
-      - \${DB_PORT}:5432
-    environment:
-      POSTGRES_USER: \${DB_USER}
-      POSTGRES_PASSWORD: \${DB_PASSWORD}
-      POSTGRES_DB: \${DB_NAME}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-    healthcheck:
-      test:
-        - CMD-SHELL
-        - pg_isready -d $\${POSTGRES_DB} -U $\${POSTGRES_USER}
-      timeout: 45s
-      interval: 10s
-      retries: 10
-volumes:
-  postgres: ~
 ",
-  "test/nest-cli.json": "{
+  "server/nest-cli.json": "{
   "sourceRoot": "src",
   "compilerOptions": {
     "assets": ["swagger"]
   }
 }
 ",
-  "test/package.json": "{
+  "server/package.json": "{
   "name": "@sample-application/server",
   "version": "0.1.3",
   "private": true,
@@ -3169,7 +125,7 @@ volumes:
   }
 }
 ",
-  "test/prisma/schema.prisma": "datasource db {
+  "server/prisma/schema.prisma": "datasource postgres {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -3299,7 +255,7 @@ enum EnumCustomerCustomerType {
   regular
 }
 ",
-  "test/scripts/customSeed.ts": "import { PrismaClient } from "@prisma/client";
+  "server/scripts/customSeed.ts": "import { PrismaClient } from "@prisma/client";
 
 export async function customSeed() {
   const client = new PrismaClient();
@@ -3307,7 +263,7 @@ export async function customSeed() {
   client.$disconnect();
 }
 ",
-  "test/scripts/seed.ts": "import * as dotenv from "dotenv";
+  "server/scripts/seed.ts": "import * as dotenv from "dotenv";
 import { PrismaClient } from "@prisma/client";
 import { customSeed } from "./customSeed";
 
@@ -3333,7 +289,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "test/src/app.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
@@ -3385,14 +341,14 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
 })
 export class AppModule {}
 ",
-  "test/src/connectMicroservices.ts": "import { INestApplication } from "@nestjs/common";
+  "server/src/connectMicroservices.ts": "import { INestApplication } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 
 export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
 }
 ",
-  "test/src/customer/base/CreateCustomerArgs.ts": "/*
+  "server/src/customer/base/CreateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3423,7 +379,7 @@ class CreateCustomerArgs {
 
 export { CreateCustomerArgs as CreateCustomerArgs };
 ",
-  "test/src/customer/base/Customer.ts": "/*
+  "server/src/customer/base/Customer.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3633,7 +589,7 @@ class Customer {
 
 export { Customer as Customer };
 ",
-  "test/src/customer/base/CustomerCountArgs.ts": "/*
+  "server/src/customer/base/CustomerCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3662,7 +618,7 @@ class CustomerCountArgs {
 
 export { CustomerCountArgs as CustomerCountArgs };
 ",
-  "test/src/customer/base/CustomerCreateInput.ts": "/*
+  "server/src/customer/base/CustomerCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3857,7 +813,7 @@ class CustomerCreateInput {
 
 export { CustomerCreateInput as CustomerCreateInput };
 ",
-  "test/src/customer/base/CustomerFindManyArgs.ts": "/*
+  "server/src/customer/base/CustomerFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3920,7 +876,7 @@ class CustomerFindManyArgs {
 
 export { CustomerFindManyArgs as CustomerFindManyArgs };
 ",
-  "test/src/customer/base/CustomerFindUniqueArgs.ts": "/*
+  "server/src/customer/base/CustomerFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -3951,7 +907,7 @@ class CustomerFindUniqueArgs {
 
 export { CustomerFindUniqueArgs as CustomerFindUniqueArgs };
 ",
-  "test/src/customer/base/CustomerListRelationFilter.ts": "/*
+  "server/src/customer/base/CustomerListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4008,7 +964,7 @@ class CustomerListRelationFilter {
 }
 export { CustomerListRelationFilter as CustomerListRelationFilter };
 ",
-  "test/src/customer/base/CustomerOrderByInput.ts": "/*
+  "server/src/customer/base/CustomerOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4208,7 +1164,7 @@ class CustomerOrderByInput {
 
 export { CustomerOrderByInput as CustomerOrderByInput };
 ",
-  "test/src/customer/base/CustomerUpdateInput.ts": "/*
+  "server/src/customer/base/CustomerUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4406,7 +1362,7 @@ class CustomerUpdateInput {
 
 export { CustomerUpdateInput as CustomerUpdateInput };
 ",
-  "test/src/customer/base/CustomerWhereInput.ts": "/*
+  "server/src/customer/base/CustomerWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4617,7 +1573,7 @@ class CustomerWhereInput {
 
 export { CustomerWhereInput as CustomerWhereInput };
 ",
-  "test/src/customer/base/CustomerWhereUniqueInput.ts": "/*
+  "server/src/customer/base/CustomerWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4646,7 +1602,7 @@ class CustomerWhereUniqueInput {
 
 export { CustomerWhereUniqueInput as CustomerWhereUniqueInput };
 ",
-  "test/src/customer/base/DeleteCustomerArgs.ts": "/*
+  "server/src/customer/base/DeleteCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4677,7 +1633,7 @@ class DeleteCustomerArgs {
 
 export { DeleteCustomerArgs as DeleteCustomerArgs };
 ",
-  "test/src/customer/base/EnumCustomerCustomerType.ts": "/*
+  "server/src/customer/base/EnumCustomerCustomerType.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4701,7 +1657,7 @@ registerEnumType(EnumCustomerCustomerType, {
   name: "EnumCustomerCustomerType",
 });
 ",
-  "test/src/customer/base/EnumCustomerFavoriteColors.ts": "/*
+  "server/src/customer/base/EnumCustomerFavoriteColors.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4725,7 +1681,7 @@ registerEnumType(EnumCustomerFavoriteColors, {
   name: "EnumCustomerFavoriteColors",
 });
 ",
-  "test/src/customer/base/OrderCreateNestedManyWithoutCustomersInput.ts": "/*
+  "server/src/customer/base/OrderCreateNestedManyWithoutCustomersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4754,7 +1710,7 @@ class OrderCreateNestedManyWithoutCustomersInput {
 
 export { OrderCreateNestedManyWithoutCustomersInput as OrderCreateNestedManyWithoutCustomersInput };
 ",
-  "test/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
+  "server/src/customer/base/OrderUpdateManyWithoutCustomersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4801,7 +1757,7 @@ class OrderUpdateManyWithoutCustomersInput {
 
 export { OrderUpdateManyWithoutCustomersInput as OrderUpdateManyWithoutCustomersInput };
 ",
-  "test/src/customer/base/UpdateCustomerArgs.ts": "/*
+  "server/src/customer/base/UpdateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -4842,7 +1798,7 @@ class UpdateCustomerArgs {
 
 export { UpdateCustomerArgs as UpdateCustomerArgs };
 ",
-  "test/src/customer/base/customer.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/customer/base/customer.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -5073,7 +2029,7 @@ describe("Customer", () => {
   });
 });
 ",
-  "test/src/customer/base/customer.controller.base.ts": "/*
+  "server/src/customer/base/customer.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5435,7 +2391,7 @@ export class CustomerControllerBase {
   }
 }
 ",
-  "test/src/customer/base/customer.module.base.ts": "/*
+  "server/src/customer/base/customer.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5454,7 +2410,7 @@ import { Module } from "@nestjs/common";
 })
 export class CustomerModuleBase {}
 ",
-  "test/src/customer/base/customer.resolver.base.ts": "/*
+  "server/src/customer/base/customer.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5631,7 +2587,7 @@ export class CustomerResolverBase {
   }
 }
 ",
-  "test/src/customer/base/customer.service.base.ts": "/*
+  "server/src/customer/base/customer.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5708,7 +2664,7 @@ export class CustomerServiceBase {
   }
 }
 ",
-  "test/src/customer/customer.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/customer/customer.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { CustomerService } from "./customer.service";
 import { CustomerControllerBase } from "./base/customer.controller.base";
@@ -5721,7 +2677,7 @@ export class CustomerController extends CustomerControllerBase {
   }
 }
 ",
-  "test/src/customer/customer.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/customer/customer.module.ts": "import { Module } from "@nestjs/common";
 import { CustomerModuleBase } from "./base/customer.module.base";
 import { CustomerService } from "./customer.service";
 import { CustomerController } from "./customer.controller";
@@ -5735,7 +2691,7 @@ import { CustomerResolver } from "./customer.resolver";
 })
 export class CustomerModule {}
 ",
-  "test/src/customer/customer.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/customer/customer.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { CustomerResolverBase } from "./base/customer.resolver.base";
 import { Customer } from "./base/Customer";
 import { CustomerService } from "./customer.service";
@@ -5747,7 +2703,7 @@ export class CustomerResolver extends CustomerResolverBase {
   }
 }
 ",
-  "test/src/customer/customer.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/customer/customer.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { CustomerServiceBase } from "./base/customer.service.base";
 
@@ -5758,7 +2714,7 @@ export class CustomerService extends CustomerServiceBase {
   }
 }
 ",
-  "test/src/decorators/api-nested-query.decorator.ts": "import { applyDecorators } from "@nestjs/common";
+  "server/src/decorators/api-nested-query.decorator.ts": "import { applyDecorators } from "@nestjs/common";
 import {
   ApiExtraModels,
   ApiQuery,
@@ -5839,7 +2795,7 @@ export function ApiNestedQuery(query: Function) {
   return applyDecorators(...decorators);
 }
 ",
-  "test/src/decorators/public.decorator.ts": "import { applyDecorators, SetMetadata } from "@nestjs/common";
+  "server/src/decorators/public.decorator.ts": "import { applyDecorators, SetMetadata } from "@nestjs/common";
 
 export const IS_PUBLIC_KEY = "isPublic";
 
@@ -5850,7 +2806,7 @@ const PublicAuthSwagger = SetMetadata("swagger/apiSecurity", ["isPublic"]);
 export const Public = () =>
   applyDecorators(PublicAuthMiddleware, PublicAuthSwagger);
 ",
-  "test/src/empty/base/DeleteEmptyArgs.ts": "/*
+  "server/src/empty/base/DeleteEmptyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5881,7 +2837,7 @@ class DeleteEmptyArgs {
 
 export { DeleteEmptyArgs as DeleteEmptyArgs };
 ",
-  "test/src/empty/base/Empty.ts": "/*
+  "server/src/empty/base/Empty.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5926,7 +2882,7 @@ class Empty {
 
 export { Empty as Empty };
 ",
-  "test/src/empty/base/EmptyCountArgs.ts": "/*
+  "server/src/empty/base/EmptyCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5955,7 +2911,7 @@ class EmptyCountArgs {
 
 export { EmptyCountArgs as EmptyCountArgs };
 ",
-  "test/src/empty/base/EmptyCreateInput.ts": "/*
+  "server/src/empty/base/EmptyCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -5969,7 +2925,7 @@ https://docs.amplication.com/how-to/custom-code
 class EmptyCreateInput {}
 export { EmptyCreateInput as EmptyCreateInput };
 ",
-  "test/src/empty/base/EmptyFindManyArgs.ts": "/*
+  "server/src/empty/base/EmptyFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6032,7 +2988,7 @@ class EmptyFindManyArgs {
 
 export { EmptyFindManyArgs as EmptyFindManyArgs };
 ",
-  "test/src/empty/base/EmptyFindUniqueArgs.ts": "/*
+  "server/src/empty/base/EmptyFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6063,7 +3019,7 @@ class EmptyFindUniqueArgs {
 
 export { EmptyFindUniqueArgs as EmptyFindUniqueArgs };
 ",
-  "test/src/empty/base/EmptyListRelationFilter.ts": "/*
+  "server/src/empty/base/EmptyListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6120,7 +3076,7 @@ class EmptyListRelationFilter {
 }
 export { EmptyListRelationFilter as EmptyListRelationFilter };
 ",
-  "test/src/empty/base/EmptyOrderByInput.ts": "/*
+  "server/src/empty/base/EmptyOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6177,7 +3133,7 @@ class EmptyOrderByInput {
 
 export { EmptyOrderByInput as EmptyOrderByInput };
 ",
-  "test/src/empty/base/EmptyUpdateInput.ts": "/*
+  "server/src/empty/base/EmptyUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6191,7 +3147,7 @@ https://docs.amplication.com/how-to/custom-code
 class EmptyUpdateInput {}
 export { EmptyUpdateInput as EmptyUpdateInput };
 ",
-  "test/src/empty/base/EmptyWhereInput.ts": "/*
+  "server/src/empty/base/EmptyWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6247,7 +3203,7 @@ class EmptyWhereInput {
 
 export { EmptyWhereInput as EmptyWhereInput };
 ",
-  "test/src/empty/base/EmptyWhereUniqueInput.ts": "/*
+  "server/src/empty/base/EmptyWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6275,7 +3231,7 @@ class EmptyWhereUniqueInput {
 
 export { EmptyWhereUniqueInput as EmptyWhereUniqueInput };
 ",
-  "test/src/empty/base/empty.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/empty/base/empty.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -6466,7 +3422,7 @@ describe("Empty", () => {
   });
 });
 ",
-  "test/src/empty/base/empty.controller.base.ts": "/*
+  "server/src/empty/base/empty.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6597,7 +3553,7 @@ export class EmptyControllerBase {
   }
 }
 ",
-  "test/src/empty/base/empty.module.base.ts": "/*
+  "server/src/empty/base/empty.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6616,7 +3572,7 @@ import { Module } from "@nestjs/common";
 })
 export class EmptyModuleBase {}
 ",
-  "test/src/empty/base/empty.resolver.base.ts": "/*
+  "server/src/empty/base/empty.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6683,7 +3639,7 @@ export class EmptyResolverBase {
   }
 }
 ",
-  "test/src/empty/base/empty.service.base.ts": "/*
+  "server/src/empty/base/empty.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -6733,7 +3689,7 @@ export class EmptyServiceBase {
   }
 }
 ",
-  "test/src/empty/empty.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/empty/empty.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { EmptyService } from "./empty.service";
 import { EmptyControllerBase } from "./base/empty.controller.base";
@@ -6746,7 +3702,7 @@ export class EmptyController extends EmptyControllerBase {
   }
 }
 ",
-  "test/src/empty/empty.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/empty/empty.module.ts": "import { Module } from "@nestjs/common";
 import { EmptyModuleBase } from "./base/empty.module.base";
 import { EmptyService } from "./empty.service";
 import { EmptyController } from "./empty.controller";
@@ -6760,7 +3716,7 @@ import { EmptyResolver } from "./empty.resolver";
 })
 export class EmptyModule {}
 ",
-  "test/src/empty/empty.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/empty/empty.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { EmptyResolverBase } from "./base/empty.resolver.base";
 import { Empty } from "./base/Empty";
 import { EmptyService } from "./empty.service";
@@ -6772,7 +3728,7 @@ export class EmptyResolver extends EmptyResolverBase {
   }
 }
 ",
-  "test/src/empty/empty.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/empty/empty.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { EmptyServiceBase } from "./base/empty.service.base";
 
@@ -6783,7 +3739,7 @@ export class EmptyService extends EmptyServiceBase {
   }
 }
 ",
-  "test/src/errors.ts": "import * as common from "@nestjs/common";
+  "server/src/errors.ts": "import * as common from "@nestjs/common";
 import { ApiProperty } from "@nestjs/swagger";
 
 export class ForbiddenException extends common.ForbiddenException {
@@ -6800,7 +3756,7 @@ export class NotFoundException extends common.NotFoundException {
   message!: string;
 }
 ",
-  "test/src/filters/HttpExceptions.filter.ts": "import {
+  "server/src/filters/HttpExceptions.filter.ts": "import {
   ArgumentsHost,
   Catch,
   HttpException,
@@ -6890,7 +3846,7 @@ export class HttpExceptionFilter extends BaseExceptionFilter {
   }
 }
 ",
-  "test/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from "@nestjs/common";
+  "server/src/health/base/health.controller.base.ts": "import { Get, HttpStatus, Res } from "@nestjs/common";
 import { Response } from "express";
 import { HealthService } from "../health.service";
 
@@ -6910,7 +3866,7 @@ export class HealthControllerBase {
   }
 }
 ",
-  "test/src/health/base/health.service.base.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/health/base/health.service.base.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../../prisma/prisma.service";
 
 @Injectable()
@@ -6926,7 +3882,7 @@ export class HealthServiceBase {
   }
 }
 ",
-  "test/src/health/health.controller.ts": "import { Controller } from "@nestjs/common";
+  "server/src/health/health.controller.ts": "import { Controller } from "@nestjs/common";
 import { HealthControllerBase } from "./base/health.controller.base";
 import { HealthService } from "./health.service";
 
@@ -6937,7 +3893,7 @@ export class HealthController extends HealthControllerBase {
   }
 }
 ",
-  "test/src/health/health.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/health/health.module.ts": "import { Module } from "@nestjs/common";
 import { HealthController } from "./health.controller";
 import { HealthService } from "./health.service";
 
@@ -6948,7 +3904,7 @@ import { HealthService } from "./health.service";
 })
 export class HealthModule {}
 ",
-  "test/src/health/health.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/health/health.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { HealthServiceBase } from "./base/health.service.base";
 
@@ -6959,7 +3915,7 @@ export class HealthService extends HealthServiceBase {
   }
 }
 ",
-  "test/src/main.ts": "import { ValidationPipe } from "@nestjs/common";
+  "server/src/main.ts": "import { ValidationPipe } from "@nestjs/common";
 import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
@@ -7020,7 +3976,7 @@ async function main() {
 
 module.exports = main();
 ",
-  "test/src/order/base/CreateOrderArgs.ts": "/*
+  "server/src/order/base/CreateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7051,7 +4007,7 @@ class CreateOrderArgs {
 
 export { CreateOrderArgs as CreateOrderArgs };
 ",
-  "test/src/order/base/DeleteOrderArgs.ts": "/*
+  "server/src/order/base/DeleteOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7082,7 +4038,7 @@ class DeleteOrderArgs {
 
 export { DeleteOrderArgs as DeleteOrderArgs };
 ",
-  "test/src/order/base/EnumOrderLabel.ts": "/*
+  "server/src/order/base/EnumOrderLabel.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7103,7 +4059,7 @@ registerEnumType(EnumOrderLabel, {
   name: "EnumOrderLabel",
 });
 ",
-  "test/src/order/base/EnumOrderStatus.ts": "/*
+  "server/src/order/base/EnumOrderStatus.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7126,7 +4082,7 @@ registerEnumType(EnumOrderStatus, {
   name: "EnumOrderStatus",
 });
 ",
-  "test/src/order/base/Order.ts": "/*
+  "server/src/order/base/Order.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7209,7 +4165,7 @@ class Order {
 
 export { Order as Order };
 ",
-  "test/src/order/base/OrderCountArgs.ts": "/*
+  "server/src/order/base/OrderCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7238,7 +4194,7 @@ class OrderCountArgs {
 
 export { OrderCountArgs as OrderCountArgs };
 ",
-  "test/src/order/base/OrderCreateInput.ts": "/*
+  "server/src/order/base/OrderCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7290,7 +4246,7 @@ class OrderCreateInput {
 
 export { OrderCreateInput as OrderCreateInput };
 ",
-  "test/src/order/base/OrderFindManyArgs.ts": "/*
+  "server/src/order/base/OrderFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7353,7 +4309,7 @@ class OrderFindManyArgs {
 
 export { OrderFindManyArgs as OrderFindManyArgs };
 ",
-  "test/src/order/base/OrderFindUniqueArgs.ts": "/*
+  "server/src/order/base/OrderFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7384,7 +4340,7 @@ class OrderFindUniqueArgs {
 
 export { OrderFindUniqueArgs as OrderFindUniqueArgs };
 ",
-  "test/src/order/base/OrderListRelationFilter.ts": "/*
+  "server/src/order/base/OrderListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7441,7 +4397,7 @@ class OrderListRelationFilter {
 }
 export { OrderListRelationFilter as OrderListRelationFilter };
 ",
-  "test/src/order/base/OrderOrderByInput.ts": "/*
+  "server/src/order/base/OrderOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7531,7 +4487,7 @@ class OrderOrderByInput {
 
 export { OrderOrderByInput as OrderOrderByInput };
 ",
-  "test/src/order/base/OrderUpdateInput.ts": "/*
+  "server/src/order/base/OrderUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7589,7 +4545,7 @@ class OrderUpdateInput {
 
 export { OrderUpdateInput as OrderUpdateInput };
 ",
-  "test/src/order/base/OrderWhereInput.ts": "/*
+  "server/src/order/base/OrderWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7682,7 +4638,7 @@ class OrderWhereInput {
 
 export { OrderWhereInput as OrderWhereInput };
 ",
-  "test/src/order/base/OrderWhereUniqueInput.ts": "/*
+  "server/src/order/base/OrderWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7710,7 +4666,7 @@ class OrderWhereUniqueInput {
 
 export { OrderWhereUniqueInput as OrderWhereUniqueInput };
 ",
-  "test/src/order/base/UpdateOrderArgs.ts": "/*
+  "server/src/order/base/UpdateOrderArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -7751,7 +4707,7 @@ class UpdateOrderArgs {
 
 export { UpdateOrderArgs as UpdateOrderArgs };
 ",
-  "test/src/order/base/order.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/order/base/order.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -7942,7 +4898,7 @@ describe("Order", () => {
   });
 });
 ",
-  "test/src/order/base/order.controller.base.ts": "/*
+  "server/src/order/base/order.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8136,7 +5092,7 @@ export class OrderControllerBase {
   }
 }
 ",
-  "test/src/order/base/order.module.base.ts": "/*
+  "server/src/order/base/order.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8155,7 +5111,7 @@ import { Module } from "@nestjs/common";
 })
 export class OrderModuleBase {}
 ",
-  "test/src/order/base/order.resolver.base.ts": "/*
+  "server/src/order/base/order.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8285,7 +5241,7 @@ export class OrderResolverBase {
   }
 }
 ",
-  "test/src/order/base/order.service.base.ts": "/*
+  "server/src/order/base/order.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8343,7 +5299,7 @@ export class OrderServiceBase {
   }
 }
 ",
-  "test/src/order/order.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/order/order.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { OrderService } from "./order.service";
 import { OrderControllerBase } from "./base/order.controller.base";
@@ -8356,7 +5312,7 @@ export class OrderController extends OrderControllerBase {
   }
 }
 ",
-  "test/src/order/order.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/order/order.module.ts": "import { Module } from "@nestjs/common";
 import { OrderModuleBase } from "./base/order.module.base";
 import { OrderService } from "./order.service";
 import { OrderController } from "./order.controller";
@@ -8370,7 +5326,7 @@ import { OrderResolver } from "./order.resolver";
 })
 export class OrderModule {}
 ",
-  "test/src/order/order.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/order/order.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { OrderResolverBase } from "./base/order.resolver.base";
 import { Order } from "./base/Order";
 import { OrderService } from "./order.service";
@@ -8382,7 +5338,7 @@ export class OrderResolver extends OrderResolverBase {
   }
 }
 ",
-  "test/src/order/order.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/order/order.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrderServiceBase } from "./base/order.service.base";
 
@@ -8393,7 +5349,7 @@ export class OrderService extends OrderServiceBase {
   }
 }
 ",
-  "test/src/organization/base/CreateOrganizationArgs.ts": "/*
+  "server/src/organization/base/CreateOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8424,7 +5380,7 @@ class CreateOrganizationArgs {
 
 export { CreateOrganizationArgs as CreateOrganizationArgs };
 ",
-  "test/src/organization/base/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "/*
+  "server/src/organization/base/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8453,7 +5409,7 @@ class CustomerCreateNestedManyWithoutOrganizationsInput {
 
 export { CustomerCreateNestedManyWithoutOrganizationsInput as CustomerCreateNestedManyWithoutOrganizationsInput };
 ",
-  "test/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
+  "server/src/organization/base/CustomerUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8500,7 +5456,7 @@ class CustomerUpdateManyWithoutOrganizationsInput {
 
 export { CustomerUpdateManyWithoutOrganizationsInput as CustomerUpdateManyWithoutOrganizationsInput };
 ",
-  "test/src/organization/base/DeleteOrganizationArgs.ts": "/*
+  "server/src/organization/base/DeleteOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8531,7 +5487,7 @@ class DeleteOrganizationArgs {
 
 export { DeleteOrganizationArgs as DeleteOrganizationArgs };
 ",
-  "test/src/organization/base/Organization.ts": "/*
+  "server/src/organization/base/Organization.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8613,7 +5569,7 @@ class Organization {
 
 export { Organization as Organization };
 ",
-  "test/src/organization/base/OrganizationCountArgs.ts": "/*
+  "server/src/organization/base/OrganizationCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8642,7 +5598,7 @@ class OrganizationCountArgs {
 
 export { OrganizationCountArgs as OrganizationCountArgs };
 ",
-  "test/src/organization/base/OrganizationCreateInput.ts": "/*
+  "server/src/organization/base/OrganizationCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8709,7 +5665,7 @@ class OrganizationCreateInput {
 
 export { OrganizationCreateInput as OrganizationCreateInput };
 ",
-  "test/src/organization/base/OrganizationFindManyArgs.ts": "/*
+  "server/src/organization/base/OrganizationFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8772,7 +5728,7 @@ class OrganizationFindManyArgs {
 
 export { OrganizationFindManyArgs as OrganizationFindManyArgs };
 ",
-  "test/src/organization/base/OrganizationFindUniqueArgs.ts": "/*
+  "server/src/organization/base/OrganizationFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8803,7 +5759,7 @@ class OrganizationFindUniqueArgs {
 
 export { OrganizationFindUniqueArgs as OrganizationFindUniqueArgs };
 ",
-  "test/src/organization/base/OrganizationListRelationFilter.ts": "/*
+  "server/src/organization/base/OrganizationListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8860,7 +5816,7 @@ class OrganizationListRelationFilter {
 }
 export { OrganizationListRelationFilter as OrganizationListRelationFilter };
 ",
-  "test/src/organization/base/OrganizationOrderByInput.ts": "/*
+  "server/src/organization/base/OrganizationOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8928,7 +5884,7 @@ class OrganizationOrderByInput {
 
 export { OrganizationOrderByInput as OrganizationOrderByInput };
 ",
-  "test/src/organization/base/OrganizationUpdateInput.ts": "/*
+  "server/src/organization/base/OrganizationUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -8998,7 +5954,7 @@ class OrganizationUpdateInput {
 
 export { OrganizationUpdateInput as OrganizationUpdateInput };
 ",
-  "test/src/organization/base/OrganizationWhereInput.ts": "/*
+  "server/src/organization/base/OrganizationWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9103,7 +6059,7 @@ class OrganizationWhereInput {
 
 export { OrganizationWhereInput as OrganizationWhereInput };
 ",
-  "test/src/organization/base/OrganizationWhereUniqueInput.ts": "/*
+  "server/src/organization/base/OrganizationWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9131,7 +6087,7 @@ class OrganizationWhereUniqueInput {
 
 export { OrganizationWhereUniqueInput as OrganizationWhereUniqueInput };
 ",
-  "test/src/organization/base/UpdateOrganizationArgs.ts": "/*
+  "server/src/organization/base/UpdateOrganizationArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9172,7 +6128,7 @@ class UpdateOrganizationArgs {
 
 export { UpdateOrganizationArgs as UpdateOrganizationArgs };
 ",
-  "test/src/organization/base/UserCreateNestedManyWithoutOrganizationsInput.ts": "/*
+  "server/src/organization/base/UserCreateNestedManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9201,7 +6157,7 @@ class UserCreateNestedManyWithoutOrganizationsInput {
 
 export { UserCreateNestedManyWithoutOrganizationsInput as UserCreateNestedManyWithoutOrganizationsInput };
 ",
-  "test/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
+  "server/src/organization/base/UserUpdateManyWithoutOrganizationsInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9248,7 +6204,7 @@ class UserUpdateManyWithoutOrganizationsInput {
 
 export { UserUpdateManyWithoutOrganizationsInput as UserUpdateManyWithoutOrganizationsInput };
 ",
-  "test/src/organization/base/organization.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/organization/base/organization.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -9443,7 +6399,7 @@ describe("Organization", () => {
   });
 });
 ",
-  "test/src/organization/base/organization.controller.base.ts": "/*
+  "server/src/organization/base/organization.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9879,7 +6835,7 @@ export class OrganizationControllerBase {
   }
 }
 ",
-  "test/src/organization/base/organization.module.base.ts": "/*
+  "server/src/organization/base/organization.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -9898,7 +6854,7 @@ import { Module } from "@nestjs/common";
 })
 export class OrganizationModuleBase {}
 ",
-  "test/src/organization/base/organization.resolver.base.ts": "/*
+  "server/src/organization/base/organization.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10044,7 +7000,7 @@ export class OrganizationResolverBase {
   }
 }
 ",
-  "test/src/organization/base/organization.service.base.ts": "/*
+  "server/src/organization/base/organization.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10127,7 +7083,7 @@ export class OrganizationServiceBase {
   }
 }
 ",
-  "test/src/organization/organization.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/organization/organization.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { OrganizationService } from "./organization.service";
 import { OrganizationControllerBase } from "./base/organization.controller.base";
@@ -10140,7 +7096,7 @@ export class OrganizationController extends OrganizationControllerBase {
   }
 }
 ",
-  "test/src/organization/organization.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/organization/organization.module.ts": "import { Module } from "@nestjs/common";
 import { OrganizationModuleBase } from "./base/organization.module.base";
 import { OrganizationService } from "./organization.service";
 import { OrganizationController } from "./organization.controller";
@@ -10154,7 +7110,7 @@ import { OrganizationResolver } from "./organization.resolver";
 })
 export class OrganizationModule {}
 ",
-  "test/src/organization/organization.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/organization/organization.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { OrganizationResolverBase } from "./base/organization.resolver.base";
 import { Organization } from "./base/Organization";
 import { OrganizationService } from "./organization.service";
@@ -10166,7 +7122,7 @@ export class OrganizationResolver extends OrganizationResolverBase {
   }
 }
 ",
-  "test/src/organization/organization.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/organization/organization.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { OrganizationServiceBase } from "./base/organization.service.base";
 
@@ -10177,7 +7133,7 @@ export class OrganizationService extends OrganizationServiceBase {
   }
 }
 ",
-  "test/src/prisma.util.spec.ts": "import {
+  "server/src/prisma.util.spec.ts": "import {
   isRecordNotFoundError,
   PRISMA_QUERY_INTERPRETATION_ERROR,
 } from "./prisma.util";
@@ -10201,7 +7157,7 @@ describe("isRecordNotFoundError", () => {
   });
 });
 ",
-  "test/src/prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
+  "server/src/prisma.util.ts": "export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
 export const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
 export function isRecordNotFoundError(error: any): boolean {
@@ -10231,7 +7187,7 @@ export async function transformStringFieldUpdateInput<
   return input;
 }
 ",
-  "test/src/prisma/prisma.module.ts": "import { Global, Module } from "@nestjs/common";
+  "server/src/prisma/prisma.module.ts": "import { Global, Module } from "@nestjs/common";
 import { PrismaService } from "./prisma.service";
 
 @Global()
@@ -10241,7 +7197,7 @@ import { PrismaService } from "./prisma.service";
 })
 export class PrismaModule {}
 ",
-  "test/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from "@nestjs/common";
+  "server/src/prisma/prisma.service.ts": "import { Injectable, OnModuleInit, INestApplication } from "@nestjs/common";
 import { PrismaClient } from "@prisma/client";
 
 @Injectable()
@@ -10251,7 +7207,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   }
 }
 ",
-  "test/src/profile/base/CreateProfileArgs.ts": "/*
+  "server/src/profile/base/CreateProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10282,7 +7238,7 @@ class CreateProfileArgs {
 
 export { CreateProfileArgs as CreateProfileArgs };
 ",
-  "test/src/profile/base/DeleteProfileArgs.ts": "/*
+  "server/src/profile/base/DeleteProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10313,7 +7269,7 @@ class DeleteProfileArgs {
 
 export { DeleteProfileArgs as DeleteProfileArgs };
 ",
-  "test/src/profile/base/Profile.ts": "/*
+  "server/src/profile/base/Profile.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10398,7 +7354,7 @@ class Profile {
 
 export { Profile as Profile };
 ",
-  "test/src/profile/base/ProfileCountArgs.ts": "/*
+  "server/src/profile/base/ProfileCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10427,7 +7383,7 @@ class ProfileCountArgs {
 
 export { ProfileCountArgs as ProfileCountArgs };
 ",
-  "test/src/profile/base/ProfileCreateInput.ts": "/*
+  "server/src/profile/base/ProfileCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10485,7 +7441,7 @@ class ProfileCreateInput {
 
 export { ProfileCreateInput as ProfileCreateInput };
 ",
-  "test/src/profile/base/ProfileFindManyArgs.ts": "/*
+  "server/src/profile/base/ProfileFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10548,7 +7504,7 @@ class ProfileFindManyArgs {
 
 export { ProfileFindManyArgs as ProfileFindManyArgs };
 ",
-  "test/src/profile/base/ProfileFindUniqueArgs.ts": "/*
+  "server/src/profile/base/ProfileFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10579,7 +7535,7 @@ class ProfileFindUniqueArgs {
 
 export { ProfileFindUniqueArgs as ProfileFindUniqueArgs };
 ",
-  "test/src/profile/base/ProfileListRelationFilter.ts": "/*
+  "server/src/profile/base/ProfileListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10636,7 +7592,7 @@ class ProfileListRelationFilter {
 }
 export { ProfileListRelationFilter as ProfileListRelationFilter };
 ",
-  "test/src/profile/base/ProfileOrderByInput.ts": "/*
+  "server/src/profile/base/ProfileOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10737,7 +7693,7 @@ class ProfileOrderByInput {
 
 export { ProfileOrderByInput as ProfileOrderByInput };
 ",
-  "test/src/profile/base/ProfileUpdateInput.ts": "/*
+  "server/src/profile/base/ProfileUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10804,7 +7760,7 @@ class ProfileUpdateInput {
 
 export { ProfileUpdateInput as ProfileUpdateInput };
 ",
-  "test/src/profile/base/ProfileWhereInput.ts": "/*
+  "server/src/profile/base/ProfileWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10907,7 +7863,7 @@ class ProfileWhereInput {
 
 export { ProfileWhereInput as ProfileWhereInput };
 ",
-  "test/src/profile/base/ProfileWhereUniqueInput.ts": "/*
+  "server/src/profile/base/ProfileWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10939,7 +7895,7 @@ class ProfileWhereUniqueInput {
 
 export { ProfileWhereUniqueInput as ProfileWhereUniqueInput };
 ",
-  "test/src/profile/base/UpdateProfileArgs.ts": "/*
+  "server/src/profile/base/UpdateProfileArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -10980,7 +7936,7 @@ class UpdateProfileArgs {
 
 export { UpdateProfileArgs as UpdateProfileArgs };
 ",
-  "test/src/profile/base/profile.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/profile/base/profile.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -11191,7 +8147,7 @@ describe("Profile", () => {
   });
 });
 ",
-  "test/src/profile/base/profile.controller.base.ts": "/*
+  "server/src/profile/base/profile.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11383,7 +8339,7 @@ export class ProfileControllerBase {
   }
 }
 ",
-  "test/src/profile/base/profile.module.base.ts": "/*
+  "server/src/profile/base/profile.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11402,7 +8358,7 @@ import { Module } from "@nestjs/common";
 })
 export class ProfileModuleBase {}
 ",
-  "test/src/profile/base/profile.resolver.base.ts": "/*
+  "server/src/profile/base/profile.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11534,7 +8490,7 @@ export class ProfileResolverBase {
   }
 }
 ",
-  "test/src/profile/base/profile.service.base.ts": "/*
+  "server/src/profile/base/profile.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11592,7 +8548,7 @@ export class ProfileServiceBase {
   }
 }
 ",
-  "test/src/profile/profile.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/profile/profile.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { ProfileService } from "./profile.service";
 import { ProfileControllerBase } from "./base/profile.controller.base";
@@ -11605,7 +8561,7 @@ export class ProfileController extends ProfileControllerBase {
   }
 }
 ",
-  "test/src/profile/profile.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/profile/profile.module.ts": "import { Module } from "@nestjs/common";
 import { ProfileModuleBase } from "./base/profile.module.base";
 import { ProfileService } from "./profile.service";
 import { ProfileController } from "./profile.controller";
@@ -11619,7 +8575,7 @@ import { ProfileResolver } from "./profile.resolver";
 })
 export class ProfileModule {}
 ",
-  "test/src/profile/profile.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/profile/profile.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { ProfileResolverBase } from "./base/profile.resolver.base";
 import { Profile } from "./base/Profile";
 import { ProfileService } from "./profile.service";
@@ -11631,7 +8587,7 @@ export class ProfileResolver extends ProfileResolverBase {
   }
 }
 ",
-  "test/src/profile/profile.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/profile/profile.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { ProfileServiceBase } from "./base/profile.service.base";
 
@@ -11642,7 +8598,7 @@ export class ProfileService extends ProfileServiceBase {
   }
 }
 ",
-  "test/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
+  "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
 
@@ -11682,7 +8638,7 @@ describe("Testing the secrets manager base class", () => {
   });
 });
 ",
-  "test/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
+  "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
 import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 export interface ISecretsManager {
@@ -11700,7 +8656,7 @@ export class SecretsManagerServiceBase implements ISecretsManager {
   }
 }
 ",
-  "test/src/providers/secrets/secretsManager.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/providers/secrets/secretsManager.module.ts": "import { Module } from "@nestjs/common";
 import { SecretsManagerService } from "./secretsManager.service";
 
 @Module({
@@ -11709,7 +8665,7 @@ import { SecretsManagerService } from "./secretsManager.service";
 })
 export class SecretsManagerModule {}
 ",
-  "test/src/providers/secrets/secretsManager.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/providers/secrets/secretsManager.service.ts": "import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SecretsManagerServiceBase } from "./base/secretsManager.service.base";
 
@@ -11720,8 +8676,8 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
-  "test/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
-  "test/src/serveStaticOptions.service.ts": "import * as path from "path";
+  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
+  "server/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import {
@@ -11761,7 +8717,7 @@ export class ServeStaticOptionsService
   }
 }
 ",
-  "test/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from "@nestjs/swagger";
+  "server/src/swagger.ts": "import { DocumentBuilder, SwaggerCustomOptions } from "@nestjs/swagger";
 
 export const swaggerPath = "api";
 
@@ -11782,7 +8738,7 @@ export const swaggerSetupOptions: SwaggerCustomOptions = {
   customSiteTitle: "Sample Application",
 };
 ",
-  "test/src/tests/health/health.service.spec.ts": "import { mock } from "jest-mock-extended";
+  "server/src/tests/health/health.service.spec.ts": "import { mock } from "jest-mock-extended";
 import { PrismaService } from "../../prisma/prisma.service";
 import { HealthServiceBase } from "../../health/base/health.service.base";
 
@@ -11819,11 +8775,11 @@ describe("Testing the HealthServiceBase", () => {
   });
 });
 ",
-  "test/src/types.ts": "import type { JsonValue } from "type-fest";
+  "server/src/types.ts": "import type { JsonValue } from "type-fest";
 
 export type InputJsonValue = Omit<JsonValue, "null">;
 ",
-  "test/src/user/base/CreateUserArgs.ts": "/*
+  "server/src/user/base/CreateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11854,7 +8810,7 @@ class CreateUserArgs {
 
 export { CreateUserArgs as CreateUserArgs };
 ",
-  "test/src/user/base/DeleteUserArgs.ts": "/*
+  "server/src/user/base/DeleteUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11885,7 +8841,7 @@ class DeleteUserArgs {
 
 export { DeleteUserArgs as DeleteUserArgs };
 ",
-  "test/src/user/base/EnumUserInterests.ts": "/*
+  "server/src/user/base/EnumUserInterests.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11907,7 +8863,7 @@ registerEnumType(EnumUserInterests, {
   name: "EnumUserInterests",
 });
 ",
-  "test/src/user/base/EnumUserPriority.ts": "/*
+  "server/src/user/base/EnumUserPriority.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11930,7 +8886,7 @@ registerEnumType(EnumUserPriority, {
   name: "EnumUserPriority",
 });
 ",
-  "test/src/user/base/OrganizationCreateNestedManyWithoutUsersInput.ts": "/*
+  "server/src/user/base/OrganizationCreateNestedManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -11959,7 +8915,7 @@ class OrganizationCreateNestedManyWithoutUsersInput {
 
 export { OrganizationCreateNestedManyWithoutUsersInput as OrganizationCreateNestedManyWithoutUsersInput };
 ",
-  "test/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
+  "server/src/user/base/OrganizationUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12006,7 +8962,7 @@ class OrganizationUpdateManyWithoutUsersInput {
 
 export { OrganizationUpdateManyWithoutUsersInput as OrganizationUpdateManyWithoutUsersInput };
 ",
-  "test/src/user/base/UpdateUserArgs.ts": "/*
+  "server/src/user/base/UpdateUserArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12047,7 +9003,7 @@ class UpdateUserArgs {
 
 export { UpdateUserArgs as UpdateUserArgs };
 ",
-  "test/src/user/base/User.ts": "/*
+  "server/src/user/base/User.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12240,7 +9196,7 @@ class User {
 
 export { User as User };
 ",
-  "test/src/user/base/UserCountArgs.ts": "/*
+  "server/src/user/base/UserCountArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12269,7 +9225,7 @@ class UserCountArgs {
 
 export { UserCountArgs as UserCountArgs };
 ",
-  "test/src/user/base/UserCreateInput.ts": "/*
+  "server/src/user/base/UserCreateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12474,7 +9430,7 @@ class UserCreateInput {
 
 export { UserCreateInput as UserCreateInput };
 ",
-  "test/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
+  "server/src/user/base/UserCreateNestedManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12503,7 +9459,7 @@ class UserCreateNestedManyWithoutUsersInput {
 
 export { UserCreateNestedManyWithoutUsersInput as UserCreateNestedManyWithoutUsersInput };
 ",
-  "test/src/user/base/UserFindManyArgs.ts": "/*
+  "server/src/user/base/UserFindManyArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12566,7 +9522,7 @@ class UserFindManyArgs {
 
 export { UserFindManyArgs as UserFindManyArgs };
 ",
-  "test/src/user/base/UserFindUniqueArgs.ts": "/*
+  "server/src/user/base/UserFindUniqueArgs.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12597,7 +9553,7 @@ class UserFindUniqueArgs {
 
 export { UserFindUniqueArgs as UserFindUniqueArgs };
 ",
-  "test/src/user/base/UserListRelationFilter.ts": "/*
+  "server/src/user/base/UserListRelationFilter.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12654,7 +9610,7 @@ class UserListRelationFilter {
 }
 export { UserListRelationFilter as UserListRelationFilter };
 ",
-  "test/src/user/base/UserOrderByInput.ts": "/*
+  "server/src/user/base/UserOrderByInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -12865,7 +9821,7 @@ class UserOrderByInput {
 
 export { UserOrderByInput as UserOrderByInput };
 ",
-  "test/src/user/base/UserUpdateInput.ts": "/*
+  "server/src/user/base/UserUpdateInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -13109,7 +10065,7 @@ class UserUpdateInput {
 
 export { UserUpdateInput as UserUpdateInput };
 ",
-  "test/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
+  "server/src/user/base/UserUpdateManyWithoutUsersInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -13156,7 +10112,7 @@ class UserUpdateManyWithoutUsersInput {
 
 export { UserUpdateManyWithoutUsersInput as UserUpdateManyWithoutUsersInput };
 ",
-  "test/src/user/base/UserWhereInput.ts": "/*
+  "server/src/user/base/UserWhereInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -13332,7 +10288,7 @@ class UserWhereInput {
 
 export { UserWhereInput as UserWhereInput };
 ",
-  "test/src/user/base/UserWhereUniqueInput.ts": "/*
+  "server/src/user/base/UserWhereUniqueInput.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -13360,7 +10316,7 @@ class UserWhereUniqueInput {
 
 export { UserWhereUniqueInput as UserWhereUniqueInput };
 ",
-  "test/src/user/base/user.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
+  "server/src/user/base/user.controller.base.spec.ts": "import { Test } from "@nestjs/testing";
 import {
   INestApplication,
   HttpStatus,
@@ -13579,7 +10535,7 @@ describe("User", () => {
   });
 });
 ",
-  "test/src/user/base/user.controller.base.ts": "/*
+  "server/src/user/base/user.controller.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -14034,7 +10990,7 @@ export class UserControllerBase {
   }
 }
 ",
-  "test/src/user/base/user.module.base.ts": "/*
+  "server/src/user/base/user.module.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -14053,7 +11009,7 @@ import { Module } from "@nestjs/common";
 })
 export class UserModuleBase {}
 ",
-  "test/src/user/base/user.resolver.base.ts": "/*
+  "server/src/user/base/user.resolver.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -14232,7 +11188,7 @@ export class UserResolverBase {
   }
 }
 ",
-  "test/src/user/base/user.service.base.ts": "/*
+  "server/src/user/base/user.service.base.ts": "/*
 ------------------------------------------------------------------------------ 
 This code was generated by Amplication. 
  
@@ -14320,7 +11276,7 @@ export class UserServiceBase {
   }
 }
 ",
-  "test/src/user/user.controller.ts": "import * as common from "@nestjs/common";
+  "server/src/user/user.controller.ts": "import * as common from "@nestjs/common";
 import * as swagger from "@nestjs/swagger";
 import { UserService } from "./user.service";
 import { UserControllerBase } from "./base/user.controller.base";
@@ -14333,7 +11289,7 @@ export class UserController extends UserControllerBase {
   }
 }
 ",
-  "test/src/user/user.module.ts": "import { Module } from "@nestjs/common";
+  "server/src/user/user.module.ts": "import { Module } from "@nestjs/common";
 import { UserModuleBase } from "./base/user.module.base";
 import { UserService } from "./user.service";
 import { UserController } from "./user.controller";
@@ -14347,7 +11303,7 @@ import { UserResolver } from "./user.resolver";
 })
 export class UserModule {}
 ",
-  "test/src/user/user.resolver.ts": "import * as graphql from "@nestjs/graphql";
+  "server/src/user/user.resolver.ts": "import * as graphql from "@nestjs/graphql";
 import { UserResolverBase } from "./base/user.resolver.base";
 import { User } from "./base/User";
 import { UserService } from "./user.service";
@@ -14359,7 +11315,7 @@ export class UserResolver extends UserResolverBase {
   }
 }
 ",
-  "test/src/user/user.service.ts": "import { Injectable } from "@nestjs/common";
+  "server/src/user/user.service.ts": "import { Injectable } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { UserServiceBase } from "./base/user.service.base";
 
@@ -14370,7 +11326,7 @@ export class UserService extends UserServiceBase {
   }
 }
 ",
-  "test/src/util/BigIntFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/BigIntFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14470,7 +11426,7 @@ export class BigIntFilter {
   not?: bigint;
 }
 ",
-  "test/src/util/BigIntNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/BigIntNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14570,7 +11526,7 @@ export class BigIntNullableFilter {
   not?: bigint;
 }
 ",
-  "test/src/util/BooleanFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/BooleanFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14603,7 +11559,7 @@ export class BooleanFilter {
   not?: boolean;
 }
 ",
-  "test/src/util/BooleanNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/BooleanNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14635,7 +11591,7 @@ export class BooleanNullableFilter {
   not?: boolean | null;
 }
 ",
-  "test/src/util/DateTimeFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/DateTimeFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14733,7 +11689,7 @@ export class DateTimeFilter {
   gte?: Date;
 }
 ",
-  "test/src/util/DateTimeNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/DateTimeNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14831,7 +11787,7 @@ export class DateTimeNullableFilter {
   not?: Date;
 }
 ",
-  "test/src/util/DecimalFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
+  "server/src/util/DecimalFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -14931,7 +11887,7 @@ export class DecimalFilter {
   not?: Decimal;
 }
 ",
-  "test/src/util/DecimalNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/DecimalNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -15031,7 +11987,7 @@ export class DecimalNullableFilter {
   not?: Decimal;
 }
 ",
-  "test/src/util/FloatFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
+  "server/src/util/FloatFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -15130,7 +12086,7 @@ export class FloatFilter {
   not?: number;
 }
 ",
-  "test/src/util/FloatNullableFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
+  "server/src/util/FloatNullableFilter.ts": "import { Field, InputType, Float } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -15229,7 +12185,7 @@ export class FloatNullableFilter {
   not?: number;
 }
 ",
-  "test/src/util/GraphQLBigInt.ts": "import { GraphQLScalarType } from "graphql";
+  "server/src/util/GraphQLBigInt.ts": "import { GraphQLScalarType } from "graphql";
 
 const graphQLBigInt = new GraphQLScalarType({
   name: "BigInt",
@@ -15254,7 +12210,7 @@ const graphQLBigInt = new GraphQLScalarType({
 
 export { graphQLBigInt as GraphQLBigInt };
 ",
-  "test/src/util/IntFilter.ts": "import { Field, InputType, Int } from "@nestjs/graphql";
+  "server/src/util/IntFilter.ts": "import { Field, InputType, Int } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -15353,7 +12309,7 @@ export class IntFilter {
   not?: number;
 }
 ",
-  "test/src/util/IntNullableFilter.ts": "import { Field, InputType, Int } from "@nestjs/graphql";
+  "server/src/util/IntNullableFilter.ts": "import { Field, InputType, Int } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { Type } from "class-transformer";
@@ -15452,7 +12408,7 @@ export class IntNullableFilter {
   not?: number;
 }
 ",
-  "test/src/util/JsonFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/JsonFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
 import { GraphQLJSONObject } from "graphql-type-json";
@@ -15484,7 +12440,7 @@ export class JsonFilter {
   not?: InputJsonValue;
 }
 ",
-  "test/src/util/JsonNullableFilter.ts": "import type { JsonValue } from "type-fest";
+  "server/src/util/JsonNullableFilter.ts": "import type { JsonValue } from "type-fest";
 import { Field, InputType } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
@@ -15516,7 +12472,7 @@ export class JsonNullableFilter {
   not?: JsonValue;
 }
 ",
-  "test/src/util/MetaQueryPayload.ts": "import { ObjectType, Field } from "@nestjs/graphql";
+  "server/src/util/MetaQueryPayload.ts": "import { ObjectType, Field } from "@nestjs/graphql";
 import { ApiProperty } from "@nestjs/swagger";
 
 @ObjectType()
@@ -15530,7 +12486,7 @@ class MetaQueryPayload {
 }
 export { MetaQueryPayload };
 ",
-  "test/src/util/QueryMode.ts": "import { registerEnumType } from "@nestjs/graphql";
+  "server/src/util/QueryMode.ts": "import { registerEnumType } from "@nestjs/graphql";
 
 export enum QueryMode {
   Default = "default",
@@ -15541,7 +12497,7 @@ registerEnumType(QueryMode, {
   description: undefined,
 });
 ",
-  "test/src/util/SortOrder.ts": "import { registerEnumType } from "@nestjs/graphql";
+  "server/src/util/SortOrder.ts": "import { registerEnumType } from "@nestjs/graphql";
 
 export enum SortOrder {
   Asc = "asc",
@@ -15552,7 +12508,7 @@ registerEnumType(SortOrder, {
   description: undefined,
 });
 ",
-  "test/src/util/StringFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/StringFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { QueryMode } from "./QueryMode";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
@@ -15694,7 +12650,7 @@ export class StringFilter {
   not?: string;
 }
 ",
-  "test/src/util/StringNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
+  "server/src/util/StringNullableFilter.ts": "import { Field, InputType } from "@nestjs/graphql";
 import { QueryMode } from "./QueryMode";
 import { ApiProperty } from "@nestjs/swagger";
 import { IsOptional } from "class-validator";
@@ -15836,9 +12792,9 @@ export class StringNullableFilter {
   not?: string;
 }
 ",
-  "test/src/validators/index.ts": "export * from "./is-json-value-validator";
+  "server/src/validators/index.ts": "export * from "./is-json-value-validator";
 ",
-  "test/src/validators/is-json-value-validator.spec.ts": "import { validate, ValidationError } from "class-validator";
+  "server/src/validators/is-json-value-validator.spec.ts": "import { validate, ValidationError } from "class-validator";
 import { IsJSONValue } from "./is-json-value-validator";
 
 class TestClass {
@@ -15883,7 +12839,7 @@ describe("IsJSONValue", () => {
   });
 });
 ",
-  "test/src/validators/is-json-value-validator.ts": "import {
+  "server/src/validators/is-json-value-validator.ts": "import {
   ValidationArguments,
   registerDecorator,
   ValidationOptions,
@@ -15913,12 +12869,12 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
   };
 }
 ",
-  "test/tsconfig.build.json": "{
+  "server/tsconfig.build.json": "{
   "extends": "./tsconfig.json",
   "exclude": ["node_modules", "prisma", "test", "dist", "**/*spec.ts", "admin"]
 }
 ",
-  "test/tsconfig.json": "{
+  "server/tsconfig.json": "{
   "compilerOptions": {
     "baseUrl": "./",
     "module": "commonjs",

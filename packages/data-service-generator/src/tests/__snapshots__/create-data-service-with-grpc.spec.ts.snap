@@ -1025,12 +1025,14 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from "../organization/Organization";
-import { JsonValue } from "type-fest";
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
 import { Profile } from "../profile/Profile";
 
 export type User = {
   id: string;
+  username: string;
+  roles: JsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1054,13 +1056,16 @@ export type UserCountArgs = {
   where?: UserWhereInput;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
   name: string;
   bio: string;
   email: string;
@@ -1112,6 +1117,9 @@ export type UserListRelationFilter = {
 
 export type UserOrderByInput = {
   id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
   email?: SortOrder;
@@ -1127,13 +1135,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -1170,6 +1181,7 @@ import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserWhereInput = {
   id?: StringFilter;
+  username?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -2508,23 +2520,33 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2589,23 +2611,33 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2687,6 +2719,8 @@ export const UserList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick="show">
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2726,6 +2760,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2750,10 +2786,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
 
-export const USER_TITLE_FIELD = "name";
+export const USER_TITLE_FIELD = "username";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name?.toString() || String(record.id);
+  return record.username?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -3148,6 +3184,9 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
+  username           String              @unique
+  roles              Json
+  password           String
   name               String              @unique @map("name")
   bio                String
   email              String
@@ -10084,6 +10123,8 @@ export class OrganizationControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -10525,6 +10566,8 @@ export class OrganizationGrpcControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -11021,31 +11064,37 @@ message findManyParams {
 };
 message User {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated string interests = 8;
-repeated string priority = 9;
-bool isCurious = 10;
-string location = 11;
-string extendedProperties = 12;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated string interests = 11;
+repeated string priority = 12;
+bool isCurious = 13;
+string location = 14;
+string extendedProperties = 15;
 };
 message UserWhereUniqueInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated string interests = 8;
-repeated string priority = 9;
-bool isCurious = 10;
-string location = 11;
-string extendedProperties = 12;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated string interests = 11;
+repeated string priority = 12;
+bool isCurious = 13;
+string location = 14;
+string extendedProperties = 15;
 };
 message UserParams {
 OrganizationWhereUniqueInput organizationWhereUniqueInput = 1;
@@ -13109,13 +13158,13 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
 import { Organization } from "../../organization/base/Organization";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 import { Profile } from "../../profile/base/Profile";
 
 @ObjectType()
@@ -13127,6 +13176,21 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -13316,19 +13380,42 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -13694,6 +13781,39 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   name?: SortOrder;
 
   @ApiProperty({
@@ -13856,19 +13976,51 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -14137,6 +14289,17 @@ class UserWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  username?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
 
   @ApiProperty({
@@ -14304,6 +14467,8 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14315,6 +14480,8 @@ const CREATE_INPUT = {
 };
 const CREATE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14327,6 +14494,8 @@ const CREATE_RESULT = {
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
+    username: "exampleUsername",
+    password: "examplePassword",
     name: "exampleName",
     bio: "exampleBio",
     email: "exampleEmail",
@@ -14339,6 +14508,8 @@ const FIND_MANY_RESULT = [
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -14546,6 +14717,8 @@ export class UserControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14583,6 +14756,8 @@ export class UserControllerBase {
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14621,6 +14796,8 @@ export class UserControllerBase {
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14682,6 +14859,8 @@ export class UserControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -14729,6 +14908,8 @@ export class UserControllerBase {
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -14776,6 +14957,8 @@ export class UserControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -14991,6 +15174,8 @@ export class UserGrpcControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15029,6 +15214,8 @@ export class UserGrpcControllerBase {
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15068,6 +15255,8 @@ export class UserGrpcControllerBase {
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15130,6 +15319,8 @@ export class UserGrpcControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -15178,6 +15369,8 @@ export class UserGrpcControllerBase {
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -15226,6 +15419,8 @@ export class UserGrpcControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -15557,67 +15752,79 @@ rpc disconnectUsers (OrganizationParams) returns (Organization) {}
  }
 message UserCreateInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message User {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message UserWhereUniqueInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message UserUpdateInput {
 string id = 1;
-string name = 2;
-string bio = 3;
-string email = 4;
-int32 age = 5;
-string birthDate = 6;
-int32 score = 7;
-repeated User employees = 8;
-repeated Organization organizations = 9;
-repeated string interests = 10;
-repeated string priority = 11;
-bool isCurious = 12;
-string location = 13;
-string extendedProperties = 14;
+string username = 2;
+repeated string roles = 3;
+string password = 4;
+string name = 5;
+string bio = 6;
+string email = 7;
+int32 age = 8;
+string birthDate = 9;
+int32 score = 10;
+repeated User employees = 11;
+repeated Organization organizations = 12;
+repeated string interests = 13;
+repeated string priority = 14;
+bool isCurious = 15;
+string location = 16;
+string extendedProperties = 17;
 };
 message findManyParams {
 
