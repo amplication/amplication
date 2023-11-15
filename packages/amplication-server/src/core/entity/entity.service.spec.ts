@@ -466,6 +466,9 @@ describe("EntityService", () => {
             createDefaultActionsForRelationField: jest.fn(() => {
               return [];
             }),
+            deleteDefaultActionsForRelationField: jest.fn(() => {
+              return [];
+            }),
           })),
         },
         {
