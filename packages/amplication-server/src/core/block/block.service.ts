@@ -221,6 +221,7 @@ export class BlockService {
       createdAt: version.block.createdAt,
       updatedAt: version.block.updatedAt,
       parentBlock: version.block.parentBlock || null,
+      parentBlockId: version.block.parentBlock?.id || null,
       versionNumber: versionData.versionNumber,
       inputParameters: inputParameters,
       outputParameters: outputParameters,

@@ -94,6 +94,7 @@ const EXAMPLE_IBLOCK: BlockType = {
   inputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   outputParameters: EXAMPLE_BLOCK_INPUT_LIST,
   parentBlock: EXAMPLE_BLOCK.parentBlock,
+  parentBlockId: EXAMPLE_BLOCK.parentBlockId,
   versionNumber: EXAMPLE_BLOCK_VERSION.versionNumber,
   resourceId: EXAMPLE_RESOURCE.id,
   ...EXAMPLE_BLOCK_SETTINGS,
