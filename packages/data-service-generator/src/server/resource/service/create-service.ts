@@ -286,11 +286,6 @@ export function createCreateFunctionId(
   return builders.identifier(`create${pascalCase(entityType)}`);
 }
 
-export function createFindManyFunctionId(
-  entityType: string
-): namedTypes.Identifier {
-  return builders.identifier(`${camelCase(entityType)}s`);
-}
 export function createUpdateFunctionId(
   entityType: string
 ): namedTypes.Identifier {

@@ -53,7 +53,6 @@ import {
   createFieldFindManyFunctionId,
   createFieldFindOneFunctionId,
   createCreateFunctionId,
-  createFindManyFunctionId,
   createDeleteFunctionId,
   createUpdateFunctionId,
 } from "../service/create-service";
@@ -77,7 +76,6 @@ export async function createResolverModules(
 ): Promise<ModuleMap> {
   const serviceId = createServiceId(entityType);
   const createFunctionId = createCreateFunctionId(entityType);
-  const findManyFunctionId = createFindManyFunctionId(entityType);
   const updateFunctionId = createUpdateFunctionId(entityType);
   const deleteFunctionId = createDeleteFunctionId(entityType);
   const resolverId = createResolverId(entityType);
@@ -125,7 +123,7 @@ export async function createResolverModules(
     RESOLVER_BASE: resolverBaseId,
     SERVICE: serviceId,
     CREATE_FUNCTION: createFunctionId,
-    FIND_MANY_FUNCTION: findManyFunctionId,
+    FIND_MANY_FUNCTION: entitiesQueryId,
     FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
     UPDATE_FUNCTION: updateFunctionId,
     DELETE_FUNCTION: deleteFunctionId,

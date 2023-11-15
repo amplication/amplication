@@ -48,7 +48,6 @@ import {
   createCreateFunctionId,
   createDeleteFunctionId,
   createFieldFindManyFunctionId,
-  createFindManyFunctionId,
   createServiceId,
   createUpdateFunctionId,
 } from "../service/create-service";
@@ -96,7 +95,6 @@ export async function createControllerModules(
   );
 
   const createFunctionId = createCreateFunctionId(entityType);
-  const findManyFunctionId = createFindManyFunctionId(entityType);
   const updateFunctionId = createUpdateFunctionId(entityType);
   const deleteFunctionId = createDeleteFunctionId(entityType);
   const findManyEntityId = builders.identifier(
@@ -127,7 +125,7 @@ export async function createControllerModules(
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
     CREATE_FUNCTION: createFunctionId,
-    FIND_MANY_FUNCTION: findManyFunctionId,
+    FIND_MANY_FUNCTION: findManyEntityId,
     FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
     UPDATE_FUNCTION: updateFunctionId,
     DELETE_FUNCTION: deleteFunctionId,
