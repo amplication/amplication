@@ -27,7 +27,7 @@ export const prepareEntityPluralName = (entityName: string): string => {
 export const getDefaultActionsForEntity = (
   entity: Entity
 ): entityDefaultActions => {
-  const entityPluralName = pascalCase(prepareEntityPluralName(entity.name));
+  const entityPluralName = prepareEntityPluralName(entity.name);
   const entityName = entity.name;
 
   const entityDisplayName = entity.displayName;
@@ -56,7 +56,7 @@ export const getDefaultActionsForEntity = (
     },
     [EnumModuleActionType.Read]: {
       actionType: EnumModuleActionType.Read,
-      name: `${entityName}`,
+      name: camelCase(entityName),
       displayName: `Get ${entityDisplayName}`,
       description: `Get one ${entityDisplayName}`,
       enabled: true,
