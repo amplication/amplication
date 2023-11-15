@@ -5531,7 +5531,7 @@ export class CustomerResolverBase {
   async _customersMeta(
     @graphql.Args() args: CustomerCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createCustomer(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
@@ -6692,7 +6692,7 @@ export class EmptyResolverBase {
   async _emptiesMeta(
     @graphql.Args() args: EmptyCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createEmpty(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
@@ -8370,7 +8370,7 @@ export class OrderResolverBase {
   async _ordersMeta(
     @graphql.Args() args: OrderCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createOrder(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
@@ -10115,7 +10115,7 @@ export class OrganizationResolverBase {
   async _organizationsMeta(
     @graphql.Args() args: OrganizationCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createOrganization(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
@@ -11623,7 +11623,7 @@ export class ProfileResolverBase {
   async _profilesMeta(
     @graphql.Args() args: ProfileCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createProfile(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
@@ -14144,7 +14144,7 @@ export class UserResolverBase {
   async _usersMeta(
     @graphql.Args() args: UserCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.createUser(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
