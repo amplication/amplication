@@ -89,7 +89,6 @@ import { ServiceSettingsService } from "../serviceSettings/serviceSettings.servi
 import { ModuleService } from "../module/module.service";
 import { DefaultModuleForEntityNotFoundError } from "../module/DefaultModuleForEntityNotFoundError";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
-import { mainCreateEntitiesDefaultCustomActions } from "../../add-entity-custom-actions";
 
 type EntityInclude = Omit<
   Prisma.EntityVersionInclude,
@@ -261,7 +260,6 @@ export class EntityService {
     enforceValidation = true,
     trackEvent = true
   ): Promise<Entity> {
-    await mainCreateEntitiesDefaultCustomActions();
     const resourceId = args.data.resource.connect.id;
     if (
       args.data?.name?.toLowerCase().trim() ===
