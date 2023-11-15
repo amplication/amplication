@@ -3012,8 +3012,6 @@ services:
       - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
-      JWT_EXPIRATION: \${JWT_EXPIRATION}
       DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
@@ -3342,9 +3340,6 @@ export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
   app.connectMicroservice<MicroserviceOptions>(grpcClientOptions);
 }
-",
-  "server/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
-export const JWT_EXPIRATION = "JWT_EXPIRATION";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -12744,18 +12739,16 @@ describe("Testing the secrets manager base class", () => {
 });
 ",
   "server/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<any | null>;
+  getSecret: (key: EnumSecretsNameKey) => Promise<any | null>;
 }
 
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  async getSecret<T>(key: string): Promise<T | null> {
-    if (!key) {
-      throw new Error("Didn't got the key");
-    }
-    const value = this.configService.get(key);
+  async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
+    const value = this.configService.get(key.toString());
     if (value) {
       return value;
     }
@@ -12783,6 +12776,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
+  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
   "server/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";

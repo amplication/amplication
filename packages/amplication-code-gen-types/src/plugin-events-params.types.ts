@@ -301,3 +301,16 @@ export interface LoadStaticFilesParams extends EventParams {
   source: string;
   basePath: string;
 }
+
+export interface CreateServerSecretsManagerParams extends EventParams {
+  /**
+   * Array of secretsName secrectKey pairs that will generate the SecretsNameKey enum.
+   * SecrectKey is used by the Secrets Manager Service to retrieve the secret value
+   */
+  secretsNameKey: SecretsNameKey[];
+}
+
+export interface SecretsNameKey {
+  name: string;
+  key: string;
+}

@@ -53,10 +53,7 @@ export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVers
     },
   ];
 
-export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([
-  EnumDataType.Id,
-  EnumDataType.Roles,
-]);
+export const SYSTEM_DATA_TYPES: Set<EnumDataType> = new Set([EnumDataType.Id]);
 
 export const INITIAL_ID_TYPE_FIELDS: EntityFieldData = {
   dataType: EnumDataType.Id,

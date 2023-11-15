@@ -112,6 +112,10 @@ export enum EventNames {
   CreateDTOs = "CreateDTOs",
   LoadStaticFiles = "LoadStaticFiles",
   CreateConnectMicroservices = "CreateConnectMicroservices",
+  /**
+   * Event that will allow plugins to add secrets references to the SecretsKeyNames enum
+   */
+  CreateServerSecretsManager = "CreateServerSecretsManager",
 }
 
 export interface AmplicationPlugin {
