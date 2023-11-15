@@ -5692,7 +5692,7 @@ export class EmptyResolverBase {
 
   @graphql.Query(() => [Empty])
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
-    return this.service.emptys(args);
+    return this.service.empties(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })

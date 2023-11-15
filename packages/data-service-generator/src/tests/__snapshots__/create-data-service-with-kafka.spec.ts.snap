@@ -6565,7 +6565,7 @@ export class EmptyControllerBase {
   @ApiNestedQuery(EmptyFindManyArgs)
   async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.emptys({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
@@ -6705,7 +6705,7 @@ export class EmptyResolverBase {
 
   @graphql.Query(() => [Empty])
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
-    return this.service.emptys(args);
+    return this.service.empties(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })

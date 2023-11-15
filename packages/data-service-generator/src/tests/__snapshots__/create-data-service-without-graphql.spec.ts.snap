@@ -6275,7 +6275,7 @@ export class EmptyControllerBase {
   @ApiNestedQuery(EmptyFindManyArgs)
   async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.emptys({
+    return this.service.empties({
       ...args,
       select: {
         id: true,
