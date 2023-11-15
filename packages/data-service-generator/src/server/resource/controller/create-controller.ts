@@ -45,8 +45,12 @@ import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports
 import DsgContext from "../../../dsg-context";
 import pluginWrapper from "../../../plugin-wrapper";
 import {
+  createCreateFunctionId,
+  createDeleteFunctionId,
   createFieldFindManyFunctionId,
+  createFindManyFunctionId,
   createServiceId,
+  createUpdateFunctionId,
 } from "../service/create-service";
 import { setEndpointPermissions } from "../../../utils/set-endpoint-permission";
 
@@ -90,6 +94,11 @@ export async function createControllerModules(
   const createEntityId = builders.identifier(
     entityActions.entityDefaultActions.Create.name
   );
+
+  const createFunctionId = createCreateFunctionId(entityType);
+  const findManyFunctionId = createFindManyFunctionId(entityType);
+  const updateFunctionId = createUpdateFunctionId(entityType);
+  const deleteFunctionId = createDeleteFunctionId(entityType);
   const findManyEntityId = builders.identifier(
     entityActions.entityDefaultActions.Find.name
   );
@@ -117,7 +126,11 @@ export async function createControllerModules(
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     SELECT: createSelect(entityDTO, entity),
-
+    CREATE_FUNCTION: createFunctionId,
+    FIND_MANY_FUNCTION: findManyFunctionId,
+    FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
+    UPDATE_FUNCTION: updateFunctionId,
+    DELETE_FUNCTION: deleteFunctionId,
     CREATE_INPUT: entityDTOs.createInput.id,
     CREATE_DATA_MAPPING: createDataMapping(
       entity,
@@ -398,6 +411,7 @@ async function createToManyRelationMethods(
     RELATED_ENTITY_NAME: builders.stringLiteral(relatedEntity.name),
     WHERE_UNIQUE_INPUT: whereUniqueInput.id,
     SERVICE: serviceId,
+    UPDATE_FUNCTION: createUpdateFunctionId(entityType),
     ENTITY_NAME: builders.stringLiteral(entityType),
     FIND_PROPERTY: createFieldFindManyFunctionId(field.name),
     PROPERTY: builders.identifier(field.name),
