@@ -5123,7 +5123,7 @@ export class CustomerControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Customer] })
   @ApiNestedQuery(CustomerFindManyArgs)
-  async Customers(@common.Req() request: Request): Promise<Customer[]> {
+  async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -5161,7 +5161,7 @@ export class CustomerControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Customer })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async Customer(
+  async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     const result = await this.service.findOne({
@@ -5318,7 +5318,7 @@ export class CustomerControllerBase {
   @Public()
   @common.Get("/:id/orders")
   @ApiNestedQuery(OrderFindManyArgs)
-  async findManyOrders(
+  async findOrders(
     @common.Req() request: Request,
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Order[]> {
@@ -5435,13 +5435,13 @@ import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateCustomerArgs } from "./CreateCustomerArgs";
-import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
-import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
+import { Customer } from "./Customer";
 import { CustomerCountArgs } from "./CustomerCountArgs";
 import { CustomerFindManyArgs } from "./CustomerFindManyArgs";
 import { CustomerFindUniqueArgs } from "./CustomerFindUniqueArgs";
-import { Customer } from "./Customer";
+import { CreateCustomerArgs } from "./CreateCustomerArgs";
+import { UpdateCustomerArgs } from "./UpdateCustomerArgs";
+import { DeleteCustomerArgs } from "./DeleteCustomerArgs";
 import { OrderFindManyArgs } from "../../order/base/OrderFindManyArgs";
 import { Order } from "../../order/base/Order";
 import { Organization } from "../../organization/base/Organization";
@@ -5552,7 +5552,7 @@ export class CustomerResolverBase {
 
   @Public()
   @graphql.ResolveField(() => [Order], { name: "orders" })
-  async resolveFieldOrders(
+  async findOrders(
     @graphql.Parent() parent: Customer,
     @graphql.Args() args: OrderFindManyArgs
   ): Promise<Order[]> {
@@ -5569,7 +5569,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "organization",
   })
-  async resolveFieldOrganization(
+  async getOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getOrganization(parent.id);
@@ -5584,7 +5584,7 @@ export class CustomerResolverBase {
     nullable: true,
     name: "vipOrganization",
   })
-  async resolveFieldVipOrganization(
+  async getVipOrganization(
     @graphql.Parent() parent: Customer
   ): Promise<Organization | null> {
     const result = await this.service.getVipOrganization(parent.id);
@@ -5608,7 +5608,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Customer, Order, Organization } from "@prisma/client";
+
+import {
+  Prisma,
+  Customer, // @ts-ignore
+  Order, // @ts-ignore
+  Organization,
+} from "@prisma/client";
 
 export class CustomerServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -5619,27 +5625,27 @@ export class CustomerServiceBase {
     return this.prisma.customer.count(args);
   }
 
-  async findMany<T extends Prisma.CustomerFindManyArgs>(
+  async customers<T extends Prisma.CustomerFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindManyArgs>
   ): Promise<Customer[]> {
     return this.prisma.customer.findMany(args);
   }
-  async findOne<T extends Prisma.CustomerFindUniqueArgs>(
+  async customer<T extends Prisma.CustomerFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerFindUniqueArgs>
   ): Promise<Customer | null> {
     return this.prisma.customer.findUnique(args);
   }
-  async create<T extends Prisma.CustomerCreateArgs>(
+  async createCustomer<T extends Prisma.CustomerCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerCreateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.create<T>(args);
   }
-  async update<T extends Prisma.CustomerUpdateArgs>(
+  async updateCustomer<T extends Prisma.CustomerUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerUpdateArgs>
   ): Promise<Customer> {
     return this.prisma.customer.update<T>(args);
   }
-  async delete<T extends Prisma.CustomerDeleteArgs>(
+  async deleteCustomer<T extends Prisma.CustomerDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.CustomerDeleteArgs>
   ): Promise<Customer> {
     return this.prisma.customer.delete(args);
@@ -6474,7 +6480,7 @@ export class EmptyControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Empty] })
   @ApiNestedQuery(EmptyFindManyArgs)
-  async Empties(@common.Req() request: Request): Promise<Empty[]> {
+  async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -6489,7 +6495,7 @@ export class EmptyControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Empty })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async Empty(
+  async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     const result = await this.service.findOne({
@@ -6595,11 +6601,11 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
+import { Empty } from "./Empty";
 import { EmptyCountArgs } from "./EmptyCountArgs";
 import { EmptyFindManyArgs } from "./EmptyFindManyArgs";
 import { EmptyFindUniqueArgs } from "./EmptyFindUniqueArgs";
-import { Empty } from "./Empty";
+import { DeleteEmptyArgs } from "./DeleteEmptyArgs";
 import { EmptyService } from "../empty.service";
 @graphql.Resolver(() => Empty)
 export class EmptyResolverBase {
@@ -6670,27 +6676,27 @@ export class EmptyServiceBase {
     return this.prisma.empty.count(args);
   }
 
-  async findMany<T extends Prisma.EmptyFindManyArgs>(
+  async empties<T extends Prisma.EmptyFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindManyArgs>
   ): Promise<Empty[]> {
     return this.prisma.empty.findMany(args);
   }
-  async findOne<T extends Prisma.EmptyFindUniqueArgs>(
+  async empty<T extends Prisma.EmptyFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyFindUniqueArgs>
   ): Promise<Empty | null> {
     return this.prisma.empty.findUnique(args);
   }
-  async create<T extends Prisma.EmptyCreateArgs>(
+  async createEmpty<T extends Prisma.EmptyCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyCreateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.create<T>(args);
   }
-  async update<T extends Prisma.EmptyUpdateArgs>(
+  async updateEmpty<T extends Prisma.EmptyUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyUpdateArgs>
   ): Promise<Empty> {
     return this.prisma.empty.update<T>(args);
   }
-  async delete<T extends Prisma.EmptyDeleteArgs>(
+  async deleteEmpty<T extends Prisma.EmptyDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.EmptyDeleteArgs>
   ): Promise<Empty> {
     return this.prisma.empty.delete(args);
@@ -7967,7 +7973,7 @@ export class OrderControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Order] })
   @ApiNestedQuery(OrderFindManyArgs)
-  async Orders(@common.Req() request: Request): Promise<Order[]> {
+  async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -7992,7 +7998,7 @@ export class OrderControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Order })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async Order(
+  async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     const result = await this.service.findOne({
@@ -8134,13 +8140,13 @@ import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
 import { Public } from "../../decorators/public.decorator";
-import { CreateOrderArgs } from "./CreateOrderArgs";
-import { UpdateOrderArgs } from "./UpdateOrderArgs";
-import { DeleteOrderArgs } from "./DeleteOrderArgs";
+import { Order } from "./Order";
 import { OrderCountArgs } from "./OrderCountArgs";
 import { OrderFindManyArgs } from "./OrderFindManyArgs";
 import { OrderFindUniqueArgs } from "./OrderFindUniqueArgs";
-import { Order } from "./Order";
+import { CreateOrderArgs } from "./CreateOrderArgs";
+import { UpdateOrderArgs } from "./UpdateOrderArgs";
+import { DeleteOrderArgs } from "./DeleteOrderArgs";
 import { Customer } from "../../customer/base/Customer";
 import { OrderService } from "../order.service";
 @graphql.Resolver(() => Order)
@@ -8236,9 +8242,7 @@ export class OrderResolverBase {
     nullable: true,
     name: "customer",
   })
-  async resolveFieldCustomer(
-    @graphql.Parent() parent: Order
-  ): Promise<Customer | null> {
+  async getCustomer(@graphql.Parent() parent: Order): Promise<Customer | null> {
     const result = await this.service.getCustomer(parent.id);
 
     if (!result) {
@@ -8260,7 +8264,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Order, Customer } from "@prisma/client";
+
+import {
+  Prisma,
+  Order, // @ts-ignore
+  Customer,
+} from "@prisma/client";
 
 export class OrderServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -8271,27 +8280,27 @@ export class OrderServiceBase {
     return this.prisma.order.count(args);
   }
 
-  async findMany<T extends Prisma.OrderFindManyArgs>(
+  async orders<T extends Prisma.OrderFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindManyArgs>
   ): Promise<Order[]> {
     return this.prisma.order.findMany(args);
   }
-  async findOne<T extends Prisma.OrderFindUniqueArgs>(
+  async order<T extends Prisma.OrderFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderFindUniqueArgs>
   ): Promise<Order | null> {
     return this.prisma.order.findUnique(args);
   }
-  async create<T extends Prisma.OrderCreateArgs>(
+  async createOrder<T extends Prisma.OrderCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderCreateArgs>
   ): Promise<Order> {
     return this.prisma.order.create<T>(args);
   }
-  async update<T extends Prisma.OrderUpdateArgs>(
+  async updateOrder<T extends Prisma.OrderUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderUpdateArgs>
   ): Promise<Order> {
     return this.prisma.order.update<T>(args);
   }
-  async delete<T extends Prisma.OrderDeleteArgs>(
+  async deleteOrder<T extends Prisma.OrderDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrderDeleteArgs>
   ): Promise<Order> {
     return this.prisma.order.delete(args);
@@ -9458,7 +9467,7 @@ export class OrganizationControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Organization] })
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async Organizations(@common.Req() request: Request): Promise<Organization[]> {
+  async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -9474,7 +9483,7 @@ export class OrganizationControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Organization })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async Organization(
+  async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     const result = await this.service.findOne({
@@ -9550,7 +9559,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/users")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyUsers(
+  async findUsers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<User[]> {
@@ -9646,7 +9655,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/customers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyCustomers(
+  async findCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -9743,7 +9752,7 @@ export class OrganizationControllerBase {
 
   @common.Get("/:id/vipCustomers")
   @ApiNestedQuery(CustomerFindManyArgs)
-  async findManyVipCustomers(
+  async findVipCustomers(
     @common.Req() request: Request,
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Customer[]> {
@@ -9873,13 +9882,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
-import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
-import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
+import { Organization } from "./Organization";
 import { OrganizationCountArgs } from "./OrganizationCountArgs";
 import { OrganizationFindManyArgs } from "./OrganizationFindManyArgs";
 import { OrganizationFindUniqueArgs } from "./OrganizationFindUniqueArgs";
-import { Organization } from "./Organization";
+import { CreateOrganizationArgs } from "./CreateOrganizationArgs";
+import { UpdateOrganizationArgs } from "./UpdateOrganizationArgs";
+import { DeleteOrganizationArgs } from "./DeleteOrganizationArgs";
 import { UserFindManyArgs } from "../../user/base/UserFindManyArgs";
 import { User } from "../../user/base/User";
 import { CustomerFindManyArgs } from "../../customer/base/CustomerFindManyArgs";
@@ -9962,7 +9971,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "users" })
-  async resolveFieldUsers(
+  async findUsers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -9976,7 +9985,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "customers" })
-  async resolveFieldCustomers(
+  async findCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -9990,7 +9999,7 @@ export class OrganizationResolverBase {
   }
 
   @graphql.ResolveField(() => [Customer], { name: "vipCustomers" })
-  async resolveFieldVipCustomers(
+  async findVipCustomers(
     @graphql.Parent() parent: Organization,
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
@@ -10016,7 +10025,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Organization, User, Customer } from "@prisma/client";
+
+import {
+  Prisma,
+  Organization, // @ts-ignore
+  User, // @ts-ignore
+  Customer,
+} from "@prisma/client";
 
 export class OrganizationServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -10027,27 +10042,27 @@ export class OrganizationServiceBase {
     return this.prisma.organization.count(args);
   }
 
-  async findMany<T extends Prisma.OrganizationFindManyArgs>(
+  async organizations<T extends Prisma.OrganizationFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindManyArgs>
   ): Promise<Organization[]> {
     return this.prisma.organization.findMany(args);
   }
-  async findOne<T extends Prisma.OrganizationFindUniqueArgs>(
+  async organization<T extends Prisma.OrganizationFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationFindUniqueArgs>
   ): Promise<Organization | null> {
     return this.prisma.organization.findUnique(args);
   }
-  async create<T extends Prisma.OrganizationCreateArgs>(
+  async createOrganization<T extends Prisma.OrganizationCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationCreateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.create<T>(args);
   }
-  async update<T extends Prisma.OrganizationUpdateArgs>(
+  async updateOrganization<T extends Prisma.OrganizationUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationUpdateArgs>
   ): Promise<Organization> {
     return this.prisma.organization.update<T>(args);
   }
-  async delete<T extends Prisma.OrganizationDeleteArgs>(
+  async deleteOrganization<T extends Prisma.OrganizationDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.OrganizationDeleteArgs>
   ): Promise<Organization> {
     return this.prisma.organization.delete(args);
@@ -11213,7 +11228,7 @@ export class ProfileControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [Profile] })
   @ApiNestedQuery(ProfileFindManyArgs)
-  async Profiles(@common.Req() request: Request): Promise<Profile[]> {
+  async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -11237,7 +11252,7 @@ export class ProfileControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: Profile })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async Profile(
+  async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     const result = await this.service.findOne({
@@ -11378,13 +11393,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateProfileArgs } from "./CreateProfileArgs";
-import { UpdateProfileArgs } from "./UpdateProfileArgs";
-import { DeleteProfileArgs } from "./DeleteProfileArgs";
+import { Profile } from "./Profile";
 import { ProfileCountArgs } from "./ProfileCountArgs";
 import { ProfileFindManyArgs } from "./ProfileFindManyArgs";
 import { ProfileFindUniqueArgs } from "./ProfileFindUniqueArgs";
-import { Profile } from "./Profile";
+import { CreateProfileArgs } from "./CreateProfileArgs";
+import { UpdateProfileArgs } from "./UpdateProfileArgs";
+import { DeleteProfileArgs } from "./DeleteProfileArgs";
 import { User } from "../../user/base/User";
 import { ProfileService } from "../profile.service";
 @graphql.Resolver(() => Profile)
@@ -11483,9 +11498,7 @@ export class ProfileResolverBase {
     nullable: true,
     name: "user",
   })
-  async resolveFieldUser(
-    @graphql.Parent() parent: Profile
-  ): Promise<User | null> {
+  async getUser(@graphql.Parent() parent: Profile): Promise<User | null> {
     const result = await this.service.getUser(parent.id);
 
     if (!result) {
@@ -11507,7 +11520,12 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, Profile, User } from "@prisma/client";
+
+import {
+  Prisma,
+  Profile, // @ts-ignore
+  User,
+} from "@prisma/client";
 
 export class ProfileServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -11518,27 +11536,27 @@ export class ProfileServiceBase {
     return this.prisma.profile.count(args);
   }
 
-  async findMany<T extends Prisma.ProfileFindManyArgs>(
+  async profiles<T extends Prisma.ProfileFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindManyArgs>
   ): Promise<Profile[]> {
     return this.prisma.profile.findMany(args);
   }
-  async findOne<T extends Prisma.ProfileFindUniqueArgs>(
+  async profile<T extends Prisma.ProfileFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileFindUniqueArgs>
   ): Promise<Profile | null> {
     return this.prisma.profile.findUnique(args);
   }
-  async create<T extends Prisma.ProfileCreateArgs>(
+  async createProfile<T extends Prisma.ProfileCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileCreateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.create<T>(args);
   }
-  async update<T extends Prisma.ProfileUpdateArgs>(
+  async updateProfile<T extends Prisma.ProfileUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileUpdateArgs>
   ): Promise<Profile> {
     return this.prisma.profile.update<T>(args);
   }
-  async delete<T extends Prisma.ProfileDeleteArgs>(
+  async deleteProfile<T extends Prisma.ProfileDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.ProfileDeleteArgs>
   ): Promise<Profile> {
     return this.prisma.profile.delete(args);
@@ -13505,7 +13523,7 @@ export class UserControllerBase {
   @common.Get()
   @swagger.ApiOkResponse({ type: [User] })
   @ApiNestedQuery(UserFindManyArgs)
-  async Users(@common.Req() request: Request): Promise<User[]> {
+  async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
     return this.service.findMany({
       ...args,
@@ -13542,7 +13560,7 @@ export class UserControllerBase {
   @common.Get("/:id")
   @swagger.ApiOkResponse({ type: User })
   @swagger.ApiNotFoundResponse({ type: errors.NotFoundException })
-  async User(
+  async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     const result = await this.service.findOne({
@@ -13695,7 +13713,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/employees")
   @ApiNestedQuery(UserFindManyArgs)
-  async findManyEmployees(
+  async findEmployees(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User[]> {
@@ -13791,7 +13809,7 @@ export class UserControllerBase {
 
   @common.Get("/:id/organizations")
   @ApiNestedQuery(OrganizationFindManyArgs)
-  async findManyOrganizations(
+  async findOrganizations(
     @common.Req() request: Request,
     @common.Param() params: UserWhereUniqueInput
   ): Promise<Organization[]> {
@@ -13899,13 +13917,13 @@ import * as graphql from "@nestjs/graphql";
 import { GraphQLError } from "graphql";
 import { isRecordNotFoundError } from "../../prisma.util";
 import { MetaQueryPayload } from "../../util/MetaQueryPayload";
-import { CreateUserArgs } from "./CreateUserArgs";
-import { UpdateUserArgs } from "./UpdateUserArgs";
-import { DeleteUserArgs } from "./DeleteUserArgs";
+import { User } from "./User";
 import { UserCountArgs } from "./UserCountArgs";
 import { UserFindManyArgs } from "./UserFindManyArgs";
 import { UserFindUniqueArgs } from "./UserFindUniqueArgs";
-import { User } from "./User";
+import { CreateUserArgs } from "./CreateUserArgs";
+import { UpdateUserArgs } from "./UpdateUserArgs";
+import { DeleteUserArgs } from "./DeleteUserArgs";
 import { OrganizationFindManyArgs } from "../../organization/base/OrganizationFindManyArgs";
 import { Organization } from "../../organization/base/Organization";
 import { Profile } from "../../profile/base/Profile";
@@ -14005,7 +14023,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [User], { name: "employees" })
-  async resolveFieldEmployees(
+  async findEmployees(
     @graphql.Parent() parent: User,
     @graphql.Args() args: UserFindManyArgs
   ): Promise<User[]> {
@@ -14019,7 +14037,7 @@ export class UserResolverBase {
   }
 
   @graphql.ResolveField(() => [Organization], { name: "organizations" })
-  async resolveFieldOrganizations(
+  async findOrganizations(
     @graphql.Parent() parent: User,
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
@@ -14036,9 +14054,7 @@ export class UserResolverBase {
     nullable: true,
     name: "manager",
   })
-  async resolveFieldManager(
-    @graphql.Parent() parent: User
-  ): Promise<User | null> {
+  async getManager(@graphql.Parent() parent: User): Promise<User | null> {
     const result = await this.service.getManager(parent.id);
 
     if (!result) {
@@ -14051,9 +14067,7 @@ export class UserResolverBase {
     nullable: true,
     name: "profile",
   })
-  async resolveFieldProfile(
-    @graphql.Parent() parent: User
-  ): Promise<Profile | null> {
+  async getProfile(@graphql.Parent() parent: User): Promise<Profile | null> {
     const result = await this.service.getProfile(parent.id);
 
     if (!result) {
@@ -14075,7 +14089,13 @@ https://docs.amplication.com/how-to/custom-code
 ------------------------------------------------------------------------------
   */
 import { PrismaService } from "../../prisma/prisma.service";
-import { Prisma, User, Organization, Profile } from "@prisma/client";
+
+import {
+  Prisma,
+  User, // @ts-ignore
+  Organization, // @ts-ignore
+  Profile,
+} from "@prisma/client";
 
 export class UserServiceBase {
   constructor(protected readonly prisma: PrismaService) {}
@@ -14086,27 +14106,27 @@ export class UserServiceBase {
     return this.prisma.user.count(args);
   }
 
-  async findMany<T extends Prisma.UserFindManyArgs>(
+  async users<T extends Prisma.UserFindManyArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindManyArgs>
   ): Promise<User[]> {
     return this.prisma.user.findMany(args);
   }
-  async findOne<T extends Prisma.UserFindUniqueArgs>(
+  async user<T extends Prisma.UserFindUniqueArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserFindUniqueArgs>
   ): Promise<User | null> {
     return this.prisma.user.findUnique(args);
   }
-  async create<T extends Prisma.UserCreateArgs>(
+  async createUser<T extends Prisma.UserCreateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserCreateArgs>
   ): Promise<User> {
     return this.prisma.user.create<T>(args);
   }
-  async update<T extends Prisma.UserUpdateArgs>(
+  async updateUser<T extends Prisma.UserUpdateArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserUpdateArgs>
   ): Promise<User> {
     return this.prisma.user.update<T>(args);
   }
-  async delete<T extends Prisma.UserDeleteArgs>(
+  async deleteUser<T extends Prisma.UserDeleteArgs>(
     args: Prisma.SelectSubset<T, Prisma.UserDeleteArgs>
   ): Promise<User> {
     return this.prisma.user.delete(args);
