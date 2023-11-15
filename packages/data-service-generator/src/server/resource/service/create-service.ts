@@ -241,7 +241,10 @@ async function createServiceBaseModule({
 
   Object.keys(entityActions.entityDefaultActions).forEach((key) => {
     const action: ModuleAction = entityActions.entityDefaultActions[key];
-    if ((!moduleContainer?.enabled && action) || (action && !action.enabled)) {
+    if (
+      (moduleContainer && !moduleContainer?.enabled && action) ||
+      (action && !action.enabled)
+    ) {
       removeClassMethodByName(classDeclaration, action.name);
     }
   });
