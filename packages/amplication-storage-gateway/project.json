@@ -30,7 +30,8 @@
         "tsConfig": "packages/amplication-storage-gateway/tsconfig.app.json",
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -43,7 +44,8 @@
     "serve": {
       "executor": "@nx/js:node",
       "options": {
-        "buildTarget": "amplication-storage-gateway:build"
+        "buildTarget": "amplication-storage-gateway:build",
+        "watch": true
       },
       "configurations": {
         "production": {

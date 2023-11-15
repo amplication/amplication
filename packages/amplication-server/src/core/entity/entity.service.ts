@@ -2206,16 +2206,6 @@ export class EntityService {
     // Validate the field's name
     validateFieldName(data.name);
 
-    // Validate the field's dataType is not a system data type
-    if (
-      isSystemDataType(data.dataType as EnumDataType) &&
-      data.dataType !== EnumDataType.Id
-    ) {
-      throw new DataConflictError(
-        `The data type ${data.dataType} cannot be used for non-system fields`
-      );
-    }
-
     if (
       enforceValidation &&
       data.dataType === EnumDataType.Id &&
@@ -2512,15 +2502,6 @@ export class EntityService {
       where: args.where,
       include: { entityVersion: true },
     });
-
-    if (
-      isSystemDataType(field.dataType as EnumDataType) &&
-      field.dataType !== EnumDataType.Id
-    ) {
-      throw new ConflictException(
-        `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
-      );
-    }
 
     if (
       enforceValidation &&
