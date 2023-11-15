@@ -13,7 +13,7 @@ import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 type ResourceTuple = [JobBuildId<BuildId>, DSGResourceData];
 @Injectable()
-export class CodeGeneratorSplitterService {
+export class BuildJobsHandlerService {
   constructor(
     private readonly redisService: RedisService,
     private readonly logger: AmplicationLogger

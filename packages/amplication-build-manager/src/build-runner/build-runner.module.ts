@@ -3,7 +3,7 @@ import { Module } from "@nestjs/common";
 import { BuildRunnerController } from "./build-runner.controller";
 import { BuildRunnerService } from "./build-runner.service";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
-import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { RedisService } from "../redis/redis.service";
 
 @Module({
@@ -12,7 +12,7 @@ import { RedisService } from "../redis/redis.service";
   providers: [
     BuildRunnerService,
     CodeGeneratorService,
-    CodeGeneratorSplitterService,
+    BuildJobsHandlerService,
     RedisService,
   ],
 })

@@ -5,11 +5,11 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BuildLoggerController } from "./build-logger.controller";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
-import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
-  let codeGeneratorSplitterService: CodeGeneratorSplitterService;
+  let buildJobsHandlerService: BuildJobsHandlerService;
 
   const mockServiceEmitMessage = jest
     .fn()
@@ -45,7 +45,7 @@ describe("Build Logger Controller", () => {
           },
         },
         {
-          provide: CodeGeneratorSplitterService,
+          provide: BuildJobsHandlerService,
           useValue: {
             extractBuildId: jest.fn(),
           },
@@ -54,8 +54,8 @@ describe("Build Logger Controller", () => {
     }).compile();
 
     controller = module.get<BuildLoggerController>(BuildLoggerController);
-    codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
-      CodeGeneratorSplitterService
+    buildJobsHandlerService = module.get<BuildJobsHandlerService>(
+      BuildJobsHandlerService
     );
   });
 
@@ -64,8 +64,8 @@ describe("Build Logger Controller", () => {
   });
 
   it("should emit `CodeGenerationLog.KafkaEvent` message on Kafka producer service", async () => {
-    const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
-      .spyOn(codeGeneratorSplitterService, "extractBuildId")
+    const spyOnBuildJobsHandlerServiceExtractBuildId = jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
       .mockReturnValue("buildID");
 
     const mockRequestLogDOT: CodeGenerationLogRequestDto = {
@@ -86,7 +86,7 @@ describe("Build Logger Controller", () => {
       logEvent
     );
 
-    expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(1);
+    expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockServiceEmitMessage()).resolves.not.toThrow();
   });
 });

@@ -7,7 +7,7 @@ import { copy } from "fs-extra";
 import { join, dirname } from "path";
 import { Env } from "../env";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
-import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import {
   CodeGenerationFailure,
@@ -26,7 +26,7 @@ export class BuildRunnerService {
     private readonly configService: ConfigService<Env, true>,
     private readonly producerService: KafkaProducerService,
     private readonly codeGeneratorService: CodeGeneratorService,
-    private readonly codeGeneratorSplitterService: CodeGeneratorSplitterService,
+    private readonly buildJobsHandlerService: BuildJobsHandlerService,
     private readonly logger: AmplicationLogger
   ) {
     this.minDsgVersionToSplitBuild = this.configService.getOrThrow(
@@ -58,11 +58,10 @@ export class BuildRunnerService {
         ) >= 0;
 
       if (shouldSplitBuild) {
-        const jobs =
-          await this.codeGeneratorSplitterService.splitBuildsIntoJobs(
-            dsgResourceData,
-            buildId
-          );
+        const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
+          dsgResourceData,
+          buildId
+        );
         for (const [jobBuildId, data] of jobs) {
           this.logger.debug("Running job for...", { jobBuildId });
           await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
@@ -147,25 +146,25 @@ export class BuildRunnerService {
     let buildId: string;
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-      const buildId =
-        this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
+      const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
       const isCopySucceeded = await this.copyFromJobToArtifact(
         resourceId,
         jobBuildId
       );
 
       isCopySucceeded
-        ? await this.codeGeneratorSplitterService.setJobStatus(
+        ? await this.buildJobsHandlerService.setJobStatus(
             jobBuildId,
             EnumJobStatus.Success
           )
-        : await this.codeGeneratorSplitterService.setJobStatus(
+        : await this.buildJobsHandlerService.setJobStatus(
             jobBuildId,
             EnumJobStatus.Failure
           );
 
-      const buildStatus =
-        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
+      const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
+        buildId
+      );
 
       if (buildStatus === EnumJobStatus.InProgress) {
         // do nothing
@@ -213,17 +212,18 @@ export class BuildRunnerService {
     let buildId: string;
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-      buildId = this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
+      buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
 
-      const buildStatus =
-        await this.codeGeneratorSplitterService.getBuildStatus(buildId);
+      const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
+        buildId
+      );
 
       if (buildStatus === EnumJobStatus.Failure) {
         // do nothing - already emitted
         return;
       }
 
-      await this.codeGeneratorSplitterService.setJobStatus(
+      await this.buildJobsHandlerService.setJobStatus(
         jobBuildId,
         EnumJobStatus.Failure
       );
@@ -291,8 +291,7 @@ export class BuildRunnerService {
     resourceId: string,
     jobBuildId: string
   ): Promise<boolean> {
-    const buildId =
-      this.codeGeneratorSplitterService.extractBuildId(jobBuildId);
+    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
 
     try {
       const jobPath = join(

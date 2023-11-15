@@ -7,7 +7,7 @@ import {
   EnumEntityPermissionType,
 } from "@amplication/code-gen-types/models";
 import { Test, TestingModule } from "@nestjs/testing";
-import { CodeGeneratorSplitterService } from "./code-generator-splitter.service";
+import { BuildJobsHandlerService } from "./build-job-handler.service";
 import { BuildId, EnumDomainName, EnumJobStatus, JobBuildId } from "../types";
 import { RedisService } from "../redis/redis.service";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
@@ -381,14 +381,14 @@ const onlyAdminInputJson: DSGResourceData = {
 
 const buildId = "cloo1bi5t0001p5888jj5wle9";
 
-describe("CodeGeneratorSplitter", () => {
-  let service: CodeGeneratorSplitterService;
+describe("BuildJobsHandlerService", () => {
+  let service: BuildJobsHandlerService;
   let redisService: RedisService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
-        CodeGeneratorSplitterService,
+        BuildJobsHandlerService,
         {
           provide: RedisService,
           useValue: {
@@ -400,9 +400,7 @@ describe("CodeGeneratorSplitter", () => {
       ],
     }).compile();
 
-    service = module.get<CodeGeneratorSplitterService>(
-      CodeGeneratorSplitterService
-    );
+    service = module.get<BuildJobsHandlerService>(BuildJobsHandlerService);
     redisService = module.get<RedisService>(RedisService);
   });
 

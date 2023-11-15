@@ -9,7 +9,7 @@ import { AppInfo, DSGResourceData } from "@amplication/code-gen-types";
 
 import { BuildRunnerService } from "./build-runner.service";
 import { Env } from "../env";
-import { CodeGeneratorSplitterService } from "../code-generator/code-generator-splitter.service";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { EnumDomainName, EnumJobStatus } from "../types";
 import { MockedAmplicationLoggerProvider } from "@amplication/util/nestjs/logging/test-utils";
 import { CodeGeneratorService } from "../code-generator/code-generator-catalog.service";
@@ -41,7 +41,7 @@ spyOnFsExtraCopy.mockImplementation((src: string, dest: string) =>
 describe("BuildRunnerService", () => {
   let service: BuildRunnerService;
   let configService: ConfigService;
-  let codeGeneratorSplitterService: CodeGeneratorSplitterService;
+  let buildJobsHandlerService: BuildJobsHandlerService;
   let codeGeneratorService: CodeGeneratorService;
   const mockKafkaServiceEmitMessage = jest.fn();
 
@@ -87,7 +87,7 @@ describe("BuildRunnerService", () => {
           },
         },
         {
-          provide: CodeGeneratorSplitterService,
+          provide: BuildJobsHandlerService,
           useValue: {
             extractBuildId: jest.fn(),
             splitBuildsIntoJobs: jest.fn(),
@@ -116,8 +116,8 @@ describe("BuildRunnerService", () => {
 
     service = module.get<BuildRunnerService>(BuildRunnerService);
     configService = module.get<ConfigService>(ConfigService);
-    codeGeneratorSplitterService = module.get<CodeGeneratorSplitterService>(
-      CodeGeneratorSplitterService
+    buildJobsHandlerService = module.get<BuildJobsHandlerService>(
+      BuildJobsHandlerService
     );
     codeGeneratorService =
       module.get<CodeGeneratorService>(CodeGeneratorService);
@@ -175,8 +175,8 @@ describe("BuildRunnerService", () => {
       const resourceId = "resourceId";
       const buildId = "buildId";
 
-      const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
-        .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      const spyOnBuildJobsHandlerServiceExtractBuildId = jest
+        .spyOn(buildJobsHandlerService, "extractBuildId")
         .mockReturnValue(buildId);
 
       const jobPath = join(
@@ -192,9 +192,7 @@ describe("BuildRunnerService", () => {
 
       const result = await service.copyFromJobToArtifact(resourceId, buildId);
 
-      expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(
-        1
-      );
+      expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
       expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
       expect(result).toBe(true);
       await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
@@ -204,8 +202,8 @@ describe("BuildRunnerService", () => {
       const resourceId = "resourceId";
       const buildId = "buildId";
 
-      const spyOnCodeGeneratorSplitterServiceExtractBuildId = jest
-        .spyOn(codeGeneratorSplitterService, "extractBuildId")
+      const spyOnBuildJobsHandlerServiceExtractBuildId = jest
+        .spyOn(buildJobsHandlerService, "extractBuildId")
         .mockReturnValue(buildId);
 
       spyOnFsExtraCopy.mockImplementationOnce(() => {
@@ -214,9 +212,7 @@ describe("BuildRunnerService", () => {
 
       const result = await service.copyFromJobToArtifact(resourceId, buildId);
 
-      expect(spyOnCodeGeneratorSplitterServiceExtractBuildId).toBeCalledTimes(
-        1
-      );
+      expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
       expect(spyOnFsExtraCopy).toBeCalledTimes(1);
       expect(result).toBe(false);
     });
@@ -255,7 +251,7 @@ describe("BuildRunnerService", () => {
       jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
 
       jest
-        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .spyOn(buildJobsHandlerService, "splitBuildsIntoJobs")
         .mockResolvedValue([
           [
             `${buildId}-${EnumDomainName.Server}`,
@@ -401,7 +397,7 @@ describe("BuildRunnerService", () => {
       jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
 
       jest
-        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .spyOn(buildJobsHandlerService, "splitBuildsIntoJobs")
         .mockResolvedValue([
           [
             `${buildId}-${EnumDomainName.Server}`,
@@ -499,7 +495,7 @@ describe("BuildRunnerService", () => {
       jest.spyOn(codeGeneratorService, "compareVersions").mockReturnValue(1);
 
       jest
-        .spyOn(codeGeneratorSplitterService, "splitBuildsIntoJobs")
+        .spyOn(buildJobsHandlerService, "splitBuildsIntoJobs")
         .mockResolvedValue([
           [
             `${buildId}-${EnumDomainName.Server}`,
@@ -642,19 +638,19 @@ describe("BuildRunnerService", () => {
 
         jest.spyOn(service, "copyFromJobToArtifact").mockResolvedValue(true);
         jest
-          .spyOn(codeGeneratorSplitterService, "setJobStatus")
+          .spyOn(buildJobsHandlerService, "setJobStatus")
           .mockResolvedValue(undefined);
 
         jest
-          .spyOn(codeGeneratorSplitterService, "getJobStatus")
+          .spyOn(buildJobsHandlerService, "getJobStatus")
           .mockResolvedValue(input.jobStatus);
 
         jest
-          .spyOn(codeGeneratorSplitterService, "extractBuildId")
+          .spyOn(buildJobsHandlerService, "extractBuildId")
           .mockReturnValue(buildId);
 
         jest
-          .spyOn(codeGeneratorSplitterService, "getBuildStatus")
+          .spyOn(buildJobsHandlerService, "getBuildStatus")
           .mockResolvedValue(input.otherJobsCombinedStatus);
 
         // Act
