@@ -3539,7 +3539,7 @@ export const ACLModule = AccessControlModule.forRoles(new RolesBuilder(grants));
   "server/src/auth/auth.controller.ts": "import { Body, Controller, Post } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
 import { AuthService } from "./auth.service";
-import { Credentials } from "./Credentials";
+import { Credentials } from "../auth/Credentials";
 import { UserInfo } from "./UserInfo";
 
 @ApiTags("auth")
@@ -3626,22 +3626,18 @@ export class AuthResolver {
 
   @Query(() => UserInfo)
   @common.UseGuards(GqlDefaultAuthGuard, gqlACGuard.GqlACGuard)
-  async userInfo(@UserData() userInfo: UserInfo): Promise<UserInfo> {
-    return userInfo;
+  async userInfo(@UserData() entityInfo: UserInfo): Promise<UserInfo> {
+    return entityInfo;
   }
 }
 ",
   "server/src/auth/auth.service.spec.ts": "import { Test, TestingModule } from "@nestjs/testing";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from "../user/user.service";
 import { AuthService } from "./auth.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
-// @ts-ignore
-// eslint-disable-next-line
 import { TokenService } from "./token.service";
 import { VALID_ID } from "../tests/auth/constants";
+import { UserService } from "../user/user.service";
 
 const VALID_CREDENTIALS: Credentials = {
   username: "Valid User",
@@ -3663,7 +3659,7 @@ const USER: any = {
 
 const SIGN_TOKEN = "SIGN_TOKEN";
 
-const userService = {
+const authEntityService = {
   findOne(args: { where: { username: string } }): any | null {
     if (args.where.username === VALID_CREDENTIALS.username) {
       return USER;
@@ -3692,7 +3688,7 @@ describe("AuthService", () => {
       providers: [
         {
           provide: UserService,
-          useValue: userService,
+          useValue: authEntityService,
         },
         {
           provide: PasswordService,
@@ -3751,20 +3747,18 @@ describe("AuthService", () => {
 });
 ",
   "server/src/auth/auth.service.ts": "import { Injectable, UnauthorizedException } from "@nestjs/common";
-// @ts-ignore
-// eslint-disable-next-line
-import { UserService } from "../user/user.service";
 import { Credentials } from "./Credentials";
 import { PasswordService } from "./password.service";
 import { TokenService } from "./token.service";
 import { UserInfo } from "./UserInfo";
+import { UserService } from "../user/user.service";
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UserService,
     private readonly passwordService: PasswordService,
-    private readonly tokenService: TokenService
+    private readonly tokenService: TokenService,
+    private readonly userService: UserService
   ) {}
 
   async validateUser(
