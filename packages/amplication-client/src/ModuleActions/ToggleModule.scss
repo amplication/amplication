@@ -1,3 +1,5 @@
+@import "../style/index.scss";
+
 .module-toggle-field {
   &__search-field {
     width: 180px;
@@ -11,6 +13,8 @@
   }
   &__operation-toggle {
     .toggle-field {
+      border: $border-dark;
+      border-radius: 20px;
       .MuiSwitch-root {
         border-radius: 8px;
         .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track {
