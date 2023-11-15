@@ -5056,7 +5056,7 @@ export class CustomerControllerBase {
   async createCustomer(
     @common.Body() data: CustomerCreateInput
   ): Promise<Customer> {
-    return await this.service.create({
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5108,7 +5108,7 @@ export class CustomerControllerBase {
   @ApiNestedQuery(CustomerFindManyArgs)
   async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5147,7 +5147,7 @@ export class CustomerControllerBase {
   async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5194,7 +5194,7 @@ export class CustomerControllerBase {
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5257,7 +5257,7 @@ export class CustomerControllerBase {
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5341,7 +5341,7 @@ export class CustomerControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5358,7 +5358,7 @@ export class CustomerControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5375,7 +5375,7 @@ export class CustomerControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -6260,7 +6260,7 @@ export class EmptyControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6275,7 +6275,7 @@ export class EmptyControllerBase {
   @ApiNestedQuery(EmptyFindManyArgs)
   async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.emptys({
       ...args,
       select: {
         id: true,
@@ -6291,7 +6291,7 @@ export class EmptyControllerBase {
   async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6315,7 +6315,7 @@ export class EmptyControllerBase {
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -6341,7 +6341,7 @@ export class EmptyControllerBase {
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -7657,7 +7657,7 @@ export class OrderControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -7688,7 +7688,7 @@ export class OrderControllerBase {
   @ApiNestedQuery(OrderFindManyArgs)
   async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -7714,7 +7714,7 @@ export class OrderControllerBase {
   async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -7748,7 +7748,7 @@ export class OrderControllerBase {
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -7790,7 +7790,7 @@ export class OrderControllerBase {
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -9025,7 +9025,7 @@ export class OrganizationControllerBase {
   async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -9041,7 +9041,7 @@ export class OrganizationControllerBase {
   @ApiNestedQuery(OrganizationFindManyArgs)
   async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -9058,7 +9058,7 @@ export class OrganizationControllerBase {
   async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -9083,7 +9083,7 @@ export class OrganizationControllerBase {
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -9110,7 +9110,7 @@ export class OrganizationControllerBase {
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -9184,7 +9184,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9201,7 +9201,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9218,7 +9218,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9281,7 +9281,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9298,7 +9298,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9315,7 +9315,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9378,7 +9378,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9395,7 +9395,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9412,7 +9412,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -10611,7 +10611,7 @@ export class ProfileControllerBase {
   async createProfile(
     @common.Body() data: ProfileCreateInput
   ): Promise<Profile> {
-    return await this.service.create({
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -10643,7 +10643,7 @@ export class ProfileControllerBase {
   @ApiNestedQuery(ProfileFindManyArgs)
   async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -10668,7 +10668,7 @@ export class ProfileControllerBase {
   async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -10701,7 +10701,7 @@ export class ProfileControllerBase {
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -10744,7 +10744,7 @@ export class ProfileControllerBase {
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -12740,7 +12740,7 @@ export class UserControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   async createUser(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -12791,7 +12791,7 @@ export class UserControllerBase {
   @ApiNestedQuery(UserFindManyArgs)
   async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.users({
       ...args,
       select: {
         id: true,
@@ -12829,7 +12829,7 @@ export class UserControllerBase {
   async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
@@ -12875,7 +12875,7 @@ export class UserControllerBase {
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -12937,7 +12937,7 @@ export class UserControllerBase {
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
@@ -13032,7 +13032,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13049,7 +13049,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13066,7 +13066,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13107,7 +13107,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13124,7 +13124,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13141,7 +13141,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },

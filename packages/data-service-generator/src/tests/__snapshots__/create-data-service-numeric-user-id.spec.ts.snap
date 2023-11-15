@@ -5073,7 +5073,7 @@ export class CustomerControllerBase {
   async createCustomer(
     @common.Body() data: CustomerCreateInput
   ): Promise<Customer> {
-    return await this.service.create({
+    return await this.service.createCustomer({
       data: {
         ...data,
 
@@ -5125,7 +5125,7 @@ export class CustomerControllerBase {
   @ApiNestedQuery(CustomerFindManyArgs)
   async customers(@common.Req() request: Request): Promise<Customer[]> {
     const args = plainToClass(CustomerFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.customers({
       ...args,
       select: {
         id: true,
@@ -5164,7 +5164,7 @@ export class CustomerControllerBase {
   async customer(
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.customer({
       where: params,
       select: {
         id: true,
@@ -5211,7 +5211,7 @@ export class CustomerControllerBase {
     @common.Body() data: CustomerUpdateInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         where: params,
         data: {
           ...data,
@@ -5274,7 +5274,7 @@ export class CustomerControllerBase {
     @common.Param() params: CustomerWhereUniqueInput
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteCustomer({
         where: params,
         select: {
           id: true,
@@ -5358,7 +5358,7 @@ export class CustomerControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5375,7 +5375,7 @@ export class CustomerControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5392,7 +5392,7 @@ export class CustomerControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateCustomer({
       where: params,
       data,
       select: { id: true },
@@ -5453,7 +5453,7 @@ export class CustomerResolverBase {
   async _customersMeta(
     @graphql.Args() args: CustomerCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createCustomer(args);
     return {
       count: result,
     };
@@ -5463,14 +5463,14 @@ export class CustomerResolverBase {
   async customers(
     @graphql.Args() args: CustomerFindManyArgs
   ): Promise<Customer[]> {
-    return this.service.findMany(args);
+    return this.service.customers(args);
   }
 
   @graphql.Query(() => Customer, { nullable: true })
   async customer(
     @graphql.Args() args: CustomerFindUniqueArgs
   ): Promise<Customer | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.customer(args);
     if (result === null) {
       return null;
     }
@@ -5481,7 +5481,7 @@ export class CustomerResolverBase {
   async createCustomer(
     @graphql.Args() args: CreateCustomerArgs
   ): Promise<Customer> {
-    return await this.service.create({
+    return await this.service.createCustomer({
       ...args,
       data: {
         ...args.data,
@@ -5506,7 +5506,7 @@ export class CustomerResolverBase {
     @graphql.Args() args: UpdateCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateCustomer({
         ...args,
         data: {
           ...args.data,
@@ -5539,7 +5539,7 @@ export class CustomerResolverBase {
     @graphql.Args() args: DeleteCustomerArgs
   ): Promise<Customer | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteCustomer(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -6467,7 +6467,7 @@ export class EmptyControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Empty })
   async createEmpty(@common.Body() data: EmptyCreateInput): Promise<Empty> {
-    return await this.service.create({
+    return await this.service.createEmpty({
       data: data,
       select: {
         id: true,
@@ -6482,7 +6482,7 @@ export class EmptyControllerBase {
   @ApiNestedQuery(EmptyFindManyArgs)
   async empties(@common.Req() request: Request): Promise<Empty[]> {
     const args = plainToClass(EmptyFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.emptys({
       ...args,
       select: {
         id: true,
@@ -6498,7 +6498,7 @@ export class EmptyControllerBase {
   async empty(
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.empty({
       where: params,
       select: {
         id: true,
@@ -6522,7 +6522,7 @@ export class EmptyControllerBase {
     @common.Body() data: EmptyUpdateInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateEmpty({
         where: params,
         data: data,
         select: {
@@ -6548,7 +6548,7 @@ export class EmptyControllerBase {
     @common.Param() params: EmptyWhereUniqueInput
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteEmpty({
         where: params,
         select: {
           id: true,
@@ -6614,7 +6614,7 @@ export class EmptyResolverBase {
   async _emptiesMeta(
     @graphql.Args() args: EmptyCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createEmpty(args);
     return {
       count: result,
     };
@@ -6622,14 +6622,14 @@ export class EmptyResolverBase {
 
   @graphql.Query(() => [Empty])
   async empties(@graphql.Args() args: EmptyFindManyArgs): Promise<Empty[]> {
-    return this.service.findMany(args);
+    return this.service.emptys(args);
   }
 
   @graphql.Query(() => Empty, { nullable: true })
   async empty(
     @graphql.Args() args: EmptyFindUniqueArgs
   ): Promise<Empty | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.empty(args);
     if (result === null) {
       return null;
     }
@@ -6641,7 +6641,7 @@ export class EmptyResolverBase {
     @graphql.Args() args: DeleteEmptyArgs
   ): Promise<Empty | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteEmpty(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -7944,7 +7944,7 @@ export class OrderControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: Order })
   async createOrder(@common.Body() data: OrderCreateInput): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       data: {
         ...data,
 
@@ -7975,7 +7975,7 @@ export class OrderControllerBase {
   @ApiNestedQuery(OrderFindManyArgs)
   async orders(@common.Req() request: Request): Promise<Order[]> {
     const args = plainToClass(OrderFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.orders({
       ...args,
       select: {
         id: true,
@@ -8001,7 +8001,7 @@ export class OrderControllerBase {
   async order(
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.order({
       where: params,
       select: {
         id: true,
@@ -8035,7 +8035,7 @@ export class OrderControllerBase {
     @common.Body() data: OrderUpdateInput
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         where: params,
         data: {
           ...data,
@@ -8077,7 +8077,7 @@ export class OrderControllerBase {
     @common.Param() params: OrderWhereUniqueInput
   ): Promise<Order | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrder({
         where: params,
         select: {
           id: true,
@@ -8156,7 +8156,7 @@ export class OrderResolverBase {
   async _ordersMeta(
     @graphql.Args() args: OrderCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createOrder(args);
     return {
       count: result,
     };
@@ -8165,7 +8165,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Query(() => [Order])
   async orders(@graphql.Args() args: OrderFindManyArgs): Promise<Order[]> {
-    return this.service.findMany(args);
+    return this.service.orders(args);
   }
 
   @Public()
@@ -8173,7 +8173,7 @@ export class OrderResolverBase {
   async order(
     @graphql.Args() args: OrderFindUniqueArgs
   ): Promise<Order | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.order(args);
     if (result === null) {
       return null;
     }
@@ -8183,7 +8183,7 @@ export class OrderResolverBase {
   @Public()
   @graphql.Mutation(() => Order)
   async createOrder(@graphql.Args() args: CreateOrderArgs): Promise<Order> {
-    return await this.service.create({
+    return await this.service.createOrder({
       ...args,
       data: {
         ...args.data,
@@ -8201,7 +8201,7 @@ export class OrderResolverBase {
     @graphql.Args() args: UpdateOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrder({
         ...args,
         data: {
           ...args.data,
@@ -8227,7 +8227,7 @@ export class OrderResolverBase {
     @graphql.Args() args: DeleteOrderArgs
   ): Promise<Order | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrder(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -9453,7 +9453,7 @@ export class OrganizationControllerBase {
   async createOrganization(
     @common.Body() data: OrganizationCreateInput
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       data: data,
       select: {
         id: true,
@@ -9469,7 +9469,7 @@ export class OrganizationControllerBase {
   @ApiNestedQuery(OrganizationFindManyArgs)
   async organizations(@common.Req() request: Request): Promise<Organization[]> {
     const args = plainToClass(OrganizationFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.organizations({
       ...args,
       select: {
         id: true,
@@ -9486,7 +9486,7 @@ export class OrganizationControllerBase {
   async organization(
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.organization({
       where: params,
       select: {
         id: true,
@@ -9511,7 +9511,7 @@ export class OrganizationControllerBase {
     @common.Body() data: OrganizationUpdateInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         where: params,
         data: data,
         select: {
@@ -9538,7 +9538,7 @@ export class OrganizationControllerBase {
     @common.Param() params: OrganizationWhereUniqueInput
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteOrganization({
         where: params,
         select: {
           id: true,
@@ -9612,7 +9612,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9629,7 +9629,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9646,7 +9646,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9709,7 +9709,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9726,7 +9726,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9743,7 +9743,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9806,7 +9806,7 @@ export class OrganizationControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9823,7 +9823,7 @@ export class OrganizationControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9840,7 +9840,7 @@ export class OrganizationControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateOrganization({
       where: params,
       data,
       select: { id: true },
@@ -9901,7 +9901,7 @@ export class OrganizationResolverBase {
   async _organizationsMeta(
     @graphql.Args() args: OrganizationCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createOrganization(args);
     return {
       count: result,
     };
@@ -9911,14 +9911,14 @@ export class OrganizationResolverBase {
   async organizations(
     @graphql.Args() args: OrganizationFindManyArgs
   ): Promise<Organization[]> {
-    return this.service.findMany(args);
+    return this.service.organizations(args);
   }
 
   @graphql.Query(() => Organization, { nullable: true })
   async organization(
     @graphql.Args() args: OrganizationFindUniqueArgs
   ): Promise<Organization | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.organization(args);
     if (result === null) {
       return null;
     }
@@ -9929,7 +9929,7 @@ export class OrganizationResolverBase {
   async createOrganization(
     @graphql.Args() args: CreateOrganizationArgs
   ): Promise<Organization> {
-    return await this.service.create({
+    return await this.service.createOrganization({
       ...args,
       data: args.data,
     });
@@ -9940,7 +9940,7 @@ export class OrganizationResolverBase {
     @graphql.Args() args: UpdateOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateOrganization({
         ...args,
         data: args.data,
       });
@@ -9959,7 +9959,7 @@ export class OrganizationResolverBase {
     @graphql.Args() args: DeleteOrganizationArgs
   ): Promise<Organization | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteOrganization(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -11198,7 +11198,7 @@ export class ProfileControllerBase {
   async createProfile(
     @common.Body() data: ProfileCreateInput
   ): Promise<Profile> {
-    return await this.service.create({
+    return await this.service.createProfile({
       data: {
         ...data,
 
@@ -11230,7 +11230,7 @@ export class ProfileControllerBase {
   @ApiNestedQuery(ProfileFindManyArgs)
   async profiles(@common.Req() request: Request): Promise<Profile[]> {
     const args = plainToClass(ProfileFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.profiles({
       ...args,
       select: {
         id: true,
@@ -11255,7 +11255,7 @@ export class ProfileControllerBase {
   async profile(
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.profile({
       where: params,
       select: {
         id: true,
@@ -11288,7 +11288,7 @@ export class ProfileControllerBase {
     @common.Body() data: ProfileUpdateInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         where: params,
         data: {
           ...data,
@@ -11331,7 +11331,7 @@ export class ProfileControllerBase {
     @common.Param() params: ProfileWhereUniqueInput
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteProfile({
         where: params,
         select: {
           id: true,
@@ -11409,7 +11409,7 @@ export class ProfileResolverBase {
   async _profilesMeta(
     @graphql.Args() args: ProfileCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createProfile(args);
     return {
       count: result,
     };
@@ -11419,14 +11419,14 @@ export class ProfileResolverBase {
   async profiles(
     @graphql.Args() args: ProfileFindManyArgs
   ): Promise<Profile[]> {
-    return this.service.findMany(args);
+    return this.service.profiles(args);
   }
 
   @graphql.Query(() => Profile, { nullable: true })
   async profile(
     @graphql.Args() args: ProfileFindUniqueArgs
   ): Promise<Profile | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.profile(args);
     if (result === null) {
       return null;
     }
@@ -11437,7 +11437,7 @@ export class ProfileResolverBase {
   async createProfile(
     @graphql.Args() args: CreateProfileArgs
   ): Promise<Profile> {
-    return await this.service.create({
+    return await this.service.createProfile({
       ...args,
       data: {
         ...args.data,
@@ -11456,7 +11456,7 @@ export class ProfileResolverBase {
     @graphql.Args() args: UpdateProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateProfile({
         ...args,
         data: {
           ...args.data,
@@ -11483,7 +11483,7 @@ export class ProfileResolverBase {
     @graphql.Args() args: DeleteProfileArgs
   ): Promise<Profile | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteProfile(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
@@ -13474,7 +13474,7 @@ export class UserControllerBase {
   @common.Post()
   @swagger.ApiCreatedResponse({ type: User })
   async createUser(@common.Body() data: UserCreateInput): Promise<User> {
-    return await this.service.create({
+    return await this.service.createUser({
       data: {
         ...data,
 
@@ -13525,7 +13525,7 @@ export class UserControllerBase {
   @ApiNestedQuery(UserFindManyArgs)
   async users(@common.Req() request: Request): Promise<User[]> {
     const args = plainToClass(UserFindManyArgs, request.query);
-    return this.service.findMany({
+    return this.service.users({
       ...args,
       select: {
         id: true,
@@ -13563,7 +13563,7 @@ export class UserControllerBase {
   async user(
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
-    const result = await this.service.findOne({
+    const result = await this.service.user({
       where: params,
       select: {
         id: true,
@@ -13609,7 +13609,7 @@ export class UserControllerBase {
     @common.Body() data: UserUpdateInput
   ): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         where: params,
         data: {
           ...data,
@@ -13671,7 +13671,7 @@ export class UserControllerBase {
     @common.Param() params: UserWhereUniqueInput
   ): Promise<User | null> {
     try {
-      return await this.service.delete({
+      return await this.service.deleteUser({
         where: params,
         select: {
           id: true,
@@ -13766,7 +13766,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13783,7 +13783,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13800,7 +13800,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13841,7 +13841,7 @@ export class UserControllerBase {
         connect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13858,7 +13858,7 @@ export class UserControllerBase {
         set: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13875,7 +13875,7 @@ export class UserControllerBase {
         disconnect: body,
       },
     };
-    await this.service.update({
+    await this.service.updateUser({
       where: params,
       data,
       select: { id: true },
@@ -13935,7 +13935,7 @@ export class UserResolverBase {
   async _usersMeta(
     @graphql.Args() args: UserCountArgs
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.count(args);
+    const result = await this.service.createUser(args);
     return {
       count: result,
     };
@@ -13943,12 +13943,12 @@ export class UserResolverBase {
 
   @graphql.Query(() => [User])
   async users(@graphql.Args() args: UserFindManyArgs): Promise<User[]> {
-    return this.service.findMany(args);
+    return this.service.users(args);
   }
 
   @graphql.Query(() => User, { nullable: true })
   async user(@graphql.Args() args: UserFindUniqueArgs): Promise<User | null> {
-    const result = await this.service.findOne(args);
+    const result = await this.service.user(args);
     if (result === null) {
       return null;
     }
@@ -13957,7 +13957,7 @@ export class UserResolverBase {
 
   @graphql.Mutation(() => User)
   async createUser(@graphql.Args() args: CreateUserArgs): Promise<User> {
-    return await this.service.create({
+    return await this.service.createUser({
       ...args,
       data: {
         ...args.data,
@@ -13980,7 +13980,7 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async updateUser(@graphql.Args() args: UpdateUserArgs): Promise<User | null> {
     try {
-      return await this.service.update({
+      return await this.service.updateUser({
         ...args,
         data: {
           ...args.data,
@@ -14011,7 +14011,7 @@ export class UserResolverBase {
   @graphql.Mutation(() => User)
   async deleteUser(@graphql.Args() args: DeleteUserArgs): Promise<User | null> {
     try {
-      return await this.service.delete(args);
+      return await this.service.deleteUser(args);
     } catch (error) {
       if (isRecordNotFoundError(error)) {
         throw new GraphQLError(
