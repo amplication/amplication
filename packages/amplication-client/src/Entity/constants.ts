@@ -33,7 +33,6 @@ export const ENTITY_ACTIONS: permissionTypes.PermissionAction[] = [
 
 export const SYSTEM_DATA_TYPES: Set<models.EnumDataType> = new Set([
   models.EnumDataType.Id,
-  models.EnumDataType.Roles,
 ]);
 
 export const DATA_TYPE_TO_LABEL_AND_ICON: {
