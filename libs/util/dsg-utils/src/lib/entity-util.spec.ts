@@ -6,6 +6,7 @@ import {
   EnumModuleActionRestVerb,
   EnumModuleActionType,
 } from "@amplication/code-gen-types";
+import { camelCase } from "lodash";
 import {
   prepareEntityPluralName,
   getDefaultActionsForEntity,
@@ -13,7 +14,7 @@ import {
 } from "./entity-util";
 
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
-const EXAMPLE_ENTITY_PLURAL_NAME = "ExampleEntityNames";
+const EXAMPLE_ENTITY_PLURAL_NAME = "exampleEntityNames";
 const EXAMPLE_ENTITY_DISPLAY_NAME = "Example Entity Name";
 const EXAMPLE_ENTITY_PLURAL_DISPLAY_NAME = "Example Entity Names";
 
@@ -106,7 +107,7 @@ describe("getDefaultActionsForEntity", () => {
       },
       [EnumModuleActionType.Read]: {
         actionType: EnumModuleActionType.Read,
-        name: `${EXAMPLE_ENTITY_NAME}`,
+        name: `${camelCase(EXAMPLE_ENTITY_NAME)}`,
         displayName: `Get ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         description: `Get one ${EXAMPLE_ENTITY_DISPLAY_NAME}`,
         enabled: true,
