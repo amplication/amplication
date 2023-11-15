@@ -39,6 +39,7 @@ import { relativeImportPath } from "../../../utils/module";
 import pluginWrapper from "../../../plugin-wrapper";
 import DsgContext from "../../../dsg-context";
 import { getEntityIdType } from "../../../utils/get-entity-id-type";
+import { camelCase } from "lodash";
 
 const MIXIN_ID = builders.identifier("Mixin");
 const ARGS_ID = builders.identifier("args");
@@ -278,6 +279,28 @@ async function createServiceBaseModule({
 
 export function createServiceId(entityType: string): namedTypes.Identifier {
   return builders.identifier(`${entityType}Service`);
+}
+export function createCreateFunctionId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`create${pascalCase(entityType)}`);
+}
+
+export function createFindManyFunctionId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`${camelCase(entityType)}s`);
+}
+export function createUpdateFunctionId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`update${pascalCase(entityType)}`);
+}
+
+export function createDeleteFunctionId(
+  entityType: string
+): namedTypes.Identifier {
+  return builders.identifier(`delete${pascalCase(entityType)}`);
 }
 
 export function createServiceBaseId(entityType: string): namedTypes.Identifier {

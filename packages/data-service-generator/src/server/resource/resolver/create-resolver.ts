@@ -52,6 +52,10 @@ import {
   createServiceId,
   createFieldFindManyFunctionId,
   createFieldFindOneFunctionId,
+  createCreateFunctionId,
+  createFindManyFunctionId,
+  createDeleteFunctionId,
+  createUpdateFunctionId,
 } from "../service/create-service";
 import { createDataMapping } from "../controller/create-data-mapping";
 import { IMPORTABLE_IDENTIFIERS_NAMES } from "../../../utils/identifiers-imports";
@@ -72,6 +76,10 @@ export async function createResolverModules(
   entity: Entity
 ): Promise<ModuleMap> {
   const serviceId = createServiceId(entityType);
+  const createFunctionId = createCreateFunctionId(entityType);
+  const findManyFunctionId = createFindManyFunctionId(entityType);
+  const updateFunctionId = createUpdateFunctionId(entityType);
+  const deleteFunctionId = createDeleteFunctionId(entityType);
   const resolverId = createResolverId(entityType);
   const resolverBaseId = createResolverBaseId(entityType);
   // eslint-disable-next-line @typescript-eslint/naming-convention
@@ -116,6 +124,11 @@ export async function createResolverModules(
     RESOLVER: resolverId,
     RESOLVER_BASE: resolverBaseId,
     SERVICE: serviceId,
+    CREATE_FUNCTION: createFunctionId,
+    FIND_MANY_FUNCTION: findManyFunctionId,
+    FIND_ONE_FUNCTION: builders.identifier(camelCase(entityType)),
+    UPDATE_FUNCTION: updateFunctionId,
+    DELETE_FUNCTION: deleteFunctionId,
     ENTITY: entityDTO.id,
     ENTITY_NAME: builders.stringLiteral(entityType),
     ENTITY_QUERY: entityQueryId,
