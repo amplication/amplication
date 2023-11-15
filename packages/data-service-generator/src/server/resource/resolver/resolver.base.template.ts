@@ -59,7 +59,7 @@ export class RESOLVER_BASE {
   async META_QUERY(
     @graphql.Args() args: COUNT_ARGS
   ): Promise<MetaQueryPayload> {
-    const result = await this.service.CREATE_FUNCTION(args);
+    const result = await this.service.count(args);
     return {
       count: result,
     };
