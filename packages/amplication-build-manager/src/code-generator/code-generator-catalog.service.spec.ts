@@ -73,4 +73,35 @@ describe("CodeGeneratorService", () => {
       expect(result).toEqual(expected);
     }
   );
+
+  describe("compareVersions", () => {
+    it("should return a positive number when currentVersion is greater", () => {
+      expect(service.compareVersions("v2.1.1", "v2.1.0")).toBeGreaterThan(0);
+    });
+
+    it("should return a negative number when currentVersion is lesser", () => {
+      expect(service.compareVersions("v2.1.0", "v2.2.0")).toBeLessThan(0);
+    });
+
+    it("should return 0 when both versions are equal", () => {
+      expect(service.compareVersions("v2.1.1", "v2.1.1")).toBe(0);
+    });
+
+    it('should return 1 for a non-semver currentVersion like "next"', () => {
+      expect(service.compareVersions("next", "v2.1.0")).toBe(1);
+    });
+
+    it("should throw an error for an invalid version string", () => {
+      const invalidVersion = "invalid-version";
+      expect(() => {
+        service.compareVersions("v2.1.0", invalidVersion);
+      }).toThrow(new Error(`Invalid version: ${invalidVersion}`));
+    });
+
+    it("should throw an error if currentVersion has pre-release tags", () => {
+      expect(() => {
+        service.compareVersions("v2.1.0-alpha", "v2.1.0");
+      }).toThrow(/prerelease tags are not supported/i);
+    });
+  });
 });

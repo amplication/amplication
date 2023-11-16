@@ -21,8 +21,7 @@
       },
       "dependsOn": [
         {
-          "target": "build",
-          "projects": "self"
+          "target": "build"
         }
       ]
     },

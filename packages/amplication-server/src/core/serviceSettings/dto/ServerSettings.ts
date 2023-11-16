@@ -18,4 +18,7 @@ export class ServerSettings {
     nullable: false,
   })
   serverPath!: string;
+
+  @Field(() => Boolean, { nullable: true, defaultValue: true })
+  generateServer?: boolean;
 }
