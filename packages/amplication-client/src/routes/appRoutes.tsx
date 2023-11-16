@@ -269,6 +269,17 @@ export const Routes: RouteDef[] = [
     isAnalytics: true,
   },
   {
+    path: "/gitlab-auth-app/callback",
+    Component: lazy(
+      () => import("../Resource/git/AuthResourceWithGitLabCallback")
+    ),
+    moduleName: "AuthResourceWithGitLabCallback",
+    permission: true,
+    routeTrackType: "auth app with git callback",
+    exactPath: true,
+    isAnalytics: true,
+  },
+  {
     path: "/signup",
     Component: lazy(() => import("../User/Signup")),
     moduleName: "Signup",

@@ -85,6 +85,10 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         onSyncNewGitOrganizationClick={handleAddProvider}
       />
       <GitProviderConnection
+        provider={EnumGitProvider.GitLab}
+        onSyncNewGitOrganizationClick={handleAddProvider}
+      />
+      <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
         disabled={!showBitbucketConnect.hasAccess}
