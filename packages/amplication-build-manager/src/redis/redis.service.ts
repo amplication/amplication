@@ -1,25 +1,32 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
-import Redis from "ioredis";
+import Redis, { RedisOptions } from "ioredis";
 import { Env } from "../env";
 @Injectable()
 export class RedisService {
   private redisClient: Redis;
   constructor(private readonly configService: ConfigService) {
-    const redisTlsEnabled = this.configService.get<string>(
-      Env.REDIS_TLS_ENABLED // locally set to false //
-    );
-    const redisClientConfig = {
-      host: this.configService.get<string>(Env.REDIS_HOST),
-      port: this.configService.get<number>(Env.REDIS_PORT),
-      password: this.configService.get<string>(Env.REDIS_PASSWORD),
-      username: this.configService.get<string>(Env.REDIS_USERNAME),
+    const host = this.configService.get<string>(Env.REDIS_HOST);
+    const port = this.configService.get<number>(Env.REDIS_PORT);
+    const password = this.configService.get<string>(Env.REDIS_PASSWORD);
+    const username = this.configService.get<string>(Env.REDIS_USERNAME);
+    const ca = this.configService.get<string>(Env.REDIS_TLS_CA);
+    const cert = this.configService.get<string>(Env.REDIS_TLS_CERT);
+    const key = this.configService.get<string>(Env.REDIS_TLS_KEY);
+    const tls = [ca, cert, key];
+    const isTlsEnabled = tls.every((value) => Boolean(value));
+
+    const redisClientConfig: RedisOptions = {
+      host,
+      port,
+      password,
+      username,
     };
-    if (!redisTlsEnabled) {
-      redisClientConfig["tls"] = {
-        ca: this.configService.get<string>(Env.REDIS_TLS_CA),
-        cert: this.configService.get<string>(Env.REDIS_TLS_CERT),
-        key: this.configService.get<string>(Env.REDIS_TLS_KEY),
+    if (isTlsEnabled) {
+      redisClientConfig.tls = {
+        ca,
+        cert,
+        key,
       };
     }
     this.redisClient = new Redis(redisClientConfig);
