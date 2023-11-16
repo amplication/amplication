@@ -37,7 +37,7 @@ export class GitLabService implements GitProvider {
     username: string;
     password: string;
   };
-  private readonly client: Resources.Gitlab;
+  private client: Resources.Gitlab;
   private auth: OAuthTokens;
 
   constructor(
@@ -50,16 +50,30 @@ export class GitLabService implements GitProvider {
         className: GitLabService.name,
       },
     });
+    this.auth = providerOrganizationProperties;
+  }
+
+  async init(): Promise<void> {
+    const timeInMsLeft = this.auth.expiresAt - Date.now();
+    this.logger.debug("Time left before token expires:", {
+      value: `${timeInMsLeft / 60000} minutes`,
+    });
+
+    if (timeInMsLeft < 5 * 60 * 1000) {
+      this.logger.debug("Token is going to be expired, refreshing...");
+      this.auth = await this.refreshAccessToken();
+    }
+
+    if (this.auth.expiresAt - Date.now() / 1000 < 5000) {
+      this.auth = await this.refreshAccessToken();
+    }
 
     this.client = new Gitlab({
-      oauthToken: providerOrganizationProperties.accessToken,
+      oauthToken: this.auth.accessToken,
       host: this.providerConfiguration.domain,
     });
   }
 
-  async init(): Promise<void> {
-    this.logger.info("GitLab init");
-  }
   async getGitInstallationUrl(amplicationWorkspaceId: string): Promise<string> {
     const { redirectUri } = this.auth;
     if (!redirectUri) {
@@ -114,8 +128,29 @@ export class GitLabService implements GitProvider {
       throw new Error(`Failed to get OAuth tokens: ${response.statusText}`);
     }
   }
-  async refreshAccessToken(): Promise<OAuthTokens> {
-    throw NotImplementedError;
+
+  private async refreshAccessToken(): Promise<OAuthTokens> {
+    const url = `${this.providerConfiguration.domain}/oauth/token`;
+    const parameters = `client_id=${this.providerConfiguration.clientId}&client_secret=${this.providerConfiguration.clientSecret}&refresh_token=${this.auth.refreshToken}&grant_type=refresh_token&redirect_uri=${this.auth.redirectUri}`;
+    const response = await fetch(`${url}?${parameters}`, {
+      method: "POST",
+    });
+    if (response?.ok) {
+      const authData = await response.json();
+
+      return {
+        accessToken: authData.access_token,
+        refreshToken: authData.refresh_token,
+        tokenType: authData.token_type,
+        expiresAt: Date.now() + authData.expires_in * 1000, // 7200 seconds = 2 hours
+        scopes: [],
+        redirectUri: this.auth.redirectUri,
+      };
+    } else {
+      throw new Error(
+        `Failed to get OAuth tokens from refreshAccessToken: ${response.statusText}`
+      );
+    }
   }
   async getGitGroups(): Promise<PaginatedGitGroup> {
     throw NotImplementedError;
@@ -123,6 +158,7 @@ export class GitLabService implements GitProvider {
   async getRepository(
     getRepositoryArgs: GetRepositoryArgs
   ): Promise<RemoteGitRepository> {
+    this.client.Projects.all({});
     throw NotImplementedError;
   }
   async getRepositories(
@@ -162,7 +198,19 @@ export class GitLabService implements GitProvider {
   async createRepository(
     createRepositoryArgs: CreateRepositoryArgs
   ): Promise<RemoteGitRepository | null> {
-    throw NotImplementedError;
+    const repo = await this.client.Projects.create({
+      path: createRepositoryArgs.repositoryName,
+      visibility: createRepositoryArgs.isPrivate ? "private" : "public",
+    });
+
+    return {
+      defaultBranch: repo.default_branch,
+      fullName: repo.path_with_namespace,
+      name: repo.path_with_namespace,
+      private: repo.visibility === "private",
+      url: repo.http_url_to_repo,
+      admin: false,
+    };
   }
   async deleteGitOrganization(): Promise<boolean> {
     throw NotImplementedError;
