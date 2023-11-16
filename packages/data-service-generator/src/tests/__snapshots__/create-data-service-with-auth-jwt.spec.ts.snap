@@ -3050,6 +3050,8 @@ services:
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
       DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
+      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
+      JWT_EXPIRATION: \${JWT_EXPIRATION}
     depends_on:
       - migrate
     restart: on-failure
@@ -3554,9 +3556,10 @@ export class AuthController {
 import { ConfigService } from "@nestjs/config";
 import { JwtModule } from "@nestjs/jwt";
 import { PassportModule } from "@nestjs/passport";
-import { JWT_EXPIRATION, JWT_SECRET_KEY } from "../constants";
+import { JWT_EXPIRATION } from "../constants";
 import { SecretsManagerModule } from "../providers/secrets/secretsManager.module";
 import { SecretsManagerService } from "../providers/secrets/secretsManager.service";
+import { EnumSecretsNameKey } from "../providers/secrets/secretsNameKey.enum";
 import { AuthController } from "./auth.controller";
 import { AuthResolver } from "./auth.resolver";
 import { AuthService } from "./auth.service";
@@ -3577,7 +3580,9 @@ import { UserModule } from "../user/user.module";
         secretsService: SecretsManagerService,
         configService: ConfigService
       ) => {
-        const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
+        const secret = await secretsService.getSecret<string>(
+          EnumSecretsNameKey.JwtSecretKey
+        );
         const expiresIn = configService.get(JWT_EXPIRATION);
         if (!secret) {
           throw new Error("Didn't get a valid jwt secret");
@@ -3940,14 +3945,14 @@ export class JwtStrategyBase
 }
 ",
   "server/src/auth/jwt/jwt.strategy.ts": "import { Inject, Injectable } from "@nestjs/common";
-import { JWT_SECRET_KEY } from "../../constants";
+import { JWT_SECRET_KEY_PROVIDER_NAME } from "../../constants";
 import { JwtStrategyBase } from "./base/jwt.strategy.base";
 import { UserService } from "../../user/user.service";
 
 @Injectable()
 export class JwtStrategy extends JwtStrategyBase {
   constructor(
-    @Inject(JWT_SECRET_KEY) secretOrKey: string,
+    @Inject(JWT_SECRET_KEY_PROVIDER_NAME) secretOrKey: string,
     protected readonly userService: UserService
   ) {
     super(secretOrKey, userService);
@@ -3958,15 +3963,18 @@ export class JwtStrategy extends JwtStrategyBase {
 
 export class JwtAuthGuard extends AuthGuard("jwt") {}
 ",
-  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY } from "../../constants";
+  "server/src/auth/jwt/jwtSecretFactory.ts": "import { JWT_SECRET_KEY_PROVIDER_NAME } from "../../constants";
 import { SecretsManagerService } from "../../providers/secrets/secretsManager.service";
+import { EnumSecretsNameKey } from "../../providers/secrets/secretsNameKey.enum";
 
 export const jwtSecretFactory = {
-  provide: JWT_SECRET_KEY,
+  provide: JWT_SECRET_KEY_PROVIDER_NAME,
   useFactory: async (
     secretsService: SecretsManagerService
   ): Promise<string> => {
-    const secret = await secretsService.getSecret<string>(JWT_SECRET_KEY);
+    const secret = await secretsService.getSecret<string>(
+      EnumSecretsNameKey.JwtSecretKey
+    );
     if (secret) {
       return secret;
     }
@@ -4156,7 +4164,7 @@ export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
 }
 ",
-  "server/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
+  "server/src/constants.ts": "export const JWT_SECRET_KEY_PROVIDER_NAME = "JWT_SECRET_KEY";
 export const JWT_EXPIRATION = "JWT_EXPIRATION";
 ",
   "server/src/customer/base/CreateCustomerArgs.ts": "/*
@@ -13644,7 +13652,9 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
-  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
+  "server/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {
+    JwtSecretKey = "JWT_SECRET_KEY"
+}",
   "server/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -13733,7 +13743,7 @@ import { TEST_USER } from "../constants";
 import { UserService } from "../../../user/user.service";
 describe("Testing the jwtStrategyBase.validate()", () => {
   const userService = mock<UserService>();
-  const jwtStrategy = new JwtStrategyBase(userService, "Secrete");
+  const jwtStrategy = new JwtStrategyBase("Secrete", userService);
   beforeEach(() => {
     userService.findOne.mockClear();
   });
