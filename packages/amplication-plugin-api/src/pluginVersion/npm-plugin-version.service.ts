@@ -44,7 +44,7 @@ export class NpmPluginVersionService {
   ): (PluginVersion & { tarballUrl: string })[] {
     const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
-    for (const [, value] of Object.entries(npmManifest.versions)) {
+    for (const value of Object.values(npmManifest.versions)) {
       if (this.versionFilterRegex.test(value.version)) {
         pluginVersions.push({
           createdAt: new Date(npmManifest.time[value.version]),
