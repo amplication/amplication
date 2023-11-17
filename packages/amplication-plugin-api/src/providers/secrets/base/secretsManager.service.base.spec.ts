@@ -31,7 +31,7 @@ describe("Testing the secrets manager base class", () => {
   it("should throw error if dont get key", () => {
     return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
   });
-  it("should throw an exeption if getting null key", () => {
+  it("should throw an exception if getting null key", () => {
     return expect(
       secretsManagerServiceBase.getSecret(null as unknown as string)
     ).rejects.toThrow();
