@@ -1,0 +1,20 @@
+@import "../style/index.scss";
+
+.amp-locked-feature-indicator {
+  &__tooltip__window {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    .amp-icon {
+      color: #f85b6e;
+    }
+
+    &__info {
+      .upgrade-link,
+      .contact-us-link {
+        font-weight: 600;
+      }
+    }
+  }
+}

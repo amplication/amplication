@@ -1,0 +1,32 @@
+@import "../../style/index.scss";
+
+$expandable-bottom-max-height: 200px;
+$expandable-transition-duration: 0.1s;
+
+$border-color: var(--gray-80);
+$background-color: var(--gray-90);
+$hover-background-color: var(--gray-80);
+
+.amp-list {
+  border: 1px solid $border-color;
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--default-border-radius);
+}
+
+.amp-list-item {
+  padding: var(--default-spacing);
+  display: inline-block;
+  border-bottom: 1px solid $border-color;
+  background-color: $background-color;
+
+  flex: 1;
+}
+
+.amp-list-item--clickable:hover {
+  background-color: $hover-background-color;
+}
+
+.amp-list-item:last-child {
+  border-bottom: none;
+}

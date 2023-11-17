@@ -1,0 +1,156 @@
+{
+  "name": "amplication-server",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "packages/amplication-server/src",
+  "projectType": "application",
+  "implicitDependencies": ["amplication-prisma-db"],
+  "namedInputs": {
+    "codegen-config": ["{workspaceRoot}/codegen.yml"],
+    "default": ["{projectRoot}/**/*", "codegen-config"]
+  },
+  "targets": {
+    "lint": {
+      "executor": "@nx/linter:eslint",
+      "outputs": ["{options.outputFile}"],
+      "options": {
+        "lintFilePatterns": ["packages/amplication-server/**/*.ts"]
+      }
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
+      "dependsOn": ["graphql:schema:check"],
+      "options": {
+        "jestConfig": "packages/amplication-server/jest.config.ts",
+        "passWithNoTests": true,
+        "maxWorkers": "50%"
+      }
+    },
+    "e2e": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/packages/amplication-server"],
+      "options": {
+        "jestConfig": "packages/amplication-server/jest.e2e.config.ts",
+        "passWithNoTests": true,
+        "runInBand": true
+      }
+    },
+    "update-version": {
+      "executor": "nx:run-commands",
+      "inputs": ["{workspaceRoot}/package.json"],
+      "outputs": ["{projectRoot}/src/util/version.ts"],
+      "options": {
+        "command": "ts-node ./scripts/update-version.ts {args.version}",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "build": {
+      "executor": "@nx/webpack:webpack",
+      "outputs": ["{options.outputPath}"],
+      "dependsOn": [
+        "^build",
+        "prebuild",
+        "graphql:schema:generate",
+        "graphql:models:generate"
+      ],
+      "options": {
+        "outputPath": "dist/packages/amplication-server",
+        "main": "packages/amplication-server/src/main.ts",
+        "tsConfig": "packages/amplication-server/tsconfig.app.json",
+        "assets": [
+          {
+            "glob": "prisma",
+            "input": "packages/amplication-prisma-db",
+            "output": "prisma"
+          },
+          {
+            "glob": "**/*.node",
+            "input": "packages/amplication-server/prisma/generated-prisma-client",
+            "output": "./"
+          },
+          {
+            "glob": "schema.prisma",
+            "input": "packages/amplication-prisma-db/prisma",
+            "output": "./"
+          }
+        ],
+        "generatePackageJson": true,
+        "compiler": "tsc",
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
+      },
+      "configurations": {
+        "production": {
+          "optimization": true,
+          "extractLicenses": true,
+          "inspect": false
+        }
+      }
+    },
+    "serve": {
+      "executor": "@nx/js:node",
+      "options": {
+        "watch": true,
+        "port": 7000,
+        "buildTarget": "amplication-server:build"
+      },
+      "configurations": {
+        "production": {
+          "buildTarget": "amplication-server:build:production"
+        }
+      }
+    },
+    "graphql:schema:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/**/*.ts"],
+      "dependsOn": ["^db:prisma:generate", "^prebuild"],
+      "outputs": ["{projectRoot}/src/schema.graphql"],
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/generate-graphql-schema.ts",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "graphql:models:generate": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/schema.graphql"],
+      "outputs": [
+        "{workspaceRoot}/packages/amplication-cli/src/models.ts",
+        "{workspaceRoot}/packages/amplication-client/src/models.ts",
+        "{workspaceRoot}/packages/amplication-code-gen-types/src/models.ts",
+        "{workspaceRoot}/ee/packages/git-sync-manager/src/models.ts",
+        "{workspaceRoot}/packages/amplication-git-pull-request-service/src/models.ts",
+        "{workspaceRoot}/packages/data-service-generator/src/models.ts"
+      ],
+      "dependsOn": ["graphql:schema:generate"],
+      "options": {
+        "command": "graphql-codegen"
+      }
+    },
+    "graphql:schema:check": {
+      "executor": "nx:run-commands",
+      "inputs": ["{projectRoot}/src/schema.graphql"],
+      "dependsOn": ["graphql:schema:generate"],
+      "options": {
+        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register scripts/check-graphql-schema",
+        "cwd": "packages/amplication-server"
+      }
+    },
+    "package:container": {
+      "executor": "@nx-tools/nx-container:build",
+      "options": {
+        "push": false,
+        "tags": ["amplication/server:latest"],
+        "build-args": ["GIT_REF_NAME=latest-local", "GIT_SHA=unicorn-🦄-sha"]
+      },
+      "configurations": {
+        "production": {
+          "build-args": ["GIT_REF_NAME=${GIT_REF_NAME}", "GIT_SHA=${GIT_SHA}"]
+        }
+      }
+    },
+    "deploy:container": {
+      "executor": "nx:run-commands"
+    }
+  },
+  "tags": []
+}

@@ -1,0 +1,115 @@
+@import "../../style/index.scss";
+
+$logo-header-width: 50px;
+$search-header-width: 52px;
+$user-header-width: 90px; // 64px after remove signout
+$modal-menu-width: 220px;
+$modal-menu-top: 30px;
+$select-menu-max-width: 300px;
+
+.workspace-header {
+  @include flexFullRowWithSpacing;
+  height: var(--header-height);
+  min-height: var(--header-height);
+  background: var(--gray-90);
+  border-bottom: $border-dark;
+  background-color: var(--gray-full);
+
+  &__highlight {
+    background-color: var(--theme-orange);
+    text-align: center;
+    color: var(--gray-full);
+    padding: var(--default-spacing-small);
+
+    a {
+      @include bold;
+      color: var(--gray-full);
+      text-decoration: underline;
+    }
+  }
+  &__version {
+    color: var(--theme-turquoise) !important;
+    margin-left: var(--user-badge-spacing);
+    margin-right: var(--default-spacing);
+    padding: var(--default-spacing-small);
+    min-width: auto;
+  }
+
+  &__left,
+  &__right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  &__logo {
+    border-right: $border-dark;
+    width: var(--menu-width);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .amp-icon {
+      color: white;
+    }
+  }
+
+  &__help_popover {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &__name {
+      @include regular-12();
+      width: 100%;
+      color: var(--gray-20);
+      white-space: nowrap;
+      padding: 2px var(--default-spacing-small);
+    }
+  }
+
+  &__right {
+    @include flexFullRowWithSpacingBothSides;
+    padding: var(--default-spacing);
+    justify-content: flex-end;
+  }
+
+  &__divider {
+    border: none;
+    width: $border-dark;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 0;
+    margin-bottom: 0;
+  }
+
+  &__links {
+    @include flexFullRowWithSpacingBothSides;
+  }
+
+  &__vertical_border {
+    width: 1px;
+    height: var(--large-spacing);
+    background: var(--gray-70);
+    border: none;
+    margin: 0;
+  }
+
+  &__resources_modal {
+    top: $modal-menu-top;
+  }
+
+  &__user_badge_wrapper {
+    padding: var(--user-badge-spacing);
+    cursor: pointer;
+  }
+
+  &__notification_bell {
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Roboto";
+
+    svg {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}

@@ -1,30 +1,38 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { PluginModule } from "./plugin/plugin.module";
 import { PluginVersionModule } from "./pluginVersion/pluginVersion.module";
 import { HealthModule } from "./health/health.module";
-import { PrismaModule } from "./prisma/prisma.module";
 import { SecretsManagerModule } from "./providers/secrets/secretsManager.module";
 import { ServeStaticModule } from "@nestjs/serve-static";
 import { ServeStaticOptionsService } from "./serveStaticOptions.service";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { GraphQLModule } from "@nestjs/graphql";
+import { PrismaModule } from "./prisma/prisma.module";
+import { AmplicationLoggerModule } from "@amplication/util/nestjs/logging";
 import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
-
+import { TracingModule } from "@amplication/util/nestjs/tracing";
+import { SERVICE_NAME } from "./constants";
 @Module({
   controllers: [],
   imports: [
-    PluginModule,
-    PluginVersionModule,
-    HealthModule,
     PrismaModule,
+    PluginModule,
+    forwardRef(() => PluginVersionModule),
+    HealthModule,
     SecretsManagerModule,
     ConfigModule.forRoot({ isGlobal: true }),
     ServeStaticModule.forRootAsync({
       useClass: ServeStaticOptionsService,
     }),
+    AmplicationLoggerModule.forRoot({
+      component: SERVICE_NAME,
+    }),
+    TracingModule.forRoot({
+      serviceName: SERVICE_NAME,
+    }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      useFactory: (configService: ConfigService) => {
+      useFactory: (configService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
@@ -38,6 +46,5 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
       imports: [ConfigModule],
     }),
   ],
-  providers: [],
 })
 export class AppModule {}

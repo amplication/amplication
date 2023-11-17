@@ -1,0 +1,605 @@
+generator serverClient {
+  provider        = "prisma-client-js"
+  output          = "../../amplication-server/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
+}
+
+generator pushWebhookServiceClient {
+  provider        = "prisma-client-js"
+  output          = "../../../ee/packages/amplication-git-push-webhook-service/prisma/generated-prisma-client"
+  binaryTargets   = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
+  previewFeatures = ["tracing"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRESQL_URL")
+}
+
+model Account {
+  id            String   @id @default(cuid())
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  email         String   @unique(map: "Account.email_unique")
+  firstName     String
+  lastName      String
+  password      String
+  currentUserId String?  @unique(map: "Account.currentUserId_unique")
+  githubId      String?
+  currentUser   User?    @relation(fields: [currentUserId], references: [id])
+  users         User[]   @relation("AccountOnUser")
+}
+
+model Workspace {
+  id               String            @id(map: "Organization_pkey") @default(cuid())
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  name             String            @unique(map: "Workspace.name_unique")
+  users            User[]
+  invitations      Invitation[]
+  subscriptions    Subscription[]
+  gitOrganizations GitOrganization[]
+  projects         Project[]
+}
+
+model Project {
+  id           String     @id @default(cuid())
+  name         String
+  workspaceId  String
+  workspace    Workspace  @relation(fields: [workspaceId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resources    Resource[]
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  commits      Commit[]
+  useDemoRepo  Boolean    @default(false)
+  demoRepoName String?
+
+  @@unique([workspaceId, name])
+}
+
+model GitOrganization {
+  id                         String                   @id @default(cuid())
+  provider                   EnumGitProvider
+  name                       String
+  useGroupingForRepositories Boolean                  @default(false)
+  installationId             String
+  providerProperties         Json                     @default("{}")
+  createdAt                  DateTime                 @default(now())
+  updatedAt                  DateTime                 @updatedAt
+  workspaceId                String
+  type                       EnumGitOrganizationType? @default(User)
+  workspace                  Workspace                @relation(fields: [workspaceId], references: [id], onDelete: NoAction)
+  gitRepositories            GitRepository[]
+
+  @@unique([provider, installationId])
+}
+
+model GitRepository {
+  id                String          @id @default(cuid())
+  name              String
+  groupName         String?
+  baseBranchName    String?
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  gitOrganizationId String
+  resources         Resource[]
+  gitOrganization   GitOrganization @relation(fields: [gitOrganizationId], references: [id], onDelete: NoAction)
+}
+
+model User {
+  id                    String       @id @default(cuid())
+  createdAt             DateTime     @default(now())
+  updatedAt             DateTime     @updatedAt
+  accountId             String
+  workspaceId           String
+  isOwner               Boolean      @default(false)
+  account               Account      @relation("AccountOnUser", fields: [accountId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspace             Workspace    @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  assignedCurrentTo     Account?
+  apiTokens             ApiToken[]
+  lockedBlocks          Block[]
+  builds                Build[]
+  commits               Commit[]
+  deployments           Deployment[]
+  lockedEntitis         Entity[]
+  userRoles             UserRole[]
+  sentInvitations       Invitation[] @relation("InvitedByUserOnInvitation")
+  createdFromInvitation Invitation?
+  createdFromCoupon     Coupon?
+  deletedAt             DateTime?
+  userAction            UserAction[]
+  lastActive            DateTime?    @default(now())
+
+  @@unique([accountId, workspaceId], map: "User.accountId_workspaceId_unique")
+}
+
+model UserRole {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String
+  role      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, role], map: "UserRole.userId_role_unique")
+}
+
+model ApiToken {
+  id           String   @id @default(cuid())
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  name         String
+  userId       String
+  token        String
+  previewChars String
+  lastAccessAt DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, name], map: "ApiToken.userId_name_unique")
+}
+
+model Resource {
+  id                    String                       @id @default(cuid())
+  createdAt             DateTime                     @default(now())
+  updatedAt             DateTime                     @updatedAt
+  name                  String
+  description           String
+  gitRepositoryOverride Boolean                      @default(false)
+  githubLastSync        DateTime?
+  githubLastMessage     String?
+  deletedAt             DateTime?
+  archived              Boolean                      @default(false)
+  gitRepositoryId       String?
+  roles                 ResourceRole[]
+  blocks                Block[]
+  builds                Build[]
+  userAction            UserAction[]
+  entities              Entity[]
+  environments          Environment[]
+  gitRepository         GitRepository?               @relation(fields: [gitRepositoryId], references: [id], onDelete: NoAction)
+  projectId             String
+  project               Project                      @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: Cascade)
+  resourceType          EnumResourceType
+  codeGeneratorVersion  String?
+  codeGeneratorStrategy CodeGeneratorVersionStrategy @default(LatestMajor)
+
+  @@unique([projectId, name], map: "Resource.projectId_name_unique")
+}
+
+model ResourceRole {
+  id                    String                 @id @default(cuid())
+  createdAt             DateTime               @default(now())
+  updatedAt             DateTime               @updatedAt
+  resourceId            String
+  name                  String
+  displayName           String
+  description           String?
+  resource              Resource               @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  entityPermissionRoles EntityPermissionRole[]
+
+  @@unique([resourceId, displayName], map: "ResourceRole.resourceId_displayName_unique")
+  @@unique([resourceId, name], map: "ResourceRole.resourceId_name_unique")
+}
+
+model Commit {
+  id             String          @id @default(cuid())
+  createdAt      DateTime        @default(now())
+  userId         String
+  message        String
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  blockVersions  BlockVersion[]
+  builds         Build[]
+  entityVersions EntityVersion[]
+  releases       Release[]
+  project        Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  projectId      String
+}
+
+model Entity {
+  id                String          @id @default(cuid())
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  resourceId        String
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
+  customAttributes  String?
+  lockedByUserId    String?
+  lockedAt          DateTime?
+  deletedAt         DateTime?
+  resource          Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  lockedByUser      User?           @relation(fields: [lockedByUserId], references: [id])
+  versions          EntityVersion[]
+
+  @@unique([resourceId, displayName], map: "Entity.resourceId_displayName_unique")
+  @@unique([resourceId, name], map: "Entity.resourceId_name_unique")
+  @@unique([resourceId, pluralDisplayName], map: "Entity.resourceId_pluralDisplayName_unique")
+}
+
+model EntityVersion {
+  id                String             @id @default(cuid())
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  entityId          String
+  versionNumber     Int
+  name              String
+  displayName       String
+  pluralDisplayName String
+  description       String?
+  customAttributes  String?
+  commitId          String?
+  deleted           Boolean?
+  commit            Commit?            @relation(fields: [commitId], references: [id])
+  entity            Entity             @relation(fields: [entityId], references: [id], onDelete: Cascade)
+  fields            EntityField[]
+  permissions       EntityPermission[]
+  builds            Build[]
+
+  @@unique([entityId, versionNumber], map: "EntityVersion.entityId_versionNumber_unique")
+}
+
+model EntityPermission {
+  id               String                   @id @default(cuid())
+  entityVersionId  String
+  action           EnumEntityAction
+  type             EnumEntityPermissionType
+  entityVersion    EntityVersion            @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
+  permissionFields EntityPermissionField[]
+  permissionRoles  EntityPermissionRole[]
+
+  @@unique([entityVersionId, action], map: "EntityPermission.entityVersionId_action_unique")
+}
+
+model EntityPermissionRole {
+  id               String                  @id @default(cuid())
+  entityVersionId  String
+  action           EnumEntityAction
+  resourceRoleId   String
+  resourceRole     ResourceRole            @relation(fields: [resourceRoleId], references: [id], onDelete: Cascade)
+  permission       EntityPermission        @relation(fields: [entityVersionId, action], references: [entityVersionId, action], onDelete: Cascade)
+  permissionFields EntityPermissionField[]
+
+  @@unique([entityVersionId, action, resourceRoleId], map: "EntityPermissionRole.entityVersionId_action_resourceRoleId_uniq")
+}
+
+model EntityPermissionField {
+  id               String                 @id @default(cuid())
+  permissionId     String
+  fieldPermanentId String
+  entityVersionId  String
+  field            EntityField            @relation(fields: [fieldPermanentId, entityVersionId], references: [permanentId, entityVersionId], onDelete: Cascade)
+  permission       EntityPermission       @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+  permissionRoles  EntityPermissionRole[]
+
+  @@unique([permissionId, fieldPermanentId], map: "EntityPermissionField.permissionId_fieldPermanentId_unique")
+}
+
+model EntityField {
+  id               String                  @id @default(cuid())
+  createdAt        DateTime                @default(now())
+  updatedAt        DateTime                @updatedAt
+  entityVersionId  String
+  permanentId      String                  @default(cuid())
+  name             String
+  displayName      String
+  dataType         EnumDataType
+  properties       Json
+  required         Boolean
+  searchable       Boolean
+  customAttributes String?
+  description      String
+  position         Int?
+  unique           Boolean                 @default(false)
+  entityVersion    EntityVersion           @relation(fields: [entityVersionId], references: [id], onDelete: Cascade)
+  permissionField  EntityPermissionField[]
+
+  @@unique([entityVersionId, displayName], map: "EntityField.entityVersionId_displayName_unique")
+  @@unique([entityVersionId, name], map: "EntityField.entityVersionId_name_unique")
+  @@unique([entityVersionId, permanentId], map: "EntityField.entityVersionId_permanentId_unique")
+}
+
+model Block {
+  id             String         @id @default(cuid())
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+  resourceId     String
+  parentBlockId  String?
+  blockType      EnumBlockType
+  displayName    String
+  description    String?
+  lockedByUserId String?
+  lockedAt       DateTime?
+  deletedAt      DateTime?
+  resource       Resource       @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  lockedByUser   User?          @relation(fields: [lockedByUserId], references: [id])
+  parentBlock    Block?         @relation("BlockToBlock", fields: [parentBlockId], references: [id])
+  blocks         Block[]        @relation("BlockToBlock")
+  versions       BlockVersion[]
+
+  @@unique([resourceId, displayName], map: "Block.resourceId_displayName_unique")
+}
+
+model BlockVersion {
+  id               String   @id @default(cuid())
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+  blockId          String
+  versionNumber    Int
+  inputParameters  Json?
+  outputParameters Json?
+  settings         Json
+  displayName      String   @default("")
+  description      String?
+  commitId         String?
+  deleted          Boolean?
+  block            Block    @relation(fields: [blockId], references: [id], onDelete: Cascade)
+  commit           Commit?  @relation(fields: [commitId], references: [id])
+  builds           Build[]
+
+  @@unique([blockId, versionNumber], map: "BlockVersion.blockId_versionNumber_unique")
+}
+
+model Action {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  steps       ActionStep[]
+  builds      Build[]
+  deployments Deployment[]
+  userAction  UserAction[]
+}
+
+model ActionStep {
+  id          String           @id @default(cuid())
+  createdAt   DateTime         @default(now())
+  message     String
+  status      ActionStepStatus
+  completedAt DateTime?
+  actionId    String
+  name        String           @default("")
+  action      Action           @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  logs        ActionLog[]
+
+  @@index([actionId], map: "ActionStep.actionId_index")
+}
+
+model ActionLog {
+  id        String       @id @default(cuid())
+  createdAt DateTime     @default(now())
+  message   String
+  meta      Json
+  level     EnumLogLevel
+  stepId    String
+  step      ActionStep   @relation(fields: [stepId], references: [id], onDelete: Cascade)
+
+  @@index([stepId], map: "ActionLog.stepId_index")
+}
+
+model Build {
+  id                       String          @id @default(cuid())
+  createdAt                DateTime        @default(now())
+  resourceId               String
+  userId                   String
+  version                  String
+  message                  String?
+  actionId                 String
+  images                   String[]
+  containerStatusQuery     Json?
+  containerStatusUpdatedAt DateTime?
+  commitId                 String?
+  action                   Action          @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  resource                 Resource        @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  commit                   Commit?         @relation(fields: [commitId], references: [id])
+  createdBy                User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  deployments              Deployment[]
+  blockVersions            BlockVersion[]
+  entityVersions           EntityVersion[]
+  codeGeneratorVersion     String?
+
+  @@unique([resourceId, version], map: "Build.resourceId_version_unique")
+}
+
+model UserAction {
+  id             String             @id @default(cuid())
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+  userActionType EnumUserActionType
+  metadata       Json               @default("{}")
+  userId         String
+  user           User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  actionId       String
+  action         Action             @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  resourceId     String
+  resource       Resource?          @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+}
+
+model Release {
+  id          String   @id @default(cuid())
+  createdAt   DateTime @default(now())
+  version     String
+  description String?
+  commitId    String
+  commit      Commit   @relation(fields: [commitId], references: [id], onDelete: Cascade)
+}
+
+model Environment {
+  id          String       @id @default(cuid())
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @default(now())
+  resourceId  String
+  name        String
+  description String?
+  address     String
+  resource    Resource     @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+  deployments Deployment[]
+
+  @@unique([resourceId, name], map: "Environment.resourceId_name_unique")
+}
+
+model Deployment {
+  id              String               @id @default(cuid())
+  createdAt       DateTime             @default(now())
+  userId          String
+  buildId         String
+  environmentId   String
+  status          EnumDeploymentStatus
+  message         String?
+  actionId        String
+  statusQuery     Json?
+  statusUpdatedAt DateTime?
+  action          Action               @relation(fields: [actionId], references: [id], onDelete: Cascade)
+  build           Build                @relation(fields: [buildId], references: [id], onDelete: Cascade)
+  environment     Environment          @relation(fields: [environmentId], references: [id], onDelete: Cascade)
+  createdBy       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+enum EnumEntityAction {
+  View
+  Create
+  Update
+  Delete
+  Search
+}
+
+enum EnumEntityPermissionType {
+  AllRoles
+  Granular
+  Disabled
+  Public
+}
+
+enum EnumDataType {
+  SingleLineText
+  MultiLineText
+  Email
+  WholeNumber
+  DateTime
+  DecimalNumber
+  Lookup
+  MultiSelectOptionSet
+  OptionSet
+  Boolean
+  Id
+  CreatedAt
+  UpdatedAt
+  GeographicLocation
+  Roles
+  Username
+  Password
+  Json
+}
+
+enum EnumBlockType {
+  ServiceSettings
+  ProjectConfigurationSettings
+  Topic
+  ServiceTopics
+  PluginInstallation
+  PluginOrder
+}
+
+enum ActionStepStatus {
+  Waiting
+  Running
+  Failed
+  Success
+}
+
+enum EnumLogLevel {
+  Error
+  Warning
+  Info
+  Debug
+}
+
+enum EnumDeploymentStatus {
+  Completed
+  Waiting
+  Failed
+  Removed
+}
+
+model Invitation {
+  id              String    @id @default(cuid())
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  email           String
+  invitedByUserId String
+  invitedByUser   User      @relation("InvitedByUserOnInvitation", fields: [invitedByUserId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  workspaceId     String
+  workspace       Workspace @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  newUserId       String?   @unique(map: "Invitation_newUserId_unique")
+  newUser         User?     @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  token           String
+  tokenExpiration DateTime
+
+  @@unique([workspaceId, email], map: "Invitation.workspaceId_email_unique")
+}
+
+model Coupon {
+  id               String               @id @default(cuid())
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+  newUserId        String?              @unique()
+  newUser          User?                @relation(fields: [newUserId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  code             String               @default(cuid())
+  expiration       DateTime
+  subscriptionPlan EnumSubscriptionPlan @default(Pro)
+  durationMonths   Int                  @default(1)
+  redemptionAt     DateTime?
+  couponType       String?
+}
+
+enum EnumSubscriptionPlan {
+  Free
+  Pro
+  Enterprise
+}
+
+enum EnumSubscriptionStatus {
+  Active
+  Trailing
+  PastDue
+  Paused
+  Deleted
+}
+
+model Subscription {
+  id                        String                 @id @default(cuid())
+  createdAt                 DateTime               @default(now())
+  updatedAt                 DateTime               @updatedAt
+  workspaceId               String
+  workspace                 Workspace              @relation(fields: [workspaceId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  subscriptionPlan          EnumSubscriptionPlan
+  status                    EnumSubscriptionStatus
+  cancellationEffectiveDate DateTime?
+}
+
+enum EnumResourceType {
+  Service
+  ProjectConfiguration
+  MessageBroker
+}
+
+enum EnumGitProvider {
+  Github
+  Bitbucket
+  AwsCodeCommit
+}
+
+enum EnumGitOrganizationType {
+  User
+  Organization
+}
+
+enum EnumUserActionType {
+  DBSchemaImport
+}
+
+enum CodeGeneratorVersionStrategy {
+  LatestMajor
+  LatestMinor
+  Specific
+}
