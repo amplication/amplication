@@ -14,6 +14,7 @@ services:
       DB_URL: postgres://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
     depends_on:
       - migrate
+    restart: on-failure
   migrate:
     build:
       context: .
