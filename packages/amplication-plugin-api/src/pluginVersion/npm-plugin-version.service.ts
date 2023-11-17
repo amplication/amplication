@@ -3,13 +3,35 @@ import { Plugin, PluginVersion } from "../../prisma/generated-prisma-client";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { Packument } from "pacote";
 import { NpmService } from "../npm/npm.service";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class NpmPluginVersionService {
+  private readonly versionFilterRegex: RegExp;
+
   constructor(
     @Inject(AmplicationLogger) readonly logger: AmplicationLogger,
-    private readonly npmService: NpmService
-  ) {}
+    private readonly npmService: NpmService,
+    private readonly configService: ConfigService
+  ) {
+    const pluginStableVersionRegex =
+      "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$";
+    const pluginStableAndPrereleaseVersionRegex =
+      "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
+
+    const ignorePrereleaseVersions =
+      this.configService.get<string>("IGNORE_PRERELEASE_PLUGIN_VERSIONS") ===
+      "true";
+
+    if (ignorePrereleaseVersions) {
+      this.versionFilterRegex = new RegExp(pluginStableVersionRegex);
+    } else {
+      this.versionFilterRegex = new RegExp(
+        pluginStableAndPrereleaseVersionRegex
+      );
+    }
+  }
+
   /**
    * get npm versions results per package and structure it as plugin version DTO
    * @param npmVersions
@@ -23,22 +45,25 @@ export class NpmPluginVersionService {
     const pluginVersions: (PluginVersion & { tarballUrl: string })[] = [];
 
     for (const [, value] of Object.entries(npmManifest.versions)) {
-      pluginVersions.push({
-        createdAt: new Date(npmManifest.time[value.version]),
-        deprecated: value.deprecated?.toString() || null,
-        id: "",
-        pluginId: pluginId,
-        pluginIdVersion: `${pluginId}_${value.version}`,
-        settings: "{}",
-        configurations: "{}",
-        updatedAt: new Date(),
-        version: value.version,
-        tarballUrl: value.dist.tarball,
-        isLatest: npmManifest["dist-tags"].latest === value.version,
-      });
+      if (this.versionFilterRegex.test(value.version)) {
+        pluginVersions.push({
+          createdAt: new Date(npmManifest.time[value.version]),
+          deprecated: value.deprecated?.toString() || null,
+          id: "",
+          pluginId: pluginId,
+          pluginIdVersion: `${pluginId}_${value.version}`,
+          settings: "{}",
+          configurations: "{}",
+          updatedAt: new Date(),
+          version: value.version,
+          tarballUrl: value.dist.tarball,
+          isLatest: npmManifest["dist-tags"].latest === value.version,
+        });
+      }
     }
     return pluginVersions;
   }
+
   /**
    * generator to fetch npm data for each plugin
    * @param plugins
