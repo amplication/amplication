@@ -41,10 +41,6 @@ export class BuildRunnerService {
   ) {
     let codeGeneratorVersion: string;
     try {
-      this.logger.debug(
-        `Calculating Code Generator Version with dsgResourceData:  ${dsgResourceData.resourceInfo.codeGeneratorVersionOptions}`
-      );
-
       codeGeneratorVersion =
         await this.codeGeneratorService.getCodeGeneratorVersion({
           codeGeneratorVersion:
@@ -54,6 +50,7 @@ export class BuildRunnerService {
             dsgResourceData.resourceInfo.codeGeneratorVersionOptions
               .codeGeneratorStrategy,
         });
+
       this.logger.debug("Code Generator Version Calculated as: ", {
         codeGeneratorVersion,
       });
@@ -101,20 +98,16 @@ export class BuildRunnerService {
     data: DSGResourceData,
     codeGeneratorVersion: string
   ) {
-    this.logger.debug("Inside runJob with codeGeneratorVersion: ", {
-      codeGeneratorVersion,
-    });
     await this.saveDsgResourceData(jobBuildId, data, codeGeneratorVersion);
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
       const postBody = {
-        resourceId: resourceId,
+        resourceId,
         buildId: jobBuildId,
         codeGeneratorVersion,
-        containerImageTag: codeGeneratorVersion,
       };
-      this.logger.debug("Calling argo event with post paylod: ", { postBody });
+      this.logger.debug("Calling argo event with post payload: ", { postBody });
       await axios.post(url, postBody);
     } catch (error) {
       throw new Error(error.message, {
