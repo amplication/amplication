@@ -14,9 +14,10 @@ export class NpmPluginVersionService {
     private readonly npmService: NpmService,
     private readonly configService: ConfigService
   ) {
-    const pluginStableVersionRegex =
+    // https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string
+    const pluginStableVersionSemVerRegex =
       "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)$";
-    const pluginStableAndPrereleaseVersionRegex =
+    const pluginStableAndPrereleaseVersionSemVerRegex =
       "^(0|[1-9]\\d*)\\.(0|[1-9]\\d*)\\.(0|[1-9]\\d*)(?:-((?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*)(?:\\.(?:0|[1-9]\\d*|\\d*[a-zA-Z-][0-9a-zA-Z-]*))*))?(?:\\+([0-9a-zA-Z-]+(?:\\.[0-9a-zA-Z-]+)*))?$";
 
     const ignorePrereleaseVersions =
@@ -24,10 +25,10 @@ export class NpmPluginVersionService {
       "true";
 
     if (ignorePrereleaseVersions) {
-      this.versionFilterRegex = new RegExp(pluginStableVersionRegex);
+      this.versionFilterRegex = new RegExp(pluginStableVersionSemVerRegex);
     } else {
       this.versionFilterRegex = new RegExp(
-        pluginStableAndPrereleaseVersionRegex
+        pluginStableAndPrereleaseVersionSemVerRegex
       );
     }
   }
