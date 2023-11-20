@@ -51,6 +51,10 @@ export class BuildRunnerService {
               .codeGeneratorStrategy,
         });
 
+      this.logger.debug("Code Generator Version Calculated as: ", {
+        codeGeneratorVersion,
+      });
+
       const shouldSplitBuild =
         this.codeGeneratorService.compareVersions(
           codeGeneratorVersion,
@@ -98,11 +102,13 @@ export class BuildRunnerService {
 
     const url = this.configService.get(Env.DSG_RUNNER_URL);
     try {
-      await axios.post(url, {
-        resourceId: resourceId,
+      const postBody = {
+        resourceId,
         buildId: jobBuildId,
         codeGeneratorVersion,
-      });
+      };
+      this.logger.debug("Calling argo event with post payload: ", { postBody });
+      await axios.post(url, postBody);
     } catch (error) {
       throw new Error(error.message, {
         cause: {
