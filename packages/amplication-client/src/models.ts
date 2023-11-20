@@ -726,6 +726,7 @@ export enum EnumGitOrganizationType {
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
   Bitbucket = 'Bitbucket',
+  GitLab = 'GitLab',
   Github = 'Github'
 }
 
