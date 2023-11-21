@@ -36,7 +36,7 @@ export class ModuleService extends BlockTypeService<
   validateModuleName(moduleName: string): void {
     const regex = /^[a-zA-Z0-9._-]{1,249}$/;
     if (!regex.test(moduleName)) {
-      throw new AmplicationError("Invalid module name");
+      throw new AmplicationError(`Invalid module name: ${moduleName}`);
     }
   }
 

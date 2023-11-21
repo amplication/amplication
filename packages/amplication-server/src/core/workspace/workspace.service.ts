@@ -1,5 +1,5 @@
 import { ConflictException, Injectable } from "@nestjs/common";
-import { User, Workspace } from "../../models";
+import { Entity, EntityField, Resource, User, Workspace } from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
 import {
   CompleteInvitationArgs,
@@ -35,6 +35,13 @@ import { EnumWorkspaceMemberType } from "./dto/EnumWorkspaceMemberType";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { BillingPeriod } from "@stigg/node-server-sdk";
 import { Coupon } from "./dto/Coupon";
+import { EnumResourceType } from "../resource/dto/EnumResourceType";
+import {
+  EnumBlockType,
+  EnumDataType,
+} from "@amplication/code-gen-types/models";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -47,7 +54,9 @@ export class WorkspaceService {
     private readonly subscriptionService: SubscriptionService,
     private readonly projectService: ProjectService,
     private readonly billingService: BillingService,
-    private analytics: SegmentAnalyticsService
+    private analytics: SegmentAnalyticsService,
+    private readonly moduleService: ModuleService,
+    private readonly moduleActionService: ModuleActionService
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -107,7 +116,6 @@ export class WorkspaceService {
     await this.billingService.provisionCustomer(workspace.id, BillingPlan.Free);
 
     const [user] = workspace.users;
-
     await this.projectService.createProject(
       {
         data: {
@@ -479,5 +487,166 @@ export class WorkspaceService {
     return this.prisma.workspace
       .findUnique({ where: { id: workspaceId } })
       .gitOrganizations();
+  }
+
+  async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
+    const workspaces = await this.prisma.workspace.findMany({
+      include: {
+        users: {
+          orderBy: {
+            lastActive: Prisma.SortOrder.asc,
+          },
+        },
+        projects: {
+          where: {
+            deletedAt: null,
+          },
+          include: {
+            resources: {
+              include: {
+                entities: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
+                archived: { not: true },
+              },
+            },
+          },
+        },
+      },
+      skip: 500,
+      take: 500,
+    });
+
+    let index = 1;
+
+    for (const workspace of workspaces) {
+      console.log("workspace number: ", index++);
+      await this.migrateWorkspace(workspace);
+    }
+
+    await this.prisma.$disconnect();
+
+    return true;
+  }
+
+  async migrateWorkspace(workspace: Workspace) {
+    const workspaceUser = workspace.users[0];
+    console.log(`migrateWorkspace: ${workspace.id}`);
+    for (const project of workspace.projects) {
+      const resources = project.resources;
+
+      await this.createResourceCustomActions(resources, workspaceUser);
+      // await this.projectService.commit(
+      //   {
+      //     data: {
+      //       message: "this is automatic commit for update custom actions",
+      //       project: {
+      //         connect: {
+      //           id: project.id,
+      //         },
+      //       },
+      //       user: {
+      //         connect: {
+      //           id: workspaceUser.id,
+      //         },
+      //       },
+      //     },
+      //   },
+      //   workspaceUser,
+      //   true // skip build
+      // );
+    }
+  }
+
+  async createEntityCustomActions(
+    entity: Entity,
+    user: User
+  ): Promise<boolean> {
+    try {
+      if (entity.name.trim() === "" || entity.name.trim() === null) return;
+      const entityArgs = {
+        data: {
+          name: entity.name,
+          displayName: entity.name,
+          resource: {
+            connect: {
+              id: entity.resourceId,
+            },
+          },
+        },
+      };
+
+      const module = await this.moduleService.createDefaultModuleForEntity(
+        entityArgs,
+        entity,
+        user
+      );
+
+      console.log({ module });
+
+      const fields = (await this.prisma.entityField.findMany({
+        where: {
+          entityVersion: {
+            entityId: entity.id,
+            versionNumber: 0,
+            deleted: false,
+          },
+        },
+      })) as EntityField[];
+
+      const relationFields = fields.filter(
+        (e) => e.dataType === EnumDataType.Lookup
+      );
+
+      for (const field of relationFields) {
+        try {
+          await this.moduleActionService.createDefaultActionsForRelationField(
+            entity,
+            field,
+            module.id,
+            user
+          );
+        } catch (error) {
+          console.log(`${error.message} entityId: ${entity.id} `);
+          return;
+        }
+      }
+      return true;
+    } catch (error) {
+      console.log({ error });
+      return false;
+    }
+  }
+
+  async createResourceCustomActions(resources: Resource[], user: User) {
+    const promises = resources.map(async (resource) => {
+      try {
+        const resourceModule = await this.prisma.block.findFirst({
+          where: {
+            blockType: EnumBlockType.Module,
+            resourceId: resource.id,
+          },
+        });
+        console.log({ resourceModule });
+        if (resourceModule) return;
+
+        for (const entity of resource.entities) {
+          await this.createEntityCustomActions(entity, user);
+          console.log(`process complete, resourceId: ${resource.id}`);
+        }
+      } catch (error) {
+        console.log(
+          `Failed to run migrateChunk, error: ${error} resource: ${resource.id}`
+        );
+        return false;
+      }
+    });
+    await Promise.allSettled(promises);
   }
 }
