@@ -554,6 +554,51 @@ describe("BuildRunnerService", () => {
     });
   });
 
+  it("emitCodeGenerationFailureWhenJobStatusFailed should not emit Kafka failure event when build already failed", async () => {
+    // Arrange
+    const errorMock = new Error("Test error");
+    const buildId = "buildId";
+    const codeGeneratorVersion = "v1.0.0";
+
+    const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+      key: null,
+      value: <CodeGenerationFailure.Value>{
+        buildId,
+        codeGeneratorVersion,
+        error: errorMock,
+      },
+    } as unknown as CodeGenerationFailure.KafkaEvent;
+
+    const spyOnSetJobStatus = jest.spyOn(
+      buildJobsHandlerService,
+      "setJobStatus"
+    );
+    jest
+      .spyOn(service, "getCodeGeneratorVersion")
+      .mockResolvedValue(codeGeneratorVersion);
+
+    jest.spyOn(service, "copyFromJobToArtifact").mockResolvedValue(true);
+
+    spyOnSetJobStatus.mockResolvedValue(undefined);
+    jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
+      .mockReturnValue(buildId);
+
+    jest
+      .spyOn(buildJobsHandlerService, "getBuildStatus")
+      .mockResolvedValue(EnumJobStatus.Failure);
+
+    // Act
+    await service.emitCodeGenerationFailureWhenJobStatusFailed(
+      buildId,
+      errorMock
+    );
+
+    // Assert
+    expect(mockKafkaServiceEmitMessage).not.toBeCalled();
+    expect(spyOnSetJobStatus).toBeCalledWith(buildId, EnumJobStatus.Failure);
+  });
+
   describe("emitKafkaEventBasedOnJobStatus", () => {
     const resourceId = "resourceId";
     const buildId = "buildId";
