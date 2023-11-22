@@ -1,7 +1,9 @@
 import { ConfigService } from "@nestjs/config";
 
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<any | null>;
+  getSecret: (
+    key: string
+  ) => Promise<unknown | null | string | Record<string, unknown>>;
 }
 
 export class SecretsManagerServiceBase implements ISecretsManager {

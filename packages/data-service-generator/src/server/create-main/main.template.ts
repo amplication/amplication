@@ -26,8 +26,8 @@ async function main() {
   const document = SwaggerModule.createDocument(app, swaggerDocumentOptions);
 
   /** check if there is Public decorator for each path (action) and its method (findMany / findOne) on each controller */
-  Object.values((document as OpenAPIObject).paths).forEach((path: any) => {
-    Object.values(path).forEach((method: any) => {
+  Object.values((document as OpenAPIObject).paths).forEach((path) => {
+    Object.values(path).forEach((method) => {
       if (
         Array.isArray(method.security) &&
         method.security.includes("isPublic")

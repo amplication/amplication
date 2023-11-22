@@ -1,6 +1,7 @@
 export const PRISMA_QUERY_INTERPRETATION_ERROR = "P2016";
 export const PRISMA_RECORD_NOT_FOUND = "RecordNotFound";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function isRecordNotFoundError(error: any): boolean {
   return (
     error instanceof Error &&
