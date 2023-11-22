@@ -19,6 +19,7 @@ import {
 
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
+import { validate } from "class-validator";
 
 @Controller("generated-apps")
 export class BuildController {
@@ -63,6 +64,20 @@ export class BuildController {
     @Payload() message: CodeGenerationFailure.Value
   ): Promise<void> {
     const args = plainToInstance(CodeGenerationFailure.Value, message);
+
+    const validationErrors = await validate(args);
+
+    if (validationErrors.length > 0) {
+      // Shallow error to avoid blocking the kafka message consumption of topic
+      // TODO add message to DLQ
+      this.logger.error("Failed to decode kafka message", null, {
+        validationErrors: validationErrors.map((error) =>
+          error.toString().replace(/\n/g, " ")
+        ),
+      });
+      return;
+    }
+
     await this.buildService.completeCodeGenerationStep(
       args.buildId,
       EnumActionStepStatus.Failed,
