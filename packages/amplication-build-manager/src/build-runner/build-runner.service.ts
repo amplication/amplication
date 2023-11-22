@@ -149,10 +149,10 @@ export class BuildRunnerService {
    */
   async emitKafkaEventBasedOnJobStatus(resourceId: string, jobBuildId: string) {
     let codeGeneratorVersion: string;
-    let buildId: string;
+    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
+
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-      const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
       const isCopySucceeded = await this.copyFromJobToArtifact(
         resourceId,
         jobBuildId
@@ -215,10 +215,10 @@ export class BuildRunnerService {
     error: Error
   ) {
     let codeGeneratorVersion: string;
-    let buildId: string;
+    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
+
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-      buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
 
       const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
         buildId
