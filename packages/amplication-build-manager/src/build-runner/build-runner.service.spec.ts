@@ -560,15 +560,6 @@ describe("BuildRunnerService", () => {
     const buildId = "buildId";
     const codeGeneratorVersion = "v1.0.0";
 
-    const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
-      key: null,
-      value: <CodeGenerationFailure.Value>{
-        buildId,
-        codeGeneratorVersion,
-        error: errorMock,
-      },
-    } as unknown as CodeGenerationFailure.KafkaEvent;
-
     const spyOnSetJobStatus = jest.spyOn(
       buildJobsHandlerService,
       "setJobStatus"
