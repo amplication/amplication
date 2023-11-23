@@ -171,7 +171,7 @@ describe("BuildRunnerService", () => {
   });
 
   describe("copyFromJobToArtifact", () => {
-    it("should copy file and/or directories from `jobPath` to `artifactPath` and return true", async () => {
+    it("should copy file and/or directories from `jobPath` to `artifactPath`", async () => {
       const resourceId = "resourceId";
       const buildId = "buildId";
 
@@ -190,31 +190,28 @@ describe("BuildRunnerService", () => {
         buildId
       );
 
-      const result = await service.copyFromJobToArtifact(resourceId, buildId);
+      await service.copyFromJobToArtifact(resourceId, buildId);
 
       expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
       expect(spyOnFsExtraCopy).toBeCalledWith(jobPath, artifactPath);
-      expect(result).toBe(true);
       await expect(fsExtra.copy(jobPath, artifactPath)).resolves.not.toThrow();
     });
 
-    it("should return false something went wrong", async () => {
-      const resourceId = "resourceId";
+    it("should throw an error when copy files failed", async () => {
       const buildId = "buildId";
+      const mockedError = new Error("Copy files failed");
 
-      const spyOnBuildJobsHandlerServiceExtractBuildId = jest
+      jest
         .spyOn(buildJobsHandlerService, "extractBuildId")
         .mockReturnValue(buildId);
 
       spyOnFsExtraCopy.mockImplementationOnce(() => {
-        throw new Error("Error");
+        throw mockedError;
       });
 
-      const result = await service.copyFromJobToArtifact(resourceId, buildId);
-
-      expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
-      expect(spyOnFsExtraCopy).toBeCalledTimes(1);
-      expect(result).toBe(false);
+      await expect(
+        service.copyFromJobToArtifact("resource-id", "job-build-id")
+      ).rejects.toThrow(mockedError.message);
     });
   });
 
@@ -568,7 +565,7 @@ describe("BuildRunnerService", () => {
       .spyOn(service, "getCodeGeneratorVersion")
       .mockResolvedValue(codeGeneratorVersion);
 
-    jest.spyOn(service, "copyFromJobToArtifact").mockResolvedValue(true);
+    jest.spyOn(service, "copyFromJobToArtifact");
 
     spyOnSetJobStatus.mockResolvedValue(undefined);
     jest
@@ -672,7 +669,7 @@ describe("BuildRunnerService", () => {
           .spyOn(service, "getCodeGeneratorVersion")
           .mockResolvedValue(codeGeneratorVersion);
 
-        jest.spyOn(service, "copyFromJobToArtifact").mockResolvedValue(true);
+        jest.spyOn(service, "copyFromJobToArtifact");
         jest
           .spyOn(buildJobsHandlerService, "setJobStatus")
           .mockResolvedValue(undefined);
