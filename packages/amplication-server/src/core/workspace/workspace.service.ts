@@ -1,4 +1,4 @@
-import { ConflictException, Injectable } from "@nestjs/common";
+import { ConflictException, Inject, Injectable } from "@nestjs/common";
 import { Entity, EntityField, Resource, User, Workspace } from "../../models";
 import { Prisma, PrismaService } from "../../prisma";
 import {
@@ -42,6 +42,7 @@ import {
 } from "@amplication/code-gen-types/models";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -56,7 +57,9 @@ export class WorkspaceService {
     private readonly billingService: BillingService,
     private analytics: SegmentAnalyticsService,
     private readonly moduleService: ModuleService,
-    private readonly moduleActionService: ModuleActionService
+    private readonly moduleActionService: ModuleActionService,
+    @Inject(AmplicationLogger)
+    private readonly logger: AmplicationLogger
   ) {}
 
   async getWorkspace(args: FindOneArgs): Promise<Workspace | null> {
@@ -489,6 +492,14 @@ export class WorkspaceService {
       .gitOrganizations();
   }
 
+  chunkArrayInGroups(arr, size) {
+    const myArray = [];
+    for (let i = 0; i < arr.length; i += size) {
+      myArray.push(arr.slice(i, i + size));
+    }
+    return myArray;
+  }
+
   async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
       include: {
@@ -519,15 +530,15 @@ export class WorkspaceService {
           },
         },
       },
-      skip: 500,
-      take: 500,
     });
 
     let index = 1;
 
-    for (const workspace of workspaces) {
-      console.log("workspace number: ", index++);
-      await this.migrateWorkspace(workspace);
+    const workspaceChunks = this.chunkArrayInGroups(workspaces, 200);
+
+    for (const workspaceChunk of workspaceChunks) {
+      this.logger.info("chunk number: ", index++);
+      await this.migrateWorkspace(workspaceChunk);
     }
 
     await this.prisma.$disconnect();
@@ -535,33 +546,41 @@ export class WorkspaceService {
     return true;
   }
 
-  async migrateWorkspace(workspace: Workspace) {
-    const workspaceUser = workspace.users[0];
-    console.log(`migrateWorkspace: ${workspace.id}`);
-    for (const project of workspace.projects) {
-      const resources = project.resources;
+  async migrateWorkspace(workspaces: Workspace[]) {
+    const promises = workspaces.map(async (workspace) => {
+      const workspaceUser = workspace.users[0];
+      for (const project of workspace.projects) {
+        const resources = project.resources;
 
-      await this.createResourceCustomActions(resources, workspaceUser);
-      // await this.projectService.commit(
-      //   {
-      //     data: {
-      //       message: "this is automatic commit for update custom actions",
-      //       project: {
-      //         connect: {
-      //           id: project.id,
-      //         },
-      //       },
-      //       user: {
-      //         connect: {
-      //           id: workspaceUser.id,
-      //         },
-      //       },
-      //     },
-      //   },
-      //   workspaceUser,
-      //   true // skip build
-      // );
-    }
+        await this.createResourceCustomActions(resources, workspaceUser);
+        await this.projectService.commit(
+          {
+            data: {
+              message: "this is automatic commit for update custom actions",
+              project: {
+                connect: {
+                  id: project.id,
+                },
+              },
+              user: {
+                connect: {
+                  id: workspaceUser.id,
+                },
+              },
+            },
+          },
+          workspaceUser,
+          true // skip build
+        );
+      }
+      const date = new Date();
+      this.logger.info(
+        `workspace process complete, workspaceId: ${
+          workspace.id
+        }, time: ${date.toUTCString()}`
+      );
+    });
+    await Promise.all(promises);
   }
 
   async createEntityCustomActions(
@@ -588,8 +607,6 @@ export class WorkspaceService {
         user
       );
 
-      console.log({ module });
-
       const fields = (await this.prisma.entityField.findMany({
         where: {
           entityVersion: {
@@ -613,13 +630,13 @@ export class WorkspaceService {
             user
           );
         } catch (error) {
-          console.log(`${error.message} entityId: ${entity.id} `);
+          this.logger.error(`${error.message} entityId: ${entity.id}`);
           return;
         }
       }
       return true;
     } catch (error) {
-      console.log({ error });
+      this.logger.error(error);
       return false;
     }
   }
@@ -633,16 +650,14 @@ export class WorkspaceService {
             resourceId: resource.id,
           },
         });
-        console.log({ resourceModule });
         if (resourceModule) return;
 
         for (const entity of resource.entities) {
           await this.createEntityCustomActions(entity, user);
-          console.log(`process complete, resourceId: ${resource.id}`);
         }
       } catch (error) {
         console.log(
-          `Failed to run migrateChunk, error: ${error} resource: ${resource.id}`
+          `Failed to run createResourceCustomActions, error: ${error} resource: ${resource.id}`
         );
         return false;
       }

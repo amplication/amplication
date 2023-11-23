@@ -1,24 +1,33 @@
-import { Controller, Inject, Post } from "@nestjs/common";
-
+import { Controller, Inject, Param, Post } from "@nestjs/common";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { WorkspaceService } from "./workspace.service";
 import { ApiTags } from "@nestjs/swagger";
+import { ConfigService } from "@nestjs/config";
 
 @ApiTags("workspace")
 @Controller("migrate-custom-actions")
 export class WorkspaceController {
   constructor(
     private readonly workspaceService: WorkspaceService,
+    private configService: ConfigService,
 
     @Inject(AmplicationLogger)
     private readonly logger: AmplicationLogger
   ) {}
 
-  @Post("createWorkspacesResourcesDefaultCustomActionsMigration")
+  @Post(`createWorkspacesResourcesDefaultCustomActionsMigration/:token`)
   async createWorkspacesResourcesDefaultCustomActionsMigration(
-    token: string
+    @Param("token") token: string
   ): Promise<boolean> {
-    console.log("createWorkspacesResourcesDefaultCustomActionsMigration....");
+    this.logger.info(
+      "createWorkspacesResourcesDefaultCustomActionsMigration...."
+    );
+    if (
+      this.configService.get<string>("CUSTOM_ACTION_MIGRATION_TOKEN") !== token
+    ) {
+      this.logger.error("InvalidToken, process aborted");
+      return;
+    }
     return this.workspaceService.dataMigrateWorkspacesResourcesCustomActions();
   }
 }
