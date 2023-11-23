@@ -1,0 +1,16 @@
+{
+  "$schema": "http://json-schema.org/schema",
+  "type": "object",
+  "cli": "nx",
+  "properties": {
+    "command": {
+      "type": "string",
+      "description": "The command to run"
+    },
+    "cwd": {
+      "type": "string",
+      "description": "The working directory to run the command in"
+    }
+  },
+  "required": ["command"]
+}

@@ -291,6 +291,7 @@
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
     "eslint-plugin-storybook": "^0.6.14",
+    "execa": "^5.1.1",
     "generate-package-json-webpack-plugin": "^2.6.0",
     "get-port": "^5.1.1",
     "google-libphonenumber": "^3.2.31",
