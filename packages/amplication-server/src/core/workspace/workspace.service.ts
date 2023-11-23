@@ -656,9 +656,10 @@ export class WorkspaceService {
           await this.createEntityCustomActions(entity, user);
         }
       } catch (error) {
-        console.log(
+        this.logger.error(
           `Failed to run createResourceCustomActions, error: ${error} resource: ${resource.id}`
         );
+
         return false;
       }
     });
