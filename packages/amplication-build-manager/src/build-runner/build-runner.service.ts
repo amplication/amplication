@@ -151,6 +151,16 @@ export class BuildRunnerService {
     let codeGeneratorVersion: string;
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
 
+    const currentBuildStatus =
+      await this.buildJobsHandlerService.getBuildStatus(buildId);
+    const otherJobsHaveAlreadyFailed =
+      currentBuildStatus === EnumJobStatus.Failure;
+
+    if (otherJobsHaveAlreadyFailed) {
+      // do nothing
+      return;
+    }
+
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
       const isCopySucceeded = await this.copyFromJobToArtifact(
@@ -172,6 +182,22 @@ export class BuildRunnerService {
         buildId
       );
 
+      if (buildStatus === EnumJobStatus.Failure) {
+        const failureEvent: CodeGenerationFailure.KafkaEvent = {
+          key: null,
+          value: {
+            buildId,
+            codeGeneratorVersion,
+            error: new Error("Failed to copy from job to artifact"),
+          },
+        };
+
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+          failureEvent
+        );
+      }
+
       if (buildStatus === EnumJobStatus.InProgress) {
         // do nothing
         return;
@@ -186,10 +212,6 @@ export class BuildRunnerService {
         await this.producerService.emitMessage(
           KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
           successEvent
-        );
-      } else if (buildStatus === EnumJobStatus.Failure) {
-        throw new Error(
-          "Something went wrong during the execution of emitKafkaEventBasedOnJobStatus"
         );
       }
     } catch (error) {
@@ -212,7 +234,7 @@ export class BuildRunnerService {
 
   async emitCodeGenerationFailureWhenJobStatusFailed(
     jobBuildId: string,
-    error: Error
+    jobError: Error
   ) {
     let codeGeneratorVersion: string;
     let otherJobsHaveNotFailed = true;
@@ -230,12 +252,12 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
     } catch (error) {
-      this.logger.error(error.message, error);
+      this.logger.error(error.message, error, { causeError: jobError });
     } finally {
       if (otherJobsHaveNotFailed) {
         const failureEvent: CodeGenerationFailure.KafkaEvent = {
           key: null,
-          value: { buildId, codeGeneratorVersion, error },
+          value: { buildId, codeGeneratorVersion, error: jobError },
         };
 
         await this.producerService.emitMessage(
