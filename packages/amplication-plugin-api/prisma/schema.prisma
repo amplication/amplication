@@ -1,4 +1,4 @@
-datasource postgres {
+datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -7,17 +7,6 @@ generator client {
   provider      = "prisma-client-js"
   output        = "./generated-prisma-client"
   binaryTargets = ["native", "debian-openssl-1.1.x", "linux-arm64-openssl-1.1.x"]
-}
-
-model User {
-  createdAt DateTime @default(now())
-  firstName String?
-  id        String   @id @default(cuid())
-  lastName  String?
-  password  String
-  roles     Json
-  updatedAt DateTime @updatedAt
-  username  String   @unique
 }
 
 model Plugin {
