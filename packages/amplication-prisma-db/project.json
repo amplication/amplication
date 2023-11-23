@@ -36,9 +36,9 @@
       }
     },
     "db:migrate:dev": {
-      "executor": "@amplication/nx-tools:run-interactive-command",
+      "executor": "nx:run-commands",
       "options": {
-        "command": "prisma migrate dev",
+        "command": "prisma migrate dev --name $([[ {args.name} = undefined ]] && echo migration || echo {args.name})",
         "cwd": "packages/amplication-prisma-db"
       }
     },
@@ -76,7 +76,7 @@
       }
     },
     "db:clean": {
-      "executor": "@amplication/nx-tools:run-interactive-command",
+      "executor": "nx:run-commands",
       "options": {
         "command": "ts-node prisma/clean.ts",
         "cwd": "packages/amplication-prisma-db"
