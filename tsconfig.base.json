@@ -27,6 +27,7 @@
       "@amplication/nest-logger-module/*": [
         "packages/amplication-nest-logger-module/src/*"
       ],
+      "@amplication/nx-tools": ["tools/nx-tools/src/index.ts"],
       "@amplication/prisma-db": ["packages/amplication-prisma-db/src/index.ts"],
       "@amplication/prisma-db/*": ["packages/amplication-prisma-db/src/*"],
       "@amplication/schema-registry": ["libs/schema-registry/src/index.ts"],
