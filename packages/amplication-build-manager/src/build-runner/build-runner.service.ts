@@ -224,15 +224,15 @@ export class BuildRunnerService {
         buildId
       );
 
-      if (buildStatus === EnumJobStatus.Failure) {
-        // do nothing - already emitted
-        return;
-      }
-
       await this.buildJobsHandlerService.setJobStatus(
         jobBuildId,
         EnumJobStatus.Failure
       );
+
+      if (buildStatus === EnumJobStatus.Failure) {
+        // do nothing - already emitted
+        return;
+      }
 
       const failureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
