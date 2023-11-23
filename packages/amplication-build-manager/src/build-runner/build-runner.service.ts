@@ -212,7 +212,7 @@ export class BuildRunnerService {
 
   async emitCodeGenerationFailureWhenJobStatusFailed(
     jobBuildId: string,
-    error: Error
+    jobError: Error
   ) {
     let codeGeneratorVersion: string;
     let otherJobsHaveNotFailed = true;
@@ -230,12 +230,12 @@ export class BuildRunnerService {
         EnumJobStatus.Failure
       );
     } catch (error) {
-      this.logger.error(error.message, error);
+      this.logger.error(error.message, error, { causeError: jobError });
     } finally {
       if (otherJobsHaveNotFailed) {
         const failureEvent: CodeGenerationFailure.KafkaEvent = {
           key: null,
-          value: { buildId, codeGeneratorVersion, error },
+          value: { buildId, codeGeneratorVersion, error: jobError },
         };
 
         await this.producerService.emitMessage(
