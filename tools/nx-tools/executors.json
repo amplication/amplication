@@ -1,9 +1,0 @@
-{
-  "executors": {
-    "run-interactive-command": {
-      "implementation": "./src/executors/run-interactive-command/executor",
-      "schema": "./src/executors/run-interactive-command/schema.json",
-      "description": "echo executor"
-    }
-  }
-}
