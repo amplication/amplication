@@ -215,45 +215,34 @@ export class BuildRunnerService {
     error: Error
   ) {
     let codeGeneratorVersion: string;
-    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
+    let otherJobsHaveNotFailed = true;
 
+    const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
 
-      const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
-        buildId
-      );
+      const currentBuildStatus =
+        await this.buildJobsHandlerService.getBuildStatus(buildId);
+      otherJobsHaveNotFailed = currentBuildStatus !== EnumJobStatus.Failure;
 
       await this.buildJobsHandlerService.setJobStatus(
         jobBuildId,
         EnumJobStatus.Failure
       );
-
-      if (buildStatus === EnumJobStatus.Failure) {
-        // do nothing - already emitted
-        return;
-      }
-
-      const failureEvent: CodeGenerationFailure.KafkaEvent = {
-        key: null,
-        value: { buildId, codeGeneratorVersion, error },
-      };
-
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        failureEvent
-      );
     } catch (error) {
       this.logger.error(error.message, error);
-      const failureEvent: CodeGenerationFailure.KafkaEvent = {
-        key: null,
-        value: { buildId, codeGeneratorVersion, error },
-      };
+    } finally {
+      if (otherJobsHaveNotFailed) {
+        const failureEvent: CodeGenerationFailure.KafkaEvent = {
+          key: null,
+          value: { buildId, codeGeneratorVersion, error },
+        };
 
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        failureEvent
-      );
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+          failureEvent
+        );
+      }
     }
   }
 
