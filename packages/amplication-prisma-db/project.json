@@ -78,7 +78,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node prisma/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "packages/amplication-prisma-db"
       }
     }
