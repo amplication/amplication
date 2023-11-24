@@ -299,7 +299,7 @@ export class BuildRunnerService {
       await copy(jobPath, artifactPath);
     } catch (error) {
       this.logger.error(error.message, error);
-      throw new Error(error.message);
+      throw error;
     }
   }
 }
