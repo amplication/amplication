@@ -29,7 +29,7 @@ export const USER_PASSWORD_FIELD: EntityField = {
   displayName: "Password",
   dataType: EnumDataType.Password,
   required: true,
-  unique: false,
+  unique: true,
   searchable: false,
 };
 
