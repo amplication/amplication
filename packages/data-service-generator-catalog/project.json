@@ -128,7 +128,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node scripts/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "packages/data-service-generator-catalog"
       }
     },
