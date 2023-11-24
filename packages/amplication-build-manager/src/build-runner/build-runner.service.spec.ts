@@ -531,7 +531,7 @@ describe("BuildRunnerService", () => {
 
       jest.spyOn(service, "runJob").mockRejectedValue(errorMock);
 
-      const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+      const expectedKafkaFailureEvent: CodeGenerationFailure.KafkaEvent = {
         key: null,
         value: <CodeGenerationFailure.Value>{
           buildId,
@@ -546,7 +546,7 @@ describe("BuildRunnerService", () => {
       // Assert
       expect(mockKafkaServiceEmitMessage).toBeCalledWith(
         KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        kafkaFailureEventMock
+        expectedKafkaFailureEvent
       );
     });
   });
@@ -564,8 +564,6 @@ describe("BuildRunnerService", () => {
     jest
       .spyOn(service, "getCodeGeneratorVersion")
       .mockResolvedValue(codeGeneratorVersion);
-
-    jest.spyOn(service, "copyFromJobToArtifact");
 
     spyOnSetJobStatus.mockResolvedValue(undefined);
     jest
@@ -591,7 +589,24 @@ describe("BuildRunnerService", () => {
     const resourceId = "resourceId";
     const buildId = "buildId";
 
+    beforeEach(() => {
+      jest.resetAllMocks();
+    });
+
     const testCases = [
+      [
+        {
+          //input
+          jobBuildId: `${buildId}-${EnumDomainName.Server}`,
+          jobStatus: EnumJobStatus.Success,
+          otherJobsCombinedStatus: EnumJobStatus.InProgress,
+          copyFailed: true,
+        },
+        {
+          //expectation
+          eventEmission: "FAILURE",
+        },
+      ],
       [
         {
           //input
@@ -643,16 +658,23 @@ describe("BuildRunnerService", () => {
     ];
 
     for (const [input, expected] of testCases) {
-      it(`When ${input.jobBuildId} returns ${input.jobStatus}, and the combined status is ${input.otherJobsCombinedStatus} it should emit ${expected.eventEmission} event and updated the cache accordingly`, async () => {
+      it(`When ${input.jobBuildId} returns ${input.jobStatus}, ${
+        input["copyFailed"] ? "and the copy artifact failed," : ""
+      } and the combined status is ${
+        input.otherJobsCombinedStatus
+      } it should emit ${
+        expected.eventEmission
+      } event and updated the cache accordingly`, async () => {
         // Arrange
         const codeGeneratorVersion = "v1.0.0";
         const errorMock = new Error("Test error");
+        const copyErrorMock = new Error("Copy failed");
 
-        const kafkaFailureEventMock: CodeGenerationFailure.KafkaEvent = {
+        const expectedKafkaFailureEvent: CodeGenerationFailure.KafkaEvent = {
           key: null,
           value: <CodeGenerationFailure.Value>{
             buildId,
-            error: errorMock,
+            error: input["copyFailed"] ? copyErrorMock : errorMock,
             codeGeneratorVersion,
           },
         } as unknown as CodeGenerationFailure.KafkaEvent;
@@ -669,14 +691,9 @@ describe("BuildRunnerService", () => {
           .spyOn(service, "getCodeGeneratorVersion")
           .mockResolvedValue(codeGeneratorVersion);
 
-        jest.spyOn(service, "copyFromJobToArtifact");
         jest
           .spyOn(buildJobsHandlerService, "setJobStatus")
           .mockResolvedValue(undefined);
-
-        jest
-          .spyOn(buildJobsHandlerService, "getJobStatus")
-          .mockResolvedValue(input.jobStatus);
 
         jest
           .spyOn(buildJobsHandlerService, "extractBuildId")
@@ -685,6 +702,12 @@ describe("BuildRunnerService", () => {
         jest
           .spyOn(buildJobsHandlerService, "getBuildStatus")
           .mockResolvedValue(input.otherJobsCombinedStatus);
+
+        if (input["copyFailed"]) {
+          jest
+            .spyOn(service, "copyFromJobToArtifact")
+            .mockRejectedValue(copyErrorMock);
+        }
 
         // Act
         await service.processBuildResult(
@@ -700,15 +723,13 @@ describe("BuildRunnerService", () => {
             expect(mockKafkaServiceEmitMessage).toBeCalledTimes(0);
             break;
           case "FAILURE":
-            mockKafkaServiceEmitMessage.mockRejectedValueOnce(errorMock);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-              kafkaFailureEventMock
+              expectedKafkaFailureEvent
             );
             break;
           case "SUCCESS":
-            mockKafkaServiceEmitMessage.mockResolvedValue(undefined);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledTimes(1);
             expect(mockKafkaServiceEmitMessage).toHaveBeenCalledWith(
               KAFKA_TOPICS.CODE_GENERATION_SUCCESS_TOPIC,
