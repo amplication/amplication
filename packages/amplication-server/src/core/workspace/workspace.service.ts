@@ -566,7 +566,6 @@ export class WorkspaceService {
   async migrateWorkspaces(workspaces: Workspace[]) {
     const promises = workspaces.map(async (workspace) => {
       const workspaceUser = workspace.users[0];
-      console.log("workspaceId: ", workspace.id);
       for (const project of workspace.projects) {
         const resources = project.resources;
 
