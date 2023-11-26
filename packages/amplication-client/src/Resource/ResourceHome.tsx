@@ -14,6 +14,8 @@ import {
   resourceMenuLayout,
   setResourceUrlLink,
 } from "./resourceMenuUtils";
+import { useStiggContext } from "@stigg/react-sdk";
+import { BillingFeature } from "../util/BillingFeature";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -35,6 +37,16 @@ const ResourceHome = ({
   const { currentResource, currentWorkspace, currentProject, pendingChanges } =
     useContext(AppContext);
 
+  const { stigg } = useStiggContext();
+
+  console.log(
+    `custom-action-feature: ${
+      stigg.getBooleanEntitlement({
+        featureId: BillingFeature.FeatureCustomActions,
+      }).hasAccess
+    }`
+  );
+
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
@@ -51,6 +63,11 @@ const ResourceHome = ({
             currentResource.id,
             linksMap[menuItem].to
           ),
+          disabled: linksMap[menuItem].license
+            ? !stigg.getBooleanEntitlement({
+                featureId: linksMap[menuItem].license,
+              }).hasAccess
+            : false,
           iconName: linksMap[menuItem].icon,
           exact: false,
           indicatorValue,

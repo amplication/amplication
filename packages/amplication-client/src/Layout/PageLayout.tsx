@@ -20,7 +20,7 @@ function PageLayout({ children, className, tabs }: Props) {
           <div className={`${CLASS_NAME}__header`}>
             <Tabs>
               {tabs.map((tab, index) => (
-                <Tabs.Tab key={index} {...tab} />
+                <Tabs.Tab key={index} {...tab} disabled={tab.disabled} />
               ))}
             </Tabs>
           </div>

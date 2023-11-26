@@ -27,9 +27,14 @@ export type TabItem = {
   iconName?: string;
   indicatorValue?: string | number;
   indicatorColor?: EnumTextColor;
+  disabled?: boolean;
 };
 
 export type TabProps = Omit<MuiTabProps, "label"> & TabItem;
+
+// {tab.disabled && (
+//   <LockedFeatureIndicator featureName={"featureName"} />
+// )}
 
 function Tab(props: TabProps) {
   const { to, exact, iconName, name, indicatorColor, indicatorValue, ...rest } =
@@ -41,12 +46,13 @@ function Tab(props: TabProps) {
 
   const label = (
     <>
-      {name}{" "}
+      {name}
       {indicatorValue && (
         <span style={colorStyle} className="amp-tab__indicator">
           {indicatorValue}
         </span>
       )}
+      {rest.disabled && <p>test</p>}
     </>
   );
 
@@ -54,7 +60,7 @@ function Tab(props: TabProps) {
     <MuiTab
       className="amp-tab"
       component={NavLink}
-      classes={{ selected: "amp-tab--selected" }}
+      classes={{ selected: "amp-tab--selected", disabled: "amp-tab--disabled" }}
       // icon={iconName && <Icon size={"small"} icon={iconName} />}
       to={to}
       label={label}

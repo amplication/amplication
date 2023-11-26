@@ -14,4 +14,5 @@ export enum BillingFeature {
   Notification = "feature-notifications",
   CodeGeneratorVersion = "feature-code-generator-version",
   ShowCodeGeneratorVersion = "feature-show-dsg-versions",
+  FeatureCustomActions = "feature-custom-actions",
 }
