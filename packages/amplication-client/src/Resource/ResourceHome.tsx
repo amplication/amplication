@@ -39,14 +39,6 @@ const ResourceHome = ({
 
   const { stigg } = useStiggContext();
 
-  console.log(
-    `custom-action-feature: ${
-      stigg.getBooleanEntitlement({
-        featureId: BillingFeature.FeatureCustomActions,
-      }).hasAccess
-    }`
-  );
-
   const tabs: TabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
