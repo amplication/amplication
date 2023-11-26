@@ -16,6 +16,7 @@ import { BillingService } from "../billing/billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 
 const EXAMPLE_WORKSPACE_ID = "exampleWorkspaceId";
 const EXAMPLE_WORKSPACE_NAME = "exampleWorkspaceName";
@@ -143,6 +144,17 @@ describe("WorkspaceService", () => {
           useClass: jest.fn(() => {
             return {};
           }),
+        },
+        {
+          provide: AmplicationLogger,
+          useClass: jest.fn().mockImplementation(() => ({
+            error: jest.fn(() => {
+              return {};
+            }),
+            info: jest.fn(() => {
+              return {};
+            }),
+          })),
         },
         {
           provide: BillingService,

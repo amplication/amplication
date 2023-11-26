@@ -1084,7 +1084,6 @@ type Mutation {
   createServiceWithEntities(data: ResourceCreateWithEntitiesInput!): ResourceCreateWithEntitiesResult!
   createTopic(data: TopicCreateInput!): Topic!
   createWorkspace(data: WorkspaceCreateInput!): Workspace
-  createWorkspacesResourcesDefaultCustomActionsMigration: Boolean!
   deleteApiToken(where: WhereUniqueInput!): ApiToken!
   deleteEntity(where: WhereUniqueInput!): Entity
   deleteEntityField(where: WhereUniqueInput!): EntityField!

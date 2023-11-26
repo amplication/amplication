@@ -80,6 +80,8 @@ export class WorkspaceResolver {
       currentUser
     );
 
+    await this.workspaceService.migrateWorkspaces([currentUser.workspace]);
+
     return { ...currentUser.workspace, externalId };
   }
 

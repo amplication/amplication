@@ -502,6 +502,23 @@ export class WorkspaceService {
 
   async dataMigrateWorkspacesResourcesCustomActions(): Promise<boolean> {
     const workspaces = await this.prisma.workspace.findMany({
+      where: {
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                blocks: { none: { blockType: EnumBlockType.Module } },
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      take: 1000,
       include: {
         users: {
           orderBy: {
@@ -537,8 +554,8 @@ export class WorkspaceService {
     const workspaceChunks = this.chunkArrayInGroups(workspaces, 200);
 
     for (const workspaceChunk of workspaceChunks) {
-      this.logger.info("chunk number: ", index++);
-      await this.migrateWorkspace(workspaceChunk);
+      this.logger.info(`chunk number ${index++}`);
+      await this.migrateWorkspaces(workspaceChunk);
     }
 
     await this.prisma.$disconnect();
@@ -546,32 +563,39 @@ export class WorkspaceService {
     return true;
   }
 
-  async migrateWorkspace(workspaces: Workspace[]) {
+  async migrateWorkspaces(workspaces: Workspace[]) {
     const promises = workspaces.map(async (workspace) => {
       const workspaceUser = workspace.users[0];
+      console.log("workspaceId: ", workspace.id);
       for (const project of workspace.projects) {
         const resources = project.resources;
 
-        await this.createResourceCustomActions(resources, workspaceUser);
-        await this.projectService.commit(
-          {
-            data: {
-              message: "this is automatic commit for update custom actions",
-              project: {
-                connect: {
-                  id: project.id,
+        const hasChanges = await this.createResourceCustomActions(
+          resources,
+          workspaceUser
+        );
+
+        if (hasChanges) {
+          await this.projectService.commit(
+            {
+              data: {
+                message: "this is automatic commit for update custom actions",
+                project: {
+                  connect: {
+                    id: project.id,
+                  },
                 },
-              },
-              user: {
-                connect: {
-                  id: workspaceUser.id,
+                user: {
+                  connect: {
+                    id: workspaceUser.id,
+                  },
                 },
               },
             },
-          },
-          workspaceUser,
-          true // skip build
-        );
+            workspaceUser,
+            true // skip build
+          );
+        }
       }
       const date = new Date();
       this.logger.info(
@@ -641,7 +665,11 @@ export class WorkspaceService {
     }
   }
 
-  async createResourceCustomActions(resources: Resource[], user: User) {
+  async createResourceCustomActions(
+    resources: Resource[],
+    user: User
+  ): Promise<boolean> {
+    let hasChanges = false;
     const promises = resources.map(async (resource) => {
       try {
         const resourceModule = await this.prisma.block.findFirst({
@@ -651,6 +679,7 @@ export class WorkspaceService {
           },
         });
         if (resourceModule) return;
+        hasChanges = true;
 
         for (const entity of resource.entities) {
           await this.createEntityCustomActions(entity, user);
@@ -660,9 +689,10 @@ export class WorkspaceService {
           `Failed to run createResourceCustomActions, error: ${error} resource: ${resource.id}`
         );
 
-        return false;
+        return hasChanges;
       }
     });
     await Promise.allSettled(promises);
+    return hasChanges;
   }
 }
