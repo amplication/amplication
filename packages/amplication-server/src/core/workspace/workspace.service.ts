@@ -566,6 +566,7 @@ export class WorkspaceService {
   async migrateWorkspaces(workspaces: Workspace[]) {
     const promises = workspaces.map(async (workspace) => {
       const workspaceUser = workspace.users[0];
+
       for (const project of workspace.projects) {
         const resources = project.resources;
 
@@ -604,6 +605,84 @@ export class WorkspaceService {
       );
     });
     await Promise.all(promises);
+  }
+
+  async migrateWorkspace(workspace: Workspace, currentUser: User) {
+    const currentWorkspace = await this.prisma.workspace.findFirst({
+      where: {
+        id: workspace.id,
+        projects: {
+          some: {
+            deletedAt: null,
+            resources: {
+              some: {
+                deletedAt: null,
+                archived: { not: true },
+                resourceType: EnumResourceType.Service,
+                blocks: { none: { blockType: EnumBlockType.Module } },
+                entities: { some: { deletedAt: null } },
+              },
+            },
+          },
+        },
+      },
+      include: {
+        projects: {
+          where: {
+            deletedAt: null,
+          },
+          include: {
+            resources: {
+              include: {
+                entities: {
+                  where: {
+                    deletedAt: null,
+                  },
+                },
+              },
+              where: {
+                resourceType: EnumResourceType.Service,
+                deletedAt: null,
+                archived: { not: true },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!currentWorkspace) return;
+
+    for (const project of currentWorkspace.projects) {
+      const resources = project.resources;
+
+      const hasChanges = await this.createResourceCustomActions(
+        resources,
+        currentUser
+      );
+
+      if (hasChanges) {
+        await this.projectService.commit(
+          {
+            data: {
+              message: "this is automatic commit for update custom actions",
+              project: {
+                connect: {
+                  id: project.id,
+                },
+              },
+              user: {
+                connect: {
+                  id: currentUser.id,
+                },
+              },
+            },
+          },
+          currentUser,
+          true // skip build
+        );
+      }
+    }
   }
 
   async createEntityCustomActions(
