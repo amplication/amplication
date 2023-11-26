@@ -56,7 +56,7 @@ export const LockedFeatureIndicator = ({ featureName }: Props) => {
         <div className={`${CLASS_NAME}__tooltip__window`}>
           <Icon icon="info_circle" />
           <div className={`${CLASS_NAME}__tooltip__window__info`}>
-            <span>This feature requires a Pro plan.</span>{" "}
+            <span>This feature requires an Enterprise plan.</span>{" "}
             <Link
               onClick={handleViewPlansClick}
               className={`${CLASS_NAME}__view_plans_link`}
