@@ -28,17 +28,23 @@ export type TabItem = {
   indicatorValue?: string | number;
   indicatorColor?: EnumTextColor;
   disabled?: boolean;
+  lockedFeatureIndicator?: React.ReactNode;
 };
 
 export type TabProps = Omit<MuiTabProps, "label"> & TabItem;
 
-// {tab.disabled && (
-//   <LockedFeatureIndicator featureName={"featureName"} />
-// )}
-
 function Tab(props: TabProps) {
-  const { to, exact, iconName, name, indicatorColor, indicatorValue, ...rest } =
-    props;
+  const {
+    to,
+    exact,
+    iconName,
+    name,
+    indicatorColor,
+    indicatorValue,
+    disabled,
+    lockedFeatureIndicator,
+    ...rest
+  } = props;
 
   const colorStyle = indicatorColor && {
     backgroundColor: `var(--${indicatorColor})`,
@@ -52,7 +58,7 @@ function Tab(props: TabProps) {
           {indicatorValue}
         </span>
       )}
-      {rest.disabled && <p>test</p>}
+      {disabled && lockedFeatureIndicator}
     </>
   );
 
@@ -60,9 +66,9 @@ function Tab(props: TabProps) {
     <MuiTab
       className="amp-tab"
       component={NavLink}
-      classes={{ selected: "amp-tab--selected", disabled: "amp-tab--disabled" }}
+      classes={{ selected: "amp-tab--selected" }}
       // icon={iconName && <Icon size={"small"} icon={iconName} />}
-      to={to}
+      to={!disabled && to}
       label={label}
       disableRipple
       {...rest}

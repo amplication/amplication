@@ -28,10 +28,6 @@ $tab-height: 26px;
       margin-right: var(--icon-spacing);
     }
 
-    &--disabled {
-      color: var(--gray-40);
-    }
-
     &__indicator {
       font-size: var(--tag-font-size);
       background-color: var(--theme-orange);

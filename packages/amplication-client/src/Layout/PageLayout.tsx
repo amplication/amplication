@@ -1,6 +1,7 @@
 import { TabItem, Tabs } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React from "react";
+import { LockedFeatureIndicator } from "../Components/LockedFeatureIndicator";
 import "./PageLayout.scss";
 
 type Props = {
@@ -20,7 +21,15 @@ function PageLayout({ children, className, tabs }: Props) {
           <div className={`${CLASS_NAME}__header`}>
             <Tabs>
               {tabs.map((tab, index) => (
-                <Tabs.Tab key={index} {...tab} disabled={tab.disabled} />
+                <Tabs.Tab
+                  key={index}
+                  {...tab}
+                  lockedFeatureIndicator={
+                    tab.disabled && (
+                      <LockedFeatureIndicator featureName={tab.name} />
+                    )
+                  }
+                />
               ))}
             </Tabs>
           </div>
