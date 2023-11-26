@@ -3,11 +3,10 @@ import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
 import { join } from "path";
 import { AMPLICATION_MODULES } from "../generate-code";
-
+import { plugins } from "./constants/example-plugins";
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
@@ -19,6 +18,8 @@ describe("createDataService", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
+          moduleContainers: [],
+          moduleActions: [],
           entities,
           roles,
           buildId: "example_build_id",
@@ -33,7 +34,7 @@ describe("createDataService", () => {
             },
           },
           resourceType: EnumResourceType.Service,
-          pluginInstallations: installedPlugins,
+          pluginInstallations: [plugins.postgresPlugin],
         },
         MockedLogger,
         join(__dirname, "../../", AMPLICATION_MODULES)
