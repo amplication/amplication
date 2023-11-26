@@ -62,6 +62,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
 

@@ -725,6 +725,7 @@ export enum EnumGitOrganizationType {
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
   Bitbucket = 'Bitbucket',
+  GitLab = 'GitLab',
   Github = 'Github'
 }
 
@@ -2241,12 +2242,14 @@ export enum Role {
 export type ServerSettings = {
   generateGraphQL: Scalars['Boolean']['output'];
   generateRestApi: Scalars['Boolean']['output'];
+  generateServer?: Maybe<Scalars['Boolean']['output']>;
   serverPath: Scalars['String']['output'];
 };
 
 export type ServerSettingsUpdateInput = {
   generateGraphQL?: InputMaybe<Scalars['Boolean']['input']>;
   generateRestApi?: InputMaybe<Scalars['Boolean']['input']>;
+  generateServer?: InputMaybe<Scalars['Boolean']['input']>;
   serverPath?: InputMaybe<Scalars['String']['input']>;
 };
 

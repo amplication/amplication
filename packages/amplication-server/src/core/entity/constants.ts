@@ -27,7 +27,6 @@ type EntityFieldData = Omit<
 > & { properties: JsonObject };
 
 export const USER_ENTITY_NAME = "User";
-export const USER_ENTITY_FIELDS = ["password", "username"];
 
 export const DEFAULT_PERMISSIONS: Prisma.EntityPermissionCreateWithoutEntityVersionInput[] =
   [

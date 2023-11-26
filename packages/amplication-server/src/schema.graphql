@@ -685,6 +685,7 @@ enum EnumGitOrganizationType {
 enum EnumGitProvider {
   AwsCodeCommit
   Bitbucket
+  GitLab
   Github
 }
 
@@ -1575,12 +1576,14 @@ enum Role {
 type ServerSettings {
   generateGraphQL: Boolean!
   generateRestApi: Boolean!
+  generateServer: Boolean
   serverPath: String!
 }
 
 input ServerSettingsUpdateInput {
   generateGraphQL: Boolean
   generateRestApi: Boolean
+  generateServer: Boolean = true
   serverPath: String
 }
 

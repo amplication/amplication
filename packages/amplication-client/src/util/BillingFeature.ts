@@ -9,6 +9,7 @@ export enum BillingFeature {
   HideNotifications = "feature-ignore-validation-code-generation-hide-notifications",
   AwsCodeCommit = "feature-awscodecommit",
   Bitbucket = "feature-bitbucket",
+  GitLab = "feature-gitlab",
   ImportDBSchema = "feature-import-db-schema",
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",

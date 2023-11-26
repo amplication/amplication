@@ -1025,12 +1025,14 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "admin-ui/src/api/user/User.ts": "import { Organization } from "../organization/Organization";
-import { JsonValue } from "type-fest";
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
 import { Profile } from "../profile/Profile";
 
 export type User = {
   id: string;
+  username: string;
+  roles: JsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1054,13 +1056,16 @@ export type UserCountArgs = {
   where?: UserWhereInput;
 };
 ",
-  "admin-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
   name: string;
   bio: string;
   email: string;
@@ -1112,6 +1117,9 @@ export type UserListRelationFilter = {
 
 export type UserOrderByInput = {
   id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
   email?: SortOrder;
@@ -1127,13 +1135,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "admin-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -1170,6 +1181,7 @@ import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserWhereInput = {
   id?: StringFilter;
+  username?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -2508,23 +2520,33 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2589,23 +2611,33 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2687,6 +2719,8 @@ export const UserList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick="show">
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2726,6 +2760,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2750,10 +2786,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
 
-export const USER_TITLE_FIELD = "name";
+export const USER_TITLE_FIELD = "username";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name?.toString() || String(record.id);
+  return record.username?.toString() || String(record.id);
 };
 ",
   "admin-ui/src/user/roles.ts": "export const ROLES = [
@@ -3142,6 +3178,9 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
+  username           String              @unique
+  roles              Json
+  password           String
   name               String              @unique @map("name")
   bio                String
   email              String
@@ -9213,6 +9252,7 @@ export class ProfileService extends ProfileServiceBase {
   "server/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -9228,7 +9268,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -9236,16 +9278,15 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
   it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });
@@ -9640,13 +9681,13 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
 import { Organization } from "../../organization/base/Organization";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 import { Profile } from "../../profile/base/Profile";
 
 @ObjectType()
@@ -9658,6 +9699,21 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -9847,19 +9903,42 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -10225,6 +10304,39 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   name?: SortOrder;
 
   @ApiProperty({
@@ -10387,19 +10499,51 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -10658,6 +10802,17 @@ class UserWhereInput {
     nullable: true,
   })
   id?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
+  username?: StringFilter;
 
   @ApiProperty({
     required: false,
