@@ -58,7 +58,9 @@ function Tab(props: TabProps) {
           {indicatorValue}
         </span>
       )}
-      {disabled && lockedFeatureIndicator}
+      {disabled && (
+        <span className="amp-tab__indicator">{lockedFeatureIndicator}</span>
+      )}
     </>
   );
 
