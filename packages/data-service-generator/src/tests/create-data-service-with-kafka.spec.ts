@@ -9,14 +9,21 @@ import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { rm } from "fs/promises";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when kafka plugin is installed", () => {
     test("creates resource as expected", async () => {
@@ -73,7 +80,7 @@ describe("createDataService", () => {
       const modules = await createDataService(
         service,
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()

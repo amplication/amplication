@@ -6,8 +6,8 @@ import { EnumResourceType } from "../models";
 import { installedPlugins } from "./pluginInstallation";
 import { createDataService } from "../create-data-service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { rm } from "fs/promises";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -23,9 +23,16 @@ const newAppInfo: AppInfo = {
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when graphql is disabled", () => {
     test("creates app as expected", async () => {
@@ -39,7 +46,7 @@ describe("createDataService", () => {
           pluginInstallations: installedPlugins,
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()
