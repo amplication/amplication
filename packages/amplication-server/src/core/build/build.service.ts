@@ -60,6 +60,7 @@ const PROVIDERS_DISPLAY_NAME: { [key in EnumGitProvider]: string } = {
   [EnumGitProvider.AwsCodeCommit]: "AWS CodeCommit",
   [EnumGitProvider.Bitbucket]: "Bitbucket",
   [EnumGitProvider.Github]: "GitHub",
+  [EnumGitProvider.GitLab]: "GitLab",
 };
 import { encryptString } from "../../util/encryptionUtil";
 
@@ -383,6 +384,8 @@ export class BuildService {
             workspaceId: commitWithAccount.commit.project.workspaceId,
             projectId: commitWithAccount.commit.projectId,
             buildId: buildId,
+            projectName: commitWithAccount.commit.project.name,
+            createdAt: Date.now(),
             externalId: encryptString(commitWithAccount.commit.user.id),
             envBaseUrl: this.configService.get<string>(Env.CLIENT_HOST),
           },

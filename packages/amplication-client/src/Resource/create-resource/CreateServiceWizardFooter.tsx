@@ -3,7 +3,7 @@ import {
   EnumButtonStyle,
   EnumIconPosition,
 } from "@amplication/ui/design-system";
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import "./CreateServiceWizard.scss";
 import { AppContext } from "../../context/appContext";
 import InnerTabLink from "../../Layout/InnerTabLink";
@@ -11,7 +11,13 @@ import InnerTabLink from "../../Layout/InnerTabLink";
 // eslint-disable-next-line @typescript-eslint/ban-types
 const CreateServiceWizardFooter: React.FC<{}> = () => {
   const { currentProject, currentWorkspace } = useContext(AppContext);
+  const [continueButtonClicked, setContinueButtonClicked] = useState(false);
 
+  const handleCreateServiceClick = () => {
+    if (!continueButtonClicked) {
+      setContinueButtonClicked(true);
+    }
+  };
   return (
     <div className={`create-service-wizard__footer`}>
       <Button
@@ -42,7 +48,8 @@ const CreateServiceWizardFooter: React.FC<{}> = () => {
       </InnerTabLink>
       <Button
         buttonStyle={EnumButtonStyle.Primary}
-        //onClick={handleCreateServiceClick}
+        onClick={handleCreateServiceClick}
+        disabled={continueButtonClicked}
       >
         Continue
       </Button>

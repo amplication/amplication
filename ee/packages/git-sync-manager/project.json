@@ -27,7 +27,8 @@
         "tsConfig": "ee/packages/git-sync-manager/tsconfig.app.json",
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -41,7 +42,8 @@
       "executor": "@nx/js:node",
       "options": {
         "buildTarget": "git-sync-manager:build",
-        "port": 7001
+        "port": 7001,
+        "watch": true
       },
       "configurations": {
         "production": {
