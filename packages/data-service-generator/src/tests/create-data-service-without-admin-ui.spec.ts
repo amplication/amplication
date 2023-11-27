@@ -34,7 +34,7 @@ describe("createDataService", () => {
             },
           },
           resourceType: EnumResourceType.Service,
-          pluginInstallations: [plugins.postgresPlugin],
+          pluginInstallations: [],
         },
         MockedLogger,
         join(__dirname, "../../", AMPLICATION_MODULES)
