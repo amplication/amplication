@@ -7,6 +7,7 @@ import roles from "./roles";
 import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { rm } from "fs/promises";
+import { plugins } from "./mock-data-plugin-installations";
 
 jest.setTimeout(100000);
 
@@ -36,22 +37,7 @@ describe("createDataService", () => {
             },
           },
           resourceType: EnumResourceType.Service,
-          pluginInstallations: [
-            {
-              id: "auth-core",
-              npm: "@amplication/plugin-auth-core",
-              enabled: true,
-              version: "latest",
-              pluginId: "auth-core",
-            },
-            {
-              id: "auth-jwt",
-              npm: "@amplication/plugin-auth-jwt",
-              enabled: true,
-              version: "latest",
-              pluginId: "auth-jwt",
-            },
-          ],
+          pluginInstallations: [plugins.authCore, plugins.authJwt],
         },
         MockedLogger,
         temporaryPluginInstallationPath

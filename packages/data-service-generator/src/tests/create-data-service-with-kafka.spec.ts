@@ -11,6 +11,7 @@ import entities from "./entities";
 import roles from "./roles";
 import { rm } from "fs/promises";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { plugins } from "./mock-data-plugin-installations";
 
 jest.setTimeout(100000);
 
@@ -67,15 +68,7 @@ describe("createDataService", () => {
           },
         ],
         otherResources: [messageBroker],
-        pluginInstallations: [
-          {
-            id: "broker-kafka",
-            npm: "@amplication/plugin-broker-kafka",
-            enabled: true,
-            pluginId: "broker-kafka",
-            version: "latest",
-          },
-        ],
+        pluginInstallations: [plugins.kafka],
       };
       const modules = await createDataService(
         service,
