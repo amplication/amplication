@@ -17,6 +17,16 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
     pluginId: "auth-jwt",
     settings: {},
   },
+  grpcPlugin: {
+    id: "transport-grpc",
+    npm: "@amplication/plugin-transport-grpc",
+    enabled: true,
+    version: "latest",
+    pluginId: "transport-grpc",
+    configurations: {
+      generateGRPC: "true",
+    },
+  },
   postgresPlugin: {
     id: "clb3p3ov800cplc01a8f6uwje",
     npm: "@amplication/plugin-db-postgres",
