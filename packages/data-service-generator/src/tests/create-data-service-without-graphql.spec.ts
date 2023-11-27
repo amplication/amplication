@@ -3,7 +3,6 @@ import roles from "./roles";
 import { AppInfo } from "@amplication/code-gen-types";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { EnumResourceType } from "../models";
-import { installedPlugins } from "./pluginInstallation";
 import { createDataService } from "../create-data-service";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
@@ -43,7 +42,7 @@ describe("createDataService", () => {
           roles,
           resourceInfo: newAppInfo,
           resourceType: EnumResourceType.Service,
-          pluginInstallations: installedPlugins,
+          pluginInstallations: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath

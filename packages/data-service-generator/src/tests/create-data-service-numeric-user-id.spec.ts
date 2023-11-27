@@ -4,7 +4,6 @@ import { EnumDataType, EnumResourceType } from "../models";
 import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
 import roles from "./roles";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { rm } from "fs/promises";
@@ -45,7 +44,7 @@ describe("createDataService", () => {
           roles,
           resourceInfo: appInfo,
           resourceType: EnumResourceType.Service,
-          pluginInstallations: installedPlugins,
+          pluginInstallations: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath
