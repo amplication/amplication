@@ -280,10 +280,21 @@ const WorkspaceHeader: React.FC = () => {
 
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
-          <Button
-            buttonStyle={EnumButtonStyle.Text}
-            icon="log_out"
-            onClick={handleSignOut}
+          <CommandPalette
+            trigger={
+              <Tooltip
+                className="amp-menu-item__tooltip"
+                aria-label={`Logout`}
+                direction="sw"
+                noDelay
+              >
+                <Button
+                  buttonStyle={EnumButtonStyle.Text}
+                  icon="log_out"
+                  onClick={handleSignOut}
+                />
+              </Tooltip>
+            }
           />
         </div>
       </div>
