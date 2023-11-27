@@ -6,7 +6,7 @@ import entities from "./entities";
 import roles from "./roles";
 import { join } from "path";
 import { AMPLICATION_MODULES } from "../generate-code";
-import { plugins } from "./constants/example-plugins";
+
 jest.setTimeout(100000);
 
 describe("createDataService", () => {
