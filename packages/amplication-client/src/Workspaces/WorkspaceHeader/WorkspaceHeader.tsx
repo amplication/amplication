@@ -27,7 +27,10 @@ import BreadcrumbsContext from "../../Layout/BreadcrumbsContext";
 import ProfileForm from "../../Profile/ProfileForm";
 import { unsetToken } from "../../authentication/authentication";
 import { AppContext } from "../../context/appContext";
-import { NX_REACT_APP_AUTH_LOGOUT_URI } from "../../env";
+import {
+  NX_REACT_APP_AUTH_LOGOUT_URI,
+  NX_REACT_APP_NOVU_IDENTIFIER,
+} from "../../env";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
@@ -251,7 +254,7 @@ const WorkspaceHeader: React.FC = () => {
               <div className={`${CLASS_NAME}__notification_bell`}>
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
-                  applicationIdentifier={"gY2CIIdnBCc1"}
+                  applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
                 >
                   <PopoverNotificationCenter
                     colorScheme={"dark"}

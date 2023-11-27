@@ -18,4 +18,5 @@ export const environment = {
   NX_REACT_APP_AUTH_LOGIN_URI: "https://server.amplication.com/auth/login",
   NX_REACT_APP_AUTH_LOGOUT_URI: "https://server.amplication.com/auth/logout",
   NX_REACT_APP_PLUGIN_VERSION_USE_LATEST: "true",
+  NX_REACT_APP_NOVU_IDENTIFIER: "OKA4d1nFNswT",
 };

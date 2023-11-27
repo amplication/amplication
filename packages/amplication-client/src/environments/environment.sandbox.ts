@@ -20,4 +20,5 @@ export const environment = {
   NX_REACT_APP_AUTH_LOGOUT_URI:
     "https://server.amplication-sandbox.com/auth/logout",
   NX_REACT_APP_PLUGIN_VERSION_USE_LATEST: "true",
+  NX_REACT_APP_NOVU_IDENTIFIER: "gY2CIIdnBCc1",
 };
