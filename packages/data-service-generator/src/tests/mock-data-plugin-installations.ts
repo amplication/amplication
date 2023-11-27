@@ -9,7 +9,14 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
     pluginId: "broker-kafka",
     settings: {},
   },
-  jwtAuth: {
+  authCore: {
+    id: "auth-core",
+    npm: "@amplication/plugin-auth-core",
+    enabled: true,
+    version: "latest",
+    pluginId: "auth-core",
+  },
+  authJwt: {
     id: "clb3p3uxx009bjn01zfbim7p1",
     npm: "@amplication/plugin-auth-jwt",
     enabled: true,
@@ -17,7 +24,17 @@ export const plugins: Record<string, PluginInstallation> = Object.freeze({
     pluginId: "auth-jwt",
     settings: {},
   },
-  postgresPlugin: {
+  grpc: {
+    id: "transport-grpc",
+    npm: "@amplication/plugin-transport-grpc",
+    enabled: true,
+    version: "latest",
+    pluginId: "transport-grpc",
+    configurations: {
+      generateGRPC: "true",
+    },
+  },
+  postgres: {
     id: "clb3p3ov800cplc01a8f6uwje",
     npm: "@amplication/plugin-db-postgres",
     enabled: true,

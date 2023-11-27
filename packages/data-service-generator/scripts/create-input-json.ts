@@ -14,7 +14,7 @@ async function createInputJsonFile() {
     roles,
     resourceInfo: appInfo,
     resourceType: EnumResourceType.Service,
-    pluginInstallations: [plugins.postgresPlugin],
+    pluginInstallations: [plugins.postgres],
   };
 
   const buildSpecPath = process.env.BUILD_SPEC_PATH;

@@ -4,15 +4,23 @@ import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import roles from "./roles";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
 import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { rm } from "fs/promises";
+import { plugins } from "./mock-data-plugin-installations";
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when auth-jwt plugin is installed", () => {
     test("creates resource as expected", async () => {
@@ -29,25 +37,10 @@ describe("createDataService", () => {
             },
           },
           resourceType: EnumResourceType.Service,
-          pluginInstallations: [
-            {
-              id: "auth-core",
-              npm: "@amplication/plugin-auth-core",
-              enabled: true,
-              version: "latest",
-              pluginId: "auth-core",
-            },
-            {
-              id: "auth-jwt",
-              npm: "@amplication/plugin-auth-jwt",
-              enabled: true,
-              version: "latest",
-              pluginId: "auth-jwt",
-            },
-          ],
+          pluginInstallations: [plugins.authCore, plugins.authJwt],
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()
