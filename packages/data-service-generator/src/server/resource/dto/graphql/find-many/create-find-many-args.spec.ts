@@ -4,12 +4,12 @@ import {
   EXAMPLE_ID_FIELD,
   EXAMPLE_SINGLE_LINE_TEXT_FIELD,
 } from "../../../util/test-data";
-import { createWhereInput } from "../../create-where-input";
 import { createOrderByInput } from "../order-by-input/order-by-input";
 import {
   createFindManyArgs,
   createFindManyArgsId,
 } from "./create-find-many-args";
+import { createEntityInputFiles } from "../../../create-dtos";
 
 const EXAMPLE_ENTITY: Entity = {
   id: "EXAMPLE_ENTITY_ID",
@@ -20,7 +20,8 @@ const EXAMPLE_ENTITY: Entity = {
   fields: [EXAMPLE_ID_FIELD, EXAMPLE_SINGLE_LINE_TEXT_FIELD],
   permissions: [],
 };
-const EXAMPLE_WHERE_INPUT = createWhereInput(EXAMPLE_ENTITY);
+const EXAMPLE_WHERE_INPUT = createEntityInputFiles(EXAMPLE_ENTITY);
+const exampleWhereInput = EXAMPLE_WHERE_INPUT.whereInput;
 
 describe("createFindManyArgs", () => {
   test("creates find many args", async () => {
@@ -30,7 +31,7 @@ describe("createFindManyArgs", () => {
       print(
         await createFindManyArgs(
           EXAMPLE_ENTITY,
-          EXAMPLE_WHERE_INPUT,
+          exampleWhereInput,
           EXAMPLE_ORDER_BY_INPUT
         )
       ).code
@@ -38,13 +39,13 @@ describe("createFindManyArgs", () => {
 class ${createFindManyArgsId(EXAMPLE_ENTITY.name).name} {
   @ApiProperty({
     required: false,
-    type: () => ${EXAMPLE_WHERE_INPUT.id.name},
+    type: () => ${exampleWhereInput.id.name},
   })
   @IsOptional()
   @ValidateNested()
-  @Field(() => ${EXAMPLE_WHERE_INPUT.id.name}, { nullable: true })
-  @Type(() => ${EXAMPLE_WHERE_INPUT.id.name})
-  where?: ${EXAMPLE_WHERE_INPUT.id.name};
+  @Field(() => ${exampleWhereInput.id.name}, { nullable: true })
+  @Type(() => ${exampleWhereInput.id.name})
+  where?: ${exampleWhereInput.id.name};
 
   @ApiProperty({
     required: false,

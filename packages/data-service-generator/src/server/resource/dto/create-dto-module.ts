@@ -6,8 +6,8 @@ import { relativeImportPath } from "../../../utils/module";
 import {
   addAutoGenerationComment,
   addImports,
-  importContainedIdentifiers,
   exportNames,
+  importContainedIdentifiers2,
 } from "../../../utils/ast";
 import {
   CLASS_VALIDATOR_MODULE,
@@ -130,14 +130,13 @@ export function createDTOFile(
     namedTypes.Identifier.check(dto.id)
       ? [dto, exportNames([dto.id])]
       : [builders.exportNamedDeclaration(dto)];
+
   const file = builders.file(builders.program(statements));
   const moduleToIds = {
     ...getImportableNames(),
     ...getImportableDTOs(modulePath, dtoNameToPath),
   };
-
-  addImports(file, importContainedIdentifiers(dto, moduleToIds));
-
+  addImports(file, importContainedIdentifiers2(dto, moduleToIds));
   return file;
 }
 

@@ -5,9 +5,12 @@ import { KafkaProducerService } from "@amplication/util/nestjs/kafka";
 import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BuildLoggerController } from "./build-logger.controller";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
+import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
+  let buildJobsHandlerService: BuildJobsHandlerService;
+
   const mockServiceEmitMessage = jest
     .fn()
     .mockImplementation(
@@ -41,10 +44,19 @@ describe("Build Logger Controller", () => {
             },
           },
         },
+        {
+          provide: BuildJobsHandlerService,
+          useValue: {
+            extractBuildId: jest.fn(),
+          },
+        },
       ],
     }).compile();
 
     controller = module.get<BuildLoggerController>(BuildLoggerController);
+    buildJobsHandlerService = module.get<BuildJobsHandlerService>(
+      BuildJobsHandlerService
+    );
   });
 
   it("should be defined", () => {
@@ -52,6 +64,10 @@ describe("Build Logger Controller", () => {
   });
 
   it("should emit `CodeGenerationLog.KafkaEvent` message on Kafka producer service", async () => {
+    const spyOnBuildJobsHandlerServiceExtractBuildId = jest
+      .spyOn(buildJobsHandlerService, "extractBuildId")
+      .mockReturnValue("buildID");
+
     const mockRequestLogDOT: CodeGenerationLogRequestDto = {
       buildId: "buildID",
       level: "info",
@@ -69,6 +85,8 @@ describe("Build Logger Controller", () => {
       KAFKA_TOPICS.DSG_LOG_TOPIC,
       logEvent
     );
+
+    expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockServiceEmitMessage()).resolves.not.toThrow();
   });
 });

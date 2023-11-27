@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`createDataService creates app as expected 1`] = `
+exports[`createDataService when server and admin are configured with custom path creates app as expected 1`] = `
 {
   "test-ui/.env": "PORT=3001
 REACT_APP_SERVER_URL=http://localhost:3000",
@@ -1025,12 +1025,14 @@ export type UpdateUserArgs = {
   data: UserUpdateInput;
 };
 ",
-  "test-ui/src/api/user/User.ts": "import { Organization } from "../organization/Organization";
-import { JsonValue } from "type-fest";
+  "test-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
 import { Profile } from "../profile/Profile";
 
 export type User = {
   id: string;
+  username: string;
+  roles: JsonValue;
   name: string;
   bio: string;
   email: string;
@@ -1054,13 +1056,16 @@ export type UserCountArgs = {
   where?: UserWhereInput;
 };
 ",
-  "test-ui/src/api/user/UserCreateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "test-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
   name: string;
   bio: string;
   email: string;
@@ -1112,6 +1117,9 @@ export type UserListRelationFilter = {
 
 export type UserOrderByInput = {
   id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
   name?: SortOrder;
   bio?: SortOrder;
   email?: SortOrder;
@@ -1127,13 +1135,16 @@ export type UserOrderByInput = {
   profileId?: SortOrder;
 };
 ",
-  "test-ui/src/api/user/UserUpdateInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+  "test-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
   name?: string;
   bio?: string;
   email?: string;
@@ -1170,6 +1181,7 @@ import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
 
 export type UserWhereInput = {
   id?: StringFilter;
+  username?: StringFilter;
   name?: StringFilter;
   bio?: StringFilter;
   age?: IntFilter;
@@ -2508,23 +2520,33 @@ import {
   SimpleForm,
   CreateProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserCreate = (props: CreateProps): React.ReactElement => {
   return (
     <Create {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2589,23 +2611,33 @@ import {
   SimpleForm,
   EditProps,
   TextInput,
+  SelectArrayInput,
+  PasswordInput,
   NumberInput,
   DateTimeInput,
   ReferenceInput,
   SelectInput,
   ReferenceArrayInput,
-  SelectArrayInput,
   BooleanInput,
 } from "react-admin";
 
 import { UserTitle } from "./UserTitle";
 import { OrganizationTitle } from "../organization/OrganizationTitle";
 import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
 
 export const UserEdit = (props: EditProps): React.ReactElement => {
   return (
     <Edit {...props}>
       <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
         <TextInput label="Name" source="name" />
         <TextInput label="Bio" multiline source="bio" />
         <TextInput label="Email" source="email" type="email" />
@@ -2687,6 +2719,8 @@ export const UserList = (props: ListProps): React.ReactElement => {
     >
       <Datagrid rowClick="show">
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2726,6 +2760,8 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
     <Show {...props}>
       <SimpleShowLayout>
         <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
         <TextField label="Name" source="name" />
         <TextField label="Bio" source="bio" />
         <TextField label="Email" source="email" />
@@ -2750,10 +2786,10 @@ export const UserShow = (props: ShowProps): React.ReactElement => {
 ",
   "test-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
 
-export const USER_TITLE_FIELD = "name";
+export const USER_TITLE_FIELD = "username";
 
 export const UserTitle = (record: TUser): string => {
-  return record.name?.toString() || String(record.id);
+  return record.username?.toString() || String(record.id);
 };
 ",
   "test-ui/src/user/roles.ts": "export const ROLES = [
@@ -2974,7 +3010,12 @@ export class StringNullableFilter {
 ",
   "test/.env": "BCRYPT_SALT=10
 COMPOSE_PROJECT_NAME=amp_\${resourceId}
-PORT=3000",
+PORT=3000
+DB_URL=postgres://admin:admin@localhost:5432/my-db
+DB_USER=admin
+DB_PASSWORD=admin
+DB_PORT=5432
+DB_NAME=my-db",
   "test/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
  
 /node_modules
@@ -2982,6 +3023,18 @@ PORT=3000",
 .DS_Store
 ",
   "test/docker-compose.dev.yml": "version: "3"
+services:
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+volumes:
+  postgres: ~
 ",
   "test/docker-compose.yml": "version: "3"
 services:
@@ -2994,10 +3047,10 @@ services:
       - \${PORT}:3000
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
-      JWT_SECRET_KEY: \${JWT_SECRET_KEY}
-      JWT_EXPIRATION: \${JWT_EXPIRATION}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       - migrate
+    restart: on-failure
   migrate:
     build:
       context: .
@@ -3007,9 +3060,29 @@ services:
     working_dir: /app/server
     environment:
       BCRYPT_SALT: \${BCRYPT_SALT}
+      DB_URL: postgres://\${DB_USER}:\${DB_PASSWORD}@db:5432/\${DB_NAME}
     depends_on:
       db:
         condition: service_healthy
+  db:
+    image: postgres:12
+    ports:
+      - \${DB_PORT}:5432
+    environment:
+      POSTGRES_USER: \${DB_USER}
+      POSTGRES_PASSWORD: \${DB_PASSWORD}
+      POSTGRES_DB: \${DB_NAME}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+    healthcheck:
+      test:
+        - CMD-SHELL
+        - pg_isready -d $\${POSTGRES_DB} -U $\${POSTGRES_USER}
+      timeout: 45s
+      interval: 10s
+      retries: 10
+volumes:
+  postgres: ~
 ",
   "test/nest-cli.json": "{
   "sourceRoot": "src",
@@ -3040,7 +3113,6 @@ services:
     "compose:down": "docker-compose down --volumes"
   },
   "dependencies": {
-    "@amplication/nest-access-control": "2.2.1",
     "@apollo/server": "^4.9.4",
     "@nestjs/apollo": "12.0.9",
     "@nestjs/common": "10.2.7",
@@ -3057,18 +3129,18 @@ services:
     "bcrypt": "5.1.1",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.0",
+    "decimal.js": "10.4.3",
     "dotenv": "16.3.1",
-    "graphql-type-json": "0.3.2",
     "graphql": "^16.8.1",
+    "graphql-type-json": "0.3.2",
     "npm-run-all": "4.1.5",
+    "passport": "0.6.0",
     "passport-http": "0.3.0",
     "passport-jwt": "4.0.1",
-    "passport": "0.6.0",
     "reflect-metadata": "0.1.13",
     "ts-node": "10.9.1",
     "type-fest": "2.19.0",
-    "validator": "13.11.0",
-    "decimal.js": "10.4.3"
+    "validator": "13.11.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.1.18",
@@ -3081,8 +3153,8 @@ services:
     "@types/passport-jwt": "3.0.10",
     "@types/supertest": "^2.0.14",
     "@types/validator": "^13.11.2",
-    "jest-mock-extended": "^3.0.5",
     "jest": "^29.7.0",
+    "jest-mock-extended": "^3.0.5",
     "prisma": "^5.4.2",
     "supertest": "^6.3.3",
     "ts-jest": "^29.1.1",
@@ -3095,7 +3167,7 @@ services:
   }
 }
 ",
-  "test/prisma/schema.prisma": "datasource postgres {
+  "test/prisma/schema.prisma": "datasource db {
   provider = "postgresql"
   url      = env("DB_URL")
 }
@@ -3106,6 +3178,9 @@ generator client {
 
 model User {
   id                 String              @id @default(cuid())
+  username           String              @unique
+  roles              Json
+  password           String
   name               String              @unique @map("name")
   bio                String
   email              String
@@ -3256,8 +3331,7 @@ async function seed() {
   console.info("Seeded database successfully");
 }
 ",
-  "test/src/app.module.ts": "import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+  "test/src/app.module.ts": "import { Module } from "@nestjs/common";
 import { UserModule } from "./user/user.module";
 import { ProfileModule } from "./profile/profile.module";
 import { OrderModule } from "./order/order.module";
@@ -3291,7 +3365,7 @@ import { ApolloDriver, ApolloDriverConfig } from "@nestjs/apollo";
     }),
     GraphQLModule.forRootAsync<ApolloDriverConfig>({
       driver: ApolloDriver,
-      useFactory: (configService) => {
+      useFactory: (configService: ConfigService) => {
         const playground = configService.get("GRAPHQL_PLAYGROUND");
         const introspection = configService.get("GRAPHQL_INTROSPECTION");
         return {
@@ -3315,9 +3389,6 @@ import { ConfigService } from "@nestjs/config";
 export async function connectMicroservices(app: INestApplication) {
   const configService = app.get(ConfigService);
 }
-",
-  "test/src/constants.ts": "export const JWT_SECRET_KEY = "JWT_SECRET_KEY";
-export const JWT_EXPIRATION = "JWT_EXPIRATION";
 ",
   "test/src/customer/base/CreateCustomerArgs.ts": "/*
 ------------------------------------------------------------------------------ 
@@ -9524,6 +9595,8 @@ export class OrganizationControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -11570,6 +11643,7 @@ export class ProfileService extends ProfileServiceBase {
   "test/src/providers/secrets/base/secretsManager.service.base.spec.ts": "import { ConfigService } from "@nestjs/config";
 import { mock } from "jest-mock-extended";
 import { SecretsManagerServiceBase } from "./secretsManager.service.base";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 describe("Testing the secrets manager base class", () => {
   const SECRET_KEY = "SECRET_KEY";
@@ -11585,7 +11659,9 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(SECRET_VALUE);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBe(SECRET_VALUE);
   });
@@ -11593,33 +11669,30 @@ describe("Testing the secrets manager base class", () => {
     //ARRANGE
     configService.get.mockReturnValue(undefined);
     //ACT
-    const result = await secretsManagerServiceBase.getSecret(SECRET_KEY);
+    const result = await secretsManagerServiceBase.getSecret(
+      SECRET_KEY as unknown as EnumSecretsNameKey
+    );
     //ASSERT
     expect(result).toBeNull();
   });
-  it("should throw error if dont get key", () => {
-    return expect(secretsManagerServiceBase.getSecret("")).rejects.toThrow();
-  });
   it("should throw an exception if getting null key", () => {
     return expect(
-      secretsManagerServiceBase.getSecret(null as unknown as string)
+      secretsManagerServiceBase.getSecret(null as unknown as EnumSecretsNameKey)
     ).rejects.toThrow();
   });
 });
 ",
   "test/src/providers/secrets/base/secretsManager.service.base.ts": "import { ConfigService } from "@nestjs/config";
+import { EnumSecretsNameKey } from "../secretsNameKey.enum";
 
 export interface ISecretsManager {
-  getSecret: (key: string) => Promise<any | null>;
+  getSecret: (key: EnumSecretsNameKey) => Promise<any | null>;
 }
 
 export class SecretsManagerServiceBase implements ISecretsManager {
   constructor(protected readonly configService: ConfigService) {}
-  async getSecret<T>(key: string): Promise<T | null> {
-    if (!key) {
-      throw new Error("Didn't got the key");
-    }
-    const value = this.configService.get(key);
+  async getSecret<T>(key: EnumSecretsNameKey): Promise<T | null> {
+    const value = this.configService.get(key.toString());
     if (value) {
       return value;
     }
@@ -11647,6 +11720,7 @@ export class SecretsManagerService extends SecretsManagerServiceBase {
   }
 }
 ",
+  "test/src/providers/secrets/secretsNameKey.enum.ts": "export enum EnumSecretsNameKey {}",
   "test/src/serveStaticOptions.service.ts": "import * as path from "path";
 import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
@@ -11998,13 +12072,13 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
 import { Organization } from "../../organization/base/Organization";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { JsonValue } from "type-fest";
 import { Profile } from "../../profile/base/Profile";
 
 @ObjectType()
@@ -12016,6 +12090,21 @@ class User {
   @IsString()
   @Field(() => String)
   id!: string;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: JsonValue;
 
   @ApiProperty({
     required: true,
@@ -12205,19 +12294,42 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
 import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserCreateInput {
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  username!: string;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  roles!: InputJsonValue;
+
+  @ApiProperty({
+    required: true,
+    type: String,
+  })
+  @IsString()
+  @Field(() => String)
+  password!: string;
+
   @ApiProperty({
     required: true,
     type: String,
@@ -12583,6 +12695,39 @@ class UserOrderByInput {
   @Field(() => SortOrder, {
     nullable: true,
   })
+  username?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  roles?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
+  password?: SortOrder;
+
+  @ApiProperty({
+    required: false,
+    enum: ["asc", "desc"],
+  })
+  @IsOptional()
+  @IsEnum(SortOrder)
+  @Field(() => SortOrder, {
+    nullable: true,
+  })
   name?: SortOrder;
 
   @ApiProperty({
@@ -12745,19 +12890,51 @@ import {
   IsBoolean,
 } from "class-validator";
 
+import { IsJSONValue } from "@app/custom-validators";
+import { GraphQLJSON } from "graphql-type-json";
+import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
 import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
 import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
 import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
 import { EnumUserInterests } from "./EnumUserInterests";
 import { EnumUserPriority } from "./EnumUserPriority";
-import { IsJSONValue } from "@app/custom-validators";
-import { GraphQLJSON } from "graphql-type-json";
-import { InputJsonValue } from "../../types";
 import { ProfileWhereUniqueInput } from "../../profile/base/ProfileWhereUniqueInput";
 
 @InputType()
 class UserUpdateInput {
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  username?: string;
+
+  @ApiProperty({
+    required: false,
+  })
+  @IsJSONValue()
+  @IsOptional()
+  @Field(() => GraphQLJSON, {
+    nullable: true,
+  })
+  roles?: InputJsonValue;
+
+  @ApiProperty({
+    required: false,
+    type: String,
+  })
+  @IsString()
+  @IsOptional()
+  @Field(() => String, {
+    nullable: true,
+  })
+  password?: string;
+
   @ApiProperty({
     required: false,
     type: String,
@@ -13026,6 +13203,17 @@ class UserWhereInput {
   @Field(() => StringFilter, {
     nullable: true,
   })
+  username?: StringFilter;
+
+  @ApiProperty({
+    required: false,
+    type: StringFilter,
+  })
+  @Type(() => StringFilter)
+  @IsOptional()
+  @Field(() => StringFilter, {
+    nullable: true,
+  })
   name?: StringFilter;
 
   @ApiProperty({
@@ -13193,6 +13381,8 @@ const nonExistingId = "nonExistingId";
 const existingId = "existingId";
 const CREATE_INPUT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13204,6 +13394,8 @@ const CREATE_INPUT = {
 };
 const CREATE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13216,6 +13408,8 @@ const CREATE_RESULT = {
 const FIND_MANY_RESULT = [
   {
     id: "exampleId",
+    username: "exampleUsername",
+    password: "examplePassword",
     name: "exampleName",
     bio: "exampleBio",
     email: "exampleEmail",
@@ -13228,6 +13422,8 @@ const FIND_MANY_RESULT = [
 ];
 const FIND_ONE_RESULT = {
   id: "exampleId",
+  username: "exampleUsername",
+  password: "examplePassword",
   name: "exampleName",
   bio: "exampleBio",
   email: "exampleEmail",
@@ -13435,6 +13631,8 @@ export class UserControllerBase {
       },
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13472,6 +13670,8 @@ export class UserControllerBase {
       ...args,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13510,6 +13710,8 @@ export class UserControllerBase {
       where: params,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,
@@ -13571,6 +13773,8 @@ export class UserControllerBase {
         },
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -13618,6 +13822,8 @@ export class UserControllerBase {
         where: params,
         select: {
           id: true,
+          username: true,
+          roles: true,
           name: true,
           bio: true,
           email: true,
@@ -13665,6 +13871,8 @@ export class UserControllerBase {
       ...query,
       select: {
         id: true,
+        username: true,
+        roles: true,
         name: true,
         bio: true,
         email: true,

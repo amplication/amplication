@@ -1,0 +1,3012 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`createDataService when server is disabled creates app as expected 1`] = `
+{
+  "admin-ui/.env": "PORT=3001
+REACT_APP_SERVER_URL=http://localhost:3000",
+  "admin-ui/.gitignore": "# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+ 
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+ 
+# testing
+/coverage
+ 
+# production
+/build
+ 
+# misc
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+ 
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+",
+  "admin-ui/package.json": "{
+  "name": "@sample-application/admin",
+  "version": "0.1.3",
+  "private": true,
+  "dependencies": {
+    "@apollo/client": "3.6.9",
+    "@material-ui/core": "4.12.4",
+    "graphql": "15.6.1",
+    "lodash": "4.17.21",
+    "pluralize": "8.0.0",
+    "ra-data-graphql-amplication": "0.0.14",
+    "react": "16.14.0",
+    "react-admin": "3.19.12",
+    "react-dom": "16.14.0",
+    "react-scripts": "5.0.0",
+    "sass": "^1.39.0",
+    "web-vitals": "1.1.2"
+  },
+  "overrides": {
+    "react-scripts": {
+      "@svgr/webpack": "6.5.1"
+    }
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject",
+    "package:container": "docker build ."
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "5.14.1",
+    "@testing-library/react": "11.2.7",
+    "@testing-library/user-event": "13.2.0",
+    "@types/jest": "26.0.16",
+    "@types/lodash": "4.14.178",
+    "@types/node": "12.20.16",
+    "@types/react": "16.14.11",
+    "@types/react-dom": "17.0.0",
+    "type-fest": "0.13.1",
+    "typescript": "4.3.5"
+  }
+}",
+  "admin-ui/public/manifest.json": "{
+  "short_name": "Sample Application",
+  "name": "Sample Application",
+  "icons": [
+    {
+      "src": "favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "logo192.png",
+      "type": "image/png",
+      "sizes": "192x192"
+    },
+    {
+      "src": "logo512.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": ".",
+  "display": "standalone",
+  "theme_color": "#000000",
+  "background_color": "#ffffff"
+}",
+  "admin-ui/src/App.tsx": "import React, { useEffect, useState } from "react";
+import { Admin, DataProvider, Resource } from "react-admin";
+import buildGraphQLProvider from "./data-provider/graphqlDataProvider";
+import { theme } from "./theme/theme";
+import Login from "./Login";
+import "./App.scss";
+import Dashboard from "./pages/Dashboard";
+import { UserList } from "./user/UserList";
+import { UserCreate } from "./user/UserCreate";
+import { UserEdit } from "./user/UserEdit";
+import { UserShow } from "./user/UserShow";
+import { ProfileList } from "./profile/ProfileList";
+import { ProfileCreate } from "./profile/ProfileCreate";
+import { ProfileEdit } from "./profile/ProfileEdit";
+import { ProfileShow } from "./profile/ProfileShow";
+import { OrderList } from "./order/OrderList";
+import { OrderCreate } from "./order/OrderCreate";
+import { OrderEdit } from "./order/OrderEdit";
+import { OrderShow } from "./order/OrderShow";
+import { OrganizationList } from "./organization/OrganizationList";
+import { OrganizationCreate } from "./organization/OrganizationCreate";
+import { OrganizationEdit } from "./organization/OrganizationEdit";
+import { OrganizationShow } from "./organization/OrganizationShow";
+import { CustomerList } from "./customer/CustomerList";
+import { CustomerCreate } from "./customer/CustomerCreate";
+import { CustomerEdit } from "./customer/CustomerEdit";
+import { CustomerShow } from "./customer/CustomerShow";
+import { EmptyList } from "./empty/EmptyList";
+import { EmptyCreate } from "./empty/EmptyCreate";
+import { EmptyEdit } from "./empty/EmptyEdit";
+import { EmptyShow } from "./empty/EmptyShow";
+import { httpAuthProvider } from "./auth-provider/ra-auth-http";
+
+const App = (): React.ReactElement => {
+  const [dataProvider, setDataProvider] = useState<DataProvider | null>(null);
+  useEffect(() => {
+    buildGraphQLProvider
+      .then((provider: any) => {
+        setDataProvider(() => provider);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }, []);
+  if (!dataProvider) {
+    return <div>Loading</div>;
+  }
+  return (
+    <div className="App">
+      <Admin
+        title={"Sample Application"}
+        dataProvider={dataProvider}
+        authProvider={httpAuthProvider}
+        theme={theme}
+        dashboard={Dashboard}
+        loginPage={Login}
+      >
+        <Resource
+          name="User"
+          list={UserList}
+          edit={UserEdit}
+          create={UserCreate}
+          show={UserShow}
+        />
+        <Resource
+          name="Profile"
+          list={ProfileList}
+          edit={ProfileEdit}
+          create={ProfileCreate}
+          show={ProfileShow}
+        />
+        <Resource
+          name="Order"
+          list={OrderList}
+          edit={OrderEdit}
+          create={OrderCreate}
+          show={OrderShow}
+        />
+        <Resource
+          name="Organization"
+          list={OrganizationList}
+          edit={OrganizationEdit}
+          create={OrganizationCreate}
+          show={OrganizationShow}
+        />
+        <Resource
+          name="Customer"
+          list={CustomerList}
+          edit={CustomerEdit}
+          create={CustomerCreate}
+          show={CustomerShow}
+        />
+        <Resource
+          name="Empty"
+          list={EmptyList}
+          edit={EmptyEdit}
+          create={EmptyCreate}
+          show={EmptyShow}
+        />
+      </Admin>
+    </div>
+  );
+};
+
+export default App;
+",
+  "admin-ui/src/Components/Pagination.tsx": "import React from "react";
+import { Pagination as RAPagination, PaginationProps } from "react-admin";
+
+const PAGINATION_OPTIONS = [10, 25, 50, 100, 200];
+
+const Pagination = (props: PaginationProps) => (
+  <RAPagination rowsPerPageOptions={PAGINATION_OPTIONS} {...props} />
+);
+
+export default Pagination;
+",
+  "admin-ui/src/Login.tsx": "import * as React from "react";
+import { useState } from "react";
+import { useLogin, useNotify, Notification, defaultTheme } from "react-admin";
+import { ThemeProvider } from "@material-ui/styles";
+import { createTheme } from "@material-ui/core/styles";
+import { Button } from "@material-ui/core";
+import "./login.scss";
+
+const CLASS_NAME = "login-page";
+
+const Login = ({ theme }: any) => {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const login = useLogin();
+  const notify = useNotify();
+  const BASE_URI = process.env.REACT_APP_SERVER_URL;
+  const submit = (e: any) => {
+    e.preventDefault();
+    login({ username, password }).catch(() =>
+      notify("Invalid username or password")
+    );
+  };
+
+  return (
+    <ThemeProvider theme={createTheme(defaultTheme)}>
+      <div className={\`\${CLASS_NAME}\`}>
+        <div className={\`\${CLASS_NAME}__wrapper\`}>
+          <div className={\`\${CLASS_NAME}__box\`}>
+            <img
+              src="https://amplication.com/assets/graphql.png"
+              alt="GraphQL API"
+            />
+            <h2>Connect via GraphQL</h2>
+            <div className={\`\${CLASS_NAME}__box__message\`}>
+              Connect to the server using GraphQL API with a complete and
+              understandable description of the data in your API
+            </div>
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              href={\`\${BASE_URI}/graphql\`}
+            >
+              Continue
+            </Button>
+          </div>
+          <div className={\`\${CLASS_NAME}__box\`}>
+            <img
+              src="https://amplication.com/assets/react-admin.png"
+              alt="React-Admin"
+            />
+            <h2>Admin UI</h2>
+            <div className={\`\${CLASS_NAME}__box__message\`}>
+              Sign in to a React-Admin client with ready-made forms for creating
+              and editing all the data models of your application
+            </div>
+            <form onSubmit={submit}>
+              <label>
+                <span>Username</span>
+
+                <input
+                  name="username"
+                  type="textbox"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
+              </label>
+              <label>
+                <span>Password</span>
+
+                <input
+                  name="password"
+                  type="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+              </label>
+              <Button type="submit" variant="contained" color="primary">
+                Log in
+              </Button>
+            </form>
+          </div>
+          <div className={\`\${CLASS_NAME}__box\`}>
+            <img
+              src="https://amplication.com/assets/restapi.png"
+              alt="REST API"
+            />
+            <h2>Connect via REST API</h2>
+            <div className={\`\${CLASS_NAME}__box__message\`}>
+              Connect to the server using REST API with a built-in Swagger
+              documentation
+            </div>
+            <Button
+              type="button"
+              variant="contained"
+              color="primary"
+              href={\`\${BASE_URI}/api\`}
+            >
+              Continue
+            </Button>
+          </div>
+
+          <Notification />
+        </div>
+        <div className={\`\${CLASS_NAME}__read-more\`}>
+          <span>Read </span>
+          <a href="https://docs.amplication.com/api" target="docs">
+            Amplication docs
+          </a>
+          <span> to learn more</span>
+        </div>
+      </div>
+    </ThemeProvider>
+  );
+};
+
+export default Login;
+",
+  "admin-ui/src/api/customer/CreateCustomerArgs.ts": "import { CustomerCreateInput } from "./CustomerCreateInput";
+
+export type CreateCustomerArgs = {
+  data: CustomerCreateInput;
+};
+",
+  "admin-ui/src/api/customer/Customer.ts": "import { Decimal } from "decimal.js";
+import { Organization } from "../organization/Organization";
+import { Order } from "../order/Order";
+
+export type Customer = {
+  id: bigint;
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  firstName: string | null;
+  lastName: string | null;
+  isVip: boolean | null;
+  birthData: Date | null;
+  averageSale: Decimal | null;
+  favoriteNumber: bigint | null;
+  geoLocation: string | null;
+  comments: string | null;
+  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
+  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
+  organization?: Organization | null;
+  vipOrganization?: Organization | null;
+  orders?: Array<Order>;
+};
+",
+  "admin-ui/src/api/customer/CustomerCountArgs.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
+
+export type CustomerCountArgs = {
+  where?: CustomerWhereInput;
+};
+",
+  "admin-ui/src/api/customer/CustomerCreateInput.ts": "import { Decimal } from "decimal.js";
+import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
+import { OrderCreateNestedManyWithoutCustomersInput } from "./OrderCreateNestedManyWithoutCustomersInput";
+
+export type CustomerCreateInput = {
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  isVip?: boolean | null;
+  birthData?: Date | null;
+  averageSale?: Decimal | null;
+  favoriteNumber?: bigint | null;
+  geoLocation?: string | null;
+  comments?: string | null;
+  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
+  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
+  organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrderCreateNestedManyWithoutCustomersInput;
+};
+",
+  "admin-ui/src/api/customer/CustomerFindManyArgs.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
+import { CustomerOrderByInput } from "./CustomerOrderByInput";
+
+export type CustomerFindManyArgs = {
+  where?: CustomerWhereInput;
+  orderBy?: Array<CustomerOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/customer/CustomerFindUniqueArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+
+export type CustomerFindUniqueArgs = {
+  where: CustomerWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/customer/CustomerListRelationFilter.ts": "import { CustomerWhereInput } from "./CustomerWhereInput";
+
+export type CustomerListRelationFilter = {
+  every?: CustomerWhereInput;
+  some?: CustomerWhereInput;
+  none?: CustomerWhereInput;
+};
+",
+  "admin-ui/src/api/customer/CustomerOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type CustomerOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  email?: SortOrder;
+  firstName?: SortOrder;
+  lastName?: SortOrder;
+  isVip?: SortOrder;
+  birthData?: SortOrder;
+  averageSale?: SortOrder;
+  favoriteNumber?: SortOrder;
+  geoLocation?: SortOrder;
+  comments?: SortOrder;
+  favoriteColors?: SortOrder;
+  customerType?: SortOrder;
+  organizationId?: SortOrder;
+  vipOrganizationId?: SortOrder;
+};
+",
+  "admin-ui/src/api/customer/CustomerUpdateInput.ts": "import { Decimal } from "decimal.js";
+import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
+import { OrderUpdateManyWithoutCustomersInput } from "./OrderUpdateManyWithoutCustomersInput";
+
+export type CustomerUpdateInput = {
+  email?: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  isVip?: boolean | null;
+  birthData?: Date | null;
+  averageSale?: Decimal | null;
+  favoriteNumber?: bigint | null;
+  geoLocation?: string | null;
+  comments?: string | null;
+  favoriteColors?: Array<"red" | "green" | "purple" | "yellow">;
+  customerType?: "platinum" | "gold" | "bronze" | "regular" | null;
+  organization?: OrganizationWhereUniqueInput | null;
+  vipOrganization?: OrganizationWhereUniqueInput | null;
+  orders?: OrderUpdateManyWithoutCustomersInput;
+};
+",
+  "admin-ui/src/api/customer/CustomerWhereInput.ts": "import { BigIntFilter } from "../../util/BigIntFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { StringFilter } from "../../util/StringFilter";
+import { StringNullableFilter } from "../../util/StringNullableFilter";
+import { BooleanNullableFilter } from "../../util/BooleanNullableFilter";
+import { DateTimeNullableFilter } from "../../util/DateTimeNullableFilter";
+import { DecimalNullableFilter } from "../../util/DecimalNullableFilter";
+import { BigIntNullableFilter } from "../../util/BigIntNullableFilter";
+import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
+import { OrderListRelationFilter } from "../order/OrderListRelationFilter";
+
+export type CustomerWhereInput = {
+  id?: BigIntFilter;
+  createdAt?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+  email?: StringFilter;
+  firstName?: StringNullableFilter;
+  lastName?: StringNullableFilter;
+  isVip?: BooleanNullableFilter;
+  birthData?: DateTimeNullableFilter;
+  averageSale?: DecimalNullableFilter;
+  favoriteNumber?: BigIntNullableFilter;
+  geoLocation?: StringNullableFilter;
+  comments?: StringNullableFilter;
+  customerType?: "platinum" | "gold" | "bronze" | "regular";
+  organization?: OrganizationWhereUniqueInput;
+  vipOrganization?: OrganizationWhereUniqueInput;
+  orders?: OrderListRelationFilter;
+};
+",
+  "admin-ui/src/api/customer/CustomerWhereUniqueInput.ts": "export type CustomerWhereUniqueInput = {
+  id: bigint;
+};
+",
+  "admin-ui/src/api/customer/DeleteCustomerArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+
+export type DeleteCustomerArgs = {
+  where: CustomerWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/customer/EnumCustomerCustomerType.ts": "export enum EnumCustomerCustomerType {
+  Platinum = "platinum",
+  Gold = "gold",
+  Bronze = "bronze",
+  Regular = "regular",
+}
+",
+  "admin-ui/src/api/customer/EnumCustomerFavoriteColors.ts": "export enum EnumCustomerFavoriteColors {
+  Red = "red",
+  Green = "green",
+  Purple = "purple",
+  Yellow = "yellow",
+}
+",
+  "admin-ui/src/api/customer/OrderCreateNestedManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from "../order/OrderWhereUniqueInput";
+
+export type OrderCreateNestedManyWithoutCustomersInput = {
+  connect?: Array<OrderWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/customer/OrderUpdateManyWithoutCustomersInput.ts": "import { OrderWhereUniqueInput } from "../order/OrderWhereUniqueInput";
+
+export type OrderUpdateManyWithoutCustomersInput = {
+  connect?: Array<OrderWhereUniqueInput>;
+  disconnect?: Array<OrderWhereUniqueInput>;
+  set?: Array<OrderWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/customer/UpdateCustomerArgs.ts": "import { CustomerWhereUniqueInput } from "./CustomerWhereUniqueInput";
+import { CustomerUpdateInput } from "./CustomerUpdateInput";
+
+export type UpdateCustomerArgs = {
+  where: CustomerWhereUniqueInput;
+  data: CustomerUpdateInput;
+};
+",
+  "admin-ui/src/api/empty/DeleteEmptyArgs.ts": "import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+
+export type DeleteEmptyArgs = {
+  where: EmptyWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/empty/Empty.ts": "export type Empty = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+};
+",
+  "admin-ui/src/api/empty/EmptyCountArgs.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
+
+export type EmptyCountArgs = {
+  where?: EmptyWhereInput;
+};
+",
+  "admin-ui/src/api/empty/EmptyCreateInput.ts": "export type EmptyCreateInput = {};
+",
+  "admin-ui/src/api/empty/EmptyFindManyArgs.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
+import { EmptyOrderByInput } from "./EmptyOrderByInput";
+
+export type EmptyFindManyArgs = {
+  where?: EmptyWhereInput;
+  orderBy?: Array<EmptyOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/empty/EmptyFindUniqueArgs.ts": "import { EmptyWhereUniqueInput } from "./EmptyWhereUniqueInput";
+
+export type EmptyFindUniqueArgs = {
+  where: EmptyWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/empty/EmptyListRelationFilter.ts": "import { EmptyWhereInput } from "./EmptyWhereInput";
+
+export type EmptyListRelationFilter = {
+  every?: EmptyWhereInput;
+  some?: EmptyWhereInput;
+  none?: EmptyWhereInput;
+};
+",
+  "admin-ui/src/api/empty/EmptyOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type EmptyOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+};
+",
+  "admin-ui/src/api/empty/EmptyUpdateInput.ts": "export type EmptyUpdateInput = {};
+",
+  "admin-ui/src/api/empty/EmptyWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+
+export type EmptyWhereInput = {
+  id?: StringFilter;
+  createdAt?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+};
+",
+  "admin-ui/src/api/empty/EmptyWhereUniqueInput.ts": "export type EmptyWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/order/CreateOrderArgs.ts": "import { OrderCreateInput } from "./OrderCreateInput";
+
+export type CreateOrderArgs = {
+  data: OrderCreateInput;
+};
+",
+  "admin-ui/src/api/order/DeleteOrderArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+
+export type DeleteOrderArgs = {
+  where: OrderWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/order/EnumOrderLabel.ts": "export enum EnumOrderLabel {
+  Fragile = "fragile",
+}
+",
+  "admin-ui/src/api/order/EnumOrderStatus.ts": "export enum EnumOrderStatus {
+  Pending = "pending",
+  InProgress = "inProgress",
+  Done = "done",
+}
+",
+  "admin-ui/src/api/order/Order.ts": "import { Customer } from "../customer/Customer";
+
+export type Order = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  customer?: Customer;
+  status?: "pending" | "inProgress" | "done";
+  label?: "fragile" | null;
+};
+",
+  "admin-ui/src/api/order/OrderCountArgs.ts": "import { OrderWhereInput } from "./OrderWhereInput";
+
+export type OrderCountArgs = {
+  where?: OrderWhereInput;
+};
+",
+  "admin-ui/src/api/order/OrderCreateInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
+
+export type OrderCreateInput = {
+  customer: CustomerWhereUniqueInput;
+  status: "pending" | "inProgress" | "done";
+  label?: "fragile" | null;
+};
+",
+  "admin-ui/src/api/order/OrderFindManyArgs.ts": "import { OrderWhereInput } from "./OrderWhereInput";
+import { OrderOrderByInput } from "./OrderOrderByInput";
+
+export type OrderFindManyArgs = {
+  where?: OrderWhereInput;
+  orderBy?: Array<OrderOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/order/OrderFindUniqueArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+
+export type OrderFindUniqueArgs = {
+  where: OrderWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/order/OrderListRelationFilter.ts": "import { OrderWhereInput } from "./OrderWhereInput";
+
+export type OrderListRelationFilter = {
+  every?: OrderWhereInput;
+  some?: OrderWhereInput;
+  none?: OrderWhereInput;
+};
+",
+  "admin-ui/src/api/order/OrderOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type OrderOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  customerId?: SortOrder;
+  status?: SortOrder;
+  label?: SortOrder;
+};
+",
+  "admin-ui/src/api/order/OrderUpdateInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
+
+export type OrderUpdateInput = {
+  customer?: CustomerWhereUniqueInput;
+  status?: "pending" | "inProgress" | "done";
+  label?: "fragile" | null;
+};
+",
+  "admin-ui/src/api/order/OrderWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
+
+export type OrderWhereInput = {
+  id?: StringFilter;
+  createdAt?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+  customer?: CustomerWhereUniqueInput;
+  status?: "pending" | "inProgress" | "done";
+  label?: "fragile";
+};
+",
+  "admin-ui/src/api/order/OrderWhereUniqueInput.ts": "export type OrderWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/order/UpdateOrderArgs.ts": "import { OrderWhereUniqueInput } from "./OrderWhereUniqueInput";
+import { OrderUpdateInput } from "./OrderUpdateInput";
+
+export type UpdateOrderArgs = {
+  where: OrderWhereUniqueInput;
+  data: OrderUpdateInput;
+};
+",
+  "admin-ui/src/api/organization/CreateOrganizationArgs.ts": "import { OrganizationCreateInput } from "./OrganizationCreateInput";
+
+export type CreateOrganizationArgs = {
+  data: OrganizationCreateInput;
+};
+",
+  "admin-ui/src/api/organization/CustomerCreateNestedManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
+
+export type CustomerCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/organization/CustomerUpdateManyWithoutOrganizationsInput.ts": "import { CustomerWhereUniqueInput } from "../customer/CustomerWhereUniqueInput";
+
+export type CustomerUpdateManyWithoutOrganizationsInput = {
+  connect?: Array<CustomerWhereUniqueInput>;
+  disconnect?: Array<CustomerWhereUniqueInput>;
+  set?: Array<CustomerWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/organization/DeleteOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+
+export type DeleteOrganizationArgs = {
+  where: OrganizationWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/organization/Organization.ts": "import { User } from "../user/User";
+import { Customer } from "../customer/Customer";
+
+export type Organization = {
+  id: string;
+  createdAt: Date;
+  updatedAt: Date;
+  name: string;
+  users?: Array<User>;
+  customers?: Array<Customer>;
+  vipCustomers?: Array<Customer>;
+};
+",
+  "admin-ui/src/api/organization/OrganizationCountArgs.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
+
+export type OrganizationCountArgs = {
+  where?: OrganizationWhereInput;
+};
+",
+  "admin-ui/src/api/organization/OrganizationCreateInput.ts": "import { UserCreateNestedManyWithoutOrganizationsInput } from "./UserCreateNestedManyWithoutOrganizationsInput";
+import { CustomerCreateNestedManyWithoutOrganizationsInput } from "./CustomerCreateNestedManyWithoutOrganizationsInput";
+
+export type OrganizationCreateInput = {
+  name: string;
+  users?: UserCreateNestedManyWithoutOrganizationsInput;
+  customers?: CustomerCreateNestedManyWithoutOrganizationsInput;
+  vipCustomers?: CustomerCreateNestedManyWithoutOrganizationsInput;
+};
+",
+  "admin-ui/src/api/organization/OrganizationFindManyArgs.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
+import { OrganizationOrderByInput } from "./OrganizationOrderByInput";
+
+export type OrganizationFindManyArgs = {
+  where?: OrganizationWhereInput;
+  orderBy?: Array<OrganizationOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/organization/OrganizationFindUniqueArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+
+export type OrganizationFindUniqueArgs = {
+  where: OrganizationWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/organization/OrganizationListRelationFilter.ts": "import { OrganizationWhereInput } from "./OrganizationWhereInput";
+
+export type OrganizationListRelationFilter = {
+  every?: OrganizationWhereInput;
+  some?: OrganizationWhereInput;
+  none?: OrganizationWhereInput;
+};
+",
+  "admin-ui/src/api/organization/OrganizationOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type OrganizationOrderByInput = {
+  id?: SortOrder;
+  createdAt?: SortOrder;
+  updatedAt?: SortOrder;
+  name?: SortOrder;
+};
+",
+  "admin-ui/src/api/organization/OrganizationUpdateInput.ts": "import { UserUpdateManyWithoutOrganizationsInput } from "./UserUpdateManyWithoutOrganizationsInput";
+import { CustomerUpdateManyWithoutOrganizationsInput } from "./CustomerUpdateManyWithoutOrganizationsInput";
+
+export type OrganizationUpdateInput = {
+  name?: string;
+  users?: UserUpdateManyWithoutOrganizationsInput;
+  customers?: CustomerUpdateManyWithoutOrganizationsInput;
+  vipCustomers?: CustomerUpdateManyWithoutOrganizationsInput;
+};
+",
+  "admin-ui/src/api/organization/OrganizationWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { UserListRelationFilter } from "../user/UserListRelationFilter";
+import { CustomerListRelationFilter } from "../customer/CustomerListRelationFilter";
+
+export type OrganizationWhereInput = {
+  id?: StringFilter;
+  createdAt?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+  name?: StringFilter;
+  users?: UserListRelationFilter;
+  customers?: CustomerListRelationFilter;
+  vipCustomers?: CustomerListRelationFilter;
+};
+",
+  "admin-ui/src/api/organization/OrganizationWhereUniqueInput.ts": "export type OrganizationWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/api/organization/UpdateOrganizationArgs.ts": "import { OrganizationWhereUniqueInput } from "./OrganizationWhereUniqueInput";
+import { OrganizationUpdateInput } from "./OrganizationUpdateInput";
+
+export type UpdateOrganizationArgs = {
+  where: OrganizationWhereUniqueInput;
+  data: OrganizationUpdateInput;
+};
+",
+  "admin-ui/src/api/organization/UserCreateNestedManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
+
+export type UserCreateNestedManyWithoutOrganizationsInput = {
+  connect?: Array<UserWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/organization/UserUpdateManyWithoutOrganizationsInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
+
+export type UserUpdateManyWithoutOrganizationsInput = {
+  connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/profile/CreateProfileArgs.ts": "import { ProfileCreateInput } from "./ProfileCreateInput";
+
+export type CreateProfileArgs = {
+  data: ProfileCreateInput;
+};
+",
+  "admin-ui/src/api/profile/DeleteProfileArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+
+export type DeleteProfileArgs = {
+  where: ProfileWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/Profile.ts": "import { User } from "../user/User";
+
+export type Profile = {
+  id: number;
+  createdIn: Date;
+  createdAt: Date;
+  updatedIn: Date;
+  updatedAt: Date;
+  email: string;
+  user?: User | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileCountArgs.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
+
+export type ProfileCountArgs = {
+  where?: ProfileWhereInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileCreateInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
+
+export type ProfileCreateInput = {
+  createdAt: Date;
+  updatedAt: Date;
+  email: string;
+  user?: UserWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileFindManyArgs.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
+import { ProfileOrderByInput } from "./ProfileOrderByInput";
+
+export type ProfileFindManyArgs = {
+  where?: ProfileWhereInput;
+  orderBy?: Array<ProfileOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/profile/ProfileFindUniqueArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+
+export type ProfileFindUniqueArgs = {
+  where: ProfileWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileListRelationFilter.ts": "import { ProfileWhereInput } from "./ProfileWhereInput";
+
+export type ProfileListRelationFilter = {
+  every?: ProfileWhereInput;
+  some?: ProfileWhereInput;
+  none?: ProfileWhereInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type ProfileOrderByInput = {
+  id?: SortOrder;
+  createdIn?: SortOrder;
+  createdAt?: SortOrder;
+  updatedIn?: SortOrder;
+  updatedAt?: SortOrder;
+  email?: SortOrder;
+  userId?: SortOrder;
+};
+",
+  "admin-ui/src/api/profile/ProfileUpdateInput.ts": "import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
+
+export type ProfileUpdateInput = {
+  createdAt?: Date;
+  updatedAt?: Date;
+  email?: string;
+  user?: UserWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/profile/ProfileWhereInput.ts": "import { IntFilter } from "../../util/IntFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { StringFilter } from "../../util/StringFilter";
+import { UserWhereUniqueInput } from "../user/UserWhereUniqueInput";
+
+export type ProfileWhereInput = {
+  id?: IntFilter;
+  createdIn?: DateTimeFilter;
+  createdAt?: DateTimeFilter;
+  updatedIn?: DateTimeFilter;
+  updatedAt?: DateTimeFilter;
+  email?: StringFilter;
+  user?: UserWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/profile/ProfileWhereUniqueInput.ts": "export type ProfileWhereUniqueInput = {
+  id: number;
+};
+",
+  "admin-ui/src/api/profile/UpdateProfileArgs.ts": "import { ProfileWhereUniqueInput } from "./ProfileWhereUniqueInput";
+import { ProfileUpdateInput } from "./ProfileUpdateInput";
+
+export type UpdateProfileArgs = {
+  where: ProfileWhereUniqueInput;
+  data: ProfileUpdateInput;
+};
+",
+  "admin-ui/src/api/user/CreateUserArgs.ts": "import { UserCreateInput } from "./UserCreateInput";
+
+export type CreateUserArgs = {
+  data: UserCreateInput;
+};
+",
+  "admin-ui/src/api/user/DeleteUserArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+
+export type DeleteUserArgs = {
+  where: UserWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/user/EnumUserInterests.ts": "export enum EnumUserInterests {
+  Programming = "programming",
+  Design = "design",
+}
+",
+  "admin-ui/src/api/user/EnumUserPriority.ts": "export enum EnumUserPriority {
+  High = "high",
+  Medium = "medium",
+  Low = "low",
+}
+",
+  "admin-ui/src/api/user/OrganizationCreateNestedManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
+
+export type OrganizationCreateNestedManyWithoutUsersInput = {
+  connect?: Array<OrganizationWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/user/OrganizationUpdateManyWithoutUsersInput.ts": "import { OrganizationWhereUniqueInput } from "../organization/OrganizationWhereUniqueInput";
+
+export type OrganizationUpdateManyWithoutUsersInput = {
+  connect?: Array<OrganizationWhereUniqueInput>;
+  disconnect?: Array<OrganizationWhereUniqueInput>;
+  set?: Array<OrganizationWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/user/UpdateUserArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateInput } from "./UserUpdateInput";
+
+export type UpdateUserArgs = {
+  where: UserWhereUniqueInput;
+  data: UserUpdateInput;
+};
+",
+  "admin-ui/src/api/user/User.ts": "import { JsonValue } from "type-fest";
+import { Organization } from "../organization/Organization";
+import { Profile } from "../profile/Profile";
+
+export type User = {
+  id: string;
+  username: string;
+  roles: JsonValue;
+  name: string;
+  bio: string;
+  email: string;
+  age: number;
+  birthDate: Date;
+  score: number;
+  manager?: User | null;
+  employees?: Array<User>;
+  organizations?: Array<Organization>;
+  interests?: Array<"programming" | "design">;
+  priority?: "high" | "medium" | "low";
+  isCurious: boolean;
+  location: string;
+  extendedProperties: JsonValue;
+  profile?: Profile | null;
+};
+",
+  "admin-ui/src/api/user/UserCountArgs.ts": "import { UserWhereInput } from "./UserWhereInput";
+
+export type UserCountArgs = {
+  where?: UserWhereInput;
+};
+",
+  "admin-ui/src/api/user/UserCreateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserCreateNestedManyWithoutUsersInput } from "./UserCreateNestedManyWithoutUsersInput";
+import { OrganizationCreateNestedManyWithoutUsersInput } from "./OrganizationCreateNestedManyWithoutUsersInput";
+import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
+
+export type UserCreateInput = {
+  username: string;
+  roles: InputJsonValue;
+  password: string;
+  name: string;
+  bio: string;
+  email: string;
+  age: number;
+  birthDate: Date;
+  score: number;
+  manager?: UserWhereUniqueInput | null;
+  employees?: UserCreateNestedManyWithoutUsersInput;
+  organizations?: OrganizationCreateNestedManyWithoutUsersInput;
+  interests?: Array<"programming" | "design">;
+  priority: "high" | "medium" | "low";
+  isCurious: boolean;
+  location: string;
+  extendedProperties: InputJsonValue;
+  profile?: ProfileWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/user/UserCreateNestedManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+
+export type UserCreateNestedManyWithoutUsersInput = {
+  connect?: Array<UserWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/user/UserFindManyArgs.ts": "import { UserWhereInput } from "./UserWhereInput";
+import { UserOrderByInput } from "./UserOrderByInput";
+
+export type UserFindManyArgs = {
+  where?: UserWhereInput;
+  orderBy?: Array<UserOrderByInput>;
+  skip?: number;
+  take?: number;
+};
+",
+  "admin-ui/src/api/user/UserFindUniqueArgs.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+
+export type UserFindUniqueArgs = {
+  where: UserWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/user/UserListRelationFilter.ts": "import { UserWhereInput } from "./UserWhereInput";
+
+export type UserListRelationFilter = {
+  every?: UserWhereInput;
+  some?: UserWhereInput;
+  none?: UserWhereInput;
+};
+",
+  "admin-ui/src/api/user/UserOrderByInput.ts": "import { SortOrder } from "../../util/SortOrder";
+
+export type UserOrderByInput = {
+  id?: SortOrder;
+  username?: SortOrder;
+  roles?: SortOrder;
+  password?: SortOrder;
+  name?: SortOrder;
+  bio?: SortOrder;
+  email?: SortOrder;
+  age?: SortOrder;
+  birthDate?: SortOrder;
+  score?: SortOrder;
+  managerId?: SortOrder;
+  interests?: SortOrder;
+  priority?: SortOrder;
+  isCurious?: SortOrder;
+  location?: SortOrder;
+  extendedProperties?: SortOrder;
+  profileId?: SortOrder;
+};
+",
+  "admin-ui/src/api/user/UserUpdateInput.ts": "import { InputJsonValue } from "../../types";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { UserUpdateManyWithoutUsersInput } from "./UserUpdateManyWithoutUsersInput";
+import { OrganizationUpdateManyWithoutUsersInput } from "./OrganizationUpdateManyWithoutUsersInput";
+import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
+
+export type UserUpdateInput = {
+  username?: string;
+  roles?: InputJsonValue;
+  password?: string;
+  name?: string;
+  bio?: string;
+  email?: string;
+  age?: number;
+  birthDate?: Date;
+  score?: number;
+  manager?: UserWhereUniqueInput | null;
+  employees?: UserUpdateManyWithoutUsersInput;
+  organizations?: OrganizationUpdateManyWithoutUsersInput;
+  interests?: Array<"programming" | "design">;
+  priority?: "high" | "medium" | "low";
+  isCurious?: boolean;
+  location?: string;
+  extendedProperties?: InputJsonValue;
+  profile?: ProfileWhereUniqueInput | null;
+};
+",
+  "admin-ui/src/api/user/UserUpdateManyWithoutUsersInput.ts": "import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+
+export type UserUpdateManyWithoutUsersInput = {
+  connect?: Array<UserWhereUniqueInput>;
+  disconnect?: Array<UserWhereUniqueInput>;
+  set?: Array<UserWhereUniqueInput>;
+};
+",
+  "admin-ui/src/api/user/UserWhereInput.ts": "import { StringFilter } from "../../util/StringFilter";
+import { IntFilter } from "../../util/IntFilter";
+import { DateTimeFilter } from "../../util/DateTimeFilter";
+import { UserWhereUniqueInput } from "./UserWhereUniqueInput";
+import { OrganizationListRelationFilter } from "../organization/OrganizationListRelationFilter";
+import { BooleanFilter } from "../../util/BooleanFilter";
+import { JsonFilter } from "../../util/JsonFilter";
+import { ProfileWhereUniqueInput } from "../profile/ProfileWhereUniqueInput";
+
+export type UserWhereInput = {
+  id?: StringFilter;
+  username?: StringFilter;
+  name?: StringFilter;
+  bio?: StringFilter;
+  age?: IntFilter;
+  birthDate?: DateTimeFilter;
+  manager?: UserWhereUniqueInput;
+  organizations?: OrganizationListRelationFilter;
+  priority?: "high" | "medium" | "low";
+  isCurious?: BooleanFilter;
+  location?: StringFilter;
+  extendedProperties?: JsonFilter;
+  profile?: ProfileWhereUniqueInput;
+};
+",
+  "admin-ui/src/api/user/UserWhereUniqueInput.ts": "export type UserWhereUniqueInput = {
+  id: string;
+};
+",
+  "admin-ui/src/auth-provider/ra-auth-http.ts": "import { gql } from "@apollo/client/core";
+import { AuthProvider } from "react-admin";
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from "../constants";
+import { Credentials, LoginMutateResult } from "../types";
+import { apolloClient } from "../data-provider/graphqlDataProvider";
+
+const LOGIN = gql\`
+  mutation login($username: String!, $password: String!) {
+    login(credentials: { username: $username, password: $password }) {
+      username
+      roles
+    }
+  }
+\`;
+
+export const httpAuthProvider: AuthProvider = {
+  login: async (credentials: Credentials) => {
+    const userData = await apolloClient.mutate<LoginMutateResult>({
+      mutation: LOGIN,
+      variables: {
+        ...credentials,
+      },
+    });
+
+    if (userData && userData.data?.login.username) {
+      localStorage.setItem(
+        CREDENTIALS_LOCAL_STORAGE_ITEM,
+        createBasicAuthorizationHeader(
+          credentials.username,
+          credentials.password
+        )
+      );
+      localStorage.setItem(
+        USER_DATA_LOCAL_STORAGE_ITEM,
+        JSON.stringify(userData.data)
+      );
+      return Promise.resolve();
+    }
+    return Promise.reject();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  getPermissions: () => Promise.reject("Unknown method"),
+  getIdentity: () => {
+    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
+    const userData: LoginMutateResult = JSON.parse(str || "");
+
+    return Promise.resolve({
+      id: userData.login.username,
+      fullName: userData.login.username,
+      avatar: undefined,
+    });
+  },
+};
+
+function createBasicAuthorizationHeader(
+  username: string,
+  password: string
+): string {
+  return \`Basic \${btoa(\`\${username}:\${password}\`)}\`;
+}
+",
+  "admin-ui/src/auth-provider/ra-auth-jwt.ts": "import { gql } from "@apollo/client/core";
+import { AuthProvider } from "react-admin";
+import {
+  CREDENTIALS_LOCAL_STORAGE_ITEM,
+  USER_DATA_LOCAL_STORAGE_ITEM,
+} from "../constants";
+import { Credentials, LoginMutateResult } from "../types";
+import { apolloClient } from "../data-provider/graphqlDataProvider";
+
+const LOGIN = gql\`
+  mutation login($username: String!, $password: String!) {
+    login(credentials: { username: $username, password: $password }) {
+      username
+      accessToken
+    }
+  }
+\`;
+
+export const jwtAuthProvider: AuthProvider = {
+  login: async (credentials: Credentials) => {
+    const userData = await apolloClient.mutate<LoginMutateResult>({
+      mutation: LOGIN,
+      variables: {
+        ...credentials,
+      },
+    });
+
+    if (userData && userData.data?.login.username) {
+      localStorage.setItem(
+        CREDENTIALS_LOCAL_STORAGE_ITEM,
+        createBearerAuthorizationHeader(userData.data.login?.accessToken)
+      );
+      localStorage.setItem(
+        USER_DATA_LOCAL_STORAGE_ITEM,
+        JSON.stringify(userData.data)
+      );
+      return Promise.resolve();
+    }
+    return Promise.reject();
+  },
+  logout: () => {
+    localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+    return Promise.resolve();
+  },
+  checkError: ({ status }: any) => {
+    if (status === 401 || status === 403) {
+      localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+      return Promise.reject();
+    }
+    return Promise.resolve();
+  },
+  checkAuth: () => {
+    return localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM)
+      ? Promise.resolve()
+      : Promise.reject();
+  },
+  getPermissions: () => Promise.reject("Unknown method"),
+  getIdentity: () => {
+    const str = localStorage.getItem(USER_DATA_LOCAL_STORAGE_ITEM);
+    const userData: LoginMutateResult = JSON.parse(str || "");
+
+    return Promise.resolve({
+      id: userData.login.username,
+      fullName: userData.login.username,
+      avatar: undefined,
+    });
+  },
+};
+
+export function createBearerAuthorizationHeader(accessToken: string) {
+  return \`Bearer \${accessToken}\`;
+}
+",
+  "admin-ui/src/auth.ts": "import { EventEmitter } from "events";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "./constants";
+import { Credentials } from "./types";
+
+const eventEmitter = new EventEmitter();
+
+export function isAuthenticated(): boolean {
+  return Boolean(getCredentials());
+}
+
+export function listen(listener: (authenticated: boolean) => void): void {
+  eventEmitter.on("change", () => {
+    listener(isAuthenticated());
+  });
+}
+
+export function setCredentials(credentials: Credentials) {
+  localStorage.setItem(
+    CREDENTIALS_LOCAL_STORAGE_ITEM,
+    JSON.stringify(credentials)
+  );
+}
+
+export function getCredentials(): Credentials | null {
+  const raw = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+  if (raw === null) {
+    return null;
+  }
+  return JSON.parse(raw);
+}
+
+export function removeCredentials(): void {
+  localStorage.removeItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+}
+",
+  "admin-ui/src/constants.ts": "export const CREDENTIALS_LOCAL_STORAGE_ITEM = "credentials";
+export const USER_DATA_LOCAL_STORAGE_ITEM = "userData";
+",
+  "admin-ui/src/customer/CustomerCreate.tsx": "import * as React from "react";
+
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  BooleanInput,
+  DateInput,
+  NumberInput,
+  SelectArrayInput,
+  SelectInput,
+  ReferenceInput,
+  ReferenceArrayInput,
+} from "react-admin";
+
+import { OrganizationTitle } from "../organization/OrganizationTitle";
+import { OrderTitle } from "../order/OrderTitle";
+
+export const CustomerCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label="Email" source="email" type="email" />
+        <TextInput label="First Name" source="firstName" />
+        <TextInput label="Last Name" source="lastName" />
+        <BooleanInput label="VIP" source="isVip" />
+        <DateInput label="Birth Data" source="birthData" />
+        <NumberInput
+          label="Average Sale (-1500.00 - 1500.00)"
+          source="averageSale"
+        />
+        <NumberInput
+          step={1}
+          label="Favorite Number (1 - 20)"
+          source="favoriteNumber"
+        />
+        <TextInput label="Geographic Location" source="geoLocation" />
+        <TextInput
+          label="Comments (up to 500 characters)"
+          multiline
+          source="comments"
+        />
+        <SelectArrayInput
+          label="Favorite Colors (multi-select)"
+          source="favoriteColors"
+          choices={[
+            { label: "Red", value: "red" },
+            { label: "Green", value: "green" },
+            { label: "Purple", value: "purple" },
+            { label: "yellow", value: "yellow" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="customerType"
+          label="Customer Type"
+          choices={[
+            { label: "Platinum", value: "platinum" },
+            { label: "Gold", value: "gold" },
+            { label: "Bronze", value: "bronze" },
+            { label: "Regular", value: "regular" },
+          ]}
+          optionText="label"
+          allowEmpty
+          optionValue="value"
+        />
+        <ReferenceInput
+          source="organization.id"
+          reference="Organization"
+          label="Organization"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source="vipOrganization.id"
+          reference="Organization"
+          label="VIP Organization"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceArrayInput
+          source="orders"
+          reference="Order"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrderTitle} />
+        </ReferenceArrayInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/customer/CustomerEdit.tsx": "import * as React from "react";
+
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  BooleanInput,
+  DateInput,
+  NumberInput,
+  SelectArrayInput,
+  SelectInput,
+  ReferenceInput,
+  ReferenceArrayInput,
+} from "react-admin";
+
+import { OrganizationTitle } from "../organization/OrganizationTitle";
+import { OrderTitle } from "../order/OrderTitle";
+
+export const CustomerEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label="Email" source="email" type="email" />
+        <TextInput label="First Name" source="firstName" />
+        <TextInput label="Last Name" source="lastName" />
+        <BooleanInput label="VIP" source="isVip" />
+        <DateInput label="Birth Data" source="birthData" />
+        <NumberInput
+          label="Average Sale (-1500.00 - 1500.00)"
+          source="averageSale"
+        />
+        <NumberInput
+          step={1}
+          label="Favorite Number (1 - 20)"
+          source="favoriteNumber"
+        />
+        <TextInput label="Geographic Location" source="geoLocation" />
+        <TextInput
+          label="Comments (up to 500 characters)"
+          multiline
+          source="comments"
+        />
+        <SelectArrayInput
+          label="Favorite Colors (multi-select)"
+          source="favoriteColors"
+          choices={[
+            { label: "Red", value: "red" },
+            { label: "Green", value: "green" },
+            { label: "Purple", value: "purple" },
+            { label: "yellow", value: "yellow" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="customerType"
+          label="Customer Type"
+          choices={[
+            { label: "Platinum", value: "platinum" },
+            { label: "Gold", value: "gold" },
+            { label: "Bronze", value: "bronze" },
+            { label: "Regular", value: "regular" },
+          ]}
+          optionText="label"
+          allowEmpty
+          optionValue="value"
+        />
+        <ReferenceInput
+          source="organization.id"
+          reference="Organization"
+          label="Organization"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceInput
+          source="vipOrganization.id"
+          reference="Organization"
+          label="VIP Organization"
+        >
+          <SelectInput optionText={OrganizationTitle} />
+        </ReferenceInput>
+        <ReferenceArrayInput
+          source="orders"
+          reference="Order"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrderTitle} />
+        </ReferenceArrayInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/customer/CustomerList.tsx": "import * as React from "react";
+
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  DateField,
+  BooleanField,
+  ReferenceField,
+} from "react-admin";
+
+import Pagination from "../Components/Pagination";
+import { ORGANIZATION_TITLE_FIELD } from "../organization/OrganizationTitle";
+
+export const CustomerList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"The Customers"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <TextField label="Email" source="email" />
+        <TextField label="First Name" source="firstName" />
+        <TextField label="Last Name" source="lastName" />
+        <BooleanField label="VIP" source="isVip" />
+        <TextField label="Birth Data" source="birthData" />
+        <TextField
+          label="Average Sale (-1500.00 - 1500.00)"
+          source="averageSale"
+        />
+        <TextField label="Favorite Number (1 - 20)" source="favoriteNumber" />
+        <TextField label="Geographic Location" source="geoLocation" />
+        <TextField label="Comments (up to 500 characters)" source="comments" />
+        <TextField
+          label="Favorite Colors (multi-select)"
+          source="favoriteColors"
+        />
+        <TextField label="Customer Type" source="customerType" />
+        <ReferenceField
+          label="Organization"
+          source="organization.id"
+          reference="Organization"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label="VIP Organization"
+          source="organization.id"
+          reference="Organization"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/customer/CustomerShow.tsx": "import * as React from "react";
+
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+  BooleanField,
+  ReferenceField,
+  ReferenceManyField,
+  Datagrid,
+} from "react-admin";
+
+import { CUSTOMER_TITLE_FIELD } from "./CustomerTitle";
+import { ORGANIZATION_TITLE_FIELD } from "../organization/OrganizationTitle";
+
+export const CustomerShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <TextField label="Email" source="email" />
+        <TextField label="First Name" source="firstName" />
+        <TextField label="Last Name" source="lastName" />
+        <BooleanField label="VIP" source="isVip" />
+        <TextField label="Birth Data" source="birthData" />
+        <TextField
+          label="Average Sale (-1500.00 - 1500.00)"
+          source="averageSale"
+        />
+        <TextField label="Favorite Number (1 - 20)" source="favoriteNumber" />
+        <TextField label="Geographic Location" source="geoLocation" />
+        <TextField label="Comments (up to 500 characters)" source="comments" />
+        <TextField
+          label="Favorite Colors (multi-select)"
+          source="favoriteColors"
+        />
+        <TextField label="Customer Type" source="customerType" />
+        <ReferenceField
+          label="Organization"
+          source="organization.id"
+          reference="Organization"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceField
+          label="VIP Organization"
+          source="organization.id"
+          reference="Organization"
+        >
+          <TextField source={ORGANIZATION_TITLE_FIELD} />
+        </ReferenceField>
+        <ReferenceManyField
+          reference="Order"
+          target="customerId"
+          label="Orders"
+        >
+          <Datagrid rowClick="show">
+            <TextField label="Id" source="id" />
+            <DateField source="createdAt" label="Created At" />
+            <DateField source="updatedAt" label="Updated At" />
+            <ReferenceField
+              label="Customer"
+              source="customer.id"
+              reference="Customer"
+            >
+              <TextField source={CUSTOMER_TITLE_FIELD} />
+            </ReferenceField>
+            <TextField label="Status" source="status" />
+            <TextField label="Label" source="label" />
+          </Datagrid>
+        </ReferenceManyField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/customer/CustomerTitle.ts": "import { Customer as TCustomer } from "../api/customer/Customer";
+
+export const CUSTOMER_TITLE_FIELD = "firstName";
+
+export const CustomerTitle = (record: TCustomer): string => {
+  return record.firstName?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/data-provider/graphqlDataProvider.ts": "import buildGraphQLProvider from "ra-data-graphql-amplication";
+import { ApolloClient, InMemoryCache, createHttpLink } from "@apollo/client";
+import { setContext } from "@apollo/client/link/context";
+import { CREDENTIALS_LOCAL_STORAGE_ITEM } from "../constants";
+
+const httpLink = createHttpLink({
+  uri: \`\${process.env.REACT_APP_SERVER_URL}/graphql\`,
+});
+
+// eslint-disable-next-line @typescript-eslint/naming-convention
+const authLink = setContext((_, { headers }) => {
+  const token = localStorage.getItem(CREDENTIALS_LOCAL_STORAGE_ITEM);
+  return {
+    headers: {
+      ...headers,
+      authorization: token ? token : "",
+    },
+  };
+});
+
+export const apolloClient = new ApolloClient({
+  cache: new InMemoryCache(),
+  link: authLink.concat(httpLink),
+});
+
+export default buildGraphQLProvider({
+  client: apolloClient,
+});
+",
+  "admin-ui/src/empty/EmptyCreate.tsx": "import * as React from "react";
+import { Create, SimpleForm, CreateProps } from "react-admin";
+
+export const EmptyCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <div />
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyEdit.tsx": "import * as React from "react";
+import { Edit, SimpleForm, EditProps } from "react-admin";
+
+export const EmptyEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <div />
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyList.tsx": "import * as React from "react";
+import { List, Datagrid, ListProps, TextField, DateField } from "react-admin";
+import Pagination from "../Components/Pagination";
+
+export const EmptyList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"Empties"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyShow.tsx": "import * as React from "react";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+} from "react-admin";
+
+export const EmptyShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/empty/EmptyTitle.ts": "import { Empty as TEmpty } from "../api/empty/Empty";
+
+export const EMPTY_TITLE_FIELD = "id";
+
+export const EmptyTitle = (record: TEmpty): string => {
+  return record.id?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/index.tsx": "import React from "react";
+import ReactDOM from "react-dom";
+import "./index.css";
+// @ts-ignore
+// eslint-disable-next-line import/no-unresolved
+import App from "./App";
+import reportWebVitals from "./reportWebVitals";
+
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById("root")
+);
+
+// If you want to start measuring performance in your app, pass a function
+// to log results (for example: reportWebVitals(console.log))
+// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+reportWebVitals();
+",
+  "admin-ui/src/order/OrderCreate.tsx": "import * as React from "react";
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  ReferenceInput,
+  SelectInput,
+} from "react-admin";
+import { CustomerTitle } from "../customer/CustomerTitle";
+
+export const OrderCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <ReferenceInput
+          source="customer.id"
+          reference="Customer"
+          label="Customer"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source="status"
+          label="Status"
+          choices={[
+            { label: "Pending", value: "pending" },
+            { label: "In Progress", value: "inProgress" },
+            { label: "Done", value: "done" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="label"
+          label="Label"
+          choices={[{ label: "Fragile", value: "fragile" }]}
+          optionText="label"
+          allowEmpty
+          optionValue="value"
+        />
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/order/OrderEdit.tsx": "import * as React from "react";
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  ReferenceInput,
+  SelectInput,
+} from "react-admin";
+import { CustomerTitle } from "../customer/CustomerTitle";
+
+export const OrderEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <ReferenceInput
+          source="customer.id"
+          reference="Customer"
+          label="Customer"
+        >
+          <SelectInput optionText={CustomerTitle} />
+        </ReferenceInput>
+        <SelectInput
+          source="status"
+          label="Status"
+          choices={[
+            { label: "Pending", value: "pending" },
+            { label: "In Progress", value: "inProgress" },
+            { label: "Done", value: "done" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="label"
+          label="Label"
+          choices={[{ label: "Fragile", value: "fragile" }]}
+          optionText="label"
+          allowEmpty
+          optionValue="value"
+        />
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/order/OrderList.tsx": "import * as React from "react";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from "react-admin";
+import Pagination from "../Components/Pagination";
+import { CUSTOMER_TITLE_FIELD } from "../customer/CustomerTitle";
+
+export const OrderList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"Orders"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <ReferenceField
+          label="Customer"
+          source="customer.id"
+          reference="Customer"
+        >
+          <TextField source={CUSTOMER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label="Status" source="status" />
+        <TextField label="Label" source="label" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/order/OrderShow.tsx": "import * as React from "react";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from "react-admin";
+import { CUSTOMER_TITLE_FIELD } from "../customer/CustomerTitle";
+
+export const OrderShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <ReferenceField
+          label="Customer"
+          source="customer.id"
+          reference="Customer"
+        >
+          <TextField source={CUSTOMER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label="Status" source="status" />
+        <TextField label="Label" source="label" />
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/order/OrderTitle.ts": "import { Order as TOrder } from "../api/order/Order";
+
+export const ORDER_TITLE_FIELD = "id";
+
+export const OrderTitle = (record: TOrder): string => {
+  return record.id?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/organization/OrganizationCreate.tsx": "import * as React from "react";
+
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  ReferenceArrayInput,
+  SelectArrayInput,
+} from "react-admin";
+
+import { UserTitle } from "../user/UserTitle";
+import { CustomerTitle } from "../customer/CustomerTitle";
+
+export const OrganizationCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label="Name" source="name" />
+        <ReferenceArrayInput
+          source="users"
+          reference="User"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="customers"
+          reference="Customer"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="vipCustomers"
+          reference="Customer"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationEdit.tsx": "import * as React from "react";
+
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  ReferenceArrayInput,
+  SelectArrayInput,
+} from "react-admin";
+
+import { UserTitle } from "../user/UserTitle";
+import { CustomerTitle } from "../customer/CustomerTitle";
+
+export const OrganizationEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label="Name" source="name" />
+        <ReferenceArrayInput
+          source="users"
+          reference="User"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="customers"
+          reference="Customer"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="vipCustomers"
+          reference="Customer"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={CustomerTitle} />
+        </ReferenceArrayInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationList.tsx": "import * as React from "react";
+import { List, Datagrid, ListProps, TextField, DateField } from "react-admin";
+import Pagination from "../Components/Pagination";
+
+export const OrganizationList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"Organizations"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <TextField label="Name" source="name" />
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationShow.tsx": "import * as React from "react";
+
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+  ReferenceManyField,
+  Datagrid,
+  BooleanField,
+  ReferenceField,
+} from "react-admin";
+
+import { ORGANIZATION_TITLE_FIELD } from "./OrganizationTitle";
+
+export const OrganizationShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <DateField source="createdAt" label="Created At" />
+        <DateField source="updatedAt" label="Updated At" />
+        <TextField label="Name" source="name" />
+        <ReferenceManyField
+          reference="Customer"
+          target="organizationId"
+          label="The Customers"
+        >
+          <Datagrid rowClick="show">
+            <TextField label="Id" source="id" />
+            <DateField source="createdAt" label="Created At" />
+            <DateField source="updatedAt" label="Updated At" />
+            <TextField label="Email" source="email" />
+            <TextField label="First Name" source="firstName" />
+            <TextField label="Last Name" source="lastName" />
+            <BooleanField label="VIP" source="isVip" />
+            <TextField label="Birth Data" source="birthData" />
+            <TextField
+              label="Average Sale (-1500.00 - 1500.00)"
+              source="averageSale"
+            />
+            <TextField
+              label="Favorite Number (1 - 20)"
+              source="favoriteNumber"
+            />
+            <TextField label="Geographic Location" source="geoLocation" />
+            <TextField
+              label="Comments (up to 500 characters)"
+              source="comments"
+            />
+            <TextField
+              label="Favorite Colors (multi-select)"
+              source="favoriteColors"
+            />
+            <TextField label="Customer Type" source="customerType" />
+            <ReferenceField
+              label="Organization"
+              source="organization.id"
+              reference="Organization"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label="VIP Organization"
+              source="organization.id"
+              reference="Organization"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+          </Datagrid>
+        </ReferenceManyField>
+        <ReferenceManyField
+          reference="Customer"
+          target="vipOrganizationId"
+          label="The Customers"
+        >
+          <Datagrid rowClick="show">
+            <TextField label="Id" source="id" />
+            <DateField source="createdAt" label="Created At" />
+            <DateField source="updatedAt" label="Updated At" />
+            <TextField label="Email" source="email" />
+            <TextField label="First Name" source="firstName" />
+            <TextField label="Last Name" source="lastName" />
+            <BooleanField label="VIP" source="isVip" />
+            <TextField label="Birth Data" source="birthData" />
+            <TextField
+              label="Average Sale (-1500.00 - 1500.00)"
+              source="averageSale"
+            />
+            <TextField
+              label="Favorite Number (1 - 20)"
+              source="favoriteNumber"
+            />
+            <TextField label="Geographic Location" source="geoLocation" />
+            <TextField
+              label="Comments (up to 500 characters)"
+              source="comments"
+            />
+            <TextField
+              label="Favorite Colors (multi-select)"
+              source="favoriteColors"
+            />
+            <TextField label="Customer Type" source="customerType" />
+            <ReferenceField
+              label="Organization"
+              source="organization.id"
+              reference="Organization"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+            <ReferenceField
+              label="VIP Organization"
+              source="organization.id"
+              reference="Organization"
+            >
+              <TextField source={ORGANIZATION_TITLE_FIELD} />
+            </ReferenceField>
+          </Datagrid>
+        </ReferenceManyField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/organization/OrganizationTitle.ts": "import { Organization as TOrganization } from "../api/organization/Organization";
+
+export const ORGANIZATION_TITLE_FIELD = "name";
+
+export const OrganizationTitle = (record: TOrganization): string => {
+  return record.name?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/pages/Dashboard.tsx": "import * as React from "react";
+import Card from "@material-ui/core/Card";
+import CardContent from "@material-ui/core/CardContent";
+import { Title } from "react-admin";
+const Dashboard = () => (
+  <Card>
+    <Title title="Welcome to the administration" />
+    <CardContent>Welcome</CardContent>
+  </Card>
+);
+
+export default Dashboard;
+",
+  "admin-ui/src/profile/ProfileCreate.tsx": "import * as React from "react";
+
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  DateTimeInput,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from "react-admin";
+
+import { UserTitle } from "../user/UserTitle";
+
+export const ProfileCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <DateTimeInput label="Created At" source="createdAt" />
+        <DateTimeInput label="Updated At" source="updatedAt" />
+        <TextInput label="Email" source="email" type="email" />
+        <ReferenceInput source="user.id" reference="User" label="User">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileEdit.tsx": "import * as React from "react";
+
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  DateTimeInput,
+  TextInput,
+  ReferenceInput,
+  SelectInput,
+} from "react-admin";
+
+import { UserTitle } from "../user/UserTitle";
+
+export const ProfileEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <DateTimeInput label="Created At" source="createdAt" />
+        <DateTimeInput label="Updated At" source="updatedAt" />
+        <TextInput label="Email" source="email" type="email" />
+        <ReferenceInput source="user.id" reference="User" label="User">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileList.tsx": "import * as React from "react";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from "react-admin";
+import Pagination from "../Components/Pagination";
+import { USER_TITLE_FIELD } from "../user/UserTitle";
+
+export const ProfileList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"Profiles"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <DateField source="createdIn" label="Created In" />
+        <TextField label="Created At" source="createdAt" />
+        <DateField source="updatedIn" label="Updated In" />
+        <TextField label="Updated At" source="updatedAt" />
+        <TextField label="Email" source="email" />
+        <ReferenceField label="User" source="user.id" reference="User">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileShow.tsx": "import * as React from "react";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  DateField,
+  ReferenceField,
+} from "react-admin";
+import { USER_TITLE_FIELD } from "../user/UserTitle";
+
+export const ProfileShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <DateField source="createdIn" label="Created In" />
+        <TextField label="Created At" source="createdAt" />
+        <DateField source="updatedIn" label="Updated In" />
+        <TextField label="Updated At" source="updatedAt" />
+        <TextField label="Email" source="email" />
+        <ReferenceField label="User" source="user.id" reference="User">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/profile/ProfileTitle.ts": "import { Profile as TProfile } from "../api/profile/Profile";
+
+export const PROFILE_TITLE_FIELD = "id";
+
+export const ProfileTitle = (record: TProfile): string => {
+  return record.id?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/reportWebVitals.ts": "import { ReportHandler } from "web-vitals";
+
+const reportWebVitals = (onPerfEntry?: ReportHandler): void => {
+  if (onPerfEntry && onPerfEntry instanceof Function) {
+    void import("web-vitals").then(
+      ({ getCLS, getFID, getFCP, getLCP, getTTFB }) => {
+        getCLS(onPerfEntry);
+        getFID(onPerfEntry);
+        getFCP(onPerfEntry);
+        getLCP(onPerfEntry);
+        getTTFB(onPerfEntry);
+      }
+    );
+  }
+};
+
+export default reportWebVitals;
+",
+  "admin-ui/src/setupTests.ts": "// jest-dom adds custom jest matchers for asserting on DOM nodes.
+// allows you to do things like:
+// expect(element).toHaveTextContent(/react/i)
+// learn more: https://github.com/testing-library/jest-dom
+import "@testing-library/jest-dom";
+",
+  "admin-ui/src/theme/theme.ts": "import { defaultTheme } from "react-admin";
+import { createTheme, ThemeOptions } from "@material-ui/core/styles";
+import { merge } from "lodash";
+import createPalette from "@material-ui/core/styles/createPalette";
+
+const palette = createPalette(
+  merge({}, defaultTheme.palette, {
+    primary: {
+      main: "#20a4f3",
+    },
+    secondary: {
+      main: "#7950ed",
+    },
+    error: {
+      main: "#e93c51",
+    },
+    warning: {
+      main: "#f6aa50",
+    },
+    info: {
+      main: "#144bc1",
+    },
+    success: {
+      main: "#31c587",
+    },
+  })
+);
+
+const themeOptions: ThemeOptions = {
+  palette,
+};
+
+export const theme = createTheme(merge({}, defaultTheme, themeOptions));
+",
+  "admin-ui/src/types.ts": "import { JsonValue } from "type-fest";
+
+export type Credentials = {
+  username: string;
+  password: string;
+};
+export type LoginMutateResult = {
+  login: {
+    username: string;
+    accessToken: string;
+  };
+};
+export type InputJsonValue = Omit<JsonValue, "null">;
+",
+  "admin-ui/src/user/EnumRoles.ts": "export enum EnumRoles {
+  User = "user",
+  Admin = "admin",
+  AreaManager = "areaManager",
+}
+",
+  "admin-ui/src/user/RolesOptions.ts": "//@ts-ignore
+import { ROLES } from "./roles";
+
+declare interface Role {
+  name: string;
+  displayName: string;
+}
+
+export const ROLES_OPTIONS = ROLES.map((role: Role) => ({
+  value: role.name,
+  label: role.displayName,
+}));
+",
+  "admin-ui/src/user/UserCreate.tsx": "import * as React from "react";
+
+import {
+  Create,
+  SimpleForm,
+  CreateProps,
+  TextInput,
+  SelectArrayInput,
+  PasswordInput,
+  NumberInput,
+  DateTimeInput,
+  ReferenceInput,
+  SelectInput,
+  ReferenceArrayInput,
+  BooleanInput,
+} from "react-admin";
+
+import { UserTitle } from "./UserTitle";
+import { OrganizationTitle } from "../organization/OrganizationTitle";
+import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
+
+export const UserCreate = (props: CreateProps): React.ReactElement => {
+  return (
+    <Create {...props}>
+      <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
+        <TextInput label="Name" source="name" />
+        <TextInput label="Bio" multiline source="bio" />
+        <TextInput label="Email" source="email" type="email" />
+        <NumberInput step={1} label="Age" source="age" />
+        <DateTimeInput label="Birth Date" source="birthDate" />
+        <NumberInput label="Score" source="score" />
+        <ReferenceInput source="manager.id" reference="User" label="Manager">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceArrayInput
+          source="employees"
+          reference="User"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="organizations"
+          reference="Organization"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrganizationTitle} />
+        </ReferenceArrayInput>
+        <SelectArrayInput
+          label="Interests"
+          source="interests"
+          choices={[
+            { label: "Programming", value: "programming" },
+            { label: "Design", value: "design" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="priority"
+          label="Priority"
+          choices={[
+            { label: "High", value: "high" },
+            { label: "Medium", value: "medium" },
+            { label: "Low", value: "low" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <BooleanInput label="Is Curious" source="isCurious" />
+        <TextInput label="Location" source="location" />
+        <div />
+        <ReferenceInput source="profile.id" reference="Profile" label="Profile">
+          <SelectInput optionText={ProfileTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Create>
+  );
+};
+",
+  "admin-ui/src/user/UserEdit.tsx": "import * as React from "react";
+
+import {
+  Edit,
+  SimpleForm,
+  EditProps,
+  TextInput,
+  SelectArrayInput,
+  PasswordInput,
+  NumberInput,
+  DateTimeInput,
+  ReferenceInput,
+  SelectInput,
+  ReferenceArrayInput,
+  BooleanInput,
+} from "react-admin";
+
+import { UserTitle } from "./UserTitle";
+import { OrganizationTitle } from "../organization/OrganizationTitle";
+import { ProfileTitle } from "../profile/ProfileTitle";
+import { ROLES_OPTIONS } from "../user/RolesOptions";
+
+export const UserEdit = (props: EditProps): React.ReactElement => {
+  return (
+    <Edit {...props}>
+      <SimpleForm>
+        <TextInput label="Username" source="username" />
+        <SelectArrayInput
+          source="roles"
+          choices={ROLES_OPTIONS}
+          optionText="label"
+          optionValue="value"
+        />
+        <PasswordInput label="Password" source="password" />
+        <TextInput label="Name" source="name" />
+        <TextInput label="Bio" multiline source="bio" />
+        <TextInput label="Email" source="email" type="email" />
+        <NumberInput step={1} label="Age" source="age" />
+        <DateTimeInput label="Birth Date" source="birthDate" />
+        <NumberInput label="Score" source="score" />
+        <ReferenceInput source="manager.id" reference="User" label="Manager">
+          <SelectInput optionText={UserTitle} />
+        </ReferenceInput>
+        <ReferenceArrayInput
+          source="employees"
+          reference="User"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={UserTitle} />
+        </ReferenceArrayInput>
+        <ReferenceArrayInput
+          source="organizations"
+          reference="Organization"
+          parse={(value: any) => value && value.map((v: any) => ({ id: v }))}
+          format={(value: any) => value && value.map((v: any) => v.id)}
+        >
+          <SelectArrayInput optionText={OrganizationTitle} />
+        </ReferenceArrayInput>
+        <SelectArrayInput
+          label="Interests"
+          source="interests"
+          choices={[
+            { label: "Programming", value: "programming" },
+            { label: "Design", value: "design" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <SelectInput
+          source="priority"
+          label="Priority"
+          choices={[
+            { label: "High", value: "high" },
+            { label: "Medium", value: "medium" },
+            { label: "Low", value: "low" },
+          ]}
+          optionText="label"
+          optionValue="value"
+        />
+        <BooleanInput label="Is Curious" source="isCurious" />
+        <TextInput label="Location" source="location" />
+        <div />
+        <ReferenceInput source="profile.id" reference="Profile" label="Profile">
+          <SelectInput optionText={ProfileTitle} />
+        </ReferenceInput>
+      </SimpleForm>
+    </Edit>
+  );
+};
+",
+  "admin-ui/src/user/UserList.tsx": "import * as React from "react";
+import {
+  List,
+  Datagrid,
+  ListProps,
+  TextField,
+  ReferenceField,
+  BooleanField,
+} from "react-admin";
+import Pagination from "../Components/Pagination";
+import { USER_TITLE_FIELD } from "./UserTitle";
+import { PROFILE_TITLE_FIELD } from "../profile/ProfileTitle";
+
+export const UserList = (props: ListProps): React.ReactElement => {
+  return (
+    <List
+      {...props}
+      bulkActionButtons={false}
+      title={"Users"}
+      perPage={50}
+      pagination={<Pagination />}
+    >
+      <Datagrid rowClick="show">
+        <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
+        <TextField label="Name" source="name" />
+        <TextField label="Bio" source="bio" />
+        <TextField label="Email" source="email" />
+        <TextField label="Age" source="age" />
+        <TextField label="Birth Date" source="birthDate" />
+        <TextField label="Score" source="score" />
+        <ReferenceField label="Manager" source="user.id" reference="User">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label="Interests" source="interests" />
+        <TextField label="Priority" source="priority" />
+        <BooleanField label="Is Curious" source="isCurious" />
+        <TextField label="Location" source="location" />
+        <TextField label="Extended Properties" source="extendedProperties" />
+        <ReferenceField label="Profile" source="profile.id" reference="Profile">
+          <TextField source={PROFILE_TITLE_FIELD} />
+        </ReferenceField>
+      </Datagrid>
+    </List>
+  );
+};
+",
+  "admin-ui/src/user/UserShow.tsx": "import * as React from "react";
+import {
+  Show,
+  SimpleShowLayout,
+  ShowProps,
+  TextField,
+  ReferenceField,
+  BooleanField,
+} from "react-admin";
+import { USER_TITLE_FIELD } from "./UserTitle";
+import { PROFILE_TITLE_FIELD } from "../profile/ProfileTitle";
+
+export const UserShow = (props: ShowProps): React.ReactElement => {
+  return (
+    <Show {...props}>
+      <SimpleShowLayout>
+        <TextField label="Id" source="id" />
+        <TextField label="Username" source="username" />
+        <TextField label="Roles" source="roles" />
+        <TextField label="Name" source="name" />
+        <TextField label="Bio" source="bio" />
+        <TextField label="Email" source="email" />
+        <TextField label="Age" source="age" />
+        <TextField label="Birth Date" source="birthDate" />
+        <TextField label="Score" source="score" />
+        <ReferenceField label="Manager" source="user.id" reference="User">
+          <TextField source={USER_TITLE_FIELD} />
+        </ReferenceField>
+        <TextField label="Interests" source="interests" />
+        <TextField label="Priority" source="priority" />
+        <BooleanField label="Is Curious" source="isCurious" />
+        <TextField label="Location" source="location" />
+        <TextField label="Extended Properties" source="extendedProperties" />
+        <ReferenceField label="Profile" source="profile.id" reference="Profile">
+          <TextField source={PROFILE_TITLE_FIELD} />
+        </ReferenceField>
+      </SimpleShowLayout>
+    </Show>
+  );
+};
+",
+  "admin-ui/src/user/UserTitle.ts": "import { User as TUser } from "../api/user/User";
+
+export const USER_TITLE_FIELD = "username";
+
+export const UserTitle = (record: TUser): string => {
+  return record.username?.toString() || String(record.id);
+};
+",
+  "admin-ui/src/user/roles.ts": "export const ROLES = [
+  {
+    name: "user",
+    displayName: "User",
+  },
+  {
+    name: "admin",
+    displayName: "Admin",
+  },
+  {
+    name: "areaManager",
+    displayName: "Area Manager",
+  },
+];
+",
+  "admin-ui/src/util/BigIntFilter.ts": "export class BigIntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/BigIntNullableFilter.ts": "export class BigIntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/BooleanFilter.ts": "export class BooleanFilter {
+  equals?: boolean;
+  not?: boolean;
+}
+",
+  "admin-ui/src/util/BooleanNullableFilter.ts": "export class BooleanNullableFilter {
+  equals?: boolean | null;
+  not?: boolean | null;
+}
+",
+  "admin-ui/src/util/DateTimeFilter.ts": "export class DateTimeFilter {
+  equals?: Date;
+  not?: Date;
+  in?: Date[];
+  notIn?: Date[];
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+}
+",
+  "admin-ui/src/util/DateTimeNullableFilter.ts": "export class DateTimeNullableFilter {
+  equals?: Date | null;
+  in?: Date[] | null;
+  notIn?: Date[] | null;
+  lt?: Date;
+  lte?: Date;
+  gt?: Date;
+  gte?: Date;
+  not?: Date;
+}
+",
+  "admin-ui/src/util/DecimalFilter.ts": "export class DecimalFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/DecimalNullableFilter.ts": "export class DecimalNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/FloatFilter.ts": "export class FloatFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/FloatNullableFilter.ts": "export class FloatNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntFilter.ts": "export class IntFilter {
+  equals?: number;
+  in?: number[];
+  notIn?: number[];
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/IntNullableFilter.ts": "export class IntNullableFilter {
+  equals?: number | null;
+  in?: number[] | null;
+  notIn?: number[] | null;
+  lt?: number;
+  lte?: number;
+  gt?: number;
+  gte?: number;
+  not?: number;
+}
+",
+  "admin-ui/src/util/JsonFilter.ts": "import { InputJsonValue } from "../types";
+export class JsonFilter {
+  equals?: InputJsonValue;
+  not?: InputJsonValue;
+}
+",
+  "admin-ui/src/util/JsonNullableFilter.ts": "import { JsonValue } from "type-fest";
+export class JsonNullableFilter {
+  equals?: JsonValue | null;
+  not?: JsonValue | null;
+}
+",
+  "admin-ui/src/util/MetaQueryPayload.ts": "export class MetaQueryPayload {
+  count!: number;
+}
+",
+  "admin-ui/src/util/QueryMode.ts": "export enum QueryMode {
+  Default = "default",
+  Insensitive = "insensitive",
+}
+",
+  "admin-ui/src/util/SortOrder.ts": "export enum SortOrder {
+  Asc = "asc",
+  Desc = "desc",
+}
+",
+  "admin-ui/src/util/StringFilter.ts": "import { QueryMode } from "./QueryMode";
+
+export class StringFilter {
+  equals?: string;
+  in?: string[];
+  notIn?: string[];
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
+",
+  "admin-ui/src/util/StringNullableFilter.ts": "import { QueryMode } from "./QueryMode";
+export class StringNullableFilter {
+  equals?: string | null;
+  in?: string[] | null;
+  notIn?: string[] | null;
+  lt?: string;
+  lte?: string;
+  gt?: string;
+  gte?: string;
+  contains?: string;
+  startsWith?: string;
+  endsWith?: string;
+  mode?: QueryMode;
+  not?: string;
+}
+",
+  "admin-ui/tsconfig.json": "{
+  "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "dom.iterable", "esnext"],
+    "allowJs": true,
+    "skipLibCheck": true,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "noFallthroughCasesInSwitch": true,
+    "module": "esnext",
+    "moduleResolution": "node",
+    "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    "strict": true
+  },
+  "include": ["src"],
+  "exclude": ["./node_modules"]
+}
+",
+}
+`;

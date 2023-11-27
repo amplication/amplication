@@ -1,5 +1,4 @@
-import { Module, Scope } from "@nestjs/common";
-import { APP_INTERCEPTOR } from "@nestjs/core";
+import { Module } from "@nestjs/common";
 
 declare const MODULES: any;
 

@@ -1,9 +1,9 @@
 import { Entity, EntityField } from "@amplication/code-gen-types";
 import { cloneDeep } from "lodash";
-import { createEntityDTO } from "../../../../server/resource/dto/create-entity-dto";
 import defaultEntity from "./constants/default-entity";
 import defaultJsonField from "./constants/json-field";
 import { printTypescript } from "./utils";
+import { createEntityInputFiles } from "../../../../server/resource/create-dtos";
 
 describe("Test that the entity dto is creating properly", () => {
   let entity: Entity;
@@ -22,7 +22,7 @@ describe("Test that the entity dto is creating properly", () => {
         unique: true,
       };
       entity.fields = [trueJsonFiled];
-      const code = printTypescript(createEntityDTO(entity));
+      const code = printTypescript(createEntityInputFiles(entity).entity);
       expect(code).toMatchInlineSnapshot(`
         "@ObjectType()
         class ClassName {
@@ -44,7 +44,7 @@ describe("Test that the entity dto is creating properly", () => {
         unique: false,
       };
       entity.fields = [falseJsonFiled];
-      const code = printTypescript(createEntityDTO(entity));
+      const code = printTypescript(createEntityInputFiles(entity).entity);
       expect(code).toMatchInlineSnapshot(`
         "@ObjectType()
         class ClassName {

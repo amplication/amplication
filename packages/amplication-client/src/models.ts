@@ -193,14 +193,14 @@ export type BooleanFilter = {
 export type Build = {
   action?: Maybe<Action>;
   actionId: Scalars['String']['output'];
-  archiveURI: Scalars['String']['output'];
+  archiveURI?: Maybe<Scalars['String']['output']>;
   codeGeneratorVersion?: Maybe<Scalars['String']['output']>;
-  commit: Commit;
+  commit?: Maybe<Commit>;
   commitId: Scalars['String']['output'];
   createdAt: Scalars['DateTime']['output'];
-  createdBy: User;
+  createdBy?: Maybe<User>;
   id: Scalars['String']['output'];
-  message: Scalars['String']['output'];
+  message?: Maybe<Scalars['String']['output']>;
   resource?: Maybe<Resource>;
   resourceId: Scalars['String']['output'];
   status?: Maybe<EnumBuildStatus>;
@@ -726,6 +726,7 @@ export enum EnumGitOrganizationType {
 export enum EnumGitProvider {
   AwsCodeCommit = 'AwsCodeCommit',
   Bitbucket = 'Bitbucket',
+  GitLab = 'GitLab',
   Github = 'Github'
 }
 
@@ -2020,12 +2021,14 @@ export enum Role {
 export type ServerSettings = {
   generateGraphQL: Scalars['Boolean']['output'];
   generateRestApi: Scalars['Boolean']['output'];
+  generateServer?: Maybe<Scalars['Boolean']['output']>;
   serverPath: Scalars['String']['output'];
 };
 
 export type ServerSettingsUpdateInput = {
   generateGraphQL?: InputMaybe<Scalars['Boolean']['input']>;
   generateRestApi?: InputMaybe<Scalars['Boolean']['input']>;
+  generateServer?: InputMaybe<Scalars['Boolean']['input']>;
   serverPath?: InputMaybe<Scalars['String']['input']>;
 };
 

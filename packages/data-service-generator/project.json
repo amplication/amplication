@@ -87,7 +87,11 @@
     "generate-local-code": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts",
+        "commands": [
+          "rimraf ../../.amplication/generate-local-code/generated",
+          "ts-node -P tsconfig.app.json -r tsconfig-paths/register ./src/main.ts"
+        ],
+        "parallel": false,
         "cwd": "packages/data-service-generator",
         "envFile": "packages/data-service-generator/.env"
       }

@@ -9,10 +9,9 @@ services:
       - "${PORT}:3000"
     environment:
       BCRYPT_SALT: "${BCRYPT_SALT}"
-      JWT_SECRET_KEY: "${JWT_SECRET_KEY}"
-      JWT_EXPIRATION: "${JWT_EXPIRATION}"
     depends_on:
       - migrate
+    restart: on-failure
   migrate:
     build:
       context: .

@@ -1,4 +1,4 @@
-import { IsInstance, IsString } from "class-validator";
+import { IsString } from "class-validator";
 
 export class Value {
   @IsString()
@@ -11,6 +11,5 @@ export class Value {
   @IsString()
   codeGeneratorVersion!: string;
 
-  @IsInstance(Error)
-  error!: Error;
+  error?: Error;
 }

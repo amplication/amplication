@@ -21,6 +21,15 @@ export async function updatePackageJSONs(
   return modules;
 }
 
+function sortObject(object: { [key: string]: any }): { [key: string]: any } {
+  return Object.keys(object)
+    .sort()
+    .reduce((obj, key) => {
+      obj[key] = object[key];
+      return obj;
+    }, {});
+}
+
 function preparePackageJsonFile(
   code: string,
   updateProperties: { [key: string]: any }[]
@@ -33,6 +42,13 @@ function preparePackageJsonFile(
 
   if (!semver.valid(parsedPkg.version)) {
     delete parsedPkg.version;
+  }
+
+  if (parsedPkg.dependencies) {
+    parsedPkg.dependencies = sortObject(parsedPkg.dependencies);
+  }
+  if (parsedPkg.devDependencies) {
+    parsedPkg.devDependencies = sortObject(parsedPkg.devDependencies);
   }
 
   return JSON.stringify(parsedPkg, null, 2);
