@@ -1,4 +1,3 @@
-import React from "react";
 import { useField, ErrorMessage } from "formik";
 import { TextInput, TextInputProps } from "@amplication/ui/design-system";
 import "./NameField.scss";
@@ -9,10 +8,9 @@ type Props = Omit<TextInputProps, "helpText" | "hasError"> & {
   capitalized?: boolean;
 };
 
-const PathField = ({ capitalized, ...rest }: Props) => {
-  // @ts-ignore
+const PathField = ({ capitalized, name, ...rest }: Props) => {
   const [field] = useField<string>({
-    ...rest,
+    name,
   });
 
   return (
