@@ -19,114 +19,117 @@ export const FAQ = () => {
       <div className={`${CLASS_NAME}__list`}>
         <Question
           question="How does Amplication pricing work?"
-          answer={
-            <div>
-              Our pricing plans are applied per each workspace individually.
-              <br />
-              <br />
-              Free edition is offered for <span className="bold">FREE</span>.
-              <br />
-              Pro edition is currently $320 per month (paid annually) or $400
-              per month (paid monthly).
-              <br /> Enterprise edition pricing will be tailored to your
-              specific requirements. Contact us to get a quote.
-            </div>
-          }
+          answer="Amplication offers a Free edition for individual developers or small teams. There's also an Enterprise edition for larger organizational needs with advanced security features, additional git sync providers, and more features."
         />
         <Question
           question="What plan is best for me and my team?"
-          answer="Check out our available plans on this page to compare our various offerings and select the plan that best fits your needs."
+          answer="The Enterprise edition is designed for larger organizations that need more features, while the free edition is suitable for individual developers or small teams."
         />
         <Question
-          question="Can I upgrade at any time?"
-          answer="Yes! You can upgrade anytime and your workspace plan will be immediately updated."
+          question="What are the differences between the free and the enterprise tier?"
+          answer="The Free edition includes database and model management, role-based permissions, and both GraphQL & REST API support. The Enterprise edition adds advanced security features, additional git sync providers, dedicated support, and includes SSO."
         />
         <Question
-          question="Can I pay monthly?"
-          answer="Sure. We offer monthly and annual plans. The annual plan is offered at a discount. "
+          question="We have multiple teams in the organization, can we use one account to manage separate teams?"
+          answer=""
         />
         <Question
-          question="When will I be billed?"
-          answer="Our paid plans are charged upfront and billed on a recurring basis based on your payment schedule preference (monthly or annually)."
+          question="We are working with the enterprise edition of GitLab / BitBucket, will it work with Amplication?"
+          answer="Amplication currently supports GitHub for the Free Plan and Bitbucket, AWS CodeCommit for the Enterprise Plan, with plans to add more git providers in the future."
         />
         <Question
-          question="What does the renewal process look like?"
-          answer="Paid subscriptions automatically renew for the same subscription period unless you downgrade your plan before your renewal date."
-        />
-        <Question
-          question="How do I cancel my subscription?"
+          question="We have our own best practices and standards - can we ask Amplication to generate the code in our own flavor?"
           answer={
             <div>
-              Very soon you will be able to manage your subscriptions in the
-              workspace settings. For now, you can reach out directly to us{" "}
-              <MailTo
-                email="mailto:sales@amplication.com"
-                subject="Update workspace plan"
-                body="here"
-              />{" "}
-              and we will update your plan as requested.
+              Amplication offers a structured way to add custom code and modify
+              your generated code, but it still adheres to its core architecture
+              and coding patterns.
+              <br />
+              <br />
+              We provide guides on how to add actions to REST API controllers,
+              add custom DTOs (Data Transfer Objects), add queries to GraphQL
+              resolver, and more on our documentation.
             </div>
           }
         />
         <Question
-          question="What happens when I downgrade a subscription?"
-          answer="You may downgrade your paid subscription any time before the renewal date. The subscription will automatically downgrade at the end of the billing cycle."
+          question="Do you support more languages besides TypeScript and Node.js?"
+          answer="Right now Amplication is focused on helping you generate production-ready Node.js backends. At the moment we don't support other languages."
         />
         <Question
-          question="Are you going to change your pricing in the future?"
-          answer="The current pricing is set to show our appreciation to early adopters of our service. We may change the pricing in the future, however as a team of developers we are committed to pricing being as developer-friendly as possible. "
-        />
-        <Question
-          question="Are there any hidden fees or charges not included in the listed price?"
-          answer="The listed prices include all you need to generate your code. Amplication adds no extra charges.  However, in some countries or jurisdictions, additional VAT or other taxes may be payable (see below). "
-        />
-        <Question
-          question="What about VAT or other taxes?"
-          answer="All prices exclude tax, because there are different taxes applied in different areas. When paying by credit card, local taxes will be added upon subscription, in accordance with the details you'll provide. "
-        />
-        <Question
-          question="What forms of payment do you accept?"
-          answer="We accept payments via all major Credit Cards"
-        />
-        <Question
-          question="Do I get a notification if I am approaching my usage limits?"
-          answer={`We constantly show you your plan limitations within your workspace. We will not block you from configuring your services but in order to generate the code you will need to comply with the workspace plan limits.
-
-          We will notify you via email or other means when we think it might be a good time for you to consider upgrading your workspace plan.`}
-        />
-        <Question
-          question="What if I need to add more team members?"
-          answer="No problem. Select the plan that meets your needs. The Free edition supports up to two user seats, the Pro edition supports up to five user seats, and the Enterprise edition has no limit. "
-        />
-        <Question
-          question="Can I pay for my subscription with an invoice?"
+          question="We have legacy systems, and would like to progress to modern architecture. Can you assist with it?"
           answer={
             <div>
-              Companies can use invoices to purchase Enterprise subscriptions.
-              Please{" "}
-              <MailTo
-                email="mailto:sales@amplication.com"
-                subject="Amplication Enterprise Plan Inquiry"
-                body="contact sales"
-              />{" "}
-              for more information and to purchase.
+              Amplication can faciliate the modernization of your legacy system.
+              We offer a suite of tools and features designed to streamline this
+              process. Those capabilities include:
+              <br />
+              <ul>
+                <li>
+                  <strong>DB Schema Import</strong>: Simplify the migration of
+                  extensive legacy data into new systems, preserving the
+                  integrity and structure of historical data.
+                </li>
+                <li>
+                  <strong>Data Modeling & Event Brokering</strong>: Enables the
+                  transition from monolithic architectures to microservices,
+                  allowing for the creation of scalable and manageable backends.
+                </li>
+                <li>
+                  <strong>Customizable Code Generation</strong>: Ensures
+                  flexibility in development, allowing for specific
+                  customizations without being bound to rigid system
+                  constraints.
+                </li>
+              </ul>
             </div>
           }
         />
         <Question
-          question="We're an open-source project, is there special pricing available?"
+          question="Can you assist with the actual deployment (terraform-like) in a cloud provider?"
           answer={
             <div>
-              Yes, as part of our commitment to support open-source projects, we
-              offer the pro plan for free. Reach out{" "}
-              <MailTo
-                email="mailto:sales@amplication.com"
-                subject="Pro plan for Open Source project"
-                body="here"
-              />{" "}
-              and we will set you up.
+              Amplication allows you to deploy to AWS's Elastic Container
+              Service (ECS). We provide in-depth documentation that will walk
+              you through using various Amplication plugins to provision the
+              required infrastructure and set up a process for continuous
+              integration and deployment.
+              <br />
+              <br />
+              The steps cover manual configurations for permissions and
+              authentication, plugin settings for AWS services, code generation,
+              provisioning with Terraform, and deployment using GitHub Actions.
             </div>
           }
+        />
+        <Question
+          question="I have an existing DB with a lot of data, entities, tables, and relationships. Can I use your backend development platform, while still keeping the data and the knowledge?"
+          answer="Amplication's DB Schema Import feature provides a clear pathway for integrating an existing database with the Amplication platform. The import feature is available on all Amplication plans, including Free accounts."
+        />
+        <Question
+          question="Will your generated code override my code changes?"
+          answer={
+            <div>
+              Amplication's Smart Git Sync feature ensures that changes made in
+              an Amplication project are automatically tracked and committed to
+              a dedicated branch in the connected Git repository. The system is
+              designed to manage the syncing process efficiently, automatically
+              creating commits and pull requests with clear messages that
+              reflect the changes made.
+              <br />
+              <br />
+              Your changes will not get overriden until you have merged any new
+              changes from Amplication.
+            </div>
+          }
+        />
+        <Question
+          question="Due to security regulations, my enterprise require supporting relevant capabilities, like 2FA, audit log, SSO and more. Do you support it?"
+          answer="The Enterprise edition gives you access to advanced security features like SSO and audit logs are provided."
+        />
+        <Question
+          question="Can I pay to Amplication through my AWS account (AWS billing)?"
+          answer=""
         />
       </div>
     </div>
