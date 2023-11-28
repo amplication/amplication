@@ -70,7 +70,7 @@ function Tab(props: TabProps) {
       component={NavLink}
       classes={{ selected: "amp-tab--selected" }}
       // icon={iconName && <Icon size={"small"} icon={iconName} />}
-      to={!disabled && to}
+      to={!disabled ? to : {}}
       label={label}
       disableRipple
       {...rest}
