@@ -19,22 +19,6 @@ export const MODULE_FIELDS_FRAGMENT = gql`
   }
 `;
 
-// versions(take: 1, orderBy: { versionNumber: Desc }) {
-//   versionNumber
-//   commit {
-//     userId
-//     message
-//     createdAt
-//     user {
-//       id
-//       account {
-//         firstName
-//         lastName
-//       }
-//     }
-//   }
-// }
-
 export const DELETE_MODULE = gql`
   mutation deleteModule($where: WhereUniqueInput!) {
     deleteModule(where: $where) {
