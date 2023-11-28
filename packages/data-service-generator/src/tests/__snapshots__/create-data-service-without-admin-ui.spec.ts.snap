@@ -9066,7 +9066,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { JsonValue } from "type-fest";
 import { Type } from "class-transformer";
@@ -9288,7 +9288,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
@@ -9884,7 +9884,7 @@ import {
   IsBoolean,
 } from "class-validator";
 
-import { IsJSONValue } from "@app/custom-validators";
+import { IsJSONValue } from "../../validators";
 import { GraphQLJSON } from "graphql-type-json";
 import { InputJsonValue } from "../../types";
 import { Type } from "class-transformer";
@@ -12929,10 +12929,7 @@ export function IsJSONValue(validationOptions?: ValidationOptions) {
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "strict": true,
-    "paths": {
-      "@app/custom-validators": ["src/validators"]
-    }
+    "strict": true
   },
   "include": ["src"]
 }
