@@ -1,38 +1,31 @@
-import { AppInfo } from "@amplication/code-gen-types";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { TEST_DATA } from "./test-data";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
-
-const newAppInfo: AppInfo = {
-  ...appInfo,
-  settings: {
-    ...appInfo.settings,
-    serverSettings: {
-      generateGraphQL: false,
-      generateRestApi: true,
-      serverPath: "",
-    },
-  },
-};
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { rm } from "fs/promises";
 
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when graphql is disabled", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
           ...TEST_DATA,
-          resourceInfo: newAppInfo,
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()
