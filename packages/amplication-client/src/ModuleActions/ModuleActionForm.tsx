@@ -5,12 +5,10 @@ import { useMemo } from "react";
 import { Form } from "../Components/Form";
 import * as models from "../models";
 import { validate } from "../util/formikValidateJsonSchema";
-
 import { DisplayNameField } from "../Components/DisplayNameField";
 import NameField from "../Components/NameField";
 import OptionalDescriptionField from "../Components/OptionalDescriptionField";
 import FormikAutoSave from "../util/formikAutoSave";
-import PathField from "../Components/PathField";
 import RestVerbSelectField from "../Components/RestVerbSelectField";
 import GqlOperationSelectField from "../Components/GqlOperationSelectField";
 
@@ -89,7 +87,6 @@ const ModuleActionForm = ({
           name="name"
           disabled={disabled || !isCustomAction}
         />
-        <PathField label="Path" name="path" />
         <RestVerbSelectField
           label={"Method"}
           name={"restVerb"}
