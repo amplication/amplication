@@ -19,31 +19,91 @@ export const FAQ = () => {
       <div className={`${CLASS_NAME}__list`}>
         <Question
           question="How does Amplication pricing work?"
-          answer="Amplication offers a Free edition for individual developers or small teams. There's also an Enterprise edition for larger organizational needs with advanced security features, additional git sync providers, and more features."
+          answer={
+            <div>
+              Amplication offers two primary plans. The{" "}
+              <strong>Free plan</strong> is for individual developers or small
+              teams building small-scale applications. It provides core features
+              to get you started on your projects.
+              <br />
+              For larger organizations with more complex needs, our{" "}
+              <strong>Enterprise plan</strong> is the best fit. It includes
+              advanced security features, additional git sync providers, and
+              many more features listed in the pricing table above.
+              <br />
+              For a full breakdown of the Enterprise plan's capabilities and to
+              get a personalized quote, feel free to contact us.
+            </div>
+          }
         />
         <Question
           question="What plan is best for me and my team?"
-          answer="The Enterprise edition is designed for larger organizations that need more features, while the free edition is suitable for individual developers or small teams."
+          answer={
+            <div>
+              <strong>Free plan</strong>: Awesome for individuals or businesses
+              building small-scale applications, offering essential features to
+              kickstart your project.
+              <br />
+              <strong>Enterprise plan</strong>: The ideal choice if you're
+              focused on building scalable, modern applications and require
+              advanced features.
+              <br />
+              To help you decide, check out our available plans on this page,
+              where you'll find a detailed comparison to ensure you pick the
+              plan that best suits your team's needs.
+            </div>
+          }
         />
         <Question
           question="What are the differences between the free and the enterprise tier?"
-          answer="The Free edition includes database and model management, role-based permissions, and both GraphQL & REST API support. The Enterprise edition adds advanced security features, additional git sync providers, dedicated support, and includes SSO."
+          answer={
+            <div>
+              The Free plan includes database and model management, role-based
+              permissions, and both GraphQL & REST API support.
+              <br></br>
+              The Enterprise plan adds unlimited projects, unlimited services,
+              unlimited team members, advanced security features, additional git
+              sync providers, dedicated support, and includes SSO.
+            </div>
+          }
+        />
+        <Question
+          question="Due to security regulations, my enterprise require supporting relevant capabilities, like 2FA, audit log, SSO and more. Do you support it?"
+          answer="The Enterprise edition gives you access to advanced security features like SSO and audit logs are provided."
         />
         <Question
           question="We have multiple teams in the organization, can we use one account to manage separate teams?"
-          answer=""
+          answer="Yes, the Enterprise plan lets you have unlimited projects, services, and team members. You can manage all your teams from the same organization in your preferred structure."
         />
         <Question
           question="We are working with the enterprise edition of GitLab / BitBucket, will it work with Amplication?"
-          answer="Amplication currently supports GitHub for the Free Plan and Bitbucket, AWS CodeCommit for the Enterprise Plan, with plans to add more git providers in the future."
+          answer={
+            <div>
+              Amplication's compatibility with git providers varies based on the
+              plan:
+              <ul>
+                <li>
+                  <strong>Free Plan:</strong> Supports GitHub.
+                </li>
+                <li>
+                  <strong>Enterprise Plan:</strong> Supports Bitbucket, AWS
+                  CodeCommit, and GitLab.
+                </li>
+              </ul>
+              We have to plans to add more git providers in the future.
+            </div>
+          }
         />
+
         <Question
           question="We have our own best practices and standards - can we ask Amplication to generate the code in our own flavor?"
           answer={
             <div>
-              Amplication offers a structured way to add custom code and modify
-              your generated code, but it still adheres to its core architecture
-              and coding patterns.
+              Amplication offers a structured way to{" "}
+              <a href="https://docs.amplication.com/custom-code/">
+                add custom code
+              </a>{" "}
+              and modify your generated code.
               <br />
               <br />
               We provide guides on how to add actions to REST API controllers,
@@ -62,74 +122,72 @@ export const FAQ = () => {
             <div>
               Amplication can faciliate the modernization of your legacy system.
               We offer a suite of tools and features designed to streamline this
-              process. Those capabilities include:
-              <br />
-              <ul>
-                <li>
-                  <strong>DB Schema Import</strong>: Simplify the migration of
-                  extensive legacy data into new systems, preserving the
-                  integrity and structure of historical data.
-                </li>
-                <li>
-                  <strong>Data Modeling & Event Brokering</strong>: Enables the
-                  transition from monolithic architectures to microservices,
-                  allowing for the creation of scalable and manageable backends.
-                </li>
-                <li>
-                  <strong>Customizable Code Generation</strong>: Ensures
-                  flexibility in development, allowing for specific
-                  customizations without being bound to rigid system
-                  constraints.
-                </li>
-              </ul>
+              process. Those capabilities include:{" "}
+              <a href="https://docs.amplication.com/how-to/import-prisma-schema/">
+                DB Schema Import
+              </a>
+              ,{" "}
+              <a href="https://docs.amplication.com/how-to/create-entity/">
+                Data Modeling
+              </a>{" "}
+              &{" "}
+              <a href="https://docs.amplication.com/plugins-list/#apache-kafka">
+                Event Brokering
+              </a>
+              , and{" "}
+              <a href="https://docs.amplication.com/custom-code/">
+                Customizable Code Generation
+              </a>
+              .
             </div>
           }
         />
         <Question
-          question="Can you assist with the actual deployment (terraform-like) in a cloud provider?"
+          question="Can you assist with deploying to various cloud providers like AWS?"
           answer={
             <div>
-              Amplication allows you to deploy to AWS's Elastic Container
-              Service (ECS). We provide in-depth documentation that will walk
-              you through using various Amplication plugins to provision the
-              required infrastructure and set up a process for continuous
-              integration and deployment.
-              <br />
-              <br />
-              The steps cover manual configurations for permissions and
-              authentication, plugin settings for AWS services, code generation,
-              provisioning with Terraform, and deployment using GitHub Actions.
+              Yes, Amplication provides in-depth guides that show you how to
+              deploy to services like{" "}
+              <a href="https://docs.amplication.com/deploy/kubernetes/">
+                Kubernetes
+              </a>
+              ,{" "}
+              <a href="https://docs.amplication.com/deploy/docker-desktop/">
+                Docker Desktop
+              </a>
+              ,{" "}
+              <a href="https://docs.amplication.com/deploy/aws/ecs/">
+                AWS's ECS
+              </a>
+              , and more coming soon.
             </div>
           }
         />
         <Question
           question="I have an existing DB with a lot of data, entities, tables, and relationships. Can I use your backend development platform, while still keeping the data and the knowledge?"
-          answer="Amplication's DB Schema Import feature provides a clear pathway for integrating an existing database with the Amplication platform. The import feature is available on all Amplication plans, including Free accounts."
+          answer="Amplication's DB Schema Import feature provides a clear pathway for integrating an existing database with the Amplication platform. The import feature is available on Amplication's Enterprise plan."
         />
         <Question
           question="Will your generated code override my code changes?"
           answer={
             <div>
-              Amplication's Smart Git Sync feature ensures that changes made in
-              an Amplication project are automatically tracked and committed to
-              a dedicated branch in the connected Git repository. The system is
-              designed to manage the syncing process efficiently, automatically
-              creating commits and pull requests with clear messages that
-              reflect the changes made.
-              <br />
-              <br />
-              Your changes will not get overriden until you have merged any new
-              changes from Amplication.
+              Yes, Amplication's Smart Git Sync feature ensures that your custom
+              code always takes precedence over the generated code. Our system
+              intelligently combines both, managing the syncing process
+              efficiently. This means that your changes will not be overridden
+              and will be seamlessly integrated with any new changes from
+              Amplication. For more details on how this works, please refer to
+              our{" "}
+              <a href="https://docs.amplication.com/smart-git-sync/">
+                documentation
+              </a>
+              .
             </div>
           }
         />
         <Question
-          question="Due to security regulations, my enterprise require supporting relevant capabilities, like 2FA, audit log, SSO and more. Do you support it?"
-          answer="The Enterprise edition gives you access to advanced security features like SSO and audit logs are provided."
-        />
-        <Question
           question="Can I pay to Amplication through my AWS account (AWS billing)?"
-          answer=""
+          answer="Yes, we support this billing method. Please contact us and we'll help you handle it."
         />
       </div>
     </div>
