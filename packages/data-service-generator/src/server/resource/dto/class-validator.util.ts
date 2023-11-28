@@ -1,8 +1,7 @@
 import { builders } from "ast-types";
 
 export const CLASS_VALIDATOR_MODULE = "class-validator";
-export const CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE =
-  "../../validators/is-json-value-validator";
+export const CLASS_VALIDATOR_CUSTOM_VALIDATORS_MODULE = "../../validators";
 export const IS_BOOLEAN_ID = builders.identifier("IsBoolean");
 export const IS_DATE_ID = builders.identifier("IsDate");
 export const IS_NUMBER_ID = builders.identifier("IsNumber");
