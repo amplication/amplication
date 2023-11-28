@@ -107,9 +107,11 @@ export const ModuleActionListItem = ({
       }
     >
       <ApiOperationTag
-        gqlTagType={GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]}
-        restTagType={REST_VERB_TO_API_OPERATION[moduleAction.restVerb]}
-        tagStyle={tagStyle}
+        apiTagOperation={
+          tagStyle === EnumApiOperationTagStyle.REST
+            ? REST_VERB_TO_API_OPERATION[moduleAction.restVerb]
+            : GQL_OPERATION_TO_API_OPERATION[moduleAction.gqlOperation]
+        }
       />
       {tagStyle === EnumApiOperationTagStyle.REST && (
         <Text textStyle={EnumTextStyle.Normal} textColor={EnumTextColor.White}>

@@ -24,30 +24,17 @@ export enum EnumApiOperationTagStyle {
 
 export type Props = {
   className?: string;
-  restTagType?: EnumRestApiOperationTagType;
-  gqlTagType?: EnumGqlApiOperationTagType;
-  tagStyle: EnumApiOperationTagStyle;
+  apiTagOperation: EnumRestApiOperationTagType | EnumGqlApiOperationTagType;
 };
 
 const CLASS_NAME = "amp-api-operation-tag";
 
-export function ApiOperationTag({
-  className,
-  restTagType,
-  gqlTagType,
-  tagStyle,
-}: Props) {
-  const tagClass =
-    tagStyle === EnumApiOperationTagStyle.REST
-      ? `${CLASS_NAME}--${restTagType}`
-      : `${CLASS_NAME}--${gqlTagType}`;
-
-  const tagName =
-    tagStyle === EnumApiOperationTagStyle.REST ? restTagType : gqlTagType;
+export function ApiOperationTag({ className, apiTagOperation }: Props) {
+  const tagClass = `${CLASS_NAME}--${apiTagOperation}`;
 
   return (
     <span className={classNames(CLASS_NAME, tagClass, className)}>
-      {tagName}
+      {apiTagOperation}
     </span>
   );
 }
