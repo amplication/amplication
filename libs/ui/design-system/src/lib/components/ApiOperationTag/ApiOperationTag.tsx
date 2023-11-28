@@ -1,4 +1,3 @@
-import React, { ReactNode } from "react";
 import classNames from "classnames";
 import "./ApiOperationTag.scss";
 
