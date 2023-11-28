@@ -3,9 +3,7 @@ import { match } from "react-router-dom";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import Module from "./Module";
 import ModuleList from "./ModuleList";
-import ModuleActions from "../ModuleActions/ModuleActions";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -30,11 +28,7 @@ const ModulesPage: React.FC<Props> = ({
       pageTitle={"Modules"}
       sideContent={<ModuleList resourceId={resource} />}
     >
-      {match.isExact ? (
-        <ModuleActions match={match} {...rest} innerRoutes={innerRoutes} />
-      ) : (
-        innerRoutes
-      )}
+      {innerRoutes}
     </PageContent>
   );
 };

@@ -126,7 +126,7 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
         <VerticalNavigation>
           <VerticalNavigationItem
             icon={"box"}
-            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`}
+            to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`}
           >
             All
           </VerticalNavigationItem>

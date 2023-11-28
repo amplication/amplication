@@ -29,7 +29,7 @@ type Props = AppRouteProps & {
     module?: string;
   }>;
 };
-const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
+const ModuleActions = React.memo(({ match }: Props) => {
   const { module: moduleId, resource: resourceId } = match.params;
   const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [error, setError] = useState<Error>();
@@ -98,72 +98,66 @@ const ModuleActions = React.memo(({ match, innerRoutes }: Props) => {
 
   return (
     <>
-      {match.isExact ? (
-        <>
-          <div className="module-toggle-field__search-field">
-            <SearchField
-              label="search"
-              placeholder="Search"
-              onChange={handleSearchChange}
+      <>
+        <div className="module-toggle-field__search-field">
+          <SearchField
+            label="search"
+            placeholder="Search"
+            onChange={handleSearchChange}
+          />
+        </div>
+
+        <FlexItem
+          itemsAlign={EnumItemsAlign.Center}
+          margin={EnumFlexItemMargin.Top}
+          start={
+            <TabContentTitle
+              title="Module Actions"
+              subTitle="Actions are used to perform operations on resources, with or without API endpoints."
             />
-          </div>
+          }
+          end={<NewModuleAction resourceId={resourceId} moduleId={moduleId} />}
+        ></FlexItem>
 
+        {generateGraphQlAndRestApi && (
           <FlexItem
-            itemsAlign={EnumItemsAlign.Center}
-            margin={EnumFlexItemMargin.Top}
-            start={
-              <TabContentTitle
-                title="Module Actions"
-                subTitle="Actions are used to perform operations on resources, with or without API endpoints."
+            direction={EnumFlexDirection.Row}
+            contentAlign={EnumContentAlign.Start}
+            itemsAlign={EnumItemsAlign.Normal}
+          >
+            GraphQL API
+            <div className={`module-toggle-field__operation-toggle`}>
+              <Toggle
+                checked={displayMode === EnumApiOperationTagStyle.REST}
+                onValueChange={handleDisplayModeChange}
               />
-            }
-            end={
-              <NewModuleAction resourceId={resourceId} moduleId={moduleId} />
-            }
-          ></FlexItem>
+            </div>
+            REST API
+          </FlexItem>
+        )}
 
-          {generateGraphQlAndRestApi && (
-            <FlexItem
-              direction={EnumFlexDirection.Row}
-              contentAlign={EnumContentAlign.Start}
-              itemsAlign={EnumItemsAlign.Normal}
-            >
-              GraphQL API
-              <div className={`module-toggle-field__operation-toggle`}>
-                <Toggle
-                  checked={displayMode === EnumApiOperationTagStyle.REST}
-                  onValueChange={handleDisplayModeChange}
-                />
-              </div>
-              REST API
-            </FlexItem>
-          )}
-
-          {moduleId ? (
-            <FlexItem margin={EnumFlexItemMargin.Top}>
+        {moduleId ? (
+          <FlexItem margin={EnumFlexItemMargin.Top}>
+            <ModuleActionList
+              moduleId={moduleId}
+              resourceId={resourceId}
+              searchPhrase={searchPhrase}
+              displayMode={displayMode}
+            />
+          </FlexItem>
+        ) : (
+          moduleListData?.Modules.map((module) => (
+            <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
               <ModuleActionList
-                moduleId={moduleId}
+                moduleId={module.id}
                 resourceId={resourceId}
                 searchPhrase={searchPhrase}
                 displayMode={displayMode}
               />
             </FlexItem>
-          ) : (
-            moduleListData?.Modules.map((module) => (
-              <FlexItem key={module.id} margin={EnumFlexItemMargin.Top}>
-                <ModuleActionList
-                  moduleId={module.id}
-                  resourceId={resourceId}
-                  searchPhrase={searchPhrase}
-                  displayMode={displayMode}
-                />
-              </FlexItem>
-            ))
-          )}
-        </>
-      ) : (
-        innerRoutes
-      )}
+          ))
+        )}
+      </>
     </>
   );
 });

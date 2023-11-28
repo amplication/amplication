@@ -1,7 +1,4 @@
-import {
-  VerticalNavigation,
-  VerticalNavigationItem,
-} from "@amplication/ui/design-system";
+import { VerticalNavigationItem } from "@amplication/ui/design-system";
 import { useContext } from "react";
 import { ModuleActionLinkList } from "../ModuleActions/ModuleActionLinkList";
 import { AppContext } from "../context/appContext";

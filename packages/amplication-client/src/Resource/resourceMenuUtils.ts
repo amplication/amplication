@@ -85,7 +85,7 @@ export const linksMap: {
   modules: {
     title: "Modules",
     icon: "box",
-    to: "/modules",
+    to: "/modules/all",
     license: BillingFeature.FeatureCustomActions,
   },
 };

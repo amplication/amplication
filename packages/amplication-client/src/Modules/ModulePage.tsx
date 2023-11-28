@@ -16,22 +16,11 @@ type Props = AppRouteProps & {
   }>;
 };
 
-const ModulePage = ({ match, innerRoutes }: Props) => {
+const ModulePage = ({ match }: Props) => {
   const { resource: resourceId, module: moduleId } = match?.params ?? {};
   const { currentWorkspace, currentProject } = useContext(AppContext);
 
-  const { getModule, getModuleData: data } = useModule();
-
-  useEffect(() => {
-    if (!moduleId) return;
-    getModule({
-      variables: {
-        moduleId,
-      },
-    }).catch(console.error);
-  }, [moduleId, getModule]);
-
-  return match.isExact ? <Module /> : innerRoutes;
+  return <Module />;
 };
 
 export default ModulePage;
