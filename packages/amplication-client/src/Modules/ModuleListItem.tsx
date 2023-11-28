@@ -30,26 +30,6 @@ export const ModuleListItem = ({ module, onDelete, onError }: Props) => {
                 resourceId={currentResource?.id}
                 moduleId={module.id}
               />
-              {/* <VerticalNavigationItem
-                expandable
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/actions`}
-                icon="api"
-                childItems={
-                  <ModuleActionLinkList
-                    resourceId={currentResource?.id}
-                    moduleId={module.id}
-                  />
-                }
-              >
-                Actions
-              </VerticalNavigationItem>
-              <VerticalNavigationItem
-                expandable
-                to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/${module.id}/types`}
-                icon="zap"
-              >
-                Types
-              </VerticalNavigationItem> */}
             </>
           }
         >
