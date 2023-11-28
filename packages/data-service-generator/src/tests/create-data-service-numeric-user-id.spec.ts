@@ -6,8 +6,8 @@ import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
 import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import entities from "./entities";
 import { TEST_DATA } from "./test-data";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "../generate-code";
+import { rm } from "fs/promises";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
 jest.setTimeout(100000);
 
@@ -24,17 +24,23 @@ beforeAll(() => {
   }
   (idField.properties as types.Id) = { idType: "AUTO_INCREMENT" };
 });
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
 
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when using a numeric user id", () => {
     test("creates resource as expected", async () => {
       const modules = await createDataService(
         TEST_DATA,
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()

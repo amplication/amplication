@@ -3,8 +3,8 @@ import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { TEST_DATA } from "./test-data";
-import { AMPLICATION_MODULES } from "../generate-code";
-import { join } from "path";
+import { rm } from "fs/promises";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -21,12 +21,18 @@ const newAppInfo: AppInfo = {
     },
   },
 };
-
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  afterEach(() => {
+  afterEach(async () => {
     jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
+    });
   });
   describe("when server and admin are configured with custom path", () => {
     test("creates app as expected", async () => {
@@ -36,7 +42,7 @@ describe("createDataService", () => {
           resourceInfo: newAppInfo,
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
 
       const modulesToSnapshot = modules

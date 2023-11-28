@@ -22,6 +22,7 @@ export async function createDataService(
 
   await dynamicPackagesInstallations(
     dSGResourceData.pluginInstallations,
+    pluginInstallationPath,
     internalLogger
   );
 
