@@ -4909,11 +4909,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createCustomer() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  customers: () => FIND_MANY_RESULT,
+  customer: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -6612,11 +6612,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createEmpty() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  empties: () => FIND_MANY_RESULT,
+  empty: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -8212,11 +8212,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrder() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  orders: () => FIND_MANY_RESULT,
+  order: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -9829,11 +9829,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createOrganization() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  organizations: () => FIND_MANY_RESULT,
+  organization: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -12018,11 +12018,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createProfile() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  profiles: () => FIND_MANY_RESULT,
+  profile: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
@@ -14542,11 +14542,11 @@ const FIND_ONE_RESULT = {
 };
 
 const service = {
-  create() {
+  createUser() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  users: () => FIND_MANY_RESULT,
+  user: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case existingId:
         return FIND_ONE_RESULT;
