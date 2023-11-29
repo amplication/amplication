@@ -19,6 +19,7 @@ import { ApolloError, useMutation } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
 import { FAQ } from "./FAQ";
+import { REACT_APP_CONTACT_US_CALENDLY_URL } from "../env";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -83,14 +84,13 @@ const PurchasePage = (props) => {
 
   const handleContactUsClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the main flow
-    history.push("?contact-us=true");
-    openHubSpotChat();
+    window.open(REACT_APP_CONTACT_US_CALENDLY_URL, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
       Action: "Contact Us",
       workspaceId: currentWorkspace.id,
     });
-  }, [openHubSpotChat, currentWorkspace.id]);
+  }, [currentWorkspace.id]);
 
   const handleDowngradeClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the downgrade flow
