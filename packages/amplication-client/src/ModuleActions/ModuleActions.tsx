@@ -76,25 +76,10 @@ const ModuleActions = React.memo(({ match }: Props) => {
     [displayMode]
   );
 
-  const { findModules, findModulesData: moduleListData } = useModule();
+  const { findModulesData: moduleListData } = useModule();
   const generateGraphQlAndRestApi =
     data?.serviceSettings?.serverSettings?.generateRestApi &&
     data?.serviceSettings?.serverSettings?.generateGraphQL;
-
-  useEffect(() => {
-    if (!moduleId) {
-      findModules({
-        variables: {
-          where: {
-            resource: { id: resourceId },
-          },
-          orderBy: {
-            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-          },
-        },
-      });
-    }
-  }, [resourceId, findModules, moduleId]);
 
   return (
     <>

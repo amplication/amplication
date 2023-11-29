@@ -1,7 +1,8 @@
-import { Reference, useLazyQuery, useMutation } from "@apollo/client";
-import { useContext } from "react";
+import { Reference, useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { useCallback, useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
+import { DATE_CREATED_FIELD } from "../ModuleList";
 import {
   CREATE_MODULE,
   DELETE_MODULE,
@@ -31,7 +32,8 @@ type TUpdateData = {
 };
 
 const useModule = () => {
-  const { addBlock, addEntity } = useContext(AppContext);
+  const { addBlock, addEntity, currentResource } = useContext(AppContext);
+  const [searchPhrase, setSearchPhrase] = useState<string>("");
 
   const [
     deleteModule,
@@ -94,15 +96,35 @@ const useModule = () => {
     },
   });
 
-  const [
-    findModules,
-    {
-      data: findModulesData,
-      loading: findModulesLoading,
-      error: findModulesError,
-      refetch: findModuleRefetch,
+  const handleSearchChange = useCallback(
+    (value) => {
+      setSearchPhrase(value);
     },
-  ] = useLazyQuery<TFindData>(FIND_MODULES, {});
+    [setSearchPhrase]
+  );
+
+  const {
+    data: findModulesData,
+    loading: findModulesLoading,
+    error: findModulesError,
+    refetch: findModuleRefetch,
+  } = useQuery<TFindData>(FIND_MODULES, {
+    variables: {
+      where: {
+        resource: { id: currentResource.id },
+        displayName:
+          searchPhrase !== ""
+            ? {
+                contains: searchPhrase,
+                mode: models.QueryMode.Insensitive,
+              }
+            : undefined,
+      },
+      orderBy: {
+        [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+      },
+    },
+  });
 
   const [
     getModule,
@@ -131,7 +153,6 @@ const useModule = () => {
     createModuleData,
     createModuleError,
     createModuleLoading,
-    findModules,
     findModulesData,
     findModulesLoading,
     findModulesError,
@@ -144,6 +165,7 @@ const useModule = () => {
     updateModule,
     updateModuleError,
     updateModuleLoading,
+    handleSearchChange,
   };
 };
 

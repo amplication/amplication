@@ -13,8 +13,7 @@ import {
   VerticalNavigation,
   VerticalNavigationItem,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useEffect, useState } from "react";
-import * as models from "../models";
+import React, { useCallback, useContext, useState } from "react";
 import { formatError } from "../util/error";
 import { ModuleListItem } from "./ModuleListItem";
 import NewModule from "./NewModule";
@@ -32,48 +31,20 @@ export const DATE_CREATED_FIELD = "createdAt";
 
 const ModuleList: React.FC<Props> = ({ resourceId }) => {
   const pageTitle = "Modules";
-  const [searchPhrase, setSearchPhrase] = useState<string>("");
   const [newModule, setNewModule] = useState<boolean>(false);
   const [error, setError] = useState<Error>();
   const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
   const {
-    findModules,
+    handleSearchChange,
     findModulesData: data,
     findModulesError: errorLoading,
     findModulesLoading: loading,
   } = useModule();
 
-  useEffect(() => {
-    findModules({
-      variables: {
-        where: {
-          resource: { id: resourceId },
-          displayName:
-            searchPhrase !== ""
-              ? {
-                  contains: searchPhrase,
-                  mode: models.QueryMode.Insensitive,
-                }
-              : undefined,
-        },
-        orderBy: {
-          [DATE_CREATED_FIELD]: models.SortOrder.Asc,
-        },
-      },
-    });
-  }, [resourceId, searchPhrase, findModules]);
-
   const handleNewModuleClick = useCallback(() => {
     setNewModule(!newModule);
   }, [newModule, setNewModule]);
-
-  const handleSearchChange = useCallback(
-    (value) => {
-      setSearchPhrase(value);
-    },
-    [setSearchPhrase]
-  );
 
   const errorMessage =
     (errorLoading && formatError(errorLoading)) ||
