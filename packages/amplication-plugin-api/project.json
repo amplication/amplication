@@ -46,7 +46,8 @@
         ],
         "generatePackageJson": true,
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -67,7 +68,8 @@
       "options": {
         "buildTarget": "amplication-plugin-api:build",
         "inspect": true,
-        "port": 7005
+        "port": 7005,
+        "watch": true
       },
       "configurations": {
         "production": {
@@ -146,7 +148,7 @@
     "db:clean": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "ts-node scripts/clean.ts",
+        "command": "prisma migrate reset --force",
         "cwd": "packages/amplication-plugin-api"
       }
     },

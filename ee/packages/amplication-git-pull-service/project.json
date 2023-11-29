@@ -38,7 +38,8 @@
           }
         ],
         "compiler": "tsc",
-        "target": "node"
+        "target": "node",
+        "webpackConfig": "{projectRoot}/webpack.config.js"
       },
       "configurations": {
         "production": {
@@ -53,7 +54,8 @@
       "options": {
         "buildTarget": "amplication-git-pull-service:build",
         "inspect": true,
-        "port": 7020
+        "port": 7020,
+        "watch": true
       },
       "configurations": {
         "production": {

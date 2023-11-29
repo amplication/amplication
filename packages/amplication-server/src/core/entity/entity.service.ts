@@ -35,7 +35,6 @@ import {
   CURRENT_VERSION_NUMBER,
   INITIAL_ENTITY_FIELDS,
   USER_ENTITY_NAME,
-  USER_ENTITY_FIELDS,
   DEFAULT_ENTITIES,
   DEFAULT_PERMISSIONS,
   SYSTEM_DATA_TYPES,
@@ -2206,16 +2205,6 @@ export class EntityService {
     // Validate the field's name
     validateFieldName(data.name);
 
-    // Validate the field's dataType is not a system data type
-    if (
-      isSystemDataType(data.dataType as EnumDataType) &&
-      data.dataType !== EnumDataType.Id
-    ) {
-      throw new DataConflictError(
-        `The data type ${data.dataType} cannot be used for non-system fields`
-      );
-    }
-
     if (
       enforceValidation &&
       data.dataType === EnumDataType.Id &&
@@ -2227,12 +2216,6 @@ export class EntityService {
     }
 
     if (isUserEntity(entity)) {
-      // Make sure the field's name is not reserved
-      if (isReservedUserEntityFieldName(data.name)) {
-        throw new DataConflictError(
-          `The field name '${data.name}' is a reserved field name and it cannot be used on the 'user' entity`
-        );
-      }
       // In case the field data type is Lookup make sure it is not required
       if (data.dataType === EnumDataType.Lookup && data.required) {
         throw new DataConflictError(
@@ -2514,15 +2497,6 @@ export class EntityService {
     });
 
     if (
-      isSystemDataType(field.dataType as EnumDataType) &&
-      field.dataType !== EnumDataType.Id
-    ) {
-      throw new ConflictException(
-        `Cannot update entity field ${field.name} because fields with data type ${field.dataType} cannot be updated`
-      );
-    }
-
-    if (
       enforceValidation &&
       field.dataType === EnumDataType.Id &&
       isBasePropertyIdFieldPayloadChanged(args.data)
@@ -2758,10 +2732,6 @@ function validateFieldName(name: string): void {
 
 function isSystemDataType(dataType: EnumDataType): boolean {
   return SYSTEM_DATA_TYPES.has(dataType);
-}
-
-function isReservedUserEntityFieldName(name: string): boolean {
-  return USER_ENTITY_FIELDS.includes(name.toLowerCase());
 }
 
 function isUserEntity(entity: Entity): boolean {

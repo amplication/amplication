@@ -3,6 +3,7 @@ import { HttpAdapterHost, NestFactory } from "@nestjs/core";
 import { OpenAPIObject, SwaggerModule } from "@nestjs/swagger";
 import { HttpExceptionFilter } from "./filters/HttpExceptions.filter";
 import { AppModule } from "./app.module";
+import { connectMicroservices } from "./connectMicroservices";
 import {
   swaggerPath,
   swaggerDocumentOptions,
@@ -40,6 +41,9 @@ async function main() {
       }
     });
   });
+
+  await connectMicroservices(app);
+  await app.startAllMicroservices();
 
   SwaggerModule.setup(swaggerPath, app, document, swaggerSetupOptions);
 

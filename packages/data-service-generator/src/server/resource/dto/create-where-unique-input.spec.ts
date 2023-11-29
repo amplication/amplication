@@ -3,11 +3,9 @@ import { print } from "@amplication/code-gen-utils";
 import { Entity } from "@amplication/code-gen-types";
 import { EXAMPLE_ID_FIELD } from "../util/test-data";
 import { createInput } from "./create-input";
-import {
-  createWhereUniqueInput,
-  createWhereUniqueInputID,
-} from "./create-where-unique-input";
+import { createWhereUniqueInputID } from "./create-where-unique-input";
 import { EntityDtoTypeEnum } from "./entity-dto-type-enum";
+import { createEntityInputFiles } from "../create-dtos";
 
 const EXAMPLE_ENTITY_ID = "EXAMPLE_ENTITY_ID";
 const EXAMPLE_ENTITY_NAME = "ExampleEntityName";
@@ -23,7 +21,9 @@ const EXAMPLE_ENTITY: Entity = {
 
 describe("createWhereUniqueInput", () => {
   test("creates input", () => {
-    expect(print(createWhereUniqueInput(EXAMPLE_ENTITY)).code).toEqual(
+    expect(
+      print(createEntityInputFiles(EXAMPLE_ENTITY).whereUniqueInput).code
+    ).toEqual(
       print(
         createInput(
           createWhereUniqueInputID(EXAMPLE_ENTITY_NAME),

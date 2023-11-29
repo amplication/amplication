@@ -6,7 +6,7 @@ import {
 } from "@amplication/code-gen-types";
 import { readStaticModules } from "../utils/read-static-modules";
 import { formatCode } from "@amplication/code-gen-utils";
-import { createDTOModules, createDTOs } from "./resource/create-dtos";
+import { createDTOModules } from "./resource/create-dtos";
 import { createResourcesModules } from "./resource/create-resource";
 import { createSwagger } from "./swagger/create-swagger";
 import { createAppModule } from "./app-module/create-app-module";
@@ -25,6 +25,7 @@ import { createDockerComposeDevFile } from "./docker-compose/create-docker-compo
 import { createTypesRelatedFiles } from "./create-types-related-files/create-types-related-files";
 import { createMainFile } from "./create-main/create-main-file";
 import { connectMicroservices } from "./connect-microservices/connect-microservices";
+import { createSecretsManager } from "./secrets-manager/create-secrets-manager";
 
 const STATIC_DIRECTORY = path.resolve(__dirname, "static");
 
@@ -54,10 +55,8 @@ async function createServerInternal(
   await context.logger.info("Creating package.json...");
   const packageJsonModule = await createServerPackageJson();
 
-  await context.logger.info("Creating DTOs...");
-  const dtos = await createDTOs(context.entities);
-  context.DTOs = dtos;
-  const dtoModules = await createDTOModules(dtos);
+  await context.logger.info("Creating server DTOs...");
+  const dtoModules = await createDTOModules(context.DTOs);
 
   await context.logger.info("Creating resources...");
   const resourcesModules = await createResourcesModules(entities);
@@ -74,10 +73,19 @@ async function createServerInternal(
   await context.logger.info("Creating message broker...");
   const messageBrokerModules = await createMessageBroker({});
 
+  await context.logger.info("Creating SecretsManager...");
+  const secretsManagerModule = await createSecretsManager({
+    secretsNameKey: [],
+  });
+
   await context.logger.info("Creating application module...");
 
   const appModuleInputModules = new ModuleMap(context.logger);
-  await appModuleInputModules.mergeMany([resourcesModules, staticModules]);
+  await appModuleInputModules.mergeMany([
+    resourcesModules,
+    staticModules,
+    secretsManagerModule,
+  ]);
   const appModule = await createAppModule(appModuleInputModules);
 
   await context.logger.info("Formatting resources code...");
@@ -133,6 +141,7 @@ async function createServerInternal(
     seedModule,
     authModules,
     messageBrokerModules,
+    secretsManagerModule,
     prismaSchemaModule,
     dotEnvModule,
     dockerComposeFile,
