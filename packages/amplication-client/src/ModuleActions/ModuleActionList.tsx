@@ -10,13 +10,12 @@ import {
   Text,
   Toggle,
 } from "@amplication/ui/design-system";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import useModule from "../Modules/hooks/useModule";
 import * as models from "../models";
 import { formatError } from "../util/error";
 import { ModuleActionListItem } from "./ModuleActionListItem";
 import useModuleAction from "./hooks/useModuleAction";
-import { AppContext } from "../context/appContext";
 import "./ToggleModule.scss";
 
 const DATE_CREATED_FIELD = "createdAt";
@@ -31,7 +30,6 @@ const ModuleActionList = React.memo(
   ({ moduleId, resourceId, displayMode, searchPhrase }: Props) => {
     const [error, setError] = useState<Error>();
 
-    const { addEntity } = useContext(AppContext);
     const {
       findModuleActions,
       findModuleActionsData: data,
@@ -53,9 +51,6 @@ const ModuleActionList = React.memo(
     useEffect(() => {
       if (!moduleData) return;
       updateModule({
-        onCompleted: () => {
-          addEntity(moduleId);
-        },
         variables: {
           where: {
             id: moduleId,

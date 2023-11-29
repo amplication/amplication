@@ -28,7 +28,6 @@ const Module = () => {
     currentWorkspace,
     currentProject,
     currentResource,
-    addEntity,
     resetPendingChangesIndicator,
     setResetPendingChangesIndicator,
   } = useContext(AppContext);
@@ -63,9 +62,6 @@ const Module = () => {
   const handleSubmit = useCallback(
     (data) => {
       updateModule({
-        onCompleted: () => {
-          addEntity(moduleId);
-        },
         variables: {
           where: {
             id: moduleId,

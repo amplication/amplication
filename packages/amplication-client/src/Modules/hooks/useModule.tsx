@@ -31,7 +31,7 @@ type TUpdateData = {
 };
 
 const useModule = () => {
-  const { addBlock } = useContext(AppContext);
+  const { addBlock, addEntity } = useContext(AppContext);
 
   const [
     deleteModule,
@@ -117,7 +117,11 @@ const useModule = () => {
   const [
     updateModule,
     { error: updateModuleError, loading: updateModuleLoading },
-  ] = useMutation<TUpdateData>(UPDATE_MODULE);
+  ] = useMutation<TUpdateData>(UPDATE_MODULE, {
+    onCompleted: (data) => {
+      addEntity(data.updateModule.id);
+    },
+  });
 
   return {
     deleteModule,
