@@ -12,6 +12,8 @@ export const environment = {
   NX_REACT_APP_DATA_SOURCE: "https://server.amplication.com/graphql",
   NX_REACT_APP_STORAGE_GATEWAY_URL: "https://server.amplication.com",
   NX_REACT_APP_BILLING_ENABLED: true,
+  NX_REACT_APP_CONTACT_US_CALENDLY_URL:
+    "https://meetings-eu1.hubspot.com/oalaluf/meeting-with-oren-30",
   NX_REACT_APP_BILLING_API_KEY:
     "client-d3f38201-ed3a-4aea-af1d-1db1ad976ec0:415fb9ff-a378-42d0-a849-dae7daf49646",
   NX_REACT_APP_AMPLITUDE_API_KEY: "P5sO0VHJJlCrBz9bPYhFgN94VwyTyxPO",
