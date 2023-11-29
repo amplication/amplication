@@ -10,13 +10,13 @@ const DISMISS_BUTTON = { label: "Dismiss" };
 
 type Props = {
   moduleAction: models.ModuleAction;
-  onDelete?: () => void;
 };
 
-export const DeleteModuleAction = ({ moduleAction, onDelete }: Props) => {
+export const DeleteModuleAction = ({ moduleAction }: Props) => {
   const [confirmDelete, setConfirmDelete] = useState<boolean>(false);
 
-  const { deleteModuleAction, deleteModuleActionError } = useModuleAction();
+  const { deleteCurrentModuleAction, deleteModuleActionError } =
+    useModuleAction();
 
   const hasError = Boolean(deleteModuleActionError);
   const errorMessage = formatError(deleteModuleActionError);
@@ -35,17 +35,8 @@ export const DeleteModuleAction = ({ moduleAction, onDelete }: Props) => {
 
   const handleConfirmDelete = useCallback(() => {
     setConfirmDelete(false);
-
-    deleteModuleAction({
-      variables: {
-        where: {
-          id: moduleAction.id,
-        },
-      },
-    })
-      .then(onDelete)
-      .catch(console.error);
-  }, [deleteModuleAction, moduleAction]);
+    deleteCurrentModuleAction(moduleAction);
+  }, [deleteCurrentModuleAction, moduleAction]);
 
   return (
     <>

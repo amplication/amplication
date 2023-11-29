@@ -89,12 +89,6 @@ const ModuleAction = ({ match }: Props) => {
   const errorMessage =
     formatError(error) || formatError(updateModuleActionError);
 
-  const handleDeleteModuleAction = useCallback(() => {
-    history.push(
-      `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules`
-    );
-  }, [history, currentWorkspace?.id, currentProject?.id, currentResource?.id]);
-
   const isCustomAction =
     data?.ModuleAction?.actionType === models.EnumModuleActionType.Custom;
 
@@ -107,10 +101,7 @@ const ModuleAction = ({ match }: Props) => {
         />
         <FlexItem.FlexEnd>
           {data?.ModuleAction && isCustomAction && (
-            <DeleteModuleAction
-              moduleAction={data?.ModuleAction}
-              onDelete={handleDeleteModuleAction}
-            />
+            <DeleteModuleAction moduleAction={data?.ModuleAction} />
           )}
         </FlexItem.FlexEnd>
       </FlexItem>

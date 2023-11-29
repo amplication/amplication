@@ -1,5 +1,6 @@
 import { Reference, useLazyQuery, useMutation } from "@apollo/client";
 import { useContext } from "react";
+import { useHistory } from "react-router-dom";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
 import {
@@ -31,7 +32,15 @@ type TUpdateData = {
 };
 
 const useModuleAction = () => {
-  const { addBlock, addEntity } = useContext(AppContext);
+  const {
+    addBlock,
+    addEntity,
+    currentWorkspace,
+    currentProject,
+    currentResource,
+  } = useContext(AppContext);
+
+  const history = useHistory();
 
   const [
     deleteModuleAction,
@@ -51,11 +60,26 @@ const useModuleAction = () => {
         },
       });
     },
-
     onCompleted: (data) => {
       addBlock(data.deleteModuleAction.id);
     },
   });
+
+  const deleteCurrentModuleAction = (data: models.ModuleAction) => {
+    deleteModuleAction({
+      variables: {
+        where: {
+          id: data.id,
+        },
+      },
+    })
+      .then((result) => {
+        history.push(
+          `/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/modules/all`
+        );
+      })
+      .catch(console.error);
+  };
 
   const [
     createModuleAction,
@@ -125,6 +149,7 @@ const useModuleAction = () => {
 
   return {
     deleteModuleAction,
+    deleteCurrentModuleAction,
     deleteModuleActionError,
     deleteModuleActionLoading,
     createModuleAction,
