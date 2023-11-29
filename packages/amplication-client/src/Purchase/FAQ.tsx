@@ -26,10 +26,12 @@ export const FAQ = () => {
               teams building small-scale applications. It provides core features
               to get you started on your projects.
               <br />
+              <br />
               For larger organizations with more complex needs, our{" "}
               <strong>Enterprise plan</strong> is the best fit. It includes
               advanced security features, additional git sync providers, and
               many more features listed in the pricing table above.
+              <br />
               <br />
               For a full breakdown of the Enterprise plan's capabilities and to
               get a personalized quote, feel free to contact us.
@@ -47,6 +49,7 @@ export const FAQ = () => {
               <strong>Enterprise plan</strong>: The ideal choice if you're
               focused on building scalable, modern applications and require
               advanced features.
+              <br />
               <br />
               To help you decide, check out our available plans on this page,
               where you'll find a detailed comparison to ensure you pick the
@@ -100,14 +103,20 @@ export const FAQ = () => {
           answer={
             <div>
               Amplication offers a structured way to{" "}
-              <a href="https://docs.amplication.com/custom-code/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/custom-code/"
+              >
                 add custom code
               </a>{" "}
               and modify your generated code.
               <br />
               <br />
               We also provide various{" "}
-              <a href="https://docs.amplication.com/getting-started/plugins/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/getting-started/plugins/"
+              >
                 plugins
               </a>
               , like Prettier and ESLint, so you can format your code exactly
@@ -127,19 +136,31 @@ export const FAQ = () => {
               Amplication can faciliate the modernization of your legacy system.
               We offer a suite of tools and features designed to streamline this
               process like{" "}
-              <a href="https://docs.amplication.com/how-to/import-prisma-schema/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/how-to/import-prisma-schema/"
+              >
                 DB Schema Import
               </a>
               ,{" "}
-              <a href="https://docs.amplication.com/how-to/create-entity/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/how-to/create-entity/"
+              >
                 Data Modeling
               </a>{" "}
               &{" "}
-              <a href="https://docs.amplication.com/plugins-list/#apache-kafka">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/plugins-list/#apache-kafka"
+              >
                 Event Brokering
               </a>
               , and{" "}
-              <a href="https://docs.amplication.com/custom-code/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/custom-code/"
+              >
                 Customizable Code Generation
               </a>
               , and many more features.
@@ -152,15 +173,24 @@ export const FAQ = () => {
             <div>
               Yes, Amplication provides in-depth guides that show you how to
               deploy to services like{" "}
-              <a href="https://docs.amplication.com/deploy/kubernetes/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/deploy/kubernetes/"
+              >
                 Kubernetes
               </a>
               ,{" "}
-              <a href="https://docs.amplication.com/deploy/docker-desktop/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/deploy/docker-desktop/"
+              >
                 Docker Desktop
               </a>
               ,{" "}
-              <a href="https://docs.amplication.com/deploy/aws/ecs/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/deploy/aws/ecs/"
+              >
                 AWS's ECS
               </a>
               , and more coming soon.
@@ -176,12 +206,17 @@ export const FAQ = () => {
           answer={
             <div>
               No, we respect your code changes.
-              <br></br>
+              <br />
+              <br />
               Amplication's Smart Git Sync feature ensures that your custom code
               always takes precedence over the generated code.
-              <br></br>
+              <br />
+              <br />
               For more details on how this works, please refer to our{" "}
-              <a href="https://docs.amplication.com/smart-git-sync/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/smart-git-sync/"
+              >
                 documentation
               </a>
               .
@@ -195,7 +230,10 @@ export const FAQ = () => {
               Yes, Amplication's Enterprise plan is equipped with advanced
               security features to meet the needs of your organization. This
               includes support for{" "}
-              <a href="https://docs.amplication.com/enterprise-sso/">
+              <a
+                target="_blank"
+                href="https://docs.amplication.com/enterprise-sso/"
+              >
                 Single Sign-On (SSO)
               </a>
               , audit logs, and Two-Factor Authentication (2FA).
