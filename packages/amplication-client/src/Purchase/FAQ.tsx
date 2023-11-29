@@ -68,8 +68,8 @@ export const FAQ = () => {
           }
         />
         <Question
-          question="Due to security regulations, my enterprise require supporting relevant capabilities, like 2FA, audit log, SSO and more. Do you support it?"
-          answer="The Enterprise edition gives you access to advanced security features like SSO and audit logs are provided."
+          question="Can I pay to Amplication through my AWS account (AWS billing)?"
+          answer="Yes, we support this billing method. Please contact us and we'll help you handle it."
         />
         <Question
           question="We have multiple teams in the organization, can we use one account to manage separate teams?"
@@ -90,7 +90,7 @@ export const FAQ = () => {
                   CodeCommit, and GitLab.
                 </li>
               </ul>
-              We have to plans to add more git providers in the future.
+              We have plans to add more git providers in the future.
             </div>
           }
         />
@@ -106,12 +106,16 @@ export const FAQ = () => {
               and modify your generated code.
               <br />
               <br />
-              We provide guides on how to add actions to REST API controllers,
-              add custom DTOs (Data Transfer Objects), add queries to GraphQL
-              resolver, and more on our documentation.
+              We also provide various{" "}
+              <a href="https://docs.amplication.com/getting-started/plugins/">
+                plugins
+              </a>
+              , like Prettier and ESLint, so you can format your code exactly
+              how you need it.
             </div>
           }
         />
+
         <Question
           question="Do you support more languages besides TypeScript and Node.js?"
           answer="Right now Amplication is focused on helping you generate production-ready Node.js backends. At the moment we don't support other languages."
@@ -122,7 +126,7 @@ export const FAQ = () => {
             <div>
               Amplication can faciliate the modernization of your legacy system.
               We offer a suite of tools and features designed to streamline this
-              process. Those capabilities include:{" "}
+              process like{" "}
               <a href="https://docs.amplication.com/how-to/import-prisma-schema/">
                 DB Schema Import
               </a>
@@ -138,7 +142,7 @@ export const FAQ = () => {
               <a href="https://docs.amplication.com/custom-code/">
                 Customizable Code Generation
               </a>
-              .
+              , and many more features.
             </div>
           }
         />
@@ -171,13 +175,12 @@ export const FAQ = () => {
           question="Will your generated code override my code changes?"
           answer={
             <div>
-              Yes, Amplication's Smart Git Sync feature ensures that your custom
-              code always takes precedence over the generated code. Our system
-              intelligently combines both, managing the syncing process
-              efficiently. This means that your changes will not be overridden
-              and will be seamlessly integrated with any new changes from
-              Amplication. For more details on how this works, please refer to
-              our{" "}
+              No, we respect your code changes.
+              <br></br>
+              Amplication's Smart Git Sync feature ensures that your custom code
+              always takes precedence over the generated code.
+              <br></br>
+              For more details on how this works, please refer to our{" "}
               <a href="https://docs.amplication.com/smart-git-sync/">
                 documentation
               </a>
@@ -186,8 +189,18 @@ export const FAQ = () => {
           }
         />
         <Question
-          question="Can I pay to Amplication through my AWS account (AWS billing)?"
-          answer="Yes, we support this billing method. Please contact us and we'll help you handle it."
+          question="Does Amplication support advanced security features like 2FA, audit logs, and SSO for organizational security concerns?"
+          answer={
+            <div>
+              Yes, Amplication's Enterprise plan is equipped with advanced
+              security features to meet the needs of your organization. This
+              includes support for{" "}
+              <a href="https://docs.amplication.com/enterprise-sso/">
+                Single Sign-On (SSO)
+              </a>
+              , audit logs, and Two-Factor Authentication (2FA).
+            </div>
+          }
         />
       </div>
     </div>
