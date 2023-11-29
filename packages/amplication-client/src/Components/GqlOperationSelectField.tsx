@@ -3,29 +3,19 @@ import { EnumModuleActionGqlOperation } from "../models";
 
 type Props = Omit<SelectFieldProps, "options">;
 
-type gqlOperationSelectFieldDic = {
-  key: string;
-  operation: EnumModuleActionGqlOperation;
-};
-
-const qlOperationMapping: gqlOperationSelectFieldDic[] = [
+const qlOperationMapping = [
   {
-    key: "mutation",
-    operation: EnumModuleActionGqlOperation.Mutation,
+    label: "mutation",
+    value: EnumModuleActionGqlOperation.Mutation,
   },
   {
-    key: "query",
-    operation: EnumModuleActionGqlOperation.Query,
+    label: "query",
+    value: EnumModuleActionGqlOperation.Query,
   },
 ];
 
 const GqlOperationSelectField = ({ ...props }: Props) => {
-  const res = qlOperationMapping.map((operation) => ({
-    value: operation.operation,
-    label: operation.key,
-  }));
-
-  return <SelectField {...props} options={res} />;
+  return <SelectField {...props} options={qlOperationMapping} />;
 };
 
 export default GqlOperationSelectField;

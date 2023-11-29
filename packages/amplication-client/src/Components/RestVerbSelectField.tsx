@@ -3,53 +3,43 @@ import { EnumModuleActionRestVerb } from "../models";
 
 type Props = Omit<SelectFieldProps, "options">;
 
-type restVerbsDic = {
-  key: string;
-  verb: EnumModuleActionRestVerb;
-};
-
-const restVerbsMapping: restVerbsDic[] = [
+const restVerbsMapping = [
   {
-    key: "get",
-    verb: EnumModuleActionRestVerb.Get,
+    label: "get",
+    value: EnumModuleActionRestVerb.Get,
   },
   {
-    key: "delete",
-    verb: EnumModuleActionRestVerb.Delete,
+    label: "delete",
+    value: EnumModuleActionRestVerb.Delete,
   },
   {
-    key: "head",
-    verb: EnumModuleActionRestVerb.Head,
+    label: "head",
+    value: EnumModuleActionRestVerb.Head,
   },
   {
-    key: "options",
-    verb: EnumModuleActionRestVerb.Options,
+    label: "options",
+    value: EnumModuleActionRestVerb.Options,
   },
   {
-    key: "patch",
-    verb: EnumModuleActionRestVerb.Patch,
+    label: "patch",
+    value: EnumModuleActionRestVerb.Patch,
   },
   {
-    key: "post",
-    verb: EnumModuleActionRestVerb.Post,
+    label: "post",
+    value: EnumModuleActionRestVerb.Post,
   },
   {
-    key: "put",
-    verb: EnumModuleActionRestVerb.Put,
+    label: "put",
+    value: EnumModuleActionRestVerb.Put,
   },
   {
-    key: "trace",
-    verb: EnumModuleActionRestVerb.Trace,
+    label: "trace",
+    value: EnumModuleActionRestVerb.Trace,
   },
 ];
 
 const RestVerbSelectField = ({ ...props }: Props) => {
-  const res = restVerbsMapping.map((verb) => ({
-    value: verb.verb,
-    label: verb.key,
-  }));
-
-  return <SelectField {...props} options={res} />;
+  return <SelectField {...props} options={restVerbsMapping} />;
 };
 
 export default RestVerbSelectField;
