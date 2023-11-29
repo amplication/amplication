@@ -83,7 +83,6 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
-    // This query param is used to open HubSpot chat with the main flow
     window.open(REACT_APP_CONTACT_US_CALENDLY_URL, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
