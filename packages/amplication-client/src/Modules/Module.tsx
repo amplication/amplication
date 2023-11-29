@@ -34,23 +34,13 @@ const Module = () => {
   const history = useHistory();
 
   const {
-    getModule,
     getModuleData: data,
     getModuleError: error,
     getModuleLoading: loading,
     getModuleRefetch: refetch,
     updateModule,
     updateModuleError,
-  } = useModule();
-
-  useEffect(() => {
-    if (!moduleId) return;
-    getModule({
-      variables: {
-        moduleId,
-      },
-    }).catch(console.error);
-  }, [moduleId, getModule]);
+  } = useModule(moduleId);
 
   useEffect(() => {
     if (!resetPendingChangesIndicator) return;

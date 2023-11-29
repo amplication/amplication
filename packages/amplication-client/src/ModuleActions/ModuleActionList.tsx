@@ -37,10 +37,10 @@ const ModuleActionList = React.memo(
       findModuleActionsLoading: loading,
     } = useModuleAction();
 
-    const { getModule, getModuleData: moduleData, updateModule } = useModule();
+    const { getModuleData: moduleData, updateModule } = useModule(moduleId);
 
     const [enabledActions, setEnabledActions] = useState<boolean>(
-      moduleData?.Module.enabled || null
+      moduleData?.Module?.enabled || null
     );
 
     useEffect(() => {
@@ -48,28 +48,23 @@ const ModuleActionList = React.memo(
       setEnabledActions(moduleData.Module.enabled);
     }, [moduleData, moduleData?.Module?.enabled]);
 
-    useEffect(() => {
-      if (!moduleData) return;
-      updateModule({
-        variables: {
-          where: {
-            id: moduleId,
-          },
-          data: {
-            description: moduleData.Module.description,
-            displayName: moduleData.Module.description,
-            name: moduleData.Module.name,
-            enabled: enabledActions,
-          },
-        },
-      }).catch(console.error);
-    }, [enabledActions, setEnabledActions, moduleId]);
-
     const onEnableChanged = useCallback(
       (value: boolean) => {
-        setEnabledActions(value);
+        updateModule({
+          variables: {
+            where: {
+              id: moduleId,
+            },
+            data: {
+              description: moduleData.Module.description,
+              displayName: moduleData.Module.description,
+              name: moduleData.Module.name,
+              enabled: value,
+            },
+          },
+        }).catch(console.error);
       },
-      [setEnabledActions]
+      [moduleId, updateModule]
     );
 
     useEffect(() => {
@@ -91,12 +86,6 @@ const ModuleActionList = React.memo(
           },
         },
       });
-
-      getModule({
-        variables: {
-          moduleId,
-        },
-      }).catch(console.error);
     }, [moduleId, searchPhrase, findModuleActions]);
 
     const errorMessage =

@@ -1,4 +1,4 @@
-import { Reference, useLazyQuery, useMutation, useQuery } from "@apollo/client";
+import { Reference, useMutation, useQuery } from "@apollo/client";
 import { useCallback, useContext, useState } from "react";
 import { AppContext } from "../../context/appContext";
 import * as models from "../../models";
@@ -31,7 +31,7 @@ type TUpdateData = {
   updateModule: models.Module;
 };
 
-const useModule = () => {
+const useModule = (moduleId?: string) => {
   const { addBlock, addEntity, currentResource } = useContext(AppContext);
   const [searchPhrase, setSearchPhrase] = useState<string>("");
 
@@ -126,15 +126,17 @@ const useModule = () => {
     },
   });
 
-  const [
-    getModule,
-    {
-      data: getModuleData,
-      error: getModuleError,
-      loading: getModuleLoading,
-      refetch: getModuleRefetch,
+  const {
+    data: getModuleData,
+    error: getModuleError,
+    loading: getModuleLoading,
+    refetch: getModuleRefetch,
+  } = useQuery<TGetData>(GET_MODULE, {
+    variables: {
+      moduleId,
     },
-  ] = useLazyQuery<TGetData>(GET_MODULE);
+    skip: !moduleId,
+  });
 
   const [
     updateModule,
@@ -157,7 +159,6 @@ const useModule = () => {
     findModulesLoading,
     findModulesError,
     findModuleRefetch,
-    getModule,
     getModuleData,
     getModuleError,
     getModuleLoading,
