@@ -56,16 +56,13 @@ export const ModuleActionListItem = ({
   disabled,
 }: Props) => {
   const history = useHistory();
-  const { currentWorkspace, currentProject, currentResource, addEntity } =
+  const { currentWorkspace, currentProject, currentResource } =
     useContext(AppContext);
   const { updateModuleAction } = useModuleAction();
 
   const onEnableChanged = useCallback(
     (value: boolean) => {
       updateModuleAction({
-        onCompleted: () => {
-          addEntity(moduleAction.id);
-        },
         variables: {
           where: {
             id: moduleAction.id,
