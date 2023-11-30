@@ -15,11 +15,11 @@ import { useCallback, useContext, useState } from "react";
 
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
-import { ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
 import { FAQ } from "./FAQ";
-import { REACT_APP_CONTACT_US_CALENDLY_URL } from "../env";
+import { GET_CONTACT_US_CALENDLY_LINK } from "../Workspaces/queries/workspaceQueries";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -57,8 +57,12 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
 
-  const { trackEvent } = useTracking();
+  const { data } = useQuery(GET_CONTACT_US_CALENDLY_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
 
+  const { trackEvent } = useTracking();
+  console.log("data", data);
   const history = useHistory();
   const backUrl = useCallback(() => {
     trackEvent({
@@ -83,13 +87,13 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
-    window.open(REACT_APP_CONTACT_US_CALENDLY_URL, "_blank");
+    window.open(data?.contactUsCalendlyLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
       Action: "Contact Us",
       workspaceId: currentWorkspace.id,
     });
-  }, [currentWorkspace.id]);
+  }, [currentWorkspace.id, data?.contactUsCalendlyLink]);
 
   const handleDowngradeClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the downgrade flow

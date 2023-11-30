@@ -66,6 +66,12 @@ export const GET_WORKSPACES = gql`
   }
 `;
 
+export const GET_CONTACT_US_CALENDLY_LINK = gql`
+  query GetContactUsCalendlyLink($id: String!) {
+    contactUsCalendlyLink(where: { id: $id })
+  }
+`;
+
 export const PROVISION_SUBSCRIPTION = gql`
   mutation provisionSubscription($data: ProvisionSubscriptionInput!) {
     provisionSubscription(data: $data) {
