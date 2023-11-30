@@ -5,7 +5,7 @@
     "dsg:package:container": "./scripts/package-container.sh"
   },
   "dependencies": {
-    "@amplication/code-gen-types": "2.0.19",
+    "@amplication/code-gen-types": "2.0.20",
     "@amplication/code-gen-utils": "0.0.7",
     "@apollo/client": "^3.7.1",
     "@babel/parser": "7.23.0",
@@ -19,7 +19,6 @@
     "@nestjs/testing": "^9.4.0",
     "@prisma/client": "^4.16.2",
     "@testing-library/jest-dom": "5.17.0",
-    "assert": "^2.0.0",
     "ast-types": "^0.14.2",
     "axios": "^0.27.2",
     "base-64": "^1.0.0",

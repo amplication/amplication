@@ -42,6 +42,8 @@ export async function createEntityControllerSpec(
   entityControllerModulePath: string,
   entityControllerBaseModulePath: string
 ): Promise<ModuleMap> {
+  const { entityActionsMap } = DsgContext.getInstance;
+  const entityActions = entityActionsMap[entity.name];
   /** @todo make dynamic */
   const param = "id";
   const paramType = builders.tsStringKeyword();
@@ -93,6 +95,21 @@ export async function createEntityControllerSpec(
       FIND_ONE_RESULT_ID,
       entity.fields,
       fieldNameToPrismField
+    ),
+    CREATE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Create.name
+    ),
+    FIND_MANY_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Find.name
+    ),
+    FIND_ONE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Read.name
+    ),
+    UPDATE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Update.name
+    ),
+    DELETE_ENTITY_FUNCTION: builders.identifier(
+      entityActions.entityDefaultActions.Delete.name
     ),
   };
 

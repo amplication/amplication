@@ -25,6 +25,8 @@ describe("createDataService", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
+          moduleContainers: [],
+          moduleActions: [],
           entities,
           roles,
           buildId: "example_build_id",

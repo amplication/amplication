@@ -1,11 +1,11 @@
 import { types } from "@amplication/code-gen-types";
-import { createDataService } from "../create-data-service";
-import { EnumDataType, EnumResourceType } from "../models";
-import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
+import { createDataService } from "../create-data-service";
+import { EnumDataType } from "../models";
+import { USER_ENTITY_NAME } from "../server/user-entity/user-entity";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
+import entities from "./entities";
+import { TEST_DATA } from "./test-data";
 import { rm } from "fs/promises";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 
@@ -38,14 +38,7 @@ describe("createDataService", () => {
   describe("when using a numeric user id", () => {
     test("creates resource as expected", async () => {
       const modules = await createDataService(
-        {
-          entities,
-          buildId: "example_build_id",
-          roles,
-          resourceInfo: appInfo,
-          resourceType: EnumResourceType.Service,
-          pluginInstallations: [],
-        },
+        TEST_DATA,
         MockedLogger,
         temporaryPluginInstallationPath
       );

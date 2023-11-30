@@ -8,6 +8,12 @@ import {
   PluginInstallation,
   serverDirectories,
   types,
+  ModuleAction,
+  EntityActionsMap,
+  EnumModuleActionType,
+  ModuleContainer,
+  entityDefaultActions,
+  entityRelatedFieldDefaultActions,
 } from "@amplication/code-gen-types";
 import { ILogger } from "@amplication/util/logging";
 import { camelCase } from "camel-case";
@@ -20,6 +26,10 @@ import { EnumResourceType } from "./models";
 import registerPlugins from "./register-plugin";
 import { SERVER_BASE_DIRECTORY } from "./server/constants";
 import { resolveTopicNames } from "./utils/message-broker";
+import {
+  getDefaultActionsForEntity,
+  getDefaultActionsForRelationField,
+} from "@amplication/dsg-utils";
 
 //This function runs at the start of the process, to prepare the input data, and populate the context object
 export async function prepareContext(
@@ -35,6 +45,8 @@ export async function prepareContext(
     roles,
     resourceInfo: appInfo,
     otherResources,
+    moduleActions,
+    moduleContainers,
   } = dSGResourceData;
 
   if (!entities || !roles || !appInfo) {
@@ -60,6 +72,12 @@ export async function prepareContext(
   context.serviceTopics = serviceTopicsWithName;
   context.otherResources = otherResources;
   context.pluginInstallations = resourcePlugins;
+  context.moduleContainers = moduleContainers;
+  context.entityActionsMap = prepareEntityActions(
+    entities,
+    moduleContainers,
+    moduleActions
+  );
   context.generateGrpc = shouldGenerateGrpc(context.pluginInstallations);
 
   context.hasDecimalFields = normalizedEntities.some((entity) => {
@@ -224,4 +242,90 @@ function resolveLookupFields(entities: Entity[]): Entity[] {
       }),
     };
   });
+}
+
+function prepareEntityActions(
+  entities: Entity[],
+  moduleContainers: ModuleContainer[],
+  moduleActions: ModuleAction[]
+): EntityActionsMap {
+  return Object.fromEntries(
+    entities.map((entity) => {
+      const defaultActions = getDefaultActionsForEntity(entity);
+
+      const relationFields = entity.fields.filter((field) => {
+        return field.dataType === EnumDataType.Lookup;
+      });
+
+      const defaultRelatedActions = Object.fromEntries(
+        relationFields.map((relatedField) => {
+          return [
+            relatedField.name,
+            getDefaultActionsForRelationField(entity, relatedField),
+          ];
+        })
+      );
+
+      const moduleContainer = moduleContainers?.find(
+        (moduleContainer) => moduleContainer.entityId === entity.id
+      );
+
+      //return the defaultActions if the relevant module was not provided
+      if (moduleContainer === undefined) {
+        return [
+          entity.name,
+          {
+            entityDefaultActions: defaultActions,
+            relatedFieldsDefaultActions: defaultRelatedActions,
+            customActions: [],
+          },
+        ];
+      }
+
+      const moduleContainerId = moduleContainer.id;
+
+      const actionKeys = Object.keys(EnumModuleActionType) as Array<
+        keyof typeof EnumModuleActionType
+      >;
+
+      //create 2 arrays for default and relations
+      const entityDefaultEntries = Object.fromEntries(
+        actionKeys.map((key) => {
+          const moduleAction = moduleActions.find(
+            (moduleAction) =>
+              moduleAction.parentBlockId === moduleContainerId &&
+              moduleAction.actionType === key &&
+              !moduleAction.fieldPermanentId
+          );
+          //return the defaultAction if the relevant actions was not provided
+          return [key, moduleAction || defaultActions[key]];
+        })
+      ) as entityDefaultActions;
+
+      const relatedFieldsDefaultEntries = Object.fromEntries(
+        relationFields.map((relatedField) => {
+          const actions = actionKeys.map((key) => {
+            const moduleAction = moduleActions.find(
+              (moduleAction) =>
+                moduleAction.parentBlockId === moduleContainerId &&
+                moduleAction.actionType === key &&
+                moduleAction.fieldPermanentId === relatedField.permanentId
+            );
+            //return the defaultAction if the relevant actions was not provided
+            return moduleAction || defaultRelatedActions[key];
+          });
+          return [relatedField.name, actions];
+        })
+      ) as Record<string, entityRelatedFieldDefaultActions>;
+
+      return [
+        entity.name,
+        {
+          entityDefaultActions: entityDefaultEntries,
+          relatedFieldsDefaultActions: relatedFieldsDefaultEntries,
+          customActions: [],
+        },
+      ];
+    })
+  );
 }

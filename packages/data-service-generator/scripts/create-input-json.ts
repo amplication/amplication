@@ -6,7 +6,7 @@ import entities from "../src/tests/entities";
 import roles from "../src/tests/roles";
 import { join } from "path";
 import { format } from "prettier";
-import { plugins } from "../src/tests/constants/example-plugins";
+import { plugins } from "../src/tests/mock-data-plugin-installations";
 
 async function createInputJsonFile() {
   const object = {

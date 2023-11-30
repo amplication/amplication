@@ -54,11 +54,11 @@ const FIND_MANY_RESULT = FIND_MANY_RESULT_VALUE;
 const FIND_ONE_RESULT = FIND_ONE_RESULT_VALUE;
 
 const service = {
-  create() {
+  CREATE_ENTITY_FUNCTION() {
     return CREATE_RESULT;
   },
-  findMany: () => FIND_MANY_RESULT,
-  findOne: ({ where }: { where: { id: string } }) => {
+  FIND_MANY_ENTITY_FUNCTION: () => FIND_MANY_RESULT,
+  FIND_ONE_ENTITY_FUNCTION: ({ where }: { where: { id: string } }) => {
     switch (where.id) {
       case EXISTING_PARAM_ID:
         return FIND_ONE_RESULT;

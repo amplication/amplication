@@ -1,6 +1,7 @@
 import { TabItem, Tabs } from "@amplication/ui/design-system";
 import classNames from "classnames";
-import React from "react";
+import React, { useCallback } from "react";
+import { LockedFeatureIndicator } from "../Components/LockedFeatureIndicator";
 import "./PageLayout.scss";
 
 type Props = {
@@ -13,16 +14,24 @@ type Props = {
 const CLASS_NAME = "amp-page-layout";
 
 function PageLayout({ children, className, tabs }: Props) {
+  const tabsComponent = useCallback(() => {
+    return tabs.map((tab, index) => (
+      <Tabs.Tab
+        key={index}
+        {...tab}
+        lockedFeatureIndicator={
+          tab.disabled && <LockedFeatureIndicator featureName={tab.name} />
+        }
+      />
+    ));
+  }, [tabs]);
+
   return (
     <>
       <div className={classNames(CLASS_NAME, className)}>
         {tabs && tabs.length > 0 && (
           <div className={`${CLASS_NAME}__header`}>
-            <Tabs>
-              {tabs.map((tab, index) => (
-                <Tabs.Tab key={index} {...tab} />
-              ))}
-            </Tabs>
+            <Tabs>{tabsComponent()}</Tabs>
           </div>
         )}
         <div className={`${CLASS_NAME}__body`}>{children}</div>

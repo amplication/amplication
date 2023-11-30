@@ -237,7 +237,8 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User
+    currentUser: User,
+    skipBuild = false
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -356,41 +357,44 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    const promises = resources
-      .filter(
-        (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
-      )
-      .map((resource: Resource) => {
-        return this.buildService.create({
-          data: {
-            resource: {
-              connect: { id: resource.id },
-            },
-            commit: {
-              connect: {
-                id: commit.id,
+    if (!skipBuild) {
+      const promises = resources
+        .filter(
+          (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
+        )
+        .map((resource: Resource) => {
+          return this.buildService.create({
+            data: {
+              resource: {
+                connect: { id: resource.id },
               },
-            },
-            createdBy: {
-              connect: {
-                id: userId,
+              commit: {
+                connect: {
+                  id: commit.id,
+                },
               },
+              createdBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              message: args.data.message,
             },
-            message: args.data.message,
-          },
+          });
         });
+
+      await Promise.all(promises);
+    }
+    if (!skipBuild) {
+      await this.analytics.track({
+        userId: currentUser.account.id,
+        properties: {
+          workspaceId: project.workspaceId,
+          projectId: project.id,
+        },
+        event: EnumEventType.CommitCreate,
       });
-
-    await Promise.all(promises);
-
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: project.workspaceId,
-        projectId: project.id,
-      },
-      event: EnumEventType.CommitCreate,
-    });
+    }
 
     return commit;
   }

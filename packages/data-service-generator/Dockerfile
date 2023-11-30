@@ -11,8 +11,13 @@ WORKDIR /workspace/packages/data-service-generator
 COPY ./dist/packages/data-service-generator .
 RUN npm i --omit-dev
 
-# Copy unpublished logging library
+# Copy unpublished amplication libraries
 COPY ./dist/libs/util/logging node_modules/@amplication/util/logging
+COPY ./dist/libs/util/dsg-utils node_modules/@amplication/dsg-utils
+
+# Copy unpublished code-gen-types library
+COPY ./dist/packages/amplication-code-gen-types node_modules/@amplication/code-gen-types
+
 
 ENV GIT_REF_NAME=${GIT_REF_NAME}
 ENV GIT_SHA=${GIT_SHA}

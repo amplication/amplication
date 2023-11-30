@@ -1,10 +1,8 @@
 import { AppInfo } from "@amplication/code-gen-types";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
-import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
+import { TEST_DATA } from "./test-data";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { rm } from "fs/promises";
 
@@ -19,7 +17,6 @@ const newAppInfo: AppInfo = {
     },
   },
 };
-
 jest.setTimeout(100000);
 
 const temporaryPluginInstallationPath =
@@ -38,12 +35,8 @@ describe("createDataService", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
-          entities,
-          buildId: "example_build_id",
-          roles,
+          ...TEST_DATA,
           resourceInfo: newAppInfo,
-          resourceType: EnumResourceType.Service,
-          pluginInstallations: [],
         },
         MockedLogger,
         temporaryPluginInstallationPath

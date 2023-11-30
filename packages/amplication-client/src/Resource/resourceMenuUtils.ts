@@ -1,4 +1,5 @@
 import { EnumResourceType } from "../models";
+import { BillingFeature } from "../util/BillingFeature";
 
 export type MenuItemLinks =
   | "entities"
@@ -9,12 +10,14 @@ export type MenuItemLinks =
   | "topics"
   | "services"
   | "connections"
+  | "modules"
   | "pendingChanges";
 
 export const resourceMenuLayout: {
   [key in EnumResourceType]: MenuItemLinks[];
 } = {
   [EnumResourceType.Service]: [
+    "modules",
     "entities",
     "roles",
     "plugins",
@@ -27,7 +30,12 @@ export const resourceMenuLayout: {
 };
 
 export const linksMap: {
-  [key in MenuItemLinks]: { title: string; icon: string; to: string };
+  [key in MenuItemLinks]: {
+    title: string;
+    icon: string;
+    to: string;
+    license?: BillingFeature;
+  };
 } = {
   entities: {
     title: "Entities",
@@ -73,6 +81,12 @@ export const linksMap: {
     title: "Pending Changes",
     icon: "pending_changes",
     to: "/pending-changes",
+  },
+  modules: {
+    title: "Modules",
+    icon: "box",
+    to: "/modules/all",
+    license: BillingFeature.CustomActions,
   },
 };
 

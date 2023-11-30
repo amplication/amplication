@@ -6,9 +6,8 @@ import {
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
 import { EnumResourceType } from "../models";
-import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import roles from "./roles";
+import { TEST_DATA } from "./test-data";
+import { MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
 import { rm } from "fs/promises";
 import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
 import { plugins } from "./mock-data-plugin-installations";
@@ -49,11 +48,7 @@ describe("createDataService", () => {
         pluginInstallations: [],
       };
       const service: DSGResourceData = {
-        entities,
-        roles,
-        resourceInfo: appInfo,
-        buildId: "example_build_id",
-        resourceType: EnumResourceType.Service,
+        ...TEST_DATA,
         serviceTopics: [
           {
             enabled: true,

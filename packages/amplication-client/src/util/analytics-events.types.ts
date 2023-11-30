@@ -77,12 +77,8 @@ export enum AnalyticsEventNames {
   BackToProjectsClick = "backToProjectsClick",
 
   // topic
-  TopicCreate = "topicCreate",
-  TopicCreateFailed = "topicCreateFailed",
-  TopicNameEdit = "topicNameEdit",
-  TopicDisplayNameEdit = "topicDisplayNameEdit",
-  TopicDescriptionEdit = "topicDescriptionEdit",
-  TopicsSearch = "topicsSearch",
+  TopicCreate = "createTopic",
+  TopicUpdate = "updateTopic",
 
   // commit & build & pending changes
   CommitClicked = "commitClicked",

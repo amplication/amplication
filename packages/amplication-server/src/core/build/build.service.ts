@@ -25,6 +25,8 @@ import { previousBuild } from "./utils";
 import { TopicService } from "../topic/topic.service";
 import { ServiceTopicsService } from "../serviceTopics/serviceTopics.service";
 import { PluginInstallationService } from "../pluginInstallation/pluginInstallation.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
+import { ModuleService } from "../module/module.service";
 import { EnumResourceType } from "../resource/dto/EnumResourceType";
 import { Env } from "../../env";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
@@ -201,6 +203,8 @@ export class BuildService {
     private readonly topicService: TopicService,
     private readonly serviceTopicsService: ServiceTopicsService,
     private readonly pluginInstallationService: PluginInstallationService,
+    private readonly moduleActionService: ModuleActionService,
+    private readonly moduleService: ModuleService,
     private readonly billingService: BillingService,
     private readonly gitProviderService: GitProviderService,
     @Inject(AmplicationLogger)
@@ -831,6 +835,14 @@ export class BuildService {
     const plugins = allPlugins.filter((plugin) => plugin.enabled);
     const url = `${this.host}/${resourceId}`;
 
+    const moduleActions = await this.moduleActionService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
+    const modules = await this.moduleService.findMany({
+      where: { resource: { id: resourceId } },
+    });
+
     const serviceSettings =
       resource.resourceType === EnumResourceType.Service
         ? await this.serviceSettingsService.getServiceSettingsValues(
@@ -861,6 +873,8 @@ export class BuildService {
       entities: await this.getOrderedEntities(buildId),
       roles: await this.getResourceRoles(resourceId),
       pluginInstallations: plugins,
+      moduleContainers: modules,
+      moduleActions: moduleActions,
       resourceType: resource.resourceType,
       topics: await this.topicService.findMany({
         where: { resource: { id: resourceId } },
