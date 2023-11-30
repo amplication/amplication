@@ -61,11 +61,9 @@ export class WorkspaceResolver {
     nullable: true,
   })
   @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
-  async contactUsCalendlyLink(
-    @Args() args: FindOneArgs
-  ): Promise<string | null> {
+  async contactUsLink(@Args() args: FindOneArgs): Promise<string | null> {
     if (args.where.id) {
-      return this.configService.get<string>(Env.CONTACT_US_CALENDLY_URL);
+      return this.configService.get<string>(Env.CONTACT_US_LINK);
     }
   }
 
