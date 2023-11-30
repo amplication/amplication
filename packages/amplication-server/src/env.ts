@@ -20,6 +20,8 @@ export class Env {
   static readonly BILLING_ENABLED = "BILLING_ENABLED";
   static readonly BILLING_API_KEY = "BILLING_API_KEY";
 
+  static readonly CONTACT_US_LINK = "CONTACT_US_LINK";
+
   static readonly STIGG_WEBHOOKS_SECRET = "STIGG_WEBHOOKS_SECRET";
 
   static readonly AUTH_ISSUER_BASE_URL = "AUTH_ISSUER_BASE_URL";

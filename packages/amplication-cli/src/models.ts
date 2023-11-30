@@ -1804,6 +1804,7 @@ export type Query = {
   builds: Array<Build>;
   commit?: Maybe<Commit>;
   commits?: Maybe<Array<Commit>>;
+  contactUsLink?: Maybe<Scalars['String']['output']>;
   currentWorkspace?: Maybe<Workspace>;
   entities: Array<Entity>;
   entity?: Maybe<Entity>;
@@ -1938,6 +1939,11 @@ export type QueryCommitsArgs = {
   skip?: InputMaybe<Scalars['Int']['input']>;
   take?: InputMaybe<Scalars['Int']['input']>;
   where?: InputMaybe<CommitWhereInput>;
+};
+
+
+export type QueryContactUsLinkArgs = {
+  where: WhereUniqueInput;
 };
 
 

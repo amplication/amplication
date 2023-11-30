@@ -15,10 +15,11 @@ import { useCallback, useContext, useState } from "react";
 
 import { AppContext } from "../context/appContext";
 import { PromoBanner } from "./PromoBanner";
-import { ApolloError, useMutation } from "@apollo/client";
+import { ApolloError, useMutation, useQuery } from "@apollo/client";
 import { PROVISION_SUBSCRIPTION } from "../Workspaces/queries/workspaceQueries";
 import { PurchaseLoader } from "./PurchaseLoader";
 import { FAQ } from "./FAQ";
+import { GET_CONTACT_US_LINK } from "../Workspaces/queries/workspaceQueries";
 
 export type DType = {
   provisionSubscription: models.ProvisionSubscriptionResult;
@@ -56,6 +57,10 @@ const CLASS_NAME = "purchase-page";
 const PurchasePage = (props) => {
   const { currentWorkspace, openHubSpotChat } = useContext(AppContext);
 
+  const { data } = useQuery(GET_CONTACT_US_LINK, {
+    variables: { id: currentWorkspace.id },
+  });
+
   const { trackEvent } = useTracking();
 
   const history = useHistory();
@@ -82,15 +87,13 @@ const PurchasePage = (props) => {
     });
 
   const handleContactUsClick = useCallback(() => {
-    // This query param is used to open HubSpot chat with the main flow
-    history.push("?contact-us=true");
-    openHubSpotChat();
+    window.open(data?.contactUsLink, "_blank");
     trackEvent({
       eventName: AnalyticsEventNames.ContactUsButtonClick,
       Action: "Contact Us",
       workspaceId: currentWorkspace.id,
     });
-  }, [openHubSpotChat, currentWorkspace.id]);
+  }, [currentWorkspace.id, data?.contactUsLink]);
 
   const handleDowngradeClick = useCallback(() => {
     // This query param is used to open HubSpot chat with the downgrade flow
