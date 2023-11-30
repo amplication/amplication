@@ -62,7 +62,7 @@ const PurchasePage = (props) => {
   });
 
   const { trackEvent } = useTracking();
-  console.log("data", data);
+
   const history = useHistory();
   const backUrl = useCallback(() => {
     trackEvent({
