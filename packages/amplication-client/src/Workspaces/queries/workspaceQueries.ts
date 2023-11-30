@@ -66,9 +66,9 @@ export const GET_WORKSPACES = gql`
   }
 `;
 
-export const GET_CONTACT_US_CALENDLY_LINK = gql`
-  query GetContactUsCalendlyLink($id: String!) {
-    contactUsCalendlyLink(where: { id: $id })
+export const GET_CONTACT_US_LINK = gql`
+  query GetContactUsLink($id: String!) {
+    contactUsLink(where: { id: $id })
   }
 `;
 
