@@ -58,11 +58,16 @@ const ModuleActions = React.memo(({ match }: Props) => {
     }
   }, [setDisplayMode, data]);
 
+  let timeout;
+
   const handleSearchChange = useCallback(
     (value) => {
-      setSearchPhrase(value);
+      if (timeout) clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        setSearchPhrase(value);
+      }, 750);
     },
-    [setSearchPhrase]
+    [setSearchPhrase, timeout]
   );
 
   const handleDisplayModeChange = useCallback(
