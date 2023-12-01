@@ -88,7 +88,7 @@ const WorkspaceHeader: React.FC = () => {
 
   const [upgradeButtonData, setUpgradeButtonData] = useState<{
     trialDaysLeft?: number;
-    trialProgress?: number;
+    trialLeftProgress?: number;
     showUpgradeTrialButton: boolean;
     showUpgradeDefaultButton?: boolean;
   }>({ showUpgradeTrialButton: false });
@@ -113,7 +113,7 @@ const WorkspaceHeader: React.FC = () => {
 
         setUpgradeButtonData({
           trialDaysLeft: 0,
-          trialProgress: 100,
+          trialLeftProgress: 0,
           showUpgradeTrialButton,
         });
       } else if (subscription.plan.pricingType !== PricingType.Free) {
@@ -122,19 +122,15 @@ const WorkspaceHeader: React.FC = () => {
           showUpgradeTrialButton: false,
         });
       } else {
-        const trialDaysLeft = subscription
-          ? Math.round(
-              Math.abs(
-                (subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY
-              )
-            )
-          : -30;
+        const trialDaysLeft = Math.round(
+          Math.abs((subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY)
+        );
+        const trialLeftProgress =
+          (100 * trialDaysLeft) / subscription.plan.defaultTrialConfig.duration;
 
         setUpgradeButtonData({
           trialDaysLeft,
-          trialProgress:
-            (100 * trialDaysLeft) /
-            subscription.plan.defaultTrialConfig.duration,
+          trialLeftProgress,
           showUpgradeTrialButton: true,
         });
       }
@@ -254,7 +250,7 @@ const WorkspaceHeader: React.FC = () => {
               <ButtonProgress
                 className={`${CLASS_NAME}__upgrade__btn`}
                 onClick={handleUpgradeClick}
-                progress={upgradeButtonData.trialProgress}
+                progress={upgradeButtonData.trialLeftProgress}
                 leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
                 yellowColorThreshold={50}
                 redColorThreshold={0}
