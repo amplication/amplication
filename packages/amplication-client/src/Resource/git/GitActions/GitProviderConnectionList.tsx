@@ -90,19 +90,19 @@ export const GitProviderConnectionList: React.FC<Props> = ({
       <GitProviderConnection
         provider={EnumGitProvider.GitLab}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        disabled={!showGitLab.hasAccess}
+        billingFeature={BillingFeature.GitLab}
       />
       <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}
         onSyncNewGitOrganizationClick={handleAddProvider}
-        disabled={!showBitbucketConnect.hasAccess}
+        billingFeature={BillingFeature.Bitbucket}
       />
       <GitProviderConnection
         provider={EnumGitProvider.AwsCodeCommit}
         onSyncNewGitOrganizationClick={() => {
           window.open("https://amplication.com/contact-us");
         }}
-        disabled={!showAwsCodeCommitConnect.hasAccess}
+        billingFeature={BillingFeature.AwsCodeCommit}
       />
     </div>
   );
