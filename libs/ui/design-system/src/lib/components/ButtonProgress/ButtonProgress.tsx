@@ -68,15 +68,16 @@ const Pie = (props: CircularProgressProps) => {
 };
 
 export const ButtonProgress = (props: Props) => {
-  let {
+  const {
     yellowColorThreshold,
     redColorThreshold,
-    progress,
+    onClick,
     leftValue,
     className,
     children,
     rest,
   } = props;
+  let { progress } = props;
 
   if (progress < 0) {
     progress = 0;
@@ -109,6 +110,7 @@ export const ButtonProgress = (props: Props) => {
           `amp-button-progress--${buttonProgressStyle}--left`
         )}
         buttonStyle={EnumButtonStyle.Outline}
+        onClick={onClick}
         {...rest}
       >
         <FlexItem
@@ -133,6 +135,7 @@ export const ButtonProgress = (props: Props) => {
           "amp-button-progress--right",
           `amp-button-progress--${buttonProgressStyle}--right`
         )}
+        onClick={onClick}
         {...rest}
       >
         {children}
