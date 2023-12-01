@@ -1,5 +1,6 @@
 import {
   Breadcrumbs,
+  ButtonProgress,
   Dialog,
   Icon,
   SelectMenu,
@@ -17,7 +18,7 @@ import {
   PopoverNotificationCenter,
 } from "@novu/notification-center";
 import { useStiggContext } from "@stigg/react-sdk";
-import React, { useCallback, useContext, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
 import CommandPalette from "../../CommandPalette/CommandPalette";
@@ -31,6 +32,7 @@ import {
   NX_REACT_APP_AUTH_LOGOUT_URI,
   NX_REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
+import { BillingPlan } from "../../util/BillingPlan";
 import { BillingFeature } from "../../util/BillingFeature";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
@@ -41,6 +43,8 @@ import {
 import { version } from "../../util/version";
 import GitHubBanner from "./GitHubBanner";
 import "./WorkspaceHeader.scss";
+
+const ONE_DAY = 1000 * 60 * 60 * 24;
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
@@ -81,6 +85,60 @@ const WorkspaceHeader: React.FC = () => {
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const [versionAlert, setVersionAlert] = useState(false);
+  const [upgradeButtonData, setUpgradeButtonData] = useState<{
+    trialDaysLeft?: number;
+    trialProgress?: number;
+    showTrialButton: boolean;
+  }>({ showTrialButton: false });
+
+  const getCurrentSubscription = useCallback(async () => {
+    if (currentWorkspace) {
+      await stigg.setCustomerId(currentWorkspace.id);
+      const customer = await stigg.getCustomer();
+      console.log("customer", customer);
+      const [subscription] = await stigg.getActiveSubscriptions();
+
+      const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
+
+      if (subscription.plan.id === BillingPlan.Free) {
+        // const customerPortalData = await stigg.getCustomerPortal();
+        // const oldTrialSubscription = customerPortalData.subscriptions.find(
+        //   (sub) => sub.status === SubscriptionStatus.Expired
+        // );
+        const daysSinceStartOfPlan = Math.abs(
+          (Date.now() - subscription.startDate.getTime()) / ONE_DAY
+        );
+
+        setUpgradeButtonData({
+          trialDaysLeft: 0,
+          trialProgress: 100,
+          showTrialButton:
+            daysSinceStartOfPlan <
+            DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL,
+        });
+      } else {
+        const trialDaysLeft = subscription
+          ? Math.round(
+              Math.abs(
+                (subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY
+              )
+            )
+          : -30;
+
+        setUpgradeButtonData({
+          trialDaysLeft,
+          trialProgress:
+            (100 * trialDaysLeft) /
+            subscription.plan.defaultTrialConfig.duration,
+          showTrialButton: true,
+        });
+      }
+    }
+  }, [currentWorkspace]);
+
+  useEffect(() => {
+    getCurrentSubscription().catch(console.error);
+  }, [getCurrentSubscription]);
 
   const canShowNotification = stigg.getBooleanEntitlement({
     featureId: BillingFeature.Notification,
@@ -187,13 +245,26 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            <Button
-              className={`${CLASS_NAME}__upgrade__btn`}
-              buttonStyle={EnumButtonStyle.Outline}
-              onClick={handleUpgradeClick}
-            >
-              Upgrade
-            </Button>
+            {upgradeButtonData.showTrialButton ? (
+              <ButtonProgress
+                className={`${CLASS_NAME}__upgrade__btn`}
+                onClick={handleUpgradeClick}
+                progress={upgradeButtonData.trialProgress}
+                leftValue={`${upgradeButtonData.trialDaysLeft} days free trial left`}
+                yellowColorThreshold={50}
+                redColorThreshold={0}
+              >
+                Upgrade
+              </ButtonProgress>
+            ) : (
+              <Button
+                className={`${CLASS_NAME}__upgrade__btn`}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={handleUpgradeClick}
+              >
+                Upgrade
+              </Button>
+            )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
 
