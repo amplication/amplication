@@ -1,6 +1,5 @@
 import {
   EnumButtonStyle,
-  SelectMenu,
   SelectMenuList,
   SelectMenuModal,
 } from "@amplication/ui/design-system";
@@ -8,6 +7,8 @@ import React from "react";
 import * as models from "../models";
 import "./CreateResourceButton.scss";
 import CreateResourceButtonItem from "./CreateResourceButtonItem";
+import { EnhancedSelectMenu } from "./FeatureSelectMenu";
+import { BillingFeature } from "../util/BillingFeature";
 
 const CLASS_NAME = "create-resource-button";
 
@@ -36,7 +37,12 @@ const ITEMS: CreateResourceButtonItemType[] = [
 const CreateResourceButton = () => {
   return (
     <div className={CLASS_NAME}>
-      <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
+      <EnhancedSelectMenu
+        title="Add Resource"
+        buttonStyle={EnumButtonStyle.Primary}
+        featureId={BillingFeature.Services}
+        showIcon={false}
+      >
         <SelectMenuModal align="right">
           <SelectMenuList>
             {ITEMS.map((item, index) => (
@@ -44,7 +50,7 @@ const CreateResourceButton = () => {
             ))}
           </SelectMenuList>
         </SelectMenuModal>
-      </SelectMenu>
+      </EnhancedSelectMenu>
     </div>
   );
 };
