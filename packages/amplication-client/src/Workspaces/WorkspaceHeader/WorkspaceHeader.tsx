@@ -17,7 +17,7 @@ import {
   NovuProvider,
   PopoverNotificationCenter,
 } from "@novu/notification-center";
-import { useStiggContext } from "@stigg/react-sdk";
+import { PricingType, useStiggContext } from "@stigg/react-sdk";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
@@ -90,6 +90,7 @@ const WorkspaceHeader: React.FC = () => {
     trialDaysLeft?: number;
     trialProgress?: number;
     showUpgradeTrialButton: boolean;
+    showUpgradeDefaultButton?: boolean;
   }>({ showUpgradeTrialButton: false });
 
   const getCurrentSubscription = useCallback(async () => {
@@ -114,6 +115,11 @@ const WorkspaceHeader: React.FC = () => {
           trialDaysLeft: 0,
           trialProgress: 100,
           showUpgradeTrialButton,
+        });
+      } else if (subscription.plan.pricingType !== PricingType.Free) {
+        setUpgradeButtonData({
+          showUpgradeDefaultButton: true,
+          showUpgradeTrialButton: false,
         });
       } else {
         const trialDaysLeft = subscription
@@ -256,13 +262,15 @@ const WorkspaceHeader: React.FC = () => {
                 Upgrade
               </ButtonProgress>
             ) : (
-              <Button
-                className={`${CLASS_NAME}__upgrade__btn`}
-                buttonStyle={EnumButtonStyle.Outline}
-                onClick={handleUpgradeClick}
-              >
-                Upgrade
-              </Button>
+              upgradeButtonData.showUpgradeDefaultButton && (
+                <Button
+                  className={`${CLASS_NAME}__upgrade__btn`}
+                  buttonStyle={EnumButtonStyle.Outline}
+                  onClick={handleUpgradeClick}
+                >
+                  Upgrade
+                </Button>
+              )
             )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
