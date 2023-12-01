@@ -140,20 +140,3 @@ export const ButtonProgress = (props: Props) => {
     </PrimerButtonGroup>
   );
 };
-
-// return (
-//   <Button
-//     {...props}
-//     isSplit={true}
-//     buttonStyle={EnumButtonStyle.Outline}
-//     splitValue={children?.toString()}
-//     className={classNames(
-//       "amp-button",
-//       className,
-//       "amp-button-progress--split"
-//     )}
-//   >
-//     {leftValue}
-//   </Button>
-// );
-// };
