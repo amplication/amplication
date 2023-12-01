@@ -1,5 +1,6 @@
 export enum BillingFeature {
   Services = "feature-services",
+  Projects = "feature-projects",
   TeamMembers = "feature-team-members",
   EntitiesPerService = "feature-entities-per-service",
   ServicesWithManyEntities = "feature-services-wth-many-entities",
