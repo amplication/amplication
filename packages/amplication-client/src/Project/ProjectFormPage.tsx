@@ -10,6 +10,7 @@ import { useContext } from "react";
 import ResourceForm from "../Resource/ResourceForm";
 import { AppContext } from "../context/appContext";
 import { DeleteProject } from "./DeleteProject";
+import "./ProjectPage.scss"
 
 function ProjectFormPage() {
   const { currentProjectConfiguration, currentProject } =
@@ -23,10 +24,7 @@ function ProjectFormPage() {
       </FlexItem>
 
       <Panel
-        style={{
-          border: "1px solid red",
-          background: "rgba(255, 20, 70, 0.4)",
-        }}
+        className={`delete__panel`}
       >
         <FlexItem itemsAlign={EnumItemsAlign.Center}>
           <FlexItem.FlexStart>
