@@ -85,32 +85,35 @@ const WorkspaceHeader: React.FC = () => {
   const breadcrumbsContext = useContext(BreadcrumbsContext);
 
   const [versionAlert, setVersionAlert] = useState(false);
+
   const [upgradeButtonData, setUpgradeButtonData] = useState<{
     trialDaysLeft?: number;
     trialProgress?: number;
-    showTrialButton: boolean;
-  }>({ showTrialButton: false });
+    showUpgradeTrialButton: boolean;
+  }>({ showUpgradeTrialButton: false });
 
   const getCurrentSubscription = useCallback(async () => {
     if (currentWorkspace) {
       await stigg.setCustomerId(currentWorkspace.id);
       const customer = await stigg.getCustomer();
-      console.log("customer", customer);
       const [subscription] = await stigg.getActiveSubscriptions();
 
       const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
 
       if (subscription.plan.id === BillingPlan.Free) {
         const daysSinceStartOfPlan = Math.abs(
-          (Date.now() - subscription.startDate.getTime()) / ONE_DAY
+          (Date.now() - new Date(subscription.startDate).getTime()) / ONE_DAY
         );
+
+        const previouslyOnTrial = customer.trialedPlans.length > 0;
+        const showUpgradeTrialButton =
+          previouslyOnTrial &&
+          daysSinceStartOfPlan < DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL;
 
         setUpgradeButtonData({
           trialDaysLeft: 0,
           trialProgress: 100,
-          showTrialButton:
-            daysSinceStartOfPlan <
-            DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL,
+          showUpgradeTrialButton,
         });
       } else {
         const trialDaysLeft = subscription
@@ -126,7 +129,7 @@ const WorkspaceHeader: React.FC = () => {
           trialProgress:
             (100 * trialDaysLeft) /
             subscription.plan.defaultTrialConfig.duration,
-          showTrialButton: true,
+          showUpgradeTrialButton: true,
         });
       }
     }
@@ -241,7 +244,7 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            {upgradeButtonData.showTrialButton ? (
+            {upgradeButtonData.showUpgradeTrialButton ? (
               <ButtonProgress
                 className={`${CLASS_NAME}__upgrade__btn`}
                 onClick={handleUpgradeClick}
