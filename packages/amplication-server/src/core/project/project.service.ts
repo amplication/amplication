@@ -111,19 +111,21 @@ export class ProjectService {
       -archivedServiceCount
     );
 
-    await this.billingService.reportUsage(
-      project.workspaceId,
-      BillingFeature.Projects,
-      -1
-    );
-
-    return this.prisma.project.update({
+    const updatedProject = this.prisma.project.update({
       where: args.where,
       data: {
         name: prepareDeletedItemName(project.name, project.id),
         deletedAt: new Date(),
       },
     });
+
+    await this.billingService.reportUsage(
+      project.workspaceId,
+      BillingFeature.Projects,
+      -1
+    );
+
+    return updatedProject;
   }
 
   async updateProject(args: UpdateProjectArgs): Promise<Project> {
