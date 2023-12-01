@@ -1,69 +1,85 @@
-.amp-button-progress {
-  transition-property: border-color, background-color, color;
-  transition-duration: 0.2s;
-  transition-timing-function: ease-in-out;
+.amp-button {
+  &.amp-button-progress {
+    transition-property: border-color, background-color, color;
+    transition-duration: 0.2s;
+    transition-timing-function: ease-in-out;
 
-  &.amp-button-progress--left {
-    background-color: transparent;
-    border-radius: var(--default-button-radius) 0 0 var(--default-button-radius) !important;
-  }
+    &.amp-button-progress--left {
+      background-color: transparent;
+      border-radius: var(--default-button-radius) 0 0
+        var(--default-button-radius) !important;
+    }
 
-  &.amp-button-progress--right {
-    color: var(--gray-full);
-    background-color: transparent;
-    border-radius: 0 var(--default-button-radius) var(--default-button-radius) 0 !important;
-  }
+    &.amp-button-progress--right {
+      color: var(--gray-full);
+      background-color: transparent;
+      border-radius: 0 var(--default-button-radius) var(--default-button-radius)
+        0 !important;
+    }
 
-  &.amp-button-progress--default {
-    color: var(--gray-base);
+    .amp-button-progress-pie {
+      &--primary {
+        color: var(--theme-turquoise);
+      }
+      &--warning {
+        color: var(--theme-orange);
+      }
+      &--danger {
+        color: var(--theme-red);
+      }
+    }
 
-    &--left {
-      border-color: var(--theme-turquoise);
-      &:hover,
-      &:active,
-      &:focus {
-        color: var(--gray-base);
+    &.amp-button-progress--primary {
+      color: var(--gray-base);
+
+      &--left {
         border-color: var(--theme-turquoise);
-        cursor: default;
+        &:hover,
+        &:active,
+        &:focus {
+          color: var(--gray-base);
+          border-color: var(--theme-turquoise);
+          cursor: default;
+        }
+      }
+      &--right {
+        border-color: var(--theme-turquoise);
+        background-color: var(--theme-turquoise);
       }
     }
-    &--right {
-      border-color: var(--theme-turquoise);
-      background-color: var(--theme-turquoise);
-    }
-  }
-  &.amp-button-progress--warning {
-    &--left {
-      border-color: var(--theme-orange);
-
-      &:hover,
-      &:active,
-      &:focus {
-        color: var(--gray-base);
+    &.amp-button-progress--warning {
+      &--left {
         border-color: var(--theme-orange);
-        cursor: default;
-      }
-    }
-    &--right {
-      border-color: var(--theme-orange);
-      background-color: var(--theme-orange);
-    }
-  }
-  &.amp-button-progress--danger {
-    &--left {
-      border-color: var(--theme-red);
 
-      &:hover,
-      &:active,
-      &:focus {
-        color: var(--gray-base);
-        border-color: var(--theme-red);
-        cursor: default;
+        &:hover,
+        &:active,
+        &:focus {
+          color: var(--gray-base);
+          border-color: var(--theme-orange);
+          cursor: default;
+        }
+      }
+      &--right {
+        border-color: var(--theme-orange);
+        background-color: var(--theme-orange);
       }
     }
-    &--right {
-      border-color: var(--theme-red);
-      background-color: var(--theme-red);
+    &.amp-button-progress--danger {
+      &--left {
+        border-color: var(--theme-red);
+
+        &:hover,
+        &:active,
+        &:focus {
+          color: var(--gray-base);
+          border-color: var(--theme-red);
+          cursor: default;
+        }
+      }
+      &--right {
+        border-color: var(--theme-red);
+        background-color: var(--theme-red);
+      }
     }
   }
 }
