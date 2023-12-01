@@ -16,7 +16,7 @@ export interface WithFeatureControlProps {
 const withFeatureControl = <P extends WithFeatureControlProps>(
   WrappedComponent: ComponentType<P>
 ) => {
-  return ({ featureId, disabled, showIcon = true, ...props }: P) => {
+  return ({ featureId, disabled = false, showIcon = true, ...props }: P) => {
     const { stigg } = useStiggContext();
     const { currentWorkspace } = useContext(AppContext);
     const { subscription } = currentWorkspace;
@@ -29,13 +29,6 @@ const withFeatureControl = <P extends WithFeatureControlProps>(
     const hasAccess = stigg.getBooleanEntitlement({
       featureId,
     }).hasAccess;
-
-    const handleIsDisabled = useCallback(() => {
-      if (!featureId) return false;
-      return (
-        (usageLimit && currentUsage && currentUsage >= usageLimit) || !hasAccess
-      );
-    }, [featureId, currentWorkspace, usageLimit, currentUsage]);
 
     const handleIcon = useCallback(() => {
       if (!featureId) return null;
@@ -67,7 +60,7 @@ const withFeatureControl = <P extends WithFeatureControlProps>(
       <div className={CLASS_NAME}>
         <WrappedComponent
           {...(props as P)}
-          disabled={disabled || handleIsDisabled()}
+          disabled={disabled || handleIcon() === "lock"}
           iconType={handleIcon()}
         />
         {showIcon && <Icon icon={handleIcon()} />}
