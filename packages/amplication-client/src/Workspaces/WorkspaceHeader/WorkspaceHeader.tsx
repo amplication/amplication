@@ -100,7 +100,6 @@ const WorkspaceHeader: React.FC = () => {
   const getCurrentSubscription = useCallback(async () => {
     if (currentWorkspace) {
       await stigg.setCustomerId(currentWorkspace.id);
-      const customer = await stigg.getCustomer();
       const [subscription] = await stigg.getActiveSubscriptions();
 
       if (!subscription) {
@@ -123,6 +122,7 @@ const WorkspaceHeader: React.FC = () => {
           (Date.now() - new Date(subscription.startDate).getTime()) / ONE_DAY
         );
 
+        const customer = await stigg.getCustomer();
         const previouslyOnTrial = customer.trialedPlans.length > 0;
         const showUpgradeTrialButton =
           previouslyOnTrial &&
