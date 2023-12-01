@@ -17,7 +17,11 @@ import {
   NovuProvider,
   PopoverNotificationCenter,
 } from "@novu/notification-center";
-import { PricingType, useStiggContext } from "@stigg/react-sdk";
+import {
+  PricingType,
+  SubscriptionStatus,
+  useStiggContext,
+} from "@stigg/react-sdk";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import { isMacOs } from "react-device-detect";
 import { Link, useHistory } from "react-router-dom";
@@ -90,8 +94,8 @@ const WorkspaceHeader: React.FC = () => {
     trialDaysLeft?: number;
     trialLeftProgress?: number;
     showUpgradeTrialButton: boolean;
-    showUpgradeDefaultButton?: boolean;
-  }>({ showUpgradeTrialButton: false });
+    showUpgradeDefaultButton: boolean;
+  }>({ showUpgradeTrialButton: false, showUpgradeDefaultButton: true });
 
   const getCurrentSubscription = useCallback(async () => {
     if (currentWorkspace) {
@@ -106,7 +110,15 @@ const WorkspaceHeader: React.FC = () => {
 
       const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
 
-      if (subscription.plan.id === BillingPlan.Free) {
+      if (
+        subscription.status === SubscriptionStatus.Active &&
+        subscription.plan.pricingType !== PricingType.Free
+      ) {
+        setUpgradeButtonData({
+          showUpgradeDefaultButton: false,
+          showUpgradeTrialButton: false,
+        });
+      } else if (subscription.plan.id === BillingPlan.Free) {
         const daysSinceStartOfPlan = Math.abs(
           (Date.now() - new Date(subscription.startDate).getTime()) / ONE_DAY
         );
@@ -120,11 +132,7 @@ const WorkspaceHeader: React.FC = () => {
           trialDaysLeft: 0,
           trialLeftProgress: 0,
           showUpgradeTrialButton,
-        });
-      } else if (subscription.plan.pricingType !== PricingType.Free) {
-        setUpgradeButtonData({
-          showUpgradeDefaultButton: true,
-          showUpgradeTrialButton: false,
+          showUpgradeDefaultButton: false,
         });
       } else {
         const trialDaysLeft = Math.round(
@@ -137,6 +145,7 @@ const WorkspaceHeader: React.FC = () => {
           trialDaysLeft,
           trialLeftProgress,
           showUpgradeTrialButton: true,
+          showUpgradeDefaultButton: false,
         });
       }
     }
@@ -251,7 +260,7 @@ const WorkspaceHeader: React.FC = () => {
         <div className={`${CLASS_NAME}__center`}></div>
         <div className={`${CLASS_NAME}__right`}>
           <div className={`${CLASS_NAME}__links`}>
-            {upgradeButtonData.showUpgradeTrialButton ? (
+            {upgradeButtonData.showUpgradeTrialButton && (
               <ButtonProgress
                 className={`${CLASS_NAME}__upgrade__btn`}
                 onClick={handleUpgradeClick}
@@ -262,16 +271,15 @@ const WorkspaceHeader: React.FC = () => {
               >
                 Upgrade
               </ButtonProgress>
-            ) : (
-              upgradeButtonData.showUpgradeDefaultButton && (
-                <Button
-                  className={`${CLASS_NAME}__upgrade__btn`}
-                  buttonStyle={EnumButtonStyle.Outline}
-                  onClick={handleUpgradeClick}
-                >
-                  Upgrade
-                </Button>
-              )
+            )}
+            {upgradeButtonData.showUpgradeDefaultButton && (
+              <Button
+                className={`${CLASS_NAME}__upgrade__btn`}
+                buttonStyle={EnumButtonStyle.Outline}
+                onClick={handleUpgradeClick}
+              >
+                Upgrade
+              </Button>
             )}
           </div>
           <hr className={`${CLASS_NAME}__vertical_border`} />
