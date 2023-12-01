@@ -101,10 +101,6 @@ const WorkspaceHeader: React.FC = () => {
       const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
 
       if (subscription.plan.id === BillingPlan.Free) {
-        // const customerPortalData = await stigg.getCustomerPortal();
-        // const oldTrialSubscription = customerPortalData.subscriptions.find(
-        //   (sub) => sub.status === SubscriptionStatus.Expired
-        // );
         const daysSinceStartOfPlan = Math.abs(
           (Date.now() - subscription.startDate.getTime()) / ONE_DAY
         );
