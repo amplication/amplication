@@ -1,4 +1,9 @@
-import { Form, SelectField, ToggleField } from "@amplication/ui/design-system";
+import {
+  Form,
+  SelectField,
+  ToggleField,
+  ToggleFieldProps,
+} from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
 import { BillingFeature } from "../../util/BillingFeature";
@@ -6,7 +11,11 @@ import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";
 
-import { LockedFeatureIndicator } from "../../Components/LockedFeatureIndicator";
+// import { LockedFeatureIndicator } from "../../Components/LockedFeatureIndicator";
+import withFeatureControl, {
+  WithFeatureControlProps,
+} from "../../Components/WithFeatureControl";
+import { EnhancedFeatureToggle } from "../../Components/FeatureToggle";
 
 const CLASS_NAME = "code-generator-version-form";
 
@@ -66,16 +75,16 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
             <div className={CLASS_NAME}>
               <div>
                 <>
-                  <ToggleField
+                  <EnhancedFeatureToggle
+                    featureId={BillingFeature.CodeGeneratorVersion}
                     label="I want to select a specific version of the code generator"
                     name={"useSpecificVersion"}
-                    disabled={!canChooseCodeGeneratorVersion}
                   />
-                  {!canChooseCodeGeneratorVersion && (
+                  {/* {!canChooseCodeGeneratorVersion && (
                     <LockedFeatureIndicator
                       featureName={BillingFeature.CodeGeneratorVersion}
                     />
-                  )}
+                  )} */}
                 </>
                 {formik.values.useSpecificVersion && (
                   <div>
