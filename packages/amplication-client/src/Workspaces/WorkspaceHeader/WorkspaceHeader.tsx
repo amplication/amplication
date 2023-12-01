@@ -99,6 +99,11 @@ const WorkspaceHeader: React.FC = () => {
       const customer = await stigg.getCustomer();
       const [subscription] = await stigg.getActiveSubscriptions();
 
+      if (!subscription) {
+        console.error("No active subscription found");
+        return;
+      }
+
       const DAYS_TO_SHOW_VERSION_ALERT_SINCE_END_OF_TRIAL = 14;
 
       if (subscription.plan.id === BillingPlan.Free) {
