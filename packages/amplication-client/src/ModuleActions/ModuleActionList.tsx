@@ -64,7 +64,7 @@ const ModuleActionList = React.memo(
           },
         }).catch(console.error);
       },
-      [moduleId, updateModule]
+      [moduleId, moduleData, updateModule]
     );
 
     useEffect(() => {

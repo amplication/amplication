@@ -7,11 +7,14 @@ import { Env } from "../../env";
 import { BillingPlan, BillingFeature } from "./billing.types";
 import Stigg, {
   BooleanEntitlement,
+  FullSubscription,
   MeteredEntitlement,
   NumericEntitlement,
+  SubscriptionStatus,
 } from "@stigg/node-server-sdk";
 import { Project, User } from "../../models";
 import { ValidationError } from "apollo-server-express";
+import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -57,6 +60,92 @@ describe("BillingService", () => {
 
   it("should be defined", () => {
     expect(service).toBeDefined();
+  });
+
+  describe("getSubscription, as amplication always have only one subscription", () => {
+    it.each([
+      [
+        BillingPlan.Free,
+        SubscriptionStatus.Active,
+        EnumSubscriptionStatus.Active,
+        EnumSubscriptionPlan.Free,
+      ],
+      [
+        BillingPlan.Enterprise,
+        SubscriptionStatus.Active,
+        EnumSubscriptionStatus.Active,
+        EnumSubscriptionPlan.Enterprise,
+      ],
+      [
+        BillingPlan.Enterprise,
+        SubscriptionStatus.InTrial,
+        EnumSubscriptionStatus.Trailing,
+        EnumSubscriptionPlan.Enterprise,
+      ],
+    ])(
+      "should return %s subscription when subscription status is %s",
+      async (
+        planId,
+        subscriptionStatus,
+        expectSubscriptionStatus,
+        expectSubscriptionPlanId
+      ) => {
+        // Arrange
+        const spyOnStiggGetActiveSubscriptions = jest.spyOn(
+          Stigg.prototype,
+          "getActiveSubscriptions"
+        );
+
+        spyOnStiggGetActiveSubscriptions.mockResolvedValue([
+          <FullSubscription>{
+            id: "id",
+            status: subscriptionStatus,
+            plan: {
+              id: planId,
+            },
+          },
+        ]);
+
+        const workspaceId = "workspace-id";
+        // Act
+        const result = await service.getSubscription(workspaceId);
+
+        // Assert
+        expect(result).toEqual({
+          id: "id",
+          status: expectSubscriptionStatus,
+          workspaceId,
+          subscriptionPlan: expectSubscriptionPlanId,
+          createdAt: expect.any(Date),
+          updatedAt: expect.any(Date),
+        });
+      }
+    );
+
+    it.each([
+      SubscriptionStatus.Canceled,
+      SubscriptionStatus.Expired,
+      SubscriptionStatus.NotStarted,
+      SubscriptionStatus.PaymentPending,
+    ])(
+      "should return null as subscription when subscription status is %s",
+      async (subscriptionStatus) => {
+        // Arrange
+        const spyOnStiggGetActiveSubscriptions = jest.spyOn(
+          Stigg.prototype,
+          "getActiveSubscriptions"
+        );
+
+        spyOnStiggGetActiveSubscriptions.mockResolvedValue([]);
+
+        const workspaceId = "workspace-id";
+        // Act
+        const result = await service.getSubscription(workspaceId);
+
+        // Assert
+        expect(result).toBeNull();
+      }
+    );
   });
 
   it("should provision customer and not sync free plans to Stripe", async () => {

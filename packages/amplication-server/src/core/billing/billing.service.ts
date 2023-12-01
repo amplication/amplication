@@ -232,10 +232,8 @@ export class BillingService {
     try {
       if (this.billingEnabled) {
         const stiggClient = await this.getStiggClient();
-        const workspace = await stiggClient.getCustomer(workspaceId);
-
-        const activeSub = await workspace.subscriptions.find((subscription) => {
-          return subscription.status === SubscriptionStatus.Active;
+        const [activeSub] = await stiggClient.getActiveSubscriptions({
+          customerId: workspaceId,
         });
 
         const amplicationSub = {
