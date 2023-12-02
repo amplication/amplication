@@ -218,6 +218,12 @@ describe("WorkspaceResolver", () => {
             setLastActivity: jest.fn(),
           })),
         },
+        {
+          provide: ConfigService,
+          useClass: jest.fn(() => ({
+            get: jest.fn(),
+          })),
+        },
       ],
       imports: [
         GraphQLModule.forRoot<ApolloDriverConfig>({

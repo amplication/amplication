@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import { gql, useMutation, Reference } from "@apollo/client";
 import { Formik, Form } from "formik";
 import { isEmpty } from "lodash";
@@ -108,11 +108,6 @@ const NewTopic = ({ onTopicAdd, resourceId }: Props) => {
   );
 
   const errorMessage = formatError(error);
-  useEffect(() => {
-    if (!error) return;
-
-    trackEvent({ eventName: AnalyticsEventNames.TopicCreateFailed });
-  }, [error]);
 
   return (
     <div className={CLASS_NAME}>

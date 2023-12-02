@@ -4,7 +4,7 @@ import {
   ConflictException,
 } from "@nestjs/common";
 import type { JsonObject } from "type-fest";
-import { pick, head, last } from "lodash";
+import { pick, head, last, mergeWith, isArray } from "lodash";
 import {
   Block as PrismaBlock,
   BlockVersion as PrismaBlockVersion,
@@ -41,6 +41,7 @@ import {
   PendingChange,
 } from "../resource/dto";
 import { DeleteBlockArgs } from "./dto/DeleteBlockArgs";
+import { JsonFilter } from "../../dto/JsonFilter";
 
 const CURRENT_VERSION_NUMBER = 0;
 const ALLOW_NO_PARENT_ONLY = new Set([null]);
@@ -84,6 +85,8 @@ export class BlockService {
 
     [EnumBlockType.PluginInstallation]: ALLOW_NO_PARENT_ONLY,
     [EnumBlockType.PluginOrder]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.Module]: ALLOW_NO_PARENT_ONLY,
+    [EnumBlockType.ModuleAction]: new Set([EnumBlockType.Module]),
   };
 
   private async resolveParentBlock(
@@ -111,7 +114,7 @@ export class BlockService {
     const block = await this.prisma.block.findFirst({
       where: {
         id: args.where.id,
-        //deletedAt: null
+        deletedAt: null,
       },
     });
 
@@ -218,6 +221,7 @@ export class BlockService {
       createdAt: version.block.createdAt,
       updatedAt: version.block.updatedAt,
       parentBlock: version.block.parentBlock || null,
+      parentBlockId: version.block.parentBlock?.id || null,
       versionNumber: versionData.versionNumber,
       inputParameters: inputParameters,
       outputParameters: outputParameters,
@@ -246,6 +250,7 @@ export class BlockService {
       lockedAt,
       lockedByUserId,
       resourceId,
+      parentBlockId,
     } = version.block;
     const block: IBlock = {
       id,
@@ -258,6 +263,7 @@ export class BlockService {
       resourceId,
       lockedAt,
       lockedByUserId,
+      parentBlockId,
       versionNumber: version.versionNumber,
       inputParameters: (
         version.inputParameters as unknown as {
@@ -278,12 +284,13 @@ export class BlockService {
   }
 
   async findOne<T extends IBlock>(args: FindOneArgs): Promise<T | null> {
-    const version = await this.prisma.blockVersion.findUnique({
+    const version = await this.prisma.blockVersion.findFirst({
       where: {
         // eslint-disable-next-line @typescript-eslint/naming-convention
-        blockId_versionNumber: {
-          blockId: args.where.id,
-          versionNumber: CURRENT_VERSION_NUMBER,
+        blockId: args.where.id,
+        versionNumber: CURRENT_VERSION_NUMBER,
+        block: {
+          deletedAt: null,
         },
       },
       include: {
@@ -308,7 +315,46 @@ export class BlockService {
   /**@todo: convert versionToIBlock */
   /**@todo: return latest version number */
   async findMany(args: FindManyBlockArgs): Promise<Block[]> {
-    return this.prisma.block.findMany(args);
+    return this.prisma.block.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        deletedAt: null,
+      },
+    });
+  }
+
+  async findManyByBlockTypeAndSettings<T extends IBlock>(
+    args: FindManyBlockTypeArgs,
+    blockType: EnumBlockType,
+    settingsFilter?: JsonFilter
+  ): Promise<T[]> {
+    const blocks = this.prisma.block.findMany({
+      ...args,
+      where: {
+        ...args.where,
+        blockType: { equals: blockType },
+        deletedAt: null,
+        versions: {
+          some: {
+            versionNumber: CURRENT_VERSION_NUMBER,
+            settings: settingsFilter,
+          },
+        },
+      },
+      include: {
+        versions: {
+          where: {
+            versionNumber: CURRENT_VERSION_NUMBER,
+          },
+        },
+        parentBlock: true,
+      },
+    });
+    return (await blocks).map((block) => {
+      const [version] = block.versions;
+      return this.versionToIBlock({ ...version, block });
+    });
   }
 
   /**@todo: return latest version number */
@@ -426,10 +472,28 @@ export class BlockService {
   ): Promise<T> {
     const { displayName, description, ...settings } = args.data;
 
+    const existingVersion = await this.prisma.blockVersion.findUnique({
+      where: {
+        // eslint-disable-next-line @typescript-eslint/naming-convention
+        blockId_versionNumber: {
+          blockId: args.where.id,
+          versionNumber: CURRENT_VERSION_NUMBER,
+        },
+      },
+    });
+
+    // merge the existing settings with the new settings. use deep merge but do not merge arrays
+    const allSettings = mergeWith(
+      {},
+      existingVersion.settings,
+      settings,
+      (oldValue, newValue) => (isArray(newValue) ? newValue : undefined)
+    );
+
     return await this.useLocking(args.where.id, user, async () => {
       const version = await this.prisma.blockVersion.update({
         data: {
-          settings: settings,
+          settings: allSettings,
           block: {
             update: {
               displayName,
@@ -461,7 +525,9 @@ export class BlockService {
 
   async delete<T extends IBlock>(
     args: DeleteBlockArgs,
-    user: User
+    user: User,
+    deleteChildBlocks = false,
+    deleteChildBlocksRecursive = true
   ): Promise<T | null> {
     const blockVersion = await this.prisma.blockVersion.findUnique({
       where: {
@@ -479,6 +545,10 @@ export class BlockService {
         },
       },
     });
+
+    if (blockVersion.block.deletedAt !== null) {
+      throw new Error(`Block ${args.where.id} is already deleted`);
+    }
 
     if (!blockVersion) {
       throw new Error(`Block ${args.where.id} is not exist`);
@@ -507,6 +577,32 @@ export class BlockService {
         },
       });
     });
+
+    if (deleteChildBlocks) {
+      const childBlocks = await this.findMany({
+        where: {
+          parentBlock: {
+            id: args.where.id,
+          },
+        },
+      });
+
+      await Promise.all(
+        childBlocks.map((childBlock) =>
+          this.delete(
+            {
+              where: {
+                id: childBlock.id,
+              },
+            },
+            user,
+            deleteChildBlocksRecursive, // if recursive is true, delete the child blocks of the child block
+            deleteChildBlocksRecursive
+          )
+        )
+      );
+    }
+
     return this.versionToIBlock<T>(blockVersion);
   }
 
@@ -719,9 +815,7 @@ export class BlockService {
         : EnumPendingChangeAction.Create;
 
       //prepare name fields for display
-      if (action === EnumPendingChangeAction.Delete) {
-        block.displayName = changedVersion.displayName;
-      }
+      block.displayName = changedVersion.displayName;
 
       return {
         originId: block.id,

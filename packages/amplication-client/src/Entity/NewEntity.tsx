@@ -31,6 +31,7 @@ import { validate } from "../util/formikValidateJsonSchema";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import "./NewEntity.scss";
 import { USER_ENTITY } from "./constants";
+import useModule from "../Modules/hooks/useModule";
 
 type CreateEntityType = Omit<models.EntityCreateInput, "resource">;
 
@@ -70,6 +71,7 @@ const FORM_SCHEMA = {
   },
 };
 const CLASS_NAME = "new-entity";
+const DATE_CREATED_FIELD = "createdAt";
 
 const keyMap = {
   SUBMIT: CROSS_OS_CTRL_ENTER,
@@ -81,13 +83,22 @@ const NewEntity = ({ resourceId, onSuccess }: Props) => {
     useContext(AppContext);
 
   const [confirmInstall, setConfirmInstall] = useState<boolean>(false);
+  const { findModuleRefetch } = useModule();
 
   const [createEntity, { error, data, loading }] = useMutation<DType>(
     CREATE_ENTITY,
     {
       onCompleted: (data) => {
         addEntity(data.createOneEntity.id);
-
+        //refresh the modules list
+        findModuleRefetch({
+          where: {
+            resource: { id: resourceId },
+          },
+          orderBy: {
+            [DATE_CREATED_FIELD]: models.SortOrder.Asc,
+          },
+        });
         onSuccess();
         history.push(`entities/${data.createOneEntity.id}`);
       },

@@ -1,6 +1,4 @@
 import { PluginInstallation } from "@amplication/code-gen-types";
-import { join } from "path";
-import { AMPLICATION_MODULES } from "./generate-code";
 import {
   DynamicPackageInstallationManager,
   PackageInstallation,
@@ -10,6 +8,7 @@ import DsgContext from "./dsg-context";
 
 export async function dynamicPackagesInstallations(
   packages: PluginInstallation[],
+  pluginInstallationPath: string,
   logger: ILogger
 ): Promise<void> {
   logger.info("Installing dynamic packages");
@@ -17,7 +16,7 @@ export async function dynamicPackagesInstallations(
   const context = DsgContext.getInstance;
 
   const manager = new DynamicPackageInstallationManager(
-    join(__dirname, "..", AMPLICATION_MODULES),
+    pluginInstallationPath,
     context.logger
   );
 

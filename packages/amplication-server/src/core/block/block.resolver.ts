@@ -57,7 +57,7 @@ export class BlockResolver {
     });
   }
 
-  @ResolveField(() => [User])
+  @ResolveField(() => User)
   async lockedByUser(@Parent() block: Block): Promise<User> {
     if (block.lockedByUserId) {
       return this.userService.findUser({

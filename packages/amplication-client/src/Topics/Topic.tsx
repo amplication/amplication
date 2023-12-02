@@ -62,16 +62,8 @@ const Topic = () => {
         },
       }).catch(console.error);
       trackEvent({
-        eventName: AnalyticsEventNames.TopicNameEdit,
-        topicName: data.name,
-      });
-      trackEvent({
-        eventName: AnalyticsEventNames.TopicDisplayNameEdit,
-        topicDisplayName: data.displayName,
-      });
-      trackEvent({
-        eventName: AnalyticsEventNames.TopicDescriptionEdit,
-        topicDescription: data.description,
+        eventName: AnalyticsEventNames.TopicUpdate,
+        ...data,
       });
     },
     [updateTopic, topicId]

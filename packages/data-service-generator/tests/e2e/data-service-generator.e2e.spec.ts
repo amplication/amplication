@@ -107,6 +107,8 @@ describe("Data Service Generator", () => {
           buildId: "example_build_id",
           resourceType: EnumResourceType.Service,
           pluginInstallations: plugins,
+          moduleActions: [],
+          moduleContainers: [],
         };
 
         logger.info("Starting code generation", {

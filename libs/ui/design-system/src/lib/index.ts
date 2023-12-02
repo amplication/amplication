@@ -209,10 +209,37 @@ export {
   EnumChipStyle,
 } from "./components/Chip/Chip";
 
-export { List, Props as ListProps } from "./components/List/List";
+export {
+  List,
+  Props as ListProps,
+  EnumListStyle,
+} from "./components/List/List";
 export { ListItem, Props as ListItemProps } from "./components/List/ListItem";
 
 export {
   TabContentTitle,
   Props as TabContentTitleProps,
 } from "./components/TabContentTitle/TabContentTitle";
+
+export {
+  default as EnabledIndicator,
+  Props as EnabledIndicatorProps,
+} from "./components/EnabledIndicator/EnabledIndicator";
+
+export {
+  VerticalNavigation,
+  Props as VerticalNavigationProps,
+} from "./components/VerticalNavigation/VerticalNavigation";
+
+export {
+  VerticalNavigationItem,
+  Props as VerticalNavigationItemProps,
+} from "./components/VerticalNavigation/VerticalNavigationItem";
+
+export {
+  ApiOperationTag,
+  Props as ApiOperationTagProps,
+  EnumApiOperationTagStyle,
+  EnumRestApiOperationTagType,
+  EnumGqlApiOperationTagType,
+} from "./components/ApiOperationTag/ApiOperationTag";
