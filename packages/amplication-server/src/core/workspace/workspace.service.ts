@@ -576,25 +576,31 @@ export class WorkspaceService {
         );
 
         if (hasChanges) {
-          await this.projectService.commit(
-            {
-              data: {
-                message: "this is automatic commit for update custom actions",
-                project: {
-                  connect: {
-                    id: project.id,
+          try {
+            await this.projectService.commit(
+              {
+                data: {
+                  message: "this is automatic commit for update custom actions",
+                  project: {
+                    connect: {
+                      id: project.id,
+                    },
                   },
-                },
-                user: {
-                  connect: {
-                    id: workspaceUser.id,
+                  user: {
+                    connect: {
+                      id: workspaceUser.id,
+                    },
                   },
                 },
               },
-            },
-            workspaceUser,
-            true // skip build
-          );
+              workspaceUser,
+              true // skip build
+            );
+          } catch (error) {
+            this.logger.error(
+              `Failed to run commit action, error: ${error} projectId: ${project.id}`
+            );
+          }
         }
       }
       const date = new Date();
@@ -619,7 +625,11 @@ export class WorkspaceService {
                 deletedAt: null,
                 archived: { not: true },
                 resourceType: EnumResourceType.Service,
-                blocks: { none: { blockType: EnumBlockType.Module } },
+                blocks: {
+                  none: {
+                    blockType: EnumBlockType.Module,
+                  },
+                },
                 entities: { some: { deletedAt: null } },
               },
             },
@@ -662,25 +672,31 @@ export class WorkspaceService {
       );
 
       if (hasChanges) {
-        await this.projectService.commit(
-          {
-            data: {
-              message: "this is automatic commit for update custom actions",
-              project: {
-                connect: {
-                  id: project.id,
+        try {
+          await this.projectService.commit(
+            {
+              data: {
+                message: "this is automatic commit for update custom actions",
+                project: {
+                  connect: {
+                    id: project.id,
+                  },
                 },
-              },
-              user: {
-                connect: {
-                  id: currentUser.id,
+                user: {
+                  connect: {
+                    id: currentUser.id,
+                  },
                 },
               },
             },
-          },
-          currentUser,
-          true // skip build
-        );
+            currentUser,
+            true // skip build
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to run commit action, error: ${error} projectId: ${project.id}`
+          );
+        }
       }
     }
   }
@@ -756,7 +772,7 @@ export class WorkspaceService {
             resourceId: resource.id,
           },
         });
-        if (resourceModule) return;
+        if (resourceModule) return hasChanges;
         hasChanges = true;
 
         for (const entity of resource.entities) {

@@ -262,7 +262,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled) {
+    if (this.billingService.isBillingEnabled && !skipBuild) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
