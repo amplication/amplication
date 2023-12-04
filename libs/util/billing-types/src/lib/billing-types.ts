@@ -19,9 +19,11 @@ export enum BillingFeature {
   TeamMembers = "feature-team-members",
   AwsCodeCommit = "feature-awscodecommit",
   Bitbucket = "feature-bitbucket",
+  GitLab = "feature-gitlab",
   ImportDBSchema = "feature-import-db-schema",
   ChangeGitBaseBranch = "feature-change-git-base-branch",
   Notification = "feature-notifications",
   BranchPerResource = "feature-branch-per-resource",
   CodeGeneratorVersion = "feature-code-generator-version",
+  CustomActions = "feature-custom-actions",
 }
