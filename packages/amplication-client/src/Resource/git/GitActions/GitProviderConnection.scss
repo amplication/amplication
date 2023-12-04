@@ -57,4 +57,10 @@
     font-size: 10px;
     color: (var(--gray-40));
   }
+
+  &__feature-container {
+    display: flex;
+    align-items: center;
+    gap: var(--default-spacing-small);
+  }
 }

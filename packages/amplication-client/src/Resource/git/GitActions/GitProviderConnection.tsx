@@ -1,4 +1,9 @@
-import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
+import {
+  Button,
+  EnumButtonStyle,
+  EnumTextColor,
+  Icon,
+} from "@amplication/ui/design-system";
 import { useCallback } from "react";
 import { EnumGitProvider } from "../../../models";
 
@@ -50,15 +55,20 @@ export default function GitProviderConnection({
           <FeatureControlContainer
             featureId={billingFeature}
             entitlementType="boolean"
-          >
-            <Button
-              className={`${CLASS_NAME}__connect`}
-              buttonStyle={EnumButtonStyle.Primary}
-              onClick={handleClick}
-            >
-              Connect
-            </Button>
-          </FeatureControlContainer>
+            render={({ icon, disabled: featureDisabled }) => (
+              <div className={`${CLASS_NAME}__feature-container`}>
+                <Icon icon={icon} size="xsmall" color={EnumTextColor.Black20} />
+                <Button
+                  className={`${CLASS_NAME}__connect`}
+                  buttonStyle={EnumButtonStyle.Primary}
+                  onClick={handleClick}
+                  disabled={featureDisabled}
+                >
+                  Connect
+                </Button>
+              </div>
+            )}
+          />
         ) : (
           <div className={`${CLASS_NAME}__coming_soon`}>Coming soon</div>
         )}
