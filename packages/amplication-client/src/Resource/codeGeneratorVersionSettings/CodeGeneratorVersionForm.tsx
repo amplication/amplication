@@ -84,11 +84,6 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                       </>
                     )}
                   />
-                  {/* {!canChooseCodeGeneratorVersion && (
-                    <LockedFeatureIndicator
-                      featureName={BillingFeature.CodeGeneratorVersion}
-                    />
-                  )} */}
                 </>
                 {formik.values.useSpecificVersion && (
                   <div>
