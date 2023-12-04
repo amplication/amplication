@@ -25,6 +25,10 @@ type Props = AppRouteProps & {
   }>;
 };
 
+export type FeatureTabItem = TabItem & {
+  license?: BillingFeature;
+};
+
 const CLASS_NAME = "resource-home";
 const OVERVIEW = "Overview";
 
@@ -39,7 +43,7 @@ const ResourceHome = ({
 
   const { stigg } = useStiggContext();
 
-  const tabs: TabItem[] = useMemo(() => {
+  const tabs: FeatureTabItem[] = useMemo(() => {
     const fixedRoutes = resourceMenuLayout[currentResource?.resourceType]?.map(
       (menuItem: MenuItemLinks) => {
         const indicatorValue =
@@ -63,6 +67,7 @@ const ResourceHome = ({
           iconName: linksMap[menuItem].icon,
           exact: false,
           indicatorValue,
+          license: linksMap[menuItem].license,
         };
       }
     );
