@@ -5,7 +5,7 @@ import { Form, Formik } from "formik";
 import { validate } from "../util/formikValidateJsonSchema";
 import { useCallback } from "react";
 import { GlobalHotKeys } from "react-hotkeys";
-import { EnumButtonStyle } from "../Components/Button";
+import { Button, EnumButtonStyle } from "../Components/Button";
 import * as models from "../models";
 import { useTracking } from "../util/analytics";
 import { formatError } from "../util/error";
@@ -13,8 +13,8 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { EnhancedFeatureButton } from "../Components/FeatureButton";
 import { BillingFeature } from "../util/BillingFeature";
+import { FeatureControlContainer } from "../Components/FeatureControlContainer";
 
 type Values = {
   email: string;
@@ -93,15 +93,18 @@ const InviteMember = () => {
                 type="email"
                 disabled={loading}
               />
-              <EnhancedFeatureButton
-                buttonStyle={EnumButtonStyle.Primary}
-                disabled={!formik.isValid || loading}
+              <FeatureControlContainer
                 featureId={BillingFeature.TeamMembers}
-                showIcon={false}
-                type="submit"
+                entitlementType="metered"
               >
-                Invite
-              </EnhancedFeatureButton>
+                <Button
+                  buttonStyle={EnumButtonStyle.Primary}
+                  disabled={!formik.isValid || loading}
+                  type="submit"
+                >
+                  Invite
+                </Button>
+              </FeatureControlContainer>
 
               <Snackbar open={Boolean(error)} message={errorMessage} />
             </Form>

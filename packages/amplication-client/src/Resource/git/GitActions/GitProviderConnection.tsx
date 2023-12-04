@@ -1,4 +1,4 @@
-import { EnumButtonStyle } from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useCallback } from "react";
 import { EnumGitProvider } from "../../../models";
 
@@ -8,7 +8,7 @@ import "./GitProviderConnection.scss";
 import { LockedFeatureIndicator } from "../../../Components/LockedFeatureIndicator";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 import { BillingFeature } from "../../../util/BillingFeature";
-import { EnhancedFeatureButton } from "../../../Components/FeatureButton";
+import { FeatureControlContainer } from "../../../Components/FeatureControlContainer";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -47,15 +47,18 @@ export default function GitProviderConnection({
       <div className={`${CLASS_NAME}__controls`}>
         {disabled && <LockedFeatureIndicator featureName={featureName} />}
         {!comingSoon ? (
-          <EnhancedFeatureButton
+          <FeatureControlContainer
             featureId={billingFeature}
-            showIcon={false}
-            className={`${CLASS_NAME}__connect`}
-            buttonStyle={EnumButtonStyle.Primary}
-            onClick={handleClick}
+            entitlementType="boolean"
           >
-            Connect
-          </EnhancedFeatureButton>
+            <Button
+              className={`${CLASS_NAME}__connect`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleClick}
+            >
+              Connect
+            </Button>
+          </FeatureControlContainer>
         ) : (
           <div className={`${CLASS_NAME}__coming_soon`}>Coming soon</div>
         )}

@@ -36,7 +36,7 @@ import { BillingFeature } from "../util/BillingFeature";
 import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
-import { EnhancedFeatureButton } from "../Components/FeatureButton";
+import { FeatureControlContainer } from "../Components/FeatureControlContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -212,17 +212,20 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               <Link
                 to={`/${currentWorkspace?.id}/${currentProject?.id}/${currentResource?.id}/entities/import-schema`}
               >
-                <EnhancedFeatureButton
-                  className={`${CLASS_NAME}__install`}
-                  buttonStyle={EnumButtonStyle.Outline}
+                <FeatureControlContainer
                   featureId={BillingFeature.ImportDBSchema}
-                  showIcon={false}
-                  eventData={{
-                    eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
-                  }}
+                  entitlementType="boolean"
                 >
-                  Upload Prisma Schema
-                </EnhancedFeatureButton>
+                  <Button
+                    className={`${CLASS_NAME}__install`}
+                    buttonStyle={EnumButtonStyle.Outline}
+                    eventData={{
+                      eventName: AnalyticsEventNames.ImportPrismaSchemaClick,
+                    }}
+                  >
+                    Upload Prisma Schema
+                  </Button>
+                </FeatureControlContainer>
               </Link>
               <Button
                 className={`${CLASS_NAME}__add-button`}

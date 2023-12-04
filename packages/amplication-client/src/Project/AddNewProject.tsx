@@ -1,20 +1,15 @@
-import {
-  Dialog,
-  EnumButtonStyle,
-  EnumIconPosition,
-} from "@amplication/ui/design-system";
+import { Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
 import NewProject from "./NewProject";
-import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
-import { EnhancedFeatureButton } from "../Components/FeatureButton";
+import { FeatureControlContainer } from "../Components/FeatureControlContainer";
+import { Button } from "../Components/Button";
 
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
   const [projectDialogStatus, setProjectDialogStatus] =
     useState<boolean>(false);
-  const { stigg } = useStiggContext();
 
   const handleNewProjectClick = useCallback(() => {
     setProjectDialogStatus(!projectDialogStatus);
@@ -34,17 +29,19 @@ const AddNewProject = () => {
       >
         <NewProject onProjectCreated={handleProjectCreated} />
       </Dialog>
-      <EnhancedFeatureButton
-        onClick={handleNewProjectClick}
-        type="button"
-        iconPosition={EnumIconPosition.Left}
-        iconSize="small"
-        buttonStyle={EnumButtonStyle.Primary}
+      <FeatureControlContainer
         featureId={BillingFeature.Projects}
-        showIcon={false}
+        entitlementType="metered"
       >
-        <span className={`${CLASS_NAME}__label`}>Add New Project</span>
-      </EnhancedFeatureButton>
+        <Button
+          onClick={handleNewProjectClick}
+          type="button"
+          iconSize="small"
+          buttonStyle={EnumButtonStyle.Primary}
+        >
+          <span className={`${CLASS_NAME}__label`}>Add New Project</span>
+        </Button>
+      </FeatureControlContainer>
     </>
   );
 };
