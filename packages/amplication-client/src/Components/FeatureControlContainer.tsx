@@ -11,7 +11,7 @@ export type Props = {
   featureId: BillingFeature;
   entitlementType: "boolean" | "metered";
   disabled?: boolean;
-  icon?: "lock" | "diamond" | null;
+  icon?: "lock-locked" | "diamond" | null;
   children?: React.ReactElement;
   render?: (props: { disabled: boolean; icon?: string }) => ReactElement;
 };
