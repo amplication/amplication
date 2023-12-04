@@ -1,6 +1,6 @@
 # billing-types
 
-This library was generated with [Nx](https://nx.dev).
+Library that contains types and reference to external billing services
 
 ## Building
 
