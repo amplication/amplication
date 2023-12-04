@@ -7,14 +7,7 @@
     gap: 6px;
 
     .amp-icon {
-      color: #f85b6e;
-    }
-
-    &__info {
-      .upgrade-link,
-      .contact-us-link {
-        font-weight: 600;
-      }
+      color: var(--theme-turquoise);
     }
   }
 }

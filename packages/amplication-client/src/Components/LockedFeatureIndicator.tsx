@@ -12,13 +12,13 @@ const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
   <Tooltip {...props} classes={{ popper: className }} />
 ))(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
-    color: "#F85B6E",
+    color: "#53dbee",
   },
   [`& .${tooltipClasses.tooltip}`]: {
     backgroundColor: "#15192C",
     color: "#ffffff",
     maxWidth: 360,
-    border: "1px solid #F85B6E",
+    border: "1px solid #53dbee",
     borderRadius: "4px",
     padding: "6px",
     fontFamily: "unset",
@@ -54,15 +54,15 @@ export const LockedFeatureIndicator = ({ featureName }: Props) => {
       placement="top-start"
       title={
         <div className={`${CLASS_NAME}__tooltip__window`}>
-          <Icon icon="info_circle" />
+          <Icon icon="diamond" />
           <div className={`${CLASS_NAME}__tooltip__window__info`}>
-            <span>This feature requires an Enterprise plan.</span>{" "}
+            <span>Available as part of the Enterprise plan only.</span>{" "}
             <Link
               onClick={handleViewPlansClick}
-              className={`${CLASS_NAME}__view_plans_link`}
+              style={{ color: "#53dbee" }}
               to={{}}
             >
-              View Plans
+              Upgrade
             </Link>
           </div>
         </div>
