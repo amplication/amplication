@@ -1,5 +1,8 @@
 {
-  "extends": ["../../../.eslintrc.json"],
+  "extends": [
+    "../../../.eslintrc.json",
+    "plugin:perfectionist/recommended-natural"
+  ],
   "ignorePatterns": ["!**/*"],
   "overrides": [
     {
