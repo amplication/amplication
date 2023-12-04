@@ -26,7 +26,7 @@ import { EnumImages } from "../Components/SvgThemeImage";
 import PageContent from "../Layout/PageContent";
 import { AppContext } from "../context/appContext";
 import * as models from "../models";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
