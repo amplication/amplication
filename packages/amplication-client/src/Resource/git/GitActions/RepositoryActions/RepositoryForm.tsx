@@ -9,14 +9,15 @@ import {
   EnumFlexDirection,
   EnumFlexItemMargin,
   EnumGapSize,
+  EnumTextColor,
   EnumTextStyle,
   FlexItem,
+  Icon,
   Text,
 } from "@amplication/ui/design-system";
-import { useStiggContext } from "@stigg/react-sdk";
-import { LockedFeatureIndicator } from "../../../../Components/LockedFeatureIndicator";
 import { BillingFeature } from "../../../../util/BillingFeature";
 import FormikAutoSave from "../../../../util/formikAutoSave";
+import { FeatureControlContainer } from "../../../../Components/FeatureControlContainer";
 
 type Props = {
   onSubmit: (values: models.GitRepository) => void;
@@ -49,61 +50,57 @@ const RepositoryForm = ({ onSubmit, defaultValues }: Props) => {
     } as models.GitRepository;
   }, [defaultValues]);
 
-  const { stigg } = useStiggContext();
-  const canChangeGitBaseBranch = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.ChangeGitBaseBranch,
-  });
-
   return (
-    <>
-      <FlexItem
-        margin={EnumFlexItemMargin.Both}
-        gap={EnumGapSize.Small}
-        direction={EnumFlexDirection.Column}
-      >
-        <FlexItem>
-          <Text textStyle={EnumTextStyle.H4}>Git Base Branch</Text>
-
-          {!canChangeGitBaseBranch.hasAccess && (
-            <LockedFeatureIndicator
-              featureName={BillingFeature.ChangeGitBaseBranch}
-            />
-          )}
-        </FlexItem>
-        <Text textStyle={EnumTextStyle.Description}>
-          Override the default base branch used for the Pull Request with the
-          generated code
-        </Text>
-      </FlexItem>
-
-      <Formik
-        initialValues={initialValues}
-        enableReinitialize
-        onSubmit={onSubmit}
-      >
-        <Form childrenAsBlocks>
-          <FormikAutoSave debounceMS={1000} />
-
-          <FlexItem>
-            <DisplayNameField
-              labelType="normal"
-              disabled={!canChangeGitBaseBranch.hasAccess}
-              name="baseBranchName"
-              label="Base Branch"
-              inputToolTip={{
-                content: (
-                  <span>
-                    Leave this field empty to use the default branch of the
-                    repository
-                  </span>
-                ),
-              }}
-              minLength={1}
-            />
+    <FeatureControlContainer
+      featureId={BillingFeature.ChangeGitBaseBranch}
+      entitlementType="boolean"
+      render={({ icon, disabled: featureDisabled }) => (
+        <>
+          <FlexItem
+            margin={EnumFlexItemMargin.Both}
+            gap={EnumGapSize.Small}
+            direction={EnumFlexDirection.Column}
+          >
+            <FlexItem>
+              <Text textStyle={EnumTextStyle.H4}>Git Base Branch</Text>
+              <Icon icon={icon} size="xsmall" color={EnumTextColor.Black20} />
+            </FlexItem>
+            <Text textStyle={EnumTextStyle.Description}>
+              Override the default base branch used for the Pull Request with
+              the generated code
+            </Text>
           </FlexItem>
-        </Form>
-      </Formik>
-    </>
+
+          <Formik
+            initialValues={initialValues}
+            enableReinitialize
+            onSubmit={onSubmit}
+          >
+            <Form childrenAsBlocks>
+              <FormikAutoSave debounceMS={1000} />
+
+              <FlexItem>
+                <DisplayNameField
+                  labelType="normal"
+                  disabled={featureDisabled}
+                  name="baseBranchName"
+                  label="Base Branch"
+                  inputToolTip={{
+                    content: (
+                      <span>
+                        Leave this field empty to use the default branch of the
+                        repository
+                      </span>
+                    ),
+                  }}
+                  minLength={1}
+                />
+              </FlexItem>
+            </Form>
+          </Formik>
+        </>
+      )}
+    />
   );
 };
 
