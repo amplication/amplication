@@ -3,7 +3,11 @@ import classNames from "classnames";
 import React, { useCallback } from "react";
 import "./PageLayout.scss";
 import { FeatureTabItem } from "../Resource/ResourceHome";
-import { FeatureControlContainer } from "../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../Components/FeatureControlContainer";
+import { LockedFeatureIndicator } from "../Components/LockedFeatureIndicator";
 
 type Props = {
   children: React.ReactNode;
@@ -17,20 +21,29 @@ const CLASS_NAME = "amp-page-layout";
 function PageLayout({ children, className, tabs }: Props) {
   const tabsComponent = useCallback(() => {
     return tabs.map((tab, index) => {
-      return (
+      return tab.license ? (
         <FeatureControlContainer
           key={index}
           featureId={tab.license}
-          entitlementType="boolean"
+          entitlementType={EntitlementType.Boolean}
+          reversePosition={true}
           render={({ icon, disabled }) => (
             <Tabs.Tab
               key={index}
               {...tab}
               disabled={disabled}
-              icon={tab.license && <Icon size={"xsmall"} icon={icon} />}
+              featureTab={true}
+              featureIndicator={
+                <LockedFeatureIndicator
+                  featureName={tab.license}
+                  infoIcon={icon}
+                />
+              }
             />
           )}
         />
+      ) : (
+        <Tabs.Tab key={index} {...tab} />
       );
     });
   }, [tabs]);
