@@ -1,4 +1,4 @@
-import { Icon } from "@amplication/ui/design-system";
+import { EnumTextColor, Icon } from "@amplication/ui/design-system";
 import Tooltip, { TooltipProps, tooltipClasses } from "@mui/material/Tooltip";
 import { styled } from "@mui/material/styles";
 import { useCallback, useContext } from "react";
@@ -7,10 +7,13 @@ import { useTracking } from "react-tracking";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import "./LockedFeatureIndicator.scss";
+import { IconType } from "./FeatureControlContainer";
 
-const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
-  <Tooltip {...props} classes={{ popper: className }} />
-))(({ theme }) => ({
+const WarningTooltip = styled(
+  ({ className, placement, ...props }: TooltipProps) => (
+    <Tooltip {...props} placement={placement} classes={{ popper: className }} />
+  )
+)(({ theme }) => ({
   [`& .${tooltipClasses.arrow}`]: {
     color: "#53dbee",
   },
@@ -20,7 +23,7 @@ const WarningTooltip = styled(({ className, ...props }: TooltipProps) => (
     maxWidth: 360,
     border: "1px solid #53dbee",
     borderRadius: "4px",
-    padding: "6px",
+    padding: "6px 8px",
     fontFamily: "unset",
     fontSize: "10px",
     fontWeight: "unset",
@@ -31,9 +34,23 @@ const CLASS_NAME = "amp-locked-feature-indicator";
 
 type Props = {
   featureName: string;
+  infoIcon?: IconType;
+  comingSoon?: boolean;
+  placement?: TooltipProps["placement"];
+  tooltipIcon?: string;
+  text?: string;
+  linkText?: string;
 };
 
-export const LockedFeatureIndicator = ({ featureName }: Props) => {
+export const LockedFeatureIndicator = ({
+  featureName,
+  infoIcon = IconType.Lock,
+  comingSoon = false,
+  tooltipIcon,
+  placement = "top-start",
+  text = "Available as part of the Enterprise plan only.",
+  linkText = "Upgrade",
+}: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
   const { currentWorkspace } = useContext(AppContext);
@@ -50,29 +67,39 @@ export const LockedFeatureIndicator = ({ featureName }: Props) => {
 
   return (
     <WarningTooltip
-      arrow
-      placement="top-start"
+      placement={placement}
       title={
         <div className={`${CLASS_NAME}__tooltip__window`}>
-          <Icon icon="diamond" />
-          <div className={`${CLASS_NAME}__tooltip__window__info`}>
-            <span>Available as part of the Enterprise plan only.</span>{" "}
-            <Link
-              onClick={handleViewPlansClick}
-              style={{ color: "#53dbee" }}
-              to={{}}
-            >
-              Upgrade
-            </Link>
-          </div>
+          {tooltipIcon && <Icon icon={tooltipIcon} />}
+          {!comingSoon ? (
+            <div className={`${CLASS_NAME}__tooltip__window__info`}>
+              <span>{text}</span>{" "}
+              <Link
+                onClick={handleViewPlansClick}
+                style={{ color: "#53dbee" }}
+                to={{}}
+              >
+                {linkText}
+              </Link>
+            </div>
+          ) : (
+            <div className={`${CLASS_NAME}__tooltip__window__info`}>
+              <Link
+                onClick={handleViewPlansClick}
+                style={{ color: "#53dbee" }}
+                to={{}}
+              >
+                {linkText}
+              </Link>
+              <span>{text}</span>{" "}
+            </div>
+          )}
         </div>
       }
     >
-      <img
-        className={`${CLASS_NAME}__lock`}
-        src={`../../../../assets/images/lock.svg`}
-        alt=""
-      />
+      <div className={`${CLASS_NAME}__wrapper`}>
+        <Icon icon={infoIcon} size={"xsmall"} color={EnumTextColor.Black20} />
+      </div>
     </WarningTooltip>
   );
 };

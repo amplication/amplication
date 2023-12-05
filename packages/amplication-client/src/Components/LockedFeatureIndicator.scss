@@ -2,10 +2,6 @@
 
 .amp-locked-feature-indicator {
   &__tooltip__window {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-
     .amp-icon {
       color: var(--theme-turquoise);
     }
