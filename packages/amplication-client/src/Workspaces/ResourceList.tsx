@@ -148,14 +148,6 @@ function ResourceList() {
       </FlexItem>
       {loadingResources && <CircularProgress centerToParent />}
 
-      {!hideNotifications.hasAccess && (
-        <LimitationNotification
-          description="With the current plan, you can use up to 3 services."
-          link={`/${currentWorkspace?.id}/purchase`}
-          handleClick={handleResourceClick}
-        />
-      )}
-
       {isEmpty(resources) && !loadingResources ? (
         <EmptyState
           message="There are no resources to show"
