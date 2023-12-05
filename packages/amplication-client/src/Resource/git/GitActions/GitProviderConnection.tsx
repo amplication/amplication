@@ -13,7 +13,10 @@ import "./GitProviderConnection.scss";
 import { LockedFeatureIndicator } from "../../../Components/LockedFeatureIndicator";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 import { BillingFeature } from "../../../util/BillingFeature";
-import { FeatureControlContainer } from "../../../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../../../Components/FeatureControlContainer";
 
 type Props = {
   onSyncNewGitOrganizationClick: (data: any) => any;
@@ -54,23 +57,33 @@ export default function GitProviderConnection({
         {!comingSoon ? (
           <FeatureControlContainer
             featureId={billingFeature}
-            entitlementType="boolean"
-            render={({ icon, disabled: featureDisabled }) => (
-              <div className={`${CLASS_NAME}__feature-container`}>
-                <Icon icon={icon} size="xsmall" color={EnumTextColor.Black20} />
-                <Button
-                  className={`${CLASS_NAME}__connect`}
-                  buttonStyle={EnumButtonStyle.Primary}
-                  onClick={handleClick}
-                  disabled={featureDisabled}
-                >
-                  Connect
-                </Button>
-              </div>
-            )}
-          />
+            entitlementType={EntitlementType.Boolean}
+            reversePosition={true}
+          >
+            <Button
+              className={`${CLASS_NAME}__connect`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleClick}
+            >
+              Connect
+            </Button>
+          </FeatureControlContainer>
         ) : (
-          <div className={`${CLASS_NAME}__coming_soon`}>Coming soon</div>
+          <div className={`${CLASS_NAME}__coming_soon`}>
+            <LockedFeatureIndicator
+              featureName={featureName}
+              text="Contact us for GitLab integration"
+              linkText="Contact us"
+            />
+            <Button
+              className={`${CLASS_NAME}__connect`}
+              buttonStyle={EnumButtonStyle.Primary}
+              onClick={handleClick}
+              disabled={true}
+            >
+              Connect
+            </Button>
+          </div>
         )}
       </div>
     </div>

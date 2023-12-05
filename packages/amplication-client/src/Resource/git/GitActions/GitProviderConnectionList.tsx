@@ -91,6 +91,7 @@ export const GitProviderConnectionList: React.FC<Props> = ({
         provider={EnumGitProvider.GitLab}
         onSyncNewGitOrganizationClick={handleAddProvider}
         billingFeature={BillingFeature.GitLab}
+        comingSoon={true}
       />
       <GitProviderConnection
         provider={EnumGitProvider.Bitbucket}

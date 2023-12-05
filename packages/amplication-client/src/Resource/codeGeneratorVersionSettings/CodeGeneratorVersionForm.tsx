@@ -10,7 +10,10 @@ import { BillingFeature } from "../../util/BillingFeature";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";
-import { FeatureControlContainer } from "../../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../../Components/FeatureControlContainer";
 
 const CLASS_NAME = "code-generator-version-form";
 
@@ -72,18 +75,13 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
                 <>
                   <FeatureControlContainer
                     featureId={BillingFeature.CodeGeneratorVersion}
-                    entitlementType="boolean"
-                    render={({ icon, disabled }) => (
-                      <>
-                        <ToggleField
-                          label="I want to select a specific version of the code generator"
-                          name="useSpecificVersion"
-                          disabled={disabled}
-                        />
-                        <Icon icon={icon} />
-                      </>
-                    )}
-                  />
+                    entitlementType={EntitlementType.Boolean}
+                  >
+                    <ToggleField
+                      label="I want to select a specific version of the code generator"
+                      name="useSpecificVersion"
+                    />
+                  </FeatureControlContainer>
                 </>
                 {formik.values.useSpecificVersion && (
                   <div>

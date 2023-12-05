@@ -36,7 +36,10 @@ import { BillingFeature } from "../util/BillingFeature";
 import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";
-import { FeatureControlContainer } from "../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../Components/FeatureControlContainer";
 
 type TData = {
   entities: models.Entity[];
@@ -214,7 +217,8 @@ const EntityList: React.FC<Props> = ({ match, innerRoutes }) => {
               >
                 <FeatureControlContainer
                   featureId={BillingFeature.ImportDBSchema}
-                  entitlementType="boolean"
+                  entitlementType={EntitlementType.Boolean}
+                  reversePosition={true}
                 >
                   <Button
                     className={`${CLASS_NAME}__install`}

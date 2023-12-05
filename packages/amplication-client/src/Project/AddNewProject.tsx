@@ -2,7 +2,10 @@ import { Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useCallback, useState } from "react";
 import NewProject from "./NewProject";
 import { BillingFeature } from "../util/BillingFeature";
-import { FeatureControlContainer } from "../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../Components/FeatureControlContainer";
 import { Button } from "../Components/Button";
 
 const CLASS_NAME = "add-new-project";
@@ -31,7 +34,7 @@ const AddNewProject = () => {
       </Dialog>
       <FeatureControlContainer
         featureId={BillingFeature.Projects}
-        entitlementType="metered"
+        entitlementType={EntitlementType.Metered}
       >
         <Button
           onClick={handleNewProjectClick}

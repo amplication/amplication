@@ -9,7 +9,10 @@ import * as models from "../models";
 import "./CreateResourceButton.scss";
 import CreateResourceButtonItem from "./CreateResourceButtonItem";
 import { BillingFeature } from "../util/BillingFeature";
-import { FeatureControlContainer } from "./FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "./FeatureControlContainer";
 
 const CLASS_NAME = "create-resource-button";
 
@@ -40,7 +43,7 @@ const CreateResourceButton = () => {
     <div className={CLASS_NAME}>
       <FeatureControlContainer
         featureId={BillingFeature.Services}
-        entitlementType="metered"
+        entitlementType={EntitlementType.Metered}
       >
         <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right">

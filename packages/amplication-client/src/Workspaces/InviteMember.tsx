@@ -14,7 +14,10 @@ import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { BillingFeature } from "../util/BillingFeature";
-import { FeatureControlContainer } from "../Components/FeatureControlContainer";
+import {
+  EntitlementType,
+  FeatureControlContainer,
+} from "../Components/FeatureControlContainer";
 
 type Values = {
   email: string;
@@ -95,7 +98,7 @@ const InviteMember = () => {
               />
               <FeatureControlContainer
                 featureId={BillingFeature.TeamMembers}
-                entitlementType="metered"
+                entitlementType={EntitlementType.Metered}
               >
                 <Button
                   buttonStyle={EnumButtonStyle.Primary}

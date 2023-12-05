@@ -54,6 +54,9 @@
   }
 
   &__coming_soon {
+    display: flex;
+    align-items: center;
+    gap: var(--default-spacing-small);
     font-size: 10px;
     color: (var(--gray-40));
   }
