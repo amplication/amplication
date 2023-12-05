@@ -1,4 +1,4 @@
-import { Icon, Tabs } from "@amplication/ui/design-system";
+import { Tabs } from "@amplication/ui/design-system";
 import classNames from "classnames";
 import React, { useCallback } from "react";
 import "./PageLayout.scss";
@@ -7,7 +7,7 @@ import {
   EntitlementType,
   FeatureControlContainer,
 } from "../Components/FeatureControlContainer";
-import { LockedFeatureIndicator } from "../Components/LockedFeatureIndicator";
+import { FeatureIndicator } from "../Components/FeatureIndicator";
 
 type Props = {
   children: React.ReactNode;
@@ -34,10 +34,7 @@ function PageLayout({ children, className, tabs }: Props) {
               disabled={disabled}
               featureTab={true}
               featureIndicator={
-                <LockedFeatureIndicator
-                  featureName={tab.license}
-                  infoIcon={icon}
-                />
+                <FeatureIndicator featureName={tab.license} infoIcon={icon} />
               }
             />
           )}

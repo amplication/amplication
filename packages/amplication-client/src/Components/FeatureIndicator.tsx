@@ -6,7 +6,7 @@ import { Link, useHistory } from "react-router-dom";
 import { useTracking } from "react-tracking";
 import { AppContext } from "../context/appContext";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import "./LockedFeatureIndicator.scss";
+import "./FeatureIndicator.scss";
 import { IconType } from "./FeatureControlContainer";
 
 const WarningTooltip = styled(
@@ -42,7 +42,7 @@ type Props = {
   linkText?: string;
 };
 
-export const LockedFeatureIndicator = ({
+export const FeatureIndicator = ({
   featureName,
   infoIcon = IconType.Lock,
   comingSoon = false,

@@ -4,7 +4,7 @@ import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
 import { BillingFeature } from "../util/BillingFeature";
 import React from "react";
-import { LockedFeatureIndicator } from "./LockedFeatureIndicator";
+import { FeatureIndicator } from "./FeatureIndicator";
 import "./FeatureControlContainer.scss";
 import { omit } from "lodash";
 
@@ -102,10 +102,7 @@ export const FeatureControlContainer: FC<Props> = ({
             >
               {React.cloneElement(child, omit(renderProps, "icon"))}
               {iconType && (
-                <LockedFeatureIndicator
-                  featureName={featureId}
-                  infoIcon={iconType}
-                />
+                <FeatureIndicator featureName={featureId} infoIcon={iconType} />
               )}
             </div>
           ))}

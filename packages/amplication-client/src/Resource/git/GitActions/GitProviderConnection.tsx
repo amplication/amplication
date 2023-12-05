@@ -1,16 +1,11 @@
-import {
-  Button,
-  EnumButtonStyle,
-  EnumTextColor,
-  Icon,
-} from "@amplication/ui/design-system";
+import { Button, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useCallback } from "react";
 import { EnumGitProvider } from "../../../models";
 
 import classNames from "classnames";
 import "./GitProviderConnection.scss";
 
-import { LockedFeatureIndicator } from "../../../Components/LockedFeatureIndicator";
+import { FeatureIndicator } from "../../../Components/FeatureIndicator";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
 import { BillingFeature } from "../../../util/BillingFeature";
 import {
@@ -53,7 +48,7 @@ export default function GitProviderConnection({
       />
       <div className={`${CLASS_NAME}__name`}>{providerDisplayName}</div>
       <div className={`${CLASS_NAME}__controls`}>
-        {disabled && <LockedFeatureIndicator featureName={featureName} />}
+        {disabled && <FeatureIndicator featureName={featureName} />}
         {!comingSoon ? (
           <FeatureControlContainer
             featureId={billingFeature}
@@ -70,7 +65,7 @@ export default function GitProviderConnection({
           </FeatureControlContainer>
         ) : (
           <div className={`${CLASS_NAME}__coming_soon`}>
-            <LockedFeatureIndicator
+            <FeatureIndicator
               featureName={featureName}
               text="Contact us for GitLab integration"
               linkText="Contact us"
