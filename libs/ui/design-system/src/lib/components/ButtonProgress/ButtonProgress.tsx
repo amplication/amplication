@@ -3,20 +3,19 @@ import React from "react";
 import { ButtonGroup as PrimerButtonGroup } from "@primer/react";
 import type { ButtonProps as PrimerButtonProps } from "@primer/react/deprecated";
 
-import "./ButtonProgress.scss";
 import { Button, EnumButtonStyle } from "../Button/Button";
 import classNames from "classnames";
-import { CircularProgress, circularProgressClasses } from "@mui/material";
+import { CircularProgress } from "@mui/material";
 import type { CircularProgressProps } from "@mui/material";
 import { Box } from "@mui/material";
-import { margin } from "@mui/system";
 import {
   EnumFlexDirection,
   EnumGapSize,
   EnumItemsAlign,
   FlexItem,
 } from "../FlexItem/FlexItem";
-import { EnumFormStyle } from "../Form/Form";
+
+import "./ButtonProgress.scss";
 
 export interface Props
   extends Pick<PrimerButtonProps, "className" | "children" | "onClick"> {
