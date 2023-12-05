@@ -40,6 +40,7 @@ import {
 } from "../../util/constants";
 import { version } from "../../util/version";
 import GitHubBanner from "./GitHubBanner";
+import styles from "./notificationStyle";
 import "./WorkspaceHeader.scss";
 
 const CLASS_NAME = "workspace-header";
@@ -148,6 +149,10 @@ const WorkspaceHeader: React.FC = () => {
 
   const Footer = () => <div></div>;
 
+  const EmptyState = () => {
+    return <span> My custom empty state </span>;
+  };
+
   return (
     <>
       <Dialog
@@ -255,9 +260,12 @@ const WorkspaceHeader: React.FC = () => {
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
                   applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
+                  styles={styles}
                 >
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
+                    position="left-start"
+                    offset={0}
                     onNotificationClick={onNotificationClick}
                     onActionClick={onBuildNotificationClick}
                     footer={() => <Footer />}
