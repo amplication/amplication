@@ -39,6 +39,8 @@ import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segment
 import { PrismaSchemaParserService } from "../prismaSchemaParser/prismaSchemaParser.service";
 import { BillingService } from "../billing/billing.service";
 import { ServiceSettingsService } from "../serviceSettings/serviceSettings.service";
+import { ModuleService } from "../module/module.service";
+import { ModuleActionService } from "../moduleAction/moduleAction.service";
 
 const EXAMPLE_RESOURCE_ID = "exampleResourceId";
 const EXAMPLE_NAME = "exampleName";
@@ -438,6 +440,34 @@ describe("EntityService", () => {
           useClass: jest.fn(() => ({
             getServiceSettingsValues: jest.fn(() => {
               return {};
+            }),
+          })),
+        },
+        {
+          provide: ModuleService,
+          useClass: jest.fn(() => ({
+            createDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            deleteDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            updateDefaultModuleForEntity: jest.fn(() => {
+              return {};
+            }),
+            getDefaultModuleIdForEntity: jest.fn(() => {
+              return "exampleModuleId";
+            }),
+          })),
+        },
+        {
+          provide: ModuleActionService,
+          useClass: jest.fn(() => ({
+            createDefaultActionsForRelationField: jest.fn(() => {
+              return [];
+            }),
+            deleteDefaultActionsForRelationField: jest.fn(() => {
+              return [];
             }),
           })),
         },

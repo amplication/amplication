@@ -150,53 +150,25 @@ export class BuildRunnerService {
   async emitKafkaEventBasedOnJobStatus(resourceId: string, jobBuildId: string) {
     let codeGeneratorVersion: string;
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
-
-    const currentBuildStatus =
-      await this.buildJobsHandlerService.getBuildStatus(buildId);
-    const otherJobsHaveAlreadyFailed =
-      currentBuildStatus === EnumJobStatus.Failure;
-
-    if (otherJobsHaveAlreadyFailed) {
-      // do nothing
-      return;
-    }
+    let otherJobsHaveNotFailed = true;
 
     try {
       codeGeneratorVersion = await this.getCodeGeneratorVersion(jobBuildId);
-      const isCopySucceeded = await this.copyFromJobToArtifact(
-        resourceId,
-        jobBuildId
-      );
 
-      isCopySucceeded
-        ? await this.buildJobsHandlerService.setJobStatus(
-            jobBuildId,
-            EnumJobStatus.Success
-          )
-        : await this.buildJobsHandlerService.setJobStatus(
-            jobBuildId,
-            EnumJobStatus.Failure
-          );
+      const currentBuildStatus =
+        await this.buildJobsHandlerService.getBuildStatus(buildId);
+      otherJobsHaveNotFailed = currentBuildStatus !== EnumJobStatus.Failure;
+
+      await this.copyFromJobToArtifact(resourceId, jobBuildId);
+
+      await this.buildJobsHandlerService.setJobStatus(
+        jobBuildId,
+        EnumJobStatus.Success
+      );
 
       const buildStatus = await this.buildJobsHandlerService.getBuildStatus(
         buildId
       );
-
-      if (buildStatus === EnumJobStatus.Failure) {
-        const failureEvent: CodeGenerationFailure.KafkaEvent = {
-          key: null,
-          value: {
-            buildId,
-            codeGeneratorVersion,
-            error: new Error("Failed to copy from job to artifact"),
-          },
-        };
-
-        await this.producerService.emitMessage(
-          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-          failureEvent
-        );
-      }
 
       if (buildStatus === EnumJobStatus.InProgress) {
         // do nothing
@@ -215,20 +187,21 @@ export class BuildRunnerService {
         );
       }
     } catch (error) {
-      this.logger.error(error.message, error);
-      const failureEvent: CodeGenerationFailure.KafkaEvent = {
-        key: null,
-        value: {
-          buildId,
-          codeGeneratorVersion,
-          error,
-        },
-      };
+      if (otherJobsHaveNotFailed) {
+        const failureEvent: CodeGenerationFailure.KafkaEvent = {
+          key: null,
+          value: {
+            buildId,
+            codeGeneratorVersion,
+            error,
+          },
+        };
 
-      await this.producerService.emitMessage(
-        KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
-        failureEvent
-      );
+        await this.producerService.emitMessage(
+          KAFKA_TOPICS.CODE_GENERATION_FAILURE_TOPIC,
+          failureEvent
+        );
+      }
     }
   }
 
@@ -307,7 +280,7 @@ export class BuildRunnerService {
   async copyFromJobToArtifact(
     resourceId: string,
     jobBuildId: string
-  ): Promise<boolean> {
+  ): Promise<void> {
     const buildId = this.buildJobsHandlerService.extractBuildId(jobBuildId);
 
     try {
@@ -324,10 +297,9 @@ export class BuildRunnerService {
       );
 
       await copy(jobPath, artifactPath);
-      return true;
     } catch (error) {
       this.logger.error(error.message, error);
-      return false;
+      throw error;
     }
   }
 }

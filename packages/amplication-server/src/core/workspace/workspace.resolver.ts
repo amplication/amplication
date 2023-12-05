@@ -40,6 +40,8 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { RedeemCouponArgs } from "./dto/RedeemCouponArgs";
 import { Coupon } from "./dto/Coupon";
+import { ConfigService } from "@nestjs/config";
+import { Env } from "../../env";
 
 @Resolver(() => Workspace)
 @UseFilters(GqlResolverExceptionsFilter)
@@ -51,8 +53,19 @@ export class WorkspaceResolver {
     private readonly billingService: BillingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly analytics: SegmentAnalyticsService,
-    private readonly userService: UserService
+    private readonly userService: UserService,
+    private readonly configService: ConfigService
   ) {}
+
+  @Query(() => String, {
+    nullable: true,
+  })
+  @AuthorizeContext(AuthorizableOriginParameter.WorkspaceId, "where.id")
+  async contactUsLink(@Args() args: FindOneArgs): Promise<string | null> {
+    if (args.where.id) {
+      return this.configService.get<string>(Env.CONTACT_US_LINK);
+    }
+  }
 
   @Query(() => Workspace, {
     nullable: true,
@@ -77,6 +90,11 @@ export class WorkspaceResolver {
     });
     await this.userService.setLastActivity(currentUser.id);
     const externalId = await this.userService.setNotificationRegistry(
+      currentUser
+    );
+
+    await this.workspaceService.migrateWorkspace(
+      currentUser.workspace,
       currentUser
     );
 

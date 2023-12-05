@@ -66,6 +66,12 @@ export const GET_WORKSPACES = gql`
   }
 `;
 
+export const GET_CONTACT_US_LINK = gql`
+  query GetContactUsLink($id: String!) {
+    contactUsLink(where: { id: $id })
+  }
+`;
+
 export const PROVISION_SUBSCRIPTION = gql`
   mutation provisionSubscription($data: ProvisionSubscriptionInput!) {
     provisionSubscription(data: $data) {

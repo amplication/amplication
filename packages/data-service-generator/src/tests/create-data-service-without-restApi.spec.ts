@@ -1,13 +1,10 @@
 import { AppInfo } from "@amplication/code-gen-types";
 import { MockedLogger } from "@amplication/util/logging/test-utils";
 import { createDataService } from "../create-data-service";
-import { EnumResourceType } from "../models";
 import { appInfo, MODULE_EXTENSIONS_TO_SNAPSHOT } from "./appInfo";
-import entities from "./entities";
-import { installedPlugins } from "./pluginInstallation";
-import roles from "./roles";
-import { AMPLICATION_MODULES } from "../generate-code";
-import { join } from "path";
+import { TEST_DATA } from "./test-data";
+import { getTemporaryPluginInstallationPath } from "./dynamic-plugin-installation-path";
+import { rm } from "fs/promises";
 
 const newAppInfo: AppInfo = {
   ...appInfo,
@@ -20,26 +17,29 @@ const newAppInfo: AppInfo = {
     },
   },
 };
-
 jest.setTimeout(100000);
 
+const temporaryPluginInstallationPath =
+  getTemporaryPluginInstallationPath(__filename);
+
 describe("createDataService", () => {
-  describe("when restapi is disabled", () => {
-    afterEach(() => {
-      jest.clearAllMocks();
+  afterEach(async () => {
+    jest.clearAllMocks();
+    await rm(temporaryPluginInstallationPath, {
+      recursive: true,
+      force: true,
     });
+  });
+
+  describe("when restapi is disabled", () => {
     test("creates app as expected", async () => {
       const modules = await createDataService(
         {
-          entities,
-          buildId: "example_build_id",
-          roles,
+          ...TEST_DATA,
           resourceInfo: newAppInfo,
-          resourceType: EnumResourceType.Service,
-          pluginInstallations: installedPlugins,
         },
         MockedLogger,
-        join(__dirname, "../../", AMPLICATION_MODULES)
+        temporaryPluginInstallationPath
       );
       const modulesToSnapshot = modules
         .modules()

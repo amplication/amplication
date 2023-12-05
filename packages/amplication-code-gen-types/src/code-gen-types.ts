@@ -9,6 +9,9 @@ export {
   EnumEntityAction,
   EnumEntityPermissionType,
   EnumMessagePatternConnectionOptions,
+  EnumModuleActionType,
+  EnumModuleActionGqlOperation,
+  EnumModuleActionRestVerb,
 } from "./models";
 
 export type ServiceSettings = Omit<
@@ -280,6 +283,50 @@ export type ResourceGenerationConfig = {
 
 export type PluginInstallation = BlockOmittedFields<models.PluginInstallation>;
 
+export type ModuleContainer = BlockOmittedFields<models.Module>;
+export type ModuleAction = Omit<
+  BlockOmittedFields<models.ModuleAction>,
+  "id" | "actionType" | "restVerb" | "gqlOperation"
+> & {
+  id?: string;
+  displayName: string;
+  description: string;
+  actionType: keyof typeof models.EnumModuleActionType;
+  restVerb: keyof typeof models.EnumModuleActionRestVerb;
+  gqlOperation: keyof typeof models.EnumModuleActionGqlOperation;
+};
+
+export type entityDefaultActions = {
+  [models.EnumModuleActionType.Create]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Delete]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Find]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Meta]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Read]: ModuleAction | undefined;
+  [models.EnumModuleActionType.Update]: ModuleAction | undefined;
+};
+
+export type entityRelatedFieldDefaultActions = {
+  [models.EnumModuleActionType.ChildrenConnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenDisconnect]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenFind]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ChildrenUpdate]?: ModuleAction | undefined;
+  [models.EnumModuleActionType.ParentGet]?: ModuleAction | undefined;
+};
+
+export type entityActions = {
+  entityDefaultActions: entityDefaultActions;
+  relatedFieldsDefaultActions: Record<
+    string, //field name
+    entityRelatedFieldDefaultActions
+  >;
+  customActions: ModuleAction[];
+};
+
+export type EntityActionsMap = Record<
+  string, //module name/ entity name
+  entityActions
+>;
+
 type BlockOmittedFields<T> = Omit<
   T,
   | "__typename"
@@ -294,6 +341,7 @@ type BlockOmittedFields<T> = Omit<
   | "outputParameters"
   | "lockedByUserId"
   | "lockedAt"
+  | "lockedByUser"
 >;
 
 export type clientDirectories = {

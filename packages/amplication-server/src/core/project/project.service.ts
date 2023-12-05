@@ -4,7 +4,7 @@ import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
-import { BlockService } from "../block/block.service";
+import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import {
   CreateCommitArgs,
@@ -28,6 +28,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
+import { EntityPendingChange } from "../entity/entity.service";
 
 @Injectable()
 export class ProjectService {
@@ -237,7 +238,8 @@ export class ProjectService {
 
   async commit(
     args: CreateCommitArgs,
-    currentUser: User
+    currentUser: User,
+    skipBuild = false
   ): Promise<Commit | null> {
     const userId = args.data.user.connect.id;
     const projectId = args.data.project.connect.id;
@@ -261,7 +263,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled) {
+    if (this.billingService.isBillingEnabled && !skipBuild) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -287,10 +289,20 @@ export class ProjectService {
       throw new Error(`Invalid userId or resourceId`);
     }
 
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId),
-    ]);
+    let changedEntities: EntityPendingChange[] = [];
+    let changedBlocks: BlockPendingChange[] = [];
+    if (skipBuild) {
+      changedBlocks =
+        await this.blockService.getChangedBlocksForCustomActionsMigration(
+          projectId,
+          userId
+        );
+    } else {
+      [changedEntities, changedBlocks] = await Promise.all([
+        this.entityService.getChangedEntities(projectId, userId),
+        this.blockService.getChangedBlocks(projectId, userId),
+      ]);
+    }
 
     /**@todo: consider discarding locked objects that have no actual changes */
 
@@ -356,41 +368,44 @@ export class ProjectService {
     /**@todo: use a transaction for all data updates  */
     //await this.prisma.$transaction(allPromises);
 
-    const promises = resources
-      .filter(
-        (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
-      )
-      .map((resource: Resource) => {
-        return this.buildService.create({
-          data: {
-            resource: {
-              connect: { id: resource.id },
-            },
-            commit: {
-              connect: {
-                id: commit.id,
+    if (!skipBuild) {
+      const promises = resources
+        .filter(
+          (res) => res.resourceType !== EnumResourceType.ProjectConfiguration
+        )
+        .map((resource: Resource) => {
+          return this.buildService.create({
+            data: {
+              resource: {
+                connect: { id: resource.id },
               },
-            },
-            createdBy: {
-              connect: {
-                id: userId,
+              commit: {
+                connect: {
+                  id: commit.id,
+                },
               },
+              createdBy: {
+                connect: {
+                  id: userId,
+                },
+              },
+              message: args.data.message,
             },
-            message: args.data.message,
-          },
+          });
         });
+
+      await Promise.all(promises);
+    }
+    if (!skipBuild) {
+      await this.analytics.track({
+        userId: currentUser.account.id,
+        properties: {
+          workspaceId: project.workspaceId,
+          projectId: project.id,
+        },
+        event: EnumEventType.CommitCreate,
       });
-
-    await Promise.all(promises);
-
-    await this.analytics.track({
-      userId: currentUser.account.id,
-      properties: {
-        workspaceId: project.workspaceId,
-        projectId: project.id,
-      },
-      event: EnumEventType.CommitCreate,
-    });
+    }
 
     return commit;
   }

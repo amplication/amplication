@@ -787,3 +787,31 @@ export function findFirstDecoratorByName(
 
   return decorator as any;
 }
+
+export function removeClassMethodByName(
+  classDeclaration: namedTypes.ClassDeclaration,
+  methodId: string
+): boolean {
+  let method: namedTypes.ClassMethod | null = null;
+
+  visit(classDeclaration, {
+    visitClassMethod(path) {
+      const classMethodNode = path.node;
+      if (
+        "key" in classMethodNode &&
+        namedTypes.Identifier.check(classMethodNode.key) &&
+        classMethodNode.key.name === methodId
+      ) {
+        method = path.value;
+        path.prune();
+      }
+      return this.traverse(path);
+    },
+  });
+
+  if (!method) {
+    return false;
+  }
+
+  return true;
+}
