@@ -5,13 +5,13 @@
 
   &.amp-button-progress--left {
     background-color: transparent;
-    border-radius: var(--default-button-radius) 0 0 var(--default-button-radius) !important;
+    border-radius: var(--default-button-radius) 0 0 var(--default-button-radius);
   }
 
   &.amp-button-progress--right {
     color: var(--gray-full);
     background-color: transparent;
-    border-radius: 0 var(--default-button-radius) var(--default-button-radius) 0 !important;
+    border-radius: 0 var(--default-button-radius) var(--default-button-radius) 0;
   }
 
   .amp-button-progress-pie {
