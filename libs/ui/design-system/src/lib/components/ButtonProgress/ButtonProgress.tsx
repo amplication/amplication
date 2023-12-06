@@ -5,8 +5,9 @@ import type { ButtonProps as PrimerButtonProps } from "@primer/react/deprecated"
 
 import { Button, EnumButtonStyle } from "../Button/Button";
 import classNames from "classnames";
-import { CircularProgress } from "@mui/material";
-import type { CircularProgressProps } from "@mui/material";
+import CircularProgress from "../CircularProgress/CircularProgress";
+import type { Props as CircularProgressProps } from "../CircularProgress/CircularProgress";
+
 import { Box } from "@mui/material";
 import {
   EnumFlexDirection,
@@ -53,11 +54,13 @@ const Pie = ({ className, value, ...rest }: CircularProgressProps) => {
         }}
       />
       <CircularProgress
+        defaultColor={false}
         size="14px"
         {...rest}
         variant="determinate"
         value={value}
         thickness={3}
+        position="absolute"
         sx={{
           color: "inherit",
           position: "absolute",
@@ -115,9 +118,7 @@ export const ButtonProgress = ({
         >
           <Pie
             value={progress}
-            className={classNames(
-              `amp-button-progress-pie--${buttonProgressStyle}`
-            )}
+            className={`amp-button-progress-pie--${buttonProgressStyle}`}
           />
           {leftValue}
         </FlexItem>
