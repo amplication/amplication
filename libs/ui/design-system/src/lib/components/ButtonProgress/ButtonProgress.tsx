@@ -24,7 +24,6 @@ export interface Props
   yellowColorThreshold: number;
   redColorThreshold: number;
   leftValue: string;
-  rest?: any;
 }
 
 enum EnumButtonProgressStyle {
@@ -74,7 +73,6 @@ export const ButtonProgress = (props: Props) => {
     leftValue,
     className,
     children,
-    rest,
   } = props;
   let { progress } = props;
 
@@ -110,7 +108,6 @@ export const ButtonProgress = (props: Props) => {
         )}
         buttonStyle={EnumButtonStyle.Outline}
         onClick={onClick}
-        {...rest}
       >
         <FlexItem
           direction={EnumFlexDirection.Row}
