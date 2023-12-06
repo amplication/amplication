@@ -89,9 +89,9 @@ export const FeatureIndicator = ({
                 style={{ color: "#53dbee" }}
                 to={{}}
               >
-                {linkText}
+                {linkText}{" "}
               </Link>
-              <span>{text}</span>{" "}
+              <span>{text}</span>
             </div>
           )}
         </div>

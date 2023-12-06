@@ -67,7 +67,8 @@ export default function GitProviderConnection({
           <div className={`${CLASS_NAME}__coming_soon`}>
             <FeatureIndicator
               featureName={featureName}
-              text="Contact us for GitLab integration"
+              comingSoon={true}
+              text="for GitLab integration"
               linkText="Contact us"
             />
             <Button
