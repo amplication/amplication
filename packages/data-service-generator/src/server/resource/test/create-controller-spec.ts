@@ -6,6 +6,9 @@ import {
   removeTSClassDeclares,
   removeTSInterfaceDeclares,
   removeTSIgnoreComments,
+  removeObjectPropertyByName,
+  removeCallExpressionStatementByName,
+  removeObjectMethodByName,
 } from "@amplication/code-gen-utils";
 import { camelCase } from "camel-case";
 import replaceExt from "replace-ext";
@@ -18,8 +21,10 @@ import {
   CreateEntityControllerSpecParams,
   Entity,
   EntityField,
+  EnumModuleActionType,
   EventNames,
   Module,
+  ModuleAction,
   ModuleMap,
 } from "@amplication/code-gen-types";
 import { isOneToOneRelationField, isRelationField } from "../../../utils/field";
@@ -42,7 +47,7 @@ export async function createEntityControllerSpec(
   entityControllerModulePath: string,
   entityControllerBaseModulePath: string
 ): Promise<ModuleMap> {
-  const { entityActionsMap } = DsgContext.getInstance;
+  const { entityActionsMap, moduleContainers } = DsgContext.getInstance;
   const entityActions = entityActionsMap[entity.name];
   /** @todo make dynamic */
   const param = "id";
@@ -126,11 +131,14 @@ export async function createEntityControllerSpec(
       entityControllerBaseModulePath,
       controllerId,
       serviceId,
+      entityActions,
+      moduleContainers,
     }
   );
 }
 
 export async function createEntityControllerSpecInternal({
+  entity,
   template,
   templateMapping,
   entityServiceModulePath,
@@ -138,6 +146,8 @@ export async function createEntityControllerSpecInternal({
   entityControllerBaseModulePath,
   controllerId,
   serviceId,
+  entityActions,
+  moduleContainers,
 }: CreateEntityControllerSpecParams): Promise<ModuleMap> {
   const modulePath = replaceExt(entityControllerBaseModulePath, ".spec.ts");
 
@@ -150,7 +160,35 @@ export async function createEntityControllerSpecInternal({
     relativeImportPath(modulePath, entityServiceModulePath)
   );
 
+  const moduleContainer = moduleContainers?.find(
+    (moduleContainer) => moduleContainer.entityId === entity.id
+  );
+
   interpolate(template, templateMapping);
+
+  Object.keys(entityActions.entityDefaultActions).forEach((key) => {
+    const action: ModuleAction = entityActions.entityDefaultActions[key];
+    const isCreateAction = action?.actionType === EnumModuleActionType.Create;
+    const isReadOrFindManyAction =
+      action?.actionType === EnumModuleActionType.Read ||
+      action?.actionType === EnumModuleActionType.Find;
+
+    if (
+      action &&
+      moduleContainer &&
+      (!moduleContainer?.enabled || !action.enabled)
+    ) {
+      if (isCreateAction || isReadOrFindManyAction) {
+        removeCallExpressionStatementByName(template, action);
+      }
+      if (isCreateAction) {
+        removeObjectMethodByName(template, action.name);
+      }
+      if (isReadOrFindManyAction) {
+        removeObjectPropertyByName(template, action.name);
+      }
+    }
+  });
 
   addImports(template, [importResourceModule, importService]);
 

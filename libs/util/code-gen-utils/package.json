@@ -1,6 +1,6 @@
 {
   "name": "@amplication/code-gen-utils",
-  "version": "0.0.7",
+  "version": "0.0.9",
   "dependencies": {
     "@babel/parser": "7.23.0",
     "@babel/types": "7.23.0",
