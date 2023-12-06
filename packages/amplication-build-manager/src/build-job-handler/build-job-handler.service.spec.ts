@@ -597,8 +597,7 @@ describe("BuildJobsHandlerService", () => {
     const mockRedisSet = jest.spyOn(redisService, "set");
 
     await service.setJobStatus(jobBuildId, status);
-    // eslint-disable-next-line no-console
-    console.error(`jobBuildId, status`, { jobBuildId, status, buildId, value });
+
     expect(mockRedisSet).toHaveBeenCalledTimes(1);
     expect(mockRedisSet).toHaveBeenCalledWith(buildId, value);
   });
