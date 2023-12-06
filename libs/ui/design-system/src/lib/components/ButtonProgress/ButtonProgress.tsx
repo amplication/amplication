@@ -32,8 +32,7 @@ enum EnumButtonProgressStyle {
   Danger = "danger",
 }
 
-const Pie = (props: CircularProgressProps) => {
-  const { className, value } = props;
+const Pie = ({ className, value, ...rest }: CircularProgressProps) => {
   return (
     <Box
       className={className}
@@ -44,7 +43,7 @@ const Pie = (props: CircularProgressProps) => {
     >
       <CircularProgress
         size="14px"
-        {...props}
+        {...rest}
         variant="determinate"
         className=".amp-button-progress--background"
         value={100}
@@ -55,7 +54,7 @@ const Pie = (props: CircularProgressProps) => {
       />
       <CircularProgress
         size="14px"
-        {...props}
+        {...rest}
         variant="determinate"
         value={value}
         thickness={3}
@@ -68,17 +67,15 @@ const Pie = (props: CircularProgressProps) => {
   );
 };
 
-export const ButtonProgress = (props: Props) => {
-  const {
-    yellowColorThreshold,
-    redColorThreshold,
-    onClick,
-    leftValue,
-    className,
-    children,
-  } = props;
-  let { progress } = props;
-
+export const ButtonProgress = ({
+  yellowColorThreshold,
+  redColorThreshold,
+  onClick,
+  leftValue,
+  className,
+  children,
+  progress,
+}: Props) => {
   if (progress < 0) {
     progress = 0;
   }
