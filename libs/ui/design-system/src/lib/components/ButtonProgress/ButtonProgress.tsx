@@ -133,7 +133,6 @@ export const ButtonProgress = (props: Props) => {
           `amp-button-progress--${buttonProgressStyle}--right`
         )}
         onClick={onClick}
-        {...rest}
       >
         {children}
       </Button>
