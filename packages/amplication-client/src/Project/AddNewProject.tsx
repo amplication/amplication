@@ -1,5 +1,5 @@
 import { Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
-import { useCallback, useState } from "react";
+import { useCallback, useContext, useState } from "react";
 import NewProject from "./NewProject";
 import { BillingFeature } from "../util/BillingFeature";
 import {
@@ -7,10 +7,12 @@ import {
   FeatureControlContainer,
 } from "../Components/FeatureControlContainer";
 import { Button } from "../Components/Button";
+import { AppContext } from "../context/appContext";
 
 const CLASS_NAME = "add-new-project";
 
 const AddNewProject = () => {
+  const { projectsList } = useContext(AppContext);
   const [projectDialogStatus, setProjectDialogStatus] =
     useState<boolean>(false);
 
@@ -35,6 +37,7 @@ const AddNewProject = () => {
       <FeatureControlContainer
         featureId={BillingFeature.Projects}
         entitlementType={EntitlementType.Metered}
+        meteredFeatureLength={projectsList.length}
       >
         <Button
           onClick={handleNewProjectClick}

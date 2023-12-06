@@ -52,7 +52,6 @@ function ResourceList() {
     loadingResources,
     errorResources,
     currentProject,
-    currentWorkspace,
   } = useContext(AppContext);
 
   const clearError = useCallback(() => {
@@ -100,11 +99,6 @@ function ResourceList() {
     [deleteResource, setError, trackEvent]
   );
 
-  const { stigg } = useStiggContext();
-  const hideNotifications = stigg.getBooleanEntitlement({
-    featureId: BillingFeature.HideNotifications,
-  });
-
   const errorMessage =
     formatError(errorResources) || (error && formatError(error));
 
@@ -118,7 +112,7 @@ function ResourceList() {
             onChange={handleSearchChange}
           />
         }
-        end={<CreateResourceButton />}
+        end={<CreateResourceButton resourcesLength={resources.length} />}
       />
       <HorizontalRule doubleSpacing />
 

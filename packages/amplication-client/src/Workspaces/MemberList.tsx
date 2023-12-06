@@ -43,7 +43,7 @@ function MemberList() {
 
   return (
     <PageContent className={CLASS_NAME} pageTitle={PAGE_TITLE}>
-      <FlexItem end={<InviteMember />}>
+      <FlexItem end={<InviteMember members={data?.workspaceMembers.length} />}>
         <Text textStyle={EnumTextStyle.H4}>Workspace Members</Text>
       </FlexItem>
 

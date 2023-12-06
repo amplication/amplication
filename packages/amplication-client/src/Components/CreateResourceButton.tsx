@@ -38,12 +38,17 @@ const ITEMS: CreateResourceButtonItemType[] = [
   },
 ];
 
-const CreateResourceButton = () => {
+const CreateResourceButton = ({
+  resourcesLength,
+}: {
+  resourcesLength: number;
+}) => {
   return (
     <div className={CLASS_NAME}>
       <FeatureControlContainer
         featureId={BillingFeature.Services}
         entitlementType={EntitlementType.Metered}
+        meteredFeatureLength={resourcesLength}
       >
         <SelectMenu title="Add Resource" buttonStyle={EnumButtonStyle.Primary}>
           <SelectMenuModal align="right">
