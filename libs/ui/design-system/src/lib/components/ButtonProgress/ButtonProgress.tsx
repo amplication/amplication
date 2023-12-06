@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 
 import { ButtonGroup as PrimerButtonGroup } from "@primer/react";
 import type { ButtonProps as PrimerButtonProps } from "@primer/react/deprecated";
@@ -83,14 +83,13 @@ export const ButtonProgress = (props: Props) => {
     progress = 100;
   }
 
-  let buttonProgressStyle: EnumButtonProgressStyle;
-  if (progress <= redColorThreshold) {
-    buttonProgressStyle = EnumButtonProgressStyle.Danger;
-  } else if (progress <= yellowColorThreshold) {
-    buttonProgressStyle = EnumButtonProgressStyle.Warning;
-  } else {
-    buttonProgressStyle = EnumButtonProgressStyle.Primary;
-  }
+  const buttonProgressStyle = useMemo(() => {
+    return progress <= redColorThreshold
+      ? EnumButtonProgressStyle.Danger
+      : progress <= yellowColorThreshold
+      ? EnumButtonProgressStyle.Warning
+      : EnumButtonProgressStyle.Primary;
+  }, [progress, redColorThreshold, yellowColorThreshold]);
 
   return (
     <PrimerButtonGroup
