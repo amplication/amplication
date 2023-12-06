@@ -57,7 +57,7 @@ export const FeatureControlContainer: FC<Props> = ({
 
   const isFeatureDisabled = useMemo(() => {
     if (!featureId) {
-      return null; // not disabled if no featureId is provided
+      return false; // not disabled if no featureId is provided
     }
 
     if (entitlementType === EntitlementType.Boolean) {
@@ -102,7 +102,7 @@ export const FeatureControlContainer: FC<Props> = ({
             >
               {React.cloneElement(child, omit(renderProps, "icon"))}
               {iconType && (
-                <FeatureIndicator featureName={featureId} infoIcon={iconType} />
+                <FeatureIndicator featureName={featureId} icon={iconType} />
               )}
             </div>
           ))}

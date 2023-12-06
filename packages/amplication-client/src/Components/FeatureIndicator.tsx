@@ -34,7 +34,7 @@ const CLASS_NAME = "amp-locked-feature-indicator";
 
 type Props = {
   featureName: string;
-  infoIcon?: IconType;
+  icon?: IconType;
   comingSoon?: boolean;
   placement?: TooltipProps["placement"];
   tooltipIcon?: string;
@@ -44,7 +44,7 @@ type Props = {
 
 export const FeatureIndicator = ({
   featureName,
-  infoIcon = IconType.Lock,
+  icon = IconType.Lock,
   comingSoon = false,
   tooltipIcon,
   placement = "top-start",
@@ -98,7 +98,7 @@ export const FeatureIndicator = ({
       }
     >
       <div className={`${CLASS_NAME}__wrapper`}>
-        <Icon icon={infoIcon} size={"xsmall"} color={EnumTextColor.Black20} />
+        <Icon icon={icon} size={"xsmall"} color={EnumTextColor.Black20} />
       </div>
     </WarningTooltip>
   );

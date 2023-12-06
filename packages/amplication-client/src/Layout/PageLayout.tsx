@@ -34,7 +34,7 @@ function PageLayout({ children, className, tabs }: Props) {
               disabled={disabled}
               featureTab={true}
               featureIndicator={
-                <FeatureIndicator featureName={tab.license} infoIcon={icon} />
+                <FeatureIndicator featureName={tab.license} icon={icon} />
               }
             />
           )}
