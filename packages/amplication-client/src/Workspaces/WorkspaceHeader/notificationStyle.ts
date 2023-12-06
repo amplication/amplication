@@ -27,7 +27,7 @@ const styles = {
     },
   },
   unseenBadge: {
-    root: { color: white, background: "#A787FF" },
+    root: { color: "#15192C", background: "#A787FF", fontWeight: "normal" },
   },
   popover: {
     root: { zIndex: -99 },
@@ -50,7 +50,8 @@ const styles = {
       "&:hover": { backgroundColor: primaryColor },
       cursor: "pointer",
       color: primaryTextColor,
-      padding: "16px",
+      padding: "8px",
+      height: "24px",
     },
     cog: { opacity: 1, width: "16px" },
     markAsRead: {
@@ -72,7 +73,7 @@ const styles = {
   },
   loader: {
     root: {
-      stroke: primaryTextColor,
+      stroke: "#A787FF",
     },
   },
   notifications: {
@@ -80,6 +81,7 @@ const styles = {
       ".nc-notifications-list-item": {
         backgroundColor: "#2C3249",
         border: dropdownBorderStyle,
+        margin: "10px 8px",
       },
       ".nc-notifications-list-item-unread": {
         backgroundColor: primaryColor,

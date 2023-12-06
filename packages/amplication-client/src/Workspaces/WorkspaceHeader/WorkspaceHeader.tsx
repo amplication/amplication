@@ -41,6 +41,7 @@ import {
 import { version } from "../../util/version";
 import GitHubBanner from "./GitHubBanner";
 import styles from "./notificationStyle";
+import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
 
 const CLASS_NAME = "workspace-header";
@@ -149,9 +150,14 @@ const WorkspaceHeader: React.FC = () => {
 
   const Footer = () => <div></div>;
 
-  const EmptyState = () => {
-    return <span> My custom empty state </span>;
-  };
+  const EmptyState = () => (
+    <div className="notification_container">
+      <img src={NoNotifications} alt="" />
+      <div className="notification_text">
+        <span>All caught up! </span>
+      </div>
+    </div>
+  );
 
   return (
     <>
@@ -269,6 +275,7 @@ const WorkspaceHeader: React.FC = () => {
                     onNotificationClick={onNotificationClick}
                     onActionClick={onBuildNotificationClick}
                     footer={() => <Footer />}
+                    emptyState={<EmptyState />}
                   >
                     {({ unseenCount }) => (
                       <NotificationBell unseenCount={unseenCount} />
