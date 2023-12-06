@@ -6,10 +6,13 @@ import { CodeGenerationLog, KAFKA_TOPICS } from "@amplication/schema-registry";
 import { BuildLoggerController } from "./build-logger.controller";
 import { CodeGenerationLogRequestDto } from "./dto/OnCodeGenerationLogRequest";
 import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
+import { EnumDomainName } from "../types";
 
 describe("Build Logger Controller", () => {
   let controller: BuildLoggerController;
   let buildJobsHandlerService: BuildJobsHandlerService;
+  const mockBuildJobsHandlerServiceExtractBuildId = jest.fn();
+  const mockBuildJobsHandlerServiceExtractDomain = jest.fn();
 
   const mockServiceEmitMessage = jest
     .fn()
@@ -18,9 +21,11 @@ describe("Build Logger Controller", () => {
         Promise.resolve()
     );
 
-  beforeEach(async () => {
+  beforeEach(() => {
     jest.clearAllMocks();
+  });
 
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       imports: [],
       controllers: [BuildLoggerController],
@@ -47,7 +52,8 @@ describe("Build Logger Controller", () => {
         {
           provide: BuildJobsHandlerService,
           useValue: {
-            extractBuildId: jest.fn(),
+            extractBuildId: mockBuildJobsHandlerServiceExtractBuildId,
+            extractDomain: mockBuildJobsHandlerServiceExtractDomain,
           },
         },
       ],
@@ -89,4 +95,42 @@ describe("Build Logger Controller", () => {
     expect(spyOnBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
     await expect(mockServiceEmitMessage()).resolves.not.toThrow();
   });
+
+  it.each([EnumDomainName.Server, EnumDomainName.AdminUI])(
+    "should emit `CodeGenerationLog.KafkaEvent` message with log message prefixed with job domain when exists",
+    async (domain) => {
+      const buildId = `buildID`;
+      const jobBuildId = `${buildId}-${domain}`;
+      mockBuildJobsHandlerServiceExtractBuildId.mockReturnValue(buildId);
+      mockBuildJobsHandlerServiceExtractDomain.mockReturnValue(domain);
+
+      const mockRequestLogDOT: CodeGenerationLogRequestDto = {
+        buildId: jobBuildId,
+        level: "info",
+        message: "test message",
+      };
+
+      const logEvent: CodeGenerationLog.KafkaEvent = {
+        key: { buildId },
+        value: mockRequestLogDOT,
+      };
+
+      await controller.onCodeGenerationLog(mockRequestLogDOT);
+
+      expect(mockServiceEmitMessage).toBeCalledWith(
+        KAFKA_TOPICS.DSG_LOG_TOPIC,
+        {
+          ...logEvent,
+          value: {
+            buildId,
+            level: mockRequestLogDOT.level,
+            message: `[${domain}] test message`,
+          },
+        }
+      );
+
+      expect(mockBuildJobsHandlerServiceExtractBuildId).toBeCalledTimes(1);
+      expect(mockBuildJobsHandlerServiceExtractDomain).toBeCalledTimes(1);
+    }
+  );
 });

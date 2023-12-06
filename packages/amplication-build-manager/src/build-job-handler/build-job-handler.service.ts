@@ -147,4 +147,15 @@ export class BuildJobsHandlerService {
 
     return jobBuildId.replace(regex, "");
   }
+
+  extractDomain(jobBuildId: string): string {
+    const regexPattern = `-(?:${EnumDomainName.Server}|${EnumDomainName.AdminUI})$`;
+    const regex = new RegExp(regexPattern);
+
+    if (!regex.test(jobBuildId)) {
+      return null;
+    }
+
+    return regex.exec(jobBuildId)[0].replace("-", "");
+  }
 }
