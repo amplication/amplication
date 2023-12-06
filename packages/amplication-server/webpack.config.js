@@ -9,5 +9,8 @@ module.exports = composePlugins(withNx(), (config) => {
     const rel = path.relative(process.cwd(), info.absoluteResourcePath);
     return `webpack:///./${rel}`;
   };
+  config.ignoreWarnings = [
+    /(Failed to parse source map from)\s.*\/generated-prisma-client\/runtime\/library.js.map\/.*/,
+  ];
   return config;
 });
