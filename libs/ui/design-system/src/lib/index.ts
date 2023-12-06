@@ -8,11 +8,6 @@ export {
   EnumIconPosition,
 } from "./components/Button/Button";
 
-export {
-  FeatureButton,
-  FeatureButtonProps,
-} from "./components/FeatureButton/FeatureButton";
-
 export type { Props as ButtonProps } from "./components/Button/Button";
 
 export {
