@@ -42,6 +42,7 @@ const Pie = (props: CircularProgressProps) => {
       }}
     >
       <CircularProgress
+        size="14px"
         {...props}
         variant="determinate"
         className=".amp-button-progress--background"
@@ -52,6 +53,7 @@ const Pie = (props: CircularProgressProps) => {
         }}
       />
       <CircularProgress
+        size="14px"
         {...props}
         variant="determinate"
         value={props.value}
@@ -115,7 +117,6 @@ export const ButtonProgress = (props: Props) => {
         >
           <Pie
             value={progress}
-            size="14px"
             className={classNames(
               `amp-button-progress-pie--${buttonProgressStyle}`
             )}
