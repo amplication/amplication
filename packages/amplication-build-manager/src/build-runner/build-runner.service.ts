@@ -55,28 +55,14 @@ export class BuildRunnerService {
         codeGeneratorVersion,
       });
 
-      const shouldSplitBuild =
-        this.codeGeneratorService.compareVersions(
-          codeGeneratorVersion,
-          this.minDsgVersionToSplitBuild
-        ) >= 0;
-
-      if (shouldSplitBuild) {
-        const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
-          dsgResourceData,
-          buildId
-        );
-        for (const [jobBuildId, data] of jobs) {
-          this.logger.debug("Running job for...", { jobBuildId });
-          await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
-        }
-      } else {
-        await this.runJob(
-          resourceId,
-          buildId,
-          dsgResourceData,
-          codeGeneratorVersion
-        );
+      const jobs = await this.buildJobsHandlerService.splitBuildsIntoJobs(
+        dsgResourceData,
+        buildId,
+        codeGeneratorVersion
+      );
+      for (const [jobBuildId, data] of jobs) {
+        this.logger.debug("Running job for...", { jobBuildId });
+        await this.runJob(resourceId, jobBuildId, data, codeGeneratorVersion);
       }
     } catch (error) {
       this.logger.error(error.message, error);
