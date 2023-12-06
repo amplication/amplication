@@ -19,6 +19,7 @@ model Plugin {
   npm            String?
   pluginId       String?  @unique
   taggedVersions Json?
+  categories     Json?    @default("[]")
   updatedAt      DateTime @updatedAt
   website        String?
 }

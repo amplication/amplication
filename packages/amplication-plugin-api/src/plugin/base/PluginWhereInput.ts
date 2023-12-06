@@ -117,6 +117,14 @@ class PluginWhereInput {
     nullable: true,
   })
   website?: StringNullableFilter;
+
+  @ApiProperty({
+    required: true,
+    type: JsonFilter,
+  })
+  @Type(() => JsonFilter)
+  @Field(() => JsonFilter)
+  categories?: JsonFilter;
 }
 
 export { PluginWhereInput as PluginWhereInput };

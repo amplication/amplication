@@ -33,7 +33,7 @@ export type Plugin = {
   icon: string;
   github: string;
   website: string;
-  category: string;
+  categories: string[];
   type: string;
   taggedVersions: { [tag: string]: string };
   versions: PluginVersion[];
@@ -190,17 +190,18 @@ const usePlugins = (resourceId: string, pluginInstallationId?: string) => {
   }, [pluginOrderError]);
 
   const sortedPluginInstallation = useMemo(() => {
-    if (!pluginOrder || !pluginInstallations) return undefined;
+    if (!pluginOrder || !pluginInstallations || !pluginsVersionData)
+      return undefined;
 
     const pluginOrderArr = [...(pluginOrder?.pluginOrder.order ?? [])];
-
+    console.log(pluginsVersionData, pluginInstallations);
     return pluginOrderArr.map((plugin: models.PluginOrderItem) => {
       return pluginInstallations?.PluginInstallations.find(
         (installationPlugin: models.PluginInstallation) =>
           installationPlugin.pluginId === plugin.pluginId
       );
     }) as unknown as models.PluginInstallation[];
-  }, [pluginInstallations, pluginOrder]);
+  }, [pluginInstallations, pluginOrder, pluginsVersionData]);
 
   const [updatePluginOrder, { error: UpdatePluginOrderError }] = useMutation<{
     setPluginOrder: models.PluginOrder;

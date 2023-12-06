@@ -129,6 +129,13 @@ class Plugin {
     nullable: true,
   })
   website!: string | null;
+
+  @ApiProperty({
+    required: true,
+  })
+  @IsJSONValue()
+  @Field(() => GraphQLJSON)
+  categories!: JsonValue;
 }
 
 export { Plugin as Plugin };
