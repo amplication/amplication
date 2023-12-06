@@ -1,4 +1,11 @@
-import { Children, FC, ReactElement, useContext, useMemo } from "react";
+import {
+  Children,
+  FC,
+  ReactElement,
+  useCallback,
+  useContext,
+  useMemo,
+} from "react";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../models";
 import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
@@ -23,6 +30,7 @@ export enum EntitlementType {
 export type Props = {
   featureId: BillingFeature;
   entitlementType: EntitlementType;
+  meteredFeatureLength?: number;
   disabled?: boolean;
   icon?: IconType | null;
   children?: React.ReactElement;
@@ -33,6 +41,7 @@ export type Props = {
 export const FeatureControlContainer: FC<Props> = ({
   featureId,
   entitlementType,
+  meteredFeatureLength,
   disabled,
   children,
   render,
@@ -55,25 +64,32 @@ export const FeatureControlContainer: FC<Props> = ({
     featureId,
   }).hasAccess;
 
-  const isFeatureDisabled = useMemo(() => {
+  const isFeatureDisabled = useCallback(() => {
     if (!featureId) {
-      return false; // not disabled if no featureId is provided
+      return false;
     }
 
     if (entitlementType === EntitlementType.Boolean) {
       return !hasBooleanAccess;
     }
 
-    const usageExceeded =
-      usageLimit && currentUsage && currentUsage >= usageLimit;
+    const usageExceeded = usageLimit && meteredFeatureLength >= usageLimit;
+
     return usageExceeded ?? !hasMeteredAccess;
-  }, [featureId, usageLimit, currentUsage, hasMeteredAccess, hasBooleanAccess]);
+  }, [
+    featureId,
+    usageLimit,
+    currentUsage,
+    hasMeteredAccess,
+    hasBooleanAccess,
+    meteredFeatureLength,
+  ]);
 
   const iconType = useMemo(() => {
     if (!featureId) {
-      return null; // no icon if no featureId is provided
+      return null;
     }
-    if (subscriptionPlan === EnumSubscriptionPlan.Free && isFeatureDisabled) {
+    if (subscriptionPlan === EnumSubscriptionPlan.Free && isFeatureDisabled()) {
       return IconType.Lock;
     }
     if (
@@ -85,7 +101,7 @@ export const FeatureControlContainer: FC<Props> = ({
   }, [featureId, subscriptionPlan, status, isFeatureDisabled]);
 
   const renderProps = {
-    disabled: disabled ?? isFeatureDisabled,
+    disabled: disabled ?? isFeatureDisabled(),
     icon: iconType,
     reversePosition,
   };
