@@ -33,9 +33,10 @@ enum EnumButtonProgressStyle {
 }
 
 const Pie = (props: CircularProgressProps) => {
+  const { className, value } = props;
   return (
     <Box
-      className={props.className}
+      className={className}
       sx={{
         position: "relative",
         display: "flex",
@@ -56,7 +57,7 @@ const Pie = (props: CircularProgressProps) => {
         size="14px"
         {...props}
         variant="determinate"
-        value={props.value}
+        value={value}
         thickness={3}
         sx={{
           color: "inherit",
