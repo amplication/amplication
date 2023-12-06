@@ -10,7 +10,7 @@ module.exports = composePlugins(withNx(), (config) => {
     return `webpack:///./${rel}`;
   };
   config.ignoreWarnings = [
-    /(Failed to parse source map from)\s.*\/generated-prisma-client\/runtime\/library.js.map\/.*/,
+    /(Failed to parse source map from)\s.*\/generated-prisma-client\/.*/,
   ];
   return config;
 });
