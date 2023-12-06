@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "@amplication/code-gen-types": "2.0.21",
-    "@amplication/code-gen-utils": "0.0.9",
+    "@amplication/code-gen-utils": "0.0.7",
     "@apollo/client": "^3.7.1",
     "@babel/parser": "7.23.0",
     "@babel/types": "7.23.0",
