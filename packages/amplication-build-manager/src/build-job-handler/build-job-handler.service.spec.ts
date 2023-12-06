@@ -601,4 +601,23 @@ describe("BuildJobsHandlerService", () => {
     expect(mockRedisSet).toHaveBeenCalledTimes(1);
     expect(mockRedisSet).toHaveBeenCalledWith(buildId, value);
   });
+
+  describe("extractDomain", () => {
+    it("should extract the domain name from the jobBuildId", () => {
+      const jobBuildId: JobBuildId<BuildId> = `${buildId}-${EnumDomainName.AdminUI}`;
+      expect(service.extractDomain(jobBuildId)).toBe(EnumDomainName.AdminUI);
+    });
+
+    it("should return null when the jobBuildId doesn't contain a domain name", () => {
+      const jobBuildId: JobBuildId<BuildId> = `${buildId}`;
+      expect(service.extractDomain(jobBuildId)).toBe(null);
+    });
+
+    it.each([null, undefined])(
+      "should return null when the jobBuildId is %s",
+      (jobBuildId) => {
+        expect(service.extractDomain(jobBuildId)).toBe(null);
+      }
+    );
+  });
 });
