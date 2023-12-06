@@ -1,12 +1,12 @@
 import { KafkaModule } from "@amplication/util/nestjs/kafka";
 import { Module } from "@nestjs/common";
 import { BuildLoggerController } from "./build-logger.controller";
-import { BuildJobsHandlerService } from "../build-job-handler/build-job-handler.service";
 import { RedisService } from "../redis/redis.service";
+import { BuildJobsHandlerModule } from "../build-job-handler/build-job-handler.module";
 
 @Module({
-  imports: [KafkaModule],
+  imports: [KafkaModule, BuildJobsHandlerModule],
   controllers: [BuildLoggerController],
-  providers: [BuildJobsHandlerService, RedisService],
+  providers: [RedisService],
 })
 export class BuildLoggerModule {}
