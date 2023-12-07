@@ -7,12 +7,12 @@ import { AmplicationError } from "../errors/AmplicationError";
 import {
   createRequestData,
   GqlResolverExceptionsFilter,
-  InternalServerError,
   PRISMA_CODE_UNIQUE_KEY_VIOLATION,
   RequestData,
-  UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
+import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
@@ -90,14 +90,17 @@ describe("GqlResolverExceptionsFilter", () => {
           target: EXAMPLE_FIELDS,
         },
       }),
-      new UniqueKeyException(EXAMPLE_FIELDS),
+      new GraphQLUniqueKeyException(EXAMPLE_FIELDS),
       null,
-      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
+      [
+        new GraphQLUniqueKeyException(EXAMPLE_FIELDS).message,
+        { requestData: null },
+      ],
     ],
     [
       "PrismaClientKnownRequestError unknown",
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
-      new InternalServerError(),
+      new GraphQLInternalServerError(),
       [EXAMPLE_PRISMA_UNKNOWN_ERROR.message, EXAMPLE_PRISMA_UNKNOWN_ERROR],
       null,
     ],
@@ -118,7 +121,7 @@ describe("GqlResolverExceptionsFilter", () => {
     [
       "Error",
       EXAMPLE_ERROR,
-      new InternalServerError(),
+      new GraphQLInternalServerError(),
       [EXAMPLE_ERROR.message, EXAMPLE_ERROR],
       null,
     ],
