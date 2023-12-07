@@ -91,7 +91,7 @@
     "apollo-upload-client": "^17.0.0",
     "assert": "^2.0.0",
     "ast-types": "^0.14.2",
-    "axios": "^0.27.2",
+    "axios": "^1.6.0",
     "bcrypt": "^5.0.1",
     "chalk": "^5.1.2",
     "class-transformer": "^0.5.1",
