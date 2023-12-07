@@ -132,9 +132,7 @@ describe("GqlResolverExceptionsFilter", () => {
     ],
     [
       "BillingLimitationError",
-      new BillingLimitationError(
-        "LimitationError: Allowed services per workspace: 1"
-      ),
+      new BillingLimitationError("Allowed services per workspace: 1"),
       new GraphQLBillingError(
         "LimitationError: Allowed services per workspace: 1",
         false
@@ -144,10 +142,7 @@ describe("GqlResolverExceptionsFilter", () => {
     ],
     [
       "BillingLimitationError bypassAllowed",
-      new BillingLimitationError(
-        "LimitationError: Allowed services per workspace: 1",
-        true
-      ),
+      new BillingLimitationError("Allowed services per workspace: 1", true),
       new GraphQLBillingError(
         "LimitationError: Allowed services per workspace: 1",
         true

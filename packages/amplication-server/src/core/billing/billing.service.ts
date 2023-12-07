@@ -314,7 +314,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new BillingLimitationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
 
         const servicesEntitlement = await this.getMeteredEntitlement(
@@ -334,7 +334,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new BillingLimitationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -362,7 +362,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new BillingLimitationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
       }
     }
