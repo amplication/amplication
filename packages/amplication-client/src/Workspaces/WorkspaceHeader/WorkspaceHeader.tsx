@@ -47,7 +47,7 @@ import GitHubBanner from "./GitHubBanner";
 import styles from "./notificationStyle";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
-import { BillingFeature } from "@amplication/util-billing-types";
+import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
