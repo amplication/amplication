@@ -71,45 +71,42 @@ const CodeGeneratorVersionForm: React.FC<Props> = ({
           <Form>
             <FormikAutoSave debounceMS={200} />
             <div className={CLASS_NAME}>
-              <div>
+              <FeatureControlContainer
+                featureId={BillingFeature.CodeGeneratorVersion}
+                entitlementType={EntitlementType.Boolean}
+              >
+                <ToggleField
+                  label="I want to select a specific version of the code generator"
+                  name="useSpecificVersion"
+                />
+              </FeatureControlContainer>
+
+              {formik.values.useSpecificVersion && (
                 <>
-                  <FeatureControlContainer
-                    featureId={BillingFeature.CodeGeneratorVersion}
-                    entitlementType={EntitlementType.Boolean}
-                  >
-                    <ToggleField
-                      label="I want to select a specific version of the code generator"
-                      name="useSpecificVersion"
-                    />
-                  </FeatureControlContainer>
+                  <SelectField
+                    disabled={
+                      !canChooseCodeGeneratorVersion &&
+                      !formik.values.useSpecificVersion
+                    }
+                    label={"Select a version"}
+                    name={"version"}
+                    options={codeGeneratorVersionList.map((version) => ({
+                      label: version,
+                      value: version,
+                    }))}
+                  />
+                  <ToggleField
+                    disabled={
+                      !canChooseCodeGeneratorVersion ||
+                      !formik.values.useSpecificVersion ||
+                      (formik.values.useSpecificVersion &&
+                        !formik.values.version)
+                    }
+                    label="Automatically use new minor version when available"
+                    name={"autoUseLatestMinorVersion"}
+                  />
                 </>
-                {formik.values.useSpecificVersion && (
-                  <div>
-                    <SelectField
-                      disabled={
-                        !canChooseCodeGeneratorVersion &&
-                        !formik.values.useSpecificVersion
-                      }
-                      label={"Select a version"}
-                      name={"version"}
-                      options={codeGeneratorVersionList.map((version) => ({
-                        label: version,
-                        value: version,
-                      }))}
-                    />
-                    <ToggleField
-                      disabled={
-                        !canChooseCodeGeneratorVersion ||
-                        !formik.values.useSpecificVersion ||
-                        (formik.values.useSpecificVersion &&
-                          !formik.values.version)
-                      }
-                      label="Automatically use new minor version when available"
-                      name={"autoUseLatestMinorVersion"}
-                    />
-                  </div>
-                )}
-              </div>
+              )}
             </div>
           </Form>
         );
