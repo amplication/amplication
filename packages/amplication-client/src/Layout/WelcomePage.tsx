@@ -97,15 +97,9 @@ function WelcomePage({
         <Panel className={`${CLASS_NAME}__panel`} shadow>
           {children}
         </Panel>
-        <div className={`${CLASS_NAME}__form__open-source-message`}>
-          {openSourceMessage}
-          <a
-            href="https://amplication.com/discord"
-            target="discord"
-            className="discord-button"
-          >
-            <DiscordButton />
-          </a>
+        <div className={`${CLASS_NAME}__trial-message`}>
+          Start a free <strong>14-days trial</strong> of our{" "}
+          <strong>Enterprise plan!</strong>
         </div>
       </div>
     </div>
