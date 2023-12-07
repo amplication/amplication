@@ -66,8 +66,12 @@ export const useUpgradeButtonData = (
         const trialDaysLeft = Math.round(
           Math.abs((subscription.trialEndDate.getTime() - Date.now()) / ONE_DAY)
         );
-        const trialLeftProgress =
-          (100 * trialDaysLeft) / subscription.plan.defaultTrialConfig.duration;
+
+        const trialLenghtInDays = Math.max(
+          subscription.plan.defaultTrialConfig.duration,
+          trialDaysLeft
+        );
+        const trialLeftProgress = (100 * trialDaysLeft) / trialLenghtInDays;
 
         setUpgradeButtonData({
           trialDaysLeft,
