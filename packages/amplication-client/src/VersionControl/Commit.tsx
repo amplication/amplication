@@ -52,16 +52,6 @@ const formatLimitationError = (errorMessage: string) => {
   return limitationError;
 };
 
-const isLimitationError = (error: ApolloError): boolean => {
-  return (
-    error?.graphQLErrors?.some(
-      (gqlError) =>
-        gqlError.extensions.code ===
-        GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
-    ) ?? false
-  );
-};
-
 const Commit = ({ projectId, noChanges }: Props) => {
   const history = useHistory();
   const { trackEvent } = useTracking();
@@ -86,7 +76,13 @@ const Commit = ({ projectId, noChanges }: Props) => {
       setCommitRunning(false);
       setPendingChangesError(true);
 
-      setOpenLimitationDialog(isLimitationError(error));
+      setOpenLimitationDialog(
+        error?.graphQLErrors?.some(
+          (gqlError) =>
+            gqlError.extensions.code ===
+            GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
+        ) ?? false
+      );
     },
     onCompleted: (response) => {
       setCommitRunning(false);
@@ -102,10 +98,17 @@ const Commit = ({ projectId, noChanges }: Props) => {
     },
   });
 
+  const isLimitationError =
+    error?.graphQLErrors?.some(
+      (gqlError) =>
+        gqlError.extensions.code ===
+        GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
+    ) ?? false;
+
   const errorMessage = formatError(error);
 
   const limitationErrorMessage =
-    isLimitationError(error) && formatLimitationError(errorMessage);
+    isLimitationError && formatLimitationError(errorMessage);
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
