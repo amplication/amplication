@@ -1,7 +1,7 @@
 import { Dialog, EnumButtonStyle } from "@amplication/ui/design-system";
 import { useCallback, useContext, useState } from "react";
 import NewProject from "./NewProject";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
   FeatureControlContainer,

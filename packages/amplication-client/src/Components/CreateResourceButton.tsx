@@ -8,7 +8,7 @@ import React from "react";
 import * as models from "../models";
 import "./CreateResourceButton.scss";
 import CreateResourceButtonItem from "./CreateResourceButtonItem";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
   FeatureControlContainer,

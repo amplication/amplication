@@ -7,7 +7,7 @@ import "./GitProviderConnection.scss";
 
 import { FeatureIndicator } from "../../../Components/FeatureIndicator";
 import { PROVIDERS_DISPLAY_NAME } from "../../constants";
-import { BillingFeature } from "../../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
   FeatureControlContainer,

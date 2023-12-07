@@ -13,7 +13,7 @@ import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { GET_WORKSPACE_MEMBERS } from "./MemberList";
 import "./InviteMember.scss";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import {
   EntitlementType,
   FeatureControlContainer,

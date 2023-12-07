@@ -9,7 +9,7 @@ import {
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../models";
 import { AppContext } from "../context/appContext";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import React from "react";
 import { FeatureIndicator } from "./FeatureIndicator";
 import "./FeatureControlContainer.scss";
