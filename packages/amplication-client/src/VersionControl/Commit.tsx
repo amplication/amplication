@@ -17,8 +17,7 @@ import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
-
-const LIMITATION_ERROR_PREFIX = "LimitationError: ";
+import { GraphQLBillingErrorCode } from "@amplication/util-billing-types";
 
 type TCommit = {
   message: string;
@@ -47,8 +46,20 @@ type RouteMatchProps = {
 };
 
 const formatLimitationError = (errorMessage: string) => {
+  const LIMITATION_ERROR_PREFIX = "LimitationError: ";
+
   const limitationError = errorMessage.split(LIMITATION_ERROR_PREFIX)[1];
   return limitationError;
+};
+
+const isLimitationError = (error: ApolloError): boolean => {
+  return (
+    error?.graphQLErrors?.some(
+      (gqlError) =>
+        gqlError.extensions.code ===
+        GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
+    ) ?? false
+  );
 };
 
 const Commit = ({ projectId, noChanges }: Props) => {
@@ -74,10 +85,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
     onError: (error: ApolloError) => {
       setCommitRunning(false);
       setPendingChangesError(true);
-      const errorMessage = formatError(error);
-      const isLimitationError =
-        errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
-      setOpenLimitationDialog(isLimitationError);
+
+      setOpenLimitationDialog(isLimitationError(error));
     },
     onCompleted: (response) => {
       setCommitRunning(false);
@@ -94,10 +103,9 @@ const Commit = ({ projectId, noChanges }: Props) => {
   });
 
   const errorMessage = formatError(error);
-  const isLimitationError =
-    errorMessage && errorMessage.includes(LIMITATION_ERROR_PREFIX);
+
   const limitationErrorMessage =
-    isLimitationError && formatLimitationError(errorMessage);
+    isLimitationError(error) && formatLimitationError(errorMessage);
 
   const handleSubmit = useCallback(
     (data, { resetForm }) => {
