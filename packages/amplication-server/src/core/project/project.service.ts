@@ -4,7 +4,7 @@ import { FindOneArgs } from "../../dto";
 import { Commit, Project, Resource, User } from "../../models";
 import { prepareDeletedItemName } from "../../util/softDelete";
 import { ResourceService, EntityService } from "../";
-import { BlockService } from "../block/block.service";
+import { BlockPendingChange, BlockService } from "../block/block.service";
 import { BuildService } from "../build/build.service";
 import {
   CreateCommitArgs,
@@ -19,7 +19,7 @@ import { isEmpty } from "lodash";
 import { UpdateProjectArgs } from "./dto/UpdateProjectArgs";
 import { BillingService } from "../billing/billing.service";
 import { FeatureUsageReport } from "./FeatureUsageReport";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { GitProviderService } from "../git/git.provider.service";
 
 export const INVALID_PROJECT_ID = "Invalid projectId";
@@ -28,6 +28,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import dockerNames from "docker-names";
+import { EntityPendingChange } from "../entity/entity.service";
 
 @Injectable()
 export class ProjectService {
@@ -264,7 +265,7 @@ export class ProjectService {
     const project = await this.findFirst({ where: { id: projectId } });
 
     //check if billing enabled first to skip calculation
-    if (this.billingService.isBillingEnabled) {
+    if (this.billingService.isBillingEnabled && !skipBuild) {
       const usageReport = await this.calculateMeteredUsage(project.workspaceId);
       await this.billingService.resetUsage(project.workspaceId, usageReport);
 
@@ -290,10 +291,20 @@ export class ProjectService {
       throw new Error(`Invalid userId or resourceId`);
     }
 
-    const [changedEntities, changedBlocks] = await Promise.all([
-      this.entityService.getChangedEntities(projectId, userId),
-      this.blockService.getChangedBlocks(projectId, userId),
-    ]);
+    let changedEntities: EntityPendingChange[] = [];
+    let changedBlocks: BlockPendingChange[] = [];
+    if (skipBuild) {
+      changedBlocks =
+        await this.blockService.getChangedBlocksForCustomActionsMigration(
+          projectId,
+          userId
+        );
+    } else {
+      [changedEntities, changedBlocks] = await Promise.all([
+        this.entityService.getChangedEntities(projectId, userId),
+        this.blockService.getChangedBlocks(projectId, userId),
+      ]);
+    }
 
     /**@todo: consider discarding locked objects that have no actual changes */
 

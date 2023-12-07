@@ -24,7 +24,6 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { BillingService } from "../billing/billing.service";
-import { BillingPlan } from "../billing/billing.types";
 import { MailService } from "../mail/mail.service";
 import { ProjectService } from "../project/project.service";
 import { EnumSubscriptionPlan } from "../subscription/dto";
@@ -43,6 +42,7 @@ import {
 import { ModuleService } from "../module/module.service";
 import { ModuleActionService } from "../moduleAction/moduleAction.service";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingPlan } from "@amplication/util-billing-types";
 
 const INVITATION_EXPIRATION_DAYS = 7;
 
@@ -576,25 +576,31 @@ export class WorkspaceService {
         );
 
         if (hasChanges) {
-          await this.projectService.commit(
-            {
-              data: {
-                message: "this is automatic commit for update custom actions",
-                project: {
-                  connect: {
-                    id: project.id,
+          try {
+            await this.projectService.commit(
+              {
+                data: {
+                  message: "this is automatic commit for update custom actions",
+                  project: {
+                    connect: {
+                      id: project.id,
+                    },
                   },
-                },
-                user: {
-                  connect: {
-                    id: workspaceUser.id,
+                  user: {
+                    connect: {
+                      id: workspaceUser.id,
+                    },
                   },
                 },
               },
-            },
-            workspaceUser,
-            true // skip build
-          );
+              workspaceUser,
+              true // skip build
+            );
+          } catch (error) {
+            this.logger.error(
+              `Failed to run commit action, error: ${error} projectId: ${project.id}`
+            );
+          }
         }
       }
       const date = new Date();
@@ -619,7 +625,11 @@ export class WorkspaceService {
                 deletedAt: null,
                 archived: { not: true },
                 resourceType: EnumResourceType.Service,
-                blocks: { none: { blockType: EnumBlockType.Module } },
+                blocks: {
+                  none: {
+                    blockType: EnumBlockType.Module,
+                  },
+                },
                 entities: { some: { deletedAt: null } },
               },
             },
@@ -662,25 +672,31 @@ export class WorkspaceService {
       );
 
       if (hasChanges) {
-        await this.projectService.commit(
-          {
-            data: {
-              message: "this is automatic commit for update custom actions",
-              project: {
-                connect: {
-                  id: project.id,
+        try {
+          await this.projectService.commit(
+            {
+              data: {
+                message: "this is automatic commit for update custom actions",
+                project: {
+                  connect: {
+                    id: project.id,
+                  },
                 },
-              },
-              user: {
-                connect: {
-                  id: currentUser.id,
+                user: {
+                  connect: {
+                    id: currentUser.id,
+                  },
                 },
               },
             },
-          },
-          currentUser,
-          true // skip build
-        );
+            currentUser,
+            true // skip build
+          );
+        } catch (error) {
+          this.logger.error(
+            `Failed to run commit action, error: ${error} projectId: ${project.id}`
+          );
+        }
       }
     }
   }
@@ -756,7 +772,7 @@ export class WorkspaceService {
             resourceId: resource.id,
           },
         });
-        if (resourceModule) return;
+        if (resourceModule) return hasChanges;
         hasChanges = true;
 
         for (const entity of resource.entities) {

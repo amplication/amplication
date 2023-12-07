@@ -13,7 +13,7 @@ import {
   FlexItem,
   Text,
 } from "@amplication/ui/design-system";
-import { BillingFeature } from "../../../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../../../util/formikAutoSave";
 import {
   EntitlementType,

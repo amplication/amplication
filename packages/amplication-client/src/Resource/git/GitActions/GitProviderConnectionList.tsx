@@ -9,7 +9,7 @@ import { useCallback } from "react";
 import { AnalyticsEventNames } from "../../../util/analytics-events.types";
 import { gql, useMutation } from "@apollo/client";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "../../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 type DType = {
   getGitResourceInstallationUrl: AuthorizeResourceWithGitResult;

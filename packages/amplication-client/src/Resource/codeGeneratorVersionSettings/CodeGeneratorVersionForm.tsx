@@ -6,7 +6,7 @@ import {
 } from "@amplication/ui/design-system";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Formik } from "formik";
-import { BillingFeature } from "../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import FormikAutoSave from "../../util/formikAutoSave";
 import { validate } from "../../util/formikValidateJsonSchema";
 import "./CodeGeneratorVersionForm.scss";

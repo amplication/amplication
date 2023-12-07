@@ -148,7 +148,7 @@ jobs:
                   "exhaustive_rules": "true",
                   "rules": [
                     {
-                      "pattern": "(app|lib):(?!data-service-generator)",
+                      "pattern": "(app|lib):(?!data-service-generator|local-data-service-generator-controller)",
                       "on_property": "labels",
                       "flags": "gu"
                     }

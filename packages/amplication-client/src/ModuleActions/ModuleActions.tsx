@@ -106,7 +106,7 @@ const ModuleActions = React.memo(({ match }: Props) => {
               subTitle="Actions are used to perform operations on resources, with or without API endpoints."
             />
           }
-          end={<NewModuleAction resourceId={resourceId} moduleId={moduleId} />}
+          // end={<NewModuleAction resourceId={resourceId} moduleId={moduleId} />} todo: return in phase 2
         ></FlexItem>
 
         {generateGraphQlAndRestApi && (
