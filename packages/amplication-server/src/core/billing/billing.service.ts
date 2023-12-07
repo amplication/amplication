@@ -12,7 +12,6 @@ import { Env } from "../../env";
 import { EnumSubscriptionPlan } from "../subscription/dto";
 import { EnumSubscriptionStatus } from "../subscription/dto/EnumSubscriptionStatus";
 import { Subscription } from "../subscription/dto/Subscription";
-import { BillingFeature, BillingPlan } from "./billing.types";
 import {
   EnumEventType,
   SegmentAnalyticsService,
@@ -22,6 +21,7 @@ import { ValidationError } from "../../errors/ValidationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 import { Project, User } from "../../models";
+import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
 
 @Injectable()
 export class BillingService {

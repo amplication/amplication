@@ -1,7 +1,7 @@
 {
   "root": true,
   "ignorePatterns": ["**/*"],
-  "plugins": ["@nx"],
+  "plugins": ["perfectionist", "@nx"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
@@ -12,7 +12,6 @@
           {
             "enforceBuildableLibDependency": true,
             "allow": ["@amplication/ui/design-system"], //exclude @amplication/ui/design-system because we use a mix of Static imports and lazy loading
-
             "depConstraints": [
               {
                 "sourceTag": "*",

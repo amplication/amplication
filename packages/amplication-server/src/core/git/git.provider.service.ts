@@ -50,7 +50,7 @@ import {
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { GitRepository, User } from "../../models";
 import { BillingService } from "../billing/billing.service";
-import { BillingFeature } from "../billing/billing.types";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { ProjectService } from "../project/project.service";
 import { Traceable } from "@amplication/opentelemetry-nestjs";
 import { UpdateGitRepositoryArgs } from "./dto/args/UpdateGitRepositoryArgs";

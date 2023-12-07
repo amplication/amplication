@@ -32,7 +32,7 @@ import usePlugins from "../Plugins/hooks/usePlugins";
 import { GET_CURRENT_WORKSPACE } from "../Workspaces/queries/workspaceQueries";
 import { AppContext } from "../context/appContext";
 import { AppRouteProps } from "../routes/routesUtil";
-import { BillingFeature } from "../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { pluralize } from "../util/pluralize";
 import EntitiesERD from "./EntityERD/EntitiesERD";
 import "./EntityList.scss";

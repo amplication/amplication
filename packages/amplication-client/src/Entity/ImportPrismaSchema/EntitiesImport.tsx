@@ -15,7 +15,7 @@ import { formatError } from "../../util/error";
 import "./EntitiesImport.scss";
 import { CREATE_ENTITIES_FROM_SCHEMA } from "./queries";
 import useUserActionWatchStatus from "./useUserActionWatchStatus";
-import { BillingFeature } from "../../util/BillingFeature";
+import { BillingFeature } from "@amplication/util-billing-types";
 import { useStiggContext } from "@stigg/react-sdk";
 import { Button } from "../../Components/Button";
 

@@ -4,7 +4,7 @@ import { BillingService } from "./billing.service";
 import { SegmentAnalyticsService } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ConfigService } from "@nestjs/config";
 import { Env } from "../../env";
-import { BillingPlan, BillingFeature } from "./billing.types";
+import { BillingPlan, BillingFeature } from "@amplication/util-billing-types";
 import Stigg, {
   BooleanEntitlement,
   FullSubscription,

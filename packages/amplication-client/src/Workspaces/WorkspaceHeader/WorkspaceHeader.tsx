@@ -31,7 +31,6 @@ import {
   NX_REACT_APP_AUTH_LOGOUT_URI,
   NX_REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
-import { BillingFeature } from "../../util/BillingFeature";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
@@ -43,6 +42,7 @@ import GitHubBanner from "./GitHubBanner";
 import styles from "./notificationStyle";
 import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const CLASS_NAME = "workspace-header";
 export { CLASS_NAME as WORK_SPACE_HEADER_CLASS_NAME };
