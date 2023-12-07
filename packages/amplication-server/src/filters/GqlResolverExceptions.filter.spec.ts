@@ -46,6 +46,10 @@ const EXAMPLE_USER = {
 describe("GqlResolverExceptionsFilter", () => {
   let filter: GqlResolverExceptionsFilter;
   beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -71,9 +75,8 @@ describe("GqlResolverExceptionsFilter", () => {
     );
     // Override prepareRequestData to avoid passing a valid ArgumentHost
     filter.prepareRequestData = prepareRequestDataMock;
-
-    jest.clearAllMocks();
   });
+
   const cases: Array<
     [
       string,
