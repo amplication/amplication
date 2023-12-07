@@ -12,9 +12,11 @@ import { Prisma } from "../prisma";
 import { ApolloError } from "apollo-server-express";
 import { Request } from "express";
 import { AmplicationError } from "../errors/AmplicationError";
+import { BillingLimitationError } from "../errors/BillingLimitationError";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
 import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
 import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
+import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
 
 export type RequestData = {
   query: string;
@@ -59,6 +61,12 @@ export class GqlResolverExceptionsFilter implements GqlExceptionFilter {
       const fields = (exception.meta as { target: string[] }).target;
       clientError = new GraphQLUniqueKeyException(fields);
       this.logger.info(clientError.message, { requestData });
+    } else if (exception instanceof BillingLimitationError) {
+      clientError = new GraphQLBillingError(
+        exception.message,
+        exception.bypassAllowed
+      );
+      this.logger.info(clientError.message, { exception });
     } else if (exception instanceof AmplicationError) {
       // Convert AmplicationError to ApolloError and pass the error to the client
       clientError = new ApolloError(exception.message);

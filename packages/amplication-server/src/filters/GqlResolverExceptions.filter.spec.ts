@@ -11,6 +11,8 @@ import {
   RequestData,
 } from "./GqlResolverExceptions.filter";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingLimitationError } from "../errors/BillingLimitationError";
+import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
 import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
 import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
 
@@ -123,6 +125,31 @@ describe("GqlResolverExceptionsFilter", () => {
       EXAMPLE_ERROR,
       new GraphQLInternalServerError(),
       [EXAMPLE_ERROR.message, EXAMPLE_ERROR],
+      null,
+    ],
+    [
+      "BillingLimitationError",
+      new BillingLimitationError(
+        "LimitationError: Allowed services per workspace: 1"
+      ),
+      new GraphQLBillingError(
+        "LimitationError: Allowed services per workspace: 1",
+        false
+      ),
+      null,
+      null,
+    ],
+    [
+      "BillingLimitationError bypassAllowed",
+      new BillingLimitationError(
+        "LimitationError: Allowed services per workspace: 1",
+        true
+      ),
+      new GraphQLBillingError(
+        "LimitationError: Allowed services per workspace: 1",
+        true
+      ),
+      null,
       null,
     ],
   ];
