@@ -18,6 +18,14 @@ export class BuildLoggerController {
     const buildId = this.buildJobsHandlerService.extractBuildId(
       logEntry.buildId
     );
+
+    if (buildId !== logEntry.buildId) {
+      const domain = this.buildJobsHandlerService.extractDomain(
+        logEntry.buildId
+      );
+      logEntry.message = `[${domain}] ${logEntry.message}`;
+    }
+
     const logEvent: CodeGenerationLog.KafkaEvent = {
       key: { buildId },
       value: { ...logEntry, buildId },

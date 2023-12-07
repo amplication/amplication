@@ -36,8 +36,6 @@ import {
   NX_REACT_APP_AUTH_LOGOUT_URI,
   NX_REACT_APP_NOVU_IDENTIFIER,
 } from "../../env";
-import { BillingPlan } from "../../util/BillingPlan";
-import { BillingFeature } from "../../util/BillingFeature";
 import { useTracking } from "../../util/analytics";
 import { AnalyticsEventNames } from "../../util/analytics-events.types";
 import {
@@ -46,7 +44,10 @@ import {
 } from "../../util/constants";
 import { version } from "../../util/version";
 import GitHubBanner from "./GitHubBanner";
+import styles from "./notificationStyle";
+import NoNotifications from "../../assets/images/no-notification.svg";
 import "./WorkspaceHeader.scss";
+import { BillingFeature } from "@amplication/util-billing-types";
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
@@ -221,6 +222,15 @@ const WorkspaceHeader: React.FC = () => {
 
   const Footer = () => <div></div>;
 
+  const EmptyState = () => (
+    <div className="notification_container">
+      <img src={NoNotifications} alt="" />
+      <div className="notification_text">
+        <span>All caught up! </span>
+      </div>
+    </div>
+  );
+
   return (
     <>
       <Dialog
@@ -342,12 +352,16 @@ const WorkspaceHeader: React.FC = () => {
                 <NovuProvider
                   subscriberId={currentWorkspace.externalId}
                   applicationIdentifier={NX_REACT_APP_NOVU_IDENTIFIER}
+                  styles={styles}
                 >
                   <PopoverNotificationCenter
                     colorScheme={"dark"}
+                    position="left-start"
+                    offset={0}
                     onNotificationClick={onNotificationClick}
                     onActionClick={onBuildNotificationClick}
                     footer={() => <Footer />}
+                    emptyState={<EmptyState />}
                   >
                     {({ unseenCount }) => (
                       <NotificationBell unseenCount={unseenCount} />

@@ -75,13 +75,13 @@ const ModuleList: React.FC<Props> = ({ resourceId }) => {
 
         <FlexItem.FlexEnd>
           <FlexItem direction={EnumFlexDirection.Row}>
-            <Button
+            {/* <Button
               buttonStyle={EnumButtonStyle.Primary}
               onClick={handleNewModuleClick}
               disabled={true}
             >
               Add Module
-            </Button>
+            </Button> */}
           </FlexItem>
         </FlexItem.FlexEnd>
       </FlexItem>
