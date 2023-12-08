@@ -1,5 +1,4 @@
 import { TabItem } from "@amplication/ui/design-system";
-import { gql } from "@apollo/client";
 import { useContext, useMemo } from "react";
 import { match } from "react-router-dom";
 import PageLayout from "../Layout/PageLayout";
@@ -15,7 +14,6 @@ import {
   setResourceUrlLink,
 } from "./resourceMenuUtils";
 import { useStiggContext } from "@stigg/react-sdk";
-import { BillingFeature } from "@amplication/util-billing-types";
 
 type Props = AppRouteProps & {
   match: match<{
@@ -94,18 +92,3 @@ const ResourceHome = ({
 };
 
 export default ResourceHome;
-
-export const GET_RESOURCE = gql`
-  query getResource($id: String!) {
-    resource(where: { id: $id }) {
-      id
-      createdAt
-      updatedAt
-      name
-      description
-      githubLastSync
-      githubLastMessage
-      resourceType
-    }
-  }
-`;

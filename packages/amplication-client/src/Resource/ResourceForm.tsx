@@ -19,8 +19,10 @@ import {
   validationErrorMessages,
 } from "../util/formikValidateJsonSchema";
 import { GET_PROJECTS } from "../Workspaces/queries/projectQueries";
-import { UPDATE_RESOURCE } from "../Workspaces/queries/resourcesQueries";
-import { GET_RESOURCE } from "./ResourceHome";
+import {
+  GET_RESOURCE,
+  UPDATE_RESOURCE,
+} from "../Workspaces/queries/resourcesQueries";
 
 type Props = {
   resourceId: string;
