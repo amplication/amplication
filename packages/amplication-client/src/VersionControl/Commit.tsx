@@ -11,13 +11,13 @@ import { useHistory, useRouteMatch } from "react-router-dom";
 import { Button, EnumButtonStyle } from "../Components/Button";
 import { AppContext } from "../context/appContext";
 import { type Commit as CommitType } from "../models";
+import { GraphQLErrorCode } from "@amplication/graphql-error-codes";
 import { useTracking } from "../util/analytics";
 import { AnalyticsEventNames } from "../util/analytics-events.types";
 import { formatError } from "../util/error";
 import { CROSS_OS_CTRL_ENTER } from "../util/hotkeys";
 import { commitPath } from "../util/paths";
 import "./Commit.scss";
-import { GraphQLBillingErrorCode } from "@amplication/util-billing-types";
 
 type TCommit = {
   message: string;
@@ -80,7 +80,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
         error?.graphQLErrors?.some(
           (gqlError) =>
             gqlError.extensions.code ===
-            GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
+            GraphQLErrorCode.BILLING_LIMITATION_ERROR
         ) ?? false
       );
     },
@@ -101,8 +101,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
   const isLimitationError =
     error?.graphQLErrors?.some(
       (gqlError) =>
-        gqlError.extensions.code ===
-        GraphQLBillingErrorCode.BILLING_LIMITATION_ERROR
+        gqlError.extensions.code === GraphQLErrorCode.BILLING_LIMITATION_ERROR
     ) ?? false;
 
   const errorMessage = formatError(error);
