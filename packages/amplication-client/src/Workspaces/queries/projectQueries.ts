@@ -21,6 +21,7 @@ export const GET_PROJECTS = gql`
       description
       useDemoRepo
       demoRepoName
+      isUnderLimitation
       resources {
         id
         name

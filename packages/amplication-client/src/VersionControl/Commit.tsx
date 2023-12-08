@@ -65,6 +65,7 @@ const Commit = ({ projectId, noChanges }: Props) => {
     commitUtils,
   } = useContext(AppContext);
 
+  const isProjectUnderLimitation = currentProject?.isUnderLimitation;
   const redirectToPurchase = () => {
     const path = `/${match.params.workspace}/purchase`;
     history.push(path, { from: { pathname: history.location.pathname } });
@@ -147,7 +148,8 @@ const Commit = ({ projectId, noChanges }: Props) => {
                 eventData={{
                   eventName: AnalyticsEventNames.CommitClicked,
                 }}
-                disabled={loading}
+                disabled={loading || isProjectUnderLimitation}
+                icon={isProjectUnderLimitation ? "locked" : null}
               >
                 {noChanges ? "Rebuild" : "Commit changes & build "}
               </Button>

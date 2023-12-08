@@ -16,6 +16,7 @@ export const GET_RESOURCES = gql`
       gitRepositoryOverride
       codeGeneratorStrategy
       codeGeneratorVersion
+      isUnderLimitation
       gitRepository {
         id
         name
