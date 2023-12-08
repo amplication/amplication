@@ -30,9 +30,11 @@ export async function createDotEnvModuleInternal({
   const context = DsgContext.getInstance;
   const { appInfo, serverDirectories } = context;
   const envVariablesWithoutDuplicateKeys = removeDuplicateKeys(envVariables);
-  const formattedAdditionalVariables = convertToKeyValueSting(
+  const envVariablesSorted = sortAlphabetically(
     envVariablesWithoutDuplicateKeys
   );
+  const formattedAdditionalVariables =
+    convertToKeyValueSting(envVariablesSorted);
   const codeWithAdditionalVariables = appendAdditionalVariables(
     "",
     formattedAdditionalVariables
@@ -74,4 +76,22 @@ function removeDuplicateKeys(arr: VariableDictionary): VariableDictionary {
     variablesMap.set(currentKey, currentValue);
   });
   return Array.from(variablesMap, ([key, value]) => ({ [key]: value }));
+}
+
+function sortAlphabetically(arr: VariableDictionary): VariableDictionary {
+  const dict = {};
+  arr.forEach((item) => {
+    const [currentKey] = Object.keys(item);
+    const [currentValue] = Object.values(item);
+    dict[currentKey] = currentValue;
+  });
+
+  const sorted = Object.keys(dict)
+    .sort()
+    .reduce((arr, key) => {
+      arr.push({ [key]: dict[key] });
+      return arr;
+    }, []);
+
+  return sorted;
 }
