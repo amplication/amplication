@@ -804,13 +804,13 @@ export class ResourceService {
 
     const resourcesOrderedByCreationDate = await this.prisma.resource.findMany({
       where: {
+        deletedAt: null,
+        archived: { not: true },
+        resourceType: EnumResourceType.Service,
         project: {
           workspaceId,
           deletedAt: null,
         },
-        deletedAt: null,
-        archived: { not: true },
-        resourceType: EnumResourceType.Service,
       },
       orderBy: {
         createdAt: "asc",
