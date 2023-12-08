@@ -13,8 +13,8 @@ import Stigg, {
   SubscriptionStatus,
 } from "@stigg/node-server-sdk";
 import { Project, User } from "../../models";
-import { ValidationError } from "apollo-server-express";
 import { EnumSubscriptionPlan, EnumSubscriptionStatus } from "../../prisma";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 
 jest.mock("@stigg/node-server-sdk");
 Stigg.initialize = jest.fn().mockReturnValue(Stigg.prototype);
@@ -224,7 +224,7 @@ describe("BillingService", () => {
         projects
       )
     ).rejects.toThrow(
-      new ValidationError("LimitationError: Allowed projects per workspace: 1")
+      new BillingLimitationError("Allowed projects per workspace: 1")
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
@@ -293,7 +293,7 @@ describe("BillingService", () => {
         projects
       )
     ).rejects.toThrow(
-      new ValidationError("LimitationError: Allowed services per workspace: 3")
+      new BillingLimitationError("Allowed services per workspace: 3")
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
@@ -401,7 +401,7 @@ describe("BillingService", () => {
         projects
       )
     ).rejects.toThrow(
-      new ValidationError("LimitationError: Allowed entities per service: 5")
+      new BillingLimitationError("Allowed entities per service: 5")
     );
 
     expect(spyOnServiceGetBooleanEntitlement).toHaveBeenCalledTimes(1);
