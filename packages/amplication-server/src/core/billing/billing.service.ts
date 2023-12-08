@@ -22,6 +22,7 @@ import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 import { Project, User } from "../../models";
 import { BillingFeature, BillingPlan } from "@amplication/util-billing-types";
+import { ValidateSubscriptionPlanLimitationsArgs } from "./billing.service.types";
 
 @Injectable()
 export class BillingService {
@@ -275,12 +276,12 @@ export class BillingService {
   }
 
   //todo: wrap with a try catch and return an object with the details about the limitations
-  async validateSubscriptionPlanLimitationsForWorkspace(
-    workspaceId: string,
-    currentUser: User,
-    currentProjectId: string,
-    projects: Project[]
-  ): Promise<void> {
+  async validateSubscriptionPlanLimitationsForWorkspace({
+    workspaceId,
+    currentUser,
+    currentProjectId,
+    projects,
+  }: ValidateSubscriptionPlanLimitationsArgs): Promise<void> {
     if (this.isBillingEnabled) {
       const isIgnoreValidationCodeGeneration = await this.getBooleanEntitlement(
         workspaceId,

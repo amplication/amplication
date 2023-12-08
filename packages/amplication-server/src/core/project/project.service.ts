@@ -304,10 +304,12 @@ export class ProjectService {
       });
 
       await this.billingService.validateSubscriptionPlanLimitationsForWorkspace(
-        project.workspaceId,
-        currentUser,
-        project.id,
-        projects
+        {
+          workspaceId: project.workspaceId,
+          currentUser,
+          currentProjectId: project.id,
+          projects: projects,
+        }
       );
     }
 

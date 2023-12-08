@@ -217,12 +217,12 @@ describe("BillingService", () => {
     ];
 
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        "project-id-2",
-        projects
-      )
+        currentUser: user,
+        currentProjectId: "project-id-2",
+        projects,
+      })
     ).rejects.toThrow(
       new BillingLimitationError("Allowed projects per workspace: 1")
     );
@@ -286,12 +286,12 @@ describe("BillingService", () => {
     ];
 
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        projectId,
-        projects
-      )
+        currentUser: user,
+        currentProjectId: projectId,
+        projects,
+      })
     ).rejects.toThrow(
       new BillingLimitationError("Allowed services per workspace: 3")
     );
@@ -394,12 +394,12 @@ describe("BillingService", () => {
     ];
 
     await expect(
-      service.validateSubscriptionPlanLimitationsForWorkspace(
+      service.validateSubscriptionPlanLimitationsForWorkspace({
         workspaceId,
-        user,
-        projectId,
-        projects
-      )
+        currentUser: user,
+        currentProjectId: projectId,
+        projects,
+      })
     ).rejects.toThrow(
       new BillingLimitationError("Allowed entities per service: 5")
     );
