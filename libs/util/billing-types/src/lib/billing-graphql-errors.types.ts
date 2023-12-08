@@ -1,3 +1,0 @@
-export enum GraphQLBillingErrorCode {
-  BILLING_LIMITATION_ERROR = "BILLING_LIMITATION_ERROR",
-}
