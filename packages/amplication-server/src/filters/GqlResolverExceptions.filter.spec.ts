@@ -7,12 +7,14 @@ import { AmplicationError } from "../errors/AmplicationError";
 import {
   createRequestData,
   GqlResolverExceptionsFilter,
-  InternalServerError,
   PRISMA_CODE_UNIQUE_KEY_VIOLATION,
   RequestData,
-  UniqueKeyException,
 } from "./GqlResolverExceptions.filter";
 import { AmplicationLogger } from "@amplication/util/nestjs/logging";
+import { BillingLimitationError } from "../errors/BillingLimitationError";
+import { GraphQLBillingError } from "../errors/graphql/graphql-billing-limitation-error";
+import { GraphQLInternalServerError } from "../errors/graphql/graphql-internal-server-error";
+import { GraphQLUniqueKeyException } from "../errors/graphql/graphql-unique-key-error";
 
 const errorMock = jest.fn();
 const infoMock = jest.fn();
@@ -44,6 +46,10 @@ const EXAMPLE_USER = {
 describe("GqlResolverExceptionsFilter", () => {
   let filter: GqlResolverExceptionsFilter;
   beforeEach(async () => {
+    jest.clearAllMocks();
+  });
+
+  beforeAll(async () => {
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         {
@@ -69,9 +75,8 @@ describe("GqlResolverExceptionsFilter", () => {
     );
     // Override prepareRequestData to avoid passing a valid ArgumentHost
     filter.prepareRequestData = prepareRequestDataMock;
-
-    jest.clearAllMocks();
   });
+
   const cases: Array<
     [
       string,
@@ -90,14 +95,17 @@ describe("GqlResolverExceptionsFilter", () => {
           target: EXAMPLE_FIELDS,
         },
       }),
-      new UniqueKeyException(EXAMPLE_FIELDS),
+      new GraphQLUniqueKeyException(EXAMPLE_FIELDS),
       null,
-      [new UniqueKeyException(EXAMPLE_FIELDS).message, { requestData: null }],
+      [
+        new GraphQLUniqueKeyException(EXAMPLE_FIELDS).message,
+        { requestData: null },
+      ],
     ],
     [
       "PrismaClientKnownRequestError unknown",
       EXAMPLE_PRISMA_UNKNOWN_ERROR,
-      new InternalServerError(),
+      new GraphQLInternalServerError(),
       [EXAMPLE_PRISMA_UNKNOWN_ERROR.message, EXAMPLE_PRISMA_UNKNOWN_ERROR],
       null,
     ],
@@ -118,8 +126,28 @@ describe("GqlResolverExceptionsFilter", () => {
     [
       "Error",
       EXAMPLE_ERROR,
-      new InternalServerError(),
+      new GraphQLInternalServerError(),
       [EXAMPLE_ERROR.message, EXAMPLE_ERROR],
+      null,
+    ],
+    [
+      "BillingLimitationError",
+      new BillingLimitationError("Allowed services per workspace: 1"),
+      new GraphQLBillingError(
+        "LimitationError: Allowed services per workspace: 1",
+        false
+      ),
+      null,
+      null,
+    ],
+    [
+      "BillingLimitationError bypassAllowed",
+      new BillingLimitationError("Allowed services per workspace: 1", true),
+      new GraphQLBillingError(
+        "LimitationError: Allowed services per workspace: 1",
+        true
+      ),
+      null,
       null,
     ],
   ];

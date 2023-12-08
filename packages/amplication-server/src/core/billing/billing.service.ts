@@ -17,7 +17,7 @@ import {
   SegmentAnalyticsService,
 } from "../../services/segmentAnalytics/segmentAnalytics.service";
 import { ProvisionSubscriptionResult } from "../workspace/dto/ProvisionSubscriptionResult";
-import { ValidationError } from "../../errors/ValidationError";
+import { BillingLimitationError } from "../../errors/BillingLimitationError";
 import { FeatureUsageReport } from "../project/FeatureUsageReport";
 import { ProvisionSubscriptionInput } from "../workspace/dto/ProvisionSubscriptionInput";
 import { Project, User } from "../../models";
@@ -314,7 +314,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new ValidationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
 
         const servicesEntitlement = await this.getMeteredEntitlement(
@@ -334,7 +334,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new ValidationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
 
         const servicesAboveEntitiesPerServiceLimitEntitlement =
@@ -362,7 +362,7 @@ export class BillingService {
             event: EnumEventType.SubscriptionLimitPassed,
           });
 
-          throw new ValidationError(`LimitationError: ${message}`);
+          throw new BillingLimitationError(message);
         }
       }
     }
