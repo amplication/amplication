@@ -402,6 +402,7 @@ export class ProjectService {
         properties: {
           workspaceId: project.workspaceId,
           projectId: project.id,
+          $groups: { groupWorkspace: project.workspaceId },
         },
         event: EnumEventType.CommitCreate,
       });
