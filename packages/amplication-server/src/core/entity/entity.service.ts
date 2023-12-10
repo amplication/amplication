@@ -384,6 +384,7 @@ export class EntityService {
           projectId: resourceWithProject.projectId,
           workspaceId: resourceWithProject.project.workspaceId,
           entityName: args.data.displayName,
+          $groups: { groupWorkspace: resourceWithProject.project.workspaceId },
         },
         event: EnumEventType.EntityCreate,
       });
