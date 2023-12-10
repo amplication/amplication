@@ -730,7 +730,7 @@ export class WorkspaceService {
           entityVersion: {
             entityId: entity.id,
             versionNumber: 0,
-            deleted: false,
+            deleted: null,
           },
         },
       })) as EntityField[];
