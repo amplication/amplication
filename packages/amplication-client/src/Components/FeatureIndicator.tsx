@@ -30,7 +30,7 @@ const WarningTooltip = styled(
   },
 }));
 
-const CLASS_NAME = "amp-locked-feature-indicator";
+const CLASS_NAME = "amp-feature-indicator";
 
 type Props = {
   featureName: string;

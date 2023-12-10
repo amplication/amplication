@@ -1,6 +1,10 @@
 @import "../style/index.scss";
 
-.amp-locked-feature-indicator {
+.amp-feature-indicator {
+  &__wrapper {
+    display: flex;
+    align-items: center;
+  }
   &__tooltip__window {
     .amp-icon {
       color: var(--theme-turquoise);
